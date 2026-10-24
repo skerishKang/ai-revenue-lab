@@ -104,6 +104,21 @@ html[data-theme="padiem-glass"] body .app-shell {
     width: calc(var(--padiem-six-panel-width) - (2 * var(--padiem-six-panel-input-inset))) !important;
     transform: none !important;
   }
+  /* #5661: past 1920px the frame lane recenters (the margin in the 1921px block
+     above), so the composer must recenter with it or the body and the input
+     split into two columns. Same lane start as the frame margin, plus the same
+     14px input inset — the composer stays frame-left + 14px at every width. */
+  @media (min-width: 1921px) {
+    html[data-theme="padiem-glass"] body .app-shell:not(.sidebar-collapsed):is(
+      [data-state="home"], [data-state="chat"], [data-state="claw"]
+    ) .composer-wrap {
+      left: calc(
+        (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
+        + var(--workspace-rail, 252px)
+        + var(--padiem-six-panel-input-inset)
+      ) !important;
+    }
+  }
   /* Collapsing the sidebar changes the shared frame location once, for all
      destinations; it must not change between an empty and active conversation. */
   html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed :is(

@@ -121,10 +121,23 @@ def _empty_stream_json_error() -> JSONResponse:
 
 
 async def _close_stream(stream: Any) -> None:
+    """Close a client stream chain on every route exit path.
+
+    #4317: this close also runs while the response task is being cancelled
+    (client disconnect mid-stream). A plain ``await closer()`` there inherits
+    the pending cancellation, so the multi-layer generator chain ends up only
+    partially unwound and the rest is left to asyncgen finalization — which on
+    the Workers runtime surfaces as ``RuntimeError: async generator ignored
+    GeneratorExit`` in the request logs even for a 200 answer. Shielding keeps
+    the whole unwinding deterministic: the close finishes, the cancellation
+    still propagates.
+    """
     closer = getattr(stream, "aclose", None)
     if callable(closer):
         try:
-            await closer()
+            await asyncio.shield(closer())
+        except asyncio.CancelledError:
+            raise
         except Exception:
             pass
 
