@@ -22,6 +22,7 @@
 .util-form input:focus-visible,
 .util-form textarea:focus-visible,
 .util-form select:focus-visible,
+.util-form-actions button:focus-visible,
 .util-actions button:focus-visible,
 .util-saved-list button:focus-visible,
 .util-archive button:focus-visible {
@@ -59,10 +60,19 @@ html[data-theme="padiem-glass"] .pdfmd-btn-primary {
 }
 .util-result { margin-top: 16px; }
 .util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
+/* #5727: the form area carries the two authoring actions — generate (the
+ * shared primary CTA) and save. Same secondary surface as the result-area
+ * buttons, so both rows read as one control family. */
+.util-form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.util-form-actions .util-save,
+.util-form-actions button:not(.util-generate) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-form-actions button:hover:not(:disabled):not(.util-generate) { background: var(--accent-soft); border-color: var(--accent); }
+.util-form-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.util-form-actions .util-generate { align-self: flex-start; }
+.util-save { min-width: 72px; }
 .util-actions { display: flex; gap: 8px; margin-top: 8px; }
 .util-actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
 .util-actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
-.util-actions .util-save { min-width: 72px; }
 .util-saved-list, .util-archive { margin-top: 16px; }
 .util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
 .util-saved-list li, .util-archive li { margin: 4px 0; }
