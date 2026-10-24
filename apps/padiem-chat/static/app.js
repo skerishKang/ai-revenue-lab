@@ -1909,27 +1909,66 @@
     else authDialog.removeAttribute("open");
   }
 
-  async function passwordAuthRequest(path, payload) {
-    const response = await fetch(path, {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+  // #5664: the Chat Python Worker can fail isolate startup with
+  // `NoGilError: Attempted to use PyProxy when Python GIL not held`
+  // (cloudflare/workerd#6624) and then answers a plain-text 5xx that no route
+  // produced. That body never describes the account, so it must not be shown
+  // as a rejected credential or a failed sign-in.
+  const AUTH_SERVER_UNREACHABLE = "auth_server_unreachable";
+  // One replay is safe only where the route makes it safe: the reset confirm is
+  // guarded by its one-time token, whose atomic consume applies at most once,
+  // and the failed request never reached the route. Every other auth write
+  // keeps its single attempt.
+  const AUTH_UNREACHABLE_RETRY_DELAY_MS = 600;
+
+  function authServerUnreachableError() {
+    const error = new Error(uiT("auth-server-unreachable"));
+    error.code = AUTH_SERVER_UNREACHABLE;
+    return error;
+  }
+
+  function passwordAuthAnswer(data) {
+    return data !== null && typeof data === "object" && !Array.isArray(data);
+  }
+
+  async function passwordAuthRequest(path, payload, options = {}) {
+    const attempts = options.retryUnreachable ? 2 : 1;
+    let response = null;
     let data = null;
-    try {
-      data = await response.json();
-    } catch (_) {}
+    let answered = false;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      if (attempt > 0) {
+        await new Promise((resolve) => setTimeout(resolve, AUTH_UNREACHABLE_RETRY_DELAY_MS));
+      }
+      response = await fetch(path, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      data = null;
+      try {
+        data = await response.json();
+      } catch (_) {}
+      answered = passwordAuthAnswer(data);
+      // A route answer, success or refusal, is final: replaying it would
+      // repeat a write. Only a body no route produced is worth the one replay.
+      if (response.ok || answered) break;
+    }
     if (!response.ok) {
-      const message = data && data.error && typeof data.error.message === "string"
+      if (!answered) throw authServerUnreachableError();
+      const message = data.error && typeof data.error.message === "string"
         ? data.error.message
         : uiT("auth-error-generic");
       const error = new Error(message);
-      error.code = data && data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
+      error.code = data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
       throw error;
     }
+    // A 2xx without a route answer is not a success: reporting one here would
+    // claim a password was set that the server never stored.
+    if (!answered) throw authServerUnreachableError();
     return data;
   }
 
@@ -2115,7 +2154,7 @@
       await passwordAuthRequest("/api/auth/password/reset/confirm", {
         token: passwordResetToken,
         new_password: newPassword,
-      });
+      }, { retryUnreachable: true });
       passwordResetToken = "";
       clearPasswordResetFragment();
       if (passwordResetNew) passwordResetNew.value = "";
