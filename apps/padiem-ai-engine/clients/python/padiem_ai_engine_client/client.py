@@ -62,6 +62,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
         "declared_plan",
+        "pc_tools",
         "agent_plan",
         "tool_arguments",
         "recovery_policy",
@@ -336,6 +337,26 @@ def _decision(value: Any) -> dict[str, Any]:
     return data
 
 
+
+def _pc_tools_context(data, app_id):
+    value = data["pc_tools"]
+    if (
+        app_id not in {"padiem-chat", "b54-padiem-claw"}
+        or not data.get("subject_id") or not data.get("session_id")
+        or data.get("agent_plan") is not None
+        or "tool_arguments" in data or "declared_plan" in data
+        or not isinstance(value, Mapping) or set(value) != {"device_id", "allowed_scopes"}
+        or not _is_pc_device_id(value.get("device_id"))
+    ):
+        raise PadiemAiEngineClientError("invalid_engine_request", "PC tools context is invalid")
+    scopes = value["allowed_scopes"]
+    if (not isinstance(scopes, list) or not scopes or len(scopes) > 3
+        or any(not isinstance(v, str) or v not in {"query_drives", "files_list", "files"} for v in scopes)
+        or len(set(scopes)) != len(scopes)):
+        raise PadiemAiEngineClientError("invalid_engine_request", "PC tools scopes are invalid")
+    return {"device_id": value["device_id"], "allowed_scopes": list(scopes)}
+
+
 def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[str, Any]:
     if not isinstance(request, Mapping):
         raise PadiemAiEngineClientError("invalid_engine_request", "Engine request must be an object")
@@ -387,6 +408,8 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
     ):
         if name in data:
             payload[name] = data[name]
+    if "pc_tools" in data:
+        payload["pc_tools"] = _pc_tools_context(data, app_id)
     if "execution_context" in data:
         payload["execution_context"] = _execution_context(data["execution_context"])
     if "decision" in data:

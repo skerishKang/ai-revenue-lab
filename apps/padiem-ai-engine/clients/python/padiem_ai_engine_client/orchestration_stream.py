@@ -44,6 +44,12 @@ class EngineNdjsonContractError(ValueError):
 
 def _side_record(record: dict[str, Any]) -> dict[str, Any] | None:
     """Optional presentation records; never counted as execution progress."""
+    if "text_delta" in record:
+        data = record["text_delta"]
+        if (set(record) != {"ok", "text_delta"} or not isinstance(data, dict)
+            or set(data) != {"delta"} or not isinstance(data["delta"], str) or not data["delta"]):
+            raise EngineNdjsonContractError("invalid_stream_record")
+        return {"text_delta": dict(data)}
     key = "pc_progress" if "pc_progress" in record else "heartbeat"
     if key not in record:
         return None

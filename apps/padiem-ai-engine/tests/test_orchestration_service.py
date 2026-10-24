@@ -1262,3 +1262,314 @@ async def test_pc_progress_client_opt_in_preserves_legacy_request_bytes():
     assert calls[1]["headers"]["X-Padiem-PC-Progress"] == "1"
     assert legacy == explicit
     assert explicit[1] == {"heartbeat":{"run_id":"r","trace_id":"t","elapsed_ms":10}}
+
+
+def _pc_turn_payload():
+    payload = make_valid_payload("padiem-chat")
+    payload.update(subject_id="sub_"+"a"*32, session_id="chat_pcq_"+"a"*32,
+                   pc_tools={"device_id":"office-pc","allowed_scopes":["query_drives","files_list","files"]})
+    return payload
+
+
+class _NativePcModel:
+    def __init__(self, tool=None):
+        self.tool = tool
+        self.requests = []
+    async def stream(self, request):
+        from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+        self.requests.append(request)
+        route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
+        if self.tool:
+            yield B14StreamEvent(tool_call=B14StreamToolCall(
+                id="call_pc_1", name=self.tool, arguments={"path":"."}), route=route)
+            yield B14StreamEvent(done=True, finish_reason="tool_calls", route=route)
+        else:
+            yield B14StreamEvent(delta_content="ordinary ", route=route)
+            yield B14StreamEvent(delta_content="answer", route=route)
+            yield B14StreamEvent(done=True, finish_reason="stop", route=route)
+    def stream_auto(self, request):
+        return self.stream(request)
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_on_general_turn_use_one_native_stream_and_no_classifier():
+    from padiem_ai_core import StreamingExecutionRuntime
+    model = _NativePcModel()
+    fallback = MockEngineRuntime()
+    async def capable(_): return True
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: fallback, b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app, b14_stream_client=model),
+        pc_tools_capability=capable,
+    )
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(_pc_turn_payload()).encode(), pc_progress=True,
+    )
+    lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert len(model.requests) == 1 and fallback.call_count == 0
+    assert [d.name for d in model.requests[0].tools] == ["query_drives","files_list","files"]
+    assert model.requests[0].tool_choice == "auto"
+    assert [x["text_delta"]["delta"] for x in lines if "text_delta" in x] == ["ordinary ","answer"]
+    assert lines[-1]["orchestration"]["execution"]["answer"] == "ordinary answer"
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_without_catalog_capability_keep_the_old_model_lane():
+    model = _NativePcModel()
+    fallback = MockEngineRuntime("old lane")
+    async def no_tools(_): return False
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: fallback, b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda _: (_ for _ in ()).throw(AssertionError("no tools capability")),
+        pc_tools_capability=no_tools,
+    )
+    response = await service.orchestrate_payload(_pc_turn_payload())
+    assert response.status_code == 200
+    assert response.body["orchestration"]["execution"]["answer"] == "old lane"
+    assert fallback.call_count == 1 and not model.requests
+
+
+@pytest.mark.asyncio
+async def test_native_pc_list_call_consumes_declared_plan_without_reclassification(monkeypatch):
+    from padiem_ai_core import StreamingExecutionRuntime
+    from tests.test_5574_pc_read_boundary_end_to_end import (
+        _FakePcEndpoint, _Request, _Response, _ScriptedModel, SIGNING_SECRET,
+        build_chat_pc_query_tool_binding, build_live_pc_query_driver,
+        WRONG_READ_STEP, COMPLETE_STEP,
+    )
+    from padiem_ai_engine_client.orchestration_stream import decode_orchestration_ndjson
+    class PC(_FakePcEndpoint):
+        async def fetch(self, request):
+            response = await super().fetch(request)
+            body = json.loads(request.body)
+            if body["mode"] == "command_status":
+                counts = getattr(self, "polls", {})
+                key = body["dispatch_id"]
+                counts[key] = counts.get(key, 0)+1
+                self.polls = counts
+                if counts[key] == 1:
+                    data = json.loads(await response.text())
+                    data["dispatch"]["state"] = "received"
+                    return _Response(data)
+            return response
+    pc = PC()
+    model = _NativePcModel("files_list")
+    followups = _ScriptedModel([WRONG_READ_STEP, COMPLETE_STEP])
+    captured = []
+    binding = build_chat_pc_query_tool_binding(service=pc, request_factory=_Request, secret=SIGNING_SECRET)
+    def factory(model_id, model_policy, task_type, optimize_for, tool_arguments=None, initial_decision=None):
+        captured.append(initial_decision)
+        return build_live_pc_query_driver(
+            b14_client=followups, model_id=model_id, model_policy=model_policy,
+            task_type=task_type, optimize_for=optimize_for, service=pc,
+            request_factory=_Request, secret=SIGNING_SECRET,
+            tool_arguments=tool_arguments, initial_decision=initial_decision,
+        )
+    async def capable(_):return True
+    async def fast_poll(_):return None
+    monkeypatch.setattr(asyncio, "sleep", fast_poll)
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app,b14_stream_client=model),
+        pc_tools_capability=capable, tool_binding_resolver=lambda _:binding,
+        pc_query_step_driver_factory=factory,
+    )
+    payload = _pc_turn_payload()
+    payload["pc_tools"]["allowed_scopes"] = ["files_list"]
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(payload).encode(), pc_progress=True,
+    )
+    chunks = [line.encode() async for line in service.iter_ndjson(prepared)]
+    async def source():
+        for chunk in chunks:yield chunk
+    lines = [item async for item in decode_orchestration_ndjson(source())]
+    assert "orchestration" in lines[-1], chunks
+    assert pc.ops == ["list"]  # model's follow-up read attempt never dispatches
+    assert all(claim["ops"] == ["list"] and claim["source"] == "declared" for claim in pc.claims)
+    assert captured == [{"action":"tool","tool_id":"claw.pc.list_files","arguments":{"path":"."}}]
+    assert len(model.requests) == 1
+    assert len(followups.prompts) == 2  # post-tool decision, then refusal observation; no classifier
+    assert [x["pc_progress"]["stage"] for x in lines if "pc_progress" in x] == [
+        "accepted","picked_up","executing","result",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_absent_keeps_client_request_bytes_and_runtime_identity():
+    from padiem_ai_engine_client import PadiemAiEngineClient, EngineTransportResponse
+    calls=[]
+    class Transport:
+        async def request(self, **kw):
+            calls.append(kw)
+            return EngineTransportResponse(status=200, body=b'{"ok":true,"orchestration":{}}', headers={})
+    client=PadiemAiEngineClient(transport=Transport(),app_id="padiem-chat",caller_id="padiem-chat",credential="x"*64)
+    request={k:v for k,v in make_valid_payload("padiem-chat").items() if k!="app_id"}
+    await client.orchestrate(request)
+    expected={"app_id":"padiem-chat","agent":request["agent"],"messages":request["messages"],
+              "trace_id":request["trace_id"],"execution_context":request["execution_context"]}
+    assert calls[0]["body"] == json.dumps(expected,ensure_ascii=False,separators=(",",":")).encode()
+    fallback=MockEngineRuntime()
+    service=OrchestrationEngineService(runtime_factory=lambda _:fallback,b14_service_bound=True)
+    assert service._runtime_for_payload("padiem-chat",request) is fallback
+    with_pc=dict(request,subject_id="sub_"+"a"*32,session_id="pc_run",
+                 pc_tools={"device_id":"office-pc","allowed_scopes":["files_list"]})
+    await client.orchestrate(with_pc)
+    assert json.loads(calls[-1]["body"])["pc_tools"] == with_pc["pc_tools"]
+
+
+def test_pc_tools_context_is_material_to_admission_and_replay():
+    from app.orchestration_idempotency_service import _initial_execution_fingerprint
+    base=_pc_turn_payload()
+    fp=_initial_execution_fingerprint(base)
+    assert fp
+    for context in (
+        {"device_id":"another-pc","allowed_scopes":["query_drives","files_list","files"]},
+        {"device_id":"office-pc","allowed_scopes":["files_list"]},
+    ):
+        assert _initial_execution_fingerprint(dict(base,pc_tools=context)) != fp
+    legacy=dict(base)
+    legacy.pop("pc_tools")
+    assert _initial_execution_fingerprint(legacy) != fp
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_catalog_reads_the_actual_model_tools_declaration():
+    from types import SimpleNamespace
+    from app.pc_tools_turn import CatalogToolCapabilities
+    requests=[]
+    class Binding:
+        async def fetch(self, request):
+            requests.append(request)
+            async def text():
+                return json.dumps({"catalog":[
+                    {"id":"test/route","tags":["tools"],"pilot_available":True},
+                    {"id":"test/text","tags":["chat"],"pilot_available":True},
+                    {"id":"test/disabled","tags":["tools"],"pilot_available":False}],
+                    "models": [], "registered_routes": []})
+            return SimpleNamespace(status=200,text=text)
+    def make(url,**kw):
+        return SimpleNamespace(js_object=SimpleNamespace(url=url,**kw))
+    read=CatalogToolCapabilities(Binding(),make)
+    assert await read("test/route")
+    assert not await read("test/text")
+    assert not await read("not/in/catalog")
+    assert not await read("test/disabled")
+    assert all(r.method=="GET" and r.url=="https://b14.internal/api/pilot/models" for r in requests)
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_stream_and_json_both_require_trusted_admission_before_model():
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+    from tests.test_execution_admission_service import DenyingAdapter
+    calls=[]
+    async def capable(_):
+        calls.append("catalog")
+        return True
+    runtime=MockEngineRuntime()
+    adapter=DenyingAdapter()
+    service=AdmissionBoundOrchestrationEngineService(
+        runtime_factory=lambda _:runtime, b14_service_bound=True,
+        admission_adapter=adapter, pc_tools_capability=capable,
+    )
+    response=await service.orchestrate_payload(_pc_turn_payload())
+    assert response.status_code == 403
+    streamed=await service.prepare_stream(
+        method="POST",path=ORCHESTRATION_STREAM_PATH,content_type="application/json",
+        body=json.dumps(_pc_turn_payload()).encode(), pc_progress=True,
+    )
+    assert streamed.status_code == 403
+    assert len(adapter.calls) == 2 and runtime.call_count == 0 and not calls
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_admitted_json_preserves_the_resolved_model_and_tier():
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+    from tests.test_execution_admission_service import AllowingAdapter
+    from padiem_ai_core import StreamingExecutionRuntime
+    model=_NativePcModel()
+    adapter=AllowingAdapter()
+    async def capable(_):return True
+    service=AdmissionBoundOrchestrationEngineService(
+        runtime_factory=lambda _:MockEngineRuntime(),b14_service_bound=True,
+        admission_adapter=adapter,pc_tools_capability=capable,
+        pc_streaming_runtime_factory=lambda app:StreamingExecutionRuntime(app_id=app,b14_stream_client=model),
+    )
+    payload=_pc_turn_payload()
+    payload["agent"]["model_policy"]["product_tier"]="free"
+    response=await service.orchestrate_payload(payload)
+    assert response.status_code == 200, response.body
+    assert len(adapter.calls)==1 and len(model.requests)==1
+    assert model.requests[0].model=="test/route"
+    assert model.requests[0].routing.product_tier=="free"
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_native_stream_keeps_one_usage_receipt_for_the_run():
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+    from tests.test_execution_usage_lifecycle import UsageAwareAdapter
+    from padiem_ai_core import StreamingExecutionRuntime
+    model=_NativePcModel()
+    from dataclasses import replace
+    from app.execution_admission import permission_product_id_for_execution_app
+    class Adapter(UsageAwareAdapter):
+        def _reservation(self, request):
+            return replace(super()._reservation(request), product_id=permission_product_id_for_execution_app(request.app_id))
+    adapter=Adapter()
+    async def capable(_):return True
+    service=AdmissionBoundOrchestrationEngineService(
+        runtime_factory=lambda _:MockEngineRuntime(),b14_service_bound=True,
+        admission_adapter=adapter,pc_tools_capability=capable,
+        pc_streaming_runtime_factory=lambda app:StreamingExecutionRuntime(app_id=app,b14_stream_client=model),
+    )
+    prepared=await service.prepare_stream(
+        method="POST",path=ORCHESTRATION_STREAM_PATH,content_type="application/json",
+        body=json.dumps(_pc_turn_payload()).encode(),pc_progress=True,
+    )
+    assert isinstance(prepared,PreparedOrchestrationStream), prepared
+    records=[json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert "orchestration" in records[-1], records
+    assert len(model.requests)==1
+    assert len(adapter.admission_calls)==1 and len(adapter.receipt_calls)==1
+    assert len(adapter.events)==1
+
+
+@pytest.mark.parametrize("context", [
+    None, {"device_id":"office-pc","allowed_scopes":[]},
+    {"device_id":"bad/path","allowed_scopes":["files_list"]},
+    {"device_id":"office-pc","allowed_scopes":["files_list","files_list"]},
+    {"device_id":"office-pc","allowed_scopes":["shell"]},
+    {"device_id":"office-pc","allowed_scopes":["files_list"],"owner":"injected"},
+])
+def test_pc_tools_invalid_context_never_gets_an_admission_fingerprint(context):
+    from app.orchestration_idempotency_service import _initial_execution_fingerprint
+    assert _initial_execution_fingerprint(dict(_pc_turn_payload(),pc_tools=context)) is None
+
+
+@pytest.mark.asyncio
+async def test_pc_tools_general_turn_replay_never_repeats_the_first_model_call():
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+    from tests.test_execution_admission_service import AllowingAdapter
+    from tests.test_execution_usage_lifecycle import ReplayAdapter
+    from padiem_ai_core import StreamingExecutionRuntime
+    model=_NativePcModel()
+    async def capable(_):return True
+    service=AdmissionBoundOrchestrationEngineService(
+        runtime_factory=lambda _:MockEngineRuntime(),b14_service_bound=True,
+        admission_adapter=AllowingAdapter(),idempotency_adapter=ReplayAdapter(),
+        pc_tools_capability=capable,
+        pc_streaming_runtime_factory=lambda app:StreamingExecutionRuntime(app_id=app,b14_stream_client=model),
+    )
+    payload=_pc_turn_payload()
+    payload["execution_context"]["idempotency_key"]="pc_native_replay"
+    first=await service.orchestrate_payload(payload)
+    assert first.status_code==200, first.body
+    repeated=await service.orchestrate_payload(payload)
+    assert repeated.status_code==200, repeated.body
+    assert len(model.requests)==1
+    changed=json.loads(json.dumps(payload))
+    changed["pc_tools"]["device_id"]="another-pc"
+    conflict=await service.orchestrate_payload(changed)
+    assert conflict.status_code==409
+    assert len(model.requests)==1

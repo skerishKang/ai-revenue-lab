@@ -619,10 +619,11 @@ def _scope_allowed_tool_ids(tool_arguments: Any) -> frozenset[str] | None:
 
 def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
                                optimize_for=None, service=None, request_factory=None,
-                               secret=None, tool_arguments=None):
+                               secret=None, tool_arguments=None, initial_decision=None):
     static_arguments = _plan_step_arguments(tool_arguments, "query_drives")
     allowed_tool_ids = _scope_allowed_tool_ids(tool_arguments)
     context_cache: dict[str, str] = {}
+    first_decisions = [dict(initial_decision)] if initial_decision is not None else []
 
     async def record_scope():
         owner = _PC_QUERY_OWNER.get()
@@ -658,6 +659,8 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         return text
 
     async def select_step(*, context, compiled_profile, observations):
+        if first_decisions:
+            return first_decisions.pop()
         from padiem_ai_core.b14_execution import B14RoutingOptions
         from padiem_ai_core.b14_execution import B14ChatRequest
         pc_context = await _pc_context_text()
