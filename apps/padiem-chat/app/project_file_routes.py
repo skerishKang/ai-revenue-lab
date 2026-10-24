@@ -16,6 +16,7 @@ from .history import HistoryStore, validate_project_id
 from .project_files import (
     BINARY_PROJECT_FILE_MEDIA,
     DEFAULT_OWNER_FILES_PAGE,
+    IMAGE_PROJECT_FILE_MEDIA,
     MAX_OWNER_FILES_PAGE,
     OwnerFileCursorError,
     ProjectFileLimitError,
@@ -23,6 +24,7 @@ from .project_files import (
     _extracted_media_type,
     decode_owner_file_cursor,
     encode_owner_file_cursor,
+    image_media_type_matches,
     validate_file_id,
 )
 
@@ -181,6 +183,31 @@ async def project_files_collection(request: Request) -> JSONResponse:
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
+                # #5728: images are opaque originals — no text extraction step,
+                # the exact uploaded media type is the record's media type and
+                # the bytes go to R2 verbatim under the same ownership guard.
+                if media_type in IMAGE_PROJECT_FILE_MEDIA:
+                    data = spool.read()
+                    if not image_media_type_matches(media_type, data[:12]):
+                        return JSONResponse(
+                            {"error": {"code": "invalid_document", "message": "이미지 형식이 일치하지 않습니다."}},
+                            status_code=422,
+                        )
+                    created = await store.create_file(uid, pid, name, media_type, "")
+                    workspace_store = getattr(request.app.state, "workspace_document_store", None)
+                    bucket = getattr(workspace_store, "r2_bucket", None)
+                    if bucket is None:
+                        await store.delete_file(uid, pid, created.id)
+                        return _unavailable()
+                    try:
+                        await _r2_call(
+                            bucket, "put", _project_original_object_key(uid, pid, created.id),
+                            data, httpMetadata={"contentType": media_type},
+                        )
+                    except Exception:
+                        await store.delete_file(uid, pid, created.id)
+                        return _unavailable()
+                    return JSONResponse({"file": created.public_dict()}, status_code=201)
                 # Local Core PDF parsing can use the seekable spool directly.
                 # The Worker isolated-parser wire contract still requires bytes.
                 source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
@@ -246,7 +273,9 @@ async def project_file_original(request: Request) -> Response:
     store: ProjectFileStore = request.app.state.project_file_store
     try:
         record = await store.get_file(uid, pid, fid)
-        if record is None or record.media_type not in {"extracted/pdf", "extracted/docx"}:
+        if record is None or record.media_type not in {
+            "extracted/pdf", "extracted/docx",
+        } | IMAGE_PROJECT_FILE_MEDIA:
             return _not_found()
         workspace_store = getattr(request.app.state, "workspace_document_store", None)
         bucket = getattr(workspace_store, "r2_bucket", None)
@@ -256,6 +285,8 @@ async def project_file_original(request: Request) -> Response:
         if obj is None:
             return _not_found()
         media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        if record.media_type in IMAGE_PROJECT_FILE_MEDIA:
+            media = record.media_type
         body = getattr(obj, "body", None)
 
         async def original_chunks():

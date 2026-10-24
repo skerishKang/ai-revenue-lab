@@ -374,9 +374,16 @@
       // Photos are picked locally (multiple, image/*), previewed as
       // thumbnails, removable and re-orderable. Blog places each photo
       // between chosen paragraphs; facebook/instagram treat them as separate
-      // post media. Photos survive platform switches, stay in this session
-      // (no upload claim), and no automatic publishing is implied.
+      // post media. Photos survive platform switches. Saving the draft also
+      // stores the composition: originals go to the project files (opaque
+      // image originals, no document parsing) and one roster text file keeps
+      // the order, blog insertion positions and the file ids, so re-entering
+      // the tool restores the exact composition; photos removed before a
+      // save are deleted from the project and do not come back.
+      const PHOTO_ROSTER_NAME = "SNS 사진 구성.json";
+      const SUPPORTED_PHOTO_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
       const photos = [];
+      const removedFileIds = new Set();
       let photoSeq = 0;
       const photoBox = el("div", "util-photos");
       photoBox.id = "utilSnsPhotoBox";
@@ -406,10 +413,36 @@
       function readPhotoFile(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto" });
+          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto", mediaType: String(file.type || "image/png"), fileId: null, file: file });
           reader.onerror = () => resolve(null);
           reader.readAsDataURL(file);
         });
+      }
+
+      // #5728: the stored original must come back byte-identical, so the
+      // upload body is the picked File itself, not the preview data URL
+      // (which browsers re-encode lossily for some inputs). Unsupported
+      // image types are refused before any request; the save loop reports
+      // them instead of mislabeling the bytes.
+      async function uploadPhotoOriginal(pid, item) {
+        if (!SUPPORTED_PHOTO_MEDIA.has(item.mediaType)) return null;
+        const body = item.file ? item.file : await (async () => {
+          const blob = await (await fetch(item.dataUrl)).blob();
+          return new Blob([blob], { type: item.mediaType });
+        })();
+        const res = await fetch("/api/projects/" + pid + "/files", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "X-Padiem-Filename": encodeURIComponent(item.name || "photo"),
+            "X-Padiem-Media-Type": item.mediaType,
+          },
+          body: body,
+        });
+        if (!res.ok) return null;
+        const data = await res.json().catch(() => null);
+        return data && data.file ? data.file : null;
       }
 
       function renderPhotoList() {
@@ -455,7 +488,11 @@
           const [moved] = photos.splice(index, 1);
           photos.splice(to, 0, moved);
         } else if (target.dataset.action === "remove") {
-          photos.splice(index, 1);
+          const [removed] = photos.splice(index, 1);
+          // #5728: a photo already stored on the project that leaves the
+          // composition is deleted from the project at save time, so the
+          // removal outlives the session.
+          if (removed && removed.fileId) removedFileIds.add(removed.fileId);
         } else {
           return;
         }
@@ -596,15 +633,93 @@
         if (!text) return;
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+        // #5728: the draft save also persists the photo composition —
+        // originals first, then one roster file carrying order and the
+        // blog insertion positions. Unsupported image types and failed
+        // uploads are reported, never silently dropped from the roster
+        // claim.
+        let photoProblem = "";
+        for (const item of photos) {
+          if (item.fileId) continue;
+          if (!SUPPORTED_PHOTO_MEDIA.has(item.mediaType)) {
+            photoProblem = "지원 형식(PNG·JPEG·WebP)이 아닌 사진은 저장되지 않습니다.";
+            continue;
+          }
+          const saved = await uploadPhotoOriginal(currentPid, item);
+          if (saved) { item.fileId = saved.id; if (saved.name) item.name = saved.name; }
+          else if (!photoProblem) photoProblem = "일부 사진을 저장하지 못했습니다.";
+        }
+        for (const fid of removedFileIds) {
+          try { await fetch("/api/projects/" + currentPid + "/files/" + fid, { method: "DELETE", credentials: "include" }); } catch (_) {}
+        }
+        removedFileIds.clear();
+        const roster = { version: 1, photos: photos
+          .filter((p) => p.fileId)
+          .map((p) => ({ fileId: p.fileId, name: p.name, position: p.position })) };
+        const existing = await listProjectFiles(currentPid);
+        const previousRoster = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
+        if (previousRoster) {
+          try { await fetch("/api/projects/" + currentPid + "/files/" + previousRoster.id, { method: "DELETE", credentials: "include" }); } catch (_) {}
+        }
+        await saveProjectFile(currentPid, PHOTO_ROSTER_NAME, JSON.stringify(roster));
         const name = (h3.textContent || "sns").trim() + ".txt";
         const file = await saveProjectFile(currentPid, name, text);
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          if (photoProblem) alert(photoProblem);
         } else {
           alert("저장 실패");
         }
       });
+
+      // #5728: re-entering the tool restores the saved composition — the
+      // roster fixes the order and blog insertion positions, each original
+      // comes back from the owner-scoped original route. Best effort: a
+      // missing original or unreadable roster leaves the composition empty
+      // instead of inventing state.
+      (async function restoreSavedPhotos() {
+        try {
+          const projects = await getProjects();
+          if (!projects.length) return;
+          currentPid = currentPid || projects[0].id;
+          const files = await listProjectFiles(currentPid);
+          const rosterFile = files.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (!rosterFile) return;
+          const detailRes = await fetch("/api/projects/" + currentPid + "/files/" + rosterFile.id, { credentials: "include" });
+          if (!detailRes.ok) return;
+          const detail = await detailRes.json().catch(() => null);
+          const rosterText = detail && detail.file ? String(detail.file.content || "") : "";
+          let roster;
+          try { roster = JSON.parse(rosterText); } catch (_) { return; }
+          const entries = roster && Array.isArray(roster.photos) ? roster.photos : [];
+          for (const entry of entries) {
+            const fid = entry && typeof entry.fileId === "string" ? entry.fileId : "";
+            if (!fid) continue;
+            const imgRes = await fetch("/api/projects/" + currentPid + "/files/" + fid + "/original", { credentials: "include" });
+            if (!imgRes.ok) continue;
+            const blob = await imgRes.blob();
+            const dataUrl = await new Promise((resolve) => {
+              const r = new FileReader();
+              r.onload = () => resolve(String(r.result || ""));
+              r.onerror = () => resolve(null);
+              r.readAsDataURL(blob);
+            });
+            if (!dataUrl) continue;
+            photos.push({
+              id: ++photoSeq,
+              name: typeof entry.name === "string" && entry.name ? entry.name : "사진",
+              dataUrl: dataUrl,
+              position: typeof entry.position === "string" && entry.position ? entry.position : "auto",
+              mediaType: blob.type || "image/png",
+              fileId: fid,
+              file: null,
+            });
+          }
+          renderPhotoList();
+          renderPreview();
+        } catch (_) { /* restore is best effort; the session composition stays as-is */ }
+      })();
 
     }
 

@@ -117,7 +117,8 @@ class MemoryProjectFileStore:
 
     async def create_file(self, user_id, project_id, name, media_type, text, *, source_media_type=None):
         rec = ProjectFileRecord(
-            id="file_" + len(self.files).to_bytes(32, "big").hex(),
+            # 37 chars exactly: "file_" + 32 hex, the shape validate_file_id accepts.
+            id="file_" + len(self.files).to_bytes(16, "big").hex(),
             project_id=project_id,
             name=name,
             media_type=media_type,
@@ -186,12 +187,22 @@ MAX_BINARY_PROJECT_FILE_BASE64_BYTES = 2 * 1024 * 1024
 class _MemoryR2:
     def __init__(self):
         self.objects = {}
+        self._http_metadata = {}
 
     async def put(self, key, body, **kwargs):
         self.objects[key] = bytes(body)
+        meta = kwargs.get("httpMetadata")
+        self._http_metadata[key] = meta.get("contentType") if isinstance(meta, dict) else None
+
+    async def get(self, key, **kwargs):
+        body = self.objects.get(key)
+        if body is None:
+            return None
+        return SimpleNamespace(body=body, arrayBuffer=None)
 
     async def delete(self, key):
         self.objects.pop(key, None)
+        self._http_metadata.pop(key, None)
 
 
 async def post_binary(client, url, *, name, media_type, base64):

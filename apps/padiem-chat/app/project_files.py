@@ -11,7 +11,31 @@ from .documents import MAX_DOCUMENT_CHARS, validate_document_fields
 
 PDF_MEDIA_TYPE = "application/pdf"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE})
+#: #5728 — SNS composition photos are stored as opaque originals: the bytes go
+#: to R2 verbatim and the record keeps the exact image media type. They never
+#: enter the document text pipeline.
+PNG_MEDIA_TYPE = "image/png"
+JPEG_MEDIA_TYPE = "image/jpeg"
+WEBP_MEDIA_TYPE = "image/webp"
+IMAGE_PROJECT_FILE_MEDIA = frozenset({PNG_MEDIA_TYPE, JPEG_MEDIA_TYPE, WEBP_MEDIA_TYPE})
+BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE}) | IMAGE_PROJECT_FILE_MEDIA
+
+#: #5728 — the same honesty the document path enforces via its parser: the
+#: declared image media type must match the bytes actually uploaded.
+_IMAGE_MAGIC: dict[str, tuple[bytes, ...]] = {
+    PNG_MEDIA_TYPE: (b"\x89PNG\r\n\x1a\n",),
+    JPEG_MEDIA_TYPE: (b"\xff\xd8\xff",),
+    WEBP_MEDIA_TYPE: (b"RIFF",),
+}
+
+
+def image_media_type_matches(media_type: str, head: bytes) -> bool:
+    signature = _IMAGE_MAGIC.get(media_type)
+    if signature is None:
+        return False
+    if media_type == WEBP_MEDIA_TYPE:
+        return head[:4] == b"RIFF" and head[8:12] == b"WEBP"
+    return any(head.startswith(prefix) for prefix in signature)
 
 
 def _extracted_media_type(original_media_type: str) -> str:
@@ -323,7 +347,11 @@ class D1ProjectFileStore:
     ) -> ProjectFileRecord:
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
-        if media_type.startswith("extracted/"):
+        if media_type in IMAGE_PROJECT_FILE_MEDIA:
+            # #5728: photos carry no extractable text and never enter the
+            # document text pipeline; the record holds the opaque original.
+            document = type("Doc", (), {"name": name, "media_type": media_type, "text": ""})()
+        elif media_type.startswith("extracted/"):
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         else:
             document = validate_document_fields(name, media_type, text)
