@@ -107,6 +107,51 @@ html[data-theme="padiem-glass"] .util-submenu-item:hover { background: rgba(248,
 html[data-theme="padiem-glass"] .util-submenu-item.active { background: rgba(248, 250, 252, .22); color: #ffffff; }
 html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255, 255, .66); }
 
+/* #5028/#5608: inside the shared six-panel frame the .util-view itself is the
+ * glass card (shared-six-panel-frame.css ≥921px list), so the per-tool panels
+ * would double-inset the content. They flatten exactly like .meeting-panel
+ * does in meeting-capture.css, and their fields sit on the shared surface. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="util"] :is(
+    #utilSpeechPanel, #utilSnsPanel, #utilMeetingPanel, .pdfmd-shell
+  ) {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+/* Long single-column forms measured as one endless wall in the captures.
+ * Short fields pair up; textareas keep the full lane so long drafting input
+ * stays one readable line length. */
+@media (min-width: 700px) {
+  .util-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  .util-form label:has(textarea) { grid-column: 1 / -1; }
+}
+/* The platform switcher shipped markup without skin, so blog/facebook/instagram
+ * rendered as raw browser buttons. Same row language as .util-tab. */
+.util-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.util-sns-tab {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
+}
+.util-sns-tab:hover { background: var(--accent-soft, rgba(101, 87, 232, .12)); border-color: var(--accent, #6557e8); }
+.util-sns-tab:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-sns-tab.active {
+  border-color: transparent;
+  background: var(--accent, #6557e8);
+  color: var(--accent-contrast, #ffffff);
+}
+
 
 /* #5568 P1: one glass surface keeps the utility readable over the theme image
  * without adding per-field cards. Tokens come from the active Chat theme. */
