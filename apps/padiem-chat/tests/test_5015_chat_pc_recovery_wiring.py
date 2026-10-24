@@ -70,13 +70,23 @@ def test_server_accepts_only_a_canonical_client_recovery_handle():
     assert "chat_pc_run_id_invalid" in source
     assert "lane_run_id = run_id or _new_lane_run_id()" in source
     assert "chat_pc_run_id_conflict" in source
+
     routes = (ROOT / "app" / "orchestration_routes.py").read_text(encoding="utf-8")
-    assert "run_id=raw.get(\"pc_run_id\")" in routes
+    # #5573 (3-C-2): the orchestration surface carries no PC entry at all, so it
+    # forwards no recovery handle; it reads the one availability decision.
+    assert "pc_tool_entry_available" in routes
+    assert "execute_chat_pc_drive_lane" not in routes
+
     chat_routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
+    # The stream lane is the only PC entry. The handle travels twice: into the
+    # lane so the staged run keeps the browser's id, and into the pinned-scope
+    # notice lookup for the same completion frame.
     assert chat_routes.count("run_id=raw.get(\"pc_run_id\")") == 2
+
     contract = (ROOT / "app" / "request_contract.py").read_text(encoding="utf-8")
     assert "\"pc_run_id\", \"web_search\"}" in contract
     assert "validate_chat_pc_run_id" in contract
+
 
 def test_request_contract_accepts_only_the_canonical_pc_run_handle():
     from app.request_contract import BrowserRequestError, _validate_payload

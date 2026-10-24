@@ -47,6 +47,12 @@ from app.control_plane_identity import (
 )
 from app.history import PRODUCT_SCOPE_CHAT
 from app.main import create_app
+from app.model_policy import (
+    ADMIN_B14_MODEL_ID,
+    resolve_model_policy,
+    resolve_request_model_policy,
+)
+from padiem_control_plane.product_tier_routes import ProductTierLabel, active_route_for
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.orchestration_routes import install_orchestration_routes
 from padiem_control_plane import (
@@ -107,17 +113,96 @@ class _AnsweringB14:
         self.answer = answer
         self.calls: list[dict[str, Any]] = []
 
-    async def stream_text_auto(self, messages, *, skill, additional_system_context=None):
+    async def stream_text_auto(
+        self, messages, *, skill, additional_system_context=None,
+        tools=(), tool_choice=None,
+    ):
         self.calls.append(
             {
                 "messages": [dict(item) for item in messages],
                 "skill": skill,
                 "additional_system_context": additional_system_context,
+                "tools": [getattr(item, "name", None) for item in tools],
+                "tool_choice": tool_choice,
             }
         )
         yield SimpleNamespace(delta_content=self.answer[:4], done=False)
         yield SimpleNamespace(delta_content=self.answer[4:], done=False)
         yield SimpleNamespace(delta_content="", done=True)
+
+
+class _ToolCallingB14:
+    """The B14 stream seam that answers a PC turn with one tool call (#5573 3-C-2).
+
+    The PC entry is now the model's tool call, so this seam is the only place a
+    PC turn can start. It records the tool definitions the product declared and
+    yields one validated tool-call event, exactly as the Core stream does.
+    """
+
+    def __init__(self, tool: str = "files") -> None:
+        self.tool = tool
+        self.calls: list[dict[str, Any]] = []
+        self.emitted: list[str] = []
+
+    async def stream_text_auto(
+        self, messages, *, skill, additional_system_context=None,
+        tools=(), tool_choice=None,
+    ):
+        self.calls.append({
+            "messages": [dict(item) for item in messages],
+            "skill": skill,
+            "additional_system_context": additional_system_context,
+            "tools": [getattr(item, "name", None) for item in tools],
+            "tool_choice": tool_choice,
+        })
+        self.emitted.append(self.tool)
+        yield SimpleNamespace(
+            delta_content=None, done=False,
+            tool_call=SimpleNamespace(
+                id="call_" + str(len(self.emitted)), name=self.tool,
+                arguments={"path": "office-pc"},
+            ),
+        )
+
+
+def _harness_model_ids() -> set[str]:
+    """Every model id these flows can resolve, from the real resolvers."""
+    ids = {ADMIN_B14_MODEL_ID}
+    for text in (CHROME_5574_TEXT, GENERAL_5574_TEXT, FOLLOWUP_5574_TEXT):
+        messages = [{"role": "user", "content": text}]
+        for resolver in (resolve_model_policy, resolve_request_model_policy):
+            try:
+                ids.add(resolver(messages).model_id)
+            except Exception:
+                continue
+    for label in ProductTierLabel:
+        try:
+            ids.add(active_route_for(label).model_id)
+        except Exception:
+            continue
+    return {item for item in ids if isinstance(item, str) and item}
+
+
+class _Catalog:
+    """The B14 catalog seam: the rows these flows resolve to declare ``tools``."""
+
+    def __init__(self, *, declared: bool) -> None:
+        self.declared = declared
+        self.calls = 0
+
+    async def list_registered_models(self):
+        self.calls += 1
+        if not self.declared:
+            return []
+        return [
+            {
+                "model_id": model_id,
+                "b14_enabled": True,
+                "owner_excluded": False,
+                "capabilities": ["tools"],
+            }
+            for model_id in sorted(_harness_model_ids())
+        ]
 
 
 class _ShadowStore:
@@ -431,7 +516,9 @@ class _PcHarness:
 
     def __init__(self, *, device_rows: list[dict[str, Any]] | None = None,
                  mesh_rows: list[dict[str, Any]] | None = None,
-                 saved_device: str | None = DEVICE_ID) -> None:
+                 saved_device: str | None = DEVICE_ID,
+                 tools_declared: bool = True,
+                 b14: Any = None) -> None:
         self.authority = _IdentityAuthority(
             authenticated_at=datetime.now(timezone.utc) - timedelta(minutes=5),
             expires_at=datetime.now(timezone.utc) + timedelta(hours=2),
@@ -440,7 +527,10 @@ class _PcHarness:
         self.selection_store = _PcDeviceSelectionStore(saved_device)
         self.directory = _BrokerDirectory(list(device_rows if device_rows is not None else [_DEVICE_ROW]))
         self.mesh = _MeshReturnSource(list(mesh_rows if mesh_rows is not None else [_MESH_ROW]))
-        self.b14: Any = _ProhibitB14()  # swapped for _AnsweringB14 on b30 flows
+        self.tools_declared = tools_declared
+        # A PC turn is decided by the model on the B14 stream seam, so that is
+        # the default seam; a flow that must not touch it passes _ProhibitB14().
+        self.b14: Any = b14 if b14 is not None else _ToolCallingB14()
         self.bridge = _RecordingEngineBridge(store=self.store)
 
     async def seed_identity(self) -> None:
@@ -475,6 +565,7 @@ class _PcHarness:
         app.state.control_plane_identity_authority = self.authority
         app.state.identity_shadow_store = _ShadowStore(self.authority)
         app.state.b14_client = self.b14
+        app.state.b14_catalog_source = _Catalog(declared=self.tools_declared)
         app.state.auto_grounding = _NoopAutoGrounding()
         app.state.calendar_store = None
         app.state.orchestration_bridge = self.bridge
@@ -788,6 +879,16 @@ def _assert_b14_untouched(harness: _PcHarness) -> None:
     assert harness.b14.calls == [], harness.b14.calls
 
 
+def _assert_b14_tool_calls(harness: _PcHarness, count: int = 1) -> dict[str, Any]:
+    """The PC turn was decided by the model on the one declared tool set."""
+    assert len(harness.b14.calls) == count, harness.b14.calls
+    call = harness.b14.calls[-1]
+    assert call["tools"] == ["query_drives", "files_list", "files"], call["tools"]
+    assert call["tool_choice"] == "auto", call
+    assert harness.b14.emitted[-1] == "files", harness.b14.emitted
+    return call
+
+
 def test_create_chat_pc_run_id_contract_is_self_consistent() -> None:
     """The transport handle prefix is the canonical ``chat_pcq_`` one."""
 
@@ -827,7 +928,9 @@ def test_mesh_only_pc_turn_reaches_engine_without_broker_devices() -> None:
     assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
     assert call["session_id"] == step["pc_run_id"]
     _assert_pc_run_completed(harness, step["pc_run_id"])
-    _assert_b14_untouched(harness)
+    # An empty Broker directory never blocks the Mesh-only turn, and the entry
+    # is the model's tool call on the declared PC tool set.
+    _assert_b14_tool_calls(harness)
 
 
 def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -> None:
@@ -850,6 +953,10 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     assert step["answer"].strip() != "", step
     assert step["events"] == ["delta", "done"], step["events"]
     assert step["conversation_id"] is not None, step
+    # #5573 (3-C-2): this surface defers a PC-capable turn, and the turn is
+    # answered on the stream lane after the model chose the tool.
+    assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+    _assert_b14_tool_calls(harness)
 
     # The one Engine call carries the pc plan, the server-owned target and
     # the minted session id; the Executor result leg was stamped pre-seal.
@@ -880,19 +987,27 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     assert [r["role"] for r in staged_rows] == ["user", "assistant"]
     assert staged_rows[0]["content"] == CHROME_5574_TEXT
     assert staged_rows[1]["content"] == step["answer"]
-    _assert_b14_untouched(harness)
     assert harness.directory.calls and harness.directory.calls[0]["owner_id"] == ACCOUNT_REF
     assert harness.mesh.calls and harness.mesh.calls[0]["device_id"] == DEVICE_ID
 
 
-@pytest.mark.parametrize("orchestration", [True, False])
-def test_general_turn_keeps_ordinary_route_without_pc_work(orchestration) -> None:
-    """PC selection does not stage a PC run or replace ordinary streaming."""
+@pytest.mark.parametrize(
+    "orchestration,tools_declared",
+    [(True, True), (True, False), (False, True), (False, False)],
+)
+def test_general_turn_keeps_ordinary_route_without_pc_work(
+    orchestration, tools_declared,
+) -> None:
+    """An ordinary question never stages a PC run, on any lane.
+
+    The PC tools are *offered* to the model on both Chat lanes whenever this
+    account has a verified PC and the route declares the capability, and an
+    answer in text means no PC execution. Where the capability or the verified
+    target is missing, the same turn simply keeps the lane it had before.
+    """
 
     async def flow():
-        harness = _PcHarness()
-        if not orchestration:
-            harness.b14 = _AnsweringB14()
+        harness = _PcHarness(tools_declared=tools_declared, b14=_AnsweringB14())
         steps = [
             {
                 "messages": [{"role": "user", "content": GENERAL_5574_TEXT}],
@@ -907,7 +1022,15 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(orchestration) -> Non
     assert step["generic_error"] is None
     assert step["answer"].strip()
     assert harness.store.runs == {}
-    if orchestration:
+
+    defers = orchestration and tools_declared
+    if defers:
+        # A PC-capable turn leaves this surface for the stream lane, where the
+        # model's tool call decides. It still answers in text, so no PC work.
+        assert _has_call(step, "POST", "/api/orchestration")
+        assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+        assert harness.bridge.requests == []
+    elif orchestration:
         assert _has_call(step, "POST", "/api/orchestration")
         assert len(harness.bridge.requests) == 1
         call = harness.bridge.requests[0]
@@ -918,11 +1041,17 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(orchestration) -> Non
     else:
         assert _has_call(step, "POST", "/api/chat/stream")
         assert harness.bridge.requests == []
-        assert len(harness.b14.calls) == 1
-        assert step["events"] == ["delta", "delta", "done"]
+
+    if not orchestration or defers:
+        assert len(harness.b14.calls) == 1, harness.b14.calls
+        assert step["events"] == ["delta", "delta", "done"], step["events"]
         call = harness.b14.calls[0]
         assert call["skill"].id == "auto"
         assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
+        expected = (
+            ["query_drives", "files_list", "files"] if tools_declared else []
+        )
+        assert call["tools"] == expected, call["tools"]
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:
@@ -964,7 +1093,9 @@ def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() 
     _assert_pc_run_completed(harness, first["pc_run_id"])
     second_row = _assert_pc_run_completed(harness, second["pc_run_id"])
     assert second_row["conversation_id"] == first["conversation_id"]
-    _assert_b14_untouched(harness)
+    # Both turns reached the lane through their own model tool call; the
+    # follow-up pronoun needed no PC marker in the sentence.
+    _assert_b14_tool_calls(harness, 2)
 
 
 def test_malformed_pc_run_id_is_refused_by_the_contract_as_invalid_request() -> None:
@@ -1021,7 +1152,14 @@ def test_replayed_pc_run_id_is_refused_as_a_conflict_and_never_repayed() -> None
     assert list(harness.store.runs) == [first["pc_run_id"]]
     row = _assert_pc_run_completed(harness, first["pc_run_id"])
     assert row["status"] == "completed"
-    _assert_b14_untouched(harness)
+    # The replay paid one more model call, but the conflict was refused before
+    # any second staging or engine work: exactly one PC execution per handle.
+    assert len(harness.b14.calls) == 2, harness.b14.calls
+    assert any(
+        call["method"] == "POST" and call["path"] == "/api/chat/stream"
+        and call["status"] == 409
+        for call in replay["calls"]
+    ), replay["calls"]
 
 
 def test_stream_route_lane_call_with_budgeted_candidates() -> None:
@@ -1051,7 +1189,7 @@ def test_stream_route_lane_call_with_budgeted_candidates() -> None:
     assert call["agent_plan"]
     row = _assert_pc_run_completed(harness, minted)
     assert row["conversation_id"] == step["conversation_id"]
-    _assert_b14_untouched(harness)
+    _assert_b14_tool_calls(harness)
 
 
 def test_bring_your_own_key_turn_never_reads_padiem_orchestration() -> None:

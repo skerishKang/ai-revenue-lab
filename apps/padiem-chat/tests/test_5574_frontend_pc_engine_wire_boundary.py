@@ -51,6 +51,7 @@ from test_5574_frontend_pc_route_harness import (
     CHROME_5574_TEXT,
     DEVICE_ID,
     SUBJECT_ID,
+    _assert_b14_tool_calls,
     _assert_b14_untouched,
     _has_call,
     _PcHarness,
@@ -209,8 +210,9 @@ def test_the_refused_wire_is_the_list_plus_read_ceiling_the_engine_executes() ->
     assert _TRACE_RE.fullmatch(sent["trace_id"]), sent["trace_id"]
     assert sent["execution_context"] == {"trace_id": sent["trace_id"], "timeout_seconds": None}
 
-    # The lane never reaches a model, a PC, or a second Engine attempt.
-    _assert_b14_untouched(harness)
+    # #5573 (3-C-2): the model's tool call is what started this lane, and it is
+    # exactly one call. No PC execution and no second Engine attempt followed.
+    _assert_b14_tool_calls(harness)
     assert transport.statuses == [ENGINE_REFUSAL_STATUS]
 
 
@@ -230,20 +232,29 @@ def test_a_refused_pc_turn_is_a_refusal_and_never_a_general_answer() -> None:
     assert step["answer"] == "", step
     assert step["events"] == [], step
 
-    refused = [
+    # The refusal arrives on the lane the turn runs on: the orchestration
+    # surface deferred, and the Engine's refusal came back on the stream route.
+    deferred = [
         call for call in step["calls"]
         if call["method"] == "POST" and call["path"] == "/api/orchestration"
+    ]
+    assert len(deferred) == 1, step["calls"]
+    assert deferred[0]["status"] == 409, deferred
+    refused = [
+        call for call in step["calls"]
+        if call["method"] == "POST" and call["path"] == "/api/chat/stream"
     ]
     assert len(refused) == 1, step["calls"]
     assert refused[0]["status"] == ENGINE_REFUSAL_STATUS, refused
 
-    # No fallback leg: the ordinary streaming route was never asked to answer.
-    assert not _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+    # The refusal is terminal for this turn: no answer frame was painted and
+    # the turn was never re-asked as an ordinary chat answer.
+    assert step["events"] == [], step
     assert len(transport.bodies) == 1, transport.bodies
 
     row = harness.store.runs[minted]
     assert row["status"] != "completed", row
-    _assert_b14_untouched(harness)
+    _assert_b14_tool_calls(harness)
 
 
 def test_the_same_real_chain_completes_when_the_engine_answers() -> None:
@@ -260,7 +271,7 @@ def test_the_same_real_chain_completes_when_the_engine_answers() -> None:
     assert step["answer"] == ENGINE_ANSWER, step
     assert step["events"] == ["delta", "done"], step
     assert transport.statuses == [200], transport.statuses
-    assert not _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+    assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
 
     sent = transport.bodies[0]
     assert sent["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
@@ -268,6 +279,6 @@ def test_the_same_real_chain_completes_when_the_engine_answers() -> None:
 
     row = harness.store.runs[minted]
     assert row["status"] == "completed", row
+    _assert_b14_tool_calls(harness)
     assert row["result_summary"] == ENGINE_EXECUTOR_SUMMARY, row
     assert row["conversation_id"] == step["conversation_id"], row
-    _assert_b14_untouched(harness)

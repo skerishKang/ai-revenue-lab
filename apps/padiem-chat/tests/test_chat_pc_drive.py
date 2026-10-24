@@ -21,30 +21,36 @@ from app.chat_pc_drive import (
     CHAT_PC_QUERY_TOOL_ID,
     ChatPCDriveError,
     build_chat_pc_agent_plan,
+    chat_pc_plan_for_tool,
     execute_chat_pc_drive_lane,
-    is_chat_pc_drive_query,
-    parse_chat_pc_tool_decision,
 )
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 
 
-def test_chat_file_detector_and_two_step_plan():
-    """#4976: Chat routes a folder/file task to the shared list/read plan."""
-    from app.chat_pc_drive import (
-        build_chat_pc_files_agent_plan,
-        is_chat_pc_files_query,
-    )
-
-    assert is_chat_pc_files_query(
-        "내 PC의 테스트 폴더에서 파일 목록을 보고, TXT를 읽어서 내용을 설명해 주세요"
-    )
-    assert not is_chat_pc_files_query("내 PC에 어떤 드라이브가 있어?")
-    assert not is_chat_pc_files_query("내 PC에서 `cmd /c hostname` 실행해줘")
-    plan = build_chat_pc_files_agent_plan()
-    assert plan["agent_id"] == "agent:padiem:chat-pc-query@1"
-    assert [step["tool_id"] for step in plan["steps"]] == [
-        "claw.pc.list_files", "claw.pc.read_file",
-    ]
+def test_model_tool_names_select_the_canonical_plans():
+    """#5573 (3-C-2): the selected tool, not the wording, picks the plan."""
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("files")["steps"]
+    ] == ["claw.pc.list_files", "claw.pc.read_file"]
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("files_list")["steps"]
+    ] == ["claw.pc.list_files"]
+    assert [
+        step["tool_id"]
+        for step in chat_pc_plan_for_tool("query_drives")["steps"]
+    ] == ["claw.pc.query_drives"]
+    # A name outside the closed PC tool set selects nothing: the model cannot
+    # invent a plan, a tool or a target here.
+    assert chat_pc_plan_for_tool("claw.desktop.capture") is None
+    assert chat_pc_plan_for_tool("") is None
+    for plan in (
+        chat_pc_plan_for_tool("files"),
+        chat_pc_plan_for_tool("files_list"),
+        chat_pc_plan_for_tool("query_drives"),
+    ):
+        assert plan["agent_id"] == "agent:padiem:chat-pc-query@1"
 
 
 def test_chat_pc_plans_survive_the_engine_client_authority_gate():
@@ -211,38 +217,53 @@ def test_chat_owner_refuses_an_inactive_session():
         asyncio.run(_resolve_chat_owner(request, "usr_1"))
 
 
-def test_detector_matches_only_drive_questions():
-    assert is_chat_pc_drive_query("내 PC 드라이브 목록을 알려줘") is True
-    assert is_chat_pc_drive_query("내 컴퓨터 디스크 용량 확인해줘") is True
-    assert is_chat_pc_drive_query("my pc drive 확인해줘") is True
-    # Explicit command lane stays explicit.
-    assert is_chat_pc_drive_query("내 PC에서 `Get-PSDrive` 실행해줘") is False
-    # Other nouns are out of scope for this lane.
-    assert is_chat_pc_drive_query("내 PC에 데이터베이스가 있나?") is False
-    assert is_chat_pc_drive_query("내 PC 호스트네임을 알려줘") is False
-    # Screen/desktop verbs are a different lane.
-    assert is_chat_pc_drive_query("내 PC 화면을 보여줘") is False
-    assert is_chat_pc_drive_query("오늘 날씨 어때?") is False
-    assert is_chat_pc_drive_query("") is False
+def test_no_wording_selects_the_lane_without_a_model_tool_call():
+    """#5573: the deleted keyword gate must not come back in any shape.
+
+    Every phrasing below reaches the lane only through a tool call the model
+    made. With no tool call the lane returns None, so the text the Owner listed
+    as previously missed ("PC의", a pronoun follow-up, a paraphrase) and the
+    text that must never execute (a quoted or negated command) are handled by
+    the same rule: no model tool call, no PC run.
+    """
+    import app.chat_pc_drive as lane
+
+    request, _, _, _ = _request(model_answers=["unused"])
+    old_ready, old_uid = lane.auth_ready, lane.current_user_id
+    lane.auth_ready = lambda req: True
+    lane.current_user_id = lambda req: "usr_chat_1"
+    try:
+        for text in (
+            "PC의 문서 폴더에 뭐가 있어?",
+            "그 폴더 목록만 보여줘",
+            "제 컴퓨터 저장 공간 확인해 주세요",
+            "mypc 드라이브 알려줘",
+            "내 PC에서 `cmd /c hostname` 실행해줘",
+            "\"내 PC 파일 목록\"이라고 써 봐",
+            "내 PC 파일 읽지 말고 그냥 설명만 해줘",
+            "오늘 날씨 어때?",
+            "",
+        ):
+            assert asyncio.run(lane.execute_chat_pc_drive_lane(
+                request, user_text=text, skill=None,
+                model_id="m", conversation_id=None,
+            )) is None
+    finally:
+        lane.auth_ready, lane.current_user_id = old_ready, old_uid
 
 
-def test_tool_decision_validation_mirrors_shared_contract():
-    tool = json.dumps({
-        "action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {},
-    })
-    assert parse_chat_pc_tool_decision(tool)["action"] == "tool"
-    complete = json.dumps({"action": "complete", "answer": "연결된 PC가 없습니다."})
-    assert parse_chat_pc_tool_decision(complete)["action"] == "complete"
-    for bad in (
-        "not json",
-        json.dumps({"action": "tool"}),
-        json.dumps({"action": "tool", "tool_id": "claw.desktop.capture", "arguments": {}}),
-        json.dumps({"action": "tool", "tool_id": CHAT_PC_QUERY_TOOL_ID, "arguments": {"x": 1}}),
-        json.dumps({"action": "complete", "answer": 42}),
-        json.dumps(["tool"]),
-    ):
-        with pytest.raises(ChatPCDriveError):
-            parse_chat_pc_tool_decision(bad)
+def test_pc_error_cause_rejects_unbounded_provider_material():
+    """The browser error carries one internal code, never provider material."""
+    error = ChatPCDriveError(
+        "chat_pc_engine_unavailable", "failed", 400,
+        cause="private-provider-response: " + "x" * 100,
+    )
+    assert error.public_error() == {
+        "code": "chat_pc_engine_unavailable", "message": "failed",
+    }
+    kept = ChatPCDriveError("chat_pc_engine_unavailable", "failed", 400,
+                            cause="upstream_auth_error")
+    assert kept.public_error()["cause"] == "upstream_auth_error"
 
 
 def test_chat_command_matches_shared_mesh_contract():
@@ -326,7 +347,7 @@ class _History:
 
     async def record_chat_pc_drive_run(self, *, user_id, run_id, workspace_id, user_text, conversation_id, **extra):
         assert run_id.startswith("chat_pcq_")
-        self.staged = {"run_id": run_id, "workspace_id": workspace_id}
+        self.staged = {"run_id": run_id, "workspace_id": workspace_id, **extra}
         return conversation_id or ("chat_" + "s" * 32)
 
     async def get_claw_run(self, user_id, run_id):
@@ -357,7 +378,7 @@ def _request(*, user="usr_chat_1", model_answers, engine_answer="C: 드라이브
     return request, b14, bridge, history
 
 
-def test_lane_falls_through_for_anonymous_or_non_drive():
+def test_lane_falls_through_without_a_user_or_a_tool_call():
     import app.chat_pc_drive as lane
 
     async def run():
@@ -366,21 +387,21 @@ def test_lane_falls_through_for_anonymous_or_non_drive():
         lane.current_user_id = lambda req: None
         try:
             anon = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
-            # No signed-in user falls through.
+            # No signed-in user falls through, tool call or not.
             assert await lane.execute_chat_pc_drive_lane(
                 anon, user_text="내 PC 드라이브 알려줘", skill=None,
-                model_id="m", conversation_id=None, tier="free",
+                model_id="m", conversation_id=None, selected_tool="files_list",
             ) is None
         finally:
             lane.auth_ready, lane.current_user_id = old_ready, old_uid
-        # A signed-in user asking something else falls through too.
+        # A signed-in turn with no model tool call falls through too.
         request, _, _, _ = _request(model_answers=["unused"])
         lane.auth_ready = lambda req: True
         lane.current_user_id = lambda req: "usr_chat_1"
         try:
             assert await lane.execute_chat_pc_drive_lane(
                 request, user_text="오늘 날씨 어때?", skill=None,
-                model_id="m", conversation_id=None, tier="free",
+                model_id="m", conversation_id=None,
             ) is None
         finally:
             lane.auth_ready, lane.current_user_id = old_ready, old_uid
@@ -438,7 +459,8 @@ def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
     try:
         result = asyncio.run(lane.execute_chat_pc_drive_lane(
             request, user_text="내 PC 드라이브 목록 알려줘", skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
+            model_id="model-x", conversation_id=None,
+            selected_tool="query_drives",
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
@@ -452,9 +474,16 @@ def test_lane_tool_path_stages_chat_run_and_records_answer(monkeypatch):
     assert sent["agent_plan"]["agent_id"] == CHAT_PC_QUERY_AGENT_ID
     assert sent["subject_id"] == "sub_" + "a" * 32
     assert sent["session_id"].startswith("chat_pcq_")
+    assert sent["tool_arguments"] == {"query_drives": {"device_id": "node/meshdomain1/owner-pc"}}
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
+        "claw.pc.query_drives",
+    ]
     assert sent["user_id"] == "usr_chat_1"
     # Staged run is a Chat run, and the final answer reused the stored summary.
     assert history.staged["run_id"].startswith("chat_pcq_")
+    # A drive turn is staged and titled as the drive run it actually is.
+    assert history.staged["action"] == "pc_drive_query"
+    assert history.staged["title_prefix"] == "PC 드라이브 조회: "
     assert history.appended and history.appended[0]["run_id"] == history.staged["run_id"]
 
 
@@ -750,12 +779,12 @@ def test_selected_pc_always_uses_the_single_engine_lane(monkeypatch):
     try:
         result = asyncio.run(lane.execute_chat_pc_drive_lane(
             request, user_text="내 PC 드라이브 알려줘", skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
+            model_id="model-x", conversation_id=None,
+            selected_tool="files",
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
         lane._resolve_chat_owner, lane._check_mesh_grant = old_owner, old_grant
-    assert result is not None
     assert result is not None
     assert len(bridge.requests) == 1
     assert bridge.requests[0]["tool_arguments"] == {

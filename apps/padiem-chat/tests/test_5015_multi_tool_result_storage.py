@@ -859,8 +859,14 @@ def _files_list_claim() -> dict:
             "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
 
 
-def test_live_pc_lane_response_carries_the_pinned_scope_notice(monkeypatch):
-    """#5573: the live POST states the already-pinned scope as its own field."""
+def test_live_pc_lane_scope_notice_comes_from_the_pinned_claim(monkeypatch):
+    """#5573: the reader the live completion path uses returns the pinned scope.
+
+    The route composes its response from
+    :func:`chat_pc_drive.pc_scope_notice_for_run`, so the notice shown live is
+    the one pinned from the claim before dispatch — never a value the model or
+    the browser could supply. The answer text stays free of it.
+    """
     from app import chat_pc_drive
     from app.history import PC_SCOPE_NOTICE_LABELS
 
@@ -875,34 +881,27 @@ def test_live_pc_lane_response_carries_the_pinned_scope_notice(monkeypatch):
         ))
         answer = "승인된 폴더의 파일 목록을 확인했습니다."
 
-        async def _lane_result(request, **kwargs):
-            return answer, CONVERSATION
-
-        monkeypatch.setattr(
-            chat_pc_drive, "execute_chat_pc_drive_lane", _lane_result,
-        )
         request = SimpleNamespace(
             app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
             cookies={},
         )
-        response = asyncio.run(chat_pc_drive.run_chat_pc_drive_lane(
-            request, user_text="내 PC 파일 목록",
-            skill=SimpleNamespace(id="auto"), model_id="m",
-            conversation_id=None, tier="free", run_id=RUN,
-        ))
-        body = json.loads(response.body)
-        assert body["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
-        assert body["scope_notice"] == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
-        assert body["answer"] == answer
-        assert body["conversation_id"] == CONVERSATION
-        # The notice is a separate field; it is never part of the answer.
-        assert body["scope_notice"] not in body["answer"]
+        notice = asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(request, run_id=RUN),
+        )
+        assert notice == PC_SCOPE_NOTICE_LABELS["files_list"]
+        assert notice == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
+        # The notice is display metadata for its own field. The lane answer is
+        # the PC result alone and never carries the notice inside it.
+        assert notice not in answer
     finally:
         connection.close()
 
 
-def test_live_pc_lane_response_without_a_scope_keeps_its_exact_shape(monkeypatch):
-    """#5573: no pinned scope means the response bytes gain no new field."""
+def test_live_pc_lane_scope_notice_lookup_is_display_only(monkeypatch):
+    """No pinned scope, or an unreadable store, means simply "no notice".
+
+    A display lookup must never turn a completed PC answer into a failure.
+    """
     from app import chat_pc_drive
 
     monkeypatch.setattr(chat_pc_drive, "auth_ready", lambda request: True)
@@ -911,29 +910,28 @@ def test_live_pc_lane_response_without_a_scope_keeps_its_exact_shape(monkeypatch
     try:
         _stage_run(connection, status="running")
         store = _store(connection)
-        answer = "승인된 폴더의 파일 목록을 확인했습니다."
-
-        async def _lane_result(request, **kwargs):
-            return answer, CONVERSATION
-
-        monkeypatch.setattr(
-            chat_pc_drive, "execute_chat_pc_drive_lane", _lane_result,
-        )
         request = SimpleNamespace(
             app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
             cookies={},
         )
-        response = asyncio.run(chat_pc_drive.run_chat_pc_drive_lane(
-            request, user_text="내 PC 파일 목록",
-            skill=SimpleNamespace(id="auto"), model_id="m",
-            conversation_id=None, tier="free", run_id=RUN,
-        ))
-        assert json.loads(response.body) == {
-            "answer": answer, "conversation_id": CONVERSATION,
-        }
-        assert b"scope_notice" not in response.body
+        assert asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(request, run_id=RUN),
+        ) is None
+
+        class _Broken:
+            async def get_pc_run_scope_notice(self, **kwargs):
+                raise RuntimeError("PRIVATE_D1_FAILURE")
+
+        broken = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=_Broken())),
+            cookies={},
+        )
+        assert asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(broken, run_id=RUN),
+        ) is None
     finally:
         connection.close()
+
 
 
 def test_pending_result_get_carries_the_pinned_scope_notice(monkeypatch):
