@@ -380,6 +380,7 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
   const assert = require('node:assert/strict');
   const notice = '웹 검색을 사용할 수 없어 근거 없이 답변합니다';
   const metadata = {web_grounding_error:'web_grounding_auth_error'};
+  global.uiT = key => key === 'web-grounding-unavailable-notice' ? notice : '웹 근거를 찾지 못해 근거 없이 답변합니다';
   const response = syntheticSseResponse({answer:'answer',notice,metadata});
   const text = await response.text();
   const done = JSON.parse(text.split('event: done\n'+'data: ')[1].trim());
@@ -387,15 +388,15 @@ def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
   assert.deepEqual(done.metadata,metadata);
   const answer = {textContent:'answer'};
   const content = {children:[answer],querySelector(){return this.children.find(x=>x.className?.includes('web-grounding-notice')) || null;},prepend(x){this.children.unshift(x);}};
-  global.document = {createElement(){return {setAttribute(k,v){this[k]=v;}};}};
-  renderWebGroundingNotice(content,done.notice);
-  renderWebGroundingNotice(content,done.notice);
+  global.document = {createElement(){return {dataset:{},setAttribute(k,v){this[k]=v;}};}};
+  renderWebGroundingNotice(content,done.notice,done.metadata);
+  renderWebGroundingNotice(content,done.notice,done.metadata);
   renderWebGroundingNotice(content,'<img src=x onerror=alert(1)>');
   assert.equal(content.children.length,2);
   assert.equal(content.children[0].textContent,notice);
   assert.equal(content.children[0].role,'status');
   assert.equal(content.children[1],answer);
-  assert.ok(appSource.includes('renderWebGroundingNotice(content, result.notice)'));
+  assert.ok(appSource.includes('renderWebGroundingNotice(content, result.notice, result.metadata)'));
   assert.ok(appSource.includes('renderWebGroundingNotice(article.querySelector'));
 })().catch(e=>{console.error(e);process.exitCode=1;});
 """

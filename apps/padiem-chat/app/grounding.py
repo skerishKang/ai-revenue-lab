@@ -58,6 +58,7 @@ class GroundingError(Exception):
     status_code: int
     code: str
     user_message: str
+    source_code: str | None = None
 
     def __str__(self) -> str:
         return self.user_message
@@ -114,10 +115,10 @@ def _translate_core_error(exc: GroundingRuntimeError) -> GroundingError:
     if exc.code in {"invalid_tool_input", "tool_input_required", "unsupported_tool"}:
         return GroundingError(exc.status_code, exc.code, "검색 요청 형식이 올바르지 않습니다.")
     if exc.code in {"no_evidence", "web_grounding_no_evidence"}:
-        return GroundingError(exc.status_code, "web_grounding_no_evidence", "웹 근거를 찾지 못했습니다.")
+        return GroundingError(exc.status_code, "web_grounding_no_evidence", "웹 근거를 찾지 못했습니다.", source_code=exc.code)
     if exc.status_code in {401, 403} or exc.code in {"upstream_auth_error", "web_grounding_auth_error"}:
-        return GroundingError(exc.status_code, "web_grounding_auth_error", "웹 검색 인증을 확인하지 못했습니다.")
-    return GroundingError(exc.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.")
+        return GroundingError(exc.status_code, "web_grounding_auth_error", "웹 검색 인증을 확인하지 못했습니다.", source_code=exc.code)
+    return GroundingError(exc.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.", source_code=exc.code)
 
 
 def grounding_fallback_fields(error: GroundingError) -> dict:
