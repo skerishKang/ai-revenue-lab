@@ -17,7 +17,7 @@ from typing import Any, AsyncIterator
 import httpx
 
 from .b14_timeout_policy import build_provider_http_timeout
-from .errors import InvalidRequest, MalformedUpstreamResponse, PilotNotConfigured, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
+from .errors import PilotError, InvalidRequest, MalformedUpstreamResponse, PilotNotConfigured, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
 from .stream_types import StreamEvent, StreamToolCall, StreamUsage
 from .tool_channel import (
     InvalidToolDeclaration,
@@ -424,6 +424,99 @@ def _go_url(wire: str) -> str:
     return base + "/" + wire
 
 
+async def _go_vendor_diagnostic(
+    response: httpx.Response, *, upstream_model: str, session_id: str | None,
+    wire: str, headers: dict[str, str],
+) -> dict[str, Any]:
+    """Read a bounded error prefix for server logs; never alter the public error."""
+    from .redaction import redact_sensitive
+    raw = bytearray()
+    try:
+        iterator = response.aiter_bytes(chunk_size=512)
+        try:
+            async for block in iterator:
+                raw.extend(block[:512 - len(raw)])
+                if len(raw) == 512:
+                    break
+        finally:
+            await iterator.aclose()
+        message = raw.decode("utf-8", errors="replace")
+        # Also mask exact values already used for this request, including a
+        # provider session echo. No header value becomes diagnostic metadata.
+        for key in ("Authorization", "x-api-key", "x-opencode-session"):
+            value = headers.get(key, "")
+            if key == "Authorization" and value.startswith("Bearer "):
+                value = value[7:]
+            if value:
+                message = message.replace(value, "[REDACTED]")
+        message = redact_sensitive(message)
+        message = re.sub(r"(?i)\bbearer\s+[^\s\"'<>;,]+", "[REDACTED]", message)
+        message = re.sub(r"(?i)\bsk-[A-Za-z0-9_.-]*", "[REDACTED]", message)
+        message = re.sub(
+            r"""(?i)\b(?:api[ _-]?key|access[_-]?token|refresh[_-]?token|"""
+            r"""client[_-]?secret|password|token|secret|authorization)\b["']?"""
+            r"""\s*[:=]\s*["']?[^\s"';,}]*""",
+            "[REDACTED]", message,
+        )
+        message = re.sub(r"[A-Za-z0-9_+/=.-]{24,}", "[REDACTED]", message)
+        message = re.sub(r"[\x00-\x1f\x7f]", " ", message)
+        message = message[:200]
+    except Exception:
+        # An unreadable error body must still map to the original HTTP error.
+        message = "[vendor body unavailable]"
+    return {
+        "vendor_status": response.status_code,
+        "vendor_message": message,
+        "provider_id": "opencode-go",
+        "upstream_model": upstream_model,
+        "vendor_path": "/inference/go/" + (
+            "anthropic/v1/" if wire == "messages" else "openai/v1/"
+        ) + wire,
+        "session_header_kind": "minted" if session_id is None else "conversation",
+    }
+
+
+async def _raise_go_vendor_error(
+    response: httpx.Response, *, upstream_model: str, session_id: str | None,
+    wire: str, headers: dict[str, str],
+) -> None:
+    from .platform import _raise_upstream_error
+    diagnostic = await _go_vendor_diagnostic(
+        response, upstream_model=upstream_model, session_id=session_id,
+        wire=wire, headers=headers,
+    )
+    try:
+        _raise_upstream_error(response.status_code, "opencode-go")
+    except PilotError as exc:
+        # PilotError.to_dict and both HTTP gateways serialize only their
+        # original public fields. This attribute is server-log-only.
+        exc._go_vendor_diagnostic = diagnostic
+        raise
+
+
+def log_go_vendor_error(
+    logger: Any, error: PilotError, *, request_id: str,
+    request_path: str, attempt: int, fallback: bool,
+) -> bool:
+    """Extend alpha_error for Go only, once per failed physical attempt."""
+    diagnostic = getattr(error, "_go_vendor_diagnostic", None)
+    if not isinstance(diagnostic, dict) or diagnostic.get("provider_id") != "opencode-go":
+        return False
+    logger.warning(
+        "alpha_error request_id=%s code=%s status=%d attempt=%d "
+        "provider_id=%s upstream_model=%s request_path=%s vendor_path=%s "
+        "session_header_kind=%s fallback=%s vendor_status=%d vendor_message=%s",
+        request_id, error.code, error.status_code, attempt,
+        diagnostic["provider_id"], diagnostic["upstream_model"],
+        json.dumps(request_path[:200]), diagnostic["vendor_path"],
+        diagnostic["session_header_kind"], "fallback" if fallback else "primary",
+        diagnostic["vendor_status"],
+        json.dumps(diagnostic["vendor_message"], ensure_ascii=True),
+    )
+    error._go_vendor_logged = True
+    return True
+
+
 async def call_go_model(*, model_id: str, upstream_model: str,
                         messages: list[dict[str, Any]], session_id: str | None,
                         max_tokens: int | None = None, temperature: float | None = None,
@@ -440,8 +533,10 @@ async def call_go_model(*, model_id: str, upstream_model: str,
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
             async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
                 if not 200 <= resp.status_code < 300:
-                    from .platform import _raise_upstream_error
-                    _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
+                    await _raise_go_vendor_error(
+                        resp, upstream_model=upstream_model, session_id=session_id,
+                        wire=wire, headers=headers,
+                    )
                 # Pre-decode byte cap (#4379): the post-buffer len() check could
                 # only fire after the whole body was already in RAM.
                 from .platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
@@ -701,7 +796,7 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                                        tools=tools, tool_choice=tool_choice)
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
-    from .platform import MAX_RESPONSE_BYTES, _iter_sse_bounded_slices, _pop_sse_frames, _raise_upstream_error
+    from .platform import MAX_RESPONSE_BYTES, _iter_sse_bounded_slices, _pop_sse_frames
     # A declared tool switches the Responses lane onto the tool decoder, which
     # emits each call only after its arguments are complete.
     tool_stream: _GoResponsesToolStream | None = None
@@ -718,7 +813,10 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
             async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
                 if not 200 <= resp.status_code < 300:
-                    _raise_upstream_error(resp.status_code, "opencode-go")
+                    await _raise_go_vendor_error(
+                        resp, upstream_model=upstream_model, session_id=session_id,
+                        wire=wire, headers=headers,
+                    )
                 # One HTTP block may contain many valid events. Slice each
                 # incoming block immediately (no read-ahead) and bound only
                 # incomplete/individual SSE frames, never cumulative output.

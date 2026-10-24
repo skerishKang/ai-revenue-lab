@@ -2,20 +2,24 @@ name = "padiem-chat"
 main = "worker.py"
 # #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
 #
-# The 3.14 snapshot (compatibility date 2026-09-08 or later, the
-# `python_workers_314` flag) is the runtime Cloudflare published for the
-# `NoGilError` initialization race (cloudflare/workerd#6624), but it cannot
-# run this Worker's password hashing: that snapshot ships no `_hashlib`, and
-# CPython 3.14 removed the pure-Python PBKDF2 fallback, so
-# `hashlib.pbkdf2_hmac` does not exist there. A deployed 3.14 Worker answers
-# every password login with HTTP 500
-# (`AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'`).
+# The 3.14 snapshot (compatibility date 2026-09-08 or later) is the runtime
+# Cloudflare published for the `NoGilError` initialization race
+# (cloudflare/workerd#6624). The password-KDF half of that move is solved and
+# unit-proven in app/password_kdf.py (bundled cryptography, stored
+# pbkdf2_sha512$220000$ credential byte-identical), and it was deployed to the
+# real edge on 2026-10-24 and measured:
 #
-# Moving this Worker to 3.14 therefore requires a password KDF the runtime
-# actually provides, which changes the stored credential format and is an
-# owner-level credential decision, not a runtime bump. Until then the date
-# stays here, and the real Workerd/Pyodide CI lane proves that the deployed
-# runtime still provides the password KDF before any release.
+#   sequential GET /health         3.14: 6 of 25 failed   | 3.13: 0 of 25
+#   concurrent /api/auth/status    3.14: 3 of 8  failed   | 3.13: 0 of 8
+#   concurrent password login      3.14: 2 of 8  failed   | 3.13: 0 of 8
+#
+# Every 3.14 failure was HTTP 500 (one 503 exceededCpu) with
+# `SystemError: Cannot enter a promising task from inside another running
+# promising task. This is a bug in Pyodide.` — the NoGilError is gone and a
+# broader Python-async-bridge failure replaced it. Production was rolled back
+# to the recorded 3.13 version and verified clean, so this date stays here
+# until the platform fixes that path. Evidence: docs/operations/
+# 5479-py314-runtime-incident-20261024.md §8.
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true

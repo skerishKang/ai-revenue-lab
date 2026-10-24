@@ -959,6 +959,12 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 timeout_error.__cause__ = exc
                 error: PilotError = timeout_error
             except PilotError as exc:
+                from .opencode_go_wire import log_go_vendor_error
+                log_go_vendor_error(
+                    logger, exc, request_id=request_id,
+                    request_path="/api/pilot/v1/chat/completions", attempt=attempt_count,
+                    fallback=idx > 0,
+                )
                 error = exc
             except Exception as exc:
                 logger.error(
@@ -1070,13 +1076,14 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
     if response_data is None or success_candidate is None:
         if last_error is not None:
-            logger.warning(
-                "alpha_error request_id=%s code=%s status=%d attempt=%d",
-                request_id,
-                last_error.code,
-                last_error.status_code,
-                attempt_count,
-            )
+            if not getattr(last_error, "_go_vendor_logged", False):
+                logger.warning(
+                    "alpha_error request_id=%s code=%s status=%d attempt=%d",
+                    request_id,
+                    last_error.code,
+                    last_error.status_code,
+                    attempt_count,
+                )
             return JSONResponse(
                 status_code=last_error.status_code,
                 content={

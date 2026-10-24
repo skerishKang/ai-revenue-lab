@@ -257,29 +257,47 @@ async def _kdf220k_state() -> dict:
     dispatch the auth routes call. On the 3.14 snapshot the WebCrypto bridge
     refuses iterations above 100,000 — reported as ``webcrypto-iteration-cap``
     instead of masking the failure."""
+    from app import password_kdf
     import app.password_auth as password_auth
+    import sys
 
+    # The lane must see WHICH provider served the stored cost, not just that
+    # some provider did. #5733 passed a low-iteration bridge and a local
+    # Workerd lane whose WebCrypto accepts 220k, then failed on the edge.
+    provider = password_kdf.resolve_kdf_provider(password_auth.PBKDF2_ITERATIONS)
     started = time.perf_counter()
     try:
         stored = await password_auth.hash_password_async("runtime-probe-password")
         if not await password_auth.verify_password_async("runtime-probe-password", stored):
-            return {"state": "verify-failed", "iterations": password_auth.PBKDF2_ITERATIONS}
+            return {
+                "state": "verify-failed",
+                "iterations": password_auth.PBKDF2_ITERATIONS,
+                "provider": provider,
+            }
         if await password_auth.verify_password_async("runtime-probe-wrong-password", stored):
-            return {"state": "wrong-accepted", "iterations": password_auth.PBKDF2_ITERATIONS}
+            return {
+                "state": "wrong-accepted",
+                "iterations": password_auth.PBKDF2_ITERATIONS,
+                "provider": provider,
+            }
         return {
             "state": "ok",
+            "runtime_minor": sys.version_info.minor,
             "iterations": password_auth.PBKDF2_ITERATIONS,
             "ms": int((time.perf_counter() - started) * 1000),
+            "provider": provider,
         }
     except Exception as exc:
         text = str(exc)
         if "iteration counts above 100000" in text:
             return {
                 "state": "webcrypto-iteration-cap",
+                "runtime_minor": sys.version_info.minor,
                 "iterations": password_auth.PBKDF2_ITERATIONS,
+                "provider": provider,
                 "error": text[:200],
             }
-        return {"state": "missing", "error": text[:200]}
+        return {"state": "missing", "provider": provider, "error": text[:200]}
 
 
 async def _kdfbench_state() -> dict:

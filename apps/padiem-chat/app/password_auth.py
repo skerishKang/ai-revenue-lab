@@ -163,13 +163,13 @@ def hash_password(password: str) -> str:
 
 
 async def hash_password_async(password: str) -> str:
-    """Runtime-dispatching hash: the C path on 3.13, WebCrypto on 3.14.
+    """Runtime-dispatching hash: the C path on 3.13, cryptography on 3.14.
 
-    #5479/#5664: the sync :func:`hash_password` stays exactly as Production
-    runs it today (Pyodide 3.13 provides ``hashlib.pbkdf2_hmac``). The async
-    form dispatches through app.password_kdf so a runtime move that removes
-    ``_hashlib`` keeps deriving the same PBKDF2-HMAC-SHA512 bytes — the
-    stored credential format does not change.
+    #5479/#5664: the sync :func:`hash_password` keeps the 3.13 C path
+    (``hashlib.pbkdf2_hmac``). The async form dispatches through
+    app.password_kdf, so a runtime without ``_hashlib`` derives the same
+    PBKDF2-HMAC-SHA512 bytes through the bundled ``cryptography`` package —
+    the stored credential format does not change.
     """
     validate_password(password)
     salt = secrets.token_bytes(PBKDF2_SALT_BYTES)

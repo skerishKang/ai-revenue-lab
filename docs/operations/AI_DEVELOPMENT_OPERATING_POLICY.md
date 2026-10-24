@@ -59,6 +59,18 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
 - **Skipped is not pass.** A `success` run whose suite was skipped by the changeset classifier is not green evidence for that suite; cite the latest run in which the suite actually executed. Latent `main` failures surfaced this way on 2026-10-23 (#5605, #5618 merged while `B62 full regression` was skipped).
 - Since #5680 (2026-10-24) every push to main runs B62 full regression and the web-desktop E2E unconditionally; PR lanes keep the changeset classifier.
 
+### 0F. 장애 분석 원칙 (Owner 결정 2026-10-24)
+
+1. 모델은 고정이다. 유료·관리자 레인 = opencode-go muse-spark-1.3-contributor. 장애가 나도 모델·route 변경을 제안하지 않는다. Free(Google)는 RPM으로 실패할 수 있으며 Free 경로로 테스트하지 않는다.
+2. TinyFish 검색의 크레딧·인증은 원인 후보에서 제외한다.
+3. upstream_auth_error / 401 / 403을 보면 가설을 세우기 전에 **같은 시간대에 공급자를 터미널에서 직접 호출**한다(B14를 거치지 않고, 같은 모델·같은 키). 직접 호출 200 → B14 또는 우리 설정 문제. 직접 호출도 401/403 → 키·공급자 문제로 분류해 Owner에게 보고하고 추적을 멈춘다. 이 단계 없이 "키 문제"라고 보고하지 않는다.
+4. HTTP 코드만으로 결론 내지 않는다. 오류를 **만든 서비스의 로그 코드**(B14: upstream_auth_failed / b14_service_proof_required / missing_provider_key 등)를 확보한 뒤 판정한다. 로그는 Workers Logs 또는 wrangler tail로 같은 시각에 잡는다.
+5. 세 가지는 분석하지 않고 즉시 Owner 결정을 받는다: ① 모델 ② 코드에 넣어 둔 자체 제한(시한·크기·횟수) ③ Cloudflare 제한. 그 외만 CTO·로컬이 분석한다.
+6. 툴 사용 턴에는 실행 시한을 두지 않는다. 진행 중·경과 시간을 보여주고, 실패에만 오류를 보인다. 503을 던지고 뒤늦게 결과를 보여주는 설계는 결함이다.
+7. 검색이 실패하면 턴을 죽이지 않고 안내와 함께 답변으로 진행한다.
+8. 작업 규칙: 한 로컬 한 작업·순서대로, 작업마다 전용 worktree, 같은 PC의 Tabbit은 한 번에 한 로컬, 배포는 CTO 지시로만·한 번에 하나, PR 전 fresh-fetch, 보고에 헤더 값·키·토큰 금지(코드 이름만).
+9. 간헐 실패(되다 안 되다)는 키 값 문제가 아니다 — 키가 틀리면 항상 실패한다. 따라서 "B14 키" 가설은 간헐 장애에서 제외한다. 간헐 실패의 후보는 두 가지뿐이다: (a) 공급자의 간헐 거부 (b) B14 내부의 요청 단위 간헐 실패(시크릿 조회·증명 검증). 3번의 직접 호출 비교로 (a)/(b)를 가른 뒤에만 보고한다.
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.

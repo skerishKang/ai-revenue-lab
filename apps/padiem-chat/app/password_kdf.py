@@ -4,29 +4,39 @@ The Chat Worker hashes passwords with PBKDF2-HMAC-SHA512 (RFC 2898). Which
 implementation provides that KDF depends on the runtime the compatibility
 date selects:
 
-- Pyodide 3.13 (``compatibility_date = "2026-08-25"``, current Production)
-  provides ``hashlib.pbkdf2_hmac`` through ``_hashlib``/OpenSSL. This is the
-  fast path and the one Production runs today.
+- Pyodide 3.13 (``compatibility_date = "2026-08-25"``) provides
+  ``hashlib.pbkdf2_hmac`` through ``_hashlib``/OpenSSL. This is the fastest
+  path and the one Production ran until the 3.14 move.
 - Pyodide 3.14 (``compatibility_date >= "2026-09-08"``) ships no ``_hashlib``
   and CPython 3.14 removed the pure-Python ``hashlib`` PBKDF2 fallback, so
   ``hashlib.pbkdf2_hmac`` does not exist there. That runtime is also the
   platform's published fix for the cold-init ``NoGilError`` race
   (``cloudflare/workerd#6624``), which #5664 recorded as still hitting
   Production register/login/reset requests.
+- Workers' WebCrypto ``subtle.deriveBits`` is NOT a general replacement: the
+  Production edge refuses PBKDF2 above 100,000 iterations
+  (``NotSupportedError``), and the stored credential cost is 220,000. #5736
+  deployed exactly that combination and every password request answered HTTP
+  500, so the WebCrypto bridge may never serve a 220k request again.
 
 This module decouples the KDF from the runtime so the stored credential
 format (``pbkdf2_sha512$220000$...``, byte-identical PBKDF2 output per RFC
 2898) survives a runtime move without any credential migration:
 
-- :func:`pbkdf2_sha512_sync` uses the C-accelerated ``hashlib`` path and is
-  what Production runs today.
-- :func:`apbkdf2_sha512` is the async dispatch: the C path when the runtime
-  has it, otherwise Workers' native ``js.crypto.subtle.deriveBits`` (no
-  ``_hashlib`` required, same RFC output).
-- :func:`pbkdf2_sha512_python` is a bounded pure-Python RFC 2898 reference
-  used by tests and by environments with neither implementation. It is
-  byte-identical to ``hashlib.pbkdf2_hmac`` but far slower — it is a
-  determinism bridge, not an interactive-login path.
+- :func:`pbkdf2_sha512_sync` uses the C-accelerated ``hashlib`` path (3.13).
+- :func:`pbkdf2_sha512_cryptography` uses the ``cryptography`` package's
+  OpenSSL PBKDF2HMAC, which the Worker bundle ships (and which Pyodide 3.14
+  publishes a wasm wheel for). Measured in the isolated 3.14 Workerd lane:
+  220,000 iterations in 269 ms, byte-identical to the C path.
+- :func:`pbkdf2_sha512_webcrypto` remains for bounded iteration counts only.
+- :func:`pbkdf2_sha512_python` is the pure-Python RFC 2898 reference used by
+  hermetic tests and by environments with no other provider. It is
+  byte-identical to ``hashlib.pbkdf2_hmac`` but far slower (720 ms at the
+  stored cost in the same lane) — a determinism bridge, never an
+  interactive-login path.
+- :func:`resolve_kdf_provider` is the single source of truth for which of
+  those the async dispatch uses, and the runtime probe reports it so a lane
+  can prove which provider served the request instead of assuming one.
 """
 from __future__ import annotations
 
@@ -41,14 +51,32 @@ WEBCRYPTO_HASH = "SHA-512"
 #: SHA-512 digest size in bytes. One PBKDF2 block, per RFC 2898.
 SHA512_DIGEST_LEN = 64
 
+#: Measured on the Cloudflare Production edge (2026-10-24, #5479): the Workers
+#: WebCrypto PBKDF2 implementation refuses any iteration count above this with
+#: ``NotSupportedError: Pbkdf2 failed: iteration counts above 100000 are not
+#: supported``. The isolated local Workerd lane does NOT enforce it, which is
+#: why a green lane alone cannot approve a WebCrypto-served credential.
+WEBCRYPTO_MAX_ITERATIONS = 100_000
+
+#: Provider names reported by :func:`resolve_kdf_provider` and the probe.
+PROVIDER_HASHLIB = "hashlib"
+PROVIDER_CRYPTOGRAPHY = "cryptography"
+PROVIDER_WEBCRYPTO = "webcrypto"
+PROVIDER_PYTHON = "python"
+PROVIDER_UNAVAILABLE = "unavailable"
+
 
 class Pbkdf2Unavailable(RuntimeError):
     """The runtime exposes no usable PBKDF2 implementation for the request."""
 
 
 #: Test hook: pretend the runtime has no C-accelerated PBKDF2 so the dispatch
-#: exercises the WebCrypto/pure-Python paths the way a 3.14 snapshot would.
+#: exercises the paths a 3.14 snapshot would take.
 FORCE_NON_C_PATH = False
+
+#: Test hook: pretend the Worker bundle carries no ``cryptography`` package,
+#: so the dispatch's last-resort behaviour is provable without uninstalling it.
+FORCE_CRYPTOGRAPHY_UNAVAILABLE = False
 
 
 def pbkdf2_hmac_available() -> bool:
@@ -56,6 +84,28 @@ def pbkdf2_hmac_available() -> bool:
     if FORCE_NON_C_PATH:
         return False
     return hasattr(hashlib, "pbkdf2_hmac")
+
+
+def _load_cryptography() -> tuple[Any, Any] | None:
+    """The bundled ``cryptography`` PBKDF2 primitives, or ``None``.
+
+    Imported lazily and without caching so a runtime whose bundle lacks the
+    package reports ``None`` instead of failing the module import. On a
+    Workers isolate this is a ``sys.modules`` lookup, not a re-import.
+    """
+    try:
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    except ImportError:
+        return None
+    return hashes, PBKDF2HMAC
+
+
+def cryptography_available() -> bool:
+    """Is the bundled OpenSSL-backed PBKDF2 available on this runtime?"""
+    if FORCE_CRYPTOGRAPHY_UNAVAILABLE:
+        return False
+    return _load_cryptography() is not None
 
 
 def pbkdf2_sha512_sync(
@@ -69,6 +119,30 @@ def pbkdf2_sha512_sync(
     return hashlib.pbkdf2_hmac(
         "sha512", password, salt, iterations, dklen=dklen
     )
+
+
+def pbkdf2_sha512_cryptography(
+    password: bytes, salt: bytes, iterations: int, dklen: int
+) -> bytes:
+    """PBKDF2-HMAC-SHA512 through the bundled ``cryptography`` package.
+
+    OpenSSL's implementation compiled to wasm; it needs no ``_hashlib`` and no
+    WebCrypto, so it serves the stored 220,000-iteration cost on the 3.14
+    snapshot. RFC 2898 output, so the stored credential bytes do not change.
+    """
+    loaded = _load_cryptography()
+    if loaded is None:
+        raise Pbkdf2Unavailable(
+            "the bundled cryptography package is not available on this runtime"
+        )
+    hashes, PBKDF2HMAC = loaded
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA512(),
+        length=dklen,
+        salt=salt,
+        iterations=iterations,
+    )
+    return kdf.derive(password)
 
 
 def pbkdf2_sha512_python(
@@ -130,9 +204,10 @@ async def pbkdf2_sha512_webcrypto(
 ) -> bytes:
     """Workers WebCrypto path: ``subtle.deriveBits`` with PBKDF2/SHA-512.
 
-    Native code on the JS side — no ``_hashlib`` needed, so it runs on the
-    3.14 snapshot, and the derived bytes are the RFC 2898 PBKDF2-HMAC-SHA512
-    output the stored credential format already holds.
+    Native code on the JS side and RFC 2898 output, but the Production edge
+    rejects iteration counts above :data:`WEBCRYPTO_MAX_ITERATIONS`, so it
+    cannot serve the stored credential cost. :func:`resolve_kdf_provider`
+    keeps this path for bounded iteration counts only.
     """
     subtle, uint8_factory, to_js = (runtime_loader or _native_runtime)()
     for name in ("importKey", "deriveBits"):
@@ -158,6 +233,35 @@ async def pbkdf2_sha512_webcrypto(
     return bytes(typed.to_py())
 
 
+def resolve_kdf_provider(
+    iterations: int,
+    *,
+    runtime_loader: Callable[[], tuple[Any, Any, Callable[..., Any]]] | None = None,
+) -> str:
+    """Which provider :func:`apbkdf2_sha512` will use for this request.
+
+    One function decides, the dispatch and the runtime probe both read it, so
+    the CI lane reports the provider that actually served the stored cost
+    instead of assuming one. Order:
+
+    1. ``hashlib`` — the C path (Pyodide 3.13; fastest, byte-identical).
+    2. ``cryptography`` — the bundled OpenSSL KDF (Pyodide 3.14).
+    3. ``webcrypto`` — bounded iteration counts only, never above the edge's
+       measured ceiling. A hermetic ``runtime_loader`` selects it explicitly.
+    4. ``python`` — pure-Python reference, hermetic contexts only.
+    5. ``unavailable`` — nothing can serve this cost; the dispatch raises.
+    """
+    if runtime_loader is not None:
+        return PROVIDER_WEBCRYPTO
+    if pbkdf2_hmac_available():
+        return PROVIDER_HASHLIB
+    if cryptography_available():
+        return PROVIDER_CRYPTOGRAPHY
+    if 0 < iterations <= WEBCRYPTO_MAX_ITERATIONS:
+        return PROVIDER_WEBCRYPTO
+    return PROVIDER_UNAVAILABLE
+
+
 async def apbkdf2_sha512(
     password: bytes,
     salt: bytes,
@@ -168,22 +272,32 @@ async def apbkdf2_sha512(
 ) -> bytes:
     """The async dispatch the auth routes call.
 
-    C path when the runtime has it (current Production, zero behavior
-    change), WebCrypto when it does not (3.14 and later snapshots). The
-    pure-Python reference only serves hermetic test contexts
-    (``runtime_loader`` injected) — on a deployed Worker a WebCrypto failure
-    must fail fast (the #5724 client already classifies and retries that)
-    instead of quietly spending minutes in interpreted arithmetic.
+    On Pyodide 3.13 this is the unchanged C path. On 3.14 it is the bundled
+    ``cryptography`` package, not WebCrypto: the stored 220,000 iterations are
+    above the edge's WebCrypto ceiling, and reaching that ceiling again is the
+    exact #5736 outage. When no provider can serve the cost the dispatch
+    raises :class:`Pbkdf2Unavailable` naming what is missing, instead of
+    silently degrading to interpreted arithmetic and hiding a platform fault.
     """
-    if pbkdf2_hmac_available():
+    provider = resolve_kdf_provider(iterations, runtime_loader=runtime_loader)
+    if provider == PROVIDER_HASHLIB:
         return pbkdf2_sha512_sync(password, salt, iterations, dklen)
-    try:
-        return await pbkdf2_sha512_webcrypto(
-            password, salt, iterations, dklen, runtime_loader=runtime_loader
-        )
-    except (Pbkdf2Unavailable, ImportError):
-        # Hermetic contexts (runtime_loader injected) fall back to the
-        # pure-Python reference; a deployed Worker fails fast instead.
-        if runtime_loader is None:
-            raise
-        return pbkdf2_sha512_python(password, salt, iterations, dklen)
+    if provider == PROVIDER_CRYPTOGRAPHY:
+        return pbkdf2_sha512_cryptography(password, salt, iterations, dklen)
+    if provider == PROVIDER_WEBCRYPTO:
+        try:
+            return await pbkdf2_sha512_webcrypto(
+                password, salt, iterations, dklen, runtime_loader=runtime_loader
+            )
+        except (Pbkdf2Unavailable, ImportError):
+            # Hermetic contexts (runtime_loader injected) fall back to the
+            # pure-Python reference; a deployed Worker fails fast instead.
+            if runtime_loader is None:
+                raise
+            return pbkdf2_sha512_python(password, salt, iterations, dklen)
+    raise Pbkdf2Unavailable(
+        "no PBKDF2-HMAC-SHA512 provider can serve "
+        f"{iterations} iterations on this runtime: hashlib.pbkdf2_hmac is "
+        "absent, the bundled cryptography package is unavailable, and Workers "
+        f"WebCrypto refuses iteration counts above {WEBCRYPTO_MAX_ITERATIONS}"
+    )

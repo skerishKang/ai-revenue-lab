@@ -8,18 +8,18 @@ Three layers are pinned here; each states where it genuinely runs.
    COM2's plain CPython and prove the stored ``pbkdf2_sha512$...`` credential
    format is runtime-independent.
 2. DISPATCH CONTRACT — the auth routes call the runtime-dispatching async
-   twins, which use the C path on the deployed 3.13 runtime and the Workers
-   WebCrypto bridge on a KDF-less 3.14 snapshot. Forced-path tests run the
-   bridge and the pure-Python reference against hermetic fakes and against
-   the C reference.
+   twins, which use the C path where the runtime has it and the bundled
+   ``cryptography`` package on the KDF-less 3.14 snapshot. WebCrypto stays a
+   bounded-iteration path only: the Production edge refuses the stored
+   220,000-iteration cost. Forced-path tests run the bridge and the
+   pure-Python reference against hermetic fakes and against the C reference.
 3. LANE CONTRACT — the sequential/concurrent cold-init repro probe exists for
    the real Workerd lane (it cannot run on COM2: no Workerd on Windows), and
    the deployed compatibility date stays pinned by the #5479 guards.
 
 What is deliberately NOT claimed here: that the upstream workerd#6624 race
-is fixed, or that the compatibility date can move today. The bridge removes
-the ``_hashlib`` blocker; the runtime move itself is a protected-deploy
-decision with its own live verification (COM1 handover in the PR).
+is fixed. The runtime move is a protected-deploy decision with its own live
+verification (the governed production deploy and edge E2E in #5479).
 """
 from __future__ import annotations
 
@@ -196,7 +196,7 @@ def test_combined_probe_ready_line_carries_the_async_kdf_state() -> None:
 
 
 def test_the_deployed_compatibility_date_is_still_pinned() -> None:
-    """The runtime move itself stays with the protected deploy (COM1)."""
+    """The date stays on the runtime the edge actually serves reliably."""
     import tomllib
 
     manifest = tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
@@ -322,10 +322,17 @@ def test_dispatch_fails_fast_when_the_platform_refuses_the_stored_cost() -> None
 def test_verify_password_async_refusal_reaches_the_route(monkeypatch) -> None:
     """The exact Production shape: verify raises, so the route answers HTTP 500.
 
-    On a runtime whose only KDF refuses the stored cost, the auth route cannot
-    tell a real credential from a platform refusal, so the refusal must reach
-    the caller. A change that turned this into ``return False`` would convert
-    the outage into a silent permanent lockout behind a 401 with no traceback.
+    On a runtime whose remaining providers cannot serve the stored cost, the
+    auth route cannot tell a real credential from a platform refusal, so the
+    refusal must reach the caller. A change that turned this into
+    ``return False`` would convert the outage into a silent permanent lockout
+    behind a 401 with no traceback.
+
+    #5479: the bundled ``cryptography`` package now serves that cost on 3.14,
+    so the KDF-less runtime is reproduced by forcing both the C path and the
+    bundle unavailable. The dispatch then refuses *before* calling WebCrypto:
+    the local Workerd accepts 220k while the Production edge does not, so
+    every guaranteed-to-fail edge round trip is removed rather than observed.
     """
     import asyncio
 
@@ -338,14 +345,15 @@ def test_verify_password_async_refusal_reaches_the_route(monkeypatch) -> None:
 
     subtle = _ceiling_subtle(WEBCRYPTO_ITERATION_CEILING)
     monkeypatch.setattr(password_kdf, "FORCE_NON_C_PATH", True)
+    monkeypatch.setattr(password_kdf, "FORCE_CRYPTOGRAPHY_UNAVAILABLE", True)
     monkeypatch.setattr(
         password_kdf, "_native_runtime", lambda: _ceiling_loader(subtle)
     )
-    with pytest.raises(_JsException, match="not supported"):
+    with pytest.raises(password_kdf.Pbkdf2Unavailable, match="cryptography"):
         asyncio.run(
             password_auth.verify_password_async("ceiling-probe-password", stored)
         )
-    assert subtle.calls == [PBKDF2_ITERATIONS]
+    assert subtle.calls == []
 
 
 def test_probe_carries_an_authentic_legacy_credential_at_the_stored_cost() -> None:

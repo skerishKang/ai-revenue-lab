@@ -89,17 +89,12 @@
     const speechResult = document.getElementById("utilSpeechResult");
     const speechOutput = document.getElementById("utilSpeechOutput");
     const copyBtn = document.getElementById("utilSpeechCopy");
-    const regenBtn = document.getElementById("utilSpeechRegenerate");
     const downloadBtn = document.getElementById("utilSpeechDownload");
-    const saveBtn = document.createElement("button");
-    saveBtn.type = "button";
-    saveBtn.id = "utilSpeechSave";
-    saveBtn.className = "util-save";
-    saveBtn.textContent = "저장";
-    if (speechResult) {
-      const actions = speechResult.querySelector(".util-actions");
-      if (actions) actions.appendChild(saveBtn);
-    }
+    // #5727: the save action lives in the form area next to 초안 생성 (index.html
+    // markup) and stays disabled until a draft exists — it never claims a save
+    // that did not happen.
+    const saveBtn = document.getElementById("utilSpeechSave");
+    const utilTitleEl = document.getElementById("utilTitle");
     const tabs = document.querySelectorAll(".util-tab");
     const panels = {
       speech: document.getElementById("utilSpeechPanel"),
@@ -188,6 +183,9 @@
       tab.classList.add("active");
       const key = tab.dataset.util;
       Object.keys(panels).forEach((k) => { if (panels[k]) panels[k].hidden = k !== key; });
+      // #5727: the page title names the actual tool, the shared standalone
+      // header hierarchy (kicker → task title → tagline) stays untouched.
+      if (utilTitleEl && tab.textContent.trim()) utilTitleEl.textContent = tab.textContent.trim();
       if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
       if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
       if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
@@ -241,17 +239,18 @@
       } catch (e) {
         speechOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
       }
+      // #5727: saving is a form-area action; the click handler's empty guard
+      // keeps an unused save from claiming anything.
     }
     if (speechForm) {
       speechForm.addEventListener("submit", (e) => { e.preventDefault(); generateSpeech(speechForm); });
     }
-    if (regenBtn) regenBtn.addEventListener("click", () => { if (speechForm) generateSpeech(speechForm); });
     if (copyBtn) copyBtn.addEventListener("click", async () => {
       try { await navigator.clipboard.writeText(speechOutput.value); copyBtn.textContent = "복사됨"; setTimeout(() => { copyBtn.textContent = "복사"; }, 1500); } catch (_) {}
     });
     if (downloadBtn) downloadBtn.addEventListener("click", () => { downloadText(speechOutput.value, "speech.txt"); });
 
-    saveBtn.addEventListener("click", async () => {
+    if (saveBtn) saveBtn.addEventListener("click", async () => {
       const text = speechOutput.value.trim();
       if (!text) return;
       if (!currentPid) currentPid = await ensureProject();
@@ -371,9 +370,14 @@
       });
       form.appendChild(tabDiv);
 
+      // #5727: the form owns 생성+저장; the result area keeps 복사+다운로드 only.
+      const formActions = el("div", "util-form-actions");
       const submitBtn = el("button", "util-generate", "생성");
       submitBtn.type = "submit";
-      form.appendChild(submitBtn);
+      const formSaveB = el("button", "util-save", "저장");
+      formSaveB.type = "button"; formSaveB.id = "utilSnsSave";
+      formActions.append(submitBtn, formSaveB);
+      form.appendChild(formActions);
 
       const result = el("div", "util-result");
       result.id = "utilSnsResult";
@@ -385,10 +389,8 @@
       output.rows = 12;
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
-      const regenB = el("button", null, "다시 생성"); regenB.type = "button"; regenB.id = "utilSnsRegen";
-      const saveB = el("button", "util-save", "저장"); saveB.type = "button"; saveB.id = "utilSnsSave";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
-      actions.append(copyB, regenB, saveB, dlB);
+      actions.append(copyB, dlB);
       result.append(h3, output, actions);
 
       panel.replaceChildren(form, result);
@@ -424,12 +426,11 @@
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
-      regenB.addEventListener("click", gen);
       copyB.addEventListener("click", async () => {
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
       dlB.addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
-      saveB.addEventListener("click", async () => {
+      formSaveB.addEventListener("click", async () => {
         const text = output.value.trim();
         if (!text) return;
         if (!currentPid) currentPid = await ensureProject();
@@ -437,8 +438,8 @@
         const name = (h3.textContent || "sns").trim() + ".txt";
         const file = await saveProjectFile(currentPid, name, text);
         if (file) {
-          saveB.textContent = "저장됨";
-          setTimeout(() => { saveB.textContent = "저장"; }, 1500);
+          formSaveB.textContent = "저장됨";
+          setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
         } else {
           alert("저장 실패");
         }
@@ -474,9 +475,14 @@
         }
         form.appendChild(l);
       });
+      // #5727: the form owns 생성+저장; the result area keeps 복사+다운로드 only.
+      const formActions = el("div", "util-form-actions");
       const submitBtn = el("button", "util-generate", "요약 생성");
       submitBtn.type = "submit";
-      form.appendChild(submitBtn);
+      const formSaveB = el("button", "util-save", "저장");
+      formSaveB.type = "button"; formSaveB.id = "utilMeetingSave";
+      formActions.append(submitBtn, formSaveB);
+      form.appendChild(formActions);
 
       const result = el("div", "util-result");
       result.id = "utilMeetingResult";
@@ -487,9 +493,8 @@
       output.rows = 12;
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilMeetingCopy";
-      const saveB = el("button", null, "저장"); saveB.type = "button"; saveB.id = "utilMeetingSave"; saveB.className = "util-save";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilMeetingDownload";
-      actions.append(copyB, saveB, dlB);
+      actions.append(copyB, dlB);
       result.append(h3, output, actions);
 
       const archive = el("div", "util-archive");
@@ -521,7 +526,7 @@
       copyB.addEventListener("click", async () => {
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
-      saveB.addEventListener("click", async () => {
+      formSaveB.addEventListener("click", async () => {
         const text = output.value.trim();
         if (!text) return;
         if (!currentPid) currentPid = await ensureProject();
@@ -529,8 +534,8 @@
         const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
         const file = await saveProjectFile(currentPid, name, text);
         if (file) {
-          saveB.textContent = "저장됨";
-          setTimeout(() => { saveB.textContent = "저장"; }, 1500);
+          formSaveB.textContent = "저장됨";
+          setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
           await refreshArchive(archive);
         } else {
           alert("저장 실패");
@@ -601,11 +606,12 @@
         const bookOutput = document.createElement("textarea");
         bookOutput.id = "utilBookOutput";
         bookOutput.rows = 16;
+        // #5727: result actions are copy/download only; regenerating the
+        // book draft is re-pressing the generate button in the selection area.
         const bookActions = el("div", "util-actions");
         const bookCopy = el("button", null, "복사"); bookCopy.type = "button";
-        const bookRegen = el("button", null, "다시 생성"); bookRegen.type = "button";
         const bookDl = el("button", null, "TXT 다운로드"); bookDl.type = "button";
-        bookActions.append(bookCopy, bookRegen, bookDl);
+        bookActions.append(bookCopy, bookDl);
         bookResult.append(bookH, bookOutput, bookActions);
         arc.appendChild(bookResult);
 
@@ -645,7 +651,6 @@
         bookCopy.addEventListener("click", async () => {
           try { await navigator.clipboard.writeText(bookOutput.value); bookCopy.textContent = "복사됨"; setTimeout(() => { bookCopy.textContent = "복사"; }, 1500); } catch (_) {}
         });
-        bookRegen.addEventListener("click", () => { bookBtn.click(); });
         bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book-draft.txt"); });
       }
       refreshArchive(archive);

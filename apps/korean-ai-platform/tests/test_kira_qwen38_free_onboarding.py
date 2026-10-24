@@ -26,7 +26,7 @@ MODEL="kira/qwen3.8-flash-free"
 UPSTREAM="qwen3.8-flash-free"
 ORIGIN="https://kiraai.vn/api/v1"
 BINDING="PADIEM_B14_CREDENTIAL_09"
-SECRET_NAME="PADIEM_KIRAAI_API_KEY"
+SECRET_NAME="PADIEM_B14_CREDENTIAL_09"
 
 @pytest.fixture
 def live(monkeypatch):
