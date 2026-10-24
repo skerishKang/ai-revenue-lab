@@ -432,13 +432,14 @@
       "provider_name": "OpenCode Go",
       "capabilities": [
         "chat",
-        "coding"
+        "coding",
+        "tools"
       ],
       "context_window": 0,
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
-      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15)",
-      "source_checked_at": "2026-10-15",
+      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15); function calling documented for Muse Spark by the model maker at https://dev.meta.ai/docs/models (read 2026-10-25); the B14 adapter proves the call shape, the live tool turn is still measured per #4727",
+      "source_checked_at": "2026-10-25",
       "enabled": true
     },
     {

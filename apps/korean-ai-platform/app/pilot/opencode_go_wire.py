@@ -18,7 +18,15 @@ import httpx
 
 from .b14_timeout_policy import build_provider_http_timeout
 from .errors import InvalidRequest, MalformedUpstreamResponse, PilotNotConfigured, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
-from .stream_types import StreamEvent, StreamUsage
+from .stream_types import StreamEvent, StreamToolCall, StreamUsage
+from .tool_channel import (
+    InvalidToolDeclaration,
+    MAX_TOOL_ARGUMENT_CHARS,
+    require_tool_capability,
+    validate_tool_calls,
+    validate_tool_choice,
+    validate_tools,
+)
 from .upstream_answer_contract import UpstreamEmptyAnswer
 
 # Owner-approved Go models; additions must keep their official wire protocol.
@@ -33,16 +41,142 @@ _WIRE = {
     "claude-haiku-5-5": "messages",
 }
 _UA = "padiem-claw-coding-agent/1.0"
+# The Responses lane is the one Go wire that carries a tool declaration. The
+# model maker documents function calling for Muse Spark and the Go gateway
+# serves that model on the OpenAI Responses transport; the chat/completions and
+# Anthropic Messages lanes keep their answer-only request shape until their own
+# provider contract is verified.
+_TOOL_WIRE = "responses"
 # Go documents a stable x-opencode-session per conversation, NOT a chat_ UUID
 # format. This is a header-value safety check only, not identity authority.
 # The public B14 gateway must never promote user-supplied JSON/headers to trust.
 _SESSION_HEADER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
+def _plain_turns(messages: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """The text-only turn shape every Go wire has always accepted."""
+    turns: list[dict[str, str]] = []
+    for m in messages:
+        if not isinstance(m, dict) or m.get("role") not in ("system", "user", "assistant"):
+            raise InvalidRequest("Invalid OpenCode Go message role.")
+        if not isinstance(m.get("content"), str) or not m["content"].strip():
+            raise InvalidRequest("Invalid OpenCode Go message content.")
+        turns.append({"role": m["role"], "content": m["content"]})
+    return turns
+
+
+def _responses_turns(
+    messages: list[dict[str, Any]], declared: frozenset[str],
+) -> list[dict[str, Any]]:
+    """Project a validated B14 conversation onto Responses input items.
+
+    A text turn keeps its ``role``/``content`` shape. The Responses transport
+    replays a tool turn as items, not messages: the assistant's request becomes
+    one ``function_call`` item per call and the caller's answer becomes one
+    ``function_call_output`` item. A call naming an undeclared tool, or a result
+    answering no call of this input, is refused here instead of reaching the
+    provider.
+    """
+    items: list[dict[str, Any]] = []
+    requested: set[str] = set()
+    answered: set[str] = set()
+    for index, message in enumerate(messages):
+        if not isinstance(message, dict):
+            raise InvalidRequest("Invalid OpenCode Go message shape.")
+        role = message.get("role")
+        content = message.get("content")
+
+        if role == "tool":
+            call_id = message.get("tool_call_id")
+            if not isinstance(content, str) or not content.strip():
+                raise InvalidRequest("Invalid OpenCode Go tool result content.")
+            if call_id not in requested:
+                raise InvalidRequest("OpenCode Go tool result answers an unknown call.")
+            if call_id in answered:
+                raise InvalidRequest("OpenCode Go tool result duplicates an answered call.")
+            answered.add(call_id)
+            items.append({"type": "function_call_output", "call_id": call_id, "output": content})
+            continue
+
+        if role not in ("system", "user", "assistant"):
+            raise InvalidRequest("Invalid OpenCode Go message role.")
+        calls = (
+            [] if message.get("tool_calls") is None
+            else validate_tool_calls(message.get("tool_calls"), index)
+        )
+        if calls and (role != "assistant" or not declared):
+            raise InvalidRequest("Only an assistant turn may carry a declared tool call.")
+        if content is None:
+            if not calls:
+                raise InvalidRequest("Invalid OpenCode Go message content.")
+        elif not isinstance(content, str) or not content.strip():
+            raise InvalidRequest("Invalid OpenCode Go message content.")
+        if isinstance(content, str) and content.strip():
+            items.append({"role": role, "content": content})
+        for call in calls:
+            name, call_id = call["function"]["name"], call["id"]
+            if name not in declared:
+                raise InvalidRequest("OpenCode Go assistant turn names an undeclared tool.")
+            if call_id in requested:
+                raise InvalidRequest("OpenCode Go assistant turn duplicates a tool call id.")
+            requested.add(call_id)
+            items.append({
+                "type": "function_call", "call_id": call_id, "name": name,
+                "arguments": call["function"]["arguments"],
+            })
+    return items
+
+
+def _responses_tool_declarations(
+    declared: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """The Responses transport declares a function tool flat, not nested."""
+    tools: list[dict[str, Any]] = []
+    for item in declared:
+        function = item["function"]
+        entry: dict[str, Any] = {
+            "type": "function", "name": function["name"],
+            "parameters": function["parameters"],
+        }
+        description = function.get("description")
+        if description:
+            entry["description"] = description
+        tools.append(entry)
+    return tools
+
+
+def _responses_tool_choice(choice: Any) -> Any:
+    """A named choice is flat on this transport; the keyword forms are not."""
+    if isinstance(choice, str):
+        return choice
+    return {"type": "function", "name": choice["function"]["name"]}
+
+
+def go_tool_wire(model_id: str) -> str | None:
+    """The tool-carrying wire of one registered Go model, or None.
+
+    Three separate facts must hold: the model is the enabled, registered
+    opencode-go model, the canonical registry declares its tool capability, and
+    its documented wire is the one this adapter carries tools on. A caller uses
+    the answer to refuse with its own error, so a tool request is never
+    answered by a model that cannot make a call.
+    """
+    from .catalog import get_catalog_by_id
+    from .tool_channel import model_supports_tools
+
+    model = get_catalog_by_id(model_id)
+    if model is None or not model.enabled or model.platform_provider_id != "opencode-go":
+        return None
+    if not model_supports_tools(model.model_id):
+        return None
+    return model.upstream_model if _WIRE.get(model.upstream_model) == _TOOL_WIRE else None
+
+
 def prepare_go_request(
-    *, model_id: str, upstream_model: str, messages: list[dict[str, str]],
+    *, model_id: str, upstream_model: str, messages: list[dict[str, Any]],
     session_id: str | None, max_tokens: int | None = None,
     temperature: float | None = None, streaming: bool = False,
+    tools: Any = None, tool_choice: Any = None,
 ) -> tuple[str, dict[str, Any], dict[str, str]]:
     """Provider-specific wire shape, not a B14-wide conversation requirement.
 
@@ -53,6 +187,18 @@ def prepare_go_request(
     """
     if _WIRE.get(upstream_model) is None or model_id != "opencode-go/" + upstream_model:
         raise InvalidRequest("OpenCode Go model is not in the owner allowlist.")
+    wire = _WIRE[upstream_model]
+    # A tool declaration is a claim about the routed model, so the registry
+    # decides whether it may be served and the wire decides whether this
+    # adapter can carry it. Both are read before any credential is resolved.
+    declared = validate_tools(tools)
+    choice = validate_tool_choice(tool_choice, declared)
+    if choice is not None and not declared:
+        raise InvalidRequest("OpenCode Go tool_choice requires a declared tool.")
+    if declared:
+        require_tool_capability(model_id)
+        if wire != _TOOL_WIRE:
+            raise InvalidRequest("Unverified tool declaration for the OpenCode Go wire.")
     if session_id is None:
         # One POST without product conversation state is its own one-turn
         # conversation. Keep a real, distinct provider session for this call.
@@ -61,17 +207,17 @@ def prepare_go_request(
         raise InvalidRequest("Invalid OpenCode Go session header value.")
     if not isinstance(messages, list) or not messages:
         raise InvalidRequest("OpenCode Go requires at least one chat message.")
-    for m in messages:
-        if not isinstance(m, dict) or m.get("role") not in ("system", "user", "assistant"):
-            raise InvalidRequest("Invalid OpenCode Go message role.")
-        if not isinstance(m.get("content"), str) or not m["content"].strip():
-            raise InvalidRequest("Invalid OpenCode Go message content.")
+    if wire == _TOOL_WIRE:
+        turns = _responses_turns(
+            messages, frozenset(item["function"]["name"] for item in declared)
+        )
+    else:
+        turns = _plain_turns(messages)
     if max_tokens is not None and (type(max_tokens) is not int or max_tokens < 1):
         raise InvalidRequest("Invalid OpenCode Go max_tokens.")
     if temperature is not None and (type(temperature) not in (float, int) or not math.isfinite(float(temperature))):
         raise InvalidRequest("Invalid OpenCode Go temperature.")
 
-    wire = _WIRE[upstream_model]
     body: dict[str, Any] = {"model": upstream_model}
     if wire == "messages":
         # Anthropic Messages requires a positive output budget, no fabricated
@@ -79,17 +225,23 @@ def prepare_go_request(
         if max_tokens is None:
             raise InvalidRequest("Claude Messages needs an explicit max_tokens budget.")
         system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-        turns = [{"role": m["role"], "content": m["content"]}
-                 for m in messages if m["role"] != "system"]
-        if not turns:
+        chat_turns = [{"role": m["role"], "content": m["content"]}
+                      for m in messages if m["role"] != "system"]
+        if not chat_turns:
             raise InvalidRequest("Anthropic Messages requires user/assistant turns.")
-        body.update({"messages": turns, "max_tokens": max_tokens})
+        body.update({"messages": chat_turns, "max_tokens": max_tokens})
         if system:
             body["system"] = system
-    elif wire == "responses":
-        body["input"] = [{"role": m["role"], "content": m["content"]} for m in messages]
+    elif wire == _TOOL_WIRE:
+        body["input"] = turns
         if max_tokens is not None:
             body["max_output_tokens"] = max_tokens
+        # The declaration and the choice travel only when the caller declared
+        # a tool, so a tool-free request keeps its exact previous body.
+        if declared:
+            body["tools"] = _responses_tool_declarations(declared)
+            if choice is not None:
+                body["tool_choice"] = _responses_tool_choice(choice)
     else:
         body["messages"] = messages
         if max_tokens is not None:
@@ -105,7 +257,48 @@ def prepare_go_request(
     return wire, body, headers
 
 
-def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latency_ms: int, response_bytes: int) -> dict[str, Any]:
+def _responses_function_calls(
+    payload: dict[str, Any], declared_names: frozenset[str] | None,
+) -> list[dict[str, Any]]:
+    """Read the model's function calls out of a completed Responses envelope.
+
+    The transport answers with one ``function_call`` item per call. B14 relays
+    the call to its caller as the OpenAI-compatible ``tool_calls`` array, so the
+    provider item shape and the product shape are translated here, once.
+
+    A call is checked against the tools this request actually declared, the
+    same way the streaming decoder checks one. A name nobody declared is a
+    provider defect, not a request the caller may act on.
+    """
+    calls: list[dict[str, Any]] = []
+    for item in payload.get("output") or []:
+        if not isinstance(item, dict) or item.get("type") != "function_call":
+            continue
+        arguments = item.get("arguments")
+        if isinstance(arguments, dict):
+            # A provider that hands back parsed arguments instead of the JSON
+            # string still describes one call; encode it for the shared shape.
+            arguments = json.dumps(arguments, ensure_ascii=False)
+        calls.append({
+            "id": item.get("call_id") or item.get("id"),
+            "type": "function",
+            "function": {"name": item.get("name"), "arguments": arguments},
+        })
+    if not calls:
+        return []
+    permitted = declared_names or frozenset()
+    try:
+        validated = validate_tool_calls(calls, 0)
+    except InvalidToolDeclaration as exc:
+        raise MalformedUpstreamResponse() from exc
+    if any(call["function"]["name"] not in permitted for call in validated):
+        # The request is refused rather than relayed: an unvalidated call could
+        # reach a tool executor that trusts whatever name the answer carried.
+        raise MalformedUpstreamResponse()
+    return validated
+
+
+def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latency_ms: int, response_bytes: int, declared_names: frozenset[str] | None = None) -> dict[str, Any]:
     """Normalize three incompatible envelopes to B14 chat completion shape."""
     if not isinstance(payload, dict):
         raise MalformedUpstreamResponse()
@@ -114,6 +307,7 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
         raise MalformedUpstreamResponse()
     usage = payload.get("usage")
     usage = usage if isinstance(usage, dict) else {}
+    tool_calls: list[dict[str, Any]] = []
     if wire == "chat/completions":
         choices = payload.get("choices")
         if not isinstance(choices, list) or not choices:
@@ -125,7 +319,7 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
         finish = item.get("finish_reason")
         in_tokens = usage.get("prompt_tokens")
         out_tokens = usage.get("completion_tokens")
-    elif wire == "responses":
+    elif wire == _TOOL_WIRE:
         status = payload.get("status")
         if status != "completed":
             raise MalformedUpstreamResponse()
@@ -138,7 +332,10 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
                     if isinstance(part, dict) and part.get("type") == "output_text" and isinstance(part.get("text"), str):
                         chunks.append(part["text"])
         text = "".join(chunks)
-        finish = "stop"
+        # A call is the model's answer for this turn. It may come with prose or
+        # without it, and the caller decides what the tool result means.
+        tool_calls = _responses_function_calls(payload, declared_names)
+        finish = "tool_calls" if tool_calls else "stop"
         in_tokens = usage.get("input_tokens")
         out_tokens = usage.get("output_tokens")
     elif wire == "messages":
@@ -154,15 +351,20 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
         out_tokens = usage.get("output_tokens")
     else:
         raise MalformedUpstreamResponse()
-    if not isinstance(text, str) or not text.strip():
+    if not isinstance(text, str):
+        raise MalformedUpstreamResponse()
+    if not text.strip() and not tool_calls:
         raise UpstreamEmptyAnswer(finish)
     if any(v is not None and (type(v) is not int or v < 0) for v in (in_tokens, out_tokens)):
         raise MalformedUpstreamResponse()
+    message: dict[str, Any] = {"role": "assistant", "content": text or None}
+    if tool_calls:
+        message["tool_calls"] = tool_calls
     return {
         "id": payload.get("id") if isinstance(payload.get("id"), str) else f"b14go_{uuid.uuid4().hex[:12]}",
         "object": "chat.completion",
         "model": upstream_model,
-        "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": finish}],
+        "choices": [{"index": 0, "message": message, "finish_reason": finish}],
         "usage": {"prompt_tokens": in_tokens, "completion_tokens": out_tokens,
                   "total_tokens": in_tokens + out_tokens if in_tokens is not None and out_tokens is not None else None},
         "_live": True,
@@ -223,12 +425,14 @@ def _go_url(wire: str) -> str:
 
 
 async def call_go_model(*, model_id: str, upstream_model: str,
-                        messages: list[dict[str, str]], session_id: str | None,
+                        messages: list[dict[str, Any]], session_id: str | None,
                         max_tokens: int | None = None, temperature: float | None = None,
+                        tools: Any = None, tool_choice: Any = None,
                         transport: httpx.AsyncBaseTransport | None = None) -> dict[str, Any]:
     wire, body, h = prepare_go_request(model_id=model_id, upstream_model=upstream_model,
                                        messages=messages, session_id=session_id,
-                                       max_tokens=max_tokens, temperature=temperature)
+                                       max_tokens=max_tokens, temperature=temperature,
+                                       tools=tools, tool_choice=tool_choice)
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
     start = time.monotonic()
@@ -252,7 +456,10 @@ async def call_go_model(*, model_id: str, upstream_model: str,
         raise MalformedUpstreamResponse() from e
     return _normalize_go_answer(wire, upstream_model, parsed,
                                 latency_ms=int((time.monotonic() - start) * 1000),
-                                response_bytes=len(raw))
+                                response_bytes=len(raw),
+                                declared_names=frozenset(
+                                    item["name"] for item in body.get("tools") or []
+                                ) or None)
 
 
 def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: str) -> tuple[str | None, str | None, StreamUsage | None, bool]:
@@ -335,16 +542,174 @@ def _go_usage(usage: Any, input_key: str, output_key: str) -> StreamUsage | None
     return StreamUsage(ins, outs, ins + outs if ins is not None and outs is not None else None)
 
 
+class _GoResponsesToolStream:
+    """Buffer Responses tool events and emit only complete function calls.
+
+    The transport spreads one call across several frames: the item opens, the
+    arguments arrive as deltas, then the item closes. A partial argument string
+    handed to a caller would make it run a tool with the wrong arguments, so a
+    call travels only after the provider closes it, and every call is checked
+    against the tool names this request actually declared.
+
+    This decoder owns no authority: it decodes a request to use a tool, never
+    the permission to use one.
+    """
+
+    def __init__(self, *, names: frozenset[str], upstream_model: str) -> None:
+        self.names = names
+        self.upstream_model = upstream_model
+        self.finish_reason: str | None = None
+        self.done = False
+        self.saw_output = False
+        self._pending: dict[str, dict[str, Any]] = {}
+        self._closed: set[str] = set()
+        self._emitted_ids: set[str] = set()
+        self._index = 0
+
+    def _open(self, key: str) -> dict[str, Any]:
+        return self._pending.setdefault(
+            key, {"id": None, "name": None, "arguments": ""}
+        )
+
+    def _record(self, key: str, item: dict[str, Any]) -> None:
+        call = self._open(key)
+        for field in ("call_id", "name", "arguments"):
+            value = item.get(field)
+            if field == "arguments" and isinstance(value, dict):
+                # A provider may hand the closed item back as a parsed object.
+                # Re-encode it; treating it as absent would answer the caller
+                # with an empty argument set for a call that had one.
+                value = json.dumps(value, ensure_ascii=False)
+            if isinstance(value, str) and value:
+                call["id" if field == "call_id" else field] = value
+
+    def _close(self, key: str) -> StreamEvent:
+        call = self._open(key)
+        arguments = call["arguments"].strip() or "{}"
+        if len(arguments) > MAX_TOOL_ARGUMENT_CHARS:
+            raise MalformedUpstreamResponse()
+        try:
+            validated = validate_tool_calls([{
+                "id": call["id"],
+                "type": "function",
+                "function": {"name": call["name"], "arguments": arguments},
+            }], 0)[0]
+        except InvalidToolDeclaration as exc:
+            raise MalformedUpstreamResponse() from exc
+        name = validated["function"]["name"]
+        if name not in self.names or validated["id"] in self._emitted_ids:
+            # A call for a tool nobody declared, or the same call twice, is a
+            # provider defect rather than a turn of the conversation.
+            raise MalformedUpstreamResponse()
+        self._closed.add(key)
+        self._emitted_ids.add(validated["id"])
+        self.saw_output = True
+        event = StreamToolCall(
+            validated["id"], name, validated["function"]["arguments"], self._index,
+        )
+        self._index += 1
+        return StreamEvent(model=self.upstream_model, tool_call=event)
+
+    def decode(self, event: str, payload: Any) -> list[StreamEvent]:
+        if not isinstance(payload, dict):
+            raise MalformedUpstreamResponse()
+        actual = payload.get("model")
+        if actual is not None and actual != self.upstream_model:
+            raise MalformedUpstreamResponse()
+        kind = payload.get("type") or event
+        if kind == "response.output_text.delta":
+            text = payload.get("delta")
+            if not isinstance(text, str):
+                raise MalformedUpstreamResponse()
+            self.saw_output = self.saw_output or bool(text.strip())
+            return [StreamEvent(model=self.upstream_model, delta_content=text)]
+        if kind == "response.output_item.added":
+            item = payload.get("item")
+            if isinstance(item, dict) and item.get("type") == "function_call":
+                self._record(str(item.get("id")), item)
+            return []
+        if kind == "response.function_call_arguments.delta":
+            delta = payload.get("delta")
+            if not isinstance(delta, str):
+                raise MalformedUpstreamResponse()
+            call = self._open(str(payload.get("item_id")))
+            call["arguments"] += delta
+            if len(call["arguments"]) > MAX_TOOL_ARGUMENT_CHARS:
+                raise MalformedUpstreamResponse()
+            return []
+        if kind == "response.function_call_arguments.done":
+            arguments = payload.get("arguments")
+            if isinstance(arguments, str) and arguments:
+                self._open(str(payload.get("item_id")))["arguments"] = arguments
+            return []
+        if kind == "response.output_item.done":
+            item = payload.get("item")
+            if not isinstance(item, dict):
+                raise MalformedUpstreamResponse()
+            if item.get("type") != "function_call":
+                return []
+            key = str(item.get("id"))
+            self._record(key, item)
+            return [self._close(key)]
+        if kind == "response.completed":
+            return self._completed(payload)
+        if kind in ("response.failed", "response.incomplete", "error"):
+            raise MalformedUpstreamResponse()
+        return []
+
+    def _completed(self, payload: dict[str, Any]) -> list[StreamEvent]:
+        response = payload.get("response")
+        if not isinstance(response, dict) or response.get("status") != "completed":
+            raise MalformedUpstreamResponse()
+        if response.get("model") not in (None, self.upstream_model):
+            raise MalformedUpstreamResponse()
+        events: list[StreamEvent] = []
+        # The completed envelope is the authority on what the turn produced. A
+        # provider may close the response after an item's arguments are done
+        # without repeating output_item.done, so any call still open is closed
+        # from this envelope instead of being dropped.
+        output = response.get("output")
+        if output is not None and not isinstance(output, list):
+            raise MalformedUpstreamResponse()
+        for item in output or []:
+            if isinstance(item, dict) and item.get("type") == "function_call":
+                key = str(item.get("id"))
+                self._record(key, item)
+                if key not in self._closed:
+                    events.append(self._close(key))
+        if self._pending and len(self._closed) < len(self._pending):
+            raise MalformedUpstreamResponse()
+        self.finish_reason = "tool_calls" if self._emitted_ids else "stop"
+        if not self.saw_output:
+            raise UpstreamEmptyAnswer(self.finish_reason, streamed=True)
+        usage = _go_usage(response.get("usage", {}), "input_tokens", "output_tokens")
+        self.done = True
+        events.append(StreamEvent(
+            model=self.upstream_model, finish_reason=self.finish_reason, usage=usage,
+        ))
+        return events
+
+
 async def stream_go_model(*, model_id: str, upstream_model: str,
-                          messages: list[dict[str, str]], session_id: str | None,
+                          messages: list[dict[str, Any]], session_id: str | None,
                           max_tokens: int | None = None, temperature: float | None = None,
+                          tools: Any = None, tool_choice: Any = None,
                           transport: httpx.AsyncBaseTransport | None = None) -> AsyncIterator[StreamEvent]:
     wire, body, h = prepare_go_request(model_id=model_id, upstream_model=upstream_model,
                                        messages=messages, session_id=session_id, max_tokens=max_tokens,
-                                       temperature=temperature, streaming=True)
+                                       temperature=temperature, streaming=True,
+                                       tools=tools, tool_choice=tool_choice)
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
     from .platform import MAX_RESPONSE_BYTES, _iter_sse_bounded_slices, _pop_sse_frames, _raise_upstream_error
+    # A declared tool switches the Responses lane onto the tool decoder, which
+    # emits each call only after its arguments are complete.
+    tool_stream: _GoResponsesToolStream | None = None
+    if body.get("tools"):
+        tool_stream = _GoResponsesToolStream(
+            names=frozenset(item["name"] for item in body["tools"]),
+            upstream_model=upstream_model,
+        )
     buffer = b""
     saw_text = False
     saw_end = False
@@ -376,6 +741,18 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                             continue
                         data = "\n".join(lines)
                         if data == "[DONE]":
+                            if tool_stream is not None:
+                                # The decoder already raised on a turn that
+                                # produced neither text nor a call.
+                                if not tool_stream.saw_output:
+                                    raise UpstreamEmptyAnswer(
+                                        tool_stream.finish_reason, streamed=True
+                                    )
+                                saw_end = True
+                                yield StreamEvent(
+                                    done=True, finish_reason=tool_stream.finish_reason,
+                                )
+                                return
                             if wire == "chat/completions":
                                 if not saw_text:
                                     raise UpstreamEmptyAnswer(last_reason, streamed=True)
@@ -387,6 +764,16 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                             payload = json.loads(data)
                         except ValueError as e:
                             raise MalformedUpstreamResponse() from e
+                        if tool_stream is not None:
+                            for event in tool_stream.decode(event_type, payload):
+                                yield event
+                            if tool_stream.done:
+                                saw_end = True
+                                yield StreamEvent(
+                                    done=True, finish_reason=tool_stream.finish_reason,
+                                )
+                                return
+                            continue
                         delta, reason, usage, ended = _decode_stream_event(wire, event_type, payload, upstream_model)
                         if delta:
                             saw_text = saw_text or bool(delta.strip())

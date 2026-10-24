@@ -383,15 +383,12 @@ async def call_platform_chat_completions(
         if model_parameters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
-        if tools:
-            # #5536: the OpenCode Go wire carries no tool declaration, so a
-            # tool request is refused rather than silently dropped.
-            from .errors import InvalidRequest
-            raise InvalidRequest("Unverified tool declaration for OpenCode Go.")
+        # #4727: the Go adapter owns its own tool wire. It refuses a tool
+        # declaration the routed model cannot serve, so nothing is dropped here.
         return await call_go_model(
             model_id=model_id, upstream_model=upstream_model, messages=messages,
             session_id=session_id, max_tokens=max_tokens, temperature=temperature,
-            transport=transport,
+            tools=tools, tool_choice=tool_choice, transport=transport,
         )
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
@@ -545,7 +542,7 @@ async def stream_platform_chat_completions(
 
     spec = _require_spec(platform_provider_id)
 
-    if tools:
+    if tools and platform_provider_id != "opencode-go":
         from .google_provider import require_stream_tool_support
         require_stream_tool_support(model_id, platform_provider_id)
 
@@ -579,10 +576,13 @@ async def stream_platform_chat_completions(
         if model_parameters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        # #4727: the same adapter owns both the completed and the streaming Go
+        # tool wire, including the capability refusal for a model that cannot
+        # serve a call.
         async for event in stream_go_model(
             model_id=model_id, upstream_model=upstream_model, messages=messages,
             session_id=session_id, max_tokens=max_tokens, temperature=temperature,
-            transport=transport,
+            tools=tools, tool_choice=tool_choice, transport=transport,
         ):
             yield event
         return
