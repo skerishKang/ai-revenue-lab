@@ -27,7 +27,8 @@ test('zero-supply P0 renders an honest consumer state with one navigation lane',
   assert.match(html, /data-consumer-mode="AD_CLICK_FIRST"/);
   assert.match(html, /바로 적립/);
   assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
-  assert.match(html, /실제로 참여할 수 있고 보상 조건이 확인된 항목만/);
+  assert.match(html, /아직 확인된 적립이 없습니다/);
+  assert.match(html, /검증된 공급자가 연결되면/);
   assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
   assert.doesNotMatch(html, /publisher|onboarding|API key/i);
 });

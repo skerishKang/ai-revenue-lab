@@ -106,13 +106,8 @@ function renderCard(card: AdClickConsumerCard): string | null {
 function renderEmptyState(): string {
   return `<div class="empty-state" role="status" data-empty-state="NO_LIVE_REWARD_SUPPLY">
     <div class="empty-state__mark" aria-hidden="true">${renderBrandMark('empty-state__mark-svg')}</div>
-    <h3>지금 참여 가능한 적립을 확인 중이에요</h3>
-    <p>실제로 참여할 수 있고 보상 조건이 확인된 항목만 보여드릴게요.</p>
-    <ul class="empty-steps">
-      <li>광고·클릭·방문처럼 짧게 끝나는 적립부터 준비됩니다.</li>
-      <li>검증된 공급자가 연결되면 여기에 바로 표시됩니다.</li>
-      <li>조건과 보상은 참여 전 외부 페이지에서 다시 확인하세요.</li>
-    </ul>
+    <h3>아직 확인된 적립이 없습니다</h3>
+    <p>검증된 공급자가 연결되면 여기에 바로 표시됩니다.</p>
   </div>`;
 }
 
@@ -241,6 +236,8 @@ function renderShell(
     .home-cta--secondary { background: var(--surface); border: 1px solid var(--line); color: var(--text); }
     .home-cta--primary:hover { background: var(--accent-strong); }
     .home-cta--secondary:hover { background: var(--surface-strong); }
+    .cta-link--secondary { color: var(--accent-strong); font-weight: 600; }
+    .cta-link--secondary:hover { text-decoration: underline; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
     .reward-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
@@ -433,20 +430,11 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
     .map(renderCard)
     .filter((card): card is string => card !== null);
 
-  const intro = `
-    <section class="home-intro" aria-labelledby="intro-title">
-      <div class="section-head">
-        <h2 id="intro-title">오늘의 추천</h2>
-        <a class="cta-link" href="/today">추천 보러 가기<span aria-hidden="true"> →</span></a>
-      </div>
-      <p class="intro-desc">오늘 가장 먼저 참여하기 좋은 적립을 모았습니다.</p>
-    </section>`;
-
   const actions = `
     <section class="home-actions" aria-labelledby="actions-title">
       <h2 id="actions-title" class="visually-hidden">수익 기회 탐색</h2>
       <a class="home-cta home-cta--primary" href="/browse">수익 기회 찾기<span aria-hidden="true"> →</span></a>
-      <a class="home-cta home-cta--secondary" href="/today">오늘의 추천 보기<span aria-hidden="true"> →</span></a>
+      <a class="cta-link cta-link--secondary" href="/today">오늘의 추천 보기<span aria-hidden="true"> →</span></a>
     </section>`;
 
   const content = renderedCards.length > 0
@@ -474,7 +462,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
         <p>${escapeHtml(viewModel.hero.description)}</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${intro}${actions}${content}`, { howItWorks: true });
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${actions}${content}`, { howItWorks: false });
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.

@@ -107,7 +107,7 @@ export function buildAdClickFirstConsumerHome(
     hero: Object.freeze({
       eyebrow: 'PADIEM AI Reward Router',
       title: '오늘의 추천 수익 기회',
-      description: '짧게 끝나는 적립부터 확인된 조건만 보여드립니다. 오늘의 추천과 전체 수익 기회를 바로 탐색하세요.',
+      description: '검증된 조건과 보상만 보여드립니다.',
     }),
     sections: Object.freeze([
       Object.freeze({
