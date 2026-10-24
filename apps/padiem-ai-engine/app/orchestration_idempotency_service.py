@@ -129,6 +129,13 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
         declared_plan = _validated_pc_declared_plan(payload)
     except Exception:
         return None
+    from app.pc_tools_turn import parse_pc_tools
+    try:
+        pc_tools = parse_pc_tools(payload)
+    except Exception:
+        return None
+    if pc_tools is not None:
+        logical = request_fingerprint({"logical_execution": logical, "pc_tools": pc_tools})
     if declared_plan is not None:
         # A different requested scope must never replay another run's result.
         # Omission keeps the exact legacy fingerprint.

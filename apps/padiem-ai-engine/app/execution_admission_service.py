@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import inspect
+import json
 import secrets
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
@@ -458,6 +459,63 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             _ENGINE_DESKTOP_OWNER.reset(desktop_scope_token)
             _PC_QUERY_OWNER.reset(pc_query_scope_token)
             PC_QUERY_RUN_SCOPE.reset(pc_run_scope_token)
+
+
+    async def prepare_stream(self, **options):
+        """New PC-tool general turns reuse trusted admission and usage policy."""
+        try:
+            payload = json.loads(bytes(options.get("body", b"")).decode("utf-8"))
+        except (ValueError, TypeError):
+            return await super().prepare_stream(**options)
+        if not isinstance(payload, Mapping) or "pc_tools" not in payload:
+            return await super().prepare_stream(**options)
+        query = _run_admission_request(payload)
+        if query is None:
+            return _service_error("invalid_pc_tools", "PC tools context is invalid.", status_code=422)
+        try:
+            admission = await resolve_and_require_trusted_admission(
+                adapter=self._admission_adapter, request=query,
+            )
+            if query.request_fingerprint is None or admission.request_fingerprint != query.request_fingerprint:
+                raise ExecutionAdmissionError(
+                    "entitlement_request_mismatch", "Execution admission does not match the PC turn.", status_code=403,
+                )
+            binding = OriginalAdmissionBinding.from_run_admission(admission)
+        except ExecutionAdmissionError as exc:
+            return self._receipt_error(exc)
+        original_token = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
+        fingerprint_token = set_canonical_idempotency_fingerprint(query.request_fingerprint)
+        evidence = ExecutionDispatchEvidence()
+        dispatch_token = activate_execution_dispatch_evidence(evidence)
+        try:
+            prepared = await super().prepare_stream(**options)
+            from app.orchestration_service import PreparedOrchestrationStream
+            if not isinstance(prepared, PreparedOrchestrationStream):
+                return prepared
+            underlying = prepared.task
+
+            async def settle():
+                try:
+                    result = await underlying
+                    if evidence.dispatched or is_idempotency_replay(result):
+                        await self._record_terminal_usage(binding, outcome="succeeded", result=result)
+                    return result
+                except asyncio.CancelledError:
+                    if evidence.dispatched:
+                        await self._record_terminal_usage(binding, outcome="cancelled")
+                    raise
+                except ExecutionAdmissionError as exc:
+                    raise ServiceContractError(exc.code, exc.safe_message, status_code=exc.status_code) from None
+                except Exception:
+                    if evidence.dispatched:
+                        await self._record_terminal_usage(binding, outcome="failed")
+                    raise
+            from dataclasses import replace
+            return replace(prepared, task=asyncio.create_task(settle()))
+        finally:
+            reset_execution_dispatch_evidence(dispatch_token)
+            reset_canonical_idempotency_fingerprint(fingerprint_token)
+            _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""

@@ -70,6 +70,9 @@ def _wire_allowed_fields(payload: Any) -> frozenset[str]:
     before.
     """
     allowed = _ORCHESTRATE_ALLOWED_FIELDS
+    from app.pc_tools_turn import parse_pc_tools
+    if parse_pc_tools(payload) is not None:
+        allowed |= {"pc_tools"}
     if _pc_tool_arguments_gate(payload) is not None:
         allowed |= {"tool_arguments"}
     if _validated_pc_declared_plan(payload) is not None:
@@ -240,7 +243,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             if isinstance(attached, ServiceResponse):
                 return attached
             orch_req = attached
-            runtime = self._runtime_factory(app_id)
+            runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
         except IdempotencyConflictError:

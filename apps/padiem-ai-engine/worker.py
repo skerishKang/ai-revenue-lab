@@ -7,6 +7,8 @@ shared Padiem AI Core.
 
 from __future__ import annotations
 
+from app.pc_tools_turn import CatalogToolCapabilities
+
 import json
 from typing import Any, Callable
 from urllib.parse import urlparse
@@ -460,6 +462,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=OrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_streaming_runtime_factory=streaming_runtime_factory,
+            pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             # #4379: the durable ledger owns the tool payloads, so a long run
