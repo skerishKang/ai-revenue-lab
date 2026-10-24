@@ -43,6 +43,25 @@
 
 결론 보류 원칙 준수: "불가능" 판단은 위 실측(격리 레인 3.13/3.14 `kdfbench` 결과) 후에만.
 
+## 4b. 3.14 실측 결과 (증거 전용 브랜치 PR #5740, run 40105508694 — 병합 안 함)
+
+구성: compat 2026-09-08 + 메인 의존성 cryptography==47.0.0 / cffi==2.0.0 (Pyodide v314 wasm 휠 정확 핀; cffi 2.1.1은 wasm 휠이 없어 번들 불가).
+
+```
+B62_WORKER_PYTHON_RUNTIME=ok 3.14 kdf=missing kdfasync=ok tz=ok stored=ok digest=ok
+B62_WORKER_KDF220K={"state":"ok","iterations":220000,"ms":363}
+B62_WORKER_KDF_BENCH={"sha512prim":"ok","vector":"true","pure_ms":720,
+                      "identity":"true","cryptogr_ms":269,
+                      "cryptogr_identity":"true","cryptogr":"ok"}
+```
+
+### 해석 (중요한 증거 품질 발견)
+- 로컬 workerd(CI 레인)의 WebCrypto는 **220k 반복을 수락**한다(저장 자격증명 검증 통과, 왕복 363ms). 운영 500을 일으킨 **100k 상한은 Cloudflare 프로덕션 엣지 WebCrypto의 동작**이며 로컬 workerd에서는 재현되지 않는다. → **격리 레인의 kdfasync/stored=ok만으로 프로덕션 3.14 전환을 증명할 수 없다.** #5733 장애를 놓친 근본 이유가 이것(저반복+로컬 workerd)이며, 프로브는 이 한계를 명시해야 한다.
+- 반면 아래 두 경로는 WebCrypto와 무관한 wasm 네이티브 실행이므로 실측이 유효:
+  - **cryptography 47.0.0 (wasm)**: 220k 단일 유도 **269ms**, 핀 벡터와 바이트 동일.
+  - **순수 파이썬 PBKDF2(hashlib.sha512 C 프리미티브 + copy-state)**: 220k 단일 유도 **720ms**, 바이트 동일(3.13 레인 778ms와 일관).
+- 대안 판단: WebCrypto 경로는 프로덕션에서 220k 불가(확정). cryptography 번들이 성능·정합성 면에서 최선이나 Worker 번들 증가·의존 추가가 수반; 순수 파이썬은 번들 변경 없이 720ms CPU. 둘 다 저장 해시 무변경. 최종 선택은 대표 결정 사항.
+
 ## 5. 롤백 게이트 결함 (별도 항목)
 
 - 원인: `rollback_production_code` 모드가 `previous_version_id`를 **디스패치 입력**으로만 요구(`test -n "${PREVIOUS_VERSION_ID}"`), 배포 작업은 이를 어디에도 기록하지 않음 → 즉시 롤백 시 수동 조회 필요, 기록 부재로 실패.
