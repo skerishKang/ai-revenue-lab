@@ -321,7 +321,6 @@
         ["event", "행사명", "text", true],
         ["whenwhere", "날짜·장소", "text", false],
         ["content", "주요 내용", "textarea", true],
-        ["photo", "사진 URL", "text", false],
         ["memo", "메모", "textarea", false],
         ["audience", "대상 독자", "text", false],
       ];
@@ -336,7 +335,6 @@
           const inp = document.createElement("input");
           inp.name = name; inp.type = "text";
           if (req) inp.required = true;
-          if (name === "photo") inp.placeholder = "photo URL";
           l.appendChild(inp);
         }
         form.appendChild(l);
@@ -365,10 +363,163 @@
           b.classList.add("active");
           platform = key;
           title.textContent = tabNames[key] + " 게시글";
+          renderPhotoList();
+          renderPreview();
         });
         tabDiv.appendChild(b);
       });
       form.appendChild(tabDiv);
+
+      // #5728: photo composition replaces the old direct photo-URL field.
+      // Photos are picked locally (multiple, image/*), previewed as
+      // thumbnails, removable and re-orderable. Blog places each photo
+      // between chosen paragraphs; facebook/instagram treat them as separate
+      // post media. Photos survive platform switches, stay in this session
+      // (no upload claim), and no automatic publishing is implied.
+      const photos = [];
+      let photoSeq = 0;
+      const photoBox = el("div", "util-photos");
+      photoBox.id = "utilSnsPhotoBox";
+      const photoHead = el("div", "util-photos-head");
+      const photoTitle = el("span", "util-photos-title", "사진");
+      const photoAdd = el("button", "util-photo-add", "사진 추가");
+      photoAdd.type = "button"; photoAdd.id = "utilSnsPhotoAdd";
+      const photoInput = document.createElement("input");
+      photoInput.type = "file"; photoInput.accept = "image/*";
+      photoInput.multiple = true; photoInput.hidden = true; photoInput.id = "utilSnsPhotoInput";
+      const photoCount = el("span", "util-photos-count", "0장");
+      photoCount.id = "utilSnsPhotoCount";
+      photoHead.append(photoTitle, photoAdd, photoInput, photoCount);
+      const photoList = el("ul", "util-photo-list");
+      photoList.id = "utilSnsPhotoList";
+      const photoNote = el("p", "util-photo-note");
+      photoNote.id = "utilSnsPhotoNote";
+      photoBox.append(photoHead, photoList, photoNote);
+      form.appendChild(photoBox);
+
+      function photoNoteText() {
+        if (platform === "blog") return "블로그는 각 사진을 본문 문단 사이에 삽입합니다. 미리보기에서 위치를 확인하세요.";
+        if (platform === "instagram") return "인스타그램은 사진을 별도 미디어로 첨부합니다(이미지 중심 미리보기).";
+        return "페이스북은 사진을 본문과 구분된 게시물 미디어로 첨부합니다.";
+      }
+
+      function readPhotoFile(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto" });
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function renderPhotoList() {
+        photoCount.textContent = photos.length + "장";
+        photoNote.textContent = photoNoteText();
+        photoList.replaceChildren();
+        photos.forEach((item, index) => {
+          const li = el("li", "util-photo-item");
+          const img = document.createElement("img");
+          img.className = "util-photo-thumb"; img.src = item.dataUrl; img.alt = item.name;
+          const nameSpan = el("span", "util-photo-name", item.name);
+          const controls = el("div", "util-photo-controls");
+          if (platform === "blog") {
+            const posLabel = el("label", "util-photo-pos", "삽입 위치 ");
+            const sel = document.createElement("select");
+            sel.className = "util-photo-pos-select";
+            sel.dataset.photoId = String(item.id);
+            const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
+            opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
+            sel.value = item.position;
+            sel.addEventListener("change", () => { item.position = sel.value; renderPreview(); });
+            posLabel.appendChild(sel);
+            controls.appendChild(posLabel);
+          }
+          const up = el("button", "util-photo-move", "↑"); up.type = "button"; up.dataset.move = "-1"; up.dataset.photoId = String(item.id);
+          const down = el("button", "util-photo-move", "↓"); down.type = "button"; down.dataset.move = "1"; down.dataset.photoId = String(item.id);
+          const del = el("button", "util-photo-remove", "삭제"); del.type = "button"; del.dataset.photoId = String(item.id); del.dataset.action = "remove";
+          controls.append(up, down, del);
+          li.append(img, nameSpan, controls);
+          photoList.appendChild(li);
+        });
+      }
+
+      photoList.addEventListener("click", (ev) => {
+        const target = ev.target;
+        if (!target || !target.dataset) return;
+        const id = Number(target.dataset.photoId);
+        const index = photos.findIndex((p) => p.id === id);
+        if (index < 0) return;
+        if (target.dataset.move) {
+          const to = index + Number(target.dataset.move);
+          if (to < 0 || to >= photos.length) return;
+          const [moved] = photos.splice(index, 1);
+          photos.splice(to, 0, moved);
+        } else if (target.dataset.action === "remove") {
+          photos.splice(index, 1);
+        } else {
+          return;
+        }
+        renderPhotoList();
+        renderPreview();
+      });
+
+      photoAdd.addEventListener("click", () => photoInput.click());
+      photoInput.addEventListener("change", async () => {
+        const files = Array.from(photoInput.files || []);
+        for (const file of files) {
+          if (file && String(file.type || "").indexOf("image/") === 0) {
+            const item = await readPhotoFile(file);
+            if (item) photos.push(item);
+          }
+        }
+        photoInput.value = "";
+        renderPhotoList();
+        renderPreview();
+      });
+
+      function blogParagraphs(text) {
+        return String(text || "").split(new RegExp("\\n\\s*\\n")).filter((p) => p.trim());
+      }
+
+      function interleaveBlog(text) {
+        const parts = blogParagraphs(text);
+        if (!photos.length) return parts.map((p) => ({ type: "text", value: p }));
+        const out = [];
+        if (photos.some((p) => p.position === "0")) {
+          photos.filter((p) => p.position === "0").forEach((p) => out.push({ type: "photo", value: p }));
+        }
+        parts.forEach((para, i) => {
+          out.push({ type: "text", value: para });
+          photos.forEach((p) => {
+            if (p.position === "auto") { if (i === Math.min(photos.indexOf(p), Math.max(parts.length - 1, 0))) out.push({ type: "photo", value: p }); }
+            else if (p.position === "end") { if (i === parts.length - 1) out.push({ type: "photo", value: p }); }
+            else if (String(i + 1) === String(p.position)) { out.push({ type: "photo", value: p }); }
+          });
+        });
+        return out;
+      }
+
+      function renderPreview() {
+        const box = document.getElementById("utilSnsPreview");
+        if (!box || box.hidden) return;
+        box.replaceChildren();
+        const text = output.value || "";
+        if (platform === "blog") {
+          interleaveBlog(text).forEach((seg) => {
+            if (seg.type === "text") { const p = el("p", "util-preview-para", seg.value); box.appendChild(p); }
+            else { const im = document.createElement("img"); im.className = "util-preview-photo"; im.src = seg.value.dataUrl; im.alt = seg.value.name; box.appendChild(im); }
+          });
+        } else {
+          if (text.trim()) { const p = el("p", "util-preview-para", text); box.appendChild(p); }
+          const grid = el("div", "util-sns-media-grid" + (platform === "instagram" ? " insta" : ""));
+          photos.forEach((ph) => { const im = document.createElement("img"); im.src = ph.dataUrl; im.alt = ph.name; grid.appendChild(im); });
+          box.appendChild(grid);
+        }
+        const note = el("p", "util-photo-note", "미리보기는 초안 구성 확인용입니다. 실제 SNS 자동 게시 기능이 아닙니다.");
+        box.appendChild(note);
+      }
+
+      renderPhotoList();
 
       // #5727: the form owns 생성+저장; the result area keeps 복사+다운로드 only.
       const formActions = el("div", "util-form-actions");
@@ -387,11 +538,14 @@
       const output = document.createElement("textarea");
       output.id = "utilSnsOutput";
       output.rows = 12;
+      const previewBox = el("div", "util-sns-preview");
+      previewBox.id = "utilSnsPreview";
+      previewBox.hidden = true;
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
       actions.append(copyB, dlB);
-      result.append(h3, output, actions);
+      result.append(h3, output, previewBox, actions);
 
       panel.replaceChildren(form, result);
       const title = h3;
@@ -415,7 +569,13 @@
         prompt += `행사명: ${event}\n`;
         if (whenwhere) prompt += `날짜·장소: ${whenwhere}\n`;
         prompt += `주요 내용: ${content}\n`;
-        if (photo) prompt += `사진 URL: ${photo}\n`;
+        if (photos.length) {
+          const names = photos.map((ph) => ph.name).join(", ");
+          prompt += `첨부 사진: ${photos.length}장 (${names})\n`;
+          prompt += platform === "blog"
+            ? "사진은 본문 문단 사이에 삽입됩니다. 각 사진이 어느 내용과 이어지는지 참고해서 문단을 구성해 주세요.\n"
+            : "사진은 본문과 구분된 게시물 미디어로 첨부됩니다. 본문에 이미지 위치 설명은 넣지 마세요.\n";
+        }
         if (memo) prompt += `메모: ${memo}\n`;
         if (audience) prompt += `대상 독자: ${audience}\n`;
         prompt += `문체: ${toneMap[tone]}\n`;
@@ -424,6 +584,7 @@
         output.value = "생성 중...";
         try { output.value = await apiChat(prompt); }
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
+        if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
       copyB.addEventListener("click", async () => {
@@ -521,6 +682,7 @@
         output.value = "생성 중...";
         try { output.value = await apiChat(prompt); }
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
+        if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
       copyB.addEventListener("click", async () => {
