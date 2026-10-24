@@ -8,7 +8,7 @@ Three layers are pinned here; each states where it genuinely runs.
    COM2's plain CPython and prove the stored ``pbkdf2_sha512$...`` credential
    format is runtime-independent.
 2. DISPATCH CONTRACT — the auth routes call the runtime-dispatching async
-   twins, which use the C path on the deployed 3.13 runtime and the Workers
+   twins, which use the C path where `_hashlib` ships and the Workers
    WebCrypto bridge on a KDF-less 3.14 snapshot. Forced-path tests run the
    bridge and the pure-Python reference against hermetic fakes and against
    the C reference.
@@ -166,7 +166,7 @@ def test_auth_routes_call_the_runtime_dispatching_twins() -> None:
 
 
 def test_password_auth_keeps_the_sync_c_path_for_the_deployed_runtime() -> None:
-    """Production (3.13) keeps the untouched fast path; async adds, not replaces."""
+    """The sync C path stays for runtimes that ship `_hashlib`; async adds, not replaces."""
     source = (ROOT / "app/password_auth.py").read_text(encoding="utf-8")
     assert "hashlib.pbkdf2_hmac(" in source
     assert "async def hash_password_async" in source
@@ -192,10 +192,10 @@ def test_combined_probe_ready_line_carries_the_async_kdf_state() -> None:
     assert "pbkdf2_sha512_webcrypto" in source
 
 
-def test_the_deployed_compatibility_date_is_still_pinned() -> None:
-    """The runtime move itself stays with the protected deploy (COM1)."""
+def test_the_deployed_compatibility_date_is_the_314_runtime() -> None:
+    """#5732 unblocked the runtime move; COM1's protected deploy carries it."""
     import tomllib
 
     manifest = tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
-    assert manifest["compatibility_date"] == "2026-08-25"
+    assert manifest["compatibility_date"] == "2026-09-08"
     assert "python_workers" in manifest["compatibility_flags"]
