@@ -105,7 +105,6 @@ if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$RE
 fi
 echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
 echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
-echo 'B62_WORKER_PASSWORD_KDF=PASS'
 # #5479: the REAL production KDF contract — the stored credential format is
 # PBKDF2-HMAC-SHA512 at 220,000 iterations through the same async dispatch the
 # auth routes call. On 3.14 the WebCrypto bridge refuses iterations above

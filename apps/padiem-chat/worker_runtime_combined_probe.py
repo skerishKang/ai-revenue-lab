@@ -411,17 +411,17 @@ class Default(WorkerEntrypoint):
         # runtime migration: the actual production KDF round trip, and the
         # stdlib-primitive fallback with its real CPU cost.
         if case == "kdf220k":
-            return Response(
-                json.dumps(await _kdf220k_state(), ensure_ascii=False),
-                status=200,
-                content_type="application/json",
-            )
+            try:
+                body = json.dumps(await _kdf220k_state(), ensure_ascii=False)
+            except Exception as exc:
+                body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
+            return Response(body, status=200, headers={"Content-Type": "application/json"})
         if case == "kdfbench":
-            return Response(
-                json.dumps(await _kdfbench_state(), ensure_ascii=False),
-                status=200,
-                content_type="application/json",
-            )
+            try:
+                body = json.dumps(await _kdfbench_state(), ensure_ascii=False)
+            except Exception as exc:
+                body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
+            return Response(body, status=200, headers={"Content-Type": "application/json"})
         handler = PROBES.get(case)
         if handler is None:
             return Response("invalid probe case", status=400)
