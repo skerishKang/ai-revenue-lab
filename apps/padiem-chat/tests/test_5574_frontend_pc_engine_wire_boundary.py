@@ -207,7 +207,7 @@ def test_the_refused_wire_is_the_list_plus_read_ceiling_the_engine_executes() ->
     assert sent["agent"]["id"] == "b62_auto"
     assert sent["messages"] == [{"role": "user", "content": CHROME_5574_TEXT}]
     assert _TRACE_RE.fullmatch(sent["trace_id"]), sent["trace_id"]
-    assert sent["execution_context"] == {"trace_id": sent["trace_id"]}
+    assert sent["execution_context"] == {"trace_id": sent["trace_id"], "timeout_seconds": None}
 
     # The lane never reaches a model, a PC, or a second Engine attempt.
     _assert_b14_untouched(harness)

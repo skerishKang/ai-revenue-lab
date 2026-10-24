@@ -141,7 +141,7 @@ def test_the_drives_record_is_the_live_chat_wire_body():
     assert transport.calls[0]["url"].endswith("/internal/v1/orchestrate")
     _refresh_or_assert("drives", live)
     assert TRACE_RE.fullmatch(live["trace_id"])
-    assert live["execution_context"] == {"trace_id": live["trace_id"]}
+    assert live["execution_context"] == {"trace_id": live["trace_id"], "timeout_seconds": None}
 
 
 def test_the_files_record_is_the_live_chat_wire_body():

@@ -417,3 +417,50 @@ def test_non_identifier_engine_code_collapses_to_unknown_error(engine_code: str)
     assert failure.status_code == 500
     assert "provider.internal" not in failure.user_message
     assert failure.user_message == "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
+
+
+@pytest.mark.parametrize("shape", ["files_list", "files", "query_drives"])
+def test_pc_plan_has_no_execution_deadline_on_the_engine_wire(shape):
+    from app.chat_pc_drive import (
+        build_chat_pc_agent_plan, build_chat_pc_files_agent_plan,
+    )
+    plan = (
+        build_chat_pc_agent_plan() if shape == "query_drives"
+        else build_chat_pc_files_agent_plan(list_only=shape == "files_list")
+    )
+    client = FakeClient(start_result=_completed_raw())
+    bridge = B62EngineOrchestrationBridge(client=client, store=FakeStore())
+    asyncio.run(bridge.start(
+        user_id="usr_deadline_test",
+        messages=[{"role": "user", "content": "PC files"}],
+        skill=get_task_mode("auto"), model_id="test/model",
+        user_text="PC files", conversation_id=None, agent_plan=plan,
+    ))
+    context = client.orchestrate_request["execution_context"]
+    assert "timeout_seconds" in context
+    assert context["timeout_seconds"] is None
+    assert context["trace_id"] == client.orchestrate_request["trace_id"]
+
+
+def test_general_request_keeps_exact_legacy_context_bytes(monkeypatch):
+    import json
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(
+        "app.orchestration_bridge.uuid.uuid4",
+        lambda: SimpleNamespace(hex="a" * 32),
+    )
+    kwargs = dict(
+        user_id="usr_deadline_test",
+        messages=[{"role": "user", "content": "ordinary question"}],
+        skill=get_task_mode("auto"), model_id="test/model",
+        conversation_id=None,
+    )
+    request = B62EngineOrchestrationBridge.build_engine_request(**kwargs)
+    legacy = dict(request, execution_context={"trace_id": "b62_orch_" + "a" * 24})
+    assert json.dumps(request).encode() == json.dumps(legacy).encode()
+    unrelated = B62EngineOrchestrationBridge.build_engine_request(
+        **kwargs, agent_plan={"agent_id": "agent:other@1", "steps": []},
+    )
+    assert unrelated.pop("agent_plan") == {"agent_id": "agent:other@1", "steps": []}
+    assert json.dumps(unrelated).encode() == json.dumps(legacy).encode()
