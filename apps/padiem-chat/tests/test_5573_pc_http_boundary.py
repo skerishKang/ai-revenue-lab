@@ -519,3 +519,17 @@ async def test_resumed_stream_appends_only_the_answer_to_the_original_user_turn(
     assert response.status_code == 200, response.text
     assert response.json()["answer"] == "resumed"
     assert calls == [{"user_id": OWNER, "run_id": PC_RUN, "answer": "resumed"}]
+
+
+async def test_stream_user_turn_store_failure_preserves_only_the_existing_redacted_cause(monkeypatch):
+    app, bridge, store = _wire(monkeypatch)
+    async def fail(**fields):
+        raise RuntimeError("database locked token=synthetic-private-token")
+    store.begin_chat_stream_turn = fail
+    response = await _post(app, PLAIN_TEXT, pc_run_id=PC_RUN)
+    assert response.status_code == 503, response.text
+    error = response.json()["error"]
+    assert error["code"] == "chat_pc_store_unavailable"
+    assert error["cause"].startswith("RuntimeError: database locked")
+    assert "synthetic-private-token" not in response.text
+    assert bridge.requests == [] and store.staged == []

@@ -307,8 +307,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
             return _error("chat_pc_run_id_conflict", "이미 사용한 PC 작업 실행 ID입니다.", 409)
         except ChatPCDriveError as exc:
             return _error(exc.code, exc.user_message, exc.status_code)
-        except Exception:
-            return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        except Exception as exc:
+            error = ChatPCDriveError("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.")
+            error.__cause__ = exc
+            return JSONResponse({"error": error.public_error()}, status_code=503)
         stream = bridge.start_stream(
             user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=saved_id,
