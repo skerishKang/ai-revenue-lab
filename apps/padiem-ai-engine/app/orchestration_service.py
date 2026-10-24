@@ -292,7 +292,7 @@ def _encode_line(payload: dict[str, Any]) -> str:
 
 
 def _stream_event_line(event: OrchestrationEvent | dict[str, Any]) -> str:
-    if isinstance(event, dict) and set(event) == {"pc_progress"}:
+    if isinstance(event, dict) and set(event) in ({"pc_progress"}, {"text_delta"}):
         return _encode_line({"ok": True, **event})
     return _encode_line({"ok": True, "event": event.to_public_dict()})
 
@@ -531,6 +531,8 @@ class OrchestrationEngineService:
         approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
         desktop_step_driver_factory: Callable[[str], Any] | None = None,
         pc_query_step_driver_factory: Callable[[str], Any] | None = None,
+        pc_streaming_runtime_factory: Any | None = None,
+        pc_tools_capability: Any | None = None,
         tool_result_ledger_factory: Callable[[str, str | None], Any] | None = None,
     ) -> None:
         if not callable(runtime_factory):
@@ -561,6 +563,8 @@ class OrchestrationEngineService:
             # Default in-memory store always supports atomic cancel
             self._continuation_store_supports_atomic_cancel = True
         self._runtime_factory = runtime_factory
+        self._pc_streaming_runtime_factory = pc_streaming_runtime_factory
+        self._pc_tools_capability = pc_tools_capability
         # #4379: the durable ledger owns the tool payloads. The runtime keeps
         # only references, so a long run does not retain every tool output in
         # the Worker.
@@ -580,6 +584,13 @@ class OrchestrationEngineService:
     # ------------------------------------------------------------------
     # Trusted tool-runtime attachment (#1746)
     # ------------------------------------------------------------------
+
+    def _runtime_for_payload(self, app_id, payload):
+        runtime = self._runtime_factory(app_id)
+        if "pc_tools" not in payload:
+            return runtime
+        from app.pc_tools_turn import PcToolsTurnRuntime
+        return PcToolsTurnRuntime(self, payload, runtime)
 
     def _resolve_tool_binding(self, app_id: str) -> EngineToolBinding | None:
         """Look up the server-provisioned binding; callers never supply one."""
@@ -739,6 +750,7 @@ class OrchestrationEngineService:
         orch_req: OrchestrationRequest,
         exec_req: ExecutionRequest,
         declared_plan: str | None = None,
+        initial_decision: Mapping[str, Any] | None = None,
     ) -> OrchestrationRequest | ServiceResponse:
         """Bind the owner-selected step driver to the exact product PC plan.
 
@@ -780,10 +792,11 @@ class OrchestrationEngineService:
             tool_arguments = {ceiling: dict(
                 (tool_arguments or {}).get(ceiling, {}),
             )}
+        driver_options = {"initial_decision": initial_decision} if initial_decision is not None else {}
         driver = self._pc_query_step_driver_factory(
                 model_id, exec_req.agent.model_policy,
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
-                tool_arguments=tool_arguments,
+                tool_arguments=tool_arguments, **driver_options,
         )
         configure_scope = getattr(driver, "configure_request_scope", None)
         if callable(configure_scope):
@@ -1051,6 +1064,8 @@ class OrchestrationEngineService:
         }
         try:
             _validated_pc_declared_plan(payload)
+            from app.pc_tools_turn import parse_pc_tools
+            parse_pc_tools(payload)
             _, exec_req, ctx = build_execution_request(exec_payload)
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
@@ -1171,7 +1186,7 @@ class OrchestrationEngineService:
                 return _service_error("invalid_request", "Trusted Office run identity is invalid.", status_code=400)
 
         try:
-            runtime = self._runtime_factory(app_id)
+            runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(
                 runtime=runtime, idempotency=self._idempotency_adapter,
                 agent_result_ledger=self._tool_result_ledger(
@@ -1737,7 +1752,7 @@ class OrchestrationEngineService:
         # suspends on put_nowait, so ordering and liveness are preserved.
         queue: asyncio.Queue[OrchestrationEvent] = asyncio.Queue()
         runner = OrchestrationRunner(
-            runtime=self._runtime_factory(app_id),
+            runtime=self._runtime_for_payload(app_id, payload),
             idempotency=self._idempotency_adapter,
             event_sink=queue.put_nowait,
         )
@@ -1766,7 +1781,11 @@ class OrchestrationEngineService:
             declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
-        pc_stream = pc_progress is True and _canonical_pc_plan(app_id, plan) is not None
+        pc_stream = pc_progress is True and (
+            _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
+        )
+        from app.pc_tools_turn import _PC_TURN_STREAM_SINK
+        turn_sink_token = _PC_TURN_STREAM_SINK.set(queue.put_nowait if pc_stream else None)
         progress_token = _PC_PROGRESS_SINK.set(
             (lambda item: queue.put_nowait({"pc_progress": item}))
             if pc_stream else None
@@ -1774,6 +1793,7 @@ class OrchestrationEngineService:
         try:
             task = asyncio.create_task(runner.run(orch_req))
         finally:
+            _PC_TURN_STREAM_SINK.reset(turn_sink_token)
             _PC_PROGRESS_SINK.reset(progress_token)
             _PC_QUERY_OWNER.reset(pc_owner_token)
             PC_QUERY_RUN_SCOPE.reset(pc_scope_token)

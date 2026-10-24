@@ -37,7 +37,7 @@
 .meeting-status { font-size: 14px; margin: 0; font-weight: 550; overflow-wrap: anywhere; }
 .meeting-panel > label { font-size: 14px; font-weight: 600; }
 .meeting-panel textarea {
-  width: 100%; min-height: clamp(220px, 35vh, 390px); padding: 14px; resize: vertical;
+  width: 100%; min-height: clamp(200px, 30vh, 330px); padding: 14px; resize: vertical;
   box-sizing: border-box; border: 1px solid currentColor;
   border-color: color-mix(in srgb, currentColor 24%, transparent);
   border-radius: 10px; color: inherit; background: transparent;

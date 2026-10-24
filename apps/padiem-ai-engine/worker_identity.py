@@ -10,6 +10,8 @@ a later Production activation gate.
 
 from __future__ import annotations
 
+from app.pc_tools_turn import CatalogToolCapabilities
+
 import asyncio
 import inspect
 
@@ -1233,6 +1235,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=AdmissionBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_streaming_runtime_factory=streaming_runtime_factory,
+            pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
@@ -1252,7 +1256,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 and len(desktop_secret) >= 32 else None
             ),
             pc_query_step_driver_factory=(
-                (lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None:
+                (lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None, initial_decision=None:
                     build_live_pc_query_driver(
                         b14_client=b14_client, model_id=model_id,
                         model_policy=model_policy, task_type=task_type,
@@ -1260,6 +1264,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         service=chat_service, request_factory=Request,
                         secret=desktop_secret,
                         tool_arguments=tool_arguments,
+                        initial_decision=initial_decision,
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None
