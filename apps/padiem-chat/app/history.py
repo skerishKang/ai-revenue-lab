@@ -145,6 +145,24 @@ def _require_product_scope(value: object) -> str:
         raise HistoryForbidden("conversation product scope is not recognized")
     return value
 
+
+#: The bounded wording of one admitted PC scope, keyed by the admission the
+#: Engine already signed. It is a notice, never part of an answer.
+PC_SCOPE_NOTICE_LABELS = {
+    "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
+    "files": "요청한 파일의 목록과 내용을 확인합니다.",
+    "query_drives": "드라이브 목록만 조회합니다.",
+    "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
+}
+
+
+def pc_scope_notice(claim: object) -> str | None:
+    """The notice for a stored scope claim, or None for anything unknown."""
+    if not isinstance(claim, dict):
+        return None
+    notice = PC_SCOPE_NOTICE_LABELS.get(claim.get("admitted"))
+    return notice if isinstance(notice, str) else None
+
 # #2956: closed server-derived trusted P01 request shape. Unknown keys fail
 # closed so browser-supplied authority fields can never enter the handoff.
 _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS = frozenset(
@@ -1726,6 +1744,18 @@ class D1HistoryStore:
         except (KeyError, IndexError, TypeError, ValueError) as exc:
             raise HistoryError("stored PC scope is invalid") from exc
 
+    async def get_pc_run_scope_notice(self, *, user_id: str, run_id: str) -> str | None:
+        """The stored scope's notice wording, or None when nothing is pinned.
+
+        An absent, foreign or malformed record is simply "no notice": the
+        live answer and the recovery GET keep their existing shape.
+        """
+        try:
+            claim = await self.get_pc_run_scope(user_id=user_id, run_id=run_id)
+        except Exception:
+            return None
+        return pc_scope_notice(claim)
+
     async def pin_pc_run_scope(self, *, user_id: str, run_id: str, claim: dict[str, Any]) -> None:
         """Record before dispatch, once per owner/run; never alter its terminal."""
         owned = await self.get_claw_run(user_id, run_id)
@@ -1734,16 +1764,10 @@ class D1HistoryStore:
         message_id = run_id + "_scope"
         if len(message_id) > 128:
             raise HistoryError("PC scope message id is invalid")
-        labels = {
-            "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
-            "files": "요청한 파일의 목록과 내용을 확인합니다.",
-            "query_drives": "드라이브 목록만 조회합니다.",
-            "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
-        }
         encoded = json.dumps(claim, sort_keys=True, separators=(",", ":"))
-        if claim.get("admitted") not in labels or len(encoded) > 1024:
+        if claim.get("admitted") not in PC_SCOPE_NOTICE_LABELS or len(encoded) > 1024:
             raise HistoryError("PC scope claim is invalid")
-        content = labels[claim["admitted"]] + "\n<!--pc_scope:" + encoded + "-->"
+        content = PC_SCOPE_NOTICE_LABELS[claim["admitted"]] + "\n<!--pc_scope:" + encoded + "-->"
         cid = owned["conversation_id"]
         # A concurrent conflicting admission loses INSERT OR IGNORE and the
         # read-back comparison refuses it. Existing messages carry the record;

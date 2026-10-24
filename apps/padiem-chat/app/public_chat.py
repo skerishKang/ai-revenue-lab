@@ -21,6 +21,7 @@ _PUBLIC_TOP_LEVEL_KEYS = frozenset(
         "conversation_id",
         "project_id",
         "project",
+        "scope_notice",
     }
 )
 

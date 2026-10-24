@@ -37,6 +37,8 @@ def _settings() -> Settings:
 
 
 class _Store:
+    scope_notice = None
+
     async def get_user(self, user_id):
         return None
 
@@ -51,6 +53,9 @@ class _Store:
 
     async def record_chat_pc_drive_run(self, **fields):
         return "chat_" + "s" * 32
+
+    async def get_pc_run_scope_notice(self, *, user_id: str, run_id: str):
+        return self.scope_notice
 
 
 class _B14:
@@ -77,8 +82,10 @@ class _Bridge(B62EngineOrchestrationBridge):
         })()
 
 
-def _wire(monkeypatch, *, selected=True, devices=True, owner_raises=False):
-    app = create_app(settings=_settings(), history_store=_Store())
+def _wire(monkeypatch, *, selected=True, devices=True, owner_raises=False, scope_notice=None):
+    store = _Store()
+    store.scope_notice = scope_notice
+    app = create_app(settings=_settings(), history_store=store)
     install_orchestration_routes(app, None)
     b14 = _B14()
     bridge = _Bridge()
@@ -129,10 +136,12 @@ def _client(app):
     return client
 
 
-async def _post(app, messages, *, device_id=None):
+async def _post(app, messages, *, device_id=None, pc_run_id=None):
     body = {"messages": messages, "skill": "auto"}
     if device_id is not None:
         body["device_id"] = device_id
+    if pc_run_id is not None:
+        body["pc_run_id"] = pc_run_id
     async with _client(app) as client:
         return await client.post("/api/orchestration", headers={"Origin": ORIGIN}, json=body)
 
@@ -208,3 +217,42 @@ async def test_browser_target_override_is_refused(monkeypatch):
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "chat_pc_selection_stale"
     assert bridge.requests == []
+
+
+PC_RUN = "chat_pcq_" + "a" * 32
+
+
+async def test_completed_pc_lane_post_carries_the_pinned_scope_notice(monkeypatch):
+    """#5573: the browser's live completion path carries the pinned scope."""
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    app, b14, bridge = _wire(
+        monkeypatch, scope_notice=PC_SCOPE_NOTICE_LABELS["files_list"],
+    )
+    response = await _post(
+        app, [{"role": "user", "content": INNER + DEEP + LIST}],
+        pc_run_id=PC_RUN,
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
+    assert body["scope_notice"] == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
+    assert body["answer"] == "ok"
+    # The notice is its own field; the answer text never carries it.
+    assert body["scope_notice"] not in body["answer"]
+    assert len(_pc_plan_requests(bridge)) == 1
+
+
+async def test_completed_pc_lane_post_without_a_scope_keeps_its_shape(monkeypatch):
+    """#5573: no pinned scope means the response gains no field at all."""
+    app, b14, bridge = _wire(monkeypatch)
+    response = await _post(
+        app, [{"role": "user", "content": INNER + DEEP + LIST}],
+        pc_run_id=PC_RUN,
+    )
+    assert response.status_code == 200, response.text
+    assert set(response.json()) == {
+        "orchestration", "answer", "decision_status", "conversation_id",
+    }
+    assert b"scope_notice" not in response.content
+    assert len(_pc_plan_requests(bridge)) == 1

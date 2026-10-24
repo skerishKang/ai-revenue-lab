@@ -201,6 +201,10 @@
     // sources it was actually grounded with, exactly like the Chat stream
     // route already does.
     if (typeof data.answer_status === "string") donePayload.answer_status = data.answer_status;
+    // #5573: the completed PC lane response carries the pinned scope notice as
+    // its own field. It rides the completion frame so the live answer shows
+    // the same notice a reload would show; the answer text is untouched.
+    if (typeof data.scope_notice === "string" && data.scope_notice) donePayload.scope_notice = data.scope_notice;
     if (Array.isArray(data.evidence) && data.evidence.length) donePayload.evidence = data.evidence;
     if (data.tool && typeof data.tool === "object") donePayload.tool = data.tool;
     const done = `event: done\ndata: ${JSON.stringify(donePayload)}\n\n`;

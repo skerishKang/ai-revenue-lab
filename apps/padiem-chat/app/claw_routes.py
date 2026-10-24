@@ -1328,6 +1328,15 @@ async def claw_pending_result(request: Request) -> JSONResponse:
             row = await history.get_claw_run(uid, run_id)
             status = row.get("status")
         result = {"run_id": run_id, "conversation_id": cid, "status": status}
+        notice_reader = getattr(history, "get_pc_run_scope_notice", None)
+        if callable(notice_reader):
+            try:
+                notice = await notice_reader(user_id=uid, run_id=run_id)
+            except Exception:
+                notice = None
+            if isinstance(notice, str) and notice:
+                # #5573: the pinned scope is a separate notice, never an answer.
+                result["scope_notice"] = notice
         if status == "completed":
             # #5015: the owner's stored completion record and the actual
             # assistant message are compared inside the owner's run and

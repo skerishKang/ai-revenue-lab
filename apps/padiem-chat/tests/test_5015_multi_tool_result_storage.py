@@ -848,6 +848,116 @@ def test_pending_result_resolves_a_canonical_chat_pc_run(monkeypatch):
         assert result["run_id"] == RUN
         assert result["conversation_id"] == CONVERSATION
         assert result["status"] == "running"
+        # #5573: a run with no pinned scope keeps the exact previous shape.
+        assert "scope_notice" not in result
+    finally:
+        connection.close()
+
+
+def _files_list_claim() -> dict:
+    return {"version": 1, "requested": "files_list", "admitted": "files_list",
+            "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
+
+
+def test_live_pc_lane_response_carries_the_pinned_scope_notice(monkeypatch):
+    """#5573: the live POST states the already-pinned scope as its own field."""
+    from app import chat_pc_drive
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    monkeypatch.setattr(chat_pc_drive, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_pc_drive, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        asyncio.run(store.pin_pc_run_scope(
+            user_id=OWNER, run_id=RUN, claim=_files_list_claim(),
+        ))
+        answer = "승인된 폴더의 파일 목록을 확인했습니다."
+
+        async def _lane_result(request, **kwargs):
+            return answer, CONVERSATION
+
+        monkeypatch.setattr(
+            chat_pc_drive, "execute_chat_pc_drive_lane", _lane_result,
+        )
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
+            cookies={},
+        )
+        response = asyncio.run(chat_pc_drive.run_chat_pc_drive_lane(
+            request, user_text="내 PC 파일 목록",
+            skill=SimpleNamespace(id="auto"), model_id="m",
+            conversation_id=None, tier="free", run_id=RUN,
+        ))
+        body = json.loads(response.body)
+        assert body["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
+        assert body["scope_notice"] == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
+        assert body["answer"] == answer
+        assert body["conversation_id"] == CONVERSATION
+        # The notice is a separate field; it is never part of the answer.
+        assert body["scope_notice"] not in body["answer"]
+    finally:
+        connection.close()
+
+
+def test_live_pc_lane_response_without_a_scope_keeps_its_exact_shape(monkeypatch):
+    """#5573: no pinned scope means the response bytes gain no new field."""
+    from app import chat_pc_drive
+
+    monkeypatch.setattr(chat_pc_drive, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_pc_drive, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        answer = "승인된 폴더의 파일 목록을 확인했습니다."
+
+        async def _lane_result(request, **kwargs):
+            return answer, CONVERSATION
+
+        monkeypatch.setattr(
+            chat_pc_drive, "execute_chat_pc_drive_lane", _lane_result,
+        )
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
+            cookies={},
+        )
+        response = asyncio.run(chat_pc_drive.run_chat_pc_drive_lane(
+            request, user_text="내 PC 파일 목록",
+            skill=SimpleNamespace(id="auto"), model_id="m",
+            conversation_id=None, tier="free", run_id=RUN,
+        ))
+        assert json.loads(response.body) == {
+            "answer": answer, "conversation_id": CONVERSATION,
+        }
+        assert b"scope_notice" not in response.body
+    finally:
+        connection.close()
+
+
+def test_pending_result_get_carries_the_pinned_scope_notice(monkeypatch):
+    """#5573: the recovery GET states the same pinned scope as the live POST."""
+    import app.claw_routes as claw_routes
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        asyncio.run(store.pin_pc_run_scope(
+            user_id=OWNER, run_id=RUN, claim=_files_list_claim(),
+        ))
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        assert response.status_code == 200
+        result = json.loads(response.body)["result"]
+        assert result["status"] == "running"
+        assert result["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
+        # The scope message is a notice, never an answer.
+        assert "answer" not in result
+        assert len(_messages(connection)) == 1
     finally:
         connection.close()
 
