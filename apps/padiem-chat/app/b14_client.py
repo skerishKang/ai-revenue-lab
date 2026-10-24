@@ -4,7 +4,6 @@ from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-import re
 from typing import Any, Protocol
 import time
 
@@ -30,6 +29,7 @@ from padiem_ai_core import (
     MAX_B14_RESPONSE_BYTES,
 )
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_streaming import B14StreamToolCall
 from padiem_ai_core.tool_channel import ToolDefinition
 
 from padiem_ai_core.dispatch_preinstruction import (
@@ -173,42 +173,17 @@ class ChatStreamEvent:
     finish_reason: str | None = None
 
 
-# #5573: the stream projection accepts only the shapes the Product can name.
-# Core's pre-merge stream event has no tool_call, so the projection reads it
-# defensively; the same accessor keeps working once 3-B-1 lands.
-_TOOL_NAME_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
-_TOOL_CALL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
-
-
-def _bounded_finish_reason(value: Any) -> str | None:
-    if isinstance(value, str) and _TOOL_NAME_RE.fullmatch(value):
-        return value
-    return None
-
-
-def _tool_call_field(raw: Any, name: str) -> Any:
-    if isinstance(raw, Mapping):
-        return raw.get(name)
-    return getattr(raw, name, None)
-
-
-def _project_tool_call(raw: Any) -> ChatToolCall | None:
+# #5573: Core owns tool-call validation (3-B-1). The product projection only
+# copies the already-validated identifier, name, arguments and index into the
+# B62-facing event, so no provider text is re-interpreted here.
+def _project_tool_call(raw: B14StreamToolCall | None) -> ChatToolCall | None:
     if raw is None:
         return None
-    name = _tool_call_field(raw, "name")
-    if not isinstance(name, str) or _TOOL_NAME_RE.fullmatch(name) is None:
-        return None
-    call_id = _tool_call_field(raw, "id")
-    if not isinstance(call_id, str) or _TOOL_CALL_ID_RE.fullmatch(call_id) is None:
-        return None
-    arguments = _tool_call_field(raw, "arguments")
-    if not isinstance(arguments, Mapping):
-        arguments = {}
-    index = _tool_call_field(raw, "index")
-    if not isinstance(index, int) or isinstance(index, bool):
-        index = None
     return ChatToolCall(
-        id=call_id, name=name, arguments=dict(arguments), index=index,
+        id=raw.id,
+        name=raw.name,
+        arguments=dict(raw.arguments),
+        index=raw.index,
     )
 
 
@@ -605,10 +580,8 @@ class B14Client:
         first_delta_emitted = False
         try:
             async for event in core_stream:
-                tool_call = _project_tool_call(getattr(event, "tool_call", None))
-                finish_reason = _bounded_finish_reason(
-                    getattr(event, "finish_reason", None)
-                )
+                tool_call = _project_tool_call(event.tool_call)
+                finish_reason = event.finish_reason
                 if tool_call is not None:
                     yield ChatStreamEvent(
                         tool_call=tool_call, finish_reason=finish_reason,
