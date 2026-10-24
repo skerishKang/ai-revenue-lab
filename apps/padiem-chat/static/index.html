@@ -108,7 +108,18 @@
         <button class="side-item" id="automationNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
         <button class="side-item" id="filesNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
-        <button class="side-item" id="utilNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">U</span><span data-locale-key="nav-util">유틸</span></button>
+        <div class="util-nav-group" id="utilNavGroup">
+          <button class="side-item" id="utilNavButton" type="button" aria-current="false" aria-expanded="false" aria-controls="utilSubmenu"><span class="side-icon" aria-hidden="true">U</span><span data-locale-key="nav-util">유틸</span><span class="side-chevron" aria-hidden="true">›</span></button>
+          <!-- #5608 follow-up: the util tools become one expandable sidebar entry.
+               The four rows route to the existing panels; the in-page duplicate
+               tab row below is hidden (util-menu.css owns the rules). -->
+          <div class="util-submenu" id="utilSubmenu" hidden>
+            <button class="util-submenu-item" type="button" data-util="speech" aria-current="false">축사·인사말</button>
+            <button class="util-submenu-item" type="button" data-util="sns" aria-current="false">SNS 홍보</button>
+            <button class="util-submenu-item" type="button" data-util="meeting" aria-current="false">회의정리·활동집</button>
+            <button class="util-submenu-item" type="button" data-util="pdfmd" aria-current="false">PDF → Markdown</button>
+          </div>
+        </div>
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
@@ -543,7 +554,7 @@
           <h2 id="utilTitle">유틸</h2>
           <p class="util-tagline">AI 홍보·기록 비서</p>
         </header>
-        <nav class="util-tabs">
+        <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
           <button class="util-tab active" data-util="speech">축사·인사말</button>
           <button class="util-tab" data-util="sns">SNS 홍보</button>
           <button class="util-tab" data-util="meeting">회의정리·책 제작</button>
