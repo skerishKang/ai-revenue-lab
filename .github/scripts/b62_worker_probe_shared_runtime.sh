@@ -89,7 +89,8 @@ echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
 # pure-Python PBKDF2 fallback, so it has no hashlib.pbkdf2_hmac at all; #5732
 # made the KDF runtime-independent and the auth routes call only the async
 # dispatch. The asserted invariant is therefore what the routes actually use:
-#   kdfasync=ok  the dispatch serves this runtime (C path or WebCrypto bridge)
+#   kdfasync=ok  the dispatch serves this runtime (C path on 3.13, the
+#                bundled cryptography package on 3.14)
 #   stored=ok    a 220,000-iteration credential written by the previous 3.13
 #                runtime verifies here. This is the check #5736 was missing:
 #                Workers WebCrypto PBKDF2 refuses any iteration count above
@@ -104,23 +105,43 @@ if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$RE
   exit 1
 fi
 echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
-echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
+B62_WORKER_PASSWORD_KDF_C_PATH="$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
+echo "B62_WORKER_PASSWORD_KDF_C_PATH=${B62_WORKER_PASSWORD_KDF_C_PATH}"
 # #5479: the REAL production KDF contract — the stored credential format is
 # PBKDF2-HMAC-SHA512 at 220,000 iterations through the same async dispatch the
-# auth routes call. On 3.14 the WebCrypto bridge refuses iterations above
-# 100,000, so the honest outcomes are `ok` (C path) or `webcrypto-iteration-cap`
-# (3.14); verify-failed / wrong-accepted / missing always fail.
+# auth routes call. The expected provider is the C path on 3.13 and the bundled
+# cryptography package on 3.14; `webcrypto-iteration-cap` is the 3.14 blocker
+# being reproduced, and verify-failed / wrong-accepted / missing always fail.
 KDF220K_BODY=""
 for _ in $(seq 1 5); do
   if KDF220K_BODY="$(curl -fsS "http://127.0.0.1:8795/probe?case=kdf220k" 2>/dev/null)"; then break; fi
   sleep 1
 done
 echo "B62_WORKER_KDF220K=$KDF220K_BODY"
+# H1: local 3.14 Workerd can pass PBKDF2 220k that production edge rejects.
+# A local success is never evidence of production-edge compatibility.
+if [[ "$KDF220K_BODY" == *'"runtime_minor": 14'* || "$KDF220K_BODY" == *'"runtime_minor":14'* ]]; then
+  echo 'B62_WORKER_KDF220K_EDGE_COMPAT=UNVERIFIED_PY314' >&2
+  exit 1
+fi
 case "$KDF220K_BODY" in
-  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_KDF220K_STATE=PASS' ;;
-  *'"state": "webcrypto-iteration-cap"'*|*'"state":"webcrypto-iteration-cap"'*)
-    echo 'B62_WORKER_KDF220K_STATE=PASS_WEB314_ITERATION_CAP' ;;
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_KDF220K_STATE=PASS_PY313_LOCAL' ;;
   *) echo "B62_WORKER_KDF220K_STATE=FAIL body=$KDF220K_BODY" >&2; exit 1 ;;
+esac
+# #5479: the stored cost must be served by the provider this runtime is
+# SUPPOSED to use — the C path where `_hashlib` exists, the bundled
+# cryptography package on 3.14. WebCrypto is not an acceptable answer at
+# 220,000 iterations even though the local Workerd accepts it: the Production
+# edge refuses it (#5736). This is the check #5733 lacked.
+if [[ "$B62_WORKER_PASSWORD_KDF_C_PATH" == 'ok' ]]; then
+  EXPECTED_KDF_PROVIDER='hashlib'
+else
+  EXPECTED_KDF_PROVIDER='cryptography'
+fi
+case "$KDF220K_BODY" in
+  *"\"provider\": \"${EXPECTED_KDF_PROVIDER}\""*|*"\"provider\":\"${EXPECTED_KDF_PROVIDER}\""*)
+    echo "B62_WORKER_KDF220K_PROVIDER=${EXPECTED_KDF_PROVIDER} PASS" ;;
+  *) echo "B62_WORKER_KDF220K_PROVIDER=FAIL expected=${EXPECTED_KDF_PROVIDER} body=$KDF220K_BODY" >&2; exit 1 ;;
 esac
 # #5479: the 220,000-iteration alternatives with their real CPU cost — the
 # pure-Python fallback (stdlib sha512 primitive) and the bundled cryptography

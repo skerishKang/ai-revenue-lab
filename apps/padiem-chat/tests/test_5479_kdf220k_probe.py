@@ -70,7 +70,43 @@ def test_the_lane_asserts_the_220k_contract():
     """The CI lane must prove the real-algorithm round trip and the bench."""
     script = _LANE_PATH.read_text(encoding="utf-8")
     assert "B62_WORKER_KDF220K=" in script
-    assert "webcrypto-iteration-cap" in script
+    assert "UNVERIFIED_PY314" in script
+    assert "PASS_WEB314_ITERATION_CAP" not in script
+    assert "runtime_minor" in script
     assert "B62_WORKER_KDF_BENCH=" in script
     assert "B62_WORKER_KDF_BENCH_VECTOR=PASS" in script
     assert "B62_WORKER_KDF_BENCH_IDENTITY=PASS" in script
+
+
+def test_h1_py314_local_ok_is_not_an_edge_pass():
+    """Exercise the gate, not just a text assertion: local 3.14 must fail."""
+    import json
+    import shutil
+    import subprocess
+    import sys
+
+    # Native Windows Git Bash can inherit a non-UTF8 console encoding;
+    # the CI lane under test executes on Linux.
+    if sys.platform == "win32":
+        import pytest
+        pytest.skip("shell decision matrix runs on Linux CI")
+    if not shutil.which("bash"):
+        import pytest
+        pytest.skip("bash required for shell contract")
+
+    source = _LANE_PATH.read_text(encoding="utf-8")
+    shell_gate = source.split("# H1: local 3.14 Workerd", 1)[1].split(
+        "# #5479: the 220,000-iteration alternatives", 1
+    )[0]
+    script = 'KDF220K_BODY=\'{}\'\n' + "# H1: local 3.14 Workerd" + shell_gate
+    for minor, state, expect_ok in [
+        (13, "ok", True),
+        (14, "ok", False),
+        (14, "webcrypto-iteration-cap", False),
+        (13, "webcrypto-iteration-cap", False),
+    ]:
+        body = json.dumps({"state": state, "runtime_minor": minor})
+        result = subprocess.run(["bash", "-c", script.format(body)], capture_output=True, text=True)
+        assert (result.returncode == 0) is expect_ok, (minor, state, result.stderr)
+        if minor == 14:
+            assert "UNVERIFIED_PY314" in result.stderr

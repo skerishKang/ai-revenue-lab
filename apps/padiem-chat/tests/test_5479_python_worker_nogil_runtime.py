@@ -12,27 +12,28 @@ them landed on the repeated ``POST /api/claw/connector/mesh-reads/poll``
 request, the traffic that keeps arriving on a cold isolate. That is the
 upstream race ``cloudflare/workerd#6624``.
 
-**The published fix for that race is a runtime change this Worker cannot take
-yet.** Cloudflare shipped the fix as a Python Workers runtime update (Python
+**The published fix for that race is the 3.14 runtime, which needs its own
+KDF.** Cloudflare shipped the fix as a Python Workers runtime update (Python
 3.14 with the memory-leak fixes) and asked affected Workers to move their
 compatibility date to ``2026-09-08`` or later. The Pyodide 3.14 snapshot ships
 no ``_hashlib``, and CPython 3.14 removed the pure-Python PBKDF2 fallback, so
 that runtime has no ``hashlib.pbkdf2_hmac``. This Worker's stored credential
-format is PBKDF2-HMAC-SHA512, so a 3.14 Worker answers **every** password
-login with HTTP 500
-(``AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'``).
+format is PBKDF2-HMAC-SHA512, and Workers WebCrypto refuses that cost above
+100,000 iterations, so the runtime is only usable with a KDF the bundle
+itself carries: the ``cryptography`` package's OpenSSL PBKDF2HMAC.
 
 So the contract is:
 
-1. the Chat Worker stays on a compatibility date whose runtime still provides
-   the password KDF the Worker uses,
+1. the Chat Worker's runtime and its declared dependencies together provide a
+   KDF that can serve the stored 220,000-iteration cost — the C path on 3.13,
+   the bundled ``cryptography`` package on 3.14,
 2. the real Workerd/Pyodide CI lane boots the *deployed* compatibility date and
-   proves both the booted Python version and the password KDF, and
+   proves the booted Python version, the stored-cost round trip and which
+   provider served it, and
 3. the production deploy config carries that date into the released Worker.
 
-A future runtime bump that breaks (1) or (2) therefore fails in CI before any
-release, and the production deploy cannot silently ship a runtime that cannot
-hash a password.
+A runtime bump that drops the KDF, or a dependency change that drops the
+bundle, therefore fails in CI before any release.
 """
 from __future__ import annotations
 
@@ -50,9 +51,10 @@ CHAT_MANIFEST = CHAT_ROOT / "wrangler.toml"
 #: hashing cannot run.
 PYTHON_314_COMPATIBILITY_DATE = "2026-09-08"
 
-#: The compatibility date the Chat Worker deploys today (Pyodide 3.13 /
-#: CPython 3.13.2), which does provide ``hashlib.pbkdf2_hmac``.
-DEPLOYED_COMPATIBILITY_DATE = "2026-08-25"
+#: The compatibility date the Chat Worker deploys: Pyodide 3.14, the
+#: published ``NoGilError`` fix, whose password KDF is the bundled
+#: ``cryptography`` package rather than ``hashlib.pbkdf2_hmac``.
+DEPLOYED_COMPATIBILITY_DATE = PYTHON_314_COMPATIBILITY_DATE
 
 #: The real Workerd/Pyodide probe scripts. Each one used to hardcode a
 #: compatibility date, which let the CI lane prove a runtime that Production
@@ -86,41 +88,60 @@ def test_the_worker_password_hash_uses_the_runtime_pbkdf2():
     source = (CHAT_ROOT / "app/password_auth.py").read_text(encoding="utf-8")
     assert "hashlib.pbkdf2_hmac" in source
     assert "PBKDF2_ALGORITHM" in source
+    kdf_source = (CHAT_ROOT / "app/password_kdf.py").read_text(encoding="utf-8")
+    assert "PBKDF2HMAC" in kdf_source
 
 
-def _runtime_provides_password_kdf(compatibility_date: str) -> bool:
-    """Does the runtime this compatibility date selects provide the KDF?
+def _declared_dependencies() -> list[str]:
+    data = tomllib.loads((CHAT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    return list(data["project"]["dependencies"])
 
-    CPython 3.14 removed the pure-Python PBKDF2 fallback and the Pyodide 3.14
-    snapshot ships no ``_hashlib``, so every compatibility date from
-    ``PYTHON_314_COMPATIBILITY_DATE`` on selects a runtime whose
-    ``hashlib`` has no ``pbkdf2_hmac``.
+
+def _runtime_provides_password_kdf(compatibility_date: str, *, bundled: bool) -> bool:
+    """Can this runtime + bundle serve the stored 220,000-iteration cost?
+
+    Below ``PYTHON_314_COMPATIBILITY_DATE`` the snapshot ships ``_hashlib``
+    and CPython provides ``hashlib.pbkdf2_hmac``. From that date on it does
+    not, so the Worker bundle itself must carry the ``cryptography`` package.
     """
-    return compatibility_date < PYTHON_314_COMPATIBILITY_DATE
+    if compatibility_date < PYTHON_314_COMPATIBILITY_DATE:
+        return True
+    return bundled
 
 
 def test_the_chat_worker_stays_on_a_runtime_with_the_password_kdf():
-    """The compatibility date must not select the KDF-less 3.14 snapshot."""
+    """The deployed date and the declared bundle must together serve 220k."""
     manifest = _manifest()
     compatibility_date = manifest["compatibility_date"]
     assert isinstance(compatibility_date, str) and compatibility_date
-    assert _runtime_provides_password_kdf(compatibility_date), (
-        "the Chat Worker still hashes passwords with hashlib.pbkdf2_hmac, and "
-        "the Pyodide 3.14 snapshot has no hashlib.pbkdf2_hmac; moving the "
-        "compatibility date to "
-        f"{PYTHON_314_COMPATIBILITY_DATE} or later answers every password "
-        "login with HTTP 500"
+    assert _runtime_provides_password_kdf(
+        compatibility_date, bundled="cryptography==47.0.0" in _declared_dependencies()
+    ), (
+        "the Chat Worker hashes passwords with PBKDF2-HMAC-SHA512 at 220,000 "
+        f"iterations from {compatibility_date}: the Pyodide 3.14 snapshot has "
+        "no hashlib.pbkdf2_hmac and Workers WebCrypto refuses that cost, so "
+        "the bundle must declare cryptography==47.0.0"
     )
     assert compatibility_date == DEPLOYED_COMPATIBILITY_DATE
     assert "python_workers" in manifest["compatibility_flags"]
 
 
 def test_the_blocked_compatibility_dates_are_rejected():
-    """Differential proof: the guard fails for the dates it has to fail for."""
-    assert _runtime_provides_password_kdf(DEPLOYED_COMPATIBILITY_DATE)
-    assert not _runtime_provides_password_kdf(PYTHON_314_COMPATIBILITY_DATE)
-    assert not _runtime_provides_password_kdf("2026-10-13")
-    assert not _runtime_provides_password_kdf("2027-01-01")
+    """Differential proof: the guard fails for the cases it has to fail for."""
+    # The previous 3.13 date needs no bundle; every 3.14 date does.
+    assert _runtime_provides_password_kdf("2026-08-25", bundled=False)
+    assert not _runtime_provides_password_kdf(
+        PYTHON_314_COMPATIBILITY_DATE, bundled=False
+    )
+    assert not _runtime_provides_password_kdf("2026-10-13", bundled=False)
+    assert not _runtime_provides_password_kdf("2027-01-01", bundled=False)
+    # The declared bundle is what makes those dates usable.
+    assert _runtime_provides_password_kdf(
+        PYTHON_314_COMPATIBILITY_DATE, bundled=True
+    )
+    assert _runtime_provides_password_kdf(
+        DEPLOYED_COMPATIBILITY_DATE, bundled=True
+    )
 
 
 def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
@@ -197,7 +218,7 @@ def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
     )
     parsed = tomllib.loads(generated)
     assert parsed["compatibility_date"] == manifest["compatibility_date"]
-    assert parsed["compatibility_date"] < PYTHON_314_COMPATIBILITY_DATE
+    assert parsed["compatibility_date"] == PYTHON_314_COMPATIBILITY_DATE
     assert "python_workers" in parsed["compatibility_flags"]
 
 
@@ -225,14 +246,17 @@ def test_the_real_worker_probe_asserts_the_runtime_and_the_password_kdf():
     # #5736: the gate asserts the invariant the auth routes actually serve. The
     # sync C path (kdf=) is printed, not gated, because a 3.14 snapshot has no
     # hashlib.pbkdf2_hmac by design — and "stored=ok" is the check that was
-    # missing when the 3.14 deploy was rolled back: it is the only one that
-    # exercises the WebCrypto bridge at the 220,000 iterations the stored
-    # credentials carry, which is above the runtime's PBKDF2 ceiling.
+    # missing when the 3.14 deploy was rolled back: it exercises the 220,000
+    # iterations the stored credentials carry.
+    # #5479: "stored=ok" alone is not enough — the lane must also report WHICH
+    # provider served it, because the local Workerd accepts 220k through
+    # WebCrypto while the Production edge refuses it.
     assert "B62_WORKER_PASSWORD_KDF_C_PATH" in shared
     assert '*"kdfasync=ok"*' in shared
     assert '*"stored=ok"*' in shared
     assert '*"digest=ok"*' in shared
     assert "B62_WORKER_PASSWORD_AUTH=FAIL" in shared
+    assert "B62_WORKER_KDF220K_PROVIDER" in shared
     probe = (CHAT_ROOT / "worker_runtime_combined_probe.py").read_text(encoding="utf-8")
     assert "sys.version_info" in probe
     assert "_password_kdf_state" in probe
