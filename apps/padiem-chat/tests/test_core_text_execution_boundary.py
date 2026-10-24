@@ -3,7 +3,9 @@ from __future__ import annotations
 import ast
 import asyncio
 from pathlib import Path
-from types import SimpleNamespace
+
+from padiem_ai_core import B14StreamEvent
+from padiem_ai_core.b14_streaming import B14StreamToolCall
 
 import app.b14_client as b14_module
 from app.b14_client import ChatStreamEvent, ChatToolCall
@@ -105,40 +107,36 @@ def test_b62_stream_projection_has_no_route_or_model_fields():
 
 
 def test_stream_projection_carries_the_pending_core_tool_call(monkeypatch):
-    """3-B-1 is not merged yet: the projection reads the same event signature.
-
-    The local stub yields Core's future ``tool_call``/``finish_reason`` fields;
-    once 3-B-1 lands the accessor reads the real event unchanged.
-    """
-    events = [
-        SimpleNamespace(
-            tool_call=SimpleNamespace(
+    """The real Core stream event carries the model's tool call unchanged."""
+    script = [
+        B14StreamEvent(
+            tool_call=B14StreamToolCall(
                 id="call_1", name="files_list", arguments={}, index=0,
             ),
-            delta_content=None,
-            done=False,
             finish_reason="tool_calls",
         ),
-        SimpleNamespace(
-            tool_call=None, delta_content="본문", done=False, finish_reason=None,
-        ),
-        SimpleNamespace(
-            tool_call=None, delta_content=None, done=True, finish_reason="stop",
-        ),
+        B14StreamEvent(delta_content="본문"),
+        B14StreamEvent(done=True, finish_reason="stop"),
     ]
 
-    class _StubRuntime:
-        def __init__(self, **kwargs):
+    class _ScriptedB14StreamClient:
+        def __init__(self, *args, **kwargs):
             pass
 
-        def stream(self, request):
-            async def _stream():
-                for event in events:
+        def _events(self):
+            async def _iterate():
+                for event in script:
                     yield event
 
-            return _stream()
+            return _iterate()
 
-    monkeypatch.setattr(b14_module, "StreamingExecutionRuntime", _StubRuntime)
+        def stream(self, request):
+            return self._events()
+
+        def stream_auto(self, request):
+            return self._events()
+
+    monkeypatch.setattr(b14_module, "B14StreamingClient", _ScriptedB14StreamClient)
     client = b14_module.B14Client(
         b14_module.Settings.from_values(
             runtime_mode="mock", b14_base_url="https://b14.example.test",
@@ -164,20 +162,16 @@ def test_stream_projection_carries_the_pending_core_tool_call(monkeypatch):
     )
     assert projected[0].finish_reason == "tool_calls"
     assert projected[1].delta_content == "본문"
+    assert projected[1].finish_reason is None
     assert projected[2].done is True
+    assert projected[2].finish_reason == "stop"
 
 
-def test_tool_call_projection_drops_shapes_the_product_cannot_name():
+def test_tool_call_projection_copies_the_validated_core_call():
+    call = B14StreamToolCall(
+        id="call_1", name="files_list", arguments={"depth": 1}, index=2,
+    )
+    assert b14_module._project_tool_call(call) == ChatToolCall(
+        id="call_1", name="files_list", arguments={"depth": 1}, index=2,
+    )
     assert b14_module._project_tool_call(None) is None
-    assert b14_module._project_tool_call(
-        SimpleNamespace(id="call_1", name="Files List", arguments={})
-    ) is None
-    assert b14_module._project_tool_call(
-        SimpleNamespace(id="bad id", name="files_list", arguments={})
-    ) is None
-    assert b14_module._project_tool_call(
-        SimpleNamespace(id="call_1", name="files_list", arguments="{}")
-    ) == ChatToolCall(id="call_1", name="files_list", arguments={}, index=None)
-    assert b14_module._project_tool_call(
-        {"id": "call_1", "name": "files_list", "arguments": {}, "index": 1}
-    ) == ChatToolCall(id="call_1", name="files_list", arguments={}, index=1)
