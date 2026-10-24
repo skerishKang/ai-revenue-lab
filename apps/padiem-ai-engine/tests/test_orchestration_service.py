@@ -1049,3 +1049,216 @@ async def test_cancel_legacy_store_without_atomic_capability_returns_503() -> No
     response = await service.cancel_payload(payload)
     assert response.status_code == 503
     assert response.body["error"]["code"] == "continuation_store_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_pc_stream_progress_is_dispatch_and_status_backed(monkeypatch):
+    import app.orchestration_service as module
+    import app.claw_pc_query_step_driver as driver
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    from padiem_ai_engine_client.orchestration_stream import decode_orchestration_ndjson
+
+    states = iter(["pending", "received", "received", "done"])
+    calls = []
+    release = asyncio.Event()
+    results = []
+    async def files(**kw):
+        calls.append(kw["mode"])
+        row = {"dispatch_id": "dsp_test", "run_id": "pc_run_test", "kind": "command"}
+        if kw["mode"] == "command_status":
+            await release.wait()
+            row["state"] = next(states)
+        if kw["mode"] == "result":
+            row.update(output='{"ok":true,"entries":[]}', termination="exited", exit_code=0)
+        return {"dispatch": row}
+    monkeypatch.setattr(driver, "_signed_files_call", files)
+    original_sleep = asyncio.sleep
+    async def fast_poll(_):
+        await original_sleep(0)
+    monkeypatch.setattr(driver.asyncio if hasattr(driver, "asyncio") else asyncio, "sleep", fast_poll)
+    class Runner:
+        def __init__(self, *, event_sink, **kw):
+            self.sink = event_sink
+        async def run(self, request):
+            self.sink(OrchestrationEvent(
+                event_id="evt_pc_start", run_id="engine_run_test",
+                trace_id=request.context.trace_id, app_id=request.app_id,
+                kind=OrchestrationEventKind.RUN_STARTED, sequence=1,
+                timestamp_iso="2026-10-24T00:00:00Z",
+            ))
+            handler = driver._make_pc_file_handler(
+                tool_id=driver.PC_LIST_FILES_TOOL_ID, op="list",
+                service=None, request_factory=None, secret="fixture",
+            )
+            results.append(await handler({"path": "."}))
+            return object()
+    monkeypatch.setattr(module, "OrchestrationRunner", Runner)
+    payload = make_valid_payload("padiem-chat")
+    payload.update(subject_id="sub_"+"a"*32, session_id="pc_run_test", agent_plan={
+        "agent_id": "agent:padiem:chat-pc-query@1",
+        "steps": [{"step_id": "list_files", "objective": "List", "tool_id": "claw.pc.list_files"}],
+    })
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: object(), b14_service_bound=True,
+        pc_query_step_driver_factory=lambda *a, **kw: object(),
+    )
+    async def body(*a, **kw):
+        return {"verified": True}
+    monkeypatch.setattr(service, "_orchestration_body", body)
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json", body=json.dumps(payload).encode(), pc_progress=True,
+    )
+    assert prepared.pc_progress
+    stream = service.iter_ndjson(prepared)
+    first_line = await anext(stream)
+    accepted_line = await anext(stream)
+    assert json.loads(accepted_line)["pc_progress"]["stage"] == "accepted"
+    assert not prepared.task.done()  # dispatch is visible before PC status/result
+    release.set()
+    chunks = [first_line.encode(), accepted_line.encode()]
+    chunks += [line.encode() async for line in stream]
+    async def source():
+        for chunk in chunks:
+            yield chunk
+    decoded = [item async for item in decode_orchestration_ndjson(source())]
+    progress = [item["pc_progress"] for item in decoded if "pc_progress" in item]
+    assert [v["stage"] for v in progress] == ["accepted", "picked_up", "executing", "result"]
+    assert [v["sequence"] for v in progress] == [1, 2, 3, 4]
+    assert all(v["pc_run_id"] == "pc_run_test" and v["dispatch_id"] == "dsp_test" for v in progress)
+    assert calls == ["dispatch"] + ["command_status"]*4 + ["result"]
+    assert decoded[-1] == {"orchestration": {"verified": True}}
+    # Same real handler without stream scope: no progress envelope in JSON mode.
+    assert driver._PC_PROGRESS_SINK.get() is None
+    states = iter(["done"])
+    token = driver._PC_QUERY_OWNER.set(("sub_"+"a"*32, "pc_run_test", "padiem-chat", None))
+    try:
+        legacy = await driver._make_pc_file_handler(
+            tool_id=driver.PC_LIST_FILES_TOOL_ID, op="list",
+            service=None, request_factory=None, secret="fixture",
+        )({"path": "."})
+    finally:
+        driver._PC_QUERY_OWNER.reset(token)
+    assert json.dumps(legacy).encode() == json.dumps(results[0]).encode()
+
+    # Legacy PC stream callers do not opt into any new records.
+    states = iter(["done"])
+    prepared_legacy = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json", body=json.dumps(payload).encode(),
+    )
+    assert not prepared_legacy.pc_progress
+    old_records = [json.loads(line) async for line in service.iter_ndjson(prepared_legacy)]
+    assert all("pc_progress" not in item and "heartbeat" not in item for item in old_records)
+
+
+@pytest.mark.asyncio
+async def test_pc_stream_heartbeat_does_not_extend_the_real_idle_watchdog(monkeypatch):
+    import app.orchestration_service as module
+    from padiem_ai_core.agent_progress import AgentProgressTracker, await_with_agent_progress, AgentIdleTimeoutError
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    from padiem_ai_core import OrchestrationError
+    tracker = AgentProgressTracker()
+    async def stall():
+        try:
+            await await_with_agent_progress(
+                asyncio.Event().wait(), tracker=tracker,
+                idle_seconds=0.06, poll_interval=0.005,
+            )
+        except AgentIdleTimeoutError:
+            raise OrchestrationError("orchestration_timeout", "No verified progress") from None
+    first = OrchestrationEvent(
+        event_id="evt_idle", run_id="run_idle", trace_id="tr_idle", app_id="padiem-chat",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1,
+        timestamp_iso="2026-10-24T00:00:00Z",
+    )
+    monkeypatch.setattr(module, "PC_STREAM_HEARTBEAT_SECONDS", 0.005)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(stall()),
+        app_id="padiem-chat", pc_progress=True,
+    )
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert any("heartbeat" in item for item in records)
+    assert records[-1]["ok"] is False
+    assert records[-1]["error"]["code"] == "orchestration_timeout"
+    assert tracker.progress_count == 0
+    assert tracker.idle_exceeded(0.06)
+
+
+@pytest.mark.asyncio
+async def test_non_pc_ndjson_and_legacy_json_bytes_are_unchanged(monkeypatch):
+    import app.orchestration_service as module
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    first = OrchestrationEvent(
+        event_id="evt_legacy", run_id="run_legacy", trace_id="tr_legacy", app_id="b62",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1,
+        timestamp_iso="2026-10-24T00:00:00Z",
+    )
+    body = {"execution": {"answer": "legacy"}}
+    async def result():
+        await asyncio.sleep(0.015)
+        return object()
+    async def project(*a, **kw):
+        return body
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    monkeypatch.setattr(service, "_orchestration_body", project)
+    monkeypatch.setattr(module, "PC_STREAM_HEARTBEAT_SECONDS", 0.001)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(result()), app_id="b62",
+    )
+    actual = "".join([line async for line in service.iter_ndjson(prepared)])
+    expected = json.dumps({"ok": True, "event": first.to_public_dict()}, ensure_ascii=False, separators=(",", ":"))+"\n"
+    expected += '{"ok":true,"orchestration":{"execution":{"answer":"legacy"}}}\n'
+    assert actual.encode() == expected.encode()
+    payload = make_valid_payload()
+    response = await OrchestrationEngineService(
+        runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
+    ).orchestrate_payload(payload)
+    assert response.status_code == 200
+    assert "pc_progress" not in response.body and "heartbeat" not in response.body
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("side", [
+    {"heartbeat": {"run_id": "r", "trace_id": "t", "elapsed_ms": True}},
+    {"pc_progress": {"pc_run_id": "r", "dispatch_id": "d", "kind": "command",
+                     "stage": "made_up", "sequence": 1, "elapsed_ms": 0}},
+    {"heartbeat": {"run_id": "r", "trace_id": "t", "elapsed_ms": 1, "secret": "NO"}},
+])
+async def test_optional_pc_stream_records_reject_unknown_or_malformed_fields(side):
+    from padiem_ai_engine_client.orchestration_stream import decode_orchestration_ndjson, EngineNdjsonContractError
+    async def chunks():
+        yield (json.dumps({"ok": True, **side})+"\n").encode()
+    with pytest.raises(EngineNdjsonContractError, match="invalid_stream_record"):
+        _ = [item async for item in decode_orchestration_ndjson(chunks())]
+
+
+@pytest.mark.asyncio
+async def test_pc_progress_client_opt_in_preserves_legacy_request_bytes():
+    from padiem_ai_engine_client import PadiemAiEngineClient, EngineStreamTransportResponse
+    calls = []
+    class Transport:
+        async def request(self, **kwargs):
+            raise AssertionError('stream must not use JSON transport')
+        async def stream_request(self, **kwargs):
+            calls.append(kwargs)
+            async def chunks():
+                yield b'{"ok":true,"event":{"kind":"run_started"}}\n'
+                yield b'{"ok":true,"heartbeat":{"run_id":"r","trace_id":"t","elapsed_ms":10}}\n'
+                yield b'{"ok":true,"orchestration":{"verified":true}}\n'
+            return EngineStreamTransportResponse(
+                status=200, headers={"content-type":"application/x-ndjson"}, chunks=chunks(),
+            )
+    client = PadiemAiEngineClient(
+        transport=Transport(), app_id="padiem-chat", caller_id="padiem-chat", credential="x"*64,
+    )
+    request = {k:v for k,v in make_valid_payload("padiem-chat").items() if k != "app_id"}
+    legacy = [item async for item in client.stream_orchestration(request)]
+    explicit = [item async for item in client.stream_orchestration(request, pc_progress=True)]
+    assert calls[0]["body"] == calls[1]["body"]
+    assert calls[0]["headers"] == {k:v for k,v in calls[1]["headers"].items() if k != "X-Padiem-PC-Progress"}
+    assert "X-Padiem-PC-Progress" not in calls[0]["headers"]
+    assert calls[1]["headers"]["X-Padiem-PC-Progress"] == "1"
+    assert legacy == explicit
+    assert explicit[1] == {"heartbeat":{"run_id":"r","trace_id":"t","elapsed_ms":10}}

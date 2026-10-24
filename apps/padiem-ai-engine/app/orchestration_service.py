@@ -281,13 +281,19 @@ class PreparedOrchestrationStream:
     task: asyncio.Task[OrchestrationResult]
     app_id: str
     request_fingerprint_value: str | None = None
+    pc_progress: bool = False
+
+
+PC_STREAM_HEARTBEAT_SECONDS = 10.0
 
 
 def _encode_line(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
-def _stream_event_line(event: OrchestrationEvent) -> str:
+def _stream_event_line(event: OrchestrationEvent | dict[str, Any]) -> str:
+    if isinstance(event, dict) and set(event) == {"pc_progress"}:
+        return _encode_line({"ok": True, **event})
     return _encode_line({"ok": True, "event": event.to_public_dict()})
 
 
@@ -1659,6 +1665,7 @@ class OrchestrationEngineService:
         path: str,
         content_type: str | None = None,
         body: bytes = b"",
+        pc_progress: bool = False,
     ) -> PreparedOrchestrationStream | ServiceResponse:
         """Validate and prime an orchestration stream before HTTP 200 commits.
 
@@ -1740,7 +1747,7 @@ class OrchestrationEngineService:
         # closed without it (pc_query_admission_required) and no Chat dispatch
         # is ever created. Bind the owner only for the exact canonical
         # PC-query plan; every other stream keeps the unset default.
-        from app.claw_pc_query_step_driver import _PC_QUERY_OWNER
+        from app.claw_pc_query_step_driver import _PC_QUERY_OWNER, _PC_PROGRESS_SINK
         from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
 
         declared_identity_token = None
@@ -1759,9 +1766,15 @@ class OrchestrationEngineService:
             declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
+        pc_stream = pc_progress is True and _canonical_pc_plan(app_id, plan) is not None
+        progress_token = _PC_PROGRESS_SINK.set(
+            (lambda item: queue.put_nowait({"pc_progress": item}))
+            if pc_stream else None
+        )
         try:
             task = asyncio.create_task(runner.run(orch_req))
         finally:
+            _PC_PROGRESS_SINK.reset(progress_token)
             _PC_QUERY_OWNER.reset(pc_owner_token)
             PC_QUERY_RUN_SCOPE.reset(pc_scope_token)
             if declared_identity_token is not None:
@@ -1781,6 +1794,7 @@ class OrchestrationEngineService:
                 task=task,
                 app_id=app_id,
                 request_fingerprint_value=request_fingerprint_value,
+                pc_progress=pc_stream,
             )
         if task in done:
             if first_event_task not in done:
@@ -1801,6 +1815,7 @@ class OrchestrationEngineService:
                     task=task,
                     app_id=app_id,
                     request_fingerprint_value=request_fingerprint_value,
+                    pc_progress=pc_stream,
                 )
             try:
                 await task
@@ -1827,6 +1842,7 @@ class OrchestrationEngineService:
             task=task,
             app_id=app_id,
             request_fingerprint_value=request_fingerprint_value,
+            pc_progress=pc_stream,
         )
 
     async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
@@ -1840,6 +1856,7 @@ class OrchestrationEngineService:
 
         if not isinstance(prepared, PreparedOrchestrationStream):
             raise ValueError("prepared must be PreparedOrchestrationStream")
+        started = asyncio.get_running_loop().time()
         try:
             yield _stream_event_line(prepared.first_event)
             while not prepared.task.done():
@@ -1847,7 +1864,23 @@ class OrchestrationEngineService:
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
                 )
+                if not done:
+                    event_task.cancel()
+                    try:
+                        await event_task
+                    except asyncio.CancelledError:
+                        pass
+                    # Transport liveness only. No Core event/sink/progress call.
+                    yield _encode_line({"ok": True, "heartbeat": {
+                        "run_id": prepared.first_event.run_id,
+                        "trace_id": prepared.first_event.trace_id,
+                        "elapsed_ms": max(0, int(
+                            (asyncio.get_running_loop().time() - started) * 1000
+                        )),
+                    }})
+                    continue
                 if event_task in done:
                     yield _stream_event_line(event_task.result())
                 if prepared.task in done and event_task not in done:
@@ -1875,6 +1908,13 @@ class OrchestrationEngineService:
                 _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
             )
         finally:
+            pending_event = locals().get("event_task")
+            if pending_event is not None and not pending_event.done():
+                pending_event.cancel()
+                try:
+                    await pending_event
+                except asyncio.CancelledError:
+                    pass
             if not prepared.task.done():
                 prepared.task.cancel()
                 try:

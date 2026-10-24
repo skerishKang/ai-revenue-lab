@@ -682,13 +682,18 @@ class PadiemAiEngineClient:
         return dict(orchestration)
 
     async def stream_orchestration(
-        self, request: Mapping[str, Any]
+        self, request: Mapping[str, Any], *, pc_progress: bool = False
     ) -> AsyncIterator[dict[str, Any]]:
         """Opt-in Engine NDJSON transport; no implicit switch from orchestrate().
 
         The caller must validate P01 correlation and the terminal result before
         committing success. Partial event yields have no approval/dispatch power.
         """
+        if type(pc_progress) is not bool:
+            raise PadiemAiEngineClientError("invalid_engine_request", "pc_progress must be boolean")
+        headers = self._headers()
+        if pc_progress:
+            headers["X-Padiem-PC-Progress"] = "1"
         payload = _run_payload(self.app_id, request, allowed=_ORCHESTRATION_ALLOWED)
         stream_request = getattr(self._transport, "stream_request", None)
         if not callable(stream_request):
@@ -698,7 +703,7 @@ class PadiemAiEngineClient:
         response = await stream_request(
             method="POST",
             url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_STREAM_PATH}",
-            headers=self._headers(),
+            headers=headers,
             body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
         )
         if not isinstance(response, EngineStreamTransportResponse):
