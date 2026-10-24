@@ -959,7 +959,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  /* #5028: flex-start, not center. The error chip and the title have different
+     line boxes; centering the row nudged the title off the shared header row by
+     ~1.75px whenever the error slot wrapped. With flex-start the title position
+     depends only on the kicker above it, exactly like the no-error header. */
+  align-items: flex-start;
   column-gap: 8px;
   /* The gap belongs to the error line, not to the eyebrow/title pair: a container
      row-gap lands on top of the shared kicker margin and pushes the title 2px

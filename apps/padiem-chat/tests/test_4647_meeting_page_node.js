@@ -95,8 +95,10 @@ test("meeting view joins the shared glass frame instead of drawing its own surfa
   assert.match(unified, /\[data-state="meeting"\]/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\) \{/);
   assert.match(unified, /\.standalone-view-kicker, \.calendar-view-kicker, \.library-kicker, \.claw-workspace-kicker\)::before \{/);
-  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 3,
-    "meeting must be in all three six-panel frame lists");
+  // #5661 added the fourth list: the >=1921px centring rule keeps meeting in
+  // the same frame family on ultra-wide screens.
+  assert.equal((frame.match(/\.automation-view, \.meeting-view/g) || []).length, 4,
+    "meeting must be in all four six-panel frame lists");
   assert.ok(frame.includes(".calendar-view, .connectors-view"), "the owner visual-lock frame literal stays intact");
   assert.doesNotMatch(meetingCss, /max-width:\s*1080px/);
   assert.doesNotMatch(meetingCss, /\.meeting-header\s+(p|h2)\s*\{/);

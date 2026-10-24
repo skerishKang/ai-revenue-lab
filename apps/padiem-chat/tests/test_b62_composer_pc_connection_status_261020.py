@@ -343,7 +343,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     revoked = page.evaluate(MEASURE)
     assert revoked["state"] == "unavailable"
-    assert revoked["label"] == "연결 확인 필요"
+    assert revoked["label"] == "상태 확인 불가"
 
     # A server that cannot answer the directory is an "unavailable" state, never a
     # connected one.
@@ -353,7 +353,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     failed = page.evaluate(MEASURE)
     assert failed["state"] == "unavailable"
-    assert failed["label"] == "연결 확인 필요"
+    assert failed["label"] == "상태 확인 불가"
     assert not errors, errors
     page.close()
 
@@ -501,7 +501,7 @@ def test_a_mesh_execution_target_is_unconfirmed_not_disconnected(browser, server
     _wait_state(page, "unavailable")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "unavailable"
-    assert measured["label"] == "연결 확인 필요"
+    assert measured["label"] == "상태 확인 불가"
     assert "온라인 상태는 확인되지 않았습니다" in (measured["ariaLabel"] or "")
     assert not errors, errors
     page.close()

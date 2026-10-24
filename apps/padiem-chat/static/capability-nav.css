@@ -325,27 +325,6 @@ html[data-theme="padiem-glass"] .capability-read {
   margin-top: auto;
 }
 
-/* The header keeps one page name and one short line; the long explanation
-   moved into a disclosure. */
-.connectors-view .standalone-view-details {
-  margin: 0 0 12px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.connectors-view .standalone-view-details > summary {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  color: var(--accent-strong, #2f6f99);
-}
-
-.connectors-view .standalone-view-details > p {
-  margin: 4px 0 0;
-  line-height: 1.5;
-}
-
 @media (max-width: 720px) {
   .capability-grid {
     grid-template-columns: minmax(0, 1fr);

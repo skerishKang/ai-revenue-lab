@@ -114,17 +114,20 @@ def test_the_dialog_title_uses_the_same_english_name():
 # ── the header copy ────────────────────────────────────────────────────────
 
 
-def test_the_header_keeps_one_short_line_and_moves_the_long_text_into_a_details():
+def test_the_header_keeps_one_short_line_without_a_details_block():
+    # Owner decision 2026-10-23 (#5555 comment): the "자세히 보기" disclosure is
+    # removed. The one-line tagline is the whole header copy; the long
+    # explanation text lives nowhere on this screen.
     view = HTML[HTML.index('id="connectorsView"'):HTML.index('id="connectorsViewBody"')]
     assert 'data-locale-key="connectors-note">연결된 서비스와 기기를 관리합니다.<' in view
-    assert 'data-locale-key="connectors-note-details"' in view
-    assert 'data-locale-key="connectors-note-toggle"' in view
-    assert "<details" in view
-    # The long sentence is no longer the header line itself.
-    assert 'data-locale-key="connectors-note">읽기 지원 여부와' not in view
+    assert "<details" not in view
+    assert "connectors-note-details" not in view
+    assert "connectors-note-toggle" not in view
+    assert "자세히 보기" not in view
+    assert "읽기 지원 여부와" not in view
     assert '"connectors-note": "연결된 서비스와 기기를 관리합니다."' in LOCALE
-    assert '"connectors-note-details"' in LOCALE
-    assert '"connectors-note-toggle"' in LOCALE
+    assert '"connectors-note-details"' not in LOCALE
+    assert '"connectors-note-toggle"' not in LOCALE
 
 
 # ── the card information order ──────────────────────────────────────────────

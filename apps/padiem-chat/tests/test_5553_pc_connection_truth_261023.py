@@ -105,7 +105,7 @@ def test_only_a_server_confirmed_online_row_reads_as_connected():
 
 
 def test_the_composer_names_the_unconfirmed_online_state():
-    assert '"연결 확인 필요"' in COMPOSER_JS
+    assert '"상태 확인 불가"' in COMPOSER_JS
     assert "executableHint" in COMPOSER_JS
     assert "executableReady" in COMPOSER_JS
     # The control still never paints connected from the execution grant.

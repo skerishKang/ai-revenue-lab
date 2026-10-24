@@ -4,7 +4,12 @@
  */
 html[data-theme="padiem-glass"] body .app-shell {
   --padiem-six-panel-left: clamp(48px, 4vw, 72px);
-  --padiem-six-panel-width: min(1200px,
+  /* #5661: the content lane caps at 960px. The 1200px cap let the panel and
+     its cards keep growing past 1920px while the hero text and starter cards
+     stayed content-sized, so the empty panel area between the copy and the
+     artwork grew with every wider screen. 960px is the measured stable lane
+     (the hero, the four starters and the composer all fit without reflow). */
+  --padiem-six-panel-width: min(960px,
     calc(100vw - var(--workspace-rail, 252px) - var(--padiem-six-panel-left) - clamp(360px, 32vw, 560px) - 48px));
   --padiem-six-panel-pad-x: clamp(18px, 2.4vw, 34px);
   /* The Chat/Claw composer is inset this far from the frame edge, and the amount
@@ -53,6 +58,20 @@ html[data-theme="padiem-glass"] body .app-shell {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
   }
+/* #5661: past 1920px the freed lane width must not pile up on one side. The
+ * panel keeps its cap and is centred in the space between the workspace rail
+ * and the reserved artwork column, so the breathing room splits evenly instead
+ * of opening one wide gap between the copy and the image. */
+@media (min-width: 1921px) {
+  html[data-theme="padiem-glass"] body .app-shell :is(
+    .conversation, .calendar-view, .connectors-view,
+    .library-view, .automation-view, .meeting-view
+  ) {
+    margin-left: calc(
+      (100vw - var(--workspace-rail, 252px) - clamp(360px, 32vw, 560px) - var(--padiem-six-panel-width)) / 2
+    ) !important;
+  }
+}
   /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
    * the same height-relative inset the hero uses, minus the 6px the page header box
    * adds above its first line, so the brand line lands on the same row at any
