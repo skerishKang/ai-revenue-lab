@@ -35,7 +35,8 @@ def parse_execution_context(value: Any) -> ExecutionContext | None:
     return ExecutionContext(
         trace_id=trace_id,
         idempotency_key=data.get("idempotency_key"),
-        timeout_seconds=data.get("timeout_seconds", 900.0),
+        # Owner decision 2026-10-24 (#5573): default deadline removed (900.0 -> None).
+        timeout_seconds=data.get("timeout_seconds", None),
     )
 
 

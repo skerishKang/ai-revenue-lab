@@ -30,7 +30,7 @@ from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
 HEALTH_PATH = "/internal/v1/health"
-MAX_REQUEST_BODY_BYTES = 128 * 1024  # Non-model Engine routes retain legacy safety.
+MAX_REQUEST_BODY_BYTES = 1024 * 1024  # Owner decision 2026-10-24 (#5573): 128KiB -> 1MiB (non-model Engine routes).
 # #4379: the model routes carry no PADIEM request body total. The Engine
 # applies the platform's own request limit. Tool/Memory/approval route guards
 # are unchanged.

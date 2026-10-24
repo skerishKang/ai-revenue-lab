@@ -118,7 +118,7 @@ def test_agent_wall_clock_is_inactivity_watchdog_not_a_fixed_cap():
     # a progressing run, and no run may silently lose its liveness bound.
     budget = "packages/padiem-ai-core/padiem_ai_core/agent_definition.py"
     context = "packages/padiem-ai-core/padiem_ai_core/execution_context.py"
-    assert literal_default(budget, owner="AgentExecutionBudget", member="max_wall_seconds") == 900
+    assert literal_default(budget, owner="AgentExecutionBudget", member="max_wall_seconds") == 1800  # Owner decision 2026-10-24 (#5573)
     assert literal_default(budget, owner="AgentExecutionBudget", member="max_total_seconds") is None
     assert literal_default(context, owner=None, member="MAX_TIMEOUT_SECONDS") == 3600.0
     agent = source("packages/padiem-ai-core/padiem_ai_core/agent_runtime.py")

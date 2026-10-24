@@ -62,9 +62,9 @@ def test_ingress_serves_only_the_model_execute_route() -> None:
 
 
 def test_non_model_engine_guard_is_not_released_in_the_same_sweep() -> None:
-    # The non-model Engine guard stays where it was: loosening the model path
-    # is not a licence to loosen the tool, control, memory and approval
-    # routes in the same sweep.
-    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
+    # The non-model Engine guard stays a bounded guard: releasing the model path
+    # is not a licence to release the tool, control, memory and approval routes.
+    # #5573 raised its value 128 KiB -> 1 MiB by Owner decision; it is not removed.
+    assert MAX_REQUEST_BODY_BYTES == 1024 * 1024  # Owner decision 2026-10-24 (#5573)
     worker = (ROOT / "worker.py").read_text(encoding="utf-8")
     assert "else MAX_REQUEST_BODY_BYTES" in worker

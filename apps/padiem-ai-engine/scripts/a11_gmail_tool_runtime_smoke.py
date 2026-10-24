@@ -111,7 +111,7 @@ REQUEST_TIMEOUT_SECONDS = 60
 
 # Oversized argument payload: strictly greater than MAX_TOOL_ARGUMENT_BYTES
 # (65536) so the Engine's argument-size bound fires, and small enough to stay
-# under the worker request-body ceiling (128 KiB).
+# under the worker request-body ceiling (1 MiB).
 OVERSIZED_ARGUMENT = "a11-smoke-" + ("0" * 70_000)
 
 ROUTE_UNAVAILABLE = "ROUTE_UNAVAILABLE"
