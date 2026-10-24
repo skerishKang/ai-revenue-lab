@@ -111,6 +111,14 @@
     let lastPayload = null;
     let currentPid = null;
 
+    // #5608 follow-up: the sidebar Util entry expands into its four tools. The
+    // submenu rows and the (hidden) in-page tabs drive the same switch, so the
+    // panels, lazy builders and saved state keep their single owner here.
+    const utilSubmenu = document.getElementById("utilSubmenu");
+    const utilSubmenuItems = utilSubmenu
+      ? Array.from(utilSubmenu.querySelectorAll(".util-submenu-item"))
+      : [];
+
     // #5608: the util page is its own shell state. The sibling views are gated
     // by CSS (util-menu.css), so entering the state is enough and navigating to
     // any other view restores them -- no per-view cleanup needed here.
@@ -120,20 +128,75 @@
       utilView.hidden = false;
       utilNav.setAttribute("aria-current", "page");
     }
-    utilNav.addEventListener("click", showUtil);
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        const key = tab.dataset.util;
-        Object.keys(panels).forEach((k) => { if (panels[k]) panels[k].hidden = k !== key; });
-        if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
-        if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
-        if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
-          panels.pdfmd.dataset.loaded = "1";
-          if (typeof window.initPdfMdUtility === "function") window.initPdfMdUtility(panels.pdfmd);
-        }
+
+    function setUtilSubmenuOpen(open) {
+      if (!utilSubmenu) return;
+      utilSubmenu.hidden = !open;
+      utilNav.setAttribute("aria-expanded", open ? "true" : "false");
+      const chevron = utilNav.querySelector(".side-chevron");
+      if (chevron) chevron.textContent = open ? "⌄" : "›";
+    }
+
+    function markActiveUtilSubmenuItem(key) {
+      if (!utilSubmenu) return;
+      utilSubmenuItems.forEach((item) => {
+        const active = key != null && item.dataset.util === key;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-current", active ? "true" : "false");
       });
+    }
+
+    function closeMobileSidebar() {
+      const shell = document.querySelector(".app-shell");
+      if (!shell || !shell.classList.contains("sidebar-open")) return;
+      shell.classList.remove("sidebar-open");
+      const menu = document.getElementById("mobileMenu");
+      if (menu) menu.setAttribute("aria-expanded", "false");
+      const scrim = document.getElementById("sidebarScrim");
+      if (scrim) scrim.hidden = true;
+    }
+
+    utilNav.addEventListener("click", () => {
+      showUtil();
+      if (utilSubmenu) setUtilSubmenuOpen(utilSubmenu.hidden);
+    });
+    utilSubmenuItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        showUtil();
+        setUtilSubmenuOpen(true);
+        markActiveUtilSubmenuItem(item.dataset.util);
+        const tab = Array.prototype.find.call(
+          tabs, (t) => t.dataset.util === item.dataset.util
+        );
+        if (tab) activateUtilTab(tab);
+        closeMobileSidebar();
+      });
+    });
+    markActiveUtilSubmenuItem("speech");
+    // Leaving the util view (any other nav) must not leave a stale highlight
+    // on a submenu row. app.js owns aria-current on the parent, so watching
+    // that one attribute covers every navigation path.
+    if (utilSubmenu && typeof MutationObserver === "function") {
+      new MutationObserver(() => {
+        if (utilNav.getAttribute("aria-current") === "false") {
+          markActiveUtilSubmenuItem(null);
+        }
+      }).observe(utilNav, { attributes: true, attributeFilter: ["aria-current"] });
+    }
+    function activateUtilTab(tab) {
+      tabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      const key = tab.dataset.util;
+      Object.keys(panels).forEach((k) => { if (panels[k]) panels[k].hidden = k !== key; });
+      if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
+      if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
+      if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
+        panels.pdfmd.dataset.loaded = "1";
+        if (typeof window.initPdfMdUtility === "function") window.initPdfMdUtility(panels.pdfmd);
+      }
+    }
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => activateUtilTab(tab));
     });
 
     // Speech

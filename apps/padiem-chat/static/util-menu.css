@@ -70,7 +70,36 @@
 @media (max-width: 600px) {
   .util-view { padding: 12px 10px 28px; }
   .util-tabs { flex-wrap: wrap; }
+  .util-tabs[hidden] { display: none; }
 }
+/* #5608 follow-up: the sidebar Util entry expands into its four tools and the
+ * in-page tab row is the duplicate — hidden everywhere, not only on phones.
+ * Submenu rows reuse the sidebar's own row language (radius, hover, focus). */
+.util-tabs[hidden] { display: none; }
+.util-submenu[hidden] { display: none; }
+.util-nav-group { display: grid; gap: 2px; }
+.side-item .side-chevron { margin-left: auto; color: var(--muted, #5b6672); font-size: 15px; line-height: 1; }
+.util-submenu { display: grid; gap: 2px; padding-left: 30px; }
+.util-submenu-item {
+  display: flex; align-items: center; min-height: 44px; padding: 0 10px;
+  border: none; border-radius: 10px; background: transparent;
+  color: var(--muted, #5b6672); font: inherit; font-size: 13px; font-weight: 650;
+  text-align: left; cursor: pointer;
+}
+.util-submenu-item:hover { background: rgba(255, 255, 255, .72); color: var(--text, #17202a); }
+.util-submenu-item:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+.util-submenu-item.active {
+  background: var(--accent-soft, rgba(101, 87, 232, .12));
+  color: var(--accent-strong, var(--accent, #6557e8));
+  font-weight: 750;
+}
+html[data-theme="padiem-glass"] .util-submenu-item { color: rgba(255, 255, 255, .78); }
+html[data-theme="padiem-glass"] .util-submenu-item:hover { background: rgba(248, 250, 252, .16); color: rgba(255, 255, 255, .95); }
+html[data-theme="padiem-glass"] .util-submenu-item.active { background: rgba(248, 250, 252, .22); color: #ffffff; }
+html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255, 255, .66); }
 
 
 /* #5568 P1: one glass surface keeps the utility readable over the theme image
