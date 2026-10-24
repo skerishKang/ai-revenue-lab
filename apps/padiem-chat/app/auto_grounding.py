@@ -16,6 +16,7 @@ from .web_tools import MockWebProvider, WebProvider
 class AutoGroundingPlan:
     decision: SearchDecision
     prepared: PreparedGrounding | None
+    error: GroundingError | None = None
 
     @property
     def searched(self) -> bool:
@@ -23,20 +24,9 @@ class AutoGroundingPlan:
 
 
 def auto_grounding_may_continue(decision: SearchDecision, error: GroundingError) -> bool:
-    """Whether a failed automatic search may continue as a normal answer.
+    """Owner 2026-10-24: failed web retrieval never terminates a Chat turn."""
+    return error.code.startswith("web_grounding_") or error.code == "no_evidence"
 
-    Only an AUTOMATIC search may continue. The search already ran and produced
-    no usable evidence, and the request does not depend on current external
-    facts, so the ordinary model answer is produced WITHOUT any evidence or
-    source. An explicit user search request and a request about a current
-    external fact (weather, news, rates) keep the honest failure, so a missing
-    web result is never presented as a verified current fact.
-    """
-    return (
-        error.code == "no_evidence"
-        and decision.reason != "explicit_search_request"
-        and not decision.evidence_required
-    )
 
 
 def latest_user_question(messages: list[dict[str, str]]) -> str:
@@ -98,10 +88,7 @@ class AutoGroundingService:
         except GroundingRuntimeError as exc:
             error = _translate_core_error(exc)
             if auto_grounding_may_continue(decision, error):
-                # The automatic search found no usable evidence and the request
-                # does not need it. The turn continues as a normal answer and
-                # no source is shown.
-                return AutoGroundingPlan(decision=decision, prepared=None)
+                return AutoGroundingPlan(decision=decision, prepared=None, error=error)
             raise error from exc
 
         return AutoGroundingPlan(decision=decision, prepared=prepared)

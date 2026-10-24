@@ -593,9 +593,22 @@
     content.appendChild(paragraph);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
+  function renderWebGroundingNotice(content, notice) {
+    if (notice !== "웹 검색을 사용할 수 없어 근거 없이 답변합니다"
+        && notice !== "웹 근거를 찾지 못해 근거 없이 답변합니다") return;
+    let note = content.querySelector(".web-grounding-notice");
+    if (!note) {
+      note = document.createElement("p");
+      note.className = "web-grounding-notice reference-note";
+      note.setAttribute("role", "status");
+      content.prepend(note);
+    }
+    note.textContent = notice;
+  }
   function renderAnswer(article, result) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
+    renderWebGroundingNotice(content, result.notice);
     // #5573: the live PC scope notice is its own line above the answer.
     window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));
     const paragraph = document.createElement("p");
@@ -2575,6 +2588,7 @@
       used.textContent = uiT("project-files-used", { count: data.project_files_used });
       article.querySelector(".assistant-content").appendChild(used);
     }
+    renderWebGroundingNotice(article.querySelector(".assistant-content"), data.notice);
     // #5573: the live PC scope notice is its own line above the answer.
     window.PadiemChatPcScopeNotice?.render?.(
       article.querySelector(".assistant-content"),

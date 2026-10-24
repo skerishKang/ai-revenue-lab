@@ -26,7 +26,7 @@ from .documents import (
     build_project_files_context,
     combine_reference_context,
 )
-from .grounding import GroundedChatService, GroundingError
+from .grounding import GroundedChatService, GroundingError, grounding_fallback_fields
 from .history import (
     HISTORY_PREVIEW_SUFFIX,
     MAX_HISTORY_MESSAGE_CHARS,
@@ -463,7 +463,7 @@ async def api_chat_stream(request: Request):
             )
         except ChatPCDriveError as exc:
             return JSONResponse(
-                {"error": {"code": exc.code, "message": exc.user_message}},
+                {"error": exc.public_error()},
                 status_code=exc.status_code,
             )
         if lane_outcome is not None:
@@ -534,14 +534,19 @@ async def api_chat_stream(request: Request):
             )
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
+    grounding_notice = {}
+    auto_plan = None
     try:
         auto_plan = None if (drive_context or identity_question) else await auto_grounding.prepare(
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            **({"explicit_search": True} if raw.get("web_search") else {}),
         )
     except GroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        grounding_notice = grounding_fallback_fields(exc)
+    if getattr(auto_plan, "error", None) is not None:
+        grounding_notice = grounding_fallback_fields(auto_plan.error)
     if auto_plan is not None and auto_plan.prepared is not None:
         reference_context = auto_plan.prepared.context
         # The auto-grounding plan replaces the context it was handed; the
@@ -608,6 +613,7 @@ async def api_chat_stream(request: Request):
                     yield _public_sse("delta", {"delta": event.delta_content})
                 if event.done:
                     done_payload: dict[str, Any] = {"done": True}
+                    done_payload.update(grounding_notice)
                     if auto_plan is not None and auto_plan.prepared is not None:
                         done_payload["answer_status"] = "answered_with_evidence"
                         done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
@@ -984,7 +990,7 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill)
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill, **({"explicit_search": True} if raw.get("web_search") else {}))
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client
@@ -1016,10 +1022,10 @@ async def api_chat(request: Request) -> JSONResponse:
                     except GroundingError as exc:
                         if not auto_grounding_may_continue(auto_decision, exc):
                             raise
-                        # The automatic search found no usable evidence and the
-                        # request does not need it. The turn continues as a
-                        # normal answer, with no evidence or source attached.
+                        # Owner 2026-10-24: failed retrieval is disclosed;
+                        # the same selected model answers without web sources.
                         result = await _plain_completion()
+                        result.update(grounding_fallback_fields(exc))
                 else:
                     result = await _plain_completion()
             else:

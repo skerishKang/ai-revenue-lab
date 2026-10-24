@@ -81,16 +81,23 @@ _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
 
 class ChatPCDriveError(ValueError):
-    def __init__(self, code: str, message: str, status_code: int = 503) -> None:
+    def __init__(self, code: str, message: str, status_code: int = 503, *, cause: str | None = None) -> None:
         super().__init__(message)
         self.code = code
         self.user_message = message
         self.status_code = status_code
+        self.cause = cause if isinstance(cause, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", cause) else None
+
+    def public_error(self) -> dict:
+        error = {"code": self.code, "message": self.user_message}
+        if self.cause is not None:
+            error["cause"] = self.cause
+        return error
 
 
 def _error_response(exc: ChatPCDriveError) -> JSONResponse:
     return JSONResponse(
-        {"ok": False, "error": {"code": exc.code, "message": exc.user_message}},
+        {"ok": False, "error": exc.public_error()},
         status_code=exc.status_code,
         headers=dict(_NO_STORE_HEADERS),
     )
@@ -789,7 +796,7 @@ async def _execute_chat_pc_files_lane(
             status="failed",
         )
         raise ChatPCDriveError(
-            "chat_pc_engine_unavailable", exc.user_message, exc.status_code,
+            "chat_pc_engine_unavailable", exc.user_message, exc.status_code, cause=exc.code,
         ) from exc
     answer = outcome.answer if isinstance(outcome.answer, str) else None
     if not answer or not answer.strip():

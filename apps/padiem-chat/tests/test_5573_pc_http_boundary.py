@@ -256,3 +256,26 @@ async def test_completed_pc_lane_post_without_a_scope_keeps_its_shape(monkeypatc
     }
     assert b"scope_notice" not in response.content
     assert len(_pc_plan_requests(bridge)) == 1
+
+
+@pytest.mark.parametrize("engine_code", ["unsupported_orchestration_field", "upstream_auth_error"])
+async def test_pc_http_error_preserves_only_the_bounded_engine_cause(monkeypatch, engine_code):
+    from app.orchestration_bridge import B62OrchestrationError
+    app, b14, bridge = _wire(monkeypatch)
+    async def fail(**fields):
+        raise B62OrchestrationError(engine_code, "AI 작업을 처리하지 못했습니다.", status_code=400)
+    async def notice(*args, **kwargs):
+        return None
+    monkeypatch.setattr(bridge, "start", fail)
+    monkeypatch.setattr(lane, "_append_lane_notice", notice)
+    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
+    assert response.status_code == 400
+    assert response.json()["error"] == {"code": "chat_pc_engine_unavailable",
+        "message": "AI 작업을 처리하지 못했습니다.", "cause": engine_code}
+    assert b14.calls == []
+
+
+def test_pc_error_cause_rejects_unbounded_provider_material():
+    error = lane.ChatPCDriveError("chat_pc_engine_unavailable", "failed", 400,
+                                  cause="private-provider-response: " + "x" * 100)
+    assert lane._error_response(error).body == b'{"ok":false,"error":{"code":"chat_pc_engine_unavailable","message":"failed"}}'

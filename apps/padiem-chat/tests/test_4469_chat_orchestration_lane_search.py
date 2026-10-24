@@ -24,6 +24,9 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import subprocess
+
+import pytest
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -312,3 +315,89 @@ def test_the_success_response_bytes_are_unchanged(monkeypatch) -> None:
         "conversation_id": "chat_" + "s" * 32,
     }
     assert response.body == json.dumps(expected, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+
+@pytest.mark.parametrize("status,code", [(403, "web_grounding_auth_error"), (502, "web_grounding_unavailable"), (404, "web_grounding_no_evidence")])
+@pytest.mark.parametrize("explicit", [False, True])
+def test_orchestration_search_failure_continues_once_without_evidence(monkeypatch, status, code, explicit):
+    from app.auto_grounding import AutoGroundingService
+    from app.web_tools import WebToolError
+    class Provider:
+        calls = 0
+        async def search(self, query, limit=5):
+            self.calls += 1
+            if status == 404:
+                return []
+            raise WebToolError("upstream_auth_error" if status == 403 else "web_unavailable", "secret-provider-response", status)
+    provider = Provider()
+    service = AutoGroundingService(provider)
+    bridge, history = _install(monkeypatch, service)
+    payload = _payload(SEARCH_QUESTION)
+    if explicit:
+        payload["web_search"] = True
+    response = asyncio.run(routes.api_orchestration(_request(payload, bridge, history, service)))
+    body = json.loads(response.body)
+    assert response.status_code == 200
+    assert body["answer"] == "확인했습니다."
+    assert body["metadata"] == {"web_grounding_error": code}
+    assert body["notice"] == ("웹 근거를 찾지 못해 근거 없이 답변합니다" if status == 404 else "웹 검색을 사용할 수 없어 근거 없이 답변합니다")
+    assert "error" not in body and "evidence" not in body and "tool" not in body
+    assert "secret-provider-response" not in response.body.decode()
+    assert provider.calls == 1 and len(bridge.requests) == 1
+    assert "additional_system_context" not in bridge.requests[0]
+
+
+def test_grounding_adapter_failure_does_not_prevent_engine_turn(monkeypatch):
+    from app.grounding import GroundingError
+    class Failed:
+        async def prepare(self, *args, **kwargs):
+            raise GroundingError(403, "upstream_auth_error", "private")
+    service = Failed()
+    bridge, history = _install(monkeypatch, service)
+    response = asyncio.run(routes.api_orchestration(_request(_payload(SEARCH_QUESTION), bridge, history, service)))
+    body = json.loads(response.body)
+    assert response.status_code == 200 and len(bridge.requests) == 1
+    assert body["metadata"] == {"web_grounding_error": "web_grounding_auth_error"}
+    assert "upstream_auth_error" not in response.body.decode()
+    assert "private" not in response.body.decode()
+
+
+def test_public_grounding_metadata_is_closed_and_does_not_expose_extra_keys():
+    from app.public_chat import public_chat_result
+    result = public_chat_result({"answer": "answer", "notice": "<script>private</script>",
+        "metadata": {"web_grounding_error": "web_grounding_auth_error", "token": "private"}})
+    assert result == {"answer": "answer", "metadata": {"web_grounding_error": "web_grounding_auth_error"}}
+    assert public_chat_result({"metadata": {"web_grounding_error": "private"}}) == {}
+
+
+def test_grounding_notice_crosses_synthetic_sse_and_renders_once_above_answer():
+    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    transport = (STATIC / "chat-transport.js").read_text(encoding="utf-8")
+    render = app[app.index("  function renderWebGroundingNotice("):app.index("  function renderAnswer(")]
+    synthetic = transport[transport.index("  function syntheticSseResponse("):transport.index("  async function tryOrchestration(")]
+    script = render + synthetic + r"""
+(async () => {
+  const assert = require('node:assert/strict');
+  const notice = '웹 검색을 사용할 수 없어 근거 없이 답변합니다';
+  const metadata = {web_grounding_error:'web_grounding_auth_error'};
+  const response = syntheticSseResponse({answer:'answer',notice,metadata});
+  const text = await response.text();
+  const done = JSON.parse(text.split('event: done\n'+'data: ')[1].trim());
+  assert.equal(done.notice,notice);
+  assert.deepEqual(done.metadata,metadata);
+  const answer = {textContent:'answer'};
+  const content = {children:[answer],querySelector(){return this.children.find(x=>x.className?.includes('web-grounding-notice')) || null;},prepend(x){this.children.unshift(x);}};
+  global.document = {createElement(){return {setAttribute(k,v){this[k]=v;}};}};
+  renderWebGroundingNotice(content,done.notice);
+  renderWebGroundingNotice(content,done.notice);
+  renderWebGroundingNotice(content,'<img src=x onerror=alert(1)>');
+  assert.equal(content.children.length,2);
+  assert.equal(content.children[0].textContent,notice);
+  assert.equal(content.children[0].role,'status');
+  assert.equal(content.children[1],answer);
+  assert.ok(appSource.includes('renderWebGroundingNotice(content, result.notice)'));
+  assert.ok(appSource.includes('renderWebGroundingNotice(article.querySelector'));
+})().catch(e=>{console.error(e);process.exitCode=1;});
+"""
+    script = "const appSource=" + json.dumps(app) + ";\n" + script
+    subprocess.run(["node"], input=script, check=True, capture_output=True, text=True, encoding="utf-8")
