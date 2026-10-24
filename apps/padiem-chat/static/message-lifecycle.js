@@ -227,12 +227,12 @@
       // outcome back when the turn ends. A turn that is no longer running keeps
       // no running status of ours on the card: this module's own live label and
       // the sweep come off, and a real orchestration stage label stays.
-      const current = article.querySelector(".capability-current");
+      const current = article.querySelector ? article.querySelector(".capability-current") : null;
       if (current && !cardShowsLiveStatus(article)) {
         if (LIVE_STATUS_TEXTS.has((current.textContent || "").trim())) {
           current.textContent = "";
         }
-        current.classList.remove("padiem-activity-sweep");
+        current.classList?.remove?.("padiem-activity-sweep");
       }
       syncBadgeVisibility(article);
       syncActivitySweep(article);

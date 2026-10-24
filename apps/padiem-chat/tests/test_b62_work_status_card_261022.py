@@ -269,9 +269,12 @@ def test_the_terminal_state_clears_only_this_module_s_live_wording():
     source = LIFECYCLE_JS.read_text(encoding="utf-8")
     setter = source[source.index("    set(article, state) {"):source.index("    applyRuntimeLabel,")]
     assert "cardShowsLiveStatus(article)" in setter, setter
+    # set() is also called on a bare article object (the shipped node contract),
+    # so the card node is read the same guarded way the badge marker is.
+    assert 'article.querySelector ? article.querySelector(".capability-current") : null' in setter, setter
     assert 'if (LIVE_STATUS_TEXTS.has((current.textContent || "").trim())) {' in setter, setter
     assert setter.index("LIVE_STATUS_TEXTS.has(") < setter.index('current.textContent = "";')
-    assert 'current.classList.remove("padiem-activity-sweep")' in setter, setter
+    assert 'current.classList?.remove?.("padiem-activity-sweep")' in setter, setter
     # The set is derived from the catalog, never hand-copied, so a live wording
     # added to the catalog is covered without a second list to forget.
     seeds = source[source.index("  const LIVE_STATUS_TEXTS"):source.index("  // The real steps of a turn")]
