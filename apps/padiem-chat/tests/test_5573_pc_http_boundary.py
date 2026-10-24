@@ -279,3 +279,88 @@ def test_pc_error_cause_rejects_unbounded_provider_material():
     error = lane.ChatPCDriveError("chat_pc_engine_unavailable", "failed", 400,
                                   cause="private-provider-response: " + "x" * 100)
     assert lane._error_response(error).body == b'{"ok":false,"error":{"code":"chat_pc_engine_unavailable","message":"failed"}}'
+
+@pytest.mark.parametrize("code", [
+    "chat_pc_run_id_unavailable", "chat_pc_decision_invalid",
+    "chat_pc_identity_unavailable", "chat_pc_model_unavailable",
+    "chat_pc_store_unavailable", "chat_pc_selection_unavailable",
+    "chat_pc_files_unavailable", "chat_pc_engine_unavailable",
+])
+def test_pc_503_cause_keeps_the_chained_exception_class_and_safe_message(code):
+    original = RuntimeError("D1_ERROR: database is locked")
+    error = lane.ChatPCDriveError(code, "PC 작업을 완료하지 못했습니다.")
+    error.__cause__ = original
+    response = lane._error_response(error)
+    import json
+    assert response.status_code == 503
+    assert json.loads(response.body)["error"]["cause"] == (
+        "RuntimeError: D1_ERROR: database is locked"
+    )
+
+
+@pytest.mark.parametrize("message, private", [
+    ("authorization: Bearer synthetic-private-token", "synthetic-private-token"),
+    ("failed token=synthetic-private-token", "synthetic-private-token"),
+    ("failed Bearer synthetic-private-token", "synthetic-private-token"),
+    ("failed https://example.test/path?key=synthetic-private-token", "example.test"),
+    ("failed 'private-file-content'", "private-file-content"),
+    (r"failed C:\Users\private-user\private-file.txt", "private-user"),
+    ("failed /home/private-user/private-file.txt", "private-user"),
+    ("failed private-user@example.test", "private-user"),
+    ("failed syntheticOpaqueCredential0123456789012345", "syntheticOpaqueCredential"),
+    ("database locked\nprivate-second-line", "private-second-line"),
+])
+def test_pc_503_cause_redacts_private_values_before_truncation(message, private):
+    error = lane.ChatPCDriveError("chat_pc_store_unavailable", "unavailable")
+    error.__cause__ = RuntimeError(message)
+    cause = error.public_error()["cause"]
+    assert cause.startswith("RuntimeError: ")
+    assert private not in cause
+    assert len(cause.removeprefix("RuntimeError: ")) <= 120
+
+
+def test_pc_503_cause_is_bounded_and_present_without_an_underlying_exception():
+    error = lane.ChatPCDriveError("chat_pc_store_unavailable", "database is locked; " * 20)
+    assert error.cause == "ChatPCDriveError: " + ("database is locked; " * 20)[:120]
+
+
+@pytest.mark.parametrize("method", [
+    "record_chat_pc_drive_run", "get_claw_run",
+    "seal_run_terminal", "append_local_task_result",
+])
+async def test_pc_http_503_preserves_each_store_failure(monkeypatch, method):
+    real_append = lane._append_lane_answer
+    app, b14, bridge = _wire(monkeypatch)
+    store = app.state.history_store
+    async def fail(*args, **kwargs):
+        raise RuntimeError("D1_ERROR: database is locked")
+    async def row(*args, **kwargs):
+        return {"result_summary": "verified output",
+                "conversation_id": "chat_" + "s" * 32,
+                "action": "pc_files_query" if method == "seal_run_terminal" else "query_drives"}
+    store.get_claw_run = row
+    setattr(store, method, fail)
+    monkeypatch.setattr(lane, "_append_lane_answer", real_append)
+    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
+    assert response.status_code == 503, response.text
+    assert response.json()["error"] == {
+        "code": "chat_pc_store_unavailable",
+        "message": "대화 기록을 현재 사용할 수 없습니다.",
+        "cause": "RuntimeError: D1_ERROR: database is locked",
+    }
+    assert b14.calls == []
+
+async def test_pc_http_503_also_retains_the_original_engine_code(monkeypatch):
+    from app.orchestration_bridge import B62OrchestrationError
+    app, b14, bridge = _wire(monkeypatch)
+    async def fail(**fields):
+        raise B62OrchestrationError("upstream_unavailable", "AI unavailable", status_code=503)
+    async def notice(*args, **kwargs):
+        return None
+    monkeypatch.setattr(bridge, "start", fail)
+    monkeypatch.setattr(lane, "_append_lane_notice", notice)
+    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
+    assert response.status_code == 503
+    assert response.json()["error"]["cause"] == (
+        "B62OrchestrationError: upstream_unavailable: AI unavailable"
+    )

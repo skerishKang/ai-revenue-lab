@@ -80,13 +80,49 @@ CHAT_PC_RUN_PREFIX = "chat_pcq_"
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
 
+def _safe_pc_exception_cause(exc: BaseException) -> str:
+    """Public diagnostic only: class plus a redacted first-line message."""
+    name = type(exc).__name__
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,79}", name) is None:
+        name = "Exception"
+    try:
+        message = str(exc).splitlines()[0][:8192]
+    except Exception:
+        message = "[message unavailable]"
+    # Redact before truncation so a cut-off credential cannot escape a match.
+    message = re.sub(r"(?i)\b(?:authorization|proxy-authorization|cookie|set-cookie|"
+                     r"password|passwd|secret|token|api[_-]?key|credential)\b"
+                     r"\s*[:=]\s*.*", "[redacted]", message)
+    message = re.sub(r"(?i)\b(?:bearer|basic)\s+\S+", "[redacted]", message)
+    message = re.sub(r"https?://[^\s]+", "[url redacted]", message, flags=re.I)
+    message = re.sub(r"""(["']).*?\1""", "[value redacted]", message)
+    message = re.sub(r"[A-Za-z]:[\\/][^\s,;]+|/(?:[^\s/]+/)+[^\s,;]*",
+                     "[path redacted]", message)
+    message = re.sub(r"[^\s@]+@[^\s@]+", "[email redacted]", message)
+    message = re.sub(r"[A-Za-z0-9_+/=.-]{24,}", "[value redacted]", message)
+    message = re.sub(r"[^\S ]+|[\x00-\x1f\x7f]", " ", message)
+    return name + ": " + message[:120]
+
+
 class ChatPCDriveError(ValueError):
     def __init__(self, code: str, message: str, status_code: int = 503, *, cause: str | None = None) -> None:
         super().__init__(message)
         self.code = code
         self.user_message = message
         self.status_code = status_code
-        self.cause = cause if isinstance(cause, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", cause) else None
+        self._cause = cause if isinstance(cause, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", cause) else None
+
+    @property
+    def cause(self) -> str | None:
+        # Exception chaining is attached after construction, so inspect it
+        # when the HTTP boundary serializes the error.
+        if self.status_code == 503 and self.code.startswith("chat_pc_"):
+            diagnostic = _safe_pc_exception_cause(self.__cause__ or self)
+            if self._cause is not None:
+                name, message = diagnostic.split(": ", 1)
+                return name + ": " + self._cause + ": " + message
+            return diagnostic
+        return self._cause
 
     def public_error(self) -> dict:
         error = {"code": self.code, "message": self.user_message}
@@ -814,9 +850,15 @@ async def _execute_chat_pc_files_lane(
             502,
         )
     composed = answer.strip()
-    saved = await _append_lane_answer(
-        request, store, uid=uid, run_id=lane_run_id, content=composed,
-    )
+    try:
+        saved = await _append_lane_answer(
+            request, store, uid=uid, run_id=lane_run_id, content=composed,
+            raise_errors=True,
+        )
+    except Exception as exc:
+        raise ChatPCDriveError(
+            "chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.",
+        ) from exc
     if not saved:
         raise ChatPCDriveError(
             "chat_pc_store_unavailable",
@@ -881,7 +923,7 @@ async def pc_scope_notice_for_run(request: Request, *, run_id: object) -> str | 
 
 async def _append_lane_answer(
     request: Request, store: HistoryStore, *, uid: str, run_id: str,
-    content: str,
+    content: str, raise_errors: bool = False,
 ) -> bool:
     """Append the lane's final answer beside the verified output message.
 
@@ -900,6 +942,8 @@ async def _append_lane_answer(
     try:
         run_row = await store.get_claw_run(uid, run_id)
     except Exception:
+        if raise_errors:
+            raise
         return False
     if not isinstance(run_row, dict):
         return False
@@ -928,6 +972,8 @@ async def _append_lane_answer(
         )
         return bool(appended)
     except Exception:
+        if raise_errors:
+            raise
         return False
 
 
