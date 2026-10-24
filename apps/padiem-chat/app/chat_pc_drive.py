@@ -452,6 +452,65 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
     return await _check_mesh_grant(request, session, device_id=device_id)
 
 
+async def resolve_chat_pc_stream_context(
+    request: Request, *, uid: str, requested_device_id: str | None = None,
+) -> dict | None:
+    """Server-authored context only; no browser field or Broker registration grants it."""
+    from .pc_work_context import (
+        SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+        read_saved_device_selection, resolve_pc_work_context,
+    )
+    try:
+        session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+        if session is None or not subject_id:
+            return None
+        selection = await read_saved_device_selection(request, owner_id=uid, workspace_id=workspace_id)
+        if selection.status == SAVED_SELECTION_UNAVAILABLE:
+            return None
+        selected = selection.device_id if selection.status == SAVED_SELECTION_SELECTED else None
+        context = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=session.session_id, selected_device_id=selected,
+        )
+        if not context.tool_available or not context.selected_confirmed:
+            return None
+        device_id = context.execution_device_id
+        if not is_pc_device_id(device_id):
+            return None
+        if requested_device_id is not None and requested_device_id != device_id:
+            return None
+        if not await _check_mesh_grant(request, session, device_id=device_id):
+            return None
+        # The existing command grant allows drive inventory; file scopes also
+        # require the same approved root that the signed file API resolves.
+        from .oracle_mesh_read_return_routes import _engine_pc_files_target
+        target, error = await _engine_pc_files_target(
+            request, session=session, selected_device_id=device_id,
+        )
+        scopes = ["query_drives"]
+        if error is None and target is not None:
+            scopes.extend(["files_list", "files"])
+        return {"pc_tools": {"device_id": device_id, "allowed_scopes": scopes},
+                "subject_id": subject_id, "workspace_id": workspace_id}
+    except Exception:
+        # An unreadable authority withholds tools and preserves the normal turn.
+        return None
+
+
+async def promote_chat_pc_stream_run(
+    request: Request, *, uid: str, run_id: str, device_id: str | None, action: str,
+) -> dict | None:
+    """For signed Engine callbacks only; no receipt means no new run."""
+    store = getattr(request.app.state, "history_store", None)
+    promoter = getattr(store, "promote_chat_stream_pc_run", None)
+    if not callable(promoter) or _client_lane_run_id(run_id) is None:
+        return None
+    session, _subject, workspace = await _resolve_chat_owner(request, uid)
+    if not await _check_mesh_grant(request, session, device_id=device_id):
+        return None
+    return await promoter(user_id=uid, run_id=run_id, workspace_id=workspace, action=action)
+
+
 async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
     """Whether the resolved route's B14 catalog row declares native tools.
 

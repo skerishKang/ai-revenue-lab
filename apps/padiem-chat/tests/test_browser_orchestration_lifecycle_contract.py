@@ -176,3 +176,51 @@ def test_orchestration_presenter_does_not_claim_engine_authority_or_failure_stat
     assert "tool_arguments" not in source
     assert 'card.className = "error-box' not in source
     assert "PadiemChatLifecycle.set(article, model.terminal" not in source
+
+
+
+def test_transport_relays_the_same_engine_stream_without_a_second_request():
+    source = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    out = _run_node("global.window=globalThis;\n" + source + r'''
+(async () => {
+  const calls = [], frames = [];
+  const wire = 'event: heartbeat\ndata: {"run_id":"run_1","trace_id":"trace_1","elapsed_ms":10000}\n\n'
+    + 'event: delta\ndata: {"delta":"hello"}\n\n'
+    + 'event: done\ndata: {"done":true}\n\n';
+  const response = new Response(wire, {headers:{'Content-Type':'text/event-stream'}});
+  global.fetch = async (path, options) => {
+    calls.push({path, body:options.body});
+    return path.endsWith('/status')
+      ? new Response(JSON.stringify({orchestration_ready:true,authenticated:true})) : response;
+  };
+  const result = await PadiemChatTransport.requestStreaming({messages:[{role:'user',content:'hello'}]});
+  await PadiemChatTransport.readSseEvents(result, frame => { frames.push(frame); return false; });
+  console.log(JSON.stringify({same:result===response,calls,frames}));
+})();
+''')
+    assert out["same"] is True
+    assert [call["path"] for call in out["calls"]] == ["/api/orchestration/status", "/api/orchestration"]
+    assert [frame["event"] for frame in out["frames"]] == ["heartbeat", "delta", "done"]
+    assert json.loads(out["frames"][1]["data"]) == {"delta": "hello"}
+
+
+def test_streamed_approval_keeps_the_existing_pause_handler_and_never_finishes():
+    source = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    out = _run_node("global.window=globalThis;\n" + source + r'''
+(async () => {
+  const payload={messages:[{role:'user',content:'hello'}]}, frames=[];
+  let pause=null, caught=null;
+  global.fetch=async path => path.endsWith('/status')
+    ? new Response(JSON.stringify({orchestration_ready:true,authenticated:true}))
+    : new Response('event: orchestration_pause\ndata: {"orchestration":{"approval_pause":{"status":"paused"}}}\n\n',
+      {headers:{'Content-Type':'text/event-stream'}});
+  PadiemChatTransport.setOrchestrationPauseHandler(value => { pause=value; });
+  const response=await PadiemChatTransport.requestStreaming(payload);
+  try { await PadiemChatTransport.readSseEvents(response, frame => { frames.push(frame); }); }
+  catch(error) { caught=error.name; }
+  console.log(JSON.stringify({caught,pause,same:pause.requestPayload===payload,frames}));
+})();
+''')
+    assert out["caught"] == "AbortError"
+    assert out["same"] is True and out["frames"] == []
+    assert out["pause"]["orchestration"]["approval_pause"]["status"] == "paused"

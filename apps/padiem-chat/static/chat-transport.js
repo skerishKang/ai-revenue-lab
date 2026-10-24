@@ -2,6 +2,7 @@
   "use strict";
 
   let orchestrationPauseHandler = null;
+  const orchestrationRequests = new WeakMap();
   const calendarTurnIdsByRequest = new WeakMap();
 
   function errorFor(data, fallback) {
@@ -49,6 +50,13 @@
           const frameText = buffer.slice(0, boundary.index);
           buffer = buffer.slice(boundary.index + boundary[0].length);
           const frame = parseSseFrame(frameText);
+          if (frame && frame.event === "orchestration_pause" && orchestrationRequests.has(response)) {
+            const data = JSON.parse(frame.data);
+            notifyOrchestrationPause(data.orchestration, orchestrationRequests.get(response));
+            const paused = new Error("approval paused");
+            paused.name = "AbortError";
+            throw paused;
+          }
           if (frame && await onEvent(frame)) {
             stoppedEarly = true;
             return;
@@ -165,6 +173,10 @@
       body: JSON.stringify(payload),
       signal,
     });
+    if (response.ok && (response.headers.get("content-type") || "").startsWith("text/event-stream")) {
+      orchestrationRequests.set(response, payload);
+      return response;
+    }
     const data = await response.json().catch(() => null);
     if (!response.ok || !data) {
       throw errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
@@ -224,6 +236,9 @@
     } catch (error) {
       if (error && error.code === "orchestration_not_applicable") return null;
       throw error;
+    }
+    if (data && data.headers && (data.headers.get("content-type") || "").startsWith("text/event-stream")) {
+      return data;
     }
     if (data.orchestration && data.orchestration.approval_pause) {
       notifyOrchestrationPause(data.orchestration, payload);

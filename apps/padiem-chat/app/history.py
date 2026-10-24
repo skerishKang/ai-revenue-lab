@@ -1362,11 +1362,87 @@ class D1HistoryStore:
         )
         return run_id
 
+    async def _chat_stream_turn(self, user_id: str, run_id: str) -> dict | None:
+        validate_chat_pc_run_id(run_id)
+        return await self._first(
+            "SELECT m.conversation_id,m.content FROM messages m "
+            "JOIN conversations c ON c.id=m.conversation_id "
+            "WHERE m.id=? AND m.role='user' AND c.user_id=? AND c.product_scope=? "
+            "AND NOT EXISTS (SELECT 1 FROM messages a WHERE a.id IN (?,?,?))",
+            general_answer_message_id(run_id + ":chat-stream-user"), user_id,
+            PRODUCT_SCOPE_CHAT, general_answer_message_id(run_id + ":chat-stream-answer"),
+            run_id + "_answer", run_id + "_final",
+        )
+
+    async def begin_chat_stream_turn(
+        self, *, user_id: str, run_id: str, workspace_id: str,
+        user_text: str, conversation_id: str | None,
+    ) -> str:
+        """Persist the real user turn, never a PC run before a tool is selected."""
+        if (await self.get_claw_run(user_id, run_id) is not None
+                or await self._first("SELECT id FROM messages WHERE id=?",
+                    general_answer_message_id(run_id + ":chat-stream-user")) is not None):
+            raise HistoryForbidden("Chat stream turn already exists")
+        validate_chat_pc_run_id(run_id)
+        return await self.record_chat_pc_drive_run(
+            user_id=user_id, run_id=run_id, workspace_id=workspace_id,
+            user_text=user_text, conversation_id=conversation_id, stage_run=False,
+            user_message_id=general_answer_message_id(run_id + ":chat-stream-user"),
+        )
+
+    async def promote_chat_stream_pc_run(
+        self, *, user_id: str, run_id: str, workspace_id: str, action: str,
+    ) -> dict | None:
+        """Called only after a signed Engine tool call revalidates its owner."""
+        if action not in ("pc_files_query", "pc_drive_query"):
+            raise HistoryForbidden("Invalid PC run action")
+        turn = await self._chat_stream_turn(user_id, run_id)
+        if turn is None:
+            return None
+        await self.record_claw_run(
+            user_id=user_id, run_id=run_id, channel="web", action=action,
+            title=("PC: " + turn["content"])[:MAX_HISTORY_TITLE_CHARS], status="pending",
+            conversation_id=turn["conversation_id"], workspace_id=_safe_identifier("workspace_id", workspace_id),
+        )
+        return await self.get_claw_run(user_id, run_id)
+
+    async def finish_chat_stream_turn(
+        self, *, user_id: str, run_id: str, answer: str,
+    ) -> str | None:
+        """Append one answer to the already stored user turn, without duplication."""
+        turn = await self._chat_stream_turn(user_id, run_id)
+        if turn is None:
+            raise HistoryForbidden("Chat stream turn is not pending")
+        cid = turn["conversation_id"]
+        run = await self.get_claw_run(user_id, run_id)
+        if run is not None:
+            # Reuse the existing PC completion invariants and verified summary.
+            from .chat_pc_drive import _append_lane_answer
+            if not await _append_lane_answer(None, self, uid=user_id, run_id=run_id, content=answer):
+                return cid
+        else:
+            content = _bounded_text(answer, "assistant_text")
+            message_id = general_answer_message_id(run_id + ":chat-stream-answer")
+            key = await self._put_full_message(cid, message_id, answer.strip())
+            try:
+                await self._run(
+                    _APPEND_USER_MESSAGE_SQL.replace("'user'", "'assistant'"),
+                    cid, message_id, cid, content, _now_iso(),
+                )
+            except Exception:
+                if key is not None:
+                    await self._delete_orphan_full_keys([(message_id, key)])
+                raise
+        await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+                        _now_iso(), cid, user_id)
+        return cid
+
     async def record_chat_pc_drive_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
         user_text: str, conversation_id: str | None,
         action: str = "pc_drive_query",
         title_prefix: str = "PC 드라이브 조회: ",
+        stage_run: bool = True, user_message_id: str | None = None,
     ) -> str:
         """Stage a real b62 Chat owner conversation + pending PC tool run.
 
@@ -1396,7 +1472,7 @@ class D1HistoryStore:
                 raise HistoryForbidden("conversation is not owned by current user")
             project_id = owned.get("project_id")
         now = _now_iso()
-        msg_id = _message_id()
+        msg_id = _message_reference(user_message_id) if user_message_id is not None else _message_id()
         key = await self._put_full_message(cid, msg_id, user_text.strip())
         persisted = False
         try:
@@ -1413,11 +1489,12 @@ class D1HistoryStore:
                 msg_id, cid, content, now,
             )
             persisted = True
-            await self.record_claw_run(
-                user_id=user_id, run_id=run_id, channel="web",
-                action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
-                status="pending", conversation_id=cid, workspace_id=workspace,
-            )
+            if stage_run:
+                await self.record_claw_run(
+                    user_id=user_id, run_id=run_id, channel="web",
+                    action=action, title=(title_prefix + content)[:MAX_HISTORY_TITLE_CHARS],
+                    status="pending", conversation_id=cid, workspace_id=workspace,
+                )
             await self._run(
                 "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
                 now, cid, user_id,

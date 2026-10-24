@@ -242,6 +242,7 @@ class _MirrorHistoryStore:
         self.conversations: dict[str, list[dict[str, str]]] = {}
         self.general_pairs: list[tuple[str, str]] = []
         self._counter = 0
+        self.pending_stream_turns = {}
 
     def _new_conversation_id(self) -> str:
         self._counter += 1
@@ -303,6 +304,26 @@ class _MirrorHistoryStore:
             {"role": "user", "content": user_text}
         )
         return cid
+
+    async def begin_chat_stream_turn(self, *, user_id, run_id, workspace_id, user_text, conversation_id):
+        from app.history import HistoryForbidden
+        if run_id in self.pending_stream_turns or run_id in self.runs:
+            raise HistoryForbidden("already used")
+        cid = conversation_id or self._new_conversation_id()
+        self.pending_stream_turns[run_id] = dict(user_id=user_id, conversation_id=cid,
+            workspace_id=workspace_id, user_text=user_text)
+        self.conversations.setdefault(cid, []).append({"role": "user", "content": user_text})
+        return cid
+
+    async def finish_chat_stream_turn(self, *, user_id, run_id, answer):
+        receipt = self.pending_stream_turns[run_id]
+        assert receipt["user_id"] == user_id
+        if run_id in self.runs:
+            from app.chat_pc_drive import _append_lane_answer
+            assert await _append_lane_answer(None, self, uid=user_id, run_id=run_id, content=answer)
+        else:
+            self.conversations[receipt["conversation_id"]].append({"role": "assistant", "content": answer})
+        return receipt["conversation_id"]
 
     async def get_claw_run(self, user_id, run_id):
         row = self.runs.get(run_id)
@@ -496,6 +517,43 @@ class _RecordingEngineBridge(B62EngineOrchestrationBridge):
         )
 
 
+    async def start_stream(self, **fields):
+        from app.orchestration_bridge import B62OrchestrationResult
+        self.requests.append(dict(fields))
+        self._answer_index += 1
+        events = []
+        def event(kind, sequence):
+            value = dict(event_id=f"evt_{sequence}", run_id="engine_run_1", trace_id="trace_1",
+                         app_id="padiem-chat", kind=kind, sequence=sequence)
+            events.append(value)
+            return {"event": value}
+        yield event("run_started", 1)
+        tools = [SimpleNamespace(name=name) for name in fields["pc_tools"]["allowed_scopes"]] if self.tools_declared else []
+        answer, selected = "", None
+        async for chunk in self.b14.stream_text_auto(fields["messages"], skill=fields["skill"],
+                additional_system_context=fields.get("additional_system_context"),
+                tools=tools, tool_choice="auto" if tools else None):
+            if getattr(chunk, "tool_call", None):
+                selected = chunk.tool_call.name
+            elif chunk.delta_content:
+                answer += chunk.delta_content
+                yield {"text_delta": {"delta": chunk.delta_content}}
+        if selected:
+            assert selected in fields["pc_tools"]["allowed_scopes"]
+            run_id = fields["session_id"]
+            receipt = self.store.pending_stream_turns[run_id]
+            self.store.runs[run_id] = dict(user_id=fields["user_id"], run_id=run_id,
+                conversation_id=receipt["conversation_id"], workspace_id=receipt["workspace_id"],
+                action="pc_files_query", status="running", result_summary="verified executor result")
+            for seq, stage in enumerate(("accepted", "picked_up", "executing", "result"), 1):
+                yield {"pc_progress": dict(pc_run_id=run_id, dispatch_id="dsp_1", kind="command",
+                    stage=stage, sequence=seq, elapsed_ms=seq * 1000)}
+            answer = f"PC-folder-answer-{self._answer_index}"
+        yield event("run_completed", 2)
+        yield {"result": B62OrchestrationResult(dict(events=events, approval_pause=None,
+            continuation_ref=None, answer=answer), answer, fields["user_text"], fields["conversation_id"])}
+
+
 _DEVICE_ROW = {
     "deviceId": DEVICE_ID,
     "deviceName": "Office PC 5574",
@@ -508,6 +566,7 @@ _MESH_ROW = {
     "device_id": DEVICE_ID,
     "node_ref": "node-office-5574",
     "command_exec": True,
+    "file_path": "C:/Approved/notes.txt", "path_relative": "notes.txt", "root_ref": "approved",
 }
 
 
@@ -569,6 +628,8 @@ class _PcHarness:
         app.state.auto_grounding = _NoopAutoGrounding()
         app.state.calendar_store = None
         app.state.orchestration_bridge = self.bridge
+        self.bridge.b14 = self.b14
+        self.bridge.tools_declared = self.tools_declared
         if orchestration:
             install_orchestration_routes(app, self.bridge)
         return app, config
@@ -951,35 +1012,18 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     assert _has_call(step, "POST", "/api/orchestration")
     assert _has_call(step, "GET", "/api/orchestration/status")
     assert step["answer"].strip() != "", step
-    assert step["events"] == ["delta", "done"], step["events"]
+    assert step["events"] == ["pc_progress"] * 4 + ["delta", "done"], step["events"]
     assert step["conversation_id"] is not None, step
-    # #5573 (3-C-2): this surface defers a PC-capable turn, and the turn is
-    # answered on the stream lane after the model chose the tool.
-    assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
+    assert not _has_call(step, "POST", "/api/chat/stream"), step["calls"]
     _assert_b14_tool_calls(harness)
-
-    # The one Engine call carries the pc plan, the server-owned target and
-    # the minted session id; the Executor result leg was stamped pre-seal.
-    assert len(harness.bridge.requests) == 1, harness.bridge.requests
+    assert len(harness.bridge.requests) == 1
     call = harness.bridge.requests[0]
-    assert call["user_id"] == OWNER
-    assert call["subject_id"] == SUBJECT_ID
+    assert call["user_id"] == OWNER and call["subject_id"] == SUBJECT_ID
     assert call["session_id"] == minted
-    assert list(call["messages"]) == [
-        {"role": "user", "content": CHROME_5574_TEXT}
-    ]
-    assert call["agent_plan"]  # engine decides the steps
-    assert call["tool_arguments"] == {"files": {"device_id": DEVICE_ID}}
+    assert call["pc_tools"] == {"device_id": DEVICE_ID, "allowed_scopes": ["query_drives", "files_list", "files"]}
+    assert "agent_plan" not in call and "tool_arguments" not in call
     assert call["conversation_id"] == step["conversation_id"]
-
-    # #5574: the lane still ships the trusted list+read ceiling and the
-    # two-step plan; the Engine's step policy starts read-closed and refuses
-    # a read the model did not explicitly intend. Engine-side regression:
-    # apps/padiem-ai-engine/tests/test_5574_pc_read_scope_leak.py.
-    assert [s["tool_id"] for s in call["agent_plan"]["steps"]] == [
-        "claw.pc.list_files",
-        "claw.pc.read_file",
-    ]
+    assert step["events"] == ["pc_progress"] * 4 + ["delta", "done"]
 
     row = _assert_pc_run_completed(harness, minted)
     assert row["conversation_id"] == step["conversation_id"]
@@ -1023,35 +1067,21 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(
     assert step["answer"].strip()
     assert harness.store.runs == {}
 
-    defers = orchestration and tools_declared
-    if defers:
-        # A PC-capable turn leaves this surface for the stream lane, where the
-        # model's tool call decides. It still answers in text, so no PC work.
+    if orchestration:
         assert _has_call(step, "POST", "/api/orchestration")
-        assert _has_call(step, "POST", "/api/chat/stream"), step["calls"]
-        assert harness.bridge.requests == []
-    elif orchestration:
-        assert _has_call(step, "POST", "/api/orchestration")
+        assert not _has_call(step, "POST", "/api/chat/stream")
         assert len(harness.bridge.requests) == 1
         call = harness.bridge.requests[0]
-        assert not call.get("agent_plan")
-        assert not call.get("tool_arguments")
-        assert call.get("session_id") != step["pc_run_id"]
-        _assert_b14_untouched(harness)
+        assert "agent_plan" not in call and "tool_arguments" not in call
+        assert call["session_id"] == step["pc_run_id"]
     else:
         assert _has_call(step, "POST", "/api/chat/stream")
         assert harness.bridge.requests == []
-
-    if not orchestration or defers:
-        assert len(harness.b14.calls) == 1, harness.b14.calls
-        assert step["events"] == ["delta", "delta", "done"], step["events"]
-        call = harness.b14.calls[0]
-        assert call["skill"].id == "auto"
-        assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
-        expected = (
-            ["query_drives", "files_list", "files"] if tools_declared else []
-        )
-        assert call["tools"] == expected, call["tools"]
+    assert len(harness.b14.calls) == 1  # one answer call; no classification
+    assert step["events"] == ["delta", "delta", "done"]
+    call = harness.b14.calls[0]
+    assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
+    assert call["tools"] == (["query_drives", "files_list", "files"] if tools_declared else [])
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:
@@ -1081,14 +1111,11 @@ def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() 
 
     followup_call = harness.bridge.requests[1]
     assert followup_call["session_id"] == second["pc_run_id"]
-    assert list(followup_call["messages"]) == [{"role": "user", "content": FOLLOWUP_5574_TEXT}]
-
-    context = followup_call["additional_system_context"]
-    assert isinstance(context, str)
-    assert "Recent conversation:" in context
-    # the prior turn's assistant answer, then this turn's line, in one call
-    assert "PC-folder-answer-1" in context, context
-    assert FOLLOWUP_5574_TEXT in context, context
+    # The existing policy may move an older user question into system context.
+    context = json.dumps(followup_call["messages"], ensure_ascii=False) + (followup_call.get("additional_system_context") or "")
+    assert CHROME_5574_TEXT in context
+    assert any(row["role"] == "assistant" and row["content"] == first["answer"] for row in followup_call["messages"])
+    assert followup_call["messages"][-1] == {"role": "user", "content": FOLLOWUP_5574_TEXT}
 
     _assert_pc_run_completed(harness, first["pc_run_id"])
     second_row = _assert_pc_run_completed(harness, second["pc_run_id"])
@@ -1152,14 +1179,9 @@ def test_replayed_pc_run_id_is_refused_as_a_conflict_and_never_repayed() -> None
     assert list(harness.store.runs) == [first["pc_run_id"]]
     row = _assert_pc_run_completed(harness, first["pc_run_id"])
     assert row["status"] == "completed"
-    # The replay paid one more model call, but the conflict was refused before
-    # any second staging or engine work: exactly one PC execution per handle.
-    assert len(harness.b14.calls) == 2, harness.b14.calls
-    assert any(
-        call["method"] == "POST" and call["path"] == "/api/chat/stream"
-        and call["status"] == 409
-        for call in replay["calls"]
-    ), replay["calls"]
+    # The receipt conflict is rejected before even the first model call.
+    assert len(harness.b14.calls) == 1
+    assert not _has_call(replay, "POST", "/api/chat/stream")
 
 
 def test_stream_route_lane_call_with_budgeted_candidates() -> None:

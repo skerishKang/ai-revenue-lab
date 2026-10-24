@@ -464,3 +464,151 @@ def test_general_request_keeps_exact_legacy_context_bytes(monkeypatch):
     )
     assert unrelated.pop("agent_plan") == {"agent_id": "agent:other@1", "steps": []}
     assert json.dumps(unrelated).encode() == json.dumps(legacy).encode()
+
+def test_pc_context_omitted_or_none_keeps_legacy_request_bytes(monkeypatch):
+    import json
+    from types import SimpleNamespace
+    import app.orchestration_bridge as module
+    monkeypatch.setattr(module.uuid, "uuid4", lambda: SimpleNamespace(hex="a" * 32))
+    kwargs = dict(user_id="usr_1", messages=[{"role": "user", "content": "hello"}],
+                  skill=SimpleNamespace(id="auto"), model_id="route/pinned", conversation_id=None)
+    expected = {
+        "agent": {"id": "b62_auto", "title": "Padiem Chat", "description": "Padiem Chat request",
+                  "system_instruction": None, "task_type": "general", "optimize_for": "balanced",
+                  "max_tokens": None, "model_policy": {"model": "route/pinned"}},
+        "messages": [{"role": "user", "content": "hello"}],
+        "trace_id": "b62_orch_" + "a" * 24,
+        "execution_context": {"trace_id": "b62_orch_" + "a" * 24},
+        "subject_id": "usr_1", "max_retries": 3, "require_evidence": False,
+        "require_verification": False,
+    }
+    wire = lambda value: json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()
+    assert wire(B62EngineOrchestrationBridge.build_engine_request(**kwargs)) == wire(expected)
+    assert wire(B62EngineOrchestrationBridge.build_engine_request(**kwargs, pc_tools=None)) == wire(expected)
+
+
+async def test_verified_pc_bridge_uses_one_progress_opt_in_stream():
+    class StreamingClient(FakeClient):
+        def __init__(self):
+            super().__init__()
+            self.calls = []
+        async def stream_orchestration(self, request, *, pc_progress=False):
+            self.calls.append((request, pc_progress))
+            raw = _completed_raw("final")
+            for event in raw["events"]:
+                yield {"event": event}
+            yield {"orchestration": raw}
+    client = StreamingClient()
+    bridge = B62EngineOrchestrationBridge(client=client, store=FakeStore())
+    records = [row async for row in bridge.start_stream(
+        user_id="usr_1", messages=[{"role": "user", "content": "list"}],
+        skill=get_task_mode("auto"), model_id="route/pinned", user_text="list",
+        conversation_id=None, subject_id="subject_1", session_id="chat_pcq_" + "a" * 32,
+        pc_tools={"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]},
+    )]
+    assert len(client.calls) == 1 and client.orchestrate_request is None
+    request, flag = client.calls[0]
+    assert flag is True and "pc_progress" not in request  # opt-in is a client header
+    assert request["pc_tools"] == {"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]}
+    assert "agent_plan" not in request and "declared_plan" not in request
+    assert request["agent"]["model_policy"] == {"model": "route/pinned"}
+    assert records[-1]["result"].answer == "final"
+
+
+async def _pc_sse(records, *, answer="verified PC result"):
+    from app.claw_live_events import chat_pc_orchestration_sse
+    from app.orchestration_bridge import B62OrchestrationResult
+    events = [_event("run_started", 1), _event("run_completed", 2)]
+    raw = {"execution": {"answer": answer}, "events": events, "approval_pause": None}
+    result = B62OrchestrationResult(project_public_orchestration(raw), answer, "user", None)
+    async def stream():
+        yield {"event": events[0]}
+        for record in records:
+            yield record
+        yield {"event": events[1]}
+        yield {"result": result}
+    completions = []
+    async def complete(value):
+        completions.append(value.answer)
+        return {"conversation_id": "chat_1"}
+    response = chat_pc_orchestration_sse(
+        stream(), pc_run_id="chat_pcq_" + "a" * 32, on_completed=complete,
+    )
+    chunks = [chunk async for chunk in response.body_iterator]
+    return b"".join(chunks).decode(), completions
+
+
+async def test_engine_pc_progress_heartbeat_and_result_relay_is_closed_and_ordered():
+    import json
+    run = "chat_pcq_" + "a" * 32
+    records = []
+    for sequence, stage in enumerate(("accepted", "picked_up", "executing", "result"), 1):
+        records.append({"pc_progress": {
+            "pc_run_id": run, "dispatch_id": "dispatch_1", "kind": "command",
+            "stage": stage, "sequence": sequence, "elapsed_ms": sequence * 1000,
+        }})
+        if stage == "picked_up":
+            records.append({"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 3000}})
+    text, completions = await _pc_sse(records)
+    kinds = [line[7:] for line in text.splitlines() if line.startswith("event: ")]
+    assert kinds == ["pc_progress", "pc_progress", "heartbeat", "pc_progress", "pc_progress", "delta", "done"]
+    values = [json.loads(line[6:]) for line in text.splitlines() if line.startswith("data: ")]
+    assert [v["stage"] for v in values if "stage" in v] == ["accepted", "picked_up", "executing", "result"]
+    assert "stage" not in values[2] and "done" not in values[2]
+    assert completions == ["verified PC result"]
+    assert "PRIVATE" not in text and "tool_arguments" not in text
+
+
+@pytest.mark.parametrize("extra", ["path", "output", "ops", "secret"])
+async def test_pc_relay_rejects_fields_outside_the_display_allowlist(extra):
+    value = {"pc_run_id": "chat_pcq_" + "a" * 32, "dispatch_id": "dispatch_1",
+             "kind": "command", "stage": "accepted", "sequence": 1, "elapsed_ms": 0,
+             extra: "PRIVATE_DO_NOT_LEAK"}
+    text, completions = await _pc_sse([{"pc_progress": value}])
+    assert "event: error" in text and "event: done" not in text
+    assert "PRIVATE_DO_NOT_LEAK" not in text and completions == []
+
+
+async def test_ordinary_text_on_pc_stream_is_emitted_once_without_pc_execution():
+    text, completions = await _pc_sse([{"text_delta": {"delta": "ordinary answer"}}],
+                                    answer="ordinary answer")
+    assert text.count("event: delta") == 1
+    assert '"delta":"ordinary answer"' in text
+    assert "pc_progress" not in text and completions == ["ordinary answer"]
+
+
+async def test_pc_relay_refuses_wrong_run_replay_and_heartbeat_identity():
+    run = "chat_pcq_" + "a" * 32
+    base = {"pc_run_id": run, "dispatch_id": "dispatch_1", "kind": "read",
+            "stage": "accepted", "sequence": 1, "elapsed_ms": 0}
+    for records in [
+        [{"pc_progress": {**base, "pc_run_id": "chat_pcq_" + "b" * 32}}],
+        [{"pc_progress": base}, {"pc_progress": base}],
+        [{"heartbeat": {"run_id": "other", "trace_id": "trace_1", "elapsed_ms": 0}}],
+    ]:
+        text, completions = await _pc_sse(records)
+        assert "event: error" in text and "event: done" not in text
+        assert completions == []
+
+
+async def test_stream_approval_resume_keeps_the_original_user_turn_receipt():
+    class PausedClient(FakeClient):
+        async def stream_orchestration(self, request, *, pc_progress=False):
+            raw = _paused_raw()
+            for event in raw["events"]:
+                yield {"event": event}
+            yield {"orchestration": raw}
+    client, store = PausedClient(), FakeStore()
+    bridge = B62EngineOrchestrationBridge(client=client, store=store)
+    run_id = "chat_pcq_" + "a" * 32
+    rows = [row async for row in bridge.start_stream(
+        user_id="usr_1", subject_id="sub_1", session_id=run_id,
+        messages=[{"role": "user", "content": "question"}], skill=get_task_mode("auto"),
+        model_id="route/pinned", user_text="question", conversation_id="chat_saved",
+        pc_tools={"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]})]
+    assert rows[-1]["result"].orchestration["approval_pause"] is not None
+    resumed = await bridge.resume(user_id="usr_1", continuation_ref="cont_abcdefgh12345678",
+        pause_id="pause_1", outcome="approved")
+    assert resumed.stream_run_id == run_id and resumed.conversation_id == "chat_saved"
+    assert client.resume_request["session_id"] == run_id
+    assert resumed.answer == "완료된 답변"

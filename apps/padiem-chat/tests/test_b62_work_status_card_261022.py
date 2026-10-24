@@ -472,3 +472,48 @@ def test_a_running_pc_step_shows_once_and_leaves_nothing_when_it_ends(browser, s
     assert foreign["cardText"] == "foreign-orchestration-stage-label", foreign
     assert foreign["cardSweep"] is False, foreign
     assert not errors, errors
+
+
+
+@requires_browser
+def test_engine_pc_progress_updates_the_one_card_and_heartbeat_only_updates_elapsed(browser, server):
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(2000)
+    out = page.evaluate(r"""() => {
+      const api=window.PadiemChatLifecycle;
+      const article=document.querySelector('.capability-kit').closest('article');
+      delete article.dataset.capabilityPreview;
+      article.querySelectorAll('[data-orchestration-ui]').forEach(node=>node.remove());
+      api.recordTaskEvent(article,'request_sent'); api.renderTaskStatus(article); api.set(article,'streaming');
+      const run='chat_pcq_'+'a'.repeat(32);
+      const progress={pc_run_id:run,dispatch_id:'dsp_1',kind:'command',stage:'accepted',sequence:1,elapsed_ms:0};
+      const read=()=>({text:article.querySelector('.capability-current').textContent,
+        surfaces:[...article.querySelectorAll('.capability-current,[data-runtime-label]')]
+          .filter(n=>n.textContent.trim() && n.checkVisibility()).length,
+        sweep:article.querySelector('.capability-current').classList.contains('padiem-activity-sweep')});
+      const rejected=api.recordPcProgress(article,{...progress,pc_run_id:'other'},run);
+      const accepted=api.recordPcProgress(article,progress,run), first=read();
+      const replay=api.recordPcProgress(article,progress,run);
+      api.recordPcHeartbeat(article,{run_id:'engine_1',trace_id:'trace_1',elapsed_ms:10000});
+      const heartbeat=read();
+      api.recordPcProgress(article,{...progress,stage:'executing',sequence:2,elapsed_ms:12000},run);
+      const executing=read();
+      api.recordPcProgress(article,{...progress,stage:'result',sequence:3,elapsed_ms:13000},run);
+      const result=read(); api.set(article,'completed'); const done=read();
+      const late=api.recordPcHeartbeat(article,{run_id:'engine_1',trace_id:'trace_1',elapsed_ms:99000});
+      return {rejected,accepted,replay,first,heartbeat,executing,result,done,late};
+    }""")
+    page.close()
+    assert out["rejected"] is False and out["replay"] is False
+    assert out["accepted"] is True
+    assert out["first"]["surfaces"] == out["heartbeat"]["surfaces"] == out["executing"]["surfaces"] == 1
+    assert out["first"]["text"].endswith("0s")
+    assert out["heartbeat"]["text"].endswith("10s")
+    assert out["heartbeat"]["text"].rsplit(" · ", 1)[0] == out["first"]["text"].rsplit(" · ", 1)[0]
+    assert out["executing"]["text"].endswith("12s")
+    assert out["result"]["text"].endswith("13s")
+    assert out["done"]["text"] == "" and out["done"]["sweep"] is False
+    assert out["late"] is False and not errors

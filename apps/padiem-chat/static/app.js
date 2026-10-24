@@ -2837,6 +2837,18 @@
     }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (!clawGeneralRequest && ["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
+          let value;
+          try { value = JSON.parse(frame.data); } catch (_) { return false; }
+          if (frame.event === "pc_progress") {
+            window.PadiemChatLifecycle?.recordPcProgress?.(article, value, payload.pc_run_id);
+          } else if (frame.event === "heartbeat") {
+            window.PadiemChatLifecycle?.recordPcHeartbeat?.(article, value);
+          } else {
+            window.PadiemChatPcScopeNotice?.render?.(article.querySelector(".assistant-content"), value.scope_notice);
+          }
+          return false;
+        }
         if (frame.event === "p01_event") {
           if (!clawGeneralRequest || !canonicalEventProjection) return false;
           let envelope;
