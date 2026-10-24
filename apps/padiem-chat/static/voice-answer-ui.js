@@ -17,6 +17,11 @@
   let currentArticle = null;
   let pendingSpeech = [];
   let lastAutoText = "";
+  // #4816 lifecycle token. Every stop/end/account change bumps it, so a speak
+  // that was scheduled for a session that already ended is dropped instead of
+  // starting later.
+  let speakToken = 0;
+  let knownIdentity = null;
   const ko = () => /^ko/i.test(doc.documentElement.lang || "ko");
   // Chat/Claw separation: the listen/stop/error copy comes from the existing locale
   // catalogue. The previous inline Korean literals were corrupted escape
@@ -60,15 +65,30 @@
     return tts.speakText(parts[0]) !== false;
   }
 
+  function autoSpeakAllowed() {
+    return !!(menuAPI && typeof menuAPI.isTtsActive === "function" && menuAPI.isTtsActive());
+  }
+
+  function stopPlayback() {
+    speakToken += 1;
+    tts.stopOutput();
+    resetButton();
+  }
+
   function handleAnswer(article) {
     if (!article || article.nodeType !== 1) return;
     const content = article.querySelector(".assistant-content");
     const text = content ? (content.innerText || content.textContent || "").trim() : "";
-    if (menuAPI && typeof menuAPI.isTtsActive === "function" && menuAPI.isTtsActive() &&
-        text && text !== lastAutoText) {
-      lastAutoText = text;
-      setTimeout(function () { speakText(text, article); }, 0);
-    }
+    if (!autoSpeakAllowed() || !text || text === lastAutoText) return;
+    lastAutoText = text;
+    const token = speakToken;
+    setTimeout(function () {
+      // Fire-time authority: the session may have ended (call end, mute,
+      // cancel, mode switch, account change) between the answer insert and this
+      // task. Re-check both the token and the live mode before speaking.
+      if (token !== speakToken || !autoSpeakAllowed()) return;
+      speakText(text, article);
+    }, 0);
   }
 
   if (win.MutationObserver) {
@@ -107,15 +127,23 @@
   }
 
   win.addEventListener("padiem:auth-state", function (event) {
-    if (!event.detail || event.detail.authenticated !== true) {
-      tts.stopOutput(); resetButton();
-    }
+    if (!event.detail || event.detail.authenticated !== true) stopPlayback();
+  });
+  // #4816 session boundaries: the voice session ended (call end, mute, mode
+  // switch) or the signed-in identity changed. Late TTS belongs to a session
+  // that no longer owns the answer.
+  win.addEventListener("padiem:voice-end", stopPlayback);
+  win.addEventListener("padiem:voice-identity", function (event) {
+    const next = event && event.detail && event.detail.identityKey != null
+      ? String(event.detail.identityKey) : "";
+    if (knownIdentity !== null && next !== knownIdentity) stopPlayback();
+    knownIdentity = next;
   });
 
   win.PadiemVoiceAnswer = {
     isSupported: tts.isSupported,
     speak: function (text) { return speakText(text, null); },
-    stop: function () { tts.stopOutput(); resetButton(); },
+    stop: stopPlayback,
     getState: tts.getState ? tts.getState() : {supported: tts.isSupported()}
   };
 })(window, document);
