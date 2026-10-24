@@ -8,8 +8,11 @@
 .app-shell[data-state="util"] .util-view { display: block; flex: 1 1 auto; min-height: 0; overflow-y: auto; position: relative; z-index: 2; }
 .app-shell[data-state="util"] .conversation, .app-shell[data-state="util"] .composer-wrap { display: none !important; }
 /* Shared standalone-view header contract (kicker/title scale from #5028). */
-.util-header h2 { margin: 0 0 4px; font-size: clamp(24px, 3vw, 32px); line-height: 1.25; letter-spacing: -0.02em; color: var(--text, #17202a); }
-.util-tagline { color: var(--muted, #5b6672); margin: 0 0 16px; font-size: 13px; }
+/* #5608: the util header joins the shared page-title contract
+ * (standalone-views.css 34px/770 title + 12px kicker). Only the local spacing
+ * stays here; the typography comes from the shared lists. */
+.util-header h2 { margin: 0 0 4px; }
+.util-header .standalone-view-tagline { margin: 0 0 14px; }
 .util-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .util-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
 .util-tab:hover { background: var(--accent-soft); border-color: var(--accent); }
@@ -46,6 +49,14 @@
 .util-generate { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 14px; font-weight: 650; }
 .util-generate:hover:not(:disabled) { filter: brightness(.96); }
 .util-generate:disabled { opacity: .5; cursor: not-allowed; }
+/* #5608: the primary action color matches the Chat/Claw composer's send
+ * button (voice-composer.css #355977 on padiem-glass) instead of the lighter
+ * selection accent, so every product's main CTA reads as the same control.
+ * Selection states (tabs, chips) keep the light accent. */
+html[data-theme="padiem-glass"] .util-generate,
+html[data-theme="padiem-glass"] .pdfmd-btn-primary {
+  background: #355977;
+}
 .util-result { margin-top: 16px; }
 .util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
 .util-actions { display: flex; gap: 8px; margin-top: 8px; }

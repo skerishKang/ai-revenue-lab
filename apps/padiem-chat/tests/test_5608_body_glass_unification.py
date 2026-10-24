@@ -56,3 +56,29 @@ def test_sns_platform_switcher_is_skinned() -> None:
 
 def test_meeting_transcript_height_is_capped_for_the_first_screen() -> None:
     assert "min-height: clamp(200px, 30vh, 330px)" in MEETING_CSS
+
+
+def test_util_header_joins_the_shared_page_title_contract() -> None:
+    html = (ROOT / "static/index.html").read_text(encoding="utf-8")
+    header = html[html.index('class="util-header"') : html.index("</header>", html.index('class="util-header"'))]
+    assert 'class="standalone-view-kicker"' in header and "Padiem Util" in header
+    assert 'class="standalone-view-title"' in header
+    assert "standalone-view-tagline" in header
+    STANDALONE_CSS = (ROOT / "static/standalone-views.css").read_text(encoding="utf-8")
+    title_list = STANDALONE_CSS[STANDALONE_CSS.index(".app-shell:is([data-state=\"meeting\"],") : STANDALONE_CSS.index("font-weight: 770")]
+    assert '[data-state="util"]' in title_list
+    kicker_list = STANDALONE_CSS[STANDALONE_CSS.index(":is(.standalone-view-kicker,.calendar-view-kicker") - 200 : STANDALONE_CSS.index(":is(.standalone-view-kicker,.calendar-view-kicker") + 60]
+    assert '[data-state="util"]' in kicker_list
+    stack_list = STANDALONE_CSS[STANDALONE_CSS.index(".util-header > div") - 400 : STANDALONE_CSS.index(".util-header > div")]
+    assert '[data-state="util"]' in stack_list
+
+
+def test_util_primary_action_matches_the_chat_claw_send_color() -> None:
+    glass_block = UTIL_CSS[UTIL_CSS.index("#5608: the primary action color matches") :]
+    assert "html[data-theme=\"padiem-glass\"] .util-generate," in glass_block
+    assert "html[data-theme=\"padiem-glass\"] .pdfmd-btn-primary {" in glass_block
+    assert "background: #355977;" in glass_block
+    # The util h2 no longer carries a private title size — the shared list owns it.
+    h2_rule = UTIL_CSS[UTIL_CSS.index(".util-header h2") : UTIL_CSS.index(".util-header .standalone-view-tagline")]
+    assert "font-size" not in h2_rule
+
