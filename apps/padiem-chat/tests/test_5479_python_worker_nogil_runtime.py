@@ -27,7 +27,7 @@ So the contract is:
 1. the Chat Worker deploys the 3.14 runtime with the runtime-independent
    password KDF that #5732 shipped,
 2. the real Workerd/Pyodide CI lane boots the *deployed* compatibility date and
-   proves the booted Python version plus ``kdf=ok kdfasync=ok tz=ok``, and
+   proves the booted Python version plus the kdf/kdfasync/tz states, and
 3. the production deploy config carries that date into the released Worker.
 
 A future runtime change that breaks (1) or (2) therefore fails in CI before

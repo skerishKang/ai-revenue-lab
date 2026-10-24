@@ -85,10 +85,17 @@ if [[ "$READY_BODY" != *"tz=ok"* ]]; then
 fi
 echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
 # #5479: the deployed runtime must still be able to run the Worker's own
-# password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
-# 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
-# hashlib.pbkdf2_hmac and every password login would answer HTTP 500.
-if [[ "$READY_BODY" != *"kdf=ok"* ]]; then
+# password hashing. On 3.13 runtimes the sync C path answers kdf=ok. On the
+# 3.14 snapshot (compat 2026-09-08+) CPython removed hashlib.pbkdf2_hmac by
+# design and the auth routes use the async WebCrypto twins (#5732): there the
+# probe reports kdf=c-path-absent and the contract moves to kdfasync=ok.
+# A runtime where the KDF is truly broken still fails (verify-failed,
+# wrong-accepted, webcrypto-mismatch, missing).
+if [[ "$READY_BODY" == *"kdf=ok"* ]]; then
+  :
+elif [[ "$READY_BODY" == *"kdf=c-path-absent"* && "$READY_BODY" == *"kdfasync=ok"* ]]; then
+  :
+else
   echo "B62_WORKER_PASSWORD_KDF=FAIL ready=$READY_BODY" >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1
