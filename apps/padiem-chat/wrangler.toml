@@ -1,22 +1,23 @@
 name = "padiem-chat"
 main = "worker.py"
-# #5479: the Chat Worker stays on the Pyodide 3.13 snapshot (CPython 3.13.2).
+# #5479: the Chat Worker runs on the Pyodide 3.14 snapshot (CPython 3.14),
+# the runtime Cloudflare published for the `NoGilError` initialization race
+# (cloudflare/workerd#6624).
 #
-# The 3.14 snapshot (compatibility date 2026-09-08 or later, the
-# `python_workers_314` flag) is the runtime Cloudflare published for the
-# `NoGilError` initialization race (cloudflare/workerd#6624), but it cannot
-# run this Worker's password hashing: that snapshot ships no `_hashlib`, and
-# CPython 3.14 removed the pure-Python PBKDF2 fallback, so
-# `hashlib.pbkdf2_hmac` does not exist there. A deployed 3.14 Worker answers
-# every password login with HTTP 500
-# (`AttributeError: module 'hashlib' has no attribute 'pbkdf2_hmac'`).
+# 3.14 ships no `_hashlib`, and CPython 3.14 removed the pure-Python PBKDF2
+# fallback, so `hashlib.pbkdf2_hmac` does not exist there. The password KDF
+# therefore dispatches to the bundled `cryptography` package (OpenSSL
+# PBKDF2HMAC) — declared in pyproject dependencies and carried by the
+# committed pylock — and the stored credential format is unchanged:
+# `pbkdf2_sha512$220000$...` verifies byte-for-byte on both runtimes, so no
+# member password or hash is re-derived or migrated.
 #
-# Moving this Worker to 3.14 therefore requires a password KDF the runtime
-# actually provides, which changes the stored credential format and is an
-# owner-level credential decision, not a runtime bump. Until then the date
-# stays here, and the real Workerd/Pyodide CI lane proves that the deployed
-# runtime still provides the password KDF before any release.
-compatibility_date = "2026-08-25"
+# Workers' WebCrypto is NOT the fallback: the Production edge refuses PBKDF2
+# above 100,000 iterations and the stored cost is 220,000 (#5736 deployed that
+# combination and every password request answered HTTP 500). The shared
+# Workerd lane boots THIS compatibility date and gates on a real 3.14
+# stored-cost round trip before any release.
+compatibility_date = "2026-09-08"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"
