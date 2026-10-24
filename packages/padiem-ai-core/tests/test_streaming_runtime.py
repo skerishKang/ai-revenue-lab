@@ -8,7 +8,8 @@ import pytest
 
 import padiem_ai_core
 from padiem_ai_core.b14_execution import B14ExecutionError, B14RouteMetadata
-from padiem_ai_core.b14_streaming import B14StreamEvent
+from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+from padiem_ai_core.tool_channel import ToolDefinition
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
 from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
@@ -492,3 +493,60 @@ def test_stream_event_public_contract_separates_delta_and_terminal_answer() -> N
             metadata=metadata_done,
             done=True,
         )
+
+
+
+@pytest.mark.parametrize("model", ["b14/auto", "google/gemini-3.1-flash-lite"])
+def test_stream_runtime_forwards_native_tools_and_surfaces_tool_only_completion(model):
+    call = B14StreamToolCall(id="call_1", name="pc_files", arguments={"plan": "files_list"}, index=0)
+    client = FakeStreamClient((
+        B14StreamEvent(tool_call=call),
+        B14StreamEvent(done=True, finish_reason="tool_calls"),
+    ))
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+    events = run(collect(runtime, request(
+        agent(model_policy={"model": model}),
+        tools=(ToolDefinition(name="pc_files"),), tool_choice="auto",
+    )))
+    assert len(client.dispatches) == 1
+    kind, outgoing = client.dispatches[0]
+    assert kind == ("auto" if model == "b14/auto" else "manual")
+    assert outgoing.tools == (ToolDefinition(name="pc_files"),)
+    assert outgoing.tool_choice == "auto"
+    assert len(events) == 2
+    assert events[0].tool_call == call and events[0].delta_content is None
+    assert events[0].to_public_dict()["tool_call"] == call.to_public_dict()
+    assert events[0].metadata.status is RunStatus.MODEL_RUNNING
+    assert events[1].done and events[1].answer == ""
+    assert events[1].finish_reason == "tool_calls"
+    assert events[1].metadata.status is RunStatus.COMPLETED
+    assert client.closed == 1
+
+
+def test_stream_runtime_empty_tools_keep_request_bytes_and_public_objects_unchanged():
+    outputs = []
+    bodies = []
+    for kwargs in ({}, {"tools": (), "tool_choice": None}):
+        client = FakeStreamClient(complete_events())
+        runtime = StreamingExecutionRuntime(
+            app_id="test-app", b14_stream_client=client, clock=lambda: 10.0
+        )
+        outputs.append([e.to_public_dict() for e in run(collect(runtime, request(**kwargs)))])
+        payload = client.dispatches[0][1].to_payload()
+        assert "tools" not in payload and "tool_choice" not in payload
+        bodies.append(json.dumps(payload, ensure_ascii=False).encode())
+    assert bodies[0] == bodies[1]
+    assert outputs[0] == outputs[1]
+    assert json.dumps(outputs[0]).encode() == json.dumps(outputs[1]).encode()
+    assert all(set(event) == {
+        "delta_content", "answer", "finish_reason", "route", "metadata", "done",
+    } for event in outputs[0])
+
+
+def test_stream_runtime_tool_finish_without_a_call_keeps_empty_answer_rejection():
+    client = FakeStreamClient((B14StreamEvent(done=True, finish_reason="tool_calls"),))
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+    with pytest.raises(ExecutionRuntimeError) as exc:
+        run(collect(runtime, request(tools=(ToolDefinition(name="pc_files"),))))
+    assert exc.value.code == "empty_upstream_answer"
+    assert client.closed == 1
