@@ -185,3 +185,27 @@ async def test_unsupported_image_type_is_rejected_and_stores_nothing():
         assert not store.files
     finally:
         await client.aclose()
+
+@pytest.mark.asyncio
+async def test_d1_store_create_accepts_images_without_document_validation(monkeypatch):
+    """The production D1 path (not the memory store) must accept image media.
+
+    Regression for the first deploy: validate_document_fields rejected
+    image/png and every upload answered 422.
+    """
+    from app.project_files import D1ProjectFileStore
+
+    store = D1ProjectFileStore(object())
+    captured = {}
+
+    async def fake_run(sql, *values):
+        captured["sql"] = sql
+        captured["values"] = values
+        return {"results": [{"id": "file_" + "0" * 32}]}
+
+    monkeypatch.setattr(store, "_run", fake_run)
+    record = await store.create_file("u1", "p1", "harbor.png", "image/png", "")
+    assert record.media_type == "image/png"
+    assert record.content_text == ""
+    assert record.content_chars == 0
+    assert "image/png" in captured["values"]

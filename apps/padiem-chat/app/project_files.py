@@ -328,7 +328,10 @@ class D1ProjectFileStore:
     ) -> ProjectFileRecord:
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
-        if media_type.startswith("extracted/"):
+        if media_type.startswith("extracted/") or media_type in IMAGE_PROJECT_FILE_MEDIA:
+            # Extracted documents arrive pre-validated from the authority
+            # parser; #5728 images carry no text at all — the original bytes
+            # live in R2, so document-field validation does not apply.
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         else:
             document = validate_document_fields(name, media_type, text)
