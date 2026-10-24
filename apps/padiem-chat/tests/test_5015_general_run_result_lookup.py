@@ -373,6 +373,31 @@ def test_a_pc_running_chip_is_never_left_stale_by_the_outcome():
     )
 
 
+def test_a_recovered_answer_releases_the_running_chip_it_was_shown():
+    """#5735: the result-recovery GET must not leave a step marked running.
+
+    The PC wait paints the observed step onto the chip, and the preparing
+    release deliberately keeps a chip that carries a real status. The recovery
+    renderer therefore releases it explicitly, after the stored answer replaces
+    the content and before the turn is settled.
+    """
+    from pathlib import Path
+
+    app = (
+        Path(__file__).resolve().parents[1] / "static" / "app.js"
+    ).read_text(encoding="utf-8")
+    render = app.split("function renderStoredPcAnswer(", 1)[1].split("\n  }", 1)[0]
+    assert "content.replaceChildren();" in render, render
+    released = render.index('applyRuntimeLabel?.(article, "", "status")')
+    assert render.index("content.replaceChildren();") < released, render
+    assert released < render.index("MESSAGE_LIFECYCLE.COMPLETED"), render
+    # One shared guard, declared before both readers of the run, so the same
+    # recovered run can never be painted into the conversation twice.
+    declared = app.index("const resolvedPcRuns = new Set();")
+    assert declared < app.index("async function waitForAcceptedPcRun(")
+    assert declared < app.index("async function recoverStoredPcResult(")
+
+
 def test_the_observed_pc_step_is_carried_on_the_card_that_shows_it():
     """The card owns the live status, so a running turn has to reach the card."""
     poll = _pc_poll_source()

@@ -2717,6 +2717,11 @@
     paragraph.textContent = result.answer;
     content.appendChild(paragraph);
     window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+    // The preparing release deliberately keeps a chip that already carries a
+    // real status, and the PC wait paints one for the step it observed. A
+    // recovered answer is that run's outcome, so the running wording is
+    // released here too; it must not stay on a turn that has already answered.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, "", "status");
     conversationState.setProduct?.(product);
     if (result.conversationId) conversationState.setConversationId(result.conversationId, product);
     conversationState.commitAssistant(outboundMessages, result.answer);
