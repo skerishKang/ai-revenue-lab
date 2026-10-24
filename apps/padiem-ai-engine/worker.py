@@ -744,11 +744,18 @@ class Default(WorkerEntrypoint):
         services = await self.engine_services_factory(self.env)
 
         if path == ORCHESTRATION_STREAM_PATH:
+            # Optional presentation protocol, never execution authority.
+            progress_options = (
+                {"pc_progress": True}
+                if headers is not None and headers.get("X-Padiem-PC-Progress") == "1"
+                else {}
+            )
             prepared = await services.orchestration.prepare_stream(
                 method=method,
                 path=path,
                 content_type=content_type,
                 body=body,
+                **progress_options,
             )
             if isinstance(prepared, ServiceResponse):
                 return _json_response(prepared)

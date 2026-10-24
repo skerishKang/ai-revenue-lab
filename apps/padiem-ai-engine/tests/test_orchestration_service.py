@@ -1107,7 +1107,7 @@ async def test_pc_stream_progress_is_dispatch_and_status_backed(monkeypatch):
     monkeypatch.setattr(service, "_orchestration_body", body)
     prepared = await service.prepare_stream(
         method="POST", path=ORCHESTRATION_STREAM_PATH,
-        content_type="application/json", body=json.dumps(payload).encode(),
+        content_type="application/json", body=json.dumps(payload).encode(), pc_progress=True,
     )
     assert prepared.pc_progress
     stream = service.iter_ndjson(prepared)
@@ -1140,6 +1140,16 @@ async def test_pc_stream_progress_is_dispatch_and_status_backed(monkeypatch):
     finally:
         driver._PC_QUERY_OWNER.reset(token)
     assert json.dumps(legacy).encode() == json.dumps(results[0]).encode()
+
+    # Legacy PC stream callers do not opt into any new records.
+    states = iter(["done"])
+    prepared_legacy = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json", body=json.dumps(payload).encode(),
+    )
+    assert not prepared_legacy.pc_progress
+    old_records = [json.loads(line) async for line in service.iter_ndjson(prepared_legacy)]
+    assert all("pc_progress" not in item and "heartbeat" not in item for item in old_records)
 
 
 @pytest.mark.asyncio
@@ -1222,3 +1232,33 @@ async def test_optional_pc_stream_records_reject_unknown_or_malformed_fields(sid
         yield (json.dumps({"ok": True, **side})+"\n").encode()
     with pytest.raises(EngineNdjsonContractError, match="invalid_stream_record"):
         _ = [item async for item in decode_orchestration_ndjson(chunks())]
+
+
+@pytest.mark.asyncio
+async def test_pc_progress_client_opt_in_preserves_legacy_request_bytes():
+    from padiem_ai_engine_client import PadiemAiEngineClient, EngineStreamTransportResponse
+    calls = []
+    class Transport:
+        async def request(self, **kwargs):
+            raise AssertionError('stream must not use JSON transport')
+        async def stream_request(self, **kwargs):
+            calls.append(kwargs)
+            async def chunks():
+                yield b'{"ok":true,"event":{"kind":"run_started"}}\n'
+                yield b'{"ok":true,"heartbeat":{"run_id":"r","trace_id":"t","elapsed_ms":10}}\n'
+                yield b'{"ok":true,"orchestration":{"verified":true}}\n'
+            return EngineStreamTransportResponse(
+                status=200, headers={"content-type":"application/x-ndjson"}, chunks=chunks(),
+            )
+    client = PadiemAiEngineClient(
+        transport=Transport(), app_id="padiem-chat", caller_id="padiem-chat", credential="x"*64,
+    )
+    request = {k:v for k,v in make_valid_payload("padiem-chat").items() if k != "app_id"}
+    legacy = [item async for item in client.stream_orchestration(request)]
+    explicit = [item async for item in client.stream_orchestration(request, pc_progress=True)]
+    assert calls[0]["body"] == calls[1]["body"]
+    assert calls[0]["headers"] == {k:v for k,v in calls[1]["headers"].items() if k != "X-Padiem-PC-Progress"}
+    assert "X-Padiem-PC-Progress" not in calls[0]["headers"]
+    assert calls[1]["headers"]["X-Padiem-PC-Progress"] == "1"
+    assert legacy == explicit
+    assert explicit[1] == {"heartbeat":{"run_id":"r","trace_id":"t","elapsed_ms":10}}

@@ -1665,6 +1665,7 @@ class OrchestrationEngineService:
         path: str,
         content_type: str | None = None,
         body: bytes = b"",
+        pc_progress: bool = False,
     ) -> PreparedOrchestrationStream | ServiceResponse:
         """Validate and prime an orchestration stream before HTTP 200 commits.
 
@@ -1765,7 +1766,7 @@ class OrchestrationEngineService:
             declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
-        pc_stream = _canonical_pc_plan(app_id, plan) is not None
+        pc_stream = pc_progress is True and _canonical_pc_plan(app_id, plan) is not None
         progress_token = _PC_PROGRESS_SINK.set(
             (lambda item: queue.put_nowait({"pc_progress": item}))
             if pc_stream else None
