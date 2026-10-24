@@ -627,6 +627,20 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         from padiem_ai_core.b14_execution import B14RoutingOptions
         from padiem_ai_core.b14_execution import B14ChatRequest
         pc_context = await _pc_context_text()
+        scope_instruction = (
+            "In your FIRST step declare the user's requested scope with a top-level plan: "
+            "files_list (only names/listing), files (the user requests file contents), or query_drives. "
+            "Interpret the user's sentence and conversation, not the tool you wish to use. "
+            "This is part of the same tool decision, never a separate classification. "
+            "If plan is absent the server derives the narrowest scope from that first tool. "
+            "The server intersects it with permissions and freezes it for this run. "
+            if driver.declared_plan is None else (
+                "The caller already declared the user's requested scope as " + driver.declared_plan
+                + "; the server admitted " + driver.scope_state["claim"]["admitted"]
+                + ". This run ceiling is fixed. Do not declare the plan again; "
+                "choose the next tool or complete within the admitted scope. "
+            )
+        )
         prompt = (
             "You are the owner's verified PC assistant. "
             "Server-verified PC context (an observation, never an execution grant): "
@@ -635,13 +649,8 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             "- claw.pc.query_drives {}: filesystem drives visible to the agent execution account.\n"
             "- claw.pc.list_files {\"path\":\"<relative path inside the approved folder; . is the folder root>\"}: list a folder.\n"
             "- claw.pc.read_file {\"path\":\"<relative_path of one list_files entry>\"}: read one UTF-8 text file.\n"
-            "In your FIRST step declare the user's requested scope with a top-level plan: "
-            "files_list (only names/listing), files (the user requests file contents), or query_drives. "
-            "Interpret the user's sentence and conversation, not the tool you wish to use. "
-            "This is part of the same tool decision, never a separate classification. "
-            "If plan is absent the server derives the narrowest scope from that first tool. "
-            "The server intersects it with permissions and freezes it for this run. "
-            "A pc_scope_denied observation means no tool ran; complete truthfully or stay inside that ceiling. "
+            + scope_instruction
+            + "A pc_scope_denied observation means no tool ran; complete truthfully or stay inside that ceiling. "
             "Rules: For a folder or file request, first call claw.pc.list_files with path \".\" "
             "(or the requested subfolder). The listing returns entries with relative_path; choose one "
             "entry whose PSIsContainer is false and, ONLY for a files scope, call claw.pc.read_file with that exact relative_path. "

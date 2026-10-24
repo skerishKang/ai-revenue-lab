@@ -657,3 +657,39 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     assert "stage=" + expected_stage in log
     assert "PRIVATE_" not in log
     assert "sample.txt" not in log
+
+
+
+def test_external_drive_plan_is_admitted_once_without_a_model_plan():
+    from padiem_ai_core.tool_runtime import ToolAuthorizationContext
+    observed = []
+    recorded = []
+
+    async def select_step(**kwargs):
+        observed.append(dict(driver.scope_state["claim"]))
+        if len(observed) == 1:
+            return {"plan": "files", "action": "tool", "tool_id": PC_DRIVES_TOOL_ID, "arguments": {}}
+        return {"plan": "files", "action": "complete", "answer": "done"}
+
+    async def record_scope():
+        recorded.append(dict(driver.scope_state["claim"]))
+
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step, allowed_tool_ids=frozenset({PC_DRIVES_TOOL_ID}),
+        record_scope=record_scope,
+    )
+    driver.configure_request_scope(
+        ToolAuthorizationContext(app_id=CLAW_APP_ID, agent_id="pc-test",
+            granted_auth_scopes=(PC_QUERY_SCOPE,),
+            externally_authorized_tools=frozenset({PC_DRIVES_TOOL_ID})),
+        declared_plan="query_drives",
+    )
+    context = AgentStepContext.with_results(
+        run_id="run_declared_drive", step_index=1, input_text="drives", results=(),
+    )
+    first = asyncio.run(driver.next_step(context, object()))
+    final = asyncio.run(driver.next_step(context, object()))
+    assert first.invocation.tool_id == PC_DRIVES_TOOL_ID and final.answer == "done"
+    assert len(recorded) == 1 and len(observed) == 2
+    assert all(c["requested"] == c["admitted"] == "query_drives" for c in observed)
+    assert all(c["ops"] == ["drives"] for c in observed)

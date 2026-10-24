@@ -405,13 +405,21 @@ class StructuredPCQueryStepDriver:
         self._request_scope_enabled = False
         self.scope_state: dict[str, Any] = {}
         self.request_context = ""
+        self.declared_plan: str | None = None
 
-    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None) -> None:
+    def configure_request_scope(self, authorization: ToolAuthorizationContext, *, ceiling_tool_ids=None, request_context=None, declared_plan=None) -> None:
         """Engine-only: intersect the trusted plan with actual server grants."""
+        if declared_plan is not None and (
+            not isinstance(declared_plan, str)
+            or declared_plan not in PC_REQUEST_SCOPE_TOOLS or declared_plan == "none"
+        ):
+            raise ValueError("invalid declared PC request plan")
         self._request_scope_enabled = True
         self.request_context = request_context if isinstance(request_context, str) else ""
         shared = PC_QUERY_RUN_SCOPE.get()
         self.scope_state = shared if shared is not None else {}
+        if "claim" not in self.scope_state:
+            self.declared_plan = declared_plan
         scopes = getattr(authorization, "granted_auth_scopes", ())
         external = getattr(authorization, "externally_authorized_tools", frozenset())
         ceiling = ceiling_tool_ids if ceiling_tool_ids is not None else self._allowed_tool_ids
@@ -427,9 +435,9 @@ class StructuredPCQueryStepDriver:
         """First decision only; neither later plans nor intent can widen it."""
         if "claim" in self.scope_state:
             return
-        proposed = decision.get("plan")
+        proposed = self.declared_plan if self.declared_plan is not None else decision.get("plan")
         source = "declared"
-        if "plan" not in decision:
+        if self.declared_plan is None and "plan" not in decision:
             source = "decision"
             first_tool = decision.get("tool_id")
             proposed = {
@@ -451,7 +459,18 @@ class StructuredPCQueryStepDriver:
                     if tool in self._allowed_tool_ids],
         }
 
+    async def _record_admitted_scope(self) -> None:
+        # Closed, non-sensitive fields only; never prompt/path/content.
+        print("pc_scope_admission=" + json.dumps(self.scope_state["claim"], sort_keys=True), flush=True)
+        if self._record_scope is not None:
+            await self._record_scope()
+
     async def next_step(self, context: AgentStepContext, compiled_profile: Any) -> AgentStepDecision:
+        if self._request_scope_enabled and self.declared_plan is not None and "claim" not in self.scope_state:
+            # Consume the caller's interpretation before the first model step.
+            # It is intersected with the server grants, never a new grant.
+            self._admit_request_scope({})
+            await self._record_admitted_scope()
         # #4379: the driver resolves the results it needs through their
         # authorized references instead of receiving every payload up front.
         resolved = await context.resolve_tool_results()
@@ -464,10 +483,7 @@ class StructuredPCQueryStepDriver:
             self._admit_request_scope(decision if isinstance(decision, Mapping) else {})
             claim = self.scope_state["claim"]
             if first:
-                # Closed, non-sensitive fields only; never prompt/path/content.
-                print("pc_scope_admission=" + json.dumps(claim, sort_keys=True), flush=True)
-                if self._record_scope is not None:
-                    await self._record_scope()
+                await self._record_admitted_scope()
             missing = first and claim["source"] == "missing"
             try:
                 if missing:

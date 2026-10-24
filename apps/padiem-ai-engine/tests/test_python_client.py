@@ -272,3 +272,36 @@ async def test_untrusted_tool_arguments_stay_rejected_before_transport():
 
 def test_field_parity_marks_the_trusted_pc_device_hint():
     assert ORCHESTRATION_FIELD_PARITY["tool_arguments"] == "TRUSTED_PC_PLAN_DEVICE_HINT_ONLY"
+
+
+
+@pytest.mark.asyncio
+async def test_optional_declared_pc_plan_preserves_legacy_body_bytes():
+    transport = _orchestration_transport()
+    client = _client(transport)
+    request = {"agent": AGENT, "messages": MESSAGES, "agent_plan": _PC_FILE_PLAN}
+    await client.orchestrate(request)
+    legacy = json.dumps(
+        {"app_id": "b62", "agent": AGENT, "messages": MESSAGES, "agent_plan": _PC_FILE_PLAN},
+        ensure_ascii=False, separators=(",", ":"), allow_nan=False,
+    ).encode()
+    assert transport.calls[-1]["body"] == legacy
+    for plan in ("files_list", "files", "query_drives"):
+        await client.orchestrate({**request, "declared_plan": plan})
+        assert transport.calls[-1]["body"] == legacy[:-1] + (
+            ',"declared_plan":"' + plan + '"}'
+        ).encode()
+    assert ORCHESTRATION_FIELD_PARITY["declared_plan"] == "PC_REQUEST_SCOPE_DECLARATION_ONLY"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("invalid", [None, "", "none", "read", "FILES", [], {}])
+async def test_invalid_declared_pc_plan_fails_before_transport(invalid):
+    transport = _orchestration_transport()
+    with pytest.raises(PadiemAiEngineClientError) as error:
+        await _client(transport).orchestrate({
+            "agent": AGENT, "messages": MESSAGES, "agent_plan": _PC_FILE_PLAN,
+            "declared_plan": invalid,
+        })
+    assert error.value.code == "invalid_engine_request"
+    assert transport.calls == []
