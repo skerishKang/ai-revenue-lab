@@ -13,8 +13,9 @@ from starlette.responses import StreamingResponse
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.b14_streaming import B14StreamEvent
 
+import app.chat_pc_drive as chat_pc_drive
 from app.auth import SESSION_COOKIE, create_session_token
-from app.b14_client import ChatRuntimeError
+from app.b14_client import ChatRuntimeError, ChatStreamEvent, ChatToolCall
 from app.config import Settings
 from app.history import ProjectProfile
 from app.main import api_chat_stream, create_app
@@ -106,6 +107,43 @@ class BlockingClient:
             await asyncio.Event().wait()
         finally:
             self.closed = True
+
+
+class ToolScriptedClient:
+    """Records the exact keyword shape the route sent to the B14 client."""
+
+    def __init__(self, script):
+        self.script = list(script)
+        self.calls: list[dict] = []
+
+    async def stream_text_auto(self, messages, **kwargs):
+        self.calls.append(
+            {"messages": [dict(item) for item in messages], **kwargs}
+        )
+        for item in self.script:
+            if isinstance(item, BaseException):
+                raise item
+            yield item
+
+
+class FakeCatalog:
+    def __init__(self, rows):
+        self.rows = list(rows)
+
+    async def list_registered_models(self):
+        return list(self.rows)
+
+
+FREE_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+
+
+def _catalog_row(*capabilities: str):
+    return {
+        "model_id": FREE_B14_MODEL_ID,
+        "capabilities": list(capabilities),
+        "b14_enabled": True,
+        "owner_excluded": False,
+    }
 
 
 class MemoryHistoryStore:
@@ -436,6 +474,139 @@ def test_conversation_project_mismatch_is_rejected_before_model_dispatch():
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "conversation_not_found"
     assert client.calls == []
+
+
+def _tool_lane_app(client, *, rows, monkeypatch, pc_verified: bool):
+    settings = _google_settings()
+    app = _app_with_client(
+        client, settings=settings, history_store=MemoryHistoryStore(),
+    )
+    app.state.b14_catalog_source = FakeCatalog(rows)
+
+    async def _available(request, *, uid):
+        return pc_verified
+
+    monkeypatch.setattr(chat_pc_drive, "chat_pc_tools_available", _available)
+    return app, settings
+
+
+def test_verified_pc_on_a_tools_route_declares_the_closed_pc_tool_set(monkeypatch):
+    client = ToolScriptedClient([_event("보통 답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+
+    async def _no_lane(*args, **kwargs):
+        pytest.fail("an ordinary answer must not enter the PC lane")
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _no_lane)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert '"delta":"보통 답변"' in response.text
+    assert len(client.calls) == 1
+    sent = client.calls[0]
+    assert [tool.name for tool in sent["tools"]] == [
+        "query_drives", "files_list", "files",
+    ]
+    assert sent["tool_choice"] == "auto"
+
+
+def test_route_without_tools_capability_keeps_the_pre_slice_request(monkeypatch):
+    client = ToolScriptedClient([_event("답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert "tools" not in client.calls[0]
+    assert "tool_choice" not in client.calls[0]
+
+
+def test_unverified_pc_withholds_the_tool_definitions(monkeypatch):
+    client = ToolScriptedClient([_event("답변"), _event(done=True)])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=False,
+    )
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert "tools" not in client.calls[0]
+    assert "tool_choice" not in client.calls[0]
+
+
+def test_model_tool_call_hands_the_turn_to_the_pc_lane(monkeypatch):
+    client = ToolScriptedClient([
+        ChatStreamEvent(
+            tool_call=ChatToolCall(
+                id="call_1", name="files_list", arguments={},
+            ),
+        ),
+        _event(done=True),
+    ])
+    app, settings = _tool_lane_app(
+        client,
+        rows=[_catalog_row("chat", "tools")],
+        monkeypatch=monkeypatch,
+        pc_verified=True,
+    )
+    recorded: dict = {}
+
+    async def _lane(request, **kwargs):
+        recorded.update(kwargs)
+        return ("내 PC의 폴더 목록입니다", CHAT_ID)
+
+    monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", _lane)
+    response = asyncio.run(_post(app, _payload(), settings=settings, signed_in=True))
+
+    assert response.status_code == 200
+    assert 'data: {"delta":"내 PC의 폴더 목록입니다"}' in response.text
+    assert '"conversation_id":"' + CHAT_ID + '"' in response.text
+    assert recorded["selected_tool"] == "files_list"
+    assert recorded["declared_plan"] == chat_pc_drive.chat_pc_plan_for_tool(
+        "files_list"
+    )
+    assert [
+        step["step_id"] for step in recorded["declared_plan"]["steps"]
+    ] == ["list_files"]
+    assert all(
+        step["tool_id"] != "claw.pc.read_file"
+        for step in recorded["declared_plan"]["steps"]
+    )
+    assert "도구 앞의 텍스트" not in response.text
+
+
+@pytest.mark.parametrize(
+    ("row", "expected"),
+    [
+        (_catalog_row("chat", "tools"), True),
+        (_catalog_row("chat"), False),
+        ({**_catalog_row("chat", "tools"), "b14_enabled": False}, False),
+        ({**_catalog_row("chat", "tools"), "owner_excluded": True}, False),
+        ({**_catalog_row("chat", "tools"), "model_id": "other/model"}, False),
+    ],
+)
+def test_route_tools_capability_is_catalog_authoritative(row, expected):
+    from app.chat_routes import _route_declares_tools
+
+    async def scenario():
+        app = SimpleNamespace(
+            state=SimpleNamespace(b14_catalog_source=FakeCatalog([row])),
+        )
+        request = SimpleNamespace(app=app)
+        return await _route_declares_tools(request, FREE_B14_MODEL_ID)
+
+    assert asyncio.run(scenario()) is expected
 
 
 def test_public_route_returns_after_first_visible_token_and_consumer_close_closes_b62_stream():

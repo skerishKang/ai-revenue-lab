@@ -148,6 +148,8 @@ class PadiemTierB14Client(B14Client):
         *,
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
+        tools: tuple[Any, ...] = (),
+        tool_choice: Any = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         policy = resolve_request_model_policy(messages, require_executable=False)
         answer = tier_identity_answer(policy.messages, policy.model_id, policy.profile)
@@ -166,6 +168,8 @@ class PadiemTierB14Client(B14Client):
             messages,
             skill=skill,
             additional_system_context=additional_system_context,
+            **({"tools": tools} if tools else {}),
+            **({"tool_choice": tool_choice} if tool_choice is not None else {}),
         )
         try:
             async for event in stream:

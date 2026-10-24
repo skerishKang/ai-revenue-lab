@@ -25,12 +25,14 @@ import json
 import logging
 import re
 import uuid
+from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import B14Client, ChatRuntimeError
@@ -263,6 +265,94 @@ def build_chat_pc_files_agent_plan(*, list_only: bool = False) -> dict[str, Any]
     return {"agent_id": CHAT_PC_QUERY_AGENT_ID, "steps": steps}
 
 
+# #5573 (3-B-2): the closed PC tool set offered to a model on the streaming
+# lane. These names mirror the canonical Engine plan keys; the model's
+# arguments carry no authority, and the lane re-verifies the PC on entry.
+CHAT_PC_TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
+    ToolDefinition(
+        name="query_drives",
+        description=(
+            "List the filesystem drives on the user's verified PC when the "
+            "user asks which drives or disks exist."
+        ),
+    ),
+    ToolDefinition(
+        name="files_list",
+        description=(
+            "List the files and folders in one folder on the user's verified "
+            "PC when the user only asks what is there."
+        ),
+    ),
+    ToolDefinition(
+        name="files",
+        description=(
+            "Find, list or read text files on the user's verified PC when the "
+            "user asks about a file's content."
+        ),
+    ),
+)
+
+
+def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
+    """The canonical Engine plan a model-requested PC tool selects."""
+    if tool_name == "query_drives":
+        return build_chat_pc_agent_plan()
+    if tool_name == "files_list":
+        return build_chat_pc_files_agent_plan(list_only=True)
+    if tool_name == "files":
+        return build_chat_pc_files_agent_plan(list_only=False)
+    return None
+
+
+def _declared_plan_for_tool(
+    tool_name: str, declared_plan: Any,
+) -> dict[str, Any] | None:
+    """The tool-derived plan, optionally narrowed to list-only.
+
+    A supplied plan is not authority: it may only drop the read step of the
+    ``files`` plan. Every other value falls back to the exact plan the tool
+    name selects, so no caller can widen the Engine's scope.
+    """
+    derived = chat_pc_plan_for_tool(tool_name)
+    if derived is None:
+        return None
+    if not isinstance(declared_plan, Mapping):
+        return derived
+    if dict(declared_plan) == derived:
+        return derived
+    if tool_name == "files":
+        narrowed = chat_pc_plan_for_tool("files_list")
+        if dict(declared_plan) == narrowed:
+            return narrowed
+    return derived
+
+
+def _tool_arguments_for_plan(
+    agent_plan: Mapping[str, Any], device_id: str | None,
+) -> dict[str, Any] | None:
+    """The closed Engine target hint for one canonical PC plan.
+
+    The Engine accepts exactly one key per plan shape; the key is never taken
+    from model output, and a plan without a known tool carries no hint.
+    """
+    if device_id is None:
+        return None
+    tool_ids = {
+        step.get("tool_id")
+        for step in agent_plan.get("steps", ())
+        if isinstance(step, Mapping)
+    }
+    if "claw.pc.query_drives" in tool_ids:
+        key = "query_drives"
+    elif "claw.pc.read_file" in tool_ids:
+        key = "files"
+    elif "claw.pc.list_files" in tool_ids:
+        key = "files_list"
+    else:
+        return None
+    return {key: {"device_id": device_id}}
+
+
 _PC_ACTION_ACTIONS = frozenset(
     {"files_list", "files_read", "drives", "none", "clarify"}
 )
@@ -475,6 +565,47 @@ async def _check_mesh_grant(
         return _mesh_grant_denied("mesh_command_target_not_unique")
     return True
 
+
+async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
+    """Whether this account may be offered the PC tools on the stream lane.
+
+    Applies the same server checks the PC lane applies on entry
+    (``resolve_pc_work_context`` + ``tool_available`` + ``_check_mesh_grant``).
+    Any failure withholds the declaration: tools are never exposed for an
+    unverified PC, and no new Broker requirement is introduced.
+    """
+    if not uid:
+        return False
+    try:
+        session, _subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+        from .pc_work_context import (
+            SAVED_SELECTION_SELECTED,
+            read_saved_device_selection,
+            resolve_pc_work_context,
+        )
+
+        selection = await read_saved_device_selection(
+            request, owner_id=uid, workspace_id=workspace_id,
+        )
+        device_id = (
+            selection.device_id
+            if selection.status == SAVED_SELECTION_SELECTED
+            else None
+        )
+        pc_context = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=getattr(session, "session_id", None),
+            selected_device_id=device_id,
+        )
+    except Exception:
+        return False
+    if not pc_context.tool_available:
+        return False
+    if device_id is not None and not pc_context.selected_confirmed:
+        return False
+    return await _check_mesh_grant(request, session, device_id=device_id)
+
+
 def _no_pc_answer() -> str:
     return (
         "검증된 PC 연결을 확인하지 못해 드라이브를 조회할 수 없습니다. "
@@ -587,6 +718,8 @@ async def execute_chat_pc_drive_lane(
     device_id: str | None = None,
     run_id: str | None = None,
     conversation_messages: Any = None,
+    declared_plan: Any = None,
+    selected_tool: str | None = None,
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
@@ -599,6 +732,12 @@ async def execute_chat_pc_drive_lane(
     resolved policy text used for model and Engine prompts, so a hidden alias
     removed by the policy never reaches the model; absent, it falls back to
     ``user_text`` for existing callers.
+
+    ``selected_tool`` is the tool name a model requested on the stream lane.
+    It replaces the keyword entry for that turn; the plan is derived from the
+    name and ``declared_plan`` may only narrow it. Everything else (owner,
+    grant, PC context) is verified again below, so the model's request is not
+    an execution authority.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
@@ -610,16 +749,24 @@ async def execute_chat_pc_drive_lane(
         if isinstance(execution_user_text, str) and execution_user_text.strip()
         else user_text
     )
-    # Lane entry (restored 2026-10-24, interim until the tool-calling entry
-    # lands): only a PC drive/file request enters this lane; every other turn
-    # keeps the ordinary streaming path and pays no extra call. The AI still
-    # selects the tool itself inside the Engine step (#5573).
-    drive_requested = is_chat_pc_drive_query(execution_text)
-    files_requested = is_chat_pc_files_query(execution_text)
-    if not drive_requested and not files_requested:
-        return None
-    files_only = files_requested and not drive_requested
-    list_only = False
+    # Lane entry: a model-requested PC tool enters directly; otherwise the
+    # keyword gate stays for this slice (removed in 3-C). Every other turn
+    # keeps the ordinary streaming path and pays no extra call.
+    selected = selected_tool if isinstance(selected_tool, str) else None
+    if selected is not None:
+        agent_plan = _declared_plan_for_tool(selected, declared_plan)
+        if agent_plan is None:
+            return None
+        files_only = selected in ("files_list", "files")
+        list_only = False
+    else:
+        drive_requested = is_chat_pc_drive_query(execution_text)
+        files_requested = is_chat_pc_files_query(execution_text)
+        if not drive_requested and not files_requested:
+            return None
+        files_only = files_requested and not drive_requested
+        list_only = False
+        agent_plan = None
     client_run_id = _client_lane_run_id(run_id)
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     if store is None:
@@ -640,8 +787,10 @@ async def execute_chat_pc_drive_lane(
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     except ChatPCDriveError:
         # No PC authority means no verified PC context. An ordinary turn keeps
-        # its existing path and pays no extra call; a PC request cannot be
-        # distinguished without a context and falls through (documented).
+        # its existing path and pays no extra call; a model-selected PC tool
+        # has no answer to resume, so it reports the handled failure.
+        if selected is not None:
+            raise
         return None
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
@@ -745,7 +894,7 @@ async def execute_chat_pc_drive_lane(
         execution_user_text=execution_text, skill=skill,
         model_id=model_id, conversation_id=conversation_id,
         device_id=device_id, additional_system_context=additional_context,
-        run_id=client_run_id, list_only=False,
+        run_id=client_run_id, list_only=list_only, agent_plan=agent_plan,
     )
 
 
@@ -765,6 +914,7 @@ async def _execute_chat_pc_files_lane(
     additional_system_context: str | None = None,
     run_id: str | None = None,
     list_only: bool = False,
+    agent_plan: Mapping[str, Any] | None = None,
 ) -> tuple[str, str | None]:
     """Stage and run the list/read plan on the Chat product.
 
@@ -798,13 +948,17 @@ async def _execute_chat_pc_files_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
-    tool_arguments = (
-        (
-            {"files_list": {"device_id": device_id}}
-            if list_only else {"files": {"device_id": device_id}}
+    if agent_plan is None:
+        agent_plan = build_chat_pc_files_agent_plan(list_only=list_only)
+        tool_arguments = (
+            (
+                {"files_list": {"device_id": device_id}}
+                if list_only else {"files": {"device_id": device_id}}
+            )
+            if device_id is not None else None
         )
-        if device_id is not None else None
-    )
+    else:
+        tool_arguments = _tool_arguments_for_plan(agent_plan, device_id)
     engine_text = (
         execution_user_text
         if isinstance(execution_user_text, str) and execution_user_text.strip()
@@ -820,7 +974,7 @@ async def _execute_chat_pc_files_lane(
             conversation_id=staged_conversation_id,
             subject_id=subject_id,
             session_id=lane_run_id,
-            agent_plan=build_chat_pc_files_agent_plan(list_only=list_only),
+            agent_plan=agent_plan,
             additional_system_context=additional_system_context,
             tool_arguments=tool_arguments,
         )

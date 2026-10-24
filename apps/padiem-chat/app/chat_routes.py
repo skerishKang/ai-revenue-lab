@@ -142,6 +142,55 @@ async def _close_stream(stream: Any) -> None:
             pass
 
 
+async def _route_declares_tools(request: Request, model_id: str) -> bool:
+    """Whether the resolved B14 route declares the native tools capability.
+
+    The B14 catalog is the only authority here: an unknown/unreadable catalog
+    or any mismatch withholds the declaration (and therefore the tools).
+    """
+    source = getattr(request.app.state, "b14_catalog_source", None)
+    lister = getattr(source, "list_registered_models", None)
+    if not callable(lister):
+        return False
+    try:
+        rows = await lister()
+    except Exception:
+        return False
+    if not isinstance(rows, list):
+        return False
+    for row in rows:
+        if not isinstance(row, dict) or row.get("model_id") != model_id:
+            continue
+        capabilities = row.get("capabilities")
+        return (
+            isinstance(capabilities, list)
+            and "tools" in capabilities
+            and row.get("b14_enabled") is True
+            and row.get("owner_excluded") is False
+        )
+    return False
+
+
+async def _chat_pc_tools_for_turn(
+    request: Request, *, uid: str | None, model_id: str,
+) -> tuple[Any, ...]:
+    """The PC tool declaration for this turn, or an empty tuple.
+
+    Tools require BOTH a verified PC target for this account and a resolved
+    route whose catalog row declares native tools; otherwise the request keeps
+    its existing shape and the keyword entry stays the only PC path.
+    """
+    if not uid:
+        return ()
+    if not await _route_declares_tools(request, model_id):
+        return ()
+    from .chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS, chat_pc_tools_available
+
+    if not await chat_pc_tools_available(request, uid=uid):
+        return ()
+    return CHAT_PC_TOOL_DEFINITIONS
+
+
 def _model_history_incomplete() -> JSONResponse:
     return JSONResponse(
         {"error": {"code": "conversation_context_incomplete",
@@ -557,6 +606,7 @@ async def api_chat_stream(request: Request):
             ) + pc_work_result
 
     client: B14Client = request.app.state.b14_client
+    lane_outcome: tuple[str, str | None] | None = None
     async with chat_request_tier_context(request, raw.get("tier", "free")):
         policy = resolve_request_model_policy(messages)
         guard = await create_guard_from_request(
@@ -566,13 +616,21 @@ async def api_chat_stream(request: Request):
             request.app.state.b14_catalog_source,
         )
         client = apply_guard_to_client(client, guard)
+        # #5573 (3-B-2): only a verified PC account on a tools-declaring route
+        # receives the PC tools; every other turn keeps the request bytes it
+        # had before this slice.
+        pc_tools = await _chat_pc_tools_for_turn(
+            request, uid=uid, model_id=policy.model_id,
+        )
         stream = client.stream_text_auto(
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            **({"tools": pc_tools, "tool_choice": "auto"} if pc_tools else {}),
         )
 
         first_visible = None
+        tool_call = None
         try:
             while True:
                 try:
@@ -580,6 +638,10 @@ async def api_chat_stream(request: Request):
                 except StopAsyncIteration:
                     await _close_stream(stream)
                     return _empty_stream_json_error()
+                candidate = getattr(event, "tool_call", None)
+                if candidate is not None:
+                    tool_call = candidate
+                    break
                 if event.delta_content:
                     first_visible = event
                     break
@@ -598,6 +660,75 @@ async def api_chat_stream(request: Request):
                 {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
                 status_code=502,
             )
+
+        if tool_call is not None:
+            # The model asked for a PC tool instead of an answer. Stop reading
+            # the stream and let the PC lane re-verify the owner, grant and
+            # target before it executes anything.
+            await _close_stream(stream)
+            from .chat_pc_drive import (
+                ChatPCDriveError,
+                chat_pc_plan_for_tool,
+                execute_chat_pc_drive_lane,
+            )
+
+            selected_tool = getattr(tool_call, "name", None)
+            declared_plan = (
+                chat_pc_plan_for_tool(selected_tool)
+                if isinstance(selected_tool, str) else None
+            )
+            if declared_plan is None:
+                return JSONResponse(
+                    {"error": {"code": "chat_pc_tool_unsupported", "message": "요청한 PC 도구를 실행할 수 없습니다."}},
+                    status_code=502,
+                )
+            execution_user_text = next(
+                (item["content"] for item in reversed(policy.messages)
+                 if item.get("role") == "user"),
+                None,
+            )
+            try:
+                lane_outcome = await execute_chat_pc_drive_lane(
+                    request,
+                    user_text=latest_user_text,
+                    execution_user_text=execution_user_text,
+                    skill=skill,
+                    model_id=selected_model,
+                    conversation_id=conversation_id,
+                    tier=(
+                        raw.get("tier", "free")
+                        if isinstance(raw.get("tier"), str) else "free"
+                    ),
+                    device_id=raw.get("device_id"),
+                    conversation_messages=messages,
+                    selected_tool=selected_tool,
+                    declared_plan=declared_plan,
+                )
+            except ChatPCDriveError as exc:
+                return JSONResponse(
+                    {"error": {"code": exc.code, "message": exc.user_message}},
+                    status_code=exc.status_code,
+                )
+            if lane_outcome is None:
+                return JSONResponse(
+                    {"error": {"code": "chat_pc_lane_unavailable", "message": "PC 작업을 시작하지 못했습니다. 다시 시도해 주세요."}},
+                    status_code=502,
+                )
+
+    if lane_outcome is not None:
+        lane_answer, lane_conversation_id = lane_outcome
+        async def tool_lane_body_iterator():
+            yield _public_sse("delta", {"delta": lane_answer})
+            tool_done: dict[str, Any] = {"done": True}
+            if lane_conversation_id:
+                tool_done["conversation_id"] = lane_conversation_id
+            yield _public_sse("done", tool_done)
+        return StreamingResponse(
+            tool_lane_body_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        )
 
     assert first_visible is not None and first_visible.delta_content
     first_delta = first_visible.delta_content
