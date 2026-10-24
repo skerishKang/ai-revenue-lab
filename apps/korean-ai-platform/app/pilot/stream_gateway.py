@@ -465,6 +465,12 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     ):
                         break
             except PilotError as exc:
+                from .opencode_go_wire import log_go_vendor_error
+                log_go_vendor_error(
+                    logger, exc, request_id=request_id,
+                    request_path=request.url.path, attempt=attempt_index + 1,
+                    fallback=attempt_index > 0,
+                )
                 await _close_iterator(iterator)
                 if (
                     attempt_index + 1 < len(attempt_candidates)
