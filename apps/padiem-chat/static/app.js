@@ -2651,10 +2651,16 @@
       if (result.status === "pending" || result.status === "running") {
         // A server-observed "running" is a real fact: the Engine reached a PC
         // step for this run. "pending" adds nothing over the preparing chip.
-        if (result.status === "running") showPcRuntimeStatus(article, "tool_started");
+        if (result.status === "running") {
+          // A running turn shows its status on the card, which owns that
+          // surface, so the observed step is carried as the card's own hint.
+          window.PadiemChatLifecycle?.setTaskHint?.(article, "tool");
+          showPcRuntimeStatus(article, "tool_started");
+        }
         continue;
       }
       if (result.status !== "completed" || typeof result.answer !== "string") {
+        window.PadiemChatLifecycle?.setTaskHint?.(article, null);
         showPcRuntimeStatus(article, "run_failed");
         PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
         return;
@@ -2667,6 +2673,7 @@
         if (result.answer_source === "model_reply") {
           // A model reply is not a completed PC execution, so a tool-running
           // status observed while waiting is released rather than confirmed.
+          window.PadiemChatLifecycle?.setTaskHint?.(article, null);
           window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, "", "status");
           PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
         }
@@ -2683,6 +2690,7 @@
       // The durable run answered: the preparing chip is released, and a
       // tool-running status shown while waiting settles on this run's real
       // completion instead of being left stale.
+      window.PadiemChatLifecycle?.setTaskHint?.(article, null);
       window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
       showPcRuntimeStatus(article, "run_completed");
       conversationState.setProduct?.(product);

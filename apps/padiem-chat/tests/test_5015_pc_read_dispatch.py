@@ -557,6 +557,26 @@ def test_a_status_poll_of_a_running_step_projects_running_too(monkeypatch):
     assert state.history_store.status_writes == [(OWNER, RUN, "running")]
 
 
+def test_the_result_return_leg_projects_running_without_becoming_the_answer(monkeypatch):
+    """The Engine also reports the step when it comes back with the result."""
+    state = _state(monkeypatch)
+    _seed_result(
+        state, state_name="done", exit_code=0,
+        body_bytes=READ_BODY.encode("utf-8"), termination="exited",
+    )
+    state.history_store.status_writes.clear()
+    status, body = _dispatch(state, {
+        "subject_id": SUBJECT, "run_id": RUN, "dispatch_id": "dsp-read",
+        "mode": "result",
+    })
+    assert status == 200, body
+    assert state.history_store.status_writes == [(OWNER, RUN, "running")]
+    row = state.history_store.run_rows[RUN]
+    assert row["status"] == "running", row
+    # The raw bytes travel back on the dispatch row, never as the run's answer.
+    assert row["result_summary"] is None, row
+
+
 def test_a_completed_run_is_never_reopened_by_a_late_progress_step(monkeypatch):
     state = _state(monkeypatch)
     settled = state.history_store.run_rows[RUN]
