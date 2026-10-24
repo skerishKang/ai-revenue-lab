@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-# Full B62 core runners intentionally do not install Playwright. Skip this
-# optional browser suite there instead of aborting pytest collection.
-sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
-
+# Full B62 core runners intentionally do not install Playwright, so the browser
+# contracts below are skipped individually there. The wiring contract at the top
+# of this module is source-only and always runs: it is the part of #4816 that a
+# focused UI lane can prove without a browser.
 ROOT = Path(__file__).resolve().parents[1] / "static"
 SCRIPTS = (
     "voice-live-transcript-turn.js",
@@ -87,8 +87,34 @@ ANSWER_HTML = (
 )
 
 
+def test_the_voice_session_boundaries_are_wired_into_the_shipped_modules():
+    """Source contract: every end/mute/cancel path uses the one session boundary.
+
+    The behavioural proof is the Chromium suite below; this keeps the wiring
+    itself covered on runners without a browser, where a UI-only change is
+    reviewed.
+    """
+    menu = (ROOT / "voice-ui-menu.js").read_text(encoding="utf-8")
+    answer = (ROOT / "voice-answer-ui.js").read_text(encoding="utf-8")
+    call = (ROOT / "voice-call-ui.js").read_text(encoding="utf-8")
+
+    # One boundary on the existing controller, reused by the mode picker.
+    assert "function endTurn(reason)" in menu
+    assert "endTurn: endTurn" in menu and "resumeTurn: resumeTurn" in menu
+    assert "st.cancelled !== true && st.invalidated !== true" in menu
+    assert "if (m !== \"tts\") stopAnswerSpeech();" in menu
+    # Call mute and call end are session boundaries; unmute resumes the turn.
+    assert 'menuAPI.endTurn("muted")' in call
+    assert 'win.PadiemVoiceMenu.endTurn("call-ended")' in call
+    assert "menuAPI.resumeTurn()" in call
+    # The answer player re-checks authority when the scheduled speak fires.
+    assert 'win.addEventListener("padiem:voice-end", stopPlayback);' in answer
+    assert "token !== speakToken || !autoSpeakAllowed()" in answer
+
+
 @pytest.fixture(scope="module")
 def browser():
+    sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
     with sync_playwright() as tool:
         instance = tool.chromium.launch(headless=True)
         yield instance
