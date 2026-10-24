@@ -98,8 +98,20 @@
       const c = composerCtrl();
       if (!c) return;
       const pressed = mute.getAttribute("aria-pressed") === "true";
-      if (pressed) { c.start(); mute.setAttribute("aria-pressed", "false"); }
-      else { c.stop("user-muted"); mute.setAttribute("aria-pressed", "true"); }
+      if (pressed) {
+        // Unmute keeps the same conversation and audio session; it only opens
+        // a fresh turn generation.
+        if (menuAPI && typeof menuAPI.resumeTurn === "function") menuAPI.resumeTurn();
+        c.start();
+        mute.setAttribute("aria-pressed", "false");
+        return;
+      }
+      // #4816: muting is a session boundary. Revoke the pending accepted turn
+      // before the recognizer tail arrives, and stop M3 playback of an answer
+      // that belongs to the muted session.
+      if (menuAPI && typeof menuAPI.endTurn === "function") menuAPI.endTurn("muted");
+      c.stop("user-muted");
+      mute.setAttribute("aria-pressed", "true");
     });
     endButton.addEventListener("click", function () { hide(); });
     if (win.MutationObserver && mic) {
@@ -114,8 +126,15 @@
   function hide() {
     if (!panel) return;
     panel.hidden = true;
+    // #4816: ending the call is a session boundary. Cancel the pending turn and
+    // drop late STT/TTS before returning to the text conversation, which keeps
+    // its existing conversation id and model choice.
+    if (win.PadiemVoiceMenu && typeof win.PadiemVoiceMenu.endTurn === "function") {
+      win.PadiemVoiceMenu.endTurn("call-ended");
+    }
     const c = composerCtrl();
     if (c && typeof c.stop === "function") c.stop("call-ended");
+    if (answerAPI && typeof answerAPI.stop === "function") answerAPI.stop();
     if (menuAPI && typeof menuAPI.setCallMode === "function") menuAPI.setCallMode(false);
     if (win.PadiemVoiceMenu && typeof win.PadiemVoiceMenu.closeMenu === "function") win.PadiemVoiceMenu.closeMenu();
   }

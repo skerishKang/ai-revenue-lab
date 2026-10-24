@@ -60,8 +60,52 @@
     return status.authenticated === true && status.authKnown === true
       ? String(status.identityKey || "") : "";
   }
-  function isTtsActive() { return currentMode === "live" && ttsOn === true; }
+  // #4816 lifecycle: M3 auto-speech is only armed while the live voice session
+  // is still valid. An ended, muted, cancelled or re-authenticated session must
+  // not speak a late answer, and M2 must never auto-speak at all.
+  function sessionValid() {
+    if (!controller) return true;
+    const st = controller.getState ? controller.getState() : null;
+    if (!st) return true;
+    return st.cancelled !== true && st.invalidated !== true;
+  }
+  function isTtsActive() {
+    return currentMode === "live" && ttsOn === true && sessionValid();
+  }
   function isCallActive() { return currentMode === "live" && callOn === true; }
+
+  function stopAnswerSpeech() {
+    const answer = win.PadiemVoiceAnswer;
+    if (answer && typeof answer.stop === "function") answer.stop();
+  }
+
+  // One session boundary for 종료 · 음소거 · 취소 · 계정 전환. Cancelling the
+  // shared turn controller revokes the pending accepted turn, so the recognizer
+  // tail that arrives afterwards cannot auto-send. Playback started by M3 is
+  // stopped with the same signal, and a queued (not yet spoken) answer is
+  // dropped instead of playing after the session ended.
+  function endTurn(reason) {
+    closeMenu();
+    outstandingKey = "";
+    busySeen = false;
+    const c = controller;
+    if (c && typeof c.cancel === "function") c.cancel();
+    stopAnswerSpeech();
+    try {
+      win.dispatchEvent(new win.CustomEvent("padiem:voice-end", {
+        detail: {reason: reason || "voice-end"}
+      }));
+    } catch (_) { /* presentation only */ }
+    renderWaveform(); renderItems();
+  }
+
+  // Unmuting or re-entering a voice mode resumes the same conversation with a
+  // fresh turn generation: no re-authentication, no new conversation id.
+  function resumeTurn() {
+    const c = controller;
+    if (c && typeof c.reset === "function") c.reset();
+    renderWaveform(); renderItems();
+  }
 
   function ensureController() {
     if (!controller && liveAPI && typeof liveAPI.create === "function") {
@@ -95,8 +139,12 @@
     if (c.getState().accountKey !== current) {
       c.setAccountKey(current);
       c.setMode("basic");
+      // The controller returns to basic on an identity change; the module state
+      // must follow, otherwise a M3 auto-speak armed for the previous account
+      // stays armed for the new one (#4816).
       currentMode = "basic"; ttsOn = false; callOn = false;
       busySeen = false; outstandingKey = "";
+      stopAnswerSpeech();
     }
     if (typeof c.syncSessionGeneration === "function") {
       c.syncSessionGeneration(composerStatus().generation);
@@ -212,6 +260,13 @@
     syncIdentity();
     const c = controller;
     if (!c) return;
+    // A pending turn belongs to the mode that was active when it started.
+    // Cancel it before arming the newly selected mode, otherwise the answer to
+    // the old turn can be spoken or a late final can submit into the new mode.
+    if (typeof c.cancel === "function") c.cancel();
+    outstandingKey = "";
+    busySeen = false;
+    if (m !== "tts") stopAnswerSpeech();
     if (m === "text") { currentMode = "live"; ttsOn = false; callOn = false; c.setMode("live"); }
     else if (m === "tts") { currentMode = "live"; ttsOn = true; callOn = false; c.setMode("live"); }
     else if (m === "call") { currentMode = "live"; ttsOn = false; callOn = true; c.setMode("live"); }
@@ -270,6 +325,12 @@
   win.addEventListener("keydown", function (event) {
     if (menuOpen && event.key === "Escape") closeMenu();
   });
+  // A new microphone run is a new turn authority. Starting one clears the
+  // cancelled/revoked window left by the previous end, mute or cancel, while the
+  // composer still refuses the previous run's tail by run identity (#4816).
+  const micButton = doc.getElementById("voiceMicButton");
+  if (micButton) micButton.addEventListener("click", resumeTurn);
+
   win.addEventListener("padiem:auth-state", syncIdentityAndState);
   win.addEventListener("padiem:voice-identity", syncIdentityAndState);
   win.addEventListener("padiem:localechange", syncIdentityAndState);
@@ -335,6 +396,10 @@
     setCallMode: function (on) { callOn = on === true; renderItems(); },
     isTtsActive: isTtsActive,
     isCallActive: isCallActive,
+    // #4816: one session boundary for 종료 · 음소거 · 취소; account changes and
+    // mode switches use it too. Voice mode stays available afterwards.
+    endTurn: endTurn,
+    resumeTurn: resumeTurn,
     selectMode: selectMode,
     closeMenu: closeMenu,
     // #5561: the primary action slot is shared by the voice waveform and the
