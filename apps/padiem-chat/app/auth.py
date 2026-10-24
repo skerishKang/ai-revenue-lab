@@ -207,9 +207,13 @@ def verify_android_handoff_state(settings: Settings, state: str | None, now: int
 
 
 def session_cookie_kwargs(settings: Settings) -> dict[str, Any]:
+    # #5115: the Secure flag is deployment-owned (settings.cookie_secure).
+    # The Cloudflare deployment keeps True behind its TLS edge; the COM2
+    # loopback HTTP runtime sets False so a session survives on the native
+    # CPython server.
     return {
         "httponly": True,
-        "secure": True,
+        "secure": settings.cookie_secure,
         "samesite": "lax",
         "path": "/",
         "max_age": settings.session_max_age_seconds,

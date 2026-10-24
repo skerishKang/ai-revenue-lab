@@ -105,6 +105,10 @@ class Settings:
     custom_key_previous_secrets: tuple[str, ...] = field(default=(), repr=False)
     custom_key_legacy_session_secrets: tuple[str, ...] = field(default=(), repr=False)
     session_max_age_seconds: int = 7 * 24 * 3600
+    # #5115: padiem-glass loopback HTTP deployments set this False so the
+    # session cookie survives the native CPython server on 127.0.0.1. The
+    # Cloudflare deployment keeps the default True behind its TLS edge.
+    cookie_secure: bool = True
     quota_salt: str | None = field(default=None, repr=False)
     anonymous_burst_limit: int = 4
     anonymous_daily_limit: int = 20
@@ -134,6 +138,7 @@ class Settings:
         custom_key_previous_secrets: object = None,
         custom_key_legacy_session_secrets: object = None,
         session_max_age_seconds: object = 7 * 24 * 3600,
+        cookie_secure: object = True,
         quota_salt: object = None,
         anonymous_burst_limit: object = 4,
         anonymous_daily_limit: object = 20,
@@ -225,6 +230,22 @@ class Settings:
             max_age = int(session_max_age_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be an integer") from exc
+        # #5115: the session cookie's Secure flag is deployment-owned. The
+        # Cloudflare deployment keeps True behind its TLS edge; the COM2
+        # loopback HTTP runtime sets False so the native server holds a
+        # session across requests.
+        if isinstance(cookie_secure, bool):
+            cookie_secure_value = cookie_secure
+        else:
+            cookie_secure_value = str(cookie_secure).strip().lower()
+            if cookie_secure_value in {"true", "1", "yes", "on"}:
+                cookie_secure_value = True
+            elif cookie_secure_value in {"false", "0", "no", "off"}:
+                cookie_secure_value = False
+            else:
+                raise ConfigError(
+                    "PADIEM_CHAT_COOKIE_SECURE must be true or false"
+                ) from None
         if not 300 <= max_age <= 30 * 24 * 3600:
             raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000")
         if auth != "off":
@@ -286,6 +307,7 @@ class Settings:
             custom_key_previous_secrets=previous_custom_keys,
             custom_key_legacy_session_secrets=legacy_custom_keys,
             session_max_age_seconds=max_age,
+            cookie_secure=cookie_secure_value,
             quota_salt=normalized_quota_salt,
             anonymous_burst_limit=anon_burst,
             anonymous_daily_limit=anon_daily,
@@ -333,6 +355,7 @@ class Settings:
                 "PADIEM_CHAT_CUSTOM_KEY_LEGACY_SESSION_SECRETS"
             ),
             session_max_age_seconds=os.getenv("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS", str(7 * 24 * 3600)),
+            cookie_secure=os.getenv("PADIEM_CHAT_COOKIE_SECURE", "true"),
             quota_salt=os.getenv("PADIEM_CHAT_QUOTA_SALT"),
             anonymous_burst_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_BURST_LIMIT", "4"),
             anonymous_daily_limit=os.getenv("PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT", "20"),
