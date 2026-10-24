@@ -105,6 +105,12 @@
     approval: Object.freeze({ state: "paused", ko: "확인 대기 중", en: "Waiting for confirmation" }),
   });
 
+  // The live status wording this module owns. A stage label the orchestration
+  // presentation rendered came from elsewhere, so it is never cleared here.
+  const LIVE_STATUS_TEXTS = new Set(
+    Object.values(taskStatusCatalog).flatMap((item) => [item.ko, item.en])
+  );
+
   // The real steps of a turn. Each one is recorded only when it actually
   // happened, so the card can never show a step that did not occur.
   const taskEventCatalog = Object.freeze({
@@ -133,7 +139,12 @@
     const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
     if (lifecycle === states.WAITING_APPROVAL) return labeledStatus(taskStatusCatalog.approval);
     const hint = article && article.dataset ? article.dataset.taskHint : "";
-    if (hint && taskStatusCatalog[hint]) return labeledStatus(taskStatusCatalog[hint]);
+    // A hint is a live status, so a turn that already has a real outcome stops
+    // carrying it: the wording of a running turn cannot survive into a finished
+    // one when the card is rendered again later.
+    if (hint && taskStatusCatalog[hint] && !terminalCatalog[lifecycle]) {
+      return labeledStatus(taskStatusCatalog[hint]);
+    }
     if (presentation && presentation.latest && presentation.latest.state === "active") return null;
     if (lifecycle === states.STREAMING) {
       return labeledStatus(article.dataset.answerStarted === "true"
@@ -180,14 +191,19 @@
     if (!article || typeof article.querySelector !== "function") return;
     if (!statusCardElement(article)) return;
     const presentation = presentationModel(null, article.dataset.lifecycle || null, false);
+    const status = taskStatusFor(article, presentation);
     renderTaskCard(article, {
       stages: taskStages(article),
-      status: taskStatusFor(article, presentation),
+      status,
+      // A refresh renders the same header renderTaskStatus renders. Without the
+      // label and the live flag, recording a stage or setting a hint rewrote the
+      // card with an empty status and dropped the sweep of a running turn.
+      statusLabel: status ? status.label : "",
       evidenceAvailable: article.dataset.taskEvidence === "true",
       approval: null,
       terminal: terminalFor(article),
       preview: false,
-      live: false,
+      live: Boolean(status) && status.state === "active",
     }, {});
   }
 
@@ -208,7 +224,16 @@
       if (!article || !Object.values(states).includes(state)) return;
       article.dataset.lifecycle = state;
       // The card takes over the live status; the badge takes the terminal
-      // outcome back when the turn ends.
+      // outcome back when the turn ends. A turn that is no longer running keeps
+      // no running status of ours on the card: this module's own live label and
+      // the sweep come off, and a real orchestration stage label stays.
+      const current = article.querySelector ? article.querySelector(".capability-current") : null;
+      if (current && !cardShowsLiveStatus(article)) {
+        if (LIVE_STATUS_TEXTS.has((current.textContent || "").trim())) {
+          current.textContent = "";
+        }
+        current.classList?.remove?.("padiem-activity-sweep");
+      }
       syncBadgeVisibility(article);
       syncActivitySweep(article);
       article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
