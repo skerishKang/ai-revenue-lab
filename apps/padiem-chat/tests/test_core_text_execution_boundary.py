@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import ast
+import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 
-from app.b14_client import ChatStreamEvent
+import app.b14_client as b14_module
+from app.b14_client import ChatStreamEvent, ChatToolCall
+from app.chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS
+from app.task_modes import get_task_mode
 
 
 SOURCE_PATH = Path(__file__).resolve().parents[1] / "app" / "b14_client.py"
@@ -97,3 +102,82 @@ def test_b62_stream_projection_has_no_route_or_model_fields():
     assert not hasattr(event, "route")
     assert not hasattr(event, "model")
     assert not hasattr(event, "provider")
+
+
+def test_stream_projection_carries_the_pending_core_tool_call(monkeypatch):
+    """3-B-1 is not merged yet: the projection reads the same event signature.
+
+    The local stub yields Core's future ``tool_call``/``finish_reason`` fields;
+    once 3-B-1 lands the accessor reads the real event unchanged.
+    """
+    events = [
+        SimpleNamespace(
+            tool_call=SimpleNamespace(
+                id="call_1", name="files_list", arguments={}, index=0,
+            ),
+            delta_content=None,
+            done=False,
+            finish_reason="tool_calls",
+        ),
+        SimpleNamespace(
+            tool_call=None, delta_content="본문", done=False, finish_reason=None,
+        ),
+        SimpleNamespace(
+            tool_call=None, delta_content=None, done=True, finish_reason="stop",
+        ),
+    ]
+
+    class _StubRuntime:
+        def __init__(self, **kwargs):
+            pass
+
+        def stream(self, request):
+            async def _stream():
+                for event in events:
+                    yield event
+
+            return _stream()
+
+    monkeypatch.setattr(b14_module, "StreamingExecutionRuntime", _StubRuntime)
+    client = b14_module.B14Client(
+        b14_module.Settings.from_values(
+            runtime_mode="mock", b14_base_url="https://b14.example.test",
+        )
+    )
+    request = b14_module._execution_request(
+        [{"role": "user", "content": "질문"}],
+        skill=get_task_mode(),
+        model="google/gemini-3.1-flash-lite",
+        required_capabilities=("chat",),
+        additional_system_context=None,
+        tools=CHAT_PC_TOOL_DEFINITIONS,
+        tool_choice="auto",
+    )
+
+    async def scenario():
+        return [event async for event in client._stream_core(request)]
+
+    projected = asyncio.run(scenario())
+
+    assert projected[0].tool_call == ChatToolCall(
+        id="call_1", name="files_list", arguments={}, index=0,
+    )
+    assert projected[0].finish_reason == "tool_calls"
+    assert projected[1].delta_content == "본문"
+    assert projected[2].done is True
+
+
+def test_tool_call_projection_drops_shapes_the_product_cannot_name():
+    assert b14_module._project_tool_call(None) is None
+    assert b14_module._project_tool_call(
+        SimpleNamespace(id="call_1", name="Files List", arguments={})
+    ) is None
+    assert b14_module._project_tool_call(
+        SimpleNamespace(id="bad id", name="files_list", arguments={})
+    ) is None
+    assert b14_module._project_tool_call(
+        SimpleNamespace(id="call_1", name="files_list", arguments="{}")
+    ) == ChatToolCall(id="call_1", name="files_list", arguments={}, index=None)
+    assert b14_module._project_tool_call(
+        {"id": "call_1", "name": "files_list", "arguments": {}, "index": 1}
+    ) == ChatToolCall(id="call_1", name="files_list", arguments={}, index=1)

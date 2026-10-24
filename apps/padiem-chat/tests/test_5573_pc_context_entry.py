@@ -214,6 +214,103 @@ def test_general_question_with_verified_pc_keeps_ordinary_lane(monkeypatch):
     assert b14.calls == []
 
 
+def _run_selected(request, text, tool, plan=None):
+    return asyncio.run(lane.execute_chat_pc_drive_lane(
+        request, user_text=text, skill=SimpleNamespace(id="auto"),
+        model_id="m", conversation_id=None, tier="free",
+        selected_tool=tool,
+        declared_plan=(
+            plan if plan is not None else lane.chat_pc_plan_for_tool(tool)
+        ),
+    ))
+
+
+def test_model_files_list_tool_call_runs_the_list_only_plan(monkeypatch):
+    """3-B-2: a files_list call carries no read step, so no read is dispatched."""
+    request, b14, bridge = _wire(monkeypatch)
+    result = _run_selected(request, "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?", "files_list")
+
+    assert result == ("ok", CONVERSATION)
+    sent = bridge.requests[0]
+    assert [step["step_id"] for step in sent["agent_plan"]["steps"]] == [
+        "list_files",
+    ]
+    assert all(
+        step["tool_id"] != "claw.pc.read_file"
+        for step in sent["agent_plan"]["steps"]
+    )
+    assert sent["tool_arguments"] == {"files_list": {"device_id": DEVICE}}
+    assert b14.calls == []
+
+
+def test_model_files_tool_call_keeps_the_list_read_plan(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
+    result = _run_selected(request, "\uadf8 \ud30c\uc77c \ub0b4\uc6a9 \uc54c\ub824\uc918", "files")
+
+    assert result == ("ok", CONVERSATION)
+    sent = bridge.requests[0]
+    assert [step["step_id"] for step in sent["agent_plan"]["steps"]] == [
+        "list_files", "read_file",
+    ]
+    assert sent["tool_arguments"] == {"files": {"device_id": DEVICE}}
+    assert b14.calls == []
+
+
+def test_model_query_drives_tool_call_uses_the_drive_plan(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
+    result = _run_selected(request, "\ub4dc\ub77c\uc774\ube0c \uc54c\ub824\uc918", "query_drives")
+
+    assert result == ("ok", CONVERSATION)
+    sent = bridge.requests[0]
+    assert [step["tool_id"] for step in sent["agent_plan"]["steps"]] == [
+        "claw.pc.query_drives",
+    ]
+    assert sent["tool_arguments"] == {"query_drives": {"device_id": DEVICE}}
+    assert b14.calls == []
+
+
+def test_caller_plan_cannot_widen_the_tool_plan(monkeypatch):
+    request, _, bridge = _wire(monkeypatch)
+    _run_selected(
+        request, "\uadf8 \ud3f4\ub354 \uc548\uc5d0 \ubb50 \uc788\uc5b4?", "files_list",
+        plan=lane.chat_pc_plan_for_tool("files"),
+    )
+
+    assert [step["step_id"] for step in bridge.requests[0]["agent_plan"]["steps"]] == [
+        "list_files",
+    ]
+
+
+def test_unknown_model_tool_falls_through_without_a_call(monkeypatch):
+    request, b14, bridge = _wire(monkeypatch)
+    assert _run_selected(request, "\uc548\ub155", "shell_exec") is None
+    assert bridge.requests == []
+    assert b14.calls == []
+
+
+def test_tools_available_requires_a_verified_target(monkeypatch):
+    request, _, _ = _wire(monkeypatch)
+    assert asyncio.run(
+        lane.chat_pc_tools_available(request, uid="usr_5573")
+    ) is True
+
+    request, _, _ = _wire(monkeypatch, devices=False, mesh_ready=False)
+    assert asyncio.run(
+        lane.chat_pc_tools_available(request, uid="usr_5573")
+    ) is False
+
+    request, _, _ = _wire(monkeypatch)
+    assert asyncio.run(lane.chat_pc_tools_available(request, uid=None)) is False
+
+    async def _denied(request, session, *, device_id=None):
+        return False
+
+    monkeypatch.setattr(lane, "_check_mesh_grant", _denied)
+    assert asyncio.run(
+        lane.chat_pc_tools_available(request, uid="usr_5573")
+    ) is False
+
+
 def test_pc_list_without_devices_or_mesh_returns_truthful_refusal(monkeypatch):
     """(c) No target means a fixed refusal, never a guessed model answer."""
     request, b14, bridge = _wire(
