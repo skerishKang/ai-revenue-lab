@@ -51,17 +51,42 @@ TOOL = {
 }
 
 
+TOOL_TWO = {
+    "type": "function",
+    "function": {
+        "name": "get_time",
+        "description": "Read one clock.",
+        "parameters": {"type": "object", "properties": {"zone": {"type": "string"}}},
+    },
+}
+
+
 def _frame(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
-def _call_item(item_id: str = "fc_1", arguments: str = '{"city":"Seoul"}') -> dict:
+def _call_item(
+    item_id: str = "fc_1",
+    arguments: str | dict = '{"city":"Seoul"}',
+    *,
+    name: str = "get_weather",
+    call_id: str = "call_1",
+) -> dict:
     return {
         "id": item_id,
         "type": "function_call",
-        "call_id": "call_1",
-        "name": "get_weather",
+        "call_id": call_id,
+        "name": name,
         "arguments": arguments,
+    }
+
+
+def _completed(*items: dict) -> dict:
+    return {
+        "type": "response.completed",
+        "response": {
+            "status": "completed", "model": MUSE_UPSTREAM, "output": list(items),
+        },
     }
 
 
@@ -96,6 +121,165 @@ def test_a_declared_tool_travels_flat_on_the_responses_wire() -> None:
         "description": "Look up one city.",
     }]
     assert "tool_choice" not in body
+
+
+# ---------------------------------------------------------------------------
+# The choice binds what the answer may contain, not only what is sent
+# ---------------------------------------------------------------------------
+
+
+def test_a_call_is_refused_when_the_caller_forbade_tools() -> None:
+    payload = {"model": MUSE_UPSTREAM, "status": "completed", "output": [_call_item()]}
+
+    _wire, body, _h = go.prepare_go_request(
+        model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=TURNS,
+        session_id=SESSION, tools=[TOOL], tool_choice="none",
+    )
+    assert body["tool_choice"] == "none"
+    with pytest.raises(MalformedUpstreamResponse):
+        go._normalize_go_answer(
+            "responses", MUSE_UPSTREAM, payload, latency_ms=5, response_bytes=40,
+            declared_names=go._permitted_tool_names(body),
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_streamed_call_is_refused_when_the_caller_forbade_tools() -> None:
+    item = _call_item()
+    sse = (
+        _frame("response.output_item.done", {"type": "response.output_item.done", "item": item})
+        + _frame("response.completed", _completed())
+    )
+
+    with pytest.raises(MalformedUpstreamResponse):
+        [
+            event async for event in go.stream_go_model(
+                model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=TURNS,
+                session_id=SESSION, tools=[TOOL], tool_choice="none",
+                transport=httpx.MockTransport(lambda request: httpx.Response(
+                    200, content=sse.encode(),
+                    headers={"Content-Type": "text/event-stream"},
+                )),
+            )
+        ]
+
+
+def test_a_named_choice_narrows_the_answer_to_that_one_tool() -> None:
+    _wire, body, _h = go.prepare_go_request(
+        model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=TURNS,
+        session_id=SESSION, tools=[TOOL, TOOL_TWO],
+        tool_choice={"type": "function", "function": {"name": "get_weather"}},
+    )
+
+    assert go._permitted_tool_names(body) == frozenset({"get_weather"})
+    payload = {
+        "model": MUSE_UPSTREAM, "status": "completed",
+        # get_time was declared, so it is a legal name; it just was not the one
+        # this caller asked for, and an unrequested call is not an answer.
+        "output": [_call_item(name="get_time", arguments="{}")],
+    }
+    with pytest.raises(MalformedUpstreamResponse):
+        go._normalize_go_answer(
+            "responses", MUSE_UPSTREAM, payload, latency_ms=5, response_bytes=40,
+            declared_names=go._permitted_tool_names(body),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Several calls in one turn, and the bound on them
+# ---------------------------------------------------------------------------
+
+
+def test_several_calls_in_one_turn_are_all_relayed() -> None:
+    payload = {
+        "model": MUSE_UPSTREAM, "status": "completed",
+        "output": [
+            _call_item("fc_1", '{"city":"Seoul"}'),
+            _call_item("fc_2", '{"zone":"Asia/Seoul"}', name="get_time", call_id="call_2"),
+        ],
+    }
+
+    answer = go._normalize_go_answer(
+        "responses", MUSE_UPSTREAM, payload, latency_ms=5, response_bytes=80,
+        declared_names=frozenset({"get_weather", "get_time"}),
+    )
+
+    calls = answer["choices"][0]["message"]["tool_calls"]
+    assert [c["id"] for c in calls] == ["call_1", "call_2"]
+    assert [c["function"]["name"] for c in calls] == ["get_weather", "get_time"]
+
+
+@pytest.mark.asyncio
+async def test_several_streamed_calls_number_in_order_and_round_trip() -> None:
+    items = [
+        _call_item("fc_1", '{"city":"Seoul"}'),
+        _call_item("fc_2", '{"zone":"Asia/Seoul"}', name="get_time", call_id="call_2"),
+    ]
+    sse = "".join(
+        _frame("response.output_item.done", {"type": "response.output_item.done", "item": item})
+        for item in items
+    ) + _frame("response.completed", _completed(*items))
+
+    events = [
+        event async for event in go.stream_go_model(
+            model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=TURNS,
+            session_id=SESSION, tools=[TOOL, TOOL_TWO],
+            transport=httpx.MockTransport(lambda request: httpx.Response(
+                200, content=sse.encode(),
+                headers={"Content-Type": "text/event-stream"},
+            )),
+        )
+    ]
+
+    calls = [e.tool_call for e in events if e.tool_call is not None]
+    assert [c.index for c in calls] == [0, 1]
+    assert [c.name for c in calls] == ["get_weather", "get_time"]
+
+    # The caller ran both tools; the follow-up turn must replay both calls and
+    # both results, or the model cannot produce its final answer.
+    conversation = [
+        {"role": "user", "content": "날씨와 시각을 알려줘"},
+        {"role": "assistant", "content": None, "tool_calls": [
+            {"id": "call_1", "type": "function", "function": {"name": "get_weather", "arguments": '{"city":"Seoul"}'}},
+            {"id": "call_2", "type": "function", "function": {"name": "get_time", "arguments": '{"zone":"Asia/Seoul"}'}},
+        ]},
+        {"role": "tool", "tool_call_id": "call_1", "content": "21C"},
+        {"role": "tool", "tool_call_id": "call_2", "content": "14:00"},
+    ]
+    _wire, followup, _h = go.prepare_go_request(
+        model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=conversation,
+        session_id=SESSION, tools=[TOOL, TOOL_TWO],
+    )
+
+    assert [item.get("type") for item in followup["input"]] == [
+        None, "function_call", "function_call", "function_call_output", "function_call_output",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_the_streamed_call_count_stays_inside_the_bound() -> None:
+    from app.pilot.tool_channel import MAX_TOOL_CALLS
+
+    items = [
+        _call_item(f"fc_{i}", '{"city":"Seoul"}', call_id=f"call_{i}")
+        for i in range(MAX_TOOL_CALLS + 1)
+    ]
+    sse = "".join(
+        _frame("response.output_item.done", {"type": "response.output_item.done", "item": item})
+        for item in items
+    ) + _frame("response.completed", _completed(*items))
+
+    with pytest.raises(MalformedUpstreamResponse):
+        [
+            event async for event in go.stream_go_model(
+                model_id=MUSE, upstream_model=MUSE_UPSTREAM, messages=TURNS,
+                session_id=SESSION, tools=[TOOL],
+                transport=httpx.MockTransport(lambda request: httpx.Response(
+                    200, content=sse.encode(),
+                    headers={"Content-Type": "text/event-stream"},
+                )),
+            )
+        ]
 
 
 @pytest.mark.parametrize("choice,expected", [
