@@ -1052,3 +1052,82 @@ def test_pending_result_still_refuses_a_malformed_run_id(monkeypatch):
             assert response.status_code == 404, run_id
     finally:
         connection.close()
+
+def test_engine_stream_user_turn_is_not_a_pc_run_and_text_answer_is_not_duplicated():
+    connection = _database()
+    try:
+        store = _store(connection)
+        cid = asyncio.run(store.begin_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+            user_text="ordinary question", conversation_id=CONVERSATION,
+        ))
+        assert cid == CONVERSATION
+        assert asyncio.run(store.get_claw_run(OWNER, RUN)) is None
+        assert [m["role"] for m in _messages(connection)] == ["user"]
+        assert asyncio.run(store.finish_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, answer="ordinary answer")) == CONVERSATION
+        assert [m["role"] for m in _messages(connection)] == ["user", "assistant"]
+        assert [m["content"] for m in _messages(connection)] == ["ordinary question", "ordinary answer"]
+        assert asyncio.run(store.get_claw_run(OWNER, RUN)) is None
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+    finally:
+        connection.close()
+
+
+def test_engine_stream_tool_promotion_reuses_the_exact_owner_turn_without_reappending_user():
+    connection = _database()
+    try:
+        store = _store(connection)
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+        asyncio.run(store.begin_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+            user_text="list only", conversation_id=CONVERSATION,
+        ))
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OTHER_OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+        row = asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query"))
+        assert row["conversation_id"] == CONVERSATION and row["run_id"] == RUN
+        assert row["workspace_id"] == WORKSPACE and row["action"] == "pc_files_query"
+        assert [m["content"] for m in _messages(connection)] == ["list only"]
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(store.begin_chat_stream_turn(
+                user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+                user_text="different turn", conversation_id=CONVERSATION,
+            ))
+    finally:
+        connection.close()
+
+
+def test_streamed_pc_completion_reuses_the_verified_result_and_terminal_guards():
+    connection = _database()
+    try:
+        store = _store(connection)
+        asyncio.run(store.begin_chat_stream_turn(user_id=OWNER, run_id=RUN,
+            workspace_id=WORKSPACE, user_text="list request", conversation_id=CONVERSATION))
+        asyncio.run(store.promote_chat_stream_pc_run(user_id=OWNER, run_id=RUN,
+            workspace_id=WORKSPACE, action="pc_files_query"))
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=_files_list_claim()))
+        _stage_command(store, "list")
+        asyncio.run(store.append_local_task_result(user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list", summary="no_exit_code",
+            content="verified listing", status="completed"))
+        # An answer cannot seal a dispatch which has not reached done.
+        asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="too early"))
+        assert _run_row(connection)["status"] == "running"
+        assert "too early" not in [r["content"] for r in _messages(connection)]
+        _finish_command(connection, "list")
+        asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="final listing"))
+        assert _run_row(connection)["status"] == "completed"
+        messages = _messages(connection)
+        assert [r["role"] for r in messages].count("user") == 1
+        assert [r["content"] for r in messages].count("final listing") == 1
+        assert any(r["id"] == RUN + "_scope" for r in messages)
+        assert any(r["id"] == RUN + "_final" for r in messages)
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="replay"))
+    finally:
+        connection.close()

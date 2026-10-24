@@ -4,9 +4,8 @@ These drive the real ``POST /api/orchestration`` route with a fake Engine
 bridge and fake PC-context sources, so no provider, no Engine and no PC is
 contacted. What they pin:
 
-* a turn for an account with a server-verified PC, on a route whose catalog
-  declares native tools, is deferred to the Chat stream lane — the one lane
-  that can observe the model's tool call before anything is staged or executed;
+* a server-verified PC offers context to one Engine stream, where the model
+  selects a tool; ordinary text creates no PC run;
 * no wording decides that deferral, in either direction;
 * an unverified PC, or a route without the ``tools`` capability, keeps the
   ordinary Engine turn and never reaches a PC plan;
@@ -59,6 +58,8 @@ class _Store:
 
     def __init__(self):
         self.staged = []
+        self.pending_turns = []
+        self.answers = []
         self.fail = None
         self.run_row = None
 
@@ -97,6 +98,14 @@ class _Store:
         self._fail("append_local_task_result")
         return True
 
+    async def begin_chat_stream_turn(self, **fields):
+        self.pending_turns.append(fields)
+        return "chat_" + "s" * 32
+
+    async def finish_chat_stream_turn(self, **fields):
+        self.answers.append(fields)
+        return "chat_" + "s" * 32
+
     async def get_pc_run_scope_notice(self, *, user_id: str, run_id: str):
         return None
 
@@ -116,6 +125,24 @@ class _Bridge(B62EngineOrchestrationBridge):
             "user_text": "request", "orchestration": {},
             "decision_status": "complete",
         })()
+
+
+    async def start_stream(self, **fields):
+        from app.orchestration_bridge import B62OrchestrationResult
+        self.requests.append(fields)
+        events = [
+            {"event_id": "evt_1", "run_id": "run_1", "trace_id": "trace_1",
+             "app_id": "padiem-chat", "kind": "run_started", "sequence": 1},
+            {"event_id": "evt_2", "run_id": "run_1", "trace_id": "trace_1",
+             "app_id": "padiem-chat", "kind": "run_completed", "sequence": 2},
+        ]
+        yield {"event": events[0]}
+        yield {"text_delta": {"delta": "ok"}}
+        yield {"event": events[1]}
+        yield {"result": B62OrchestrationResult(
+            {"events": events, "approval_pause": None, "continuation_ref": None, "answer": "ok"},
+            "ok", fields["user_text"], fields["conversation_id"],
+        )}
 
 
 def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True,
@@ -177,6 +204,10 @@ def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True,
     async def _resolve(request, **kwargs):
         return context
 
+    async def _file_target(*args, **kwargs):
+        return {"root": "C:/approved"}, None
+    from app import oracle_mesh_read_return_routes as mesh_routes
+    monkeypatch.setattr(mesh_routes, "_engine_pc_files_target", _file_target)
     monkeypatch.setattr(lane, "chat_pc_route_declares_tools", _declares)
     monkeypatch.setattr(lane, "_resolve_chat_owner", _owner)
     monkeypatch.setattr(lane, "_check_mesh_grant", _grant)
@@ -212,40 +243,47 @@ async def _post(app, text, *, device_id=None, pc_run_id=None):
         )
 
 
-async def test_a_pc_capable_turn_defers_to_the_lane_with_the_model_tool(monkeypatch):
-    """The PC decision is the model's tool call, so the turn moves to that lane."""
+async def test_a_pc_capable_turn_uses_one_engine_stream_with_server_context(monkeypatch):
     app, bridge, store = _wire(monkeypatch)
-    response = await _post(app, PC_TEXT)
-
-    assert response.status_code == 409, response.text
-    assert response.json()["error"]["code"] == "orchestration_not_applicable"
-    # Nothing executed here: no Engine turn, no staged PC run.
-    assert bridge.requests == []
+    response = await _post(app, PC_TEXT, pc_run_id=PC_RUN)
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.text.count("event: delta") == 1
+    assert response.text.count('"delta":"ok"') == 1
+    assert len(bridge.requests) == 1
+    assert bridge.requests[0]["pc_tools"] == {
+        "device_id": DEVICE, "allowed_scopes": ["query_drives", "files_list", "files"],
+    }
+    assert bridge.requests[0]["session_id"] == PC_RUN
     assert store.staged == []
+    assert len(store.pending_turns) == len(store.answers) == 1
 
 
-async def test_no_wording_decides_the_deferral(monkeypatch):
-    """A PC sentence, a paraphrase-only list request and a maths question defer alike.
-
-    The keyword table is gone, so this surface cannot be picking PC turns out of
-    the sentence in either direction: the server-verified PC plus a
-    tools-declaring route is the whole decision.
-    """
+async def test_no_wording_decides_the_engine_pc_tools_offer(monkeypatch):
     for text in (PC_TEXT, LIST_ONLY, PLAIN_TEXT):
         app, bridge, store = _wire(monkeypatch)
-        response = await _post(app, text)
-        assert response.status_code == 409, text
-        assert bridge.requests == []
+        response = await _post(app, text, pc_run_id=PC_RUN)
+        assert response.status_code == 200, response.text
+        assert response.headers["content-type"].startswith("text/event-stream")
+        assert len(bridge.requests) == 1
+        assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
+        # A user turn receipt is not a PC run. Only an actual signed tool
+        # callback can promote one; an ordinary text answer stages none.
         assert store.staged == []
 
 
-async def test_a_route_without_tools_capability_keeps_the_engine_turn(monkeypatch):
-    """An unverified capability is not a PC turn: the ordinary Engine answer runs."""
+async def test_route_capability_is_left_to_the_engine_without_a_classifier_call(monkeypatch):
     app, bridge, store = _wire(monkeypatch, tools_declared=False)
-    response = await _post(app, PC_TEXT)
-
-    assert response.status_code == 200, response.text
-    assert len(bridge.requests) == 1
+    calls = []
+    async def forbidden(*args, **kwargs):
+        calls.append(1)
+        raise AssertionError("No Chat classification/model request permitted")
+    monkeypatch.setattr(lane, "chat_pc_route_declares_tools", forbidden)
+    monkeypatch.setattr(lane, "execute_chat_pc_drive_lane", forbidden)
+    response = await _post(app, PLAIN_TEXT, pc_run_id=PC_RUN)
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert len(bridge.requests) == 1 and calls == []
     assert store.staged == []
 
 
@@ -272,8 +310,9 @@ async def test_a_mesh_only_account_is_not_asked_to_register_a_pc(monkeypatch):
     app, bridge, store = _wire(monkeypatch, devices=False)
     response = await _post(app, LIST_ONLY)
 
-    assert response.status_code == 409, response.text
-    assert bridge.requests == []
+    assert response.status_code == 200, response.text
+    assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
+    assert store.staged == []
 
 
 async def test_no_verified_target_at_all_keeps_the_ordinary_engine_turn(monkeypatch):
@@ -295,8 +334,10 @@ async def test_a_browser_target_and_handle_are_never_a_plan(monkeypatch):
         app, PC_TEXT, device_id=OTHER_DEVICE, pc_run_id=PC_RUN,
     )
 
-    assert response.status_code == 409, response.text
-    assert bridge.requests == []
+    assert response.status_code == 200, response.text
+    # A stale target cannot silently execute against a different saved PC.
+    assert "pc_tools" not in bridge.requests[0]
+    assert store.pending_turns == []
     assert store.staged == []
 
 
@@ -308,7 +349,7 @@ def test_the_surface_keeps_no_pc_execution_path_of_its_own():
     ).read_text(encoding="utf-8")
     # The surface reads the one existing availability decision and nothing else:
     # no lane call, no plan, no target hint, no natural-language table.
-    assert "from .chat_pc_drive import pc_tool_entry_available" in source
+    assert "from .chat_pc_drive import resolve_chat_pc_stream_context" in source
     assert "execute_chat_pc_drive_lane" not in source
     assert "agent_plan" not in source
     assert "tool_arguments" not in source
@@ -448,3 +489,11 @@ async def test_a_lane_engine_503_retains_the_original_engine_code(monkeypatch):
     assert excinfo.value.public_error()["cause"] == (
         "B62OrchestrationError: upstream_unavailable: AI unavailable"
     )
+
+
+async def test_invalid_stream_recovery_handle_is_refused_before_any_engine_or_history_call(monkeypatch):
+    app, bridge, store = _wire(monkeypatch)
+    response = await _post(app, PLAIN_TEXT, pc_run_id="noncanonical")
+    assert response.status_code == 422, response.text
+    assert response.json()["error"]["code"] == "invalid_request"
+    assert bridge.requests == [] and store.pending_turns == [] and store.staged == []

@@ -416,6 +416,7 @@ class B62EngineOrchestrationBridge:
         tool_arguments: Mapping[str, Any] | None = None,
         session_id: str | None = None,
         product_identity: str | None = None,
+        pc_tools: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -478,6 +479,19 @@ class B62EngineOrchestrationBridge:
             request["session_id"] = conversation_id
         if additional_system_context:
             request["additional_system_context"] = additional_system_context
+        if pc_tools is not None:
+            from padiem_ai_core.pc_device_identity import is_pc_device_id
+            scopes = pc_tools.get("allowed_scopes") if isinstance(pc_tools, Mapping) else None
+            if (agent_plan is not None or tool_arguments is not None
+                    or not isinstance(pc_tools, Mapping)
+                    or set(pc_tools) != {"device_id", "allowed_scopes"}
+                    or not is_pc_device_id(pc_tools.get("device_id"))
+                    or not isinstance(scopes, list) or not scopes
+                    or any(v not in ("query_drives", "files_list", "files") for v in scopes)
+                    or len(set(scopes)) != len(scopes)
+                    or not request.get("subject_id") or not request.get("session_id")):
+                raise B62OrchestrationError("invalid_engine_request", "PC 도구 요청을 확인할 수 없습니다.", status_code=500)
+            request["pc_tools"] = {"device_id": pc_tools["device_id"], "allowed_scopes": list(scopes)}
         return request
 
     async def _persist_pause(
@@ -547,6 +561,39 @@ class B62EngineOrchestrationBridge:
         )
         answer = public.get("answer") if isinstance(public.get("answer"), str) else None
         return B62OrchestrationResult(public, answer, user_text, conversation_id)
+
+    async def start_stream(
+        self, *, user_id: str, messages: Sequence[Mapping[str, str]], skill: Any,
+        model_id: str, user_text: str, conversation_id: str | None,
+        pc_tools: Mapping[str, Any], subject_id: str, session_id: str,
+        additional_system_context: str | None = None, product_identity: str | None = None,
+    ):
+        request = self.build_engine_request(
+            user_id=user_id, messages=messages, skill=skill, model_id=model_id,
+            conversation_id=conversation_id, pc_tools=pc_tools,
+            subject_id=subject_id, session_id=session_id,
+            additional_system_context=additional_system_context, product_identity=product_identity,
+        )
+        iterator = self._client.stream_orchestration(request, pc_progress=True)
+        try:
+            async for record in iterator:
+                if "orchestration" not in record:
+                    yield record
+                    continue
+                public = project_public_orchestration(record["orchestration"])
+                await self._persist_pause(
+                    public=public, engine_request=request, user_id=user_id,
+                    user_text=user_text, conversation_id=conversation_id,
+                )
+                yield {"result": B62OrchestrationResult(
+                    public, public.get("answer"), user_text, conversation_id,
+                )}
+        except PadiemAiEngineClientError as exc:
+            raise _engine_error(exc) from exc
+        finally:
+            close = getattr(iterator, "aclose", None)
+            if callable(close):
+                await close()
 
     async def resume(
         self,

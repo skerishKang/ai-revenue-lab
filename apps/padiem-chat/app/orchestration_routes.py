@@ -235,23 +235,12 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
 
     user_text = _latest_user(messages)
-    # #5573 (3-C-2): no wording selects the PC lane on this route either. The
-    # decision now belongs to the model's tool call, and only the Chat stream
-    # lane can observe that call *before* anything is staged or executed
-    # (#5709). This lane's Engine turn runs the PC tool inside its own run, so
-    # staging after the decision is impossible and staging every turn would put
-    # a pending PC run on ordinary conversation. Deferring with the code the
-    # browser already falls back on — the same one attachments and PADIEM
-    # Custom use — reuses the existing route contract instead of adding a
-    # second PC entry or a second write surface.
-    from .chat_pc_drive import pc_tool_entry_available
-
-    if await pc_tool_entry_available(request, uid=uid, model_id=policy.model_id):
-        return _error(
-            "orchestration_not_applicable",
-            "이 요청은 채팅 경로에서 처리합니다.",
-            409,
-        )
+    # The server verification chooses only whether PC tools may be offered.
+    # Model interpretation stays inside the same Engine turn.
+    from .chat_pc_drive import resolve_chat_pc_stream_context
+    pc_context = await resolve_chat_pc_stream_context(
+        request, uid=uid, requested_device_id=raw.get("device_id"),
+    )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
     # web search has to run here as well. The existing Core search decision,
@@ -289,6 +278,53 @@ async def api_orchestration(request: Request) -> JSONResponse:
         if prepared is not None:
             grounding_context = prepared.context
             grounded_evidence = public_grounding_evidence(prepared.evidence)
+
+    if pc_context is not None:
+        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, _new_lane_run_id, pc_scope_notice_for_run
+        from .claw_live_events import chat_pc_orchestration_sse
+        begin = getattr(store, "begin_chat_stream_turn", None)
+        finish = getattr(store, "finish_chat_stream_turn", None)
+        if not callable(begin) or not callable(finish):
+            return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        try:
+            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or _new_lane_run_id()
+            saved_id = await begin(
+                user_id=uid, run_id=pc_run_id, workspace_id=pc_context["workspace_id"],
+                user_text=user_text, conversation_id=conversation_id,
+            )
+        except ChatPCDriveError as exc:
+            return _error(exc.code, exc.user_message, exc.status_code)
+        except Exception:
+            return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        stream = bridge.start_stream(
+            user_id=uid, messages=policy.messages, skill=skill, model_id=policy.model_id,
+            user_text=user_text, conversation_id=saved_id,
+            pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
+            session_id=pc_run_id, additional_system_context=grounding_context,
+            product_identity=product_identity,
+        )
+        async def scope_notice():
+            return await pc_scope_notice_for_run(request, run_id=pc_run_id)
+        async def complete_stream(result):
+            fields = {"conversation_id": saved_id}
+            try:
+                await finish(user_id=uid, run_id=pc_run_id, answer=result.answer)
+            except Exception:
+                # Match normal history-save behavior: a verified answer remains
+                # visible even if optional history projection is unavailable.
+                pass
+            notice = await scope_notice()
+            if notice is not None:
+                fields["scope_notice"] = notice
+            return fields
+        completion_fields = dict(grounding_notice)
+        if grounded_evidence:
+            completion_fields.update(answer_status="answered_with_evidence",
+                evidence=grounded_evidence, tool={"id": "web_search", "title": "웹 검색"})
+        return chat_pc_orchestration_sse(
+            stream, pc_run_id=pc_run_id, on_completed=complete_stream,
+            on_scope=scope_notice, done_fields=completion_fields,
+        )
 
     try:
         result = await bridge.start(
