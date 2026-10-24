@@ -85,6 +85,13 @@ def test_util_menu_css_hides_duplicate_tabs_and_styles_submenu() -> None:
     assert 'html[data-theme="padiem-glass"] .util-submenu-item' in css
 
 
+def test_util_parent_shows_the_active_treatment_while_a_tool_is_open() -> None:
+    css = UTIL_MENU_CSS.read_text(encoding="utf-8")
+    rule = css[css.index('#utilNavButton[aria-current="page"]') :]
+    assert "var(--accent-soft" in rule[:200]
+    assert "inset 3px 0 0 var(--accent" in rule[:200]
+
+
 # --------------------------------------------------------------------------
 # behavioral harness: real util-menu.js, minimal DOM, no network
 # --------------------------------------------------------------------------
