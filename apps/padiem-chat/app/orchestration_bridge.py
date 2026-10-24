@@ -462,6 +462,13 @@ class B62EngineOrchestrationBridge:
         }
         if agent_plan is not None:
             request["agent_plan"] = dict(agent_plan)
+            # #5573 Owner decision: PC tool turns have no execution deadline.
+            # Match the server-authored PC plan, including tool-call entry;
+            # ordinary requests retain their exact existing wire shape.
+            from .chat_pc_drive import CHAT_PC_QUERY_AGENT_ID
+
+            if agent_plan.get("agent_id") == CHAT_PC_QUERY_AGENT_ID:
+                request["execution_context"]["timeout_seconds"] = None
         if tool_arguments is not None:
             request["tool_arguments"] = dict(tool_arguments)
         if session_id is not None:
