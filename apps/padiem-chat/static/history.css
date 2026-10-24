@@ -239,6 +239,26 @@ html[data-theme="dark"] .auth-primary {
   display: block;
 }
 
+/* #5474: Free is usable without a login; the note under the login button names
+   what signing in adds, in the same Glass typography as the rest of the panel. */
+.auth-free-note {
+  display: grid;
+  gap: 2px;
+  margin: -8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.auth-free-note strong {
+  font-weight: 650;
+  opacity: 0.9;
+}
+
+.auth-free-note span {
+  opacity: 0.78;
+}
+
 .auth-primary {
   background: #111;
   color: #fff;

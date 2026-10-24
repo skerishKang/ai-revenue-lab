@@ -1,7 +1,9 @@
 """Owner-approved Free baseline uses the existing Gemini 3.1 route for members.
 
 This deliberately does not activate Plus/Pro/Max, mutate central membership,
-or authorize a browser-supplied arbitrary exact model.
+or authorize a browser-supplied arbitrary exact model. #5474 (Owner decision
+2026-10-24) keeps Free as the anonymous baseline too, bounded by the usage
+gate; a paid upgrade is never inferred from the request.
 """
 from __future__ import annotations
 
@@ -17,7 +19,7 @@ from test_auth_history import MemoryHistoryStore, add_test_user
 
 
 @pytest.mark.asyncio
-async def test_free_requires_membership_login_not_paid_upgrade() -> None:
+async def test_anonymous_free_needs_no_paid_upgrade_and_stays_bounded() -> None:
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="google",
@@ -42,9 +44,10 @@ async def test_free_requires_membership_login_not_paid_upgrade() -> None:
         allowed = await client.post("/api/chat", json=payload)
         assert allowed.status_code == 200, allowed.text
 
-    # Actual B14 mode without a login must reject BEFORE any provider POST.
-    # Only the authentication decision is under test, no upstream mock response
-    # or live model dispatch is ever allowed here.
+    # Actual B14 mode without a login is the anonymous Free lane since #5474
+    # (Owner decision 2026-10-24). The usage gate answers before any provider
+    # POST, and the request never buys a paid tier. Only the gating decision is
+    # under test; no upstream mock response or live dispatch is allowed here.
     live_settings = Settings.from_values(
         runtime_mode="b14",
         b14_base_url="https://b14.test.invalid",
@@ -55,14 +58,15 @@ async def test_free_requires_membership_login_not_paid_upgrade() -> None:
         session_secret="test-free-member-route-secret-0000000000000000000",
     )
     live_app = create_app(live_settings, history_store=store)
+    live_app.state.usage_gate_enforced = True
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=live_app), base_url="https://chat.example.test",
     ) as client:
-        denied = await client.post("/api/chat/stream", json=payload)
-        assert denied.status_code == 401
-        assert denied.json()["error"]["code"] == "unauthorized"
-        denied_complete = await client.post("/api/chat", json=payload)
-        assert denied_complete.status_code == 401
+        bounded = await client.post("/api/chat/stream", json=payload)
+        assert bounded.status_code == 503
+        assert bounded.json()["error"]["code"] == "live_abuse_gate_unavailable"
+        bounded_complete = await client.post("/api/chat", json=payload)
+        assert bounded_complete.status_code == 503
     assert resolve_tier_policy(payload["messages"], "free").model_id == FREE_B14_MODEL_ID
 
 
