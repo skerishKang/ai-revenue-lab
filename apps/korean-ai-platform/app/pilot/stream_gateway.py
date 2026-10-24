@@ -96,15 +96,23 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     if get_catalog_by_id(model_id) is None:
         raise UnsupportedModel(model_id)
 
-    # #5573 slice 3-A: only a capability-declared Google native wire carries tools.
+    # #5573 slice 3-A / #4727: a streaming tool call is served only by a route
+    # whose provider adapter actually carries one.
     if body.get("tools"):
-        from .google_provider import require_stream_tool_support
-        require_stream_tool_support(model_id)
+        from .tool_channel import require_stream_tool_wire
+        require_stream_tool_wire(model_id)
 
     # Slice 12 is deliberately text-only. The installed multimodal validator
     # may accept structured content for the canonical endpoint; preview
     # streaming does not widen that contract yet.
-    if any(not isinstance(message.get("content"), str) for message in body["messages"]):
+    # #4727: the tool channel's own turns are the one documented exception. An
+    # assistant turn whose answer is a call carries no text, and the result of
+    # that call is the turn the model reads before its final answer.
+    if any(
+        not isinstance(message.get("content"), str)
+        and not (message.get("role") == "assistant" and message.get("tool_calls"))
+        for message in body["messages"]
+    ):
         raise StreamNotSupported()
 
     b14_opts = body.get("business14", {})
@@ -430,8 +438,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 raise InvalidRequest("platform_secret route missing provider binding.")
 
             if body.get("tools"):
-                from .google_provider import require_stream_tool_support
-                require_stream_tool_support(selected_model, platform_provider_id)
+                # #4727: a fallback candidate is a different provider wire, so
+                # the adapter check runs again for the model that will answer.
+                from .tool_channel import require_stream_tool_wire
+                require_stream_tool_wire(selected_model, platform_provider_id)
 
             iterator = stream_platform_chat_completions(
                 model_id=selected_model,

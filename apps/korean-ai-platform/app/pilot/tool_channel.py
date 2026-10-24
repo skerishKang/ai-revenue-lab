@@ -19,10 +19,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from app.pilot.errors import PilotError, ToolsNotSupported
+from app.pilot.errors import PilotError, StreamNotSupported, ToolsNotSupported
 
 # The registry capability tag that marks a model able to serve tool calls.
 TOOL_CAPABILITY = "tools"
+# The provider whose models are served by the OpenCode Go wire adapter.
+GO_PROVIDER_ID = "opencode-go"
 
 # A tool name is a provider-side identifier. The bound and the character set
 # keep a declared name small and predictable.
@@ -37,6 +39,11 @@ _TOOL_CALL_ID_CHARS = frozenset(
 
 MAX_TOOL_DEFINITIONS = 32
 MAX_TOOL_CALLS = 16
+# A call's arguments are the only part of a provider answer a caller may act
+# on. The bound matches the Core execution contract's own limit, so B14 refuses
+# an oversized call at the edge instead of relaying a payload its consumer
+# would reject after the credential was already spent.
+MAX_TOOL_ARGUMENT_CHARS = 65_536
 
 _TOOL_CHOICE_KEYWORDS = frozenset({"auto", "none", "required"})
 
@@ -227,6 +234,10 @@ def validate_tool_calls(raw: Any, index: int) -> list[dict[str, Any]]:
             raise InvalidToolDeclaration(
                 f"messages[{index}].tool_calls[{call_index}] arguments must be a JSON string"
             )
+        if isinstance(arguments, str) and len(arguments) > MAX_TOOL_ARGUMENT_CHARS:
+            raise InvalidToolDeclaration(
+                f"messages[{index}].tool_calls[{call_index}] arguments are too large"
+            )
         validated.append(
             {
                 "id": call_id,
@@ -363,3 +374,33 @@ def require_tool_capability(model_id: str) -> None:
 
     if not model_supports_tools(model_id):
         raise ToolsNotSupported(model_id)
+
+
+def require_stream_tool_wire(
+    model_id: str, platform_provider_id: str | None = None
+) -> None:
+    """Refuse a streaming tool request the routed adapter cannot carry.
+
+    Serving a tool call is a property of the provider wire, not of the channel:
+    the Google native lane and the OpenCode Go Responses lane each carry one,
+    and every other route must be refused before a credential is spent rather
+    than answered without the tool the caller asked for. Each adapter owns its
+    own refusal, so this only dispatches to the one that will serve the call.
+    """
+
+    if platform_provider_id is None:
+        from app.pilot.catalog import get_catalog_by_id
+
+        model = get_catalog_by_id(model_id)
+        platform_provider_id = model.platform_provider_id if model else None
+
+    if platform_provider_id == GO_PROVIDER_ID:
+        from .opencode_go_wire import go_tool_wire
+
+        if go_tool_wire(model_id) is None:
+            raise StreamNotSupported()
+        return
+
+    from .google_provider import require_stream_tool_support
+
+    require_stream_tool_support(model_id, platform_provider_id)
