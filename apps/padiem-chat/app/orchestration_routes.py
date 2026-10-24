@@ -141,60 +141,6 @@ async def _save_terminal_history(
         return conversation_id
 
 
-async def _run_pc_lane(
-    request: Request,
-    *,
-    user_text: str,
-    execution_user_text: str | None = None,
-    skill: Any,
-    model_id: str,
-    tier: str,
-    conversation_id: str | None,
-    device_id: Any,
-    run_id: Any = None,
-    conversation_messages: Any = None,
-) -> tuple[str | None, str | None]:
-    """Run the existing PC drive/file lane for this turn, if it applies.
-
-    The lane itself decides whether the turn is a PC request, resolves the
-    server-verified target, and owns the plan, the grant checks and the answer
-    persistence. A turn that is not a PC request returns ``(None, None)`` and
-    the caller continues with the ordinary orchestration path.
-    """
-    from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
-
-    try:
-        outcome = await execute_chat_pc_drive_lane(
-            request,
-            user_text=user_text,
-            execution_user_text=execution_user_text,
-            skill=skill,
-            model_id=model_id,
-            conversation_id=conversation_id,
-            tier=tier,
-            device_id=device_id if isinstance(device_id, str) else None,
-            run_id=run_id if isinstance(run_id, str) else None,
-            conversation_messages=conversation_messages,
-        )
-    except ChatPCDriveError as exc:
-        raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code, cause=exc.cause) from exc
-    if outcome is None:
-        return None, None
-    answer, lane_conversation_id = outcome
-    return answer, lane_conversation_id
-
-
-class _PcLaneRefusal(Exception):
-    """A bounded refusal from the existing PC lane."""
-
-    def __init__(self, code: str, user_message: str, status_code: int, *, cause: str | None = None) -> None:
-        super().__init__(code)
-        self.code = code
-        self.user_message = user_message
-        self.status_code = status_code
-        self.cause = cause
-
-
 def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
     """The browser-safe evidence projection for a grounded answer.
 
@@ -289,55 +235,23 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
 
     user_text = _latest_user(messages)
-    # #5015: the resolved policy already removed a hidden tier alias from the
-    # execution messages. The PC lane uses that text for its model/Engine
-    # prompt, while the original user_text above remains the stored user turn.
-    execution_user_text = _latest_user(policy.messages)
-    # #5015: a browser turn may reach this surface instead of the Chat stream
-    # route. The generic bridge call below carries NO PC plan and NO selected
-    # target, so a PC request could never reach the existing PC file lane: the
-    # Engine would run a plan without the PC query steps, and the selected PC
-    # would never be part of the request. Reuse the existing PC module (the
-    # same one the Chat stream route uses) so the PC plan, the server-verified
-    # target and the existing Mesh grant checks stay exactly where they are.
-    # No second executor, no second target store, no browser-chosen target.
-    try:
-        pc_lane_answer, pc_lane_conversation_id = await _run_pc_lane(
-            request,
-            user_text=user_text,
-            execution_user_text=execution_user_text,
-            skill=skill,
-            model_id=policy.model_id,
-            tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            conversation_id=conversation_id,
-            device_id=raw.get("device_id"),
-            run_id=raw.get("pc_run_id"),
-            conversation_messages=messages,
-        )
-    except _PcLaneRefusal as exc:
-        error = {"code": exc.code, "message": exc.user_message}
-        if exc.cause is not None:
-            error["cause"] = exc.cause
-        return JSONResponse({"error": error}, status_code=exc.status_code)
-    if pc_lane_answer is not None:
-        # The PC lane already persisted the verified exchange in its own
-        # conversation, so the answer is not stored a second time here.
-        payload: dict[str, Any] = {
-            "orchestration": {"status": "completed", "source": "pc_file_lane"},
-            "answer": pc_lane_answer,
-            "decision_status": "completed",
-        }
-        if pc_lane_conversation_id is not None:
-            payload["conversation_id"] = pc_lane_conversation_id
-        from .chat_pc_drive import pc_scope_notice_for_run
+    # #5573 (3-C-2): no wording selects the PC lane on this route either. The
+    # decision now belongs to the model's tool call, and only the Chat stream
+    # lane can observe that call *before* anything is staged or executed
+    # (#5709). This lane's Engine turn runs the PC tool inside its own run, so
+    # staging after the decision is impossible and staging every turn would put
+    # a pending PC run on ordinary conversation. Deferring with the code the
+    # browser already falls back on — the same one attachments and PADIEM
+    # Custom use — reuses the existing route contract instead of adding a
+    # second PC entry or a second write surface.
+    from .chat_pc_drive import pc_tool_entry_available
 
-        # #5573: the admitted scope was pinned before dispatch. This is the
-        # browser's live completion path, so the pinned notice is returned
-        # here as its own field; it is never folded into the answer.
-        scope_notice = await pc_scope_notice_for_run(request, run_id=raw.get("pc_run_id"))
-        if scope_notice is not None:
-            payload["scope_notice"] = scope_notice
-        return JSONResponse(payload, headers={"Cache-Control": "no-store"})
+    if await pc_tool_entry_available(request, uid=uid, model_id=policy.model_id):
+        return _error(
+            "orchestration_not_applicable",
+            "이 요청은 채팅 경로에서 처리합니다.",
+            409,
+        )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
     # web search has to run here as well. The existing Core search decision,

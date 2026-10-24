@@ -142,35 +142,6 @@ async def _close_stream(stream: Any) -> None:
             pass
 
 
-async def _route_declares_tools(request: Request, model_id: str) -> bool:
-    """Whether the resolved B14 route declares the native tools capability.
-
-    The B14 catalog is the only authority here: an unknown/unreadable catalog
-    or any mismatch withholds the declaration (and therefore the tools).
-    """
-    source = getattr(request.app.state, "b14_catalog_source", None)
-    lister = getattr(source, "list_registered_models", None)
-    if not callable(lister):
-        return False
-    try:
-        rows = await lister()
-    except Exception:
-        return False
-    if not isinstance(rows, list):
-        return False
-    for row in rows:
-        if not isinstance(row, dict) or row.get("model_id") != model_id:
-            continue
-        capabilities = row.get("capabilities")
-        return (
-            isinstance(capabilities, list)
-            and "tools" in capabilities
-            and row.get("b14_enabled") is True
-            and row.get("owner_excluded") is False
-        )
-    return False
-
-
 async def _chat_pc_tools_for_turn(
     request: Request, *, uid: str | None, model_id: str,
 ) -> tuple[Any, ...]:
@@ -178,15 +149,11 @@ async def _chat_pc_tools_for_turn(
 
     Tools require BOTH a verified PC target for this account and a resolved
     route whose catalog row declares native tools; otherwise the request keeps
-    its existing shape and the keyword entry stays the only PC path.
+    its existing shape and this turn has no PC path at all.
     """
-    if not uid:
-        return ()
-    if not await _route_declares_tools(request, model_id):
-        return ()
-    from .chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS, chat_pc_tools_available
+    from .chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS, pc_tool_entry_available
 
-    if not await chat_pc_tools_available(request, uid=uid):
+    if not await pc_tool_entry_available(request, uid=uid, model_id=model_id):
         return ()
     return CHAT_PC_TOOL_DEFINITIONS
 
@@ -499,38 +466,6 @@ async def api_chat_stream(request: Request):
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
-    # #5015/#5573: only an explicit client PC run handle enters the PC lane.
-    # Ordinary chat keeps the existing stream path unchanged.
-    if browser_project_id is None and raw.get("pc_run_id") is not None:
-        from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
-        try:
-            lane_outcome = await execute_chat_pc_drive_lane(
-                request, user_text=latest_user_text, skill=skill,
-                model_id=selected_model, conversation_id=conversation_id,
-                tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-                device_id=raw.get("device_id"), run_id=raw.get("pc_run_id"),
-            )
-        except ChatPCDriveError as exc:
-            return JSONResponse(
-                {"error": exc.public_error()},
-                status_code=exc.status_code,
-            )
-        if lane_outcome is not None:
-            lane_answer, lane_conversation_id = lane_outcome
-            async def lane_body_iterator():
-                yield _public_sse("delta", {"delta": lane_answer})
-                lane_done: dict[str, Any] = {"done": True}
-                if lane_conversation_id:
-                    lane_done["conversation_id"] = lane_conversation_id
-                yield _public_sse("done", lane_done)
-            return StreamingResponse(
-                lane_body_iterator(),
-                status_code=200,
-                media_type="text/event-stream",
-                headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-            )
-
-
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
     needs_native_calendar = False
@@ -618,8 +553,10 @@ async def api_chat_stream(request: Request):
         client = apply_guard_to_client(client, guard)
         # #5573 (3-B-2): only a verified PC account on a tools-declaring route
         # receives the PC tools; every other turn keeps the request bytes it
-        # had before this slice.
-        pc_tools = await _chat_pc_tools_for_turn(
+        # had before this slice. A project turn runs on its own reference
+        # context and is never offered a PC tool, so it can neither be deferred
+        # nor handed to the PC lane.
+        pc_tools = () if browser_project_id is not None else await _chat_pc_tools_for_turn(
             request, uid=uid, model_id=policy.model_id,
         )
         stream = client.stream_text_auto(
@@ -688,6 +625,10 @@ async def api_chat_stream(request: Request):
                 None,
             )
             try:
+                # The browser's own run handle is reused as the staged run id,
+                # so a dropped connection recovers this turn's verified result
+                # through the existing owner-scoped GET (#5567) instead of
+                # resubmitting the PC turn.
                 lane_outcome = await execute_chat_pc_drive_lane(
                     request,
                     user_text=latest_user_text,
@@ -695,18 +636,15 @@ async def api_chat_stream(request: Request):
                     skill=skill,
                     model_id=selected_model,
                     conversation_id=conversation_id,
-                    tier=(
-                        raw.get("tier", "free")
-                        if isinstance(raw.get("tier"), str) else "free"
-                    ),
                     device_id=raw.get("device_id"),
+                    run_id=raw.get("pc_run_id"),
                     conversation_messages=messages,
                     selected_tool=selected_tool,
                     declared_plan=declared_plan,
                 )
             except ChatPCDriveError as exc:
                 return JSONResponse(
-                    {"error": {"code": exc.code, "message": exc.user_message}},
+                    {"error": exc.public_error()},
                     status_code=exc.status_code,
                 )
             if lane_outcome is None:
@@ -717,11 +655,22 @@ async def api_chat_stream(request: Request):
 
     if lane_outcome is not None:
         lane_answer, lane_conversation_id = lane_outcome
+        from .chat_pc_drive import pc_scope_notice_for_run
+
+        lane_scope_notice = await pc_scope_notice_for_run(
+            request, run_id=raw.get("pc_run_id"),
+        )
+
         async def tool_lane_body_iterator():
             yield _public_sse("delta", {"delta": lane_answer})
             tool_done: dict[str, Any] = {"done": True}
             if lane_conversation_id:
                 tool_done["conversation_id"] = lane_conversation_id
+            if lane_scope_notice:
+                # #5573: the scope pinned before dispatch is its own field, so
+                # the live answer states "목록만 조회합니다" without the
+                # notice being folded into the answer text.
+                tool_done["scope_notice"] = lane_scope_notice
             yield _public_sse("done", tool_done)
         return StreamingResponse(
             tool_lane_body_iterator(),
@@ -1059,22 +1008,6 @@ async def api_chat(request: Request) -> JSONResponse:
         )
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
-
-    # #5015/#5573: explicit client PC run handle only; ordinary JSON chat is
-    # untouched and never enters the PC lane.
-    if (
-        browser_project_id is None and tool_request is None and not attachments
-        and raw.get("pc_run_id") is not None
-    ):
-        from .chat_pc_drive import run_chat_pc_drive_lane
-        lane_response = await run_chat_pc_drive_lane(
-            request, user_text=latest_user_text, skill=skill,
-            model_id=selected_model, conversation_id=conversation_id,
-            tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            device_id=raw.get("device_id"), run_id=raw.get("pc_run_id"),
-        )
-        if lane_response is not None:
-            return lane_response
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)

@@ -21,7 +21,6 @@ explicit code; nothing is ever claimed about an unverified PC.
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 import uuid
@@ -29,13 +28,11 @@ from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from padiem_ai_core.tool_channel import ToolDefinition
 
 from .auth_routes import auth_ready, current_user_id
-from .b14_client import B14Client, ChatRuntimeError
 from .history import (
     HistoryForbidden,
     HistoryStore,
@@ -43,33 +40,6 @@ from .history import (
     is_multi_command_action,
     validate_chat_pc_run_id,
 )
-from .central_model_route_runtime import chat_request_tier_context
-from .pc_work_context import build_pc_work_context_text
-from .public_chat import public_chat_result
-
-_NO_STORE_HEADERS = {
-    "Cache-Control": "no-store, max-age=0",
-    "Pragma": "no-cache",
-    "Referrer-Policy": "no-referrer",
-    "X-Content-Type-Options": "nosniff",
-}
-
-# Drive-only natural-language detector. Mirrors the drive branch of
-# claw_general_routes._natural_pc_query_command/_requested_natural_pc_query
-# without importing the Claw composer: a backtick command is the explicit
-# lane and never this one, and DB/hostname nouns are out of scope here.
-_CHAT_PC_MARKERS = (
-    "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "com1", "mypc", "mycomputer",
-)
-_CHAT_PC_DRIVE_NOUNS = (
-    "드라이브", "디스크", "drive", "disk",
-)
-_CHAT_PC_VERBS = (
-    "있", "뭐", "무엇", "확인", "조회", "목록", "리스트", "검색", "찾",
-    "보여", "알려", "인벤토리", "어떻",
-)
-_CHAT_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
-_CHAT_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
 
 CHAT_PC_DRIVE_COMMAND = (
     "Get-PSDrive -PSProvider FileSystem | "
@@ -129,18 +99,16 @@ class ChatPCDriveError(ValueError):
         return self._cause
 
     def public_error(self) -> dict:
+        """The bounded browser error: a fixed code, a fixed message, a safe cause.
+
+        ``cause`` is carried only when it already matches the internal code
+        grammar, so an engine or provider blob can never reach the browser
+        through this field.
+        """
         error = {"code": self.code, "message": self.user_message}
         if self.cause is not None:
             error["cause"] = self.cause
         return error
-
-
-def _error_response(exc: ChatPCDriveError) -> JSONResponse:
-    return JSONResponse(
-        {"ok": False, "error": exc.public_error()},
-        status_code=exc.status_code,
-        headers=dict(_NO_STORE_HEADERS),
-    )
 
 
 def _client_lane_run_id(value: object) -> str | None:
@@ -192,23 +160,6 @@ async def _refuse_existing_client_run_id(
         )
 
 
-def is_chat_pc_drive_query(user_text: str) -> bool:
-    """Narrow drive-only natural question for the verified owner PC."""
-    if not isinstance(user_text, str) or not user_text:
-        return False
-    if "`" in user_text:
-        return False
-    lowered = user_text.lower()
-    compact = "".join(lowered.split())
-    if not any(marker in compact for marker in _CHAT_PC_MARKERS):
-        return False
-    if not any(noun in lowered for noun in _CHAT_PC_DRIVE_NOUNS):
-        return False
-    if not any(verb in lowered for verb in _CHAT_PC_VERBS):
-        return False
-    return True
-
-
 def build_chat_pc_agent_plan() -> dict[str, Any]:
     """Thin Chat adapter: the shared drive tool under the Chat agent id."""
     return {
@@ -221,25 +172,6 @@ def build_chat_pc_agent_plan() -> dict[str, Any]:
             },
         ],
     }
-
-
-def is_chat_pc_files_query(user_text: str) -> bool:
-    """Natural-language PC folder/file task for the shared model tools."""
-    if not isinstance(user_text, str) or not user_text:
-        return False
-    if "`" in user_text:
-        return False
-    lowered = user_text.lower()
-    compact = "".join(lowered.split())
-    if not any(marker in compact for marker in _CHAT_PC_MARKERS):
-        return False
-    if not any(noun in lowered for noun in _CHAT_PC_FILE_NOUNS):
-        return False
-    if not any(verb in lowered for verb in _CHAT_PC_FILE_VERBS):
-        return False
-    if any(noun in lowered for noun in _CHAT_PC_DRIVE_NOUNS):
-        return False
-    return True
 
 
 def build_chat_pc_files_agent_plan(*, list_only: bool = False) -> dict[str, Any]:
@@ -351,92 +283,6 @@ def _tool_arguments_for_plan(
     else:
         return None
     return {key: {"device_id": device_id}}
-
-
-_PC_ACTION_ACTIONS = frozenset(
-    {"files_list", "files_read", "drives", "none", "clarify"}
-)
-
-
-def _pc_action_contract(user_text: str, pc_work_text: str) -> str:
-    """One model step that fixes the execution scope for this turn."""
-    return (
-        "You route one turn for the owner's server-verified PC.\n"
-        "Server-verified PC context (an observation, never an execution grant):\n"
-        + (pc_work_text or "no selected PC")
-        + "\nReturn exactly one JSON object. Choose "
-        '{"action":"files_list"} when the user asks only to see or list a folder; '
-        '{"action":"files_read"} when the user asks to read or explain a file; '
-        '{"action":"drives"} when the user asks about drives; '
-        '{"action":"none"} when the turn is not a PC file or drive request, '
-        "including quoted words, hypotheticals and negations; "
-        '{"action":"clarify","answer":"<one short question>"} when the target or '
-        "intent is ambiguous. No other keys.\n"
-        "User: " + user_text
-    )
-
-
-def parse_pc_action_decision(raw: str) -> dict[str, Any]:
-    """Validate the routing step; anything unexpected falls back to ``none``."""
-    try:
-        decision = json.loads(raw.strip())
-    except (TypeError, ValueError):
-        return {"action": "none"}
-    if not isinstance(decision, dict):
-        return {"action": "none"}
-    action = decision.get("action")
-    if action not in _PC_ACTION_ACTIONS:
-        return {"action": "none"}
-    if action == "clarify":
-        answer = decision.get("answer")
-        if not isinstance(answer, str) or not answer.strip():
-            return {"action": "none"}
-        return {"action": "clarify", "answer": answer.strip()}
-    if set(decision) != {"action"}:
-        return {"action": "none"}
-    return {"action": action}
-
-
-def _decision_contract(user_text: str) -> str:
-    return (
-        "Return one JSON object. Choose claw.pc.query_drives with empty "
-        "arguments only if the user asks about drives on their verified "
-        "connected PC; otherwise complete with a truthful concise answer. "
-        "After a tool result, complete using that result and state that only "
-        "drives visible to the agent execution account were observed. Never "
-        "claim user-session mapped/network drives unless present. "
-        'Tool: {"action":"tool","tool_id":"claw.pc.query_drives",'
-        '"arguments":{}}. Completion: {"action":"complete","answer":"..."}." '
-        f"User: {user_text}"
-    )
-
-
-def parse_chat_pc_tool_decision(raw: str) -> dict[str, Any]:
-    """Validate one model step: exactly the shared drive tool, or complete."""
-    try:
-        decision = json.loads(raw.strip())
-    except (TypeError, ValueError) as exc:
-        raise ChatPCDriveError(
-            "chat_pc_decision_invalid",
-            "PC 조회 판단을 확인하지 못했습니다. 다시 시도해 주세요.",
-        ) from exc
-    if not isinstance(decision, dict):
-        raise ChatPCDriveError(
-            "chat_pc_decision_invalid",
-            "PC 조회 판단을 확인하지 못했습니다. 다시 시도해 주세요.",
-        )
-    if decision.get("action") == "complete" and isinstance(decision.get("answer"), str):
-        return decision
-    if (
-        decision.get("action") == "tool"
-        and decision.get("tool_id") == CHAT_PC_QUERY_TOOL_ID
-        and decision.get("arguments") == {}
-    ):
-        return decision
-    raise ChatPCDriveError(
-        "chat_pc_decision_invalid",
-        "PC 조회 판단을 확인하지 못했습니다. 다시 시도해 주세요.",
-    )
 
 
 async def _resolve_chat_owner(request: Request, uid: str) -> tuple[Any, str, str]:
@@ -606,6 +452,52 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
     return await _check_mesh_grant(request, session, device_id=device_id)
 
 
+async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
+    """Whether the resolved route's B14 catalog row declares native tools.
+
+    The catalog is the only authority: an unreadable catalog, a disabled row,
+    an owner-excluded route or a missing ``tools`` tag withholds the
+    declaration. This reads no model/provider policy and changes no route.
+    """
+    source = getattr(request.app.state, "b14_catalog_source", None)
+    lister = getattr(source, "list_registered_models", None)
+    if not callable(lister):
+        return False
+    try:
+        rows = await lister()
+    except Exception:
+        return False
+    if not isinstance(rows, list):
+        return False
+    for row in rows:
+        if not isinstance(row, dict) or row.get("model_id") != model_id:
+            continue
+        capabilities = row.get("capabilities")
+        return (
+            isinstance(capabilities, list)
+            and "tools" in capabilities
+            and row.get("b14_enabled") is True
+            and row.get("owner_excluded") is False
+        )
+    return False
+
+
+async def pc_tool_entry_available(
+    request: Request, *, uid: str | None, model_id: str,
+) -> bool:
+    """Whether a model on this route can select a PC tool for this account.
+
+    Both halves are required: a server-verified PC target and a route whose
+    catalog declares ``tools``. Either one missing means no declaration, so the
+    turn keeps its existing path and its existing request bytes.
+    """
+    if not uid:
+        return False
+    if not await chat_pc_route_declares_tools(request, model_id):
+        return False
+    return await chat_pc_tools_available(request, uid=uid)
+
+
 def _no_pc_answer() -> str:
     return (
         "검증된 PC 연결을 확인하지 못해 드라이브를 조회할 수 없습니다. "
@@ -656,41 +548,6 @@ def _conversation_transcript(messages: Any) -> str:
     )
 
 
-async def _complete_with_model(
-    request: Request, *, user_text: str, skill: Any,
-    tier: str, system_contract: str, history: Any = None,
-) -> str:
-    """One bounded B14 text turn under the existing Chat model policy."""
-    client: B14Client | None = getattr(request.app.state, "b14_client", None)
-    if client is None:
-        raise ChatPCDriveError(
-            "chat_pc_model_unavailable",
-            "AI 모델을 현재 사용할 수 없습니다.",
-        )
-    try:
-        async with chat_request_tier_context(request, tier):
-            result = await client.complete(
-                tuple(history or ()) + ({"role": "user", "content": user_text},),
-                skill,
-                additional_system_context=system_contract,
-            )
-    except ChatRuntimeError as exc:
-        raise ChatPCDriveError("chat_pc_model_unavailable", exc.user_message, exc.status_code) from exc
-    except Exception as exc:
-        raise ChatPCDriveError(
-            "chat_pc_model_unavailable",
-            "AI 모델을 현재 사용할 수 없습니다.",
-        ) from exc
-    answer = result.get("answer") if isinstance(result, dict) else None
-    if not isinstance(answer, str) or not answer.strip():
-        raise ChatPCDriveError(
-            "chat_pc_model_unavailable",
-            "AI 모델이 표시할 답변을 만들지 못했습니다.",
-            502,
-        )
-    return answer.strip()
-
-
 async def _save_pair(
     store: HistoryStore, *, uid: str, conversation_id: str | None,
     user_text: str, answer: str,
@@ -714,7 +571,6 @@ async def execute_chat_pc_drive_lane(
     skill: Any,
     model_id: str,
     conversation_id: str | None,
-    tier: str,
     device_id: str | None = None,
     run_id: str | None = None,
     conversation_messages: Any = None,
@@ -723,20 +579,20 @@ async def execute_chat_pc_drive_lane(
 ) -> tuple[str, str | None] | None:
     """Run the lane and return ``(answer, conversation_id)``.
 
-    Returns None to fall through to the existing general Chat path
-    (anonymous user, or the one model scope step says this is not a PC turn). Raises ChatPCDriveError for
-    every handled failure. History writes happen here, so both the JSON and
-    the SSE call sites share them.
+    Returns None when the turn carries no model-selected PC tool (or the name
+    is not one of the closed PC tools), so the caller keeps its ordinary path.
+    Raises ChatPCDriveError for every handled failure. History writes happen
+    here, so both the JSON and the SSE call sites share them.
 
     ``user_text`` remains the stored user turn. ``execution_user_text`` is the
     resolved policy text used for model and Engine prompts, so a hidden alias
     removed by the policy never reaches the model; absent, it falls back to
     ``user_text`` for existing callers.
 
-    ``selected_tool`` is the tool name a model requested on the stream lane.
-    It replaces the keyword entry for that turn; the plan is derived from the
-    name and ``declared_plan`` may only narrow it. Everything else (owner,
-    grant, PC context) is verified again below, so the model's request is not
+    ``selected_tool`` is the tool name the model requested — the only entry
+    this lane has (#5573 3-C-2). The plan is derived from the name and
+    ``declared_plan`` may only narrow it. Everything else (owner, grant, PC
+    context, target) is verified again below, so the model's request is never
     an execution authority.
     """
     from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
@@ -749,24 +605,16 @@ async def execute_chat_pc_drive_lane(
         if isinstance(execution_user_text, str) and execution_user_text.strip()
         else user_text
     )
-    # Lane entry: a model-requested PC tool enters directly; otherwise the
-    # keyword gate stays for this slice (removed in 3-C). Every other turn
-    # keeps the ordinary streaming path and pays no extra call.
+    # #5573 (3-C-2): the model's tool call is the entry. No wording selects or
+    # blocks this lane; a turn the model answers in text never reaches it, and
+    # a synonym, a paraphrase or a "그 폴더" follow-up is no longer excluded.
     selected = selected_tool if isinstance(selected_tool, str) else None
-    if selected is not None:
-        agent_plan = _declared_plan_for_tool(selected, declared_plan)
-        if agent_plan is None:
-            return None
-        files_only = selected in ("files_list", "files")
-        list_only = False
-    else:
-        drive_requested = is_chat_pc_drive_query(execution_text)
-        files_requested = is_chat_pc_files_query(execution_text)
-        if not drive_requested and not files_requested:
-            return None
-        files_only = files_requested and not drive_requested
-        list_only = False
-        agent_plan = None
+    if selected is None:
+        return None
+    agent_plan = _declared_plan_for_tool(selected, declared_plan)
+    if agent_plan is None:
+        return None
+    files_only = selected in ("files_list", "files")
     client_run_id = _client_lane_run_id(run_id)
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     if store is None:
@@ -786,12 +634,10 @@ async def execute_chat_pc_drive_lane(
     try:
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     except ChatPCDriveError:
-        # No PC authority means no verified PC context. An ordinary turn keeps
-        # its existing path and pays no extra call; a model-selected PC tool
-        # has no answer to resume, so it reports the handled failure.
-        if selected is not None:
-            raise
-        return None
+        # The turn already carries a model-selected PC tool, so there is no
+        # ordinary answer to fall back to here: a missing owner context is a
+        # handled failure, never a silent no-op.
+        raise
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
         read_saved_device_selection, render_pc_work_context,
@@ -878,12 +724,11 @@ async def execute_chat_pc_drive_lane(
 
     pc_work_text = render_pc_work_context(pc_context)
 
-    # #5573 / Option A: one Engine call for every PC request with a verified
-    # PC context (the entry pre-check above keeps ordinary turns on the
-    # streaming path). The Engine's existing step driver selects the tool
-    # (drives, list, read); the Chat app runs no separate classification
-    # call. Prior turns travel in the system context so the same call can
-    # resolve "그 폴더" and similar follow-ups.
+    # #5573 / Option A: one Engine call for every model-selected PC tool with a
+    # verified PC context. The Engine's existing step driver still decides and
+    # runs the tool; the Chat app runs no separate classification call. Prior
+    # turns travel in the system context so the same call can resolve "그 폴더"
+    # and similar follow-ups.
     transcript = _conversation_transcript(conversation_messages)
     additional_context = pc_work_text if not transcript else (
         pc_work_text + "\n\nRecent conversation:\n" + transcript
@@ -894,7 +739,7 @@ async def execute_chat_pc_drive_lane(
         execution_user_text=execution_text, skill=skill,
         model_id=model_id, conversation_id=conversation_id,
         device_id=device_id, additional_system_context=additional_context,
-        run_id=client_run_id, list_only=list_only, agent_plan=agent_plan,
+        run_id=client_run_id, agent_plan=agent_plan,
     )
 
 
@@ -913,10 +758,9 @@ async def _execute_chat_pc_files_lane(
     device_id: str | None,
     additional_system_context: str | None = None,
     run_id: str | None = None,
-    list_only: bool = False,
-    agent_plan: Mapping[str, Any] | None = None,
+    agent_plan: Mapping[str, Any],
 ) -> tuple[str, str | None]:
-    """Stage and run the list/read plan on the Chat product.
+    """Stage and run the model-selected plan on the Chat product.
 
     The model decisions and both tool executions happen in the Engine's PC
     step driver; this lane only stages the Chat run, passes the server-owned
@@ -933,11 +777,16 @@ async def _execute_chat_pc_files_lane(
             "PC 파일 도구를 현재 사용할 수 없습니다.",
         )
     lane_run_id = run_id or _new_lane_run_id()
+    drive_only = any(
+        isinstance(step, Mapping) and step.get("tool_id") == CHAT_PC_QUERY_TOOL_ID
+        for step in agent_plan.get("steps", ())
+    )
     try:
         staged_conversation_id = await store.record_chat_pc_drive_run(
             user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
             user_text=user_text, conversation_id=conversation_id,
-            action="pc_files_query", title_prefix="PC 파일 탐색: ",
+            action="pc_drive_query" if drive_only else "pc_files_query",
+            title_prefix="PC 드라이브 조회: " if drive_only else "PC 파일 탐색: ",
         )
     except HistoryForbidden as exc:
         raise ChatPCDriveError(
@@ -948,17 +797,7 @@ async def _execute_chat_pc_files_lane(
             "chat_pc_store_unavailable",
             "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
-    if agent_plan is None:
-        agent_plan = build_chat_pc_files_agent_plan(list_only=list_only)
-        tool_arguments = (
-            (
-                {"files_list": {"device_id": device_id}}
-                if list_only else {"files": {"device_id": device_id}}
-            )
-            if device_id is not None else None
-        )
-    else:
-        tool_arguments = _tool_arguments_for_plan(agent_plan, device_id)
+    tool_arguments = _tool_arguments_for_plan(agent_plan, device_id)
     engine_text = (
         execution_user_text
         if isinstance(execution_user_text, str) and execution_user_text.strip()
@@ -1021,40 +860,6 @@ async def _execute_chat_pc_files_lane(
             "대화 기록을 현재 사용할 수 없습니다.",
         )
     return composed, staged_conversation_id
-
-
-async def run_chat_pc_drive_lane(
-    request: Request,
-    *,
-    user_text: str,
-    execution_user_text: str | None = None,
-    skill: Any,
-    model_id: str,
-    conversation_id: str | None,
-    tier: str,
-    device_id: str | None = None,
-    run_id: str | None = None,
-) -> JSONResponse | None:
-    """JSON wrapper of :func:`execute_chat_pc_drive_lane` for /api/chat."""
-    try:
-        result = await execute_chat_pc_drive_lane(
-            request, user_text=user_text, execution_user_text=execution_user_text,
-            skill=skill, model_id=model_id,
-            conversation_id=conversation_id, tier=tier, device_id=device_id,
-            run_id=run_id,
-        )
-    except ChatPCDriveError as exc:
-        return _error_response(exc)
-    if result is None:
-        return None
-    answer, saved_id = result
-    payload: dict[str, Any] = {"answer": answer, "conversation_id": saved_id}
-    notice = await pc_scope_notice_for_run(request, run_id=run_id)
-    if notice is not None:
-        # #5573: the notice was pinned before dispatch and is shown live as a
-        # separate line; it is never folded into the answer.
-        payload["scope_notice"] = notice
-    return JSONResponse(public_chat_result(payload))
 
 
 async def pc_scope_notice_for_run(request: Request, *, run_id: object) -> str | None:
@@ -1172,11 +977,14 @@ __all__ = [
     "CHAT_PC_DRIVE_COMMAND",
     "CHAT_PC_QUERY_AGENT_ID",
     "CHAT_PC_QUERY_TOOL_ID",
+    "CHAT_PC_TOOL_DEFINITIONS",
     "ChatPCDriveError",
     "build_chat_pc_agent_plan",
+    "build_chat_pc_files_agent_plan",
+    "chat_pc_plan_for_tool",
+    "chat_pc_route_declares_tools",
+    "chat_pc_tools_available",
     "execute_chat_pc_drive_lane",
-    "is_chat_pc_drive_query",
-    "parse_chat_pc_tool_decision",
     "pc_scope_notice_for_run",
-    "run_chat_pc_drive_lane",
+    "pc_tool_entry_available",
 ]
