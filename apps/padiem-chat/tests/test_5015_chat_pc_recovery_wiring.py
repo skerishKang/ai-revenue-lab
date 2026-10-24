@@ -72,13 +72,15 @@ def test_server_accepts_only_a_canonical_client_recovery_handle():
     assert "chat_pc_run_id_conflict" in source
 
     routes = (ROOT / "app" / "orchestration_routes.py").read_text(encoding="utf-8")
-    # #5573 (3-C-2): the orchestration surface carries no PC entry at all, so it
-    # forwards no recovery handle; it reads the one availability decision.
-    assert "pc_tool_entry_available" in routes
+    # The Engine stream now receives the canonical recovery handle only after
+    # the same server PC verification; the surface still owns no PC executor.
+    assert "resolve_chat_pc_stream_context" in routes
+    assert '_client_lane_run_id(raw.get("pc_run_id"))' in routes
+    assert "session_id=pc_run_id" in routes
     assert "execute_chat_pc_drive_lane" not in routes
 
     chat_routes = (ROOT / "app" / "chat_routes.py").read_text(encoding="utf-8")
-    # The stream lane is the only PC entry. The handle travels twice: into the
+    # The direct Chat stream entry remains compatible. Its handle travels into the
     # lane so the staged run keeps the browser's id, and into the pinned-scope
     # notice lookup for the same completion frame.
     assert chat_routes.count("run_id=raw.get(\"pc_run_id\")") == 2

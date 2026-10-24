@@ -497,3 +497,25 @@ async def test_invalid_stream_recovery_handle_is_refused_before_any_engine_or_hi
     assert response.status_code == 422, response.text
     assert response.json()["error"]["code"] == "invalid_request"
     assert bridge.requests == [] and store.pending_turns == [] and store.staged == []
+
+
+async def test_resumed_stream_appends_only_the_answer_to_the_original_user_turn(monkeypatch):
+    app, bridge, store = _wire(monkeypatch)
+    calls = []
+    async def resume(**fields):
+        return SimpleNamespace(stream_run_id=PC_RUN, conversation_id="chat_saved", answer="resumed",
+            user_text=PLAIN_TEXT, orchestration={"events": [], "approval_pause": None}, decision_status=None)
+    async def finish(**fields):
+        calls.append(fields)
+        return "chat_saved"
+    async def forbidden_exchange(*args, **kwargs):
+        raise AssertionError("the already stored user turn must not be appended again")
+    bridge.resume = resume
+    store.finish_chat_stream_turn = finish
+    store.append_exchange = forbidden_exchange
+    async with _client(app) as client:
+        response = await client.post("/api/orchestration/resume", headers={"Origin": ORIGIN}, json={
+            "continuationRef": "cont_abcdefgh12345678", "pauseId": "pause_1", "outcome": "approved", "requiresTrustedDecision": True})
+    assert response.status_code == 200, response.text
+    assert response.json()["answer"] == "resumed"
+    assert calls == [{"user_id": OWNER, "run_id": PC_RUN, "answer": "resumed"}]

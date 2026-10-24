@@ -1,13 +1,8 @@
 """#5015/#5573: the orchestration surface and the model-tool PC entry.
 
-A browser turn may reach ``POST /api/orchestration`` instead of the Chat stream
-route. The Engine turn this surface starts runs a PC tool *inside* its own run,
-so it cannot stage the Chat PC run after the model has chosen a tool — and
-staging one per turn would put a pending PC run on ordinary conversation. The
-surface therefore defers a PC-capable turn to the Chat stream lane, which is
-where the model's tool call is observed before anything is staged or executed.
-These tests pin that deferral, that no wording is consulted, that an
-ordinary turn is unchanged, and that no second executor or target store appears.
+The server offers PC tools on its existing Engine turn. Only a signed tool
+callback may promote the stored user turn into a PC run. Wording never selects
+this transport and the browser never supplies an admitted plan.
 """
 from __future__ import annotations
 
@@ -63,16 +58,49 @@ class _Bridge:
         )
 
 
+    async def start_stream(self, **kwargs):
+        self.calls.append(kwargs)
+        events = [dict(event_id="evt_" + str(n), run_id="engine_1", trace_id="trace_1",
+            app_id="padiem-chat", kind=kind, sequence=n)
+            for n, kind in enumerate(("run_started", "run_completed"), 1)]
+        for event in events:
+            yield {"event": event}
+        yield {"result": SimpleNamespace(
+            orchestration=dict(events=events, approval_pause=None), answer="answer")}
+
+
+class _Store:
+    async def begin_chat_stream_turn(self, **fields):
+        return "chat_generic"
+    async def finish_chat_stream_turn(self, **fields):
+        return "chat_generic"
+
+
+def _call(request):
+    async def run():
+        response = await routes.api_orchestration(request)
+        if hasattr(response, "body_iterator"):
+            body = b""
+            async for chunk in response.body_iterator:
+                body += chunk.encode() if isinstance(chunk, str) else chunk
+            return SimpleNamespace(status_code=response.status_code, body=body)
+        return response
+    return asyncio.run(run())
+
+
 def _install(monkeypatch, lane: _Lane, *, pc_entry: bool = False) -> _Bridge:
     import app.chat_pc_drive as chat_pc_drive
 
     bridge = _Bridge()
     monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", lane)
 
-    async def _available(request, *, uid, model_id):
-        return pc_entry
+    async def _available(request, *, uid, requested_device_id=None):
+        if not pc_entry or (requested_device_id is not None and requested_device_id != DEVICE_ID):
+            return None
+        return {"pc_tools": {"device_id": DEVICE_ID, "allowed_scopes": ["files_list"]},
+                "subject_id": "subject_1", "workspace_id": "workspace_1"}
 
-    monkeypatch.setattr(chat_pc_drive, "pc_tool_entry_available", _available)
+    monkeypatch.setattr(chat_pc_drive, "resolve_chat_pc_stream_context", _available)
     # The route's readiness guard requires the concrete bridge contract; this
     # test owns the routing question, so it supplies a ready bridge directly.
     monkeypatch.setattr(routes, "_bridge", lambda request: bridge)
@@ -89,7 +117,7 @@ def _request(payload: dict, bridge: _Bridge) -> Request:
     request.scope["app"] = SimpleNamespace(
         state=SimpleNamespace(
             orchestration_bridge=bridge,
-            history_store=None,
+            history_store=_Store(),
             usage_gate_enforced=False,
             usage_gate=None,
             settings=SimpleNamespace(runtime_mode="mock"),
@@ -99,82 +127,73 @@ def _request(payload: dict, bridge: _Bridge) -> Request:
     return request
 
 
-def test_a_pc_capable_turn_defers_to_the_chat_stream_lane(monkeypatch):
-    """#5573 (3-C-2): the PC decision belongs to the lane that can see it."""
+def test_a_pc_capable_turn_uses_the_same_engine_stream(monkeypatch):
+    """Offer tools on the same Engine turn without a second Chat executor."""
     lane = _Lane(outcome=("PC 파일 목록 결과", "chat_pc"))
     bridge = _install(monkeypatch, lane, pc_entry=True)
 
-    response = asyncio.run(routes.api_orchestration(_request({
+    response = _call(_request({
         "messages": [{"role": "user", "content": PC_TEXT}],
         "tier": "plus",
         "device_id": DEVICE_ID,
-    }, bridge)))
-    # The existing browser fallback for a turn this surface does not answer.
-    assert response.status_code == 409
-    body = json.loads(response.body)
-    assert body["error"]["code"] == "orchestration_not_applicable"
-    # Nothing ran here: no Engine turn, no PC lane, no browser-chosen target.
-    assert bridge.calls == []
-    assert lane.calls == []
+    }, bridge))
+    assert response.status_code == 200
+    assert b"event: done" in response.body
+    assert len(bridge.calls) == 1 and lane.calls == []
+    assert bridge.calls[0]["pc_tools"]["device_id"] == DEVICE_ID
+    assert "agent_plan" not in bridge.calls[0]
 
 
 @pytest.mark.parametrize("text", [PC_TEXT, PLAIN_TEXT])
-def test_no_wording_decides_the_deferral(monkeypatch, text):
-    """A paraphrase, an ordinary question and a PC sentence defer alike.
-
-    The keyword table is gone, so this surface cannot be selecting PC turns by
-    wording in either direction: the server-verified PC plus a tools-declaring
-    route decides, and nothing else does.
-    """
+def test_no_wording_decides_whether_the_engine_gets_pc_tools(monkeypatch, text):
+    """A PC sentence and an ordinary question offer the same verified tools."""
     lane = _Lane(outcome=None)
     bridge = _install(monkeypatch, lane, pc_entry=True)
 
-    response = asyncio.run(routes.api_orchestration(_request({
+    response = _call(_request({
         "messages": [{"role": "user", "content": text}],
-    }, bridge)))
-    assert response.status_code == 409
-    assert bridge.calls == []
-    assert lane.calls == []
+    }, bridge))
+    assert response.status_code == 200
+    assert len(bridge.calls) == 1 and lane.calls == []
+    assert bridge.calls[0]["pc_tools"]["allowed_scopes"] == ["files_list"]
 
 
 def test_a_non_pc_turn_keeps_the_ordinary_orchestration_path(monkeypatch):
     lane = _Lane(outcome=None)
     bridge = _install(monkeypatch, lane)
 
-    response = asyncio.run(routes.api_orchestration(_request({
+    response = _call(_request({
         "messages": [{"role": "user", "content": PLAIN_TEXT}],
-    }, bridge)))
+    }, bridge))
     assert response.status_code == 200
     body = json.loads(response.body)
     assert body["answer"] == "일반 답변"
-    # No verified PC on a tools route means no deferral and no PC entry: the
-    # generic bridge call handles the turn exactly as before.
+    # Without a verified PC the generic bridge body remains unchanged.
     assert len(bridge.calls) == 1
     assert lane.calls == []
 
 
-def test_the_deferral_carries_no_pc_plan_or_target(monkeypatch):
+def test_browser_handles_never_become_a_plan_or_execution_grant(monkeypatch):
     bridge = _install(monkeypatch, _Lane(outcome=None), pc_entry=True)
 
-    response = asyncio.run(routes.api_orchestration(_request({
+    response = _call(_request({
         "messages": [{"role": "user", "content": PC_TEXT}],
         "device_id": DEVICE_ID,
         "pc_run_id": "chat_pcq_" + "f" * 32,
-    }, bridge)))
-    assert response.status_code == 409
-    # A browser handle or a browser-selected device is never a plan, a target
-    # or an execution grant on this surface.
-    assert bridge.calls == []
+    }, bridge))
+    assert response.status_code == 200
+    assert len(bridge.calls) == 1
+    assert bridge.calls[0]["session_id"] == "chat_pcq_" + "f" * 32
+    assert bridge.calls[0]["pc_tools"] == {"device_id": DEVICE_ID, "allowed_scopes": ["files_list"]}
+    assert "agent_plan" not in bridge.calls[0] and "tool_arguments" not in bridge.calls[0]
 
 
 def test_the_surface_has_no_second_pc_executor_or_target_store():
     source = (
         Path(__file__).resolve().parents[1] / "app" / "orchestration_routes.py"
     ).read_text(encoding="utf-8")
-    # The surface reads the one existing availability decision and keeps no PC
-    # execution path of its own: no lane call, no plan, no target hint, no
-    # natural-language table to drift back into a keyword gate.
-    assert "from .chat_pc_drive import pc_tool_entry_available" in source
+    # The surface offers server-authored context, not another executor or plan.
+    assert "from .chat_pc_drive import resolve_chat_pc_stream_context" in source
     assert "execute_chat_pc_drive_lane" not in source
     assert "agent_plan" not in source
     assert "tool_arguments" not in source

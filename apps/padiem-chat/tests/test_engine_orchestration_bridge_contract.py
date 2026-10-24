@@ -589,3 +589,26 @@ async def test_pc_relay_refuses_wrong_run_replay_and_heartbeat_identity():
         text, completions = await _pc_sse(records)
         assert "event: error" in text and "event: done" not in text
         assert completions == []
+
+
+async def test_stream_approval_resume_keeps_the_original_user_turn_receipt():
+    class PausedClient(FakeClient):
+        async def stream_orchestration(self, request, *, pc_progress=False):
+            raw = _paused_raw()
+            for event in raw["events"]:
+                yield {"event": event}
+            yield {"orchestration": raw}
+    client, store = PausedClient(), FakeStore()
+    bridge = B62EngineOrchestrationBridge(client=client, store=store)
+    run_id = "chat_pcq_" + "a" * 32
+    rows = [row async for row in bridge.start_stream(
+        user_id="usr_1", subject_id="sub_1", session_id=run_id,
+        messages=[{"role": "user", "content": "question"}], skill=get_task_mode("auto"),
+        model_id="route/pinned", user_text="question", conversation_id="chat_saved",
+        pc_tools={"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]})]
+    assert rows[-1]["result"].orchestration["approval_pause"] is not None
+    resumed = await bridge.resume(user_id="usr_1", continuation_ref="cont_abcdefgh12345678",
+        pause_id="pause_1", outcome="approved")
+    assert resumed.stream_run_id == run_id and resumed.conversation_id == "chat_saved"
+    assert client.resume_request["session_id"] == run_id
+    assert resumed.answer == "완료된 답변"

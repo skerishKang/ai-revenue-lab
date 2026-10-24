@@ -51,6 +51,7 @@ class B62OrchestrationResult:
     user_text: str
     conversation_id: str | None
     decision_status: str | None = None
+    stream_run_id: str | None = None
 
 
 class OrchestrationStateStore(Protocol):
@@ -669,7 +670,11 @@ class B62EngineOrchestrationBridge:
                 conversation_id=snapshot.conversation_id,
             )
         answer = public.get("answer") if isinstance(public.get("answer"), str) else None
-        return B62OrchestrationResult(public, answer, snapshot.user_text, snapshot.conversation_id)
+        return B62OrchestrationResult(
+            public, answer, snapshot.user_text, snapshot.conversation_id,
+            stream_run_id=(snapshot.engine_request.get("session_id")
+                if "pc_tools" in snapshot.engine_request else None),
+        )
 
     async def cancel(self, *, user_id: str, continuation_ref: str) -> B62OrchestrationResult:
         snapshot = await self._store.load_active(user_id=user_id, continuation_ref=continuation_ref)

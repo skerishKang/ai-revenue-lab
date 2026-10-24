@@ -286,18 +286,31 @@ async def api_orchestration(request: Request) -> JSONResponse:
         finish = getattr(store, "finish_chat_stream_turn", None)
         if not callable(begin) or not callable(finish):
             return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        stream_messages = policy.messages
+        if conversation_id is not None:
+            from .chat_routes import _restore_owner_chat_model_messages
+            try:
+                stream_messages = await _restore_owner_chat_model_messages(
+                    store, uid, conversation_id, existing, list(policy.messages),
+                )
+            except OverflowError:
+                return _error("history_context_too_large", "대화 맥락이 전송 한도를 초과했습니다.", 413)
+            except Exception:
+                return _error("history_context_incomplete", "대화 맥락을 현재 복원할 수 없습니다.", 503)
         try:
             pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or _new_lane_run_id()
             saved_id = await begin(
                 user_id=uid, run_id=pc_run_id, workspace_id=pc_context["workspace_id"],
                 user_text=user_text, conversation_id=conversation_id,
             )
+        except HistoryForbidden:
+            return _error("chat_pc_run_id_conflict", "이미 사용한 PC 작업 실행 ID입니다.", 409)
         except ChatPCDriveError as exc:
             return _error(exc.code, exc.user_message, exc.status_code)
         except Exception:
             return _error("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
         stream = bridge.start_stream(
-            user_id=uid, messages=policy.messages, skill=skill, model_id=policy.model_id,
+            user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=saved_id,
             pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
             session_id=pc_run_id, additional_system_context=grounding_context,
@@ -418,13 +431,22 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
         if prepared is not None:
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
-    saved_id = await _save_terminal_history(
-        request,
-        user_id=uid,
-        conversation_id=result.conversation_id,
-        user_text=result.user_text,
-        answer=result.answer,
-    )
+    stream_run_id = getattr(result, "stream_run_id", None)
+    if stream_run_id is not None:
+        # The first stream already persisted its user turn before pausing.
+        # Resume appends only the answer, under the same owner/run receipt.
+        saved_id = result.conversation_id
+        finish = getattr(getattr(request.app.state, "history_store", None), "finish_chat_stream_turn", None)
+        if isinstance(result.answer, str) and result.answer and callable(finish):
+            try:
+                saved_id = await finish(user_id=uid, run_id=stream_run_id, answer=result.answer)
+            except Exception:
+                pass
+    else:
+        saved_id = await _save_terminal_history(
+            request, user_id=uid, conversation_id=result.conversation_id,
+            user_text=result.user_text, answer=result.answer,
+        )
     payload: dict[str, Any] = {
         "orchestration": dict(result.orchestration),
         "answer": result.answer,
