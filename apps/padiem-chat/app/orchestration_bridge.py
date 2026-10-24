@@ -361,17 +361,37 @@ def project_cancel_result(raw: Any) -> dict[str, Any]:
     return {"events": events, "approval_pause": None, "continuation_ref": None, "answer": None}
 
 
+# #5568: the Chat composer may show one reason line for a failed orchestration
+# turn. A code crosses only as a well-formed identifier; anything else becomes
+# unknown_error. The copy is authored here and never copied from the Engine
+# response, so provider text and route/stack fragments cannot project.
+_ENGINE_ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+_ENGINE_ERROR_MESSAGES: dict[str, str] = {
+    "upstream_auth_error": "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_request_error": "현재 AI 모델이 요청을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_server_error": "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",
+    "timeout": "AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_rate_limited": "AI 사용량이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
+    "upstream_unavailable": "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+    "upstream_response_too_large": "답변이 너무 커서 안전하게 표시할 수 없습니다.",
+    "tier_not_available": "현재 이용 등급 이하의 AI 등급을 선택해 주세요.",
+    "pc_scope_denied": "선택한 PC에 접근할 수 없습니다. 연결을 확인해 주세요.",
+    "continuation_identity_mismatch": "이전 작업과 현재 확인 요청이 일치하지 않습니다.",
+    "continuation_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
+    "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
+}
+_UNKNOWN_ENGINE_ERROR_MESSAGE = "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."
+
+
 def _engine_error(exc: PadiemAiEngineClientError) -> B62OrchestrationError:
-    code = exc.code if isinstance(exc.code, str) else "engine_request_failed"
+    code = exc.code if isinstance(exc.code, str) and _ENGINE_ERROR_CODE_RE.match(exc.code) else "unknown_error"
     status = exc.status if isinstance(exc.status, int) and 400 <= exc.status <= 599 else 502
-    messages = {
-        "continuation_identity_mismatch": "이전 작업과 현재 확인 요청이 일치하지 않습니다.",
-        "continuation_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
-        "approval_decision_expired": "확인 가능한 시간이 지나 작업을 이어갈 수 없습니다.",
-        "upstream_timeout": "AI 응답 시간이 초과되었습니다. 다시 시도해 주세요.",
-        "upstream_rate_limited": "AI 사용량이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
-    }
-    return B62OrchestrationError(code, messages.get(code, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요."), status_code=status)
+    return B62OrchestrationError(
+        code,
+        _ENGINE_ERROR_MESSAGES.get(code, _UNKNOWN_ENGINE_ERROR_MESSAGE),
+        status_code=status,
+    )
 
 
 class B62EngineOrchestrationBridge:

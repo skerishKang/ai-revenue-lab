@@ -30,7 +30,7 @@ from types import SimpleNamespace
 from starlette.requests import Request
 
 from app import orchestration_routes as routes
-from app.orchestration_bridge import B62EngineOrchestrationBridge
+from app.orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 
 OWNER = "usr_" + "a" * 32
 SEARCH_QUESTION = "오늘 Meta의 최신 실적을 웹에서 확인해 줘"
@@ -118,6 +118,30 @@ def _install(monkeypatch, auto_grounding):
 
 async def _no_pc_lane(*args, **kwargs):
     return None
+
+
+class _FailingBridge:
+    """A bridge whose Engine leg already failed with a bounded product code."""
+
+    def __init__(self, error: B62OrchestrationError) -> None:
+        self.error = error
+
+    async def start(self, **fields):
+        raise self.error
+
+
+def _install_bridge(monkeypatch, bridge):
+    history = _History()
+    monkeypatch.setattr(routes, "_bridge", lambda request: bridge)
+    monkeypatch.setattr(routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(routes, "current_user_id", lambda request: OWNER)
+
+    import app.chat_pc_drive as lane
+
+    monkeypatch.setattr(lane, "auth_ready", lambda request: True)
+    monkeypatch.setattr(lane, "current_user_id", lambda request: OWNER)
+    monkeypatch.setattr(lane, "execute_chat_pc_drive_lane", _no_pc_lane)
+    return history
 
 
 def _request(payload, bridge, history, auto_grounding):
@@ -254,3 +278,37 @@ def test_the_public_evidence_projection_keeps_the_browser_contract() -> None:
     assert evidence["url"] == "https://example.com/meta-earnings"
     assert "provider" not in evidence
     assert re.match(r"^https://", evidence["url"])
+
+
+def test_the_error_response_carries_the_bounded_orchestration_code(monkeypatch) -> None:
+    """#5568: the Chat response exposes the product code the composer renders."""
+    message = "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요."
+    bridge = _FailingBridge(B62OrchestrationError("upstream_auth_error", message, status_code=403))
+    history = _install_bridge(monkeypatch, bridge)
+
+    response = asyncio.run(routes.api_orchestration(
+        _request(_payload(GREETING), bridge, history, None),
+    ))
+
+    assert response.status_code == 403
+    assert json.loads(response.body) == {
+        "error": {"code": "upstream_auth_error", "message": message},
+    }
+
+
+def test_the_success_response_bytes_are_unchanged(monkeypatch) -> None:
+    """#5568: the code line is failure-only; a successful turn serializes as before."""
+    bridge, history = _install(monkeypatch, None)
+
+    response = asyncio.run(routes.api_orchestration(
+        _request(_payload(GREETING), bridge, history, None),
+    ))
+
+    assert response.status_code == 200
+    expected = {
+        "orchestration": {"status": "completed"},
+        "answer": "확인했습니다.",
+        "decision_status": "completed",
+        "conversation_id": "chat_" + "s" * 32,
+    }
+    assert response.body == json.dumps(expected, ensure_ascii=False, separators=(",", ":")).encode("utf-8")

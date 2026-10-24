@@ -711,24 +711,47 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
+  // #5568: one bounded reason line under a Chat failure. Only the server's
+  // compact code identifier is rendered; the message copy stays server/locale
+  // authored. Claw keeps its existing refusal/recovery presentation, and an
+  // unexpected string is never echoed into the notice.
+  const FAILURE_CODE_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
+  function failureCodeNote(errorCode, label) {
+    if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
+    const note = document.createElement("p");
+    note.className = "error-code";
+    note.textContent = `${label} (${errorCode})`;
+    return note;
+  }
+  function failureStatusLabel(lifecycle) {
+    return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+  }
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
-    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    const statusLabel = failureStatusLabel(lifecycle);
+    article.querySelector("[data-runtime-label]").textContent = statusLabel;
     // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
+    const box = buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure);
+    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
+    if (codeNote) box.appendChild(codeNote);
+    content.appendChild(box);
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null, errorCode = "") {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
+    const statusLabel = failureStatusLabel(lifecycle);
+    article.querySelector("[data-runtime-label]").textContent = statusLabel;
     // A failure is a real status: the chip stays visible with its own copy.
-    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, statusLabel, "status");
+    const box = buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure);
+    const codeNote = clawGeneralRequest ? null : failureCodeNote(errorCode, statusLabel);
+    if (codeNote) box.appendChild(codeNote);
+    content.appendChild(box);
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
@@ -2790,7 +2813,8 @@
               ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure);
+          const terminalFailure = chatTransport.errorFor(data, message);
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(terminalFailure), clawFailure, terminalFailure.code);
           return true;
         }
         if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
@@ -2858,7 +2882,8 @@
           // Preserve the original standalone Chat catch path and its existing
           // rich-stream/browser contract. Only Claw uses bounded safe copy.
           renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
-            outboundMessages, skill, contextSnapshot, false);
+            outboundMessages, skill, contextSnapshot, false, MESSAGE_LIFECYCLE.FAILED, null,
+            error && typeof error.code === "string" ? error.code : "");
         }
         return false;
       }
@@ -3036,6 +3061,7 @@
         clawGeneralRequest,
         lifecycleForError(error),
         clawFailure,
+        error && typeof error.code === "string" ? error.code : "",
       );
       return false;
     } finally {

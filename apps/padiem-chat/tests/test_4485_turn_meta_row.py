@@ -164,7 +164,9 @@ def test_every_completion_path_releases_the_preparing_chip() -> None:
     # A real status is never removed by the release.
     assert 'applyRuntimeLabel?.(article, label, "status");' in app
     # A failure keeps its own status and stays visible.
-    assert 'applyRuntimeLabel?.(article, lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error"), "status");' in app
+    assert 'return lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");' in app
+    assert "const statusLabel = failureStatusLabel(lifecycle);" in app
+    assert 'applyRuntimeLabel?.(article, statusLabel, "status");' in app
     assert 'applyRuntimeLabel?.(article, uiT("generation-cancelled"), "status");' in app
     # A restored turn is a real status, not a preparing chip.
     assert 'addAssistantShell(uiT("stored-conversation"), "status")' in app
