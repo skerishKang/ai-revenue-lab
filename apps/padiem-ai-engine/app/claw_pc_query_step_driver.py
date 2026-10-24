@@ -72,7 +72,8 @@ CHAT_ENGINE_PC_FILES_URL = "https://padiem-chat.internal/internal/chat/engine-pc
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: #5015: the Chat PC-files read is bounded server-side at 1 MB. The Engine
 #: re-checks the delivered bytes defensively; it never raises the bound.
-PC_FILES_READ_MAX_BYTES = 1_000_000
+# Owner decision 2026-10-24 (#5573): 1,000,000 -> 20,000,000 (Engine re-check bound only).
+PC_FILES_READ_MAX_BYTES = 20_000_000
 
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)

@@ -82,7 +82,8 @@ class AgentExecutionBudget:
     max_steps: int | None = None
     max_tool_calls: int | None = None
     max_skill_calls: int | None = None
-    max_wall_seconds: int = 900  # inactivity window; NOT a cumulative wall cap
+    # Owner decision 2026-10-24 (#5573): 900 -> 1800.
+    max_wall_seconds: int = 1800  # inactivity window; NOT a cumulative wall cap
     max_total_seconds: int | None = None  # opt-in explicit ceiling; None = no wall
 
     def __post_init__(self) -> None:

@@ -336,7 +336,7 @@ def test_revoked_durable_guard_stops_a_progressing_run_at_the_next_dispatch() ->
 
 def test_default_budget_has_no_total_ceiling_and_validates_an_opt_in_one() -> None:
     assert AgentExecutionBudget().max_total_seconds is None
-    assert AgentExecutionBudget().max_wall_seconds == 900
+    assert AgentExecutionBudget().max_wall_seconds == 1800  # Owner decision 2026-10-24 (#5573)
     assert AgentExecutionBudget(max_total_seconds=86_400).max_total_seconds == 86_400
     # #4379: an opt-in total ceiling has no PADIEM maximum either.
     assert AgentExecutionBudget(max_total_seconds=2_000_000).max_total_seconds == 2_000_000

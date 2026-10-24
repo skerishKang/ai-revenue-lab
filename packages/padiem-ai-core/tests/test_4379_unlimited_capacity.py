@@ -34,7 +34,7 @@ def test_execution_budget_has_no_step_or_tool_count_ceiling():
     assert budget.max_tool_calls is None
     assert budget.max_skill_calls is None
     # The inactivity window stays: it ends a run that stops making progress.
-    assert budget.max_wall_seconds == 900
+    assert budget.max_wall_seconds == 1800  # Owner decision 2026-10-24 (#5573)
     assert budget.max_total_seconds is None
 
 
