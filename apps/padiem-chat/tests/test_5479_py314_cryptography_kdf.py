@@ -2,12 +2,17 @@
 
 #5736 rolled the 3.14 runtime back because the only KDF the Worker could reach
 there was Workers WebCrypto, which the Production edge refuses above 100,000
-iterations while every stored credential carries 220,000. The fix is not a
-lower iteration count and not a credential migration: the Worker bundle now
-carries the ``cryptography`` package (Pyodide's own wasm wheel), and the async
-dispatch selects it ahead of WebCrypto.
+iterations while every stored credential carries 220,000. The KDF half of that
+is solved here: the dispatch selects the bundled ``cryptography`` package
+(Pyodide's own wasm wheel) ahead of WebCrypto, and the stored credential stays
+byte-identical.
 
-These tests pin that decision:
+The runtime itself is NOT shipped: the 3.14 Worker was deployed on 2026-10-24
+and answered 6 of 25 sequential ``/health`` requests with HTTP 500 (``SystemError:
+Cannot enter a promising task from inside another running promising task. This
+is a bug in Pyodide.``), so Production was rolled back to the recorded 3.13
+version. The KDF code and its evidence stay, the bundle does not, until that
+platform path serves traffic. These tests pin all of it:
 1. the bundled KDF produces the stored bytes exactly (byte identity, external
    RFC 2898 vector, round trip at 220,000),
 2. the dispatch chooses it on a runtime without ``_hashlib`` and never sends
@@ -17,8 +22,8 @@ These tests pin that decision:
    needs no password reset and a rollback needs no re-hash,
 4. when nothing can serve the cost the dispatch raises instead of degrading
    to interpreted arithmetic, and
-5. the deployed manifest and the committed dependency locks actually carry
-   the runtime and the package (source contract, not a runtime claim).
+5. the deployed manifest still names the runtime the edge serves cleanly, and
+   the unproven 3.14 bundle is not shipped as a production dependency.
 """
 from __future__ import annotations
 
@@ -208,31 +213,48 @@ def _declared_dependencies() -> list[str]:
     return list(data["project"]["dependencies"])
 
 
-def test_the_deployed_compatibility_date_selects_python_314() -> None:
+def test_the_deployed_worker_stays_on_the_runtime_that_serves_auth() -> None:
+    """The measured 3.14 failure keeps Production on the 3.13 snapshot."""
     manifest = tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
-    assert manifest["compatibility_date"] == PYTHON_314_COMPATIBILITY_DATE
+    assert manifest["compatibility_date"] == "2026-08-25"
+    assert manifest["compatibility_date"] < PYTHON_314_COMPATIBILITY_DATE
     assert "python_workers" in manifest["compatibility_flags"]
 
 
-def test_the_worker_bundle_declares_the_kdf_the_314_runtime_needs() -> None:
+def test_the_unproven_314_kdf_bundle_is_not_shipped() -> None:
+    """The provider stays testable without being vendored into Production.
+
+    The 3.14 wasm wheel is only reachable by generating a 3.14 pylock, so
+    declaring it here would ship a dependency the deployed runtime neither
+    resolves nor needs. When the 3.14 edge path is fixed, re-declare it with a
+    fresh 3.14 pylock and a 3.14 lane run.
+    """
     declared = _declared_dependencies()
-    assert "cryptography==47.0.0" in declared, declared
-    # cffi 2.1.1 has no wasm wheel and cannot be built for emscripten.
-    assert "cffi==2.0.0" in declared, declared
+    assert "cryptography==47.0.0" not in declared, declared
+    assert "cffi==2.0.0" not in declared, declared
+    # It remains a dev dependency, so the provider above is exercised on every
+    # test run instead of becoming dead code.
+    dev = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))["project"][
+        "optional-dependencies"
+    ]["dev"]
+    assert any(entry.startswith("cryptography") for entry in dev), dev
+
+    lock = tomllib.loads(PYLOCK.read_text(encoding="utf-8"))
+    assert re.fullmatch(r">=3\.13(\.\d+)?", lock["requires-python"]), lock[
+        "requires-python"
+    ]
+    packages = {package["name"] for package in lock["packages"]}
+    assert "cryptography" not in packages
+    assert "cffi" not in packages
 
 
-def test_the_committed_pylock_targets_the_314_runtime_and_carries_the_wheel() -> None:
-    text = PYLOCK.read_text(encoding="utf-8")
-    lock = tomllib.loads(text)
-    assert re.fullmatch(r">=3\.14(\.\d+)?", lock["requires-python"]), lock["requires-python"]
-    packages = {package["name"]: package for package in lock["packages"]}
-    assert packages["cryptography"]["version"] == "47.0.0"
-    assert packages["cffi"]["version"] == "2.0.0"
-    wheels = " ".join(
-        wheel["url"] for wheel in packages["cryptography"].get("wheels", [])
-    )
-    assert "pyemscripten" in wheels and "cryptography-47.0.0" in wheels
-    assert "pycparser" in packages  # cffi's runtime dependency
+def test_the_incident_record_keeps_the_measured_314_failure() -> None:
+    """The rollback reason must survive in the evidence document."""
+    document = (
+        REPO_ROOT / "docs/operations/5479-py314-runtime-incident-20261024.md"
+    ).read_text(encoding="utf-8")
+    assert "Cannot enter a promising task" in document
+    assert "3.14" in document and "3.13" in document
 
 
 def test_the_runtime_lane_reports_the_provider_that_served_the_stored_cost() -> None:
