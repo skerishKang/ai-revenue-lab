@@ -301,6 +301,11 @@ def test_pc_503_cause_keeps_the_chained_exception_class_and_safe_message(code):
 @pytest.mark.parametrize("message, private", [
     ("authorization: Bearer synthetic-private-token", "synthetic-private-token"),
     ("failed token=synthetic-private-token", "synthetic-private-token"),
+    ("failed access_token=private-value", "private-value"),
+    ("failed refresh_token=private-value", "private-value"),
+    ("failed client_secret=private-value", "private-value"),
+    ("failed api key=private-value", "private-value"),
+    ("failed session_id=private-value", "private-value"),
     ("failed Bearer synthetic-private-token", "synthetic-private-token"),
     ("failed https://example.test/path?key=synthetic-private-token", "example.test"),
     ("failed 'private-file-content'", "private-file-content"),

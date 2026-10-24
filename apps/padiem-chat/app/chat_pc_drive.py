@@ -91,7 +91,9 @@ def _safe_pc_exception_cause(exc: BaseException) -> str:
         message = "[message unavailable]"
     # Redact before truncation so a cut-off credential cannot escape a match.
     message = re.sub(r"(?i)\b(?:authorization|proxy-authorization|cookie|set-cookie|"
-                     r"password|passwd|secret|token|api[_-]?key|credential)\b"
+                     r"password|passwd|secret|token|api[ _-]?key|credential|"
+                     r"access[_-]?token|refresh[_-]?token|client[_-]?secret|"
+                     r"session[_-]?id|private[_-]?key|signature)\b"
                      r"\s*[:=]\s*.*", "[redacted]", message)
     message = re.sub(r"(?i)\b(?:bearer|basic)\s+\S+", "[redacted]", message)
     message = re.sub(r"https?://[^\s]+", "[url redacted]", message, flags=re.I)
