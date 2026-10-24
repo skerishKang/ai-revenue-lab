@@ -37,11 +37,13 @@
 |---|---|---|
 | WebCrypto `deriveBits` 220k | 런타임 상한 100k (운영 traceback) | 불가 |
 | WebCrypto 100k×체크 분할 | PBKDF2의 U_i 체인은 API로 재개 불가(수학적 비동치) | 불가 |
-| 순수 파이썬 PBKDF2(HMAC-SHA512, `hashlib.sha512` C 프리미티브 + copy-state) | 로컬 CPython 3.11 기준 220k = **0.49초**, 고정 벡터·C 구현과 바이트 동일. workerd 실측은 프로브 `kdfbench` 케이스로 진행(본 PR) + 3.14 레인 증거 필요 | **유력 — 실측 대기** |
-| Pyodide 번들 `cryptography`(45.0.5/47.0.0) `PBKDF2HMAC`(OpenSSL) | 두 스냅샷 모두 패키지 내장 확인(pyodide-lock). 실런타임 동작·번들 영향은 증거 브랜치에서 검증 예정 | 유력 — 실측 대기 |
+| 순수 파이썬 PBKDF2(HMAC-SHA512, `hashlib.sha512` C 프리미티브 + copy-state) | 격리 3.14 레인 220k = **720ms**, 고정 벡터·C 구현과 바이트 동일 | 대안 보존 (자동 전환 금지) |
+| Pyodide 번들 `cryptography`(45.0.5/47.0.0) `PBKDF2HMAC`(OpenSSL) | 격리 3.14 레인 실측: 220k 269ms, 고정 벡터 바이트 동일(§7) | **채택** |
 | C `_hashlib` 복원 | Cloudflare/Pyodide 스냅샷 의존 — 상류 문의 사항 | 대기 |
 
 결론 보류 원칙 준수: "불가능" 판단은 위 실측(격리 레인 3.13/3.14 `kdfbench` 결과) 후에만.
+
+> 2026-10-25 갱신: 실측 결과 `cryptography 47.0.0`을 채택했다. 구현·검증 상세는 §7.
 
 ## 5. 롤백 게이트 결함 (별도 항목)
 
@@ -58,3 +60,47 @@
 - 3.14 운영 배포: run 40076096543 / 실패 traceback: Workers tail (08:09–08:10 UTC)
 - 롤백 실패: run 40077161401 / 복구 배포: run 40078483333
 - 복구 후 auth 정상: 로그인 401(JSON), 타 흐름 register/login/reset/confirm ok
+- 3.14 + cryptography 격리 실측: run 40105508694 `B62 Worker/Pyodide contract` job
+  (`B62_WORKER_KDF_BENCH={"pure_ms": 720, "cryptogr_ms": 269, "cryptogr_identity": "true"}`)
+
+## 7. 채택 구현 (2026-10-25)
+
+### 7.1 결정
+
+- KDF 제공자: **Pyodide 번들 `cryptography` 47.0.0 (`PBKDF2HMAC`, OpenSSL)**.
+- 저장 자격증명 형식·반복 횟수·회원 데이터 변경 없음: `pbkdf2_sha512$220000$...` 그대로.
+- Worker 의존성에 `cryptography==47.0.0` + `cffi==2.0.0`을 **메인 의존성**으로 추가한다
+  (Pyodide v314 wasm 휠 정확 핀, `cffi` 2.1.1은 wasm 휠 부재로 emscripten 빌드 불가).
+- `wrangler.toml` 호환일: `2026-08-25` → `2026-09-08` (Python 3.14, workerd#6624 수정 스냅샷).
+
+### 7.2 디스패치 우선순위 (`app/password_kdf.py`)
+
+`resolve_kdf_provider(iterations)` 한 곳이 결정하고, 디스패치와 런타임 프로브가
+같은 함수를 읽는다.
+
+| 순서 | 제공자 | 조건 |
+|---|---|---|
+| 1 | `hashlib` | 런타임에 `hashlib.pbkdf2_hmac` 존재 (3.13, 최속) |
+| 2 | `cryptography` | 번들 패키지 로드 가능 (3.14) |
+| 3 | `webcrypto` | **10만 회 이하 요청에 한정** + dHermetic `runtime_loader` 주입 시 |
+| 4 | `python` | dHermetic 테스트 전용 (자동 전환 없음) |
+| 5 | `unavailable` | 디스패치가 원인을 명시해 예외 발생 |
+
+- 저장 비용(220,000)은 3번 경로에 절대 도달하지 않는다: 운영 엣지 WebCrypto 상한
+  100,000을 다시 밟지 않기 위한 구조적 차단이며, 회귀 테스트가 증명한다.
+- 순수 파이썬 구현은 고정 벡터 검증용 대안으로 남기되, 배포 런타임에서 자동으로
+  선택되지 않는다(성을 숨기는 자동 강등 금지).
+
+### 7.3 검증 범위
+
+- 격리 3.14 Workerd/Pyodide 레인: 부팅한 인터프리터·저장 해시 220k 왕복·제공자 보고를
+  함께 단정한다(`B62_WORKER_KDF220K_PROVIDER`). 이전 #5733 레인은 로컬 Workerd의
+  WebCrypto가 220k를 수락해 운영 엣지 상한을 볼 수 없었다.
+- 로컬 Workerd 결과는 **운영 엣지의 성공이 아니다**. 운영 검증은 보호 배포 후 실제
+  엣지 인증 E2E로만 판정한다 (§7.4).
+
+### 7.4 운영 전환·복구 기록
+
+배포·복구 결과는 본 문서가 아니라 #5479 이슈 코멘트에 실행 시각·버전 ID·응답 상태와
+함께 기록한다. 배포 직전 활성 버전 ID를 읽기 전용으로 기록하고, 그 ID를
+`rollback_production_code`의 `previous_version_id`로 사용한다.
