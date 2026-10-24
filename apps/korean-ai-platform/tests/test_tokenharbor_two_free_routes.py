@@ -24,7 +24,7 @@ from app.pilot.router_core import resolve_manual_route
 
 PROVIDER = "tokenharbor"
 BINDING = "PADIEM_B14_CREDENTIAL_13"
-SECRET_NAME = "PADIEM_B14_CREDENTIAL_13"
+SECRET_NAME = "PADIEM_TOKEN_HARBOR_API_KEY"
 ORIGIN = "https://tokenharbor.ai/v1"
 ALLOWED = {
     "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
