@@ -105,6 +105,41 @@ if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$RE
 fi
 echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
 echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
+# #5479: the REAL production KDF contract — the stored credential format is
+# PBKDF2-HMAC-SHA512 at 220,000 iterations through the same async dispatch the
+# auth routes call. On 3.14 the WebCrypto bridge refuses iterations above
+# 100,000, so the honest outcomes are `ok` (C path) or `webcrypto-iteration-cap`
+# (3.14); verify-failed / wrong-accepted / missing always fail.
+KDF220K_BODY=""
+for _ in $(seq 1 5); do
+  if KDF220K_BODY="$(curl -fsS "http://127.0.0.1:8795/probe?case=kdf220k" 2>/dev/null)"; then break; fi
+  sleep 1
+done
+echo "B62_WORKER_KDF220K=$KDF220K_BODY"
+case "$KDF220K_BODY" in
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_KDF220K_STATE=PASS' ;;
+  *'"state": "webcrypto-iteration-cap"'*|*'"state":"webcrypto-iteration-cap"'*)
+    echo 'B62_WORKER_KDF220K_STATE=PASS_WEB314_ITERATION_CAP' ;;
+  *) echo "B62_WORKER_KDF220K_STATE=FAIL body=$KDF220K_BODY" >&2; exit 1 ;;
+esac
+# #5479: the 220,000-iteration alternatives with their real CPU cost — the
+# pure-Python fallback (stdlib sha512 primitive) and the bundled cryptography
+# package. Correctness (pinned external vectors) must hold on every runtime.
+KDFBENCH_BODY=""
+for _ in $(seq 1 5); do
+  if KDFBENCH_BODY="$(curl -fsS --max-time 60 "http://127.0.0.1:8795/probe?case=kdfbench" 2>/dev/null)"; then break; fi
+  sleep 1
+done
+echo "B62_WORKER_KDF_BENCH=$KDFBENCH_BODY"
+case "$KDFBENCH_BODY" in
+  *'"vector": "true"'*|*'"vector":"true"'*) echo 'B62_WORKER_KDF_BENCH_VECTOR=PASS' ;;
+  *) echo 'B62_WORKER_KDF_BENCH_VECTOR=FAIL' >&2; exit 1 ;;
+esac
+case "$KDFBENCH_BODY" in
+  *'"identity": "true"'*|*'"identity":"true"'*) echo 'B62_WORKER_KDF_BENCH_IDENTITY=PASS' ;;
+  *) echo 'B62_WORKER_KDF_BENCH_IDENTITY=FAIL' >&2; exit 1 ;;
+esac
+
 
 failed=0
 count=0

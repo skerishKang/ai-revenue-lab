@@ -7,6 +7,9 @@ module globals and must not influence the HTTP/R2 contract probes.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import time
 from urllib.parse import parse_qs, urlparse
 
 from workers import Response, WorkerEntrypoint
@@ -205,6 +208,138 @@ def _digest_surface_state() -> str:
         return f"missing:{type(error).__name__}"
 
 
+def _pbkdf2_sha512_pure(password: bytes, salt: bytes, iterations: int, dklen: int) -> bytes:
+    """RFC 2898 PBKDF2-HMAC-SHA512 built only from the ``hashlib.sha512``
+    primitive (no ``hashlib.pbkdf2_hmac``, which the 3.14 snapshot lacks).
+    The HMAC key block is 128 bytes — SHA-512's block size, NOT 64."""
+    block_size = hashlib.sha512().block_size
+    key = password
+    if len(key) > block_size:
+        key = hashlib.sha512(key).digest()
+    key = key.ljust(block_size, b"\x00")
+    inner = hashlib.sha512(bytes(b ^ 0x36 for b in key))
+    outer = hashlib.sha512(bytes(b ^ 0x5C for b in key))
+
+    def prf(data: bytes) -> bytes:
+        i = inner.copy()
+        i.update(data)
+        o = outer.copy()
+        o.update(i.digest())
+        return o.digest()
+
+    out = bytearray()
+    block_index = 1
+    while len(out) < dklen:
+        u = prf(salt + block_index.to_bytes(4, "big"))
+        t_int = int.from_bytes(u, "big")
+        for _ in range(iterations - 1):
+            u = prf(u)
+            t_int ^= int.from_bytes(u, "big")
+        out += t_int.to_bytes(64, "big")
+        block_index += 1
+    return bytes(out[:dklen])
+
+
+#: PBKDF2-HMAC-SHA512("password", "salt", c, 64) — computed with the C
+#: implementation and pinned so a runtime without ``hashlib.pbkdf2_hmac``
+#: still proves its fallback against an external reference.
+_PURE_VECTORS = {
+    1: "867f70cf1ade02cff3752599a3a53dc4af34c7a669815ae5d513554e1c8cf252c02d470a285a0501bad999bfe943c08f050235d7d68b1da55e63f73b60a57fce",
+    2: "e1d9c16aa681708a45f5c7c4e215ceb66e011a2e9f0040713f18aefdb866d53cf76cab2868a39b9f7840edce4fef5a82be67335c77a6068e04112754f27ccf4e",
+    4096: "d197b1b33db0143e018b12f3d1d1479e6cdebdcc97c5c0f87f6902e072f457b5143f30602641b3d55cd335988cb36b84376060ecd532e039b742a239434af2d5",
+    220000: "3ede6b8c2ba493194db1febc21d3be4fc1c7d63f4a6bcc14ad9ae07c63432c6a867beca4a0dc50070666875567d813cc3bfd3607e634ba6087934cb5ec4bb99a",
+}
+
+
+async def _kdf220k_state() -> dict:
+    """One real production-cost auth round trip: the stored credential
+    format (PBKDF2-HMAC-SHA512 at PBKDF2_ITERATIONS) through the same async
+    dispatch the auth routes call. On the 3.14 snapshot the WebCrypto bridge
+    refuses iterations above 100,000 — reported as ``webcrypto-iteration-cap``
+    instead of masking the failure."""
+    import app.password_auth as password_auth
+
+    started = time.perf_counter()
+    try:
+        stored = await password_auth.hash_password_async("runtime-probe-password")
+        if not await password_auth.verify_password_async("runtime-probe-password", stored):
+            return {"state": "verify-failed", "iterations": password_auth.PBKDF2_ITERATIONS}
+        if await password_auth.verify_password_async("runtime-probe-wrong-password", stored):
+            return {"state": "wrong-accepted", "iterations": password_auth.PBKDF2_ITERATIONS}
+        return {
+            "state": "ok",
+            "iterations": password_auth.PBKDF2_ITERATIONS,
+            "ms": int((time.perf_counter() - started) * 1000),
+        }
+    except Exception as exc:
+        text = str(exc)
+        if "iteration counts above 100000" in text:
+            return {
+                "state": "webcrypto-iteration-cap",
+                "iterations": password_auth.PBKDF2_ITERATIONS,
+                "error": text[:200],
+            }
+        return {"state": "missing", "error": text[:200]}
+
+
+async def _kdfbench_state() -> dict:
+    """The 220,000-iteration alternatives with their real CPU cost.
+
+    - ``sha512prim``: does this runtime expose the C ``hashlib.sha512``
+      primitive the pure-Python fallback needs?
+    - ``vector``: the pure-Python PBKDF2 against pinned external vectors
+      (correctness independent of any C path).
+    - ``pure_ms`` + ``identity``: 220,000 iterations in the pure-Python
+      fallback, timed, and — where the C path exists — byte-identical to it.
+    - ``cryptogr``: the bundled ``cryptography`` package's PBKDF2HMAC at
+      220,000 (``not-bundled`` unless the dependency is added).
+    """
+    import hashlib
+
+    result: dict = {}
+    try:
+        hashlib.sha512(b"").digest()
+        result["sha512prim"] = "ok"
+    except Exception:
+        result["sha512prim"] = "missing"
+        return result
+
+    vector_ok = all(
+        _pbkdf2_sha512_pure(b"password", b"salt", c, 64).hex() == expected
+        for c, expected in _PURE_VECTORS.items()
+        if c != 220000
+    )
+    result["vector"] = "true" if vector_ok else "false"
+
+    started = time.perf_counter()
+    pure_220k = _pbkdf2_sha512_pure(b"password", b"salt", 220000, 64)
+    result["pure_ms"] = int((time.perf_counter() - started) * 1000)
+    if hasattr(hashlib, "pbkdf2_hmac"):
+        c_ref = hashlib.pbkdf2_hmac("sha512", b"password", b"salt", 220000, 64)
+        result["identity"] = "true" if pure_220k == c_ref else "false"
+    else:
+        result["identity"] = (
+            "true" if pure_220k.hex() == _PURE_VECTORS[220000] else "false"
+        )
+
+    try:
+        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+        from cryptography.hazmat.primitives import hashes
+
+        started = time.perf_counter()
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA512(), length=64, salt=b"salt", iterations=220000)
+        derived = kdf.derive(b"password")
+        result["cryptogr_ms"] = int((time.perf_counter() - started) * 1000)
+        result["cryptogr_identity"] = "true" if derived.hex() == _PURE_VECTORS[220000] else "false"
+        result["cryptogr"] = "ok"
+    except ImportError:
+        result["cryptogr"] = "not-bundled"
+    except Exception as exc:
+        result["cryptogr"] = "error:" + str(exc)[:120]
+    return result
+
+
+
 def _timezone_database_state() -> str:
     """``ok`` when this runtime can resolve a real IANA zone.
 
@@ -268,7 +403,26 @@ class Default(WorkerEntrypoint):
             return Response("invalid probe case", status=400)
         if set(params) != {"case"} or len(params["case"]) != 1:
             return Response("invalid probe case", status=400)
-        handler = PROBES.get(params["case"][0])
+        case = params["case"][0]
+        # #5479/#5664: the real password KDF contract — the stored credential
+        # format is PBKDF2-HMAC-SHA512 at PBKDF2_ITERATIONS (220,000), and the
+        # 3.14 snapshot's WebCrypto bridge refuses iterations above 100,000.
+        # These two cases carry the evidence the CI lane needs to judge a
+        # runtime migration: the actual production KDF round trip, and the
+        # stdlib-primitive fallback with its real CPU cost.
+        if case == "kdf220k":
+            try:
+                body = json.dumps(await _kdf220k_state(), ensure_ascii=False)
+            except Exception as exc:
+                body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
+            return Response(body, status=200, headers={"Content-Type": "application/json"})
+        if case == "kdfbench":
+            try:
+                body = json.dumps(await _kdfbench_state(), ensure_ascii=False)
+            except Exception as exc:
+                body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
+            return Response(body, status=200, headers={"Content-Type": "application/json"})
+        handler = PROBES.get(case)
         if handler is None:
             return Response("invalid probe case", status=400)
         # The old handlers inspect only request.url (the path remains /probe).
