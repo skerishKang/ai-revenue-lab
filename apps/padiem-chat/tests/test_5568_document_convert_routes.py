@@ -31,6 +31,13 @@ INTRUDER = "usr_" + "c" * 32
 STRANGER = "usr_" + "d" * 32
 SEEDED = (OWNER, INTRUDER, STRANGER, "usr_x")
 
+@pytest.fixture(autouse=True)
+def _legacy_conversion_contract(monkeypatch):
+    """Legacy conversion tests still exercise the engine behind the #5710 gate."""
+    from app import document_convert_routes
+    monkeypatch.setattr(document_convert_routes, "PDFMD_NEW_WORK_DISABLED", False)
+
+
 
 class StubHistory:
     """The signed-in session resolver only asks whether a user row exists."""
@@ -578,5 +585,39 @@ async def test_upload_is_pypdf_free_and_conversion_still_parses():
         assert ran["has_markdown"] is True
         markdown = await client.get(f"/api/document-conversions/items/{item['id']}/markdown")
         assert "Deferred 1 page 1" in markdown.text
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_5710_paused_migration_blocks_new_writes_but_preserves_existing_files(monkeypatch):
+    """No new D1 job or R2 writes; existing owner-scoped reads and downloads survive."""
+    from app import document_convert_routes
+
+    r2 = MemoryR2()
+    client, _app = await build_client(r2=r2)
+    try:
+        job_id = await open_job(client)
+        created = await upload(client, job_id, pdf_bytes(texts=["Existing PDF"]), name="existing.pdf")
+        assert created.status_code == 201
+        item_id = created.json()["items"][0]["id"]
+        finished = await client.post(f"/api/document-conversions/items/{item_id}/run")
+        assert finished.status_code == 200
+        baseline_keys = set(r2.objects)
+
+        monkeypatch.setattr(document_convert_routes, "PDFMD_NEW_WORK_DISABLED", True)
+        blocked = (
+            await client.post("/api/document-conversions", json={"mode": "fast"}),
+            await upload(client, job_id, pdf_bytes(texts=["Attack"]), name="new.pdf"),
+            await client.post(f"/api/document-conversions/items/{item_id}/run"),
+        )
+        assert all(resp.status_code == 503 for resp in blocked)
+        assert all(resp.json()["error"]["code"] == "pdfmd_migration_paused" for resp in blocked)
+        assert set(r2.objects) == baseline_keys
+        assert (await client.get("/api/document-conversions")).status_code == 200
+        assert (await client.get(f"/api/document-conversions/{job_id}")).status_code == 200
+        assert (await client.get(f"/api/document-conversions/items/{item_id}/original")).status_code == 200
+        assert (await client.get(f"/api/document-conversions/items/{item_id}/markdown")).status_code == 200
+        assert (await client.get(f"/api/document-conversions/{job_id}/archive")).status_code == 200
     finally:
         await client.aclose()
