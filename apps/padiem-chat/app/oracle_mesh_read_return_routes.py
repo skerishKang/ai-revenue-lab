@@ -3295,6 +3295,18 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "run_id": payload["run_id"],
         })
 
+    # The Engine has reached a real PC step for this proof- and owner-verified
+    # run, so the conversation's staged row moves pending -> running. Status
+    # only: no result_summary is ever passed, so a step in flight cannot be
+    # mistaken for the run's answer, and the guarded write leaves a completed
+    # run untouched. A lost projection must not fail the step that is running.
+    mark_running = getattr(history_store, "update_claw_run_status", None)
+    if callable(mark_running):
+        try:
+            await mark_running(uid, payload["run_id"], "running")
+        except Exception:
+            pass
+
     if mode == "dispatch":
         op = payload.get("op")
         if op not in ("list", "read"):

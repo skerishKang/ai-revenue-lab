@@ -2614,6 +2614,17 @@
 
   // Transport completion does not imply a completed durable PC run.
   const resolvedPcRuns = new Set();
+  // The PC lane carries no live P01 stage, so its status chip follows the
+  // run's own observed status. The wording is the existing stage vocabulary,
+  // and any status shown here is settled by the run's terminal outcome.
+  function showPcRuntimeStatus(article, kind) {
+    const text = window.PadiemClawRunEventProjection?.label?.(
+      kind, document.documentElement.lang
+    );
+    if (!text) return false;
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, text, "status");
+    return true;
+  }
   async function waitForAcceptedPcRun(article, handle, outboundMessages, signal, product) {
     const { run_id: runId, conversation_id: conversationId } = handle;
     const owner = authState.user;
@@ -2637,8 +2648,20 @@
       if (!result || result.run_id !== runId || result.conversation_id !== conversationId) return;
       if (authState.user !== owner || conversationState.getConversationId?.(product) !== conversationId
           || !article.isConnected || signal.aborted) return;
-      if (result.status === "pending" || result.status === "running") continue;
+      if (result.status === "pending" || result.status === "running") {
+        // A server-observed "running" is a real fact: the Engine reached a PC
+        // step for this run. "pending" adds nothing over the preparing chip.
+        if (result.status === "running") {
+          // A running turn shows its status on the card, which owns that
+          // surface, so the observed step is carried as the card's own hint.
+          window.PadiemChatLifecycle?.setTaskHint?.(article, "tool");
+          showPcRuntimeStatus(article, "tool_started");
+        }
+        continue;
+      }
       if (result.status !== "completed" || typeof result.answer !== "string") {
+        window.PadiemChatLifecycle?.setTaskHint?.(article, null);
+        showPcRuntimeStatus(article, "run_failed");
         PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
         return;
       }
@@ -2648,6 +2671,10 @@
       // completed PC run.
       if (result.answer_source !== "pc_command_result") {
         if (result.answer_source === "model_reply") {
+          // A model reply is not a completed PC execution, so a tool-running
+          // status observed while waiting is released rather than confirmed.
+          window.PadiemChatLifecycle?.setTaskHint?.(article, null);
+          window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, "", "status");
           PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
         }
         return;
@@ -2660,8 +2687,12 @@
       const paragraph = document.createElement("p");
       paragraph.textContent = result.answer;
       content.appendChild(paragraph);
-      // The durable run answered: the preparing chip is released as well.
+      // The durable run answered: the preparing chip is released, and a
+      // tool-running status shown while waiting settles on this run's real
+      // completion instead of being left stale.
+      window.PadiemChatLifecycle?.setTaskHint?.(article, null);
       window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+      showPcRuntimeStatus(article, "run_completed");
       conversationState.setProduct?.(product);
       conversationState.commitAssistant(outboundMessages, result.answer);
       conversationState.setProduct?.(conversationProduct);
@@ -2686,6 +2717,11 @@
     paragraph.textContent = result.answer;
     content.appendChild(paragraph);
     window.PadiemChatLifecycle?.releasePreparingRuntimeLabel?.(article);
+    // The preparing release deliberately keeps a chip that already carries a
+    // real status, and the PC wait paints one for the step it observed. A
+    // recovered answer is that run's outcome, so the running wording is
+    // released here too; it must not stay on a turn that has already answered.
+    window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, "", "status");
     conversationState.setProduct?.(product);
     if (result.conversationId) conversationState.setConversationId(result.conversationId, product);
     conversationState.commitAssistant(outboundMessages, result.answer);

@@ -213,6 +213,74 @@ def test_the_live_claw_events_reach_the_shared_card():
     assert "PadiemChatOrchestrationUI?.render?.(article, { events: liveOrchestrationEvents }, {})" in app
 
 
+def _lifecycle_function(name: str, next_name: str) -> str:
+    """The exact shipped source of one module function."""
+    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    start = source.index(f"  function {name}(")
+    return source[start:source.index(f"  function {next_name}(", start)]
+
+
+def _live_status_wording(key: str) -> str:
+    """The Korean copy the shipped catalog assigns to a live status key."""
+    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    line = next(
+        row for row in source.splitlines()
+        if row.strip().startswith(f"{key}: Object.freeze(")
+    )
+    found = re.search(r'state: "\w+", ko: "([^"]+)", en: "[^"]+"', line)
+    assert found is not None, line
+    return found.group(1)
+
+
+def test_a_card_refresh_renders_the_header_a_running_card_already_shows():
+    """#5573 3-D-2: re-rendering the card must not blank the status it shows.
+
+    Recording a stage or setting a hint re-renders the card. A refresh that
+    carried no label and claimed live:false erased the running wording and its
+    sweep mid-turn, which every plain submit and every web search hits.
+    """
+    refresh = _lifecycle_function("refreshTaskStatus", "terminalFor")
+    plain = _lifecycle_function("renderTaskStatus", "renderCapabilityKit")
+    # One derived status feeds all three header fields, so a refresh cannot
+    # render a card that disagrees with itself.
+    assert "const status = taskStatusFor(" in refresh, refresh
+    for shared in (
+        'statusLabel: status ? status.label : ""',
+        'live: Boolean(status) && status.state === "active"',
+    ):
+        assert shared in refresh, refresh
+        assert shared in plain, plain
+    assert "live: false," not in refresh, refresh
+
+
+def test_a_finished_turn_stops_carrying_a_live_status_hint():
+    """The wording of a running turn cannot survive into a finished one."""
+    status_for = _lifecycle_function("taskStatusFor", "labeledStatus")
+    after_hint = status_for[status_for.index("const hint"):]
+    assert "!terminalCatalog[lifecycle]" in after_hint, status_for
+    # The guard sits on the hint itself, so a terminal turn cannot fall through
+    # into the streaming chip either.
+    assert "states.STREAMING" in after_hint, status_for
+    assert after_hint.index("!terminalCatalog[lifecycle]") < after_hint.index("states.STREAMING")
+
+
+def test_the_terminal_state_clears_only_this_module_s_live_wording():
+    """A stage label the orchestration presentation rendered is not ours to erase."""
+    source = LIFECYCLE_JS.read_text(encoding="utf-8")
+    setter = source[source.index("    set(article, state) {"):source.index("    applyRuntimeLabel,")]
+    assert "cardShowsLiveStatus(article)" in setter, setter
+    # set() is also called on a bare article object (the shipped node contract),
+    # so the card node is read the same guarded way the badge marker is.
+    assert 'article.querySelector ? article.querySelector(".capability-current") : null' in setter, setter
+    assert 'if (LIVE_STATUS_TEXTS.has((current.textContent || "").trim())) {' in setter, setter
+    assert setter.index("LIVE_STATUS_TEXTS.has(") < setter.index('current.textContent = "";')
+    assert 'current.classList?.remove?.("padiem-activity-sweep")' in setter, setter
+    # The set is derived from the catalog, never hand-copied, so a live wording
+    # added to the catalog is covered without a second list to forget.
+    seeds = source[source.index("  const LIVE_STATUS_TEXTS"):source.index("  // The real steps of a turn")]
+    assert "Object.values(taskStatusCatalog)" in seeds, seeds
+
+
 # ---------------------------------------------------------------------------
 # Browser contracts
 # ---------------------------------------------------------------------------
@@ -305,3 +373,102 @@ def test_a_reduced_motion_reader_gets_the_state_without_the_movement(browser, se
     assert await_close is None
     page.close()
     context.close()
+
+
+# The plain lane, driven the way static/app.js drives it around a PC wait:
+# the chip copy and the card hint are both applied, and the outcome settles
+# them. The card is mounted on a real assistant article from the shipped
+# template, so its meta-row chip is the real one.
+ONE_STATUS_SURFACE = r"""
+(runningLabel) => {
+  const api = window.PadiemChatLifecycle;
+  const kit = document.querySelector('.capability-kit');
+  const article = kit ? kit.closest('article') : null;
+  if (!article) return { error: 'no work card was rendered' };
+  delete article.dataset.capabilityPreview;
+  article.querySelectorAll('[data-orchestration-ui]').forEach((node) => node.remove());
+  const read = () => {
+    const current = article.querySelector('.capability-current');
+    const chip = article.querySelector('[data-runtime-label]');
+    const cardShows = Boolean(current && current.innerText.trim() && current.checkVisibility());
+    const chipShows = Boolean(chip && chip.innerText.trim() && chip.checkVisibility());
+    return {
+      lifecycle: article.dataset.lifecycle || null,
+      taskHint: article.dataset.taskHint || '',
+      cardText: current ? current.innerText.trim() : '(no node)',
+      cardSweep: current ? current.classList.contains('padiem-activity-sweep') : null,
+      chipText: chip ? chip.innerText.trim() : '(no node)',
+      chipVisible: chip ? chip.checkVisibility() : null,
+      visibleSurfaces: (cardShows ? 1 : 0) + (chipShows ? 1 : 0),
+    };
+  };
+  const out = {};
+  api.recordTaskEvent(article, 'request_sent');
+  api.renderTaskStatus(article);
+  api.set(article, 'streaming');
+  api.applyRuntimeLabel(article, runningLabel, 'status');
+  api.setTaskHint(article, 'tool');
+  out.running = read();
+  api.renderTaskStatus(article);
+  out.runningAfterRender = read();
+  api.setTaskHint(article, 'tool');
+  api.setTaskHint(article, null);
+  api.set(article, 'completed');
+  out.finished = read();
+  api.setTaskHint(article, 'tool');
+  out.hintAfterFinish = read();
+  api.set(article, 'streaming');
+  const current = article.querySelector('.capability-current');
+  current.textContent = 'foreign-orchestration-stage-label';
+  api.set(article, 'completed');
+  out.foreignLabel = read();
+  return out;
+}
+"""
+
+
+@requires_browser
+def test_a_running_pc_step_shows_once_and_leaves_nothing_when_it_ends(browser, server):
+    """#5735: the observed step is visible on the one surface, then gone."""
+    page = browser.new_page(viewport={"width": 1440, "height": 900})
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_timeout(2000)
+
+    running = _live_status_wording("tool")
+    out = page.evaluate(ONE_STATUS_SURFACE, running)
+    page.close()
+    assert "error" not in out, out
+
+    live = out["running"]
+    assert live["lifecycle"] == "streaming", live
+    assert live["cardText"] == running, live
+    assert live["cardSweep"] is True, live
+    # The chip carries the same fact and stays hidden while the card shows it:
+    # #5559 allows exactly one visible status per turn, never two copies.
+    assert live["chipText"] == running, live
+    assert live["chipVisible"] is False, live
+    assert live["visibleSurfaces"] == 1, live
+
+    again = out["runningAfterRender"]
+    assert again["cardText"] == running, again
+    assert again["cardSweep"] is True, again
+    assert again["visibleSurfaces"] == 1, again
+
+    done = out["finished"]
+    assert done["lifecycle"] == "completed", done
+    assert done["cardText"] == "", done
+    assert done["cardSweep"] is False, done
+
+    late = out["hintAfterFinish"]
+    assert late["taskHint"] == "tool", late
+    assert late["cardText"] == "", late
+    assert late["cardSweep"] is False, late
+
+    # A stage label the orchestration presentation rendered is not this
+    # module's wording, so a terminal state leaves it in place.
+    foreign = out["foreignLabel"]
+    assert foreign["cardText"] == "foreign-orchestration-stage-label", foreign
+    assert foreign["cardSweep"] is False, foreign
+    assert not errors, errors
