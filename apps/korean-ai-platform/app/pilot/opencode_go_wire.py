@@ -22,6 +22,7 @@ from .stream_types import StreamEvent, StreamToolCall, StreamUsage
 from .tool_channel import (
     InvalidToolDeclaration,
     MAX_TOOL_ARGUMENT_CHARS,
+    MAX_TOOL_CALLS,
     require_tool_capability,
     validate_tool_calls,
     validate_tool_choice,
@@ -150,6 +151,23 @@ def _responses_tool_choice(choice: Any) -> Any:
     if isinstance(choice, str):
         return choice
     return {"type": "function", "name": choice["function"]["name"]}
+
+
+def _permitted_tool_names(body: dict[str, Any]) -> frozenset[str]:
+    """Which calls this request may answer, given its declaration and choice.
+
+    A tool choice is not advisory: a caller that said ``none`` must not receive
+    a call, and a caller that named one tool must not receive another. The
+    Google lane already applies this rule; this wire applies the same one, so a
+    provider defect cannot widen what the caller asked for.
+    """
+    declared = frozenset(item["name"] for item in body.get("tools") or [])
+    choice = body.get("tool_choice")
+    if choice == "none":
+        return frozenset()
+    if isinstance(choice, dict):
+        return frozenset({choice.get("name")}) & declared
+    return declared
 
 
 def go_tool_wire(model_id: str) -> str | None:
@@ -552,9 +570,7 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     return _normalize_go_answer(wire, upstream_model, parsed,
                                 latency_ms=int((time.monotonic() - start) * 1000),
                                 response_bytes=len(raw),
-                                declared_names=frozenset(
-                                    item["name"] for item in body.get("tools") or []
-                                ) or None)
+                                declared_names=_permitted_tool_names(body))
 
 
 def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: str) -> tuple[str | None, str | None, StreamUsage | None, bool]:
@@ -696,6 +712,10 @@ class _GoResponsesToolStream:
             # A call for a tool nobody declared, or the same call twice, is a
             # provider defect rather than a turn of the conversation.
             raise MalformedUpstreamResponse()
+        if self._index >= MAX_TOOL_CALLS:
+            # Each call is validated on its own, so the per-response bound has
+            # to be checked here rather than inherited from one array.
+            raise MalformedUpstreamResponse()
         self._closed.add(key)
         self._emitted_ids.add(validated["id"])
         self.saw_output = True
@@ -802,7 +822,7 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
     tool_stream: _GoResponsesToolStream | None = None
     if body.get("tools"):
         tool_stream = _GoResponsesToolStream(
-            names=frozenset(item["name"] for item in body["tools"]),
+            names=_permitted_tool_names(body),
             upstream_model=upstream_model,
         )
     buffer = b""
