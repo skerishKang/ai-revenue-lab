@@ -21,6 +21,7 @@ re-exported so every existing import path keeps working unchanged.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 import hashlib
 import hmac
 import json
@@ -72,6 +73,30 @@ PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: #5015: the Chat PC-files read is bounded server-side at 1 MB. The Engine
 #: re-checks the delivered bytes defensively; it never raises the bound.
 PC_FILES_READ_MAX_BYTES = 1_000_000
+
+# Stream-local presentation only: never authorizes tools or refreshes Core idle.
+_PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
+
+
+def _pc_progress_emitter(owner, dispatch_id, kind):
+    sink = _PC_PROGRESS_SINK.get()
+    started = time.monotonic()
+    sequence = 0
+    seen = set()
+
+    def emit(stage):
+        nonlocal sequence
+        if sink is None or stage in seen:
+            return
+        seen.add(stage)
+        sequence += 1
+        sink({
+            "pc_run_id": owner[1], "dispatch_id": dispatch_id, "kind": kind,
+            "stage": stage, "sequence": sequence,
+            "elapsed_ms": max(0, int((time.monotonic() - started) * 1000)),
+        })
+    return emit
+
 # Exact, reviewed Chat API codes may cross the trusted Engine boundary as
 # bounded diagnostic stages; unknown codes and messages never leave that
 # boundary. These stages do not authorize or retry any PC command.
@@ -300,6 +325,8 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 "pc_files_dispatch_missing",
                 "PC file dispatch identifier unavailable",
             )
+        emit_progress = _pc_progress_emitter(owner, dispatch_id, expected_kind)
+        emit_progress("accepted")
         import asyncio
 
         async def _final_result():
@@ -354,6 +381,11 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                     "pc_files_result_mismatch",
                     "PC file result correlation failed; do not replay",
                 )
+            if row.get("state") == "received":
+                emit_progress("picked_up")
+                # Owner-approved presentation: received means PC processing
+                # in flight, not independently verified OS process creation.
+                emit_progress("executing")
             if row.get("state") == "failed":
                 if op == "read":
                     # A failed read keeps its verified marker body in the same
@@ -472,9 +504,11 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         ensure_ascii=False,
                         separators=(",", ":"),
                     )
+                    emit_progress("result")
                     return common
                 common["content"] = output
                 common["content_bytes"] = len(output.encode("utf-8"))
+                emit_progress("result")
                 return common
             if row.get("state") not in ("pending", "received", "store_failed"):
                 raise ToolHandlerError(
