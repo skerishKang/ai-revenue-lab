@@ -268,7 +268,11 @@ async def api_chat_stream(request: Request):
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    if "tier" in raw:
+    # Owner decision 2026-10-24 (#5474): Free is available with or without a
+    # login on the Chat lane, and the usage gate below bounds anonymous spend.
+    # Paid tiers, Custom, Claw and projects still require a session.
+    anonymous_free = uid is None and raw.get("tier") == "free"
+    if "tier" in raw and not anonymous_free:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
@@ -277,13 +281,6 @@ async def api_chat_stream(request: Request):
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
                 return tier_denial
-    # Free is available to every signed-in member; it is not an anonymous
-    # platform-key proxy. Never read tier/upgrade claims from browser state.
-    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
-        return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
-            status_code=401,
-        )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -756,7 +753,11 @@ async def api_chat(request: Request) -> JSONResponse:
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    if "tier" in raw:
+    # Owner decision 2026-10-24 (#5474): Free is available with or without a
+    # login on the Chat lane, and the usage gate below bounds anonymous spend.
+    # Paid tiers, Custom, Claw and projects still require a session.
+    anonymous_free = uid is None and raw.get("tier") == "free"
+    if "tier" in raw and not anonymous_free:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
@@ -765,13 +766,6 @@ async def api_chat(request: Request) -> JSONResponse:
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
                 return tier_denial
-    # Free is available to every signed-in member; it is not an anonymous
-    # platform-key proxy. Never read tier/upgrade claims from browser state.
-    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
-        return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
-            status_code=401,
-        )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:

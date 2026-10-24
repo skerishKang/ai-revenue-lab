@@ -1,23 +1,19 @@
-"""#5474 verification: can a cookie-less Chat request execute the signed platform key?
+"""#5474: the anonymous Chat lane and the usage gate that bounds it.
 
-``/api/chat`` and ``/api/chat/stream`` gate the Free-tier login check on the
-literal browser claim ``tier == "free"``. A request that omits ``tier`` still
-resolves to the Free policy (``_apply_b62_model_policy`` defaults to ``"free"``),
-so it does not hit that check and the request keeps flowing.
-
-This module is the verification suite the issue asked for. It does not change
-route behaviour; it pins the gate that actually stands in front of the signed
-platform key and records why no code change is warranted:
+Originally a verification suite: an anonymous request that omitted ``tier``
+reached the usage gate while an explicit ``tier == "free"`` claim was answered
+401 by the login check. The Owner decision of 2026-10-24 settles that
+asymmetry in favour of anonymous Free on the Chat lane, so both claims now take
+the same path and this module pins the resulting contract:
 
 * The Production worker enforces the usage gate unconditionally
   (``worker.py`` sets ``app.state.usage_gate_enforced = True``) and the gate is
   evaluated in both routes before any B14 call. Without a quota store or a
   client IP it denies with 503 and makes zero provider calls.
-* With a store bound, anonymous access is bounded per real client IP and the
-  second burst call is denied with 429 before B14.
-* Omitting ``tier`` does bypass the Free-tier *login* check, so the two claims
-  land in different places. That asymmetry is asserted explicitly below so a
-  future edit cannot widen or narrow it unnoticed.
+* With a store bound, anonymous Free — explicit or defaulted — is bounded per
+  real client IP and the second burst call is denied with 429 before B14.
+* Paid tiers, Custom and projects still require a session: anonymous requests
+  are answered 401 before any provider call.
 * With no enforcing gate the request executes, which is the documented
   development-stage posture (``app_factory.py``: quotas disabled by default,
   provider-governed rather than locally quota-gated).
@@ -212,23 +208,47 @@ def test_anonymous_access_is_rate_limited_before_b14(path: str) -> None:
     assert scripted.calls == 1
 
 
-# --- 2. the omitted-tier asymmetry that #5474 reports -----------------------
+# --- 2. anonymous Free, explicit or defaulted, shares one bounded path -----
 
 
 @pytest.mark.parametrize("path", PATHS)
-def test_explicit_free_tier_requires_login_before_any_model_call(path: str) -> None:
-    app = build_app()
-    response = asyncio.run(post(app, path, payload(tier="free")))
-    assert_code(app, response, expected_status=401, expected_code="unauthorized")
+def test_explicit_free_tier_reaches_the_usage_gate_before_b14(path: str) -> None:
+    app = build_enforced_app(store=InMemoryUsageCounterStore())
+    response = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN))
+    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
+
+
+@pytest.mark.parametrize("path", PATHS)
+def test_explicit_free_tier_is_quota_bounded_for_anonymous_callers(path: str) -> None:
+    app = create_app(quota_settings(), history_store=EmptyHistory(), usage_store=InMemoryUsageCounterStore())
+    app.state.usage_gate_enforced = True
+    scripted = ScriptedB14()
+    app.state.b14_client = scripted
+
+    first = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN, client_ip=CLIENT_IP))
+    second = asyncio.run(post(app, path, payload(tier="free"), origin=ORIGIN, client_ip=CLIENT_IP))
+
+    assert first.status_code == 200, first.text
+    assert scripted.calls == 1
+    assert second.status_code == 429, second.text
+    assert second.json()["error"]["code"] == "rate_limited"
+    assert scripted.calls == 1
 
 
 @pytest.mark.parametrize("path", PATHS)
 def test_omitted_tier_reaches_the_usage_gate_instead_of_the_login_gate(path: str) -> None:
-    """Pinning the asymmetry: the omitted claim is not blocked by the login gate."""
+    """Pinning the shared path: the omitted claim is not blocked by a login gate."""
 
     app = build_enforced_app(store=InMemoryUsageCounterStore())
     response = asyncio.run(post(app, path, payload()))
     assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
+
+
+@pytest.mark.parametrize("path", PATHS)
+def test_anonymous_paid_tier_still_requires_login(path: str) -> None:
+    app = build_app()
+    response = asyncio.run(post(app, path, payload(tier="plus"), origin=ORIGIN))
+    assert_code(app, response, expected_status=401, expected_code="unauthorized")
 
 
 # --- 3. the gate must not over-block a signed-in member ---------------------
@@ -249,12 +269,22 @@ def test_signed_in_member_still_reaches_the_model(path: str) -> None:
 def test_expired_or_tampered_session_is_not_identity(path: str) -> None:
     app = build_app()
     expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200)
-    response = asyncio.run(post(app, path, payload(tier="free"), cookie=expired, origin=ORIGIN))
+    response = asyncio.run(post(app, path, payload(tier="plus"), cookie=expired, origin=ORIGIN))
     assert_code(app, response, expected_status=401, expected_code="unauthorized")
 
     token = create_session_token(settings(), OWNER)
-    response = asyncio.run(post(app, path, payload(tier="free"), cookie=token[:-4] + "AAAA", origin=ORIGIN))
+    response = asyncio.run(post(app, path, payload(tier="plus"), cookie=token[:-4] + "AAAA", origin=ORIGIN))
     assert_code(app, response, expected_status=401, expected_code="unauthorized")
+
+
+@pytest.mark.parametrize("path", PATHS)
+def test_expired_session_behaves_as_anonymous_free(path: str) -> None:
+    """A dead cookie is no identity, so Free lands on the anonymous usage gate."""
+
+    app = build_enforced_app(store=InMemoryUsageCounterStore())
+    expired = create_session_token(settings(), OWNER, now=int(time.time()) - 7200)
+    response = asyncio.run(post(app, path, payload(tier="free"), cookie=expired, origin=ORIGIN))
+    assert_code(app, response, expected_status=503, expected_code="live_identity_unavailable")
 
 
 @pytest.mark.parametrize("path", PATHS)

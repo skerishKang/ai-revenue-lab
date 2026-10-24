@@ -3,7 +3,10 @@
 Three source-verified defects are covered here:
 
 1. ``chat_routes.py`` answered a non-login Free-tier request with a mojibake
-   literal (``"?? AI? ????? ???? ???"``) instead of readable Korean.
+   literal (``"?? AI? ????? ???? ???"``) instead of readable Korean. #5474
+   (Owner decision 2026-10-24) removed that 401 entirely: anonymous Free now
+   takes the usage-gated Chat lane. The mojibake scan below still guards every
+   string literal in the module.
 2. ``claw_general_routes.py`` defined ``_combine_system_context`` twice.
 3. ``claw_routes.py`` reflected the caller's own channel/action string into the
    ``invalid_channel`` / ``invalid_action`` messages.
@@ -36,7 +39,6 @@ CLAW_ROUTES = APP_DIR / "app" / "claw_routes.py"
 MOJIBAKE_RUN = re.compile(r"\?{2,}")
 HANGUL = re.compile(r"[\uac00-\ud7a3]")
 
-FREE_TIER_401_MESSAGE = "무료 AI를 사용하려면 로그인이 필요합니다."
 INVALID_CHANNEL_MESSAGE = "지원되지 않는 채널입니다."
 INVALID_ACTION_MESSAGE = "지원되지 않는 작업입니다."
 
@@ -80,45 +82,25 @@ def _free_tier_payload() -> dict[str, object]:
     }
 
 
-# ── 1. the non-login Free-tier 401 message must be readable Korean ─────────
+# ── 1. the anonymous Free lane stays bounded and carries no mojibake ────────
 
 
 @pytest.mark.parametrize("path", FREE_TIER_PATHS)
-def test_free_tier_401_message_is_readable_korean(
-    free_tier_client: TestClient,
-    monkeypatch: pytest.MonkeyPatch,
-    path: str,
-) -> None:
-    import app.chat_routes as chat_routes
-
-    async def _grade_gate_did_not_answer(*_args: object, **_kwargs: object) -> None:
-        # The shared member-grade gate answers an anonymous tier request
-        # first, so the route's own Free-tier guard is normally shadowed.
-        # Neutralising that gate here only reaches the guard so that the
-        # guard's own message is proven; the product gate is not changed.
-        return None
-
-    monkeypatch.setattr(chat_routes, "selected_grade_denial", _grade_gate_did_not_answer)
-
-    resp = free_tier_client.post(path, json=_free_tier_payload())
-    assert resp.status_code == 401
-    data = resp.json()
-    assert data["error"]["code"] == "unauthorized"
-    message = data["error"]["message"]
-    assert message == FREE_TIER_401_MESSAGE
-    assert MOJIBAKE_RUN.search(message) is None
-    assert HANGUL.search(message)
-
-
-@pytest.mark.parametrize("path", FREE_TIER_PATHS)
-def test_anonymous_free_request_keeps_the_401_contract(
+def test_anonymous_free_request_is_bounded_by_the_usage_gate(
     free_tier_client: TestClient,
     path: str,
 ) -> None:
-    resp = free_tier_client.post(path, json=_free_tier_payload())
-    assert resp.status_code == 401
+    # #5474 Owner decision: no login is required for Free. The usage gate must
+    # answer instead, before any provider call.
+    free_tier_client.app.state.usage_gate_enforced = True
+    resp = free_tier_client.post(
+        path,
+        json=_free_tier_payload(),
+        headers={"cf-connecting-ip": "203.0.113.61"},
+    )
+    assert resp.status_code == 503
     data = resp.json()
-    assert data["error"]["code"] == "unauthorized"
+    assert data["error"]["code"] == "live_abuse_gate_unavailable"
     message = data["error"]["message"]
     assert MOJIBAKE_RUN.search(message) is None
     assert HANGUL.search(message)
