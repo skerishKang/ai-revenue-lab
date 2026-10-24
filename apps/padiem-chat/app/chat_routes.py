@@ -40,6 +40,7 @@ from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import model_supports, request_tier_context, resolve_request_model_policy, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
 from .central_model_route_runtime import chat_request_tier_context
 from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
+from .model_call_record_store import ModelCallRecordInput
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .tier_identity_client import is_padiem_identity_question
 from .project_files import ProjectFileStore
@@ -233,6 +234,43 @@ async def _restore_owner_chat_model_messages(
         raise OverflowError("owned model conversation exceeds transport guard")
     normalized.append(dict(newest))
     return normalized
+
+
+async def _record_chat_model_call(
+    request: Request,
+    *,
+    uid: str | None,
+    provider_id: str,
+    model_id: str,
+    status: str,
+    duration_ms: int | None = None,
+    error_code: str | None = None,
+    conversation_id: str | None = None,
+    fallback_used: bool = False,
+    retry_count: int = 0,
+) -> None:
+    """#5318 slice A: persist one Chat model call record (best-effort)."""
+    store = getattr(request.app.state, "model_call_record_store", None)
+    if store is None:
+        return
+    try:
+        await store.record(
+            ModelCallRecordInput(
+                product="chat",
+                provider_id=provider_id,
+                model_id=model_id,
+                status=status,
+                user_id=uid,
+                duration_ms=duration_ms,
+                error_code=error_code,
+                conversation_id=conversation_id,
+                fallback_used=fallback_used,
+                retry_count=retry_count,
+            )
+        )
+    except Exception:
+        # Recording must never break the user-facing response.
+        pass
 
 
 async def api_chat_stream(request: Request):
@@ -1039,6 +1077,10 @@ async def api_chat(request: Request) -> JSONResponse:
                 )
 
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
+        await _record_chat_model_call(
+            request, uid=uid, provider_id="unknown", model_id="unknown",
+            status="error", error_code=getattr(exc, "code", None),
+        )
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
 
     if drive_sources:
@@ -1072,4 +1114,14 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
+    route = result.get("route") if isinstance(result, dict) else None
+    if isinstance(route, dict):
+        await _record_chat_model_call(
+            request,
+            uid=uid,
+            provider_id=str(route.get("provider") or "unknown"),
+            model_id=str(route.get("model") or "unknown"),
+            status="success",
+            conversation_id=result.get("conversation_id") if isinstance(result, dict) else None,
+        )
     return JSONResponse(public_chat_result(result))
