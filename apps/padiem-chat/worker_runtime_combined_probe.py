@@ -258,6 +258,7 @@ async def _kdf220k_state() -> dict:
     refuses iterations above 100,000 — reported as ``webcrypto-iteration-cap``
     instead of masking the failure."""
     import app.password_auth as password_auth
+    import sys
 
     started = time.perf_counter()
     try:
@@ -268,6 +269,7 @@ async def _kdf220k_state() -> dict:
             return {"state": "wrong-accepted", "iterations": password_auth.PBKDF2_ITERATIONS}
         return {
             "state": "ok",
+            "runtime_minor": sys.version_info.minor,
             "iterations": password_auth.PBKDF2_ITERATIONS,
             "ms": int((time.perf_counter() - started) * 1000),
         }
@@ -276,6 +278,7 @@ async def _kdf220k_state() -> dict:
         if "iteration counts above 100000" in text:
             return {
                 "state": "webcrypto-iteration-cap",
+                "runtime_minor": sys.version_info.minor,
                 "iterations": password_auth.PBKDF2_ITERATIONS,
                 "error": text[:200],
             }
