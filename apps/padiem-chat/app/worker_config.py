@@ -387,6 +387,19 @@ def apply_live_deadman_switch(settings: Settings) -> Settings:
     return settings
 
 
+# #5568: the PDF→Markdown util page previews the owner's original PDF by
+# framing this exact path. The default policy denies all framing, so the frame
+# was refused even same-origin and the preview pane could never render the
+# document. This is the one inline-preview exception, the same SAMEORIGIN
+# contract the Drive case PDF preview ships; the query string is not part of
+# `path`, so both display modes of this one owner-scoped route share it.
+# Cross-origin framing stays denied and every other path keeps the strict
+# default.
+_DOCUMENT_CONVERT_ORIGINAL_RE = re.compile(
+    r"^/api/document-conversions/items/[A-Za-z0-9_-]{1,128}/original$"
+)
+
+
 def response_headers_for_path(
     path: str,
     *,
@@ -400,6 +413,12 @@ def response_headers_for_path(
         headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
             "frame-src blob:;",
             f"frame-src blob: {b66_quote_base_url};",
+        )
+    if _DOCUMENT_CONVERT_ORIGINAL_RE.match(path):
+        headers["X-Frame-Options"] = "SAMEORIGIN"
+        headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
+            "frame-ancestors 'none';",
+            "frame-ancestors 'self';",
         )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"
