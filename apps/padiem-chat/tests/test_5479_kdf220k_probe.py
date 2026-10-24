@@ -78,8 +78,15 @@ def test_the_lane_asserts_the_220k_contract():
     assert "B62_WORKER_KDF_BENCH_IDENTITY=PASS" in script
 
 
-def test_h1_py314_local_ok_is_not_an_edge_pass():
-    """Exercise the gate, not just a text assertion: local 3.14 must fail."""
+def test_h1_py314_local_ok_is_never_an_edge_pass():
+    """Local 3.14 must never be labelled as certifying the Production edge.
+
+    #5743's rule is preserved exactly: a 3.14 result carries
+    ``UNVERIFIED_PY314`` and is never reported as the 3.13 pass. What the lane
+    does not do is stop on it — the manifest's runtime is a deploy decision,
+    and a lane that can only pass on 3.13 would red every 3.14 build without
+    producing edge evidence. Real refusals (the WebCrypto cap) still fail.
+    """
     import json
     import shutil
     import subprocess
@@ -95,18 +102,35 @@ def test_h1_py314_local_ok_is_not_an_edge_pass():
         pytest.skip("bash required for shell contract")
 
     source = _LANE_PATH.read_text(encoding="utf-8")
-    shell_gate = source.split("# H1: local 3.14 Workerd", 1)[1].split(
+    shell_gate = source.split("# H1 (#5743)", 1)[1].split(
         "# #5479: the 220,000-iteration alternatives", 1
     )[0]
-    script = 'KDF220K_BODY=\'{}\'\n' + "# H1: local 3.14 Workerd" + shell_gate
-    for minor, state, expect_ok in [
-        (13, "ok", True),
-        (14, "ok", False),
-        (14, "webcrypto-iteration-cap", False),
-        (13, "webcrypto-iteration-cap", False),
-    ]:
-        body = json.dumps({"state": state, "runtime_minor": minor})
-        result = subprocess.run(["bash", "-c", script.format(body)], capture_output=True, text=True)
-        assert (result.returncode == 0) is expect_ok, (minor, state, result.stderr)
+    # The fragment contains shell ``${...}`` expansions, so it is concatenated
+    # rather than ``str.format()``-ed: formatting it raised KeyError once the
+    # provider gate added ``${EXPECTED_KDF_PROVIDER}`` to this region.
+    prelude = "B62_WORKER_PASSWORD_KDF_C_PATH='missing'\n"
+    matrix = [
+        (13, "ok", 0, "B62_WORKER_KDF220K_STATE=PASS_PY313_LOCAL"),
+        (14, "ok", 0, "B62_WORKER_KDF220K_EDGE_COMPAT=UNVERIFIED_PY314"),
+        (14, "ok", 0, "B62_WORKER_KDF220K_STATE=PASS_PY314_LOCAL_KDF_ONLY"),
+        (14, "webcrypto-iteration-cap", 1, "B62_WORKER_KDF220K_STATE=FAIL"),
+        (13, "webcrypto-iteration-cap", 1, "B62_WORKER_KDF220K_STATE=FAIL"),
+    ]
+    for minor, state, expected_code, marker in matrix:
+        body = json.dumps(
+            {"state": state, "runtime_minor": minor, "provider": "cryptography"}
+        )
+        script = (
+            prelude + "KDF220K_BODY='" + body + "'\n" + "# H1 (#5743)" + shell_gate
+        )
+        result = subprocess.run(
+            ["bash", "-c", script], capture_output=True, text=True
+        )
+        output = result.stdout + result.stderr
+        assert result.returncode == expected_code, (minor, state, output)
+        assert marker in output, (minor, state, output)
         if minor == 14:
-            assert "UNVERIFIED_PY314" in result.stderr
+            # The forbidden shape: a local 3.14 run reported as the 3.13 pass.
+            assert "PASS_PY313_LOCAL" not in output, (minor, state, output)
+        else:
+            assert "UNVERIFIED_PY314" not in output, (minor, state, output)
