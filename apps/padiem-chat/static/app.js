@@ -596,6 +596,8 @@
   function renderAnswer(article, result) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
+    // #5573: the live PC scope notice is its own line above the answer.
+    window.PadiemChatPcScopeNotice?.render?.(content, window.PadiemChatPcScopeNotice?.value?.(result));
     const paragraph = document.createElement("p");
     paragraph.textContent = result.answer;
     content.appendChild(paragraph);
@@ -2511,6 +2513,11 @@
       used.textContent = uiT("project-files-used", { count: data.project_files_used });
       article.querySelector(".assistant-content").appendChild(used);
     }
+    // #5573: the live PC scope notice is its own line above the answer.
+    window.PadiemChatPcScopeNotice?.render?.(
+      article.querySelector(".assistant-content"),
+      data.scope_notice,
+    );
     renderProjectState();
     if (authState.authenticated) {
       loadRecentConversations();
@@ -2570,6 +2577,7 @@
       resolvedPcRuns.add(runId);
       const content = article.querySelector(".assistant-content");
       content.replaceChildren();
+      window.PadiemChatPcScopeNotice?.render?.(content, result.scope_notice);
       const paragraph = document.createElement("p");
       paragraph.textContent = result.answer;
       content.appendChild(paragraph);
@@ -2593,6 +2601,8 @@
     if (!content) return false;
     const product = contextSnapshot.product || conversationProduct;
     content.replaceChildren();
+    // The recovery GET carries the same pinned notice as the live POST.
+    window.PadiemChatPcScopeNotice?.render?.(content, result.scopeNotice);
     const paragraph = document.createElement("p");
     paragraph.textContent = result.answer;
     content.appendChild(paragraph);

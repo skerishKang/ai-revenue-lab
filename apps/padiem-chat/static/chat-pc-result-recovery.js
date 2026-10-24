@@ -29,6 +29,11 @@
     var resolved = new Set();
     var attempted = new Set();
 
+    function scopeNotice(result) {
+      var notice = result && result.scope_notice;
+      return typeof notice === "string" && notice ? notice : null;
+    }
+
     async function read(runId, conversationId, signal) {
       if (!RUN_ID.test(runId)) return {kind: "rejected"};
       if (resolved.has(runId)) return {kind: "duplicate"};
@@ -67,7 +72,10 @@
       if (typeof cid !== "string" || !CONVERSATION_ID.test(cid)) return {kind: "rejected"};
       if (conversationId && cid !== conversationId) return {kind: "rejected"};
       if (PENDING[result.status] === true) {
-        return {kind: "pending", conversationId: cid, status: result.status};
+        return {
+          kind: "pending", conversationId: cid, status: result.status,
+          scopeNotice: scopeNotice(result)
+        };
       }
       if (result.status !== "completed"
           || typeof result.answer !== "string" || !result.answer
@@ -80,7 +88,8 @@
         kind: "completed",
         answer: result.answer,
         answerSource: result.answer_source,
-        conversationId: cid
+        conversationId: cid,
+        scopeNotice: scopeNotice(result)
       };
     }
 

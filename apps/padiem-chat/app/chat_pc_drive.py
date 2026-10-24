@@ -843,7 +843,33 @@ async def run_chat_pc_drive_lane(
     if result is None:
         return None
     answer, saved_id = result
-    return JSONResponse(public_chat_result({"answer": answer, "conversation_id": saved_id}))
+    payload: dict[str, Any] = {"answer": answer, "conversation_id": saved_id}
+    notice = await pc_scope_notice_for_run(request, run_id=run_id)
+    if notice is not None:
+        # #5573: the notice was pinned before dispatch and is shown live as a
+        # separate line; it is never folded into the answer.
+        payload["scope_notice"] = notice
+    return JSONResponse(public_chat_result(payload))
+
+
+async def pc_scope_notice_for_run(request: Request, *, run_id: object) -> str | None:
+    """The pinned PC scope notice for this run, or None when unavailable.
+
+    Display-only: an unreadable request, store or record is simply "no notice",
+    so a notice lookup can never turn a completed PC answer into a failure.
+    """
+    if not isinstance(run_id, str) or not run_id:
+        return None
+    try:
+        uid = current_user_id(request) if auth_ready(request) else None
+        store = getattr(request.app.state, "history_store", None)
+        reader = getattr(store, "get_pc_run_scope_notice", None)
+        if not isinstance(uid, str) or not uid or not callable(reader):
+            return None
+        notice = await reader(user_id=uid, run_id=run_id)
+    except Exception:
+        return None
+    return notice if isinstance(notice, str) and notice else None
 
 
 async def _append_lane_answer(
@@ -942,5 +968,6 @@ __all__ = [
     "execute_chat_pc_drive_lane",
     "is_chat_pc_drive_query",
     "parse_chat_pc_tool_decision",
+    "pc_scope_notice_for_run",
     "run_chat_pc_drive_lane",
 ]

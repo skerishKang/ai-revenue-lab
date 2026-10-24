@@ -325,6 +325,14 @@ async def api_orchestration(request: Request) -> JSONResponse:
         }
         if pc_lane_conversation_id is not None:
             payload["conversation_id"] = pc_lane_conversation_id
+        from .chat_pc_drive import pc_scope_notice_for_run
+
+        # #5573: the admitted scope was pinned before dispatch. This is the
+        # browser's live completion path, so the pinned notice is returned
+        # here as its own field; it is never folded into the answer.
+        scope_notice = await pc_scope_notice_for_run(request, run_id=raw.get("pc_run_id"))
+        if scope_notice is not None:
+            payload["scope_notice"] = scope_notice
         return JSONResponse(payload, headers={"Cache-Control": "no-store"})
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
