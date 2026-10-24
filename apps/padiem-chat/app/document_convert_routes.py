@@ -69,6 +69,10 @@ MARKDOWN_MEDIA_TYPE = "text/markdown; charset=utf-8"
 UPLOAD_MEDIA_TYPE = "application/octet-stream"
 UPLOAD_MEDIA_TYPES = frozenset({PDF_MEDIA_TYPE, ZIP_MEDIA_TYPE})
 MAX_JOB_BODY_BYTES = 4_096
+
+# Pause new work while COM2 becomes the canonical document runtime (#5710).
+# Do not disable existing owner-scoped reads, downloads, reviews or deletes.
+PDFMD_NEW_WORK_DISABLED = True
 _NO_STORE = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
 
 #: Core stays locale-free, so the sentence is owned here. It states the absence and
@@ -91,6 +95,14 @@ def _unauthorized() -> JSONResponse:
 
 def _unavailable() -> JSONResponse:
     return _error("document_convert_unavailable", "문서 변환을 현재 사용할 수 없습니다.", 503)
+
+
+def _paused() -> JSONResponse:
+    return _error(
+        "pdfmd_migration_paused",
+        "PDF → Markdown 서비스 이전 작업 중입니다. 신규 업로드와 변환은 준비 후 다시 열립니다. 기존 작업과 다운로드는 이용할 수 있습니다.",
+        503,
+    )
 
 
 def _not_found() -> JSONResponse:
@@ -192,6 +204,8 @@ async def convert_jobs_collection(request: Request):
             return _unavailable()
         return JSONResponse({"jobs": [job.public_dict() for job in jobs], "limit": limit})
 
+    if PDFMD_NEW_WORK_DISABLED:
+        return _paused()
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_JOB_BODY_BYTES)
         raw = json.loads(body.decode("utf-8"))
@@ -274,6 +288,8 @@ def _pdf_members(spool):
 async def convert_job_files(request: Request):
     """Upload one PDF, or a ZIP of PDFs, into an existing work ledger."""
 
+    if PDFMD_NEW_WORK_DISABLED:
+        return _paused()
     uid, ledger, bucket, job, error = await _resolve_job(request)
     if error is not None:
         return error
@@ -398,6 +414,8 @@ async def _resolve_item(request: Request):
 async def convert_item_run(request: Request):
     """Convert one queued item with the adopted engine and store its Markdown."""
 
+    if PDFMD_NEW_WORK_DISABLED:
+        return _paused()
     resolved = await _resolve_item(request)
     if resolved[-1] is not None:
         return resolved[-1]
