@@ -84,16 +84,27 @@ if [[ "$READY_BODY" != *"tz=ok"* ]]; then
   exit 1
 fi
 echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
-# #5479: the deployed runtime must still be able to run the Worker's own
-# password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
-# 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
-# hashlib.pbkdf2_hmac and every password login would answer HTTP 500.
-if [[ "$READY_BODY" != *"kdf=ok"* ]]; then
-  echo "B62_WORKER_PASSWORD_KDF=FAIL ready=$READY_BODY" >&2
+# #5479/#5664: the deployed runtime must serve password authentication. The
+# Pyodide 3.14 snapshot ships no _hashlib and CPython 3.14 removed the
+# pure-Python PBKDF2 fallback, so it has no hashlib.pbkdf2_hmac at all; #5732
+# made the KDF runtime-independent and the auth routes call only the async
+# dispatch. The asserted invariant is therefore what the routes actually use:
+#   kdfasync=ok  the dispatch serves this runtime (C path or WebCrypto bridge)
+#   stored=ok    a 220,000-iteration credential written by the previous 3.13
+#                runtime verifies here. This is the check #5736 was missing:
+#                Workers WebCrypto PBKDF2 refuses any iteration count above
+#                100,000, so a 3.14 deploy passed the low-iteration bridge and
+#                still answered every register/login/reset with HTTP 500.
+#   digest=ok    SHA-2/HMAC match the published OpenSSL vectors
+# kdf= (the sync C path) stays a printed availability report, not a gate: on
+# 3.14 it is absent by design and no login path uses it.
+if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$READY_BODY" != *"digest=ok"* ]]; then
+  echo "B62_WORKER_PASSWORD_AUTH=FAIL ready=$READY_BODY" >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1
 fi
-echo 'B62_WORKER_PASSWORD_KDF=PASS'
+echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
+echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
 
 failed=0
 count=0

@@ -222,8 +222,17 @@ def test_the_real_worker_probe_asserts_the_runtime_and_the_password_kdf():
     )
     assert "B62_WORKER_PYTHON_RUNTIME" in shared
     assert "get_python_version" in shared
-    assert "B62_WORKER_PASSWORD_KDF" in shared
-    assert "kdf=ok" in shared
+    # #5736: the gate asserts the invariant the auth routes actually serve. The
+    # sync C path (kdf=) is printed, not gated, because a 3.14 snapshot has no
+    # hashlib.pbkdf2_hmac by design — and "stored=ok" is the check that was
+    # missing when the 3.14 deploy was rolled back: it is the only one that
+    # exercises the WebCrypto bridge at the 220,000 iterations the stored
+    # credentials carry, which is above the runtime's PBKDF2 ceiling.
+    assert "B62_WORKER_PASSWORD_KDF_C_PATH" in shared
+    assert '*"kdfasync=ok"*' in shared
+    assert '*"stored=ok"*' in shared
+    assert '*"digest=ok"*' in shared
+    assert "B62_WORKER_PASSWORD_AUTH=FAIL" in shared
     probe = (CHAT_ROOT / "worker_runtime_combined_probe.py").read_text(encoding="utf-8")
     assert "sys.version_info" in probe
     assert "_password_kdf_state" in probe

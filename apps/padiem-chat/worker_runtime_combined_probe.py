@@ -114,6 +114,97 @@ async def _password_kdf_async_state() -> str:
         return "missing"
 
 
+#: A credential written by the Pyodide 3.13 runtime (CPython 3.13, C
+#: ``hashlib`` PBKDF2 path) through the real application hashing function,
+#: corroborated byte-for-byte by OpenSSL. Members keep these exact bytes: a
+#: compatibility-date move must not re-hash or migrate anything, so the runtime
+#: Production moves TO has to accept a hash written before the move.
+#:
+#: The iteration count carried here is the stored 220,000, which is the point
+#: of this vector. #5736 recorded a deployed 3.14 Worker rejecting exactly that
+#: cost — ``js.crypto.subtle.deriveBits`` answers PBKDF2 above 100,000 iterations
+#: with ``NotSupportedError`` and there is no ``_hashlib`` C path on that
+#: snapshot — so every register, login and password reset returned HTTP 500 and
+#: Production had to be rolled back. The low-iteration bridge check in
+#: :func:`_password_kdf_async_state` cannot see that ceiling; this one can.
+LEGACY_PYODIDE_313_STORED_HASH = (
+    "pbkdf2_sha512$220000$FRiPFPCmf2W2mVjqpy85qw==$"
+    "JUn+Fo0Rod5ZOJPBy80PJOfmfOBSS4hHGaUw7FM4ymg="
+)
+LEGACY_PYODIDE_313_PASSWORD = "runtime-probe-legacy-credential"
+LEGACY_PYODIDE_313_WRONG_PASSWORD = "runtime-probe-legacy-credential-wrong"
+
+
+async def _legacy_stored_credential_state() -> str:
+    """``ok`` when this runtime serves a credential written by the previous one.
+
+    This is the production-shaped check: the auth routes serve an existing
+    member through ``verify_password_async`` only, so the stored prefix,
+    iteration count and derived key from the earlier runtime must pass here and
+    a wrong password must not. A runtime that cannot reach the stored iteration
+    count reports the raising exception class instead of a bare ``missing``,
+    so the CI log names the ceiling rather than hiding it.
+    """
+    try:
+        from app.password_auth import verify_password_async
+
+        if not await verify_password_async(
+            LEGACY_PYODIDE_313_PASSWORD, LEGACY_PYODIDE_313_STORED_HASH
+        ):
+            return "rejected"
+        if await verify_password_async(
+            LEGACY_PYODIDE_313_WRONG_PASSWORD, LEGACY_PYODIDE_313_STORED_HASH
+        ):
+            return "wrong-accepted"
+        return "ok"
+    except Exception as error:
+        return f"blocked:{type(error).__name__}"
+
+
+#: Published OpenSSL/CPython vectors for the digest surface the auth layer uses
+#: outside the password KDF (token hashing in ``app/auth.py``, abuse keys in
+#: ``app/auth_abuse.py``). Compared against an external oracle, not against
+#: ``hashlib`` checking itself.
+_SHA256_ABC = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+_SHA512_ABC = (
+    "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+    "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
+)
+_HMAC_KEY = b"runtime-probe-key"
+_HMAC_MESSAGE = b"runtime-probe-message"
+_HMAC_SHA256_FIXED = "6d6357bb3cd312e22258e5b3a69d7783c68da539b57ff8add5002f5d9f508993"
+_HMAC_SHA512_FIXED = (
+    "c32b7a9ab5ecb2c9326f006ad9e88d5866d4fb9b0f02243ff6bc27ed1194ae45"
+    "1cf380fd26f9f598c5ee01cdcdfb08378536f6137ea6a3bf89db874e450e8fba"
+)
+
+
+def _digest_surface_state() -> str:
+    """``ok`` when this runtime's SHA-2 and HMAC match the published vectors.
+
+    ``_hashlib`` (OpenSSL) is absent from the Pyodide 3.14 snapshot, and the
+    auth layer hashes issued tokens, abuse keys and certified payloads with
+    ``hashlib``/``hmac`` directly. A runtime answering those calls with
+    different bytes would invalidate credentials that were issued before the
+    move, so the move is provable only if the digests are checked here.
+    """
+    try:
+        import hashlib
+        import hmac
+
+        if hashlib.sha256(b"abc").hexdigest() != _SHA256_ABC:
+            return "sha256-mismatch"
+        if hashlib.sha512(b"abc").hexdigest() != _SHA512_ABC:
+            return "sha512-mismatch"
+        if hmac.new(_HMAC_KEY, _HMAC_MESSAGE, hashlib.sha256).hexdigest() != _HMAC_SHA256_FIXED:
+            return "hmac-sha256-mismatch"
+        if hmac.new(_HMAC_KEY, _HMAC_MESSAGE, hashlib.sha512).hexdigest() != _HMAC_SHA512_FIXED:
+            return "hmac-sha512-mismatch"
+        return "ok"
+    except Exception as error:
+        return f"missing:{type(error).__name__}"
+
+
 def _timezone_database_state() -> str:
     """``ok`` when this runtime can resolve a real IANA zone.
 
@@ -155,15 +246,18 @@ class Default(WorkerEntrypoint):
             # #5023: the same holds for the IANA timezone database the
             # Calendar contracts validate against.
             # #5664: the ready line also carries the runtime-dispatching auth
-            # KDF state (async routes + WebCrypto bridge), so a compatibility
+            # KDF state (async routes + WebCrypto bridge), the cross-runtime
+            # stored-credential check and the digest surface, so a compatibility
             # date move is provable in this lane before Production takes it.
             import sys
 
             kdf_async = await _password_kdf_async_state()
+            stored = await _legacy_stored_credential_state()
             return Response(
                 f"ok {sys.version_info.major}.{sys.version_info.minor} "
                 f"kdf={_password_kdf_state()} kdfasync={kdf_async} "
-                f"tz={_timezone_database_state()}",
+                f"tz={_timezone_database_state()} stored={stored} "
+                f"digest={_digest_surface_state()}",
                 status=200,
             )
         if url.path != "/probe":
