@@ -1,9 +1,10 @@
-"""#5015: /api/orchestration honors the server-verified browser tier.
+"""#5015/#5573: /api/orchestration honors the server-verified browser tier.
 
-The real orchestration route, the real PC files lane and the real tier-aware
-resolver run against a recording Engine transport. No provider, Mesh, D1 or
-network call is made. The browser tier is checked through the same grade and
-administrator gates the Chat stream route already applies.
+The real orchestration route and the real tier-aware resolver run against a
+recording Engine transport. No provider, Mesh, D1 or network call is made. The
+browser tier is checked through the same grade and administrator gates the Chat
+stream route already applies, and those gates still decide *before* a
+PC-capable turn is deferred to the lane that carries the model's tool call.
 """
 
 from __future__ import annotations
@@ -52,13 +53,24 @@ class _RecordingBridge(B62EngineOrchestrationBridge):
             tool_arguments=fields.get("tool_arguments"),
             session_id=fields.get("session_id"),
         ))
-        return SimpleNamespace(answer="ok")
+        return SimpleNamespace(
+            answer="ok", conversation_id=fields.get("conversation_id"),
+            user_text=fields.get("user_text"), orchestration={},
+            decision_status="completed",
+        )
 
 
 class _History:
     def __init__(self) -> None:
         self.runs: list[dict] = []
         self.sealed: list[dict] = []
+        self.exchanged: list[dict] = []
+
+    async def append_exchange(
+        self, user_id, conversation_id, user_text, answer, *, product_scope,
+    ):
+        self.exchanged.append({"user_text": user_text, "answer": answer})
+        return conversation_id or "chat_" + "s" * 32
 
     async def record_chat_pc_drive_run(self, **fields):
         self.runs.append(fields)
@@ -88,7 +100,7 @@ class _AdminStore:
         return {"status": "approved", "tier": "max"}
 
 
-def _install(monkeypatch, *, is_admin: bool):
+def _install(monkeypatch, *, is_admin: bool, pc_entry: bool = False):
     import app.chat_pc_drive as lane
     import app.pc_work_context as context
 
@@ -122,8 +134,12 @@ def _install(monkeypatch, *, is_admin: bool):
             execution=SimpleNamespace(ready=False),
         )
 
+    async def _entry(request, *, uid, model_id):
+        return pc_entry
+
     monkeypatch.setattr(lane, "_resolve_chat_owner", owner)
     monkeypatch.setattr(lane, "_check_mesh_grant", grant)
+    monkeypatch.setattr(lane, "pc_tool_entry_available", _entry)
     monkeypatch.setattr(context, "read_saved_device_selection", selection)
     monkeypatch.setattr(context, "resolve_pc_work_context", work_context)
     monkeypatch.setattr(context, "render_pc_work_context", lambda pc_context: "")
@@ -155,7 +171,7 @@ def _payload(tier: str, text: str = PC_TEXT) -> dict:
     return {"messages": [{"role": "user", "content": text}], "tier": tier}
 
 
-def test_admin_tier_reaches_the_pc_files_engine_request(monkeypatch) -> None:
+def test_admin_tier_reaches_the_engine_request(monkeypatch) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=True)
 
     response = asyncio.run(routes.api_orchestration(
@@ -167,8 +183,10 @@ def test_admin_tier_reaches_the_pc_files_engine_request(monkeypatch) -> None:
     assert bridge.requests[0]["agent"]["model_policy"] == {
         "model": ADMIN_B14_MODEL_ID,
     }
-    assert bridge.requests[0]["agent_plan"]["agent_id"] == "agent:padiem:chat-pc-query@1"
-    assert history.runs[0]["action"] == "pc_files_query"
+    # No browser-supplied PC plan or target rides this surface's request.
+    assert "agent_plan" not in bridge.requests[0]
+    assert "tool_arguments" not in bridge.requests[0]
+    assert history.runs == []
 
 
 def test_non_admin_admin_tier_is_refused_before_the_lane(monkeypatch) -> None:
@@ -184,7 +202,28 @@ def test_non_admin_admin_tier_is_refused_before_the_lane(monkeypatch) -> None:
     assert history.runs == []
 
 
-def test_plus_tier_reaches_the_pc_files_engine_request(monkeypatch) -> None:
+def test_a_pc_capable_turn_defers_only_after_the_administrator_gate(monkeypatch) -> None:
+    """The deferral cannot be a way around the tier and grade gates.
+
+    An administrator tier from a non-administrator is refused with its own 403
+    even when this account could be offered PC tools: the refusal decision is
+    taken first, so no PC turn is ever started for a caller who is not allowed
+    the tier it asked for.
+    """
+    bridge, history, admin_store = _install(
+        monkeypatch, is_admin=False, pc_entry=True,
+    )
+
+    response = asyncio.run(routes.api_orchestration(
+        _request(_payload("admin"), bridge, history, admin_store),
+    ))
+
+    assert response.status_code == 403
+    assert json.loads(response.body)["error"]["code"] == "admin_forbidden"
+    assert bridge.requests == []
+
+
+def test_plus_tier_reaches_the_engine_request(monkeypatch) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=False)
     expected = active_route_for(ProductTierLabel.PLUS).model_id
 
@@ -216,7 +255,8 @@ def test_legacy_alias_without_tier_keeps_its_model_and_cleans_the_prompt(
     assert response.status_code == 200
     assert bridge.requests[0]["agent"]["model_policy"] == {"model": expected}
     assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
-    assert history.runs[0]["user_text"] == ALIASED_TEXT
+    # The alias survives in the stored user turn and never reaches the model.
+    assert history.exchanged[0]["user_text"] == ALIASED_TEXT
 
 
 def test_admin_tier_replaces_the_alias_in_the_engine_prompt(monkeypatch) -> None:
@@ -231,4 +271,5 @@ def test_admin_tier_replaces_the_alias_in_the_engine_prompt(monkeypatch) -> None
         "model": ADMIN_B14_MODEL_ID,
     }
     assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
-    assert history.runs[0]["user_text"] == ALIASED_TEXT
+    # The alias survives in the stored user turn and never reaches the model.
+    assert history.exchanged[0]["user_text"] == ALIASED_TEXT

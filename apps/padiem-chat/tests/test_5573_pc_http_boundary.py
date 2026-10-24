@@ -1,13 +1,27 @@
-"""#5573 interim PC entry over the real POST /api/orchestration route.
+"""#5573 (3-C-2) boundary: the orchestration surface and the model-tool PC entry.
 
-Explicit PC requests carry the whole turn into Engine; the model and Engine seams are fakes,
-so no provider and no PC is contacted.
+These drive the real ``POST /api/orchestration`` route with a fake Engine
+bridge and fake PC-context sources, so no provider, no Engine and no PC is
+contacted. What they pin:
+
+* a turn for an account with a server-verified PC, on a route whose catalog
+  declares native tools, is deferred to the Chat stream lane — the one lane
+  that can observe the model's tool call before anything is staged or executed;
+* no wording decides that deferral, in either direction;
+* an unverified PC, or a route without the ``tools`` capability, keeps the
+  ordinary Engine turn and never reaches a PC plan;
+* a browser-supplied target or recovery handle is never a plan, a target or a
+  grant on this surface;
+* the surface keeps no second PC executor, no second target store and no
+  natural-language table that could drift back into a keyword gate.
 """
 
 from __future__ import annotations
 
 import httpx
 import pytest
+
+from types import SimpleNamespace
 
 import app.chat_pc_drive as lane
 import app.pc_work_context as pc_work_context
@@ -21,10 +35,14 @@ ORIGIN = "https://chat.example.test"
 OWNER = "usr_" + "4" * 32
 SESSION_SECRET = "issue-5573-http-boundary-session-secret-000000000000"
 DEVICE = "node/meshdomain1/owner-pc"
-POSSESSIVE = "PC\uc758 "
-INNER = "\ub0b4 PC\uc758 "
-DEEP = "C:\\Users\\limone\\AppData\\Local\\Padiem\\MeshCentralTrial\\5015-conditions-20261022 "
-LIST = "\ud3f4\ub354\uc5d0 \uc788\ub294 \ud30c\uc77c \ubaa9\ub85d\ub9cc \ubcf4\uc5ec\uc918"
+OTHER_DEVICE = "node/meshdomain1/other-owner-pc"
+PC_TEXT = (
+    "내 PC의 MeshCentralTrial 폴더에서 파일 목록을 보고, "
+    "meshcentral-padiem-trial.txt 파일 내용을 읽어줘"
+)
+LIST_ONLY = "PC의 5015-conditions-20261022 폴더에 있는 파일 목록만 보여줘"
+PLAIN_TEXT = "3과 5의 최소공배수를 한 문장으로 답해줘"
+PC_RUN = "chat_pcq_" + "a" * 32
 
 
 def _settings() -> Settings:
@@ -37,7 +55,16 @@ def _settings() -> Settings:
 
 
 class _Store:
-    scope_notice = None
+    """Chat history that records every staging attempt, with a failable seam."""
+
+    def __init__(self):
+        self.staged = []
+        self.fail = None
+        self.run_row = None
+
+    def _fail(self, method):
+        if self.fail == method:
+            raise RuntimeError("D1_ERROR: database is locked")
 
     async def get_user(self, user_id):
         return None
@@ -48,26 +75,35 @@ class _Store:
     async def get_conversation(self, user_id, conversation_id, *, product_scope):
         return {"conversation_id": conversation_id}
 
-    async def append_exchange(self, user_id, conversation_id, user_text, answer, *, product_scope):
+    async def append_exchange(
+        self, user_id, conversation_id, user_text, answer, *, product_scope,
+    ):
         return conversation_id or ("chat_" + "n" * 32)
 
     async def record_chat_pc_drive_run(self, **fields):
+        self._fail("record_chat_pc_drive_run")
+        self.staged.append(fields)
         return "chat_" + "s" * 32
 
+    async def get_claw_run(self, user_id, run_id):
+        self._fail("get_claw_run")
+        return self.run_row
+
+    async def seal_run_terminal(self, **fields):
+        self._fail("seal_run_terminal")
+        return True
+
+    async def append_local_task_result(self, **fields):
+        self._fail("append_local_task_result")
+        return True
+
     async def get_pc_run_scope_notice(self, *, user_id: str, run_id: str):
-        return self.scope_notice
-
-
-class _B14:
-    def __init__(self):
-        self.calls = []
-
-    async def complete(self, messages, skill=None, additional_system_context=None):
-        self.calls.append(additional_system_context)
-        return {"answer": "general answer"}
+        return None
 
 
 class _Bridge(B62EngineOrchestrationBridge):
+    """The ordinary Engine turn, recorded instead of sent."""
+
     def __init__(self):
         super().__init__(client=object(), store=object())
         self.requests = []
@@ -82,19 +118,42 @@ class _Bridge(B62EngineOrchestrationBridge):
         })()
 
 
-def _wire(monkeypatch, *, selected=True, devices=True, owner_raises=False, scope_notice=None):
+def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True,
+          tools_declared=True):
+    """A signed-in Chat turn over the real route, with each boundary faked.
+
+    ``selected``/``devices``/``mesh_ready`` drive the *real* verification chain
+    ``chat_pc_tools_available`` runs. Only the catalog read and the owner
+    session are replaced, because no live B14 or Control Plane is contacted.
+    """
+    context = pc_work_context.PcWorkContext(
+        broker_status="ready" if devices else "no_device",
+        devices=(
+            pc_work_context.PcWorkDevice(DEVICE, None, "CONNECTED", True),
+        ) if devices else (),
+        execution=pc_work_context.PcExecutionTarget(
+            status="ready" if mesh_ready else "no_target",
+            device_id=DEVICE if mesh_ready else None,
+        ),
+        mapping="confirmed" if mesh_ready else "unknown",
+        selected_device_id=DEVICE if selected is True else None,
+        saved_selection_status=(
+            pc_work_context.SAVED_SELECTION_SELECTED if selected is True
+            else pc_work_context.SAVED_SELECTION_UNAVAILABLE
+            if selected is False else pc_work_context.SAVED_SELECTION_NONE
+        ),
+    )
+
     store = _Store()
-    store.scope_notice = scope_notice
     app = create_app(settings=_settings(), history_store=store)
     install_orchestration_routes(app, None)
-    b14 = _B14()
     bridge = _Bridge()
-    app.state.b14_client = b14
     app.state.orchestration_bridge = bridge
 
+    async def _declares(request, model_id):
+        return tools_declared
+
     async def _owner(request, uid):
-        if owner_raises:
-            raise lane.ChatPCDriveError("chat_pc_owner_unavailable", "denied", 503)
         return type("S", (), {"session_id": "sess_5573"})(), OWNER, "tenant-1"
 
     async def _grant(request, session, *, device_id=None):
@@ -102,198 +161,188 @@ def _wire(monkeypatch, *, selected=True, devices=True, owner_raises=False, scope
 
     async def _read(request, *, owner_id, workspace_id):
         if selected is True:
-            return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_SELECTED, "device_id": DEVICE})()
+            return type("Sel", (), {
+                "status": pc_work_context.SAVED_SELECTION_SELECTED,
+                "device_id": DEVICE,
+            })()
         if selected is False:
-            return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_UNAVAILABLE, "device_id": None})()
-        return type("Sel", (), {"status": pc_work_context.SAVED_SELECTION_NONE, "device_id": None})()
-
-    async def _resolve(request, **kwargs):
-        rows = [type("D", (), {"device_id": DEVICE, "state": "READY"})()] if devices else []
-        return type("Ctx", (), {
-            "devices": rows, "selected_confirmed": True, "tool_available": True,
-            "execution": type("E", (), {"ready": True})(),
+            return type("Sel", (), {
+                "status": pc_work_context.SAVED_SELECTION_UNAVAILABLE,
+                "device_id": None,
+            })()
+        return type("Sel", (), {
+            "status": pc_work_context.SAVED_SELECTION_NONE, "device_id": None,
         })()
 
-    async def _save(*args, **kwargs):
-        return "chat_" + "c" * 32
+    async def _resolve(request, **kwargs):
+        return context
 
-    async def _append(*args, **kwargs):
-        return True
-
+    monkeypatch.setattr(lane, "chat_pc_route_declares_tools", _declares)
     monkeypatch.setattr(lane, "_resolve_chat_owner", _owner)
     monkeypatch.setattr(lane, "_check_mesh_grant", _grant)
-    monkeypatch.setattr(lane, "_save_pair", _save)
-    monkeypatch.setattr(lane, "_append_lane_answer", _append)
     monkeypatch.setattr(pc_work_context, "read_saved_device_selection", _read)
     monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve)
-    monkeypatch.setattr(pc_work_context, "render_pc_work_context", lambda ctx: "selected PC")
-    return app, b14, bridge
+    monkeypatch.setattr(
+        pc_work_context, "render_pc_work_context",
+        lambda ctx: "selected PC: " + DEVICE,
+    )
+    return app, bridge, store
 
 
 def _client(app):
-    client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN)
-    client.cookies.set(SESSION_COOKIE, create_session_token(_settings(), OWNER), domain="chat.example.test", path="/")
+    client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
+    )
+    client.cookies.set(
+        SESSION_COOKIE, create_session_token(_settings(), OWNER),
+        domain="chat.example.test", path="/",
+    )
     return client
 
 
-async def _post(app, messages, *, device_id=None, pc_run_id=None):
-    body = {"messages": messages, "skill": "auto"}
+async def _post(app, text, *, device_id=None, pc_run_id=None):
+    body = {"messages": [{"role": "user", "content": text}], "skill": "auto"}
     if device_id is not None:
         body["device_id"] = device_id
     if pc_run_id is not None:
         body["pc_run_id"] = pc_run_id
     async with _client(app) as client:
-        return await client.post("/api/orchestration", headers={"Origin": ORIGIN}, json=body)
+        return await client.post(
+            "/api/orchestration", headers={"Origin": ORIGIN}, json=body,
+        )
 
 
-def _pc_plan_requests(bridge):
-    return [req for req in bridge.requests if "agent_plan" in req]
+async def test_a_pc_capable_turn_defers_to_the_lane_with_the_model_tool(monkeypatch):
+    """The PC decision is the model's tool call, so the turn moves to that lane."""
+    app, bridge, store = _wire(monkeypatch)
+    response = await _post(app, PC_TEXT)
 
-
-@pytest.mark.parametrize("qualifier, expected_pc_calls", [(POSSESSIVE, 0), (INNER, 1)])
-async def test_interim_pc_qualifier_controls_pc_lane_entry(monkeypatch, qualifier, expected_pc_calls):
-    app, b14, bridge = _wire(monkeypatch)
-    response = await _post(app, [{"role": "user", "content": qualifier + DEEP + LIST}])
-    assert response.status_code == 200, response.text
-    requests = _pc_plan_requests(bridge)
-    assert len(requests) == expected_pc_calls
-    if expected_pc_calls:
-        assert requests[0]["tool_arguments"] == {"files": {"device_id": DEVICE}}
-        assert [step["tool_id"] for step in requests[0]["agent_plan"]["steps"]] == [
-            "claw.pc.list_files", "claw.pc.read_file",
-        ]
-    assert b14.calls == []
-
-
-async def test_inner_qualifier_read_request_keeps_the_read_plan(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch)
-    response = await _post(app, [{"role": "user", "content": INNER + "sample.txt \ud30c\uc77c \ub0b4\uc6a9\uc744 \uc77d\uc5b4\uc918"}])
-    assert response.status_code == 200, response.text
-    requests = _pc_plan_requests(bridge)
-    assert len(requests) == 1
-    assert requests[0]["tool_arguments"] == {"files": {"device_id": DEVICE}}
-    assert b14.calls == []
-
-
-async def test_explicit_pc_follow_up_carries_the_prior_turns(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch)
-    messages = [
-        {"role": "user", "content": "5015-conditions-20261022 \ud3f4\ub354\ub97c \ubd24\uc5b4"},
-        {"role": "assistant", "content": "\ubaa9\ub85d\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4."},
-        {"role": "user", "content": INNER + "\uadf8 \ud3f4\ub354 \ud30c\uc77c \ubaa9\ub85d \ubcf4\uc5ec\uc918"},
-    ]
-    response = await _post(app, messages)
-    assert response.status_code == 200, response.text
-    requests = _pc_plan_requests(bridge)
-    assert len(requests) == 1
-    context = requests[0]["additional_system_context"]
-    assert messages[0]["content"] in context
-    assert messages[1]["content"] in context
-    assert b14.calls == []
-
-
-async def test_account_without_a_verified_pc_keeps_the_general_path(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch, selected=None, devices=False)
-    response = await _post(app, [{"role": "user", "content": "\uc624\ub298 \ub0a0\uc528 \uc5b4\ub54c?"}])
-    assert response.status_code == 200, response.text
-    assert _pc_plan_requests(bridge) == []
-
-
-async def test_unreadable_selection_fails_closed_before_any_call(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch, selected=False)
-    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "chat_pc_selection_unavailable"
+    assert response.status_code == 409, response.text
+    assert response.json()["error"]["code"] == "orchestration_not_applicable"
+    # Nothing executed here: no Engine turn, no staged PC run.
     assert bridge.requests == []
-    assert b14.calls == []
+    assert store.staged == []
 
 
-async def test_browser_target_override_is_refused(monkeypatch):
-    app, b14, bridge = _wire(monkeypatch)
-    response = await _post(
-        app, [{"role": "user", "content": INNER + DEEP + LIST}],
-        device_id="node/meshdomain1/other-owner-pc",
-    )
-    assert response.status_code == 409
-    assert response.json()["error"]["code"] == "chat_pc_selection_stale"
+async def test_no_wording_decides_the_deferral(monkeypatch):
+    """A PC sentence, a paraphrase-only list request and a maths question defer alike.
+
+    The keyword table is gone, so this surface cannot be picking PC turns out of
+    the sentence in either direction: the server-verified PC plus a
+    tools-declaring route is the whole decision.
+    """
+    for text in (PC_TEXT, LIST_ONLY, PLAIN_TEXT):
+        app, bridge, store = _wire(monkeypatch)
+        response = await _post(app, text)
+        assert response.status_code == 409, text
+        assert bridge.requests == []
+        assert store.staged == []
+
+
+async def test_a_route_without_tools_capability_keeps_the_engine_turn(monkeypatch):
+    """An unverified capability is not a PC turn: the ordinary Engine answer runs."""
+    app, bridge, store = _wire(monkeypatch, tools_declared=False)
+    response = await _post(app, PC_TEXT)
+
+    assert response.status_code == 200, response.text
+    assert len(bridge.requests) == 1
+    assert store.staged == []
+
+
+async def test_an_unreadable_saved_target_withholds_the_entry(monkeypatch):
+    """A selection that cannot be read is fail-closed: no tools, no PC run.
+
+    The old surface answered this with a 503 refusal of the PC turn. Entry now
+    belongs to the model, so this route keeps answering the turn in text and
+    never executes on a target it cannot verify.
+    """
+    app, bridge, store = _wire(monkeypatch, selected=False)
+    response = await _post(app, PC_TEXT)
+
+    assert response.status_code == 200, response.text
+    # The ordinary Engine turn ran, and it carried no PC plan and no target.
+    assert len(bridge.requests) == 1
+    assert "agent_plan" not in bridge.requests[0]
+    assert "tool_arguments" not in bridge.requests[0]
+    assert store.staged == []
+
+
+async def test_a_mesh_only_account_is_not_asked_to_register_a_pc(monkeypatch):
+    """Native registration stays optional: no Broker device still defers."""
+    app, bridge, store = _wire(monkeypatch, devices=False)
+    response = await _post(app, LIST_ONLY)
+
+    assert response.status_code == 409, response.text
     assert bridge.requests == []
 
 
-PC_RUN = "chat_pcq_" + "a" * 32
-
-
-async def test_completed_pc_lane_post_carries_the_pinned_scope_notice(monkeypatch):
-    """#5573: the browser's live completion path carries the pinned scope."""
-    from app.history import PC_SCOPE_NOTICE_LABELS
-
-    app, b14, bridge = _wire(
-        monkeypatch, scope_notice=PC_SCOPE_NOTICE_LABELS["files_list"],
+async def test_no_verified_target_at_all_keeps_the_ordinary_engine_turn(monkeypatch):
+    """No device and no Mesh target: the turn stays a plain Engine answer."""
+    app, bridge, store = _wire(
+        monkeypatch, selected=None, devices=False, mesh_ready=False,
     )
-    response = await _post(
-        app, [{"role": "user", "content": INNER + DEEP + LIST}],
-        pc_run_id=PC_RUN,
-    )
+    response = await _post(app, PC_TEXT)
+
     assert response.status_code == 200, response.text
-    body = response.json()
-    assert body["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
-    assert body["scope_notice"] == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
-    assert body["answer"] == "ok"
-    # The notice is its own field; the answer text never carries it.
-    assert body["scope_notice"] not in body["answer"]
-    assert len(_pc_plan_requests(bridge)) == 1
+    assert len(bridge.requests) == 1
+    assert store.staged == []
 
 
-async def test_completed_pc_lane_post_without_a_scope_keeps_its_shape(monkeypatch):
-    """#5573: no pinned scope means the response gains no field at all."""
-    app, b14, bridge = _wire(monkeypatch)
+async def test_a_browser_target_and_handle_are_never_a_plan(monkeypatch):
+    """A browser-selected device or recovery handle grants nothing on this surface."""
+    app, bridge, store = _wire(monkeypatch)
     response = await _post(
-        app, [{"role": "user", "content": INNER + DEEP + LIST}],
-        pc_run_id=PC_RUN,
+        app, PC_TEXT, device_id=OTHER_DEVICE, pc_run_id=PC_RUN,
     )
-    assert response.status_code == 200, response.text
-    assert set(response.json()) == {
-        "orchestration", "answer", "decision_status", "conversation_id",
+
+    assert response.status_code == 409, response.text
+    assert bridge.requests == []
+    assert store.staged == []
+
+
+def test_the_surface_keeps_no_pc_execution_path_of_its_own():
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "app" / "orchestration_routes.py"
+    ).read_text(encoding="utf-8")
+    # The surface reads the one existing availability decision and nothing else:
+    # no lane call, no plan, no target hint, no natural-language table.
+    assert "from .chat_pc_drive import pc_tool_entry_available" in source
+    assert "execute_chat_pc_drive_lane" not in source
+    assert "agent_plan" not in source
+    assert "tool_arguments" not in source
+    assert "_CHAT_PC_MARKERS" not in source
+
+def test_pc_error_cause_keeps_only_an_internal_code_below_503():
+    """#5742's bounded-cause contract, on the envelope this lane now uses."""
+    error = lane.ChatPCDriveError(
+        "chat_pc_engine_unavailable", "failed", 400,
+        cause="private-provider-response: " + "x" * 100,
+    )
+    assert error.public_error() == {
+        "code": "chat_pc_engine_unavailable", "message": "failed",
     }
-    assert b"scope_notice" not in response.content
-    assert len(_pc_plan_requests(bridge)) == 1
 
-
-@pytest.mark.parametrize("engine_code", ["unsupported_orchestration_field", "upstream_auth_error"])
-async def test_pc_http_error_preserves_only_the_bounded_engine_cause(monkeypatch, engine_code):
-    from app.orchestration_bridge import B62OrchestrationError
-    app, b14, bridge = _wire(monkeypatch)
-    async def fail(**fields):
-        raise B62OrchestrationError(engine_code, "AI 작업을 처리하지 못했습니다.", status_code=400)
-    async def notice(*args, **kwargs):
-        return None
-    monkeypatch.setattr(bridge, "start", fail)
-    monkeypatch.setattr(lane, "_append_lane_notice", notice)
-    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
-    assert response.status_code == 400
-    assert response.json()["error"] == {"code": "chat_pc_engine_unavailable",
-        "message": "AI 작업을 처리하지 못했습니다.", "cause": engine_code}
-    assert b14.calls == []
-
-
-def test_pc_error_cause_rejects_unbounded_provider_material():
-    error = lane.ChatPCDriveError("chat_pc_engine_unavailable", "failed", 400,
-                                  cause="private-provider-response: " + "x" * 100)
-    assert lane._error_response(error).body == b'{"ok":false,"error":{"code":"chat_pc_engine_unavailable","message":"failed"}}'
 
 @pytest.mark.parametrize("code", [
-    "chat_pc_run_id_unavailable", "chat_pc_decision_invalid",
-    "chat_pc_identity_unavailable", "chat_pc_model_unavailable",
+    "chat_pc_run_id_unavailable", "chat_pc_identity_unavailable",
     "chat_pc_store_unavailable", "chat_pc_selection_unavailable",
     "chat_pc_files_unavailable", "chat_pc_engine_unavailable",
 ])
 def test_pc_503_cause_keeps_the_chained_exception_class_and_safe_message(code):
+    """#5742: a 503 keeps the exception class and a safe first line.
+
+    ``chat_pc_decision_invalid`` and ``chat_pc_model_unavailable`` are dropped
+    from this list because #5573 (3-C-2) removed the Chat-side decision and
+    completion calls that could raise them; every code kept here is still
+    reachable from the lane.
+    """
     original = RuntimeError("D1_ERROR: database is locked")
     error = lane.ChatPCDriveError(code, "PC 작업을 완료하지 못했습니다.")
     error.__cause__ = original
-    response = lane._error_response(error)
-    import json
-    assert response.status_code == 503
-    assert json.loads(response.body)["error"]["cause"] == (
+    assert error.status_code == 503
+    assert error.public_error()["cause"] == (
         "RuntimeError: D1_ERROR: database is locked"
     )
 
@@ -325,7 +374,9 @@ def test_pc_503_cause_redacts_private_values_before_truncation(message, private)
 
 
 def test_pc_503_cause_is_bounded_and_present_without_an_underlying_exception():
-    error = lane.ChatPCDriveError("chat_pc_store_unavailable", "database is locked; " * 20)
+    error = lane.ChatPCDriveError(
+        "chat_pc_store_unavailable", "database is locked; " * 20,
+    )
     assert error.cause == "ChatPCDriveError: " + ("database is locked; " * 20)[:120]
 
 
@@ -333,39 +384,67 @@ def test_pc_503_cause_is_bounded_and_present_without_an_underlying_exception():
     "record_chat_pc_drive_run", "get_claw_run",
     "seal_run_terminal", "append_local_task_result",
 ])
-async def test_pc_http_503_preserves_each_store_failure(monkeypatch, method):
-    real_append = lane._append_lane_answer
-    app, b14, bridge = _wire(monkeypatch)
-    store = app.state.history_store
-    async def fail(*args, **kwargs):
-        raise RuntimeError("D1_ERROR: database is locked")
-    async def row(*args, **kwargs):
-        return {"result_summary": "verified output",
-                "conversation_id": "chat_" + "s" * 32,
-                "action": "pc_files_query" if method == "seal_run_terminal" else "query_drives"}
-    store.get_claw_run = row
-    setattr(store, method, fail)
-    monkeypatch.setattr(lane, "_append_lane_answer", real_append)
-    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
-    assert response.status_code == 503, response.text
-    assert response.json()["error"] == {
+async def test_a_store_failure_keeps_its_redacted_cause_on_the_tool_turn(
+    monkeypatch, method,
+):
+    """#5742 on the #5573 entry: every lane failure stays diagnosable.
+
+    The keyword route that used to produce this 503 is gone, so the same store
+    seams are driven through a model-selected tool. Each one must still surface
+    one 503 carrying the chained exception class and a redacted message.
+    """
+    app, bridge, store = _wire(monkeypatch)
+    store.run_row = {
+        "conversation_id": "chat_" + "s" * 32,
+        "result_summary": "verified output",
+        "action": "pc_files_query" if method == "seal_run_terminal"
+                  else "pc_drive_query",
+    }
+    store.fail = method
+    monkeypatch.setattr(lane, "auth_ready", lambda request: True)
+    monkeypatch.setattr(lane, "current_user_id", lambda request: OWNER)
+    request = SimpleNamespace(app=SimpleNamespace(state=app.state), cookies={})
+
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        await lane.execute_chat_pc_drive_lane(
+            request, user_text=LIST_ONLY, skill=None, model_id="m",
+            conversation_id=None, selected_tool="files",
+        )
+
+    error = excinfo.value
+    assert error.status_code == 503
+    assert error.public_error() == {
         "code": "chat_pc_store_unavailable",
         "message": "대화 기록을 현재 사용할 수 없습니다.",
         "cause": "RuntimeError: D1_ERROR: database is locked",
     }
-    assert b14.calls == []
+    # A staging failure stops before the Engine; a result-leg failure does not.
+    assert len(bridge.requests) == (0 if method == "record_chat_pc_drive_run" else 1)
 
-async def test_pc_http_503_also_retains_the_original_engine_code(monkeypatch):
+
+async def test_a_lane_engine_503_retains_the_original_engine_code(monkeypatch):
+    """The engine's own code survives inside the redacted cause."""
     from app.orchestration_bridge import B62OrchestrationError
-    app, b14, bridge = _wire(monkeypatch)
+
+    app, bridge, store = _wire(monkeypatch)
+
     async def fail(**fields):
-        raise B62OrchestrationError("upstream_unavailable", "AI unavailable", status_code=503)
-    async def notice(*args, **kwargs):
-        return None
-    monkeypatch.setattr(bridge, "start", fail)
-    monkeypatch.setattr(lane, "_append_lane_notice", notice)
-    response = await _post(app, [{"role": "user", "content": INNER + DEEP + LIST}])
-    assert response.status_code == 503
-    assert response.json()["error"]["cause"] == (
+        raise B62OrchestrationError(
+            "upstream_unavailable", "AI unavailable", status_code=503,
+        )
+
+    bridge.start = fail
+    monkeypatch.setattr(lane, "auth_ready", lambda request: True)
+    monkeypatch.setattr(lane, "current_user_id", lambda request: OWNER)
+    request = SimpleNamespace(app=SimpleNamespace(state=app.state), cookies={})
+
+    with pytest.raises(lane.ChatPCDriveError) as excinfo:
+        await lane.execute_chat_pc_drive_lane(
+            request, user_text=LIST_ONLY, skill=None, model_id="m",
+            conversation_id=None, selected_tool="files",
+        )
+
+    assert excinfo.value.status_code == 503
+    assert excinfo.value.public_error()["cause"] == (
         "B62OrchestrationError: upstream_unavailable: AI unavailable"
     )

@@ -41,6 +41,9 @@ def test_the_first_visible_token_is_measured_once_on_the_existing_event():
         def __init__(self, *, delta="", done=False):
             self.delta_content = delta
             self.done = done
+            # The real Core stream event always carries these fields (#5573).
+            self.tool_call = None
+            self.finish_reason = None
 
     class FakeRuntime:
         def __init__(self, *args, **kwargs):

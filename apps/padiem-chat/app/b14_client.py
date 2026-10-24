@@ -29,6 +29,8 @@ from padiem_ai_core import (
     MAX_B14_RESPONSE_BYTES,
 )
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_streaming import B14StreamToolCall
+from padiem_ai_core.tool_channel import ToolDefinition
 
 from padiem_ai_core.dispatch_preinstruction import (
     render_dispatch_preinstruction,
@@ -148,11 +150,41 @@ class _BeforeDispatchHTTPTransport(execution_httpx.AsyncBaseTransport):
 
 
 @dataclass(frozen=True, slots=True)
+class ChatToolCall:
+    """One model-requested tool call, projected without provider content.
+
+    ``arguments`` is model-authored data and carries no authority: the Product
+    still owns verification and the execution scope on the PC lane.
+    """
+
+    id: str
+    name: str
+    arguments: Mapping[str, Any]
+    index: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class ChatStreamEvent:
     """Minimal B62 server-side stream event projected from Core execution."""
 
     delta_content: str | None = None
     done: bool = False
+    tool_call: ChatToolCall | None = None
+    finish_reason: str | None = None
+
+
+# #5573: Core owns tool-call validation (3-B-1). The product projection only
+# copies the already-validated identifier, name, arguments and index into the
+# B62-facing event, so no provider text is re-interpreted here.
+def _project_tool_call(raw: B14StreamToolCall | None) -> ChatToolCall | None:
+    if raw is None:
+        return None
+    return ChatToolCall(
+        id=raw.id,
+        name=raw.name,
+        arguments=dict(raw.arguments),
+        index=raw.index,
+    )
 
 
 @dataclass
@@ -397,6 +429,8 @@ def _execution_request(
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
     tier_stream_fallback: bool = False,
+    tools: tuple[ToolDefinition, ...] = (),
+    tool_choice: Mapping[str, Any] | str | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -413,6 +447,9 @@ def _execution_request(
         additional_system_context=_trusted_dispatch_context(
             additional_system_context, dispatch_sample
         ),
+        # #5573: an absent declaration keeps the request exactly as before.
+        **({"tools": tools} if tools else {}),
+        **({"tool_choice": tool_choice} if tool_choice is not None else {}),
     )
 
 
@@ -543,6 +580,12 @@ class B14Client:
         first_delta_emitted = False
         try:
             async for event in core_stream:
+                tool_call = _project_tool_call(event.tool_call)
+                finish_reason = event.finish_reason
+                if tool_call is not None:
+                    yield ChatStreamEvent(
+                        tool_call=tool_call, finish_reason=finish_reason,
+                    )
                 if event.delta_content:
                     if not first_delta_emitted:
                         # #4317 perf: `b14.stream` below is the WHOLE stream, so
@@ -556,10 +599,13 @@ class B14Client:
                             outcome="ok",
                             duration_ms=(time.perf_counter()-stream_started)*1000,
                         )
-                    yield ChatStreamEvent(delta_content=event.delta_content)
+                    yield ChatStreamEvent(
+                        delta_content=event.delta_content,
+                        finish_reason=finish_reason,
+                    )
                 if event.done:
                     stream_completed = True
-                    yield ChatStreamEvent(done=True)
+                    yield ChatStreamEvent(done=True, finish_reason=finish_reason)
         except ExecutionRuntimeError as exc:
             emit_stage_event(stage="b14.stream", outcome="error",
                              duration_ms=(time.perf_counter()-stream_started)*1000,
@@ -639,6 +685,8 @@ class B14Client:
         *,
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
+        tools: tuple[ToolDefinition, ...] = (),
+        tool_choice: Mapping[str, Any] | str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         """Compatibility entrypoint for B62's simple default UX.
 
@@ -694,6 +742,8 @@ class B14Client:
             dispatch_sample=self._dispatch_wall_clock(),
             product_tier=tier,
             tier_stream_fallback=True,
+            tools=tools,
+            tool_choice=tool_choice,
         )
         inner_stream = self._stream_core(request)
         try:

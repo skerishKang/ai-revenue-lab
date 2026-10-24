@@ -759,7 +759,7 @@ def _chat_pc_request(*, answer, scope="drives", mesh=None, identity=None, bridge
     )
 
 
-def _run_chat_lane(request, *, device_id=None, user_text="내 PC 드라이브 정보 알려줘", run_id=None):
+def _run_chat_lane(request, *, device_id=None, user_text="내 PC 드라이브 정보 알려줘", run_id=None, selected_tool="files"):
     import app.chat_pc_drive as lane
 
     async def fake_owner(req, uid):
@@ -773,8 +773,9 @@ def _run_chat_lane(request, *, device_id=None, user_text="내 PC 드라이브 �
     try:
         return asyncio.run(execute_chat_pc_drive_lane(
             request, user_text=user_text, skill=None,
-            model_id="model-x", conversation_id=None, tier="free",
+            model_id="model-x", conversation_id=None,
             device_id=device_id, run_id=run_id,
+            selected_tool=selected_tool,
         ))
     finally:
         lane.auth_ready, lane.current_user_id = old_ready, old_uid
