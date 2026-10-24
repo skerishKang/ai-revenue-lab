@@ -98,13 +98,11 @@ echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
 #   digest=ok    SHA-2/HMAC match the published OpenSSL vectors
 # kdf= (the sync C path) stays a printed availability report, not a gate: on
 # 3.14 it is absent by design and no login path uses it.
-if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$READY_BODY" != *"digest=ok"* ]]; then
-  echo "B62_WORKER_PASSWORD_AUTH=FAIL ready=$READY_BODY" >&2
-  cat "$LOGDIR/workerd.log" >&2
-  exit 1
-fi
-echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
-echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
+# EVIDENCE BRANCH ONLY (#5479): the 220k evidence cases run BEFORE the
+# stored=ok gate. On the 3.14 runtime that gate is EXPECTED to fail (the
+# WebCrypto iteration ceiling is the known blocker); collecting the kdf220k /
+# kdfbench measurements first keeps them in the job log for the owner
+# decision even when the gate below stops the lane.
 # #5479: the REAL production KDF contract — the stored credential format is
 # PBKDF2-HMAC-SHA512 at 220,000 iterations through the same async dispatch the
 # auth routes call. On 3.14 the WebCrypto bridge refuses iterations above
@@ -135,6 +133,14 @@ case "$KDFBENCH_BODY" in
   *'"vector": "true"'*|*'"vector":"true"'*) echo 'B62_WORKER_KDF_BENCH_VECTOR=PASS' ;;
   *) echo 'B62_WORKER_KDF_BENCH_VECTOR=FAIL' >&2; exit 1 ;;
 esac
+
+if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$READY_BODY" != *"digest=ok"* ]]; then
+  echo "B62_WORKER_PASSWORD_AUTH=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
+echo "B62_WORKER_PASSWORD_KDF_C_PATH=$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
 case "$KDFBENCH_BODY" in
   *'"identity": "true"'*|*'"identity":"true"'*) echo 'B62_WORKER_KDF_BENCH_IDENTITY=PASS' ;;
   *) echo 'B62_WORKER_KDF_BENCH_IDENTITY=FAIL' >&2; exit 1 ;;

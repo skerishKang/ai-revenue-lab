@@ -11,6 +11,13 @@ dependencies = [
   "starlette>=0.37,<1",
   "httpx>=0.27,<1",
   "uvicorn>=0.30,<1",
+  # EVIDENCE BRANCH ONLY (#5479): bundled into the Worker so the kdfbench
+  # probe can measure the cryptography package's PBKDF2 at the stored
+  # 220,000-iteration cost on the real 3.14 runtime. The Pyodide v314
+  # snapshot ships cryptography 47.0.0; the dev-extra pin (>=42,<47) does
+  # not intersect it, so this range matches the vendored wheel exactly.
+  "cryptography==47.0.0",  # exactly the Pyodide v314 wasm wheel
+  "cffi==2.0.0",  # exactly the Pyodide v314 wasm wheel (2.1.1 has no wasm wheel)
   # #5023: the Calendar contracts validate explicit timezone identifiers
   # against the real IANA database (a shape-valid but nonexistent zone such as
   # "Mars/Olympus" must be refused at write time). The Worker runtime ships no
@@ -28,7 +35,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "cryptography>=42,<47",
+  "cryptography>=42,<48",  # EVIDENCE BRANCH ONLY: widened to intersect the Pyodide v314 wheel (47.0.0)
   "PyMuPDF==1.26.3",
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
