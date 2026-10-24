@@ -105,9 +105,9 @@ export function buildAdClickFirstConsumerHome(
     issueNumber: 1112 as const,
     primaryNavigation: PRIMARY_NAVIGATION,
     hero: Object.freeze({
-      eyebrow: '가장 쉬운 적립부터',
-      title: '지금 바로 할 수 있는 적립',
-      description: '광고보기·클릭·방문처럼 짧게 끝나는 적립만 먼저 보여드려요.',
+      eyebrow: 'PADIEM AI Reward Router',
+      title: '오늘의 추천 수익 기회',
+      description: '짧게 끝나는 적립부터 확인된 조건만 보여드립니다. 오늘의 추천과 전체 수익 기회를 바로 탐색하세요.',
     }),
     sections: Object.freeze([
       Object.freeze({

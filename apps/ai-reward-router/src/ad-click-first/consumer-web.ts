@@ -231,6 +231,18 @@ function renderShell(
     .section-head h2 { margin: 0; font-size: 19px; letter-spacing: -.025em; font-weight: 650; }
     .section-head > span { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
 
+    .home-intro { margin: 18px 0 8px; }
+    .intro-desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .cta-link { color: var(--accent); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .cta-link:hover { text-decoration: underline; }
+    .home-actions { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 10px; }
+    .home-cta { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-btn); font-size: 15px; font-weight: 700; letter-spacing: -.01em; transition: background .16s ease, transform .16s ease; }
+    .home-cta--primary { background: var(--accent); color: #06080d; }
+    .home-cta--secondary { background: var(--surface); border: 1px solid var(--line); color: var(--text); }
+    .home-cta--primary:hover { background: var(--accent-strong); }
+    .home-cta--secondary:hover { background: var(--surface-strong); }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
     .reward-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
     .reward-card {
       display: flex; flex-direction: column;
@@ -379,6 +391,11 @@ function renderShell(
       .detail-card h2 { font-size: 21px; margin: 10px 0 14px; }
       .detail-fact { grid-template-columns: 96px 1fr; gap: 10px; }
       .footer-note { margin-top: 32px; }
+      .home-actions { margin: 18px 0 8px; }
+      .home-cta { min-height: 44px; font-size: 14px; }
+      .cta-link { font-size: 12px; }
+      .intro-desc { font-size: 13px; }
+      .hero { padding: 20px 0 14px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
@@ -416,6 +433,22 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
     .map(renderCard)
     .filter((card): card is string => card !== null);
 
+  const intro = `
+    <section class="home-intro" aria-labelledby="intro-title">
+      <div class="section-head">
+        <h2 id="intro-title">오늘의 추천</h2>
+        <a class="cta-link" href="/today">추천 보러 가기<span aria-hidden="true"> →</span></a>
+      </div>
+      <p class="intro-desc">오늘 가장 먼저 참여하기 좋은 적립을 모았습니다.</p>
+    </section>`;
+
+  const actions = `
+    <section class="home-actions" aria-labelledby="actions-title">
+      <h2 id="actions-title" class="visually-hidden">수익 기회 탐색</h2>
+      <a class="home-cta home-cta--primary" href="/browse">수익 기회 찾기<span aria-hidden="true"> →</span></a>
+      <a class="home-cta home-cta--secondary" href="/today">오늘의 추천 보기<span aria-hidden="true"> →</span></a>
+    </section>`;
+
   const content = renderedCards.length > 0
     ? `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
@@ -441,7 +474,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
         <p>${escapeHtml(viewModel.hero.description)}</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, content, { howItWorks: true });
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${intro}${actions}${content}`, { howItWorks: true });
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
