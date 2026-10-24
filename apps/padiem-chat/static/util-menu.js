@@ -452,6 +452,29 @@
         });
       }
 
+      // #5728: the roster is one small text file that carries the
+      // composition's order and the blog insertion positions; the photo
+      // originals themselves are already stored (each add uploaded them).
+      // Rewrites replace the previous roster in place, so a stale roster can
+      // never resurrect a photo the owner deleted.
+      const PHOTO_ROSTER_NAME = "SNS 사진 구성.json";
+      // Roster writes serialize: two changes landing together must never
+      // leave two roster files behind (an older one would win a name lookup
+      // and silently revert the newer order or position).
+      let rosterWriteChain = Promise.resolve();
+      function writePhotoRoster(pid) {
+        if (!pid) return;
+        rosterWriteChain = rosterWriteChain.then(async () => {
+          const roster = { version: 1, photos: photos
+            .map((p) => ({ fileId: String(p.id), name: p.name, position: p.position })) };
+          const existing = await listProjectFiles(pid);
+          const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (previous) await deleteProjectFile(pid, previous.id);
+          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster));
+        }).catch(() => { /* the composition keeps working; the roster stays last-known */ });
+        return rosterWriteChain;
+      }
+
       function renderPhotoList() {
         photoCount.textContent = photos.length + "장";
         photoNote.textContent = photoNoteText();
@@ -470,7 +493,7 @@
             const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
             opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
             sel.value = item.position;
-            sel.addEventListener("change", () => { item.position = sel.value; renderPreview(); });
+            sel.addEventListener("change", () => { item.position = sel.value; renderPreview(); writePhotoRoster(currentPid); });
             posLabel.appendChild(sel);
             controls.appendChild(posLabel);
           }
@@ -506,25 +529,11 @@
           return;
         }
         renderPhotoList();
-
-      // #5728: re-entry restores the persisted photo set (server order).
-      // Order changes stay session-scoped; the saved set itself is durable.
-      (async () => {
-        if (!currentPid) currentPid = await ensureProject();
-        if (!currentPid) return;
-        const files = await listProjectFiles(currentPid);
-        const imageFiles = files.filter((f) => f.media_type === "image/png"
-          || f.media_type === "image/jpeg" || f.media_type === "image/webp");
-        if (photos.length || !imageFiles.length) return;
-        for (const meta of imageFiles) {
-          const dataUrl = await fetchOriginalDataUrl(currentPid, meta.id);
-          if (!dataUrl) continue;
-          photos.push({ id: meta.id, name: meta.name, dataUrl: dataUrl, position: "auto" });
-        }
-        renderPhotoList();
         renderPreview();
-      })();
-        renderPreview();
+        // #5728: every durable composition change (reorder and removal here,
+        // insertion positions on the selects) rewrites the roster file, so
+        // the order and the blog insertion positions outlive the session.
+        writePhotoRoster(currentPid);
       });
 
       photoAdd.addEventListener("click", () => photoInput.click());
@@ -547,6 +556,9 @@
         photoInput.value = "";
         renderPhotoList();
         renderPreview();
+        // An added photo is part of the durable composition as soon as its
+        // upload landed — the roster records it right away.
+        if (!failed.length) writePhotoRoster(currentPid);
       });
 
       function blogParagraphs(text) {
@@ -621,6 +633,53 @@
 
       panel.replaceChildren(form, result);
       const title = h3;
+
+      // #5728: re-entry restores the persisted composition ONCE, at build
+      // time — before any interaction with the photo list. The stored image
+      // files are the originals; when the roster file exists it fixes the
+      // order and the blog insertion positions, and photos it does not
+      // mention still surface after it so nothing the owner stored vanishes.
+      (async () => {
+        try {
+          if (!currentPid) currentPid = await ensureProject();
+          if (!currentPid) return;
+          const files = await listProjectFiles(currentPid);
+          const imageFiles = files.filter((f) => f.media_type === "image/png"
+            || f.media_type === "image/jpeg" || f.media_type === "image/webp");
+          if (photos.length || !imageFiles.length) return;
+          let order = null;
+          const rosterFile = files.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (rosterFile) {
+            const detailRes = await fetch("/api/projects/" + currentPid + "/files/" + encodeURIComponent(rosterFile.id), { credentials: "include" });
+            if (detailRes.ok) {
+              const detail = await detailRes.json().catch(() => null);
+              try {
+                const roster = JSON.parse(String((detail && detail.file && detail.file.content) || ""));
+                if (roster && Array.isArray(roster.photos)) order = roster.photos;
+              } catch (_) { /* unreadable roster falls back to the stored order */ }
+            }
+          }
+          const ordered = [];
+          if (order && order.length) {
+            order.forEach((entry) => {
+              const meta = imageFiles.find((f) => f.id === (entry && entry.fileId));
+              if (meta) ordered.push({ meta: meta, position: entry && typeof entry.position === "string" && entry.position ? entry.position : "auto" });
+            });
+            imageFiles.forEach((meta) => {
+              if (!ordered.some((o) => o.meta.id === meta.id)) ordered.push({ meta: meta, position: "auto" });
+            });
+          } else {
+            imageFiles.forEach((meta) => ordered.push({ meta: meta, position: "auto" }));
+          }
+          for (const entry of ordered) {
+            const dataUrl = await fetchOriginalDataUrl(currentPid, entry.meta.id);
+            if (!dataUrl) continue;
+            photos.push({ id: entry.meta.id, name: entry.meta.name, dataUrl: dataUrl, position: entry.position });
+          }
+          renderPhotoList();
+          renderPreview();
+        } catch (_) { /* restore is best effort; an empty composition stays honest */ }
+      })();
 
       async function gen() {
         const d = new FormData(form);

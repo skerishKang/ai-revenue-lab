@@ -24,6 +24,7 @@ from .project_files import (
     _extracted_media_type,
     decode_owner_file_cursor,
     encode_owner_file_cursor,
+    image_media_type_matches,
     validate_file_id,
 )
 
@@ -182,11 +183,21 @@ async def project_files_collection(request: Request) -> JSONResponse:
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
+                image_body = None
                 if media_type in IMAGE_PROJECT_FILE_MEDIA:
                     # #5728 — an image is preserved byte-for-byte: no document
                     # parser runs, the stored record keeps its original
                     # media_type and an empty text body, and the owner re-reads
-                    # the exact original through the /original route.
+                    # the exact original through the /original route. The
+                    # declared type must still match the actual bytes — the
+                    # same honesty the document path enforces through its
+                    # parser's format checks.
+                    image_body = spool.read()
+                    if not image_media_type_matches(media_type, image_body[:12]):
+                        return JSONResponse(
+                            {"error": {"code": "invalid_document", "message": "이미지 형식이 일치하지 않습니다."}},
+                            status_code=422,
+                        )
                     created = await store.create_file(uid, pid, name, media_type, "")
                 else:
                     # Local Core PDF parsing can use the seekable spool directly.
@@ -204,13 +215,21 @@ async def project_files_collection(request: Request) -> JSONResponse:
                     await store.delete_file(uid, pid, created.id)
                     return _unavailable()
                 try:
-                    spool.seek(0)
-                    # R2 Python binding receives bytes; avoid a second parse-time
-                    # copy for PDFs while preserving the existing storage contract.
-                    await _r2_call(
-                        bucket, "put", _project_original_object_key(uid, pid, created.id),
-                        spool.read(), httpMetadata={"contentType": media_type},
-                    )
+                    if image_body is not None:
+                        # The image bytes were already read whole for the
+                        # magic check; storing them avoids a second spool pass.
+                        await _r2_call(
+                            bucket, "put", _project_original_object_key(uid, pid, created.id),
+                            image_body, httpMetadata={"contentType": media_type},
+                        )
+                    else:
+                        spool.seek(0)
+                        # R2 Python binding receives bytes; avoid a second parse-time
+                        # copy for PDFs while preserving the existing storage contract.
+                        await _r2_call(
+                            bucket, "put", _project_original_object_key(uid, pid, created.id),
+                            spool.read(), httpMetadata={"contentType": media_type},
+                        )
                 except Exception:
                     await store.delete_file(uid, pid, created.id)
                     return _unavailable()
