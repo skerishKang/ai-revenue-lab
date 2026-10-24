@@ -223,3 +223,147 @@ def test_canonical_conversation_remains_stable_across_turns_but_not_across_chats
     assert a[2]["x-opencode-session"] == a_followup[2]["x-opencode-session"] == SESSION
     assert b[2]["x-opencode-session"] == second
     assert b[2]["x-opencode-session"] != SESSION
+
+# Owner-authorized diagnostic only: every transport below is synthetic.
+class _VendorErrorBody(httpx.AsyncByteStream):
+    def __init__(self, chunks):
+        self.chunks = chunks
+        self.read = []
+        self.closed = False
+
+    async def __aiter__(self):
+        for chunk in self.chunks:
+            self.read.append(len(chunk))
+            yield chunk
+
+    async def aclose(self):
+        self.closed = True
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("streaming", [False, True])
+@pytest.mark.parametrize("session", [None, SESSION])
+async def test_vendor_401_is_redacted_in_alpha_log_not_the_public_error(
+    monkeypatch, caplog, streaming, session,
+):
+    import logging
+    monkeypatch.setattr(go, "_authorization_gate", lambda *_: None)
+    async def auth(h, wire):
+        return {**h, "Authorization": "Bearer synthetic-short-credential"}
+    monkeypatch.setattr(go, "_authenticated_headers", auth)
+    body = ('denied Bearer synthetic-short-credential; '
+            'sk-private123; keyishCredential01234567890123456789; api_key=tiny-secret; '
+            + (session or "no-session"))
+    transport = httpx.MockTransport(lambda req: httpx.Response(401, text=body))
+    args = dict(model_id="opencode-go/muse-spark-1.3-contributor",
+                upstream_model="muse-spark-1.3-contributor",
+                messages=TURNS, session_id=session, transport=transport)
+    with pytest.raises(UpstreamAuthFailed) as caught:
+        if streaming:
+            [event async for event in go.stream_go_model(**args)]
+        else:
+            await go.call_go_model(**args)
+    original = UpstreamAuthFailed()
+    assert caught.value.to_dict() == original.to_dict()
+    assert caught.value.status_code == original.status_code
+    with caplog.at_level(logging.WARNING):
+        assert go.log_go_vendor_error(
+            logging.getLogger("go-diagnostic-test"), caught.value,
+            request_id="fixed-request", request_path="/api/pilot/v1/chat/completions",
+            attempt=2, fallback=True,
+        )
+    line = next(r.message for r in caplog.records if r.message.startswith("alpha_error "))
+    for private in ["synthetic-short-credential", "sk-private123",
+                    "keyishCredential01234567890123456789", "tiny-secret"]:
+        assert private not in line
+    if session is not None:
+        assert session not in line
+    for field in ["provider_id=opencode-go", "vendor_status=401",
+                  "upstream_model=muse-spark-1.3-contributor",
+                  "attempt=2", "fallback=fallback", "request_path=",
+                  "vendor_path=/inference/go/openai/v1/responses",
+                  "session_header_kind=" + ("minted" if session is None else "conversation")]:
+        assert field in line
+    assert len(caught.value._go_vendor_diagnostic["vendor_message"]) <= 200
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("streaming", [False, True])
+async def test_vendor_error_reads_only_512_bytes_and_stops_before_the_next_chunk(monkeypatch, streaming):
+    monkeypatch.setattr(go, "_authorization_gate", lambda *_: None)
+    async def auth(h, wire):
+        return h
+    monkeypatch.setattr(go, "_authenticated_headers", auth)
+    prefix = (b"denied " + b"a " * 253)[:512]
+    assert len(prefix) == 512
+    body = _VendorErrorBody([prefix, b"DO_NOT_READ_THIS_PRIVATE_TRAILER"])
+    transport = httpx.MockTransport(lambda req: httpx.Response(401, stream=body))
+    args = dict(model_id="opencode-go/muse-spark-1.3-contributor",
+                upstream_model="muse-spark-1.3-contributor",
+                messages=TURNS, session_id=None, transport=transport)
+    with pytest.raises(UpstreamAuthFailed) as caught:
+        if streaming:
+            [event async for event in go.stream_go_model(**args)]
+        else:
+            await go.call_go_model(**args)
+    assert body.read == [512]
+    assert body.closed
+    assert caught.value._go_vendor_diagnostic["vendor_message"] == prefix.decode()[:200]
+
+
+@pytest.mark.parametrize("streaming", [False, True])
+def test_go_gateway_logs_context_and_keeps_client_error_bytes_unchanged(
+    monkeypatch, caplog, streaming,
+):
+    import asyncio
+    import logging
+    from app.factory import create_app
+    from starlette.testclient import TestClient
+    from app.pilot import gateway, stream_gateway, platform
+    from app.pilot.b14_runtime_config import runtime_config
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_11", "synthetic-go-credential-123456789")
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    monkeypatch.setattr(stream_gateway, "_request_id", lambda: "b14stream_fixed")
+    async def auth(h, wire):
+        return {**h, "Authorization": "Bearer synthetic-go-credential-123456789"}
+    monkeypatch.setattr(go, "_authenticated_headers", auth)
+    transport = httpx.MockTransport(lambda req: httpx.Response(
+        401, text="invalid subscription; Bearer synthetic-go-credential-123456789"))
+    async def call(**kwargs):
+        return await go.call_go_model(
+            **{k: kwargs[k] for k in ["model_id", "upstream_model", "messages", "max_tokens", "temperature"]},
+            session_id=None, transport=transport,
+        )
+    monkeypatch.setattr(platform, "call_platform_chat_completions", call)
+    body = {"model": "opencode-go/muse-spark-1.3-contributor",
+            "messages": [{"role": "user", "content": "synthetic question"}]}
+    app = create_app()
+    app.state.stream_transport = transport
+    def run():
+        if streaming:
+            with TestClient(app) as client:
+                return client.post("/api/pilot/v1/chat/completions/stream-preview",
+                                   json={**body, "stream": True})
+        return asyncio.run(gateway._handle_alpha_chat("b14_fixed", body))
+    with caplog.at_level(logging.WARNING):
+        observed = run()
+    observed_bytes = observed.content if streaming else observed.body
+    assert observed.status_code == 401
+    lines = [r.message for r in caplog.records if r.message.startswith("alpha_error ")]
+    assert len(lines) == 1
+    for part in ["vendor_status=401", "provider_id=opencode-go", "attempt=1",
+                 "fallback=primary", "session_header_kind=minted", "invalid subscription"]:
+        assert part in lines[0]
+    assert "synthetic-go-credential" not in lines[0]
+    # Replay only the original status normalization as the pre-change baseline.
+    async def original_status_only(response, **kwargs):
+        platform._raise_upstream_error(response.status_code, "opencode-go")
+    monkeypatch.setattr(go, "_raise_go_vendor_error", original_status_only)
+    reference = run()
+    reference_bytes = reference.content if streaming else reference.body
+    assert observed.status_code == reference.status_code
+    assert observed_bytes == reference_bytes
+    for private in [b"vendor_message", b"vendor_status", b"session_header_kind",
+                    b"invalid subscription", b"synthetic-go-credential"]:
+        assert private not in observed_bytes

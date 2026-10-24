@@ -1,0 +1,330 @@
+{
+  "speech_1440": {
+    "opened": {
+      "state": "util",
+      "title": "축사·인사말"
+    },
+    "header": {
+      "title": "축사·인사말",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 156.5,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 965.8,
+        "w": 263.8,
+        "h": 44
+      },
+      "buttons": [
+        "초안 생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1379.4,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "sns_1440": {
+    "opened": {
+      "state": "util",
+      "title": "SNS 홍보"
+    },
+    "header": {
+      "title": "SNS 홍보",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 128.3,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 622.4,
+        "y": 736.6,
+        "w": 263.8,
+        "h": 44
+      },
+      "buttons": [
+        "생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1150.3,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "meeting_1440": {
+    "opened": {
+      "state": "util",
+      "title": "회의정리·책 제작"
+    },
+    "header": {
+      "title": "회의정리·책 제작",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 219.2,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 619.4,
+        "w": 263.8,
+        "h": 44
+      },
+      "buttons": [
+        "요약 생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1033.1,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "pdfmd_1440": {
+    "opened": {
+      "state": "util",
+      "title": "PDF → Markdown"
+    },
+    "header": {
+      "title": "PDF → Markdown",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 259.6,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "overflowX": 0
+  },
+  "speech_390": {
+    "opened": {
+      "state": "util",
+      "title": "축사·인사말"
+    },
+    "header": {
+      "title": "축사·인사말",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 119.7,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 29,
+        "y": 1224.4,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "초안 생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1638,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "sns_390": {
+    "opened": {
+      "state": "util",
+      "title": "SNS 홍보"
+    },
+    "header": {
+      "title": "SNS 홍보",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 98.1,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 29,
+        "y": 885.6,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1299.3,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "meeting_390": {
+    "opened": {
+      "state": "util",
+      "title": "회의정리·책 제작"
+    },
+    "header": {
+      "title": "회의정리·책 제작",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 167.6,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": {
+        "x": 29,
+        "y": 629.6,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "요약 생성",
+        "저장"
+      ]
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1043.3,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "pdfmd_390": {
+    "opened": {
+      "state": "util",
+      "title": "PDF → Markdown"
+    },
+    "header": {
+      "title": "PDF → Markdown",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 198.5,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "overflowX": 0
+  }
+}

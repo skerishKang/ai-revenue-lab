@@ -289,8 +289,12 @@ result.appendChild(output);
 const actions = mk("div", null, "util-actions");
 result.appendChild(actions);
 mk("button", "utilSpeechCopy");
-mk("button", "utilSpeechRegenerate");
 mk("button", "utilSpeechDownload");
+// #5727: save lives in the form area next to the generate button.
+const formActions = mk("div", null, "util-form-actions");
+form.appendChild(formActions);
+const saveBtn = mk("button", "utilSpeechSave", "util-save");
+formActions.appendChild(saveBtn);
 mk("div", "utilSpeechPanel");
 mk("div", "utilSnsPanel");
 mk("div", "utilMeetingPanel");
@@ -379,8 +383,9 @@ function fail(label, extra) {
 
   // 2) Save the drafted speech.
   output.value = DRAFT_BODY;
-  const saveBtn = actions.children.find((n) => n.id === "utilSpeechSave");
+  // #5727: the save button is form-area markup next to the generate button.
   if (!saveBtn) fail("SAVE_BUTTON_NOT_BUILT");
+  if (saveBtn.parentNode.className !== "util-form-actions") fail("SAVE_NOT_IN_FORM_AREA");
   await saveBtn.dispatch("click");
   if (storedFiles.length !== 1) fail("SAVE_DID_NOT_STORE");
   if (storedFiles[0].content !== DRAFT_BODY) fail("SAVED_BODY_NOT_PRESERVED");
