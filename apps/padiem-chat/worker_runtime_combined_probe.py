@@ -52,25 +52,15 @@ async def connector_asgi_websocket_runtime_probe(scope, receive, send):
 
 
 def _password_kdf_state() -> str:
-    """State of the sync C ``hashlib`` hashing path on this runtime.
+    """``ok`` when this runtime can run the Worker's password hashing.
 
-    The Worker's stored credential format is PBKDF2-HMAC-SHA512. On runtimes
-    that ship ``_hashlib`` (3.13) the probe runs the real application hashing
-    function and reports ``ok`` / ``verify-failed`` / ``verify-wrong-accepted``.
-    On the 3.14 snapshot (compat date 2026-09-08+) CPython removed
-    ``hashlib.pbkdf2_hmac`` by design, and the auth routes use the async
-    WebCrypto twins instead (#5732) — the probe reports ``c-path-absent`` so
-    the CI lane can require ``kdfasync=ok`` there instead of pretending the C
-    path still exists. A runtime where even the dispatching module cannot load
-    still reports ``missing``.
+    The Worker's stored credential format is PBKDF2-HMAC-SHA512. A Python
+    runtime without ``hashlib.pbkdf2_hmac`` cannot verify a stored hash at
+    all, so every password login would answer HTTP 500. The probe runs the
+    real application hashing function, so a runtime without the KDF is
+    reported instead of silently passing.
     """
     try:
-        import hashlib
-
-        if not hasattr(hashlib, "pbkdf2_hmac"):
-            from app import password_auth, password_kdf  # noqa: F401
-
-            return "c-path-absent"
         from app.password_auth import hash_password, verify_password
 
         stored = hash_password("runtime-probe-password")

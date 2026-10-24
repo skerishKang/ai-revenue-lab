@@ -4,7 +4,7 @@ The Chat Worker hashes passwords with PBKDF2-HMAC-SHA512 (RFC 2898). Which
 implementation provides that KDF depends on the runtime the compatibility
 date selects:
 
-- CPython 3.13 (Pyodide 3.13 snapshots) — the C `hashlib` path
+- Pyodide 3.13 (``compatibility_date = "2026-08-25"``, current Production)
   provides ``hashlib.pbkdf2_hmac`` through ``_hashlib``/OpenSSL. This is the
   fast path and the one Production runs today.
 - Pyodide 3.14 (``compatibility_date >= "2026-09-08"``) ships no ``_hashlib``
