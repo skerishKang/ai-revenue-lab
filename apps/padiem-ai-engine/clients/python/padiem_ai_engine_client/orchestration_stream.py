@@ -42,6 +42,33 @@ class EngineNdjsonContractError(ValueError):
         self.engine_code = engine_code
 
 
+def _side_record(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Optional presentation records; never counted as execution progress."""
+    key = "pc_progress" if "pc_progress" in record else "heartbeat"
+    if key not in record:
+        return None
+    data = record[key]
+    fields = (
+        {"pc_run_id", "dispatch_id", "kind", "stage", "sequence", "elapsed_ms"}
+        if key == "pc_progress" else {"run_id", "trace_id", "elapsed_ms"}
+    )
+    if set(record) != {"ok", key} or not isinstance(data, dict) or set(data) != fields:
+        raise EngineNdjsonContractError("invalid_stream_record")
+    ids = ("pc_run_id", "dispatch_id") if key == "pc_progress" else ("run_id", "trace_id")
+    for name in ids:
+        if not isinstance(data[name], str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", data[name]):
+            raise EngineNdjsonContractError("invalid_stream_record")
+    for name in (("elapsed_ms", "sequence") if key == "pc_progress" else ("elapsed_ms",)):
+        if type(data[name]) is not int or data[name] < (1 if name == "sequence" else 0):
+            raise EngineNdjsonContractError("invalid_stream_record")
+    if key == "pc_progress" and (
+        data["kind"] not in {"command", "read"} or
+        data["stage"] not in {"accepted", "picked_up", "executing", "result"}
+    ):
+        raise EngineNdjsonContractError("invalid_stream_record")
+    return {key: dict(data)}
+
+
 async def decode_orchestration_ndjson(
     chunks: AsyncIterator[bytes],
 ) -> AsyncIterator[dict[str, Any]]:
@@ -105,6 +132,10 @@ async def decode_orchestration_ndjson(
                         )
                     if record.get("ok") is not True:
                         raise EngineNdjsonContractError("invalid_stream_record")
+                    side = _side_record(record)
+                    if side is not None:
+                        yield side
+                        continue
                     if set(record) == {"ok", "event"} and isinstance(record["event"], Mapping):
                         count += 1
                         if count > MAX_NDJSON_EVENT_COUNT:
