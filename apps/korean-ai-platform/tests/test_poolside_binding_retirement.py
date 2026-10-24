@@ -42,7 +42,7 @@ def test_wrangler_toml_declares_no_unsafe_bindings():
     assert "unsafe" not in config
     text = WRANGLER_TOML.read_text(encoding="utf-8")
     assert 'binding = "PADIEM_B14_CREDENTIAL_12"' in text
-    assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in text
+    assert 'secret_name = "PADIEM_B14_CREDENTIAL_12"' in text
     assert "PADIEM_B14_CREDENTIAL_12 =" not in text
 
 
