@@ -19,9 +19,38 @@ from .b14_execution import (
     _safe_string,
 )
 from .contracts import UsageMetadata
+from .tool_channel import MAX_TOOL_ARGUMENT_CHARS, ToolCall
 
 B14_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 B14_AUTO_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
+
+
+def _tool_json_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {key: _tool_json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_tool_json_value(item) for item in value]
+    return value
+
+
+@dataclass(frozen=True, slots=True)
+class B14StreamToolCall(ToolCall):
+    """One complete call; consumers must await successful stream completion."""
+
+    index: int = 0
+
+    def __post_init__(self) -> None:
+        ToolCall.__post_init__(self)
+        if isinstance(self.index, bool) or not isinstance(self.index, int) or self.index < 0:
+            raise ValueError("tool call index must be a non-negative integer")
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "arguments": _tool_json_value(self.arguments),
+            "index": self.index,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +62,7 @@ class B14StreamEvent:
     usage: UsageMetadata = field(default_factory=UsageMetadata)
     route: B14RouteMetadata = field(default_factory=B14RouteMetadata)
     done: bool = False
+    tool_call: B14StreamToolCall | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
@@ -45,9 +75,13 @@ class B14StreamEvent:
             raise ValueError("route must be B14RouteMetadata")
         if not isinstance(self.done, bool):
             raise ValueError("done must be a boolean")
+        if self.tool_call is not None:
+            if not isinstance(self.tool_call, B14StreamToolCall):
+                raise ValueError("tool_call must be B14StreamToolCall or None")
+            if self.delta_content is not None or self.done:
+                raise ValueError("tool call event must not contain delta or completion")
         if self.done and (
             self.delta_content is not None
-            or self.finish_reason is not None
             or any(
                 value is not None
                 for value in (
@@ -57,10 +91,10 @@ class B14StreamEvent:
                 )
             )
         ):
-            raise ValueError("done event must not contain delta, finish reason, or usage")
+            raise ValueError("done event must not contain delta or usage")
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "response_id": self.response_id,
             "model": self.model,
             "delta_content": self.delta_content,
@@ -69,6 +103,9 @@ class B14StreamEvent:
             "route": self.route.to_public_dict(),
             "done": self.done,
         }
+        if self.tool_call is not None:
+            payload["tool_call"] = self.tool_call.to_public_dict()
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,7 +194,39 @@ def _parse_error_frame(frame: _SSEFrame) -> B14ExecutionError:
     )
 
 
-def _parse_data_frame(frame: _SSEFrame) -> B14StreamEvent:
+def _parse_tool_frame(frame: _SSEFrame) -> B14StreamEvent:
+    try:
+        payload = json.loads(frame.data)
+        if not isinstance(payload, dict):
+            raise ValueError("expected event object")
+        if frame.event == "done":
+            reason = payload.get("finish_reason")
+            if not isinstance(reason, str) or not reason.strip():
+                raise ValueError("expected finish reason")
+            return B14StreamEvent(done=True, finish_reason=reason)
+        raw_arguments = payload.get("arguments")
+        if not isinstance(raw_arguments, str) or len(raw_arguments) > MAX_TOOL_ARGUMENT_CHARS:
+            raise ValueError("expected bounded JSON arguments")
+        arguments = json.loads(raw_arguments)
+        if not isinstance(arguments, dict):
+            raise ValueError("expected argument object")
+        # Python's JSON decoder accepts NaN/Infinity, which are not JSON values.
+        json.dumps(arguments, allow_nan=False)
+        return B14StreamEvent(
+            tool_call=B14StreamToolCall(
+                id=payload.get("id"),
+                name=payload.get("name"),
+                arguments=arguments,
+                index=payload.get("index"),
+            )
+        )
+    except (ValueError, TypeError, RecursionError) as exc:
+        raise _malformed() from exc
+
+
+def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14StreamEvent:
+    if tools_requested and frame.event in {"tool_call", "done"}:
+        return _parse_tool_frame(frame)
     if frame.event != "message":
         if frame.event == "error":
             raise _parse_error_frame(frame)
@@ -408,23 +477,33 @@ class B14StreamingClient:
                                 decoded = _decode_sse_frame(raw_frame)
                                 if decoded is None:
                                     continue
-                                event = _parse_data_frame(decoded)
+                                event = _parse_data_frame(
+                                    decoded, tools_requested=bool(request.tools)
+                                )
                                 if event.done:
                                     saw_done = True
-                                    yield B14StreamEvent(route=last_route, done=True)
+                                    yield B14StreamEvent(
+                                        route=last_route, done=True, finish_reason=event.finish_reason
+                                    )
                                     return
-                                last_route = event.route
+                                if event.tool_call is None:
+                                    last_route = event.route
                                 yield event
 
                     if buffer.strip():
                         decoded = _decode_sse_frame(buffer)
                         if decoded is not None:
-                            event = _parse_data_frame(decoded)
+                            event = _parse_data_frame(
+                                decoded, tools_requested=bool(request.tools)
+                            )
                             if event.done:
                                 saw_done = True
-                                yield B14StreamEvent(route=last_route, done=True)
+                                yield B14StreamEvent(
+                                    route=last_route, done=True, finish_reason=event.finish_reason
+                                )
                                 return
-                            last_route = event.route
+                            if event.tool_call is None:
+                                last_route = event.route
                             yield event
         except B14ExecutionError:
             raise

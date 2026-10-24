@@ -11,7 +11,7 @@ from .b14_execution import (
     B14ExecutionError,
     B14RouteMetadata,
 )
-from .b14_streaming import B14StreamEvent
+from .b14_streaming import B14StreamEvent, B14StreamToolCall
 from .contracts import ErrorClass, RunMetadata, RunStatus, UsageMetadata
 from .execution_runtime import (
     ExecutionRequest,
@@ -46,12 +46,15 @@ def _observed_model(route: B14RouteMetadata, chunk_model: str | None) -> str | N
 
 @dataclass(frozen=True, slots=True)
 class StreamingExecutionEvent:
+    """Text or a complete tool call; tool consumers must await successful done."""
+
     delta_content: str | None
     answer: str | None
     finish_reason: str | None
     route: B14RouteMetadata
     metadata: RunMetadata
     done: bool = False
+    tool_call: B14StreamToolCall | None = None
 
     def __post_init__(self) -> None:
         if self.delta_content is not None and not isinstance(self.delta_content, str):
@@ -67,23 +70,31 @@ class StreamingExecutionEvent:
         if not isinstance(self.done, bool):
             raise ValueError("done must be a boolean")
 
+        if self.tool_call is not None:
+            if not isinstance(self.tool_call, B14StreamToolCall):
+                raise ValueError("tool_call must be B14StreamToolCall or None")
+            if self.delta_content is not None or self.done:
+                raise ValueError("tool call event must not contain delta or completion")
+
         if self.done:
             if self.delta_content is not None:
                 raise ValueError("terminal event must not contain delta_content")
-            if self.answer is None or not self.answer.strip():
+            if self.answer is None or (
+                not self.answer.strip() and self.finish_reason != "tool_calls"
+            ):
                 raise ValueError("terminal event must contain a non-empty answer")
             if self.metadata.status is not RunStatus.COMPLETED:
                 raise ValueError("terminal event metadata must be completed")
         else:
             if self.answer is not None:
                 raise ValueError("progress event must not contain final answer")
-            if self.delta_content is None or not self.delta_content:
-                raise ValueError("progress event must contain a non-empty delta")
+            if not self.delta_content and self.tool_call is None:
+                raise ValueError("progress event must contain a non-empty delta or tool call")
             if self.metadata.status is not RunStatus.MODEL_RUNNING:
                 raise ValueError("progress event metadata must be model_running")
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "delta_content": self.delta_content,
             "answer": self.answer,
             "finish_reason": self.finish_reason,
@@ -91,6 +102,9 @@ class StreamingExecutionEvent:
             "metadata": self.metadata.to_public_dict(),
             "done": self.done,
         }
+        if self.tool_call is not None:
+            payload["tool_call"] = self.tool_call.to_public_dict()
+        return payload
 
 
 class StreamingExecutionRuntime:
@@ -228,6 +242,7 @@ class StreamingExecutionRuntime:
         last_model: str | None = None
         last_finish_reason: str | None = None
         saw_done = False
+        saw_tool_call = False
 
         try:
             async for event in iterator:
@@ -268,7 +283,11 @@ class StreamingExecutionRuntime:
                         )
                     saw_done = True
                     answer = "".join(answer_parts).strip()
-                    if not answer:
+                    if not answer and not (
+                        b14_request.tools
+                        and saw_tool_call
+                        and last_finish_reason == "tool_calls"
+                    ):
                         raise self._runtime_error(
                             request=request,
                             trace_id=trace_id,
@@ -298,8 +317,11 @@ class StreamingExecutionRuntime:
                     )
                     return
 
-                if event.delta_content:
-                    answer_parts.append(event.delta_content)
+                if event.delta_content or event.tool_call is not None:
+                    if event.delta_content:
+                        answer_parts.append(event.delta_content)
+                    if event.tool_call is not None:
+                        saw_tool_call = True
                     yield StreamingExecutionEvent(
                         delta_content=event.delta_content,
                         answer=None,
@@ -315,6 +337,7 @@ class StreamingExecutionRuntime:
                             chunk_model=last_model,
                         ),
                         done=False,
+                        tool_call=event.tool_call,
                     )
 
             if not saw_done:
@@ -388,6 +411,8 @@ class StreamingExecutionRuntime:
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
                 model_parameters=model_parameters,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
             )
         except ValueError:
             metadata = self._metadata(
