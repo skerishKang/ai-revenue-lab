@@ -25,10 +25,13 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import importlib.util
 from pathlib import Path
 import subprocess
 import sys
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -199,3 +202,203 @@ def test_the_deployed_compatibility_date_is_still_pinned() -> None:
     manifest = tomllib.loads(CHAT_MANIFEST.read_text(encoding="utf-8"))
     assert manifest["compatibility_date"] == "2026-08-25"
     assert "python_workers" in manifest["compatibility_flags"]
+
+
+# --------------------------------------------------------------------------- #
+# #5736 — why the 3.14 move could not stay deployed, and what must prove it
+# before anyone attempts it again.
+#
+# The deployed 3.14 Worker answered every register/login/reset with HTTP 500
+# from ``app/password_kdf.py``:
+#
+#   js.crypto.subtle.deriveBits -> NotSupportedError: Pbkdf2 failed:
+#   iteration counts above 100000 are not supported (requested 220000).
+#
+# Workers WebCrypto caps PBKDF2 at 100,000 iterations; stored credentials carry
+# 220,000. The bridge check that CI ran used 2,000 iterations, so it passed a
+# runtime that could not verify a single member. These tests pin the ceiling and
+# the checks that see it.
+# --------------------------------------------------------------------------- #
+
+#: Measured on Production, not read off a specification.
+WEBCRYPTO_ITERATION_CEILING = 100_000
+SHARED_RUNTIME_SCRIPT = REPO_ROOT / ".github/scripts/b62_worker_probe_shared_runtime.sh"
+
+
+class _JsException(Exception):
+    """Stand-in for ``pyodide.ffi.JsException``, the type Workers raises through."""
+
+
+def _ceiling_subtle(raises_at: int):
+    """A hermetic ``subtle`` that refuses PBKDF2 above ``raises_at`` iterations."""
+
+    class _Subtle:
+        calls: list[int] = []
+
+        async def importKey(self, fmt, data, algorithm, extractable, usages):
+            return object()
+
+        async def deriveBits(self, params, key, length):
+            iterations = params["iterations"]
+            self.calls.append(iterations)
+            if iterations > raises_at:
+                raise _JsException(
+                    "Pbkdf2 failed: iteration counts above "
+                    f"{raises_at} are not supported (requested {iterations})."
+                )
+            return hashlib.pbkdf2_hmac(
+                "sha512", b"ceiling-probe-password", bytes(range(16)), iterations, dklen=32
+            )
+
+    return _Subtle()
+
+
+def _ceiling_loader(subtle):
+    class _Uint8:
+        def __init__(self, data):
+            self._data = data
+
+        @classmethod
+        def new(cls, length_or_data):
+            return cls(bytes(length_or_data) if isinstance(length_or_data, bytes) else b"\0" * length_or_data)
+
+        def __setitem__(self, index, value):
+            pass
+
+        def to_py(self):
+            return self._data
+
+    return subtle, _Uint8, lambda value: value
+
+
+def probe_constant(name: str):
+    """Read one module-level constant out of the Workerd-only probe source."""
+    import ast
+
+    tree = ast.parse(COMBINED_PROBE.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if getattr(target, "id", None) == name:
+                    return ast.literal_eval(node.value)
+    raise AssertionError(f"{name} is not a module-level constant in the probe")
+
+
+def test_stored_password_cost_is_above_the_platform_ceiling() -> None:
+    """The single reason a 3.14 deploy cannot serve the existing members."""
+    from app.password_auth import PBKDF2_ITERATIONS
+
+    assert PBKDF2_ITERATIONS == 220_000
+    assert PBKDF2_ITERATIONS > WEBCRYPTO_ITERATION_CEILING
+    # If the stored cost ever drops to or below the ceiling the blocker this
+    # test documents is gone, and the 3.14 move becomes a fresh decision.
+
+
+def test_dispatch_fails_fast_when_the_platform_refuses_the_stored_cost() -> None:
+    """A refused KDF must raise, never be reported as a wrong password.
+
+    Mutation proof: if :func:`apbkdf2_sha512` swallowed the platform refusal
+    (returning empty bytes or falling through to a different cost), a member
+    would be locked out with HTTP 401 and the outage would be invisible.
+    """
+    import asyncio
+
+    from app.password_auth import PBKDF2_ITERATIONS
+
+    subtle = _ceiling_subtle(WEBCRYPTO_ITERATION_CEILING)
+    with pytest.raises(_JsException, match="iteration counts above"):
+        asyncio.run(
+            password_kdf.pbkdf2_sha512_webcrypto(
+                b"ceiling-probe-password",
+                bytes(range(16)),
+                PBKDF2_ITERATIONS,
+                32,
+                runtime_loader=lambda: _ceiling_loader(subtle),
+            )
+        )
+    assert subtle.calls == [PBKDF2_ITERATIONS]
+
+
+def test_verify_password_async_refusal_reaches_the_route(monkeypatch) -> None:
+    """The exact Production shape: verify raises, so the route answers HTTP 500.
+
+    On a runtime whose only KDF refuses the stored cost, the auth route cannot
+    tell a real credential from a platform refusal, so the refusal must reach
+    the caller. A change that turned this into ``return False`` would convert
+    the outage into a silent permanent lockout behind a 401 with no traceback.
+    """
+    import asyncio
+
+    from app import password_auth
+    from app.password_auth import PBKDF2_ITERATIONS
+
+    stored = password_auth.hash_password("ceiling-probe-password")
+    prefix, iterations_raw, salt_raw, digest_raw = stored.split("$", 3)
+    assert int(iterations_raw) == PBKDF2_ITERATIONS
+
+    subtle = _ceiling_subtle(WEBCRYPTO_ITERATION_CEILING)
+    monkeypatch.setattr(password_kdf, "FORCE_NON_C_PATH", True)
+    monkeypatch.setattr(
+        password_kdf, "_native_runtime", lambda: _ceiling_loader(subtle)
+    )
+    with pytest.raises(_JsException, match="not supported"):
+        asyncio.run(
+            password_auth.verify_password_async("ceiling-probe-password", stored)
+        )
+    assert subtle.calls == [PBKDF2_ITERATIONS]
+
+
+def test_probe_carries_an_authentic_legacy_credential_at_the_stored_cost() -> None:
+    """The cross-runtime vector must be a real credential, not a made-up string.
+
+    ``stored=`` only proves anything if this hash is one the 3.13 C path
+    actually produced for this password at the stored iteration count.
+    """
+    from app.password_auth import PBKDF2_ITERATIONS, verify_password
+
+    stored = probe_constant("LEGACY_PYODIDE_313_STORED_HASH")
+    password = probe_constant("LEGACY_PYODIDE_313_PASSWORD")
+    wrong = probe_constant("LEGACY_PYODIDE_313_WRONG_PASSWORD")
+
+    prefix, iterations_raw, _salt_raw, digest_raw = stored.split("$", 3)
+    assert prefix == "pbkdf2_sha512"
+    assert int(iterations_raw) == PBKDF2_ITERATIONS
+    assert len(base64.b64decode(digest_raw)) == 32
+    assert verify_password(password, stored) is True
+    assert verify_password(wrong, stored) is False
+
+
+def test_probe_digest_vectors_equal_the_published_openssl_values() -> None:
+    """The digest oracle is external, so a wrong literal fails here first."""
+    assert probe_constant("_SHA256_ABC") == hashlib.sha256(b"abc").hexdigest()
+    assert probe_constant("_SHA512_ABC") == hashlib.sha512(b"abc").hexdigest()
+    key, message = probe_constant("_HMAC_KEY"), probe_constant("_HMAC_MESSAGE")
+    assert probe_constant("_HMAC_SHA256_FIXED") == hmac.new(
+        key, message, hashlib.sha256
+    ).hexdigest()
+    assert probe_constant("_HMAC_SHA512_FIXED") == hmac.new(
+        key, message, hashlib.sha512
+    ).hexdigest()
+
+
+def test_lane_requires_the_stored_cost_not_just_the_low_iteration_bridge() -> None:
+    """The probe must report the ceiling, not hide it behind a low-iteration pass.
+
+    The 2,000-iteration bridge check is still there, and it passed the revision
+    #5736 had to roll back; the readiness line now has to say why a runtime that
+    passes it still cannot serve a member.
+    """
+    probe_source = COMBINED_PROBE.read_text(encoding="utf-8")
+    assert "_legacy_stored_credential_state" in probe_source
+    assert "_digest_surface_state" in probe_source
+    assert "stored={stored}" in probe_source
+    assert "digest={" in probe_source
+    # A blocked ceiling reports the raising type instead of a bare "missing".
+    assert 'f"blocked:{type(error).__name__}"' in probe_source
+
+    gate = SHARED_RUNTIME_SCRIPT.read_text(encoding="utf-8")
+    # The gate no longer rests on the sync C path being present, and the old
+    # single-token PASS marker is gone.
+    assert "B62_WORKER_PASSWORD_KDF=PASS" not in gate
+    assert "LEGACY_PYODIDE_313_STORED_HASH" in probe_source
+    assert "220000" in probe_source
