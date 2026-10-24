@@ -259,6 +259,7 @@ async def _kdf220k_state() -> dict:
     instead of masking the failure."""
     from app import password_kdf
     import app.password_auth as password_auth
+    import sys
 
     # The lane must see WHICH provider served the stored cost, not just that
     # some provider did. #5733 passed a low-iteration bridge and a local
@@ -281,6 +282,7 @@ async def _kdf220k_state() -> dict:
             }
         return {
             "state": "ok",
+            "runtime_minor": sys.version_info.minor,
             "iterations": password_auth.PBKDF2_ITERATIONS,
             "ms": int((time.perf_counter() - started) * 1000),
             "provider": provider,
@@ -290,6 +292,7 @@ async def _kdf220k_state() -> dict:
         if "iteration counts above 100000" in text:
             return {
                 "state": "webcrypto-iteration-cap",
+                "runtime_minor": sys.version_info.minor,
                 "iterations": password_auth.PBKDF2_ITERATIONS,
                 "provider": provider,
                 "error": text[:200],

@@ -118,10 +118,14 @@ for _ in $(seq 1 5); do
   sleep 1
 done
 echo "B62_WORKER_KDF220K=$KDF220K_BODY"
+# H1: local 3.14 Workerd can pass PBKDF2 220k that production edge rejects.
+# A local success is never evidence of production-edge compatibility.
+if [[ "$KDF220K_BODY" == *'"runtime_minor": 14'* || "$KDF220K_BODY" == *'"runtime_minor":14'* ]]; then
+  echo 'B62_WORKER_KDF220K_EDGE_COMPAT=UNVERIFIED_PY314' >&2
+  exit 1
+fi
 case "$KDF220K_BODY" in
-  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_KDF220K_STATE=PASS' ;;
-  *'"state": "webcrypto-iteration-cap"'*|*'"state":"webcrypto-iteration-cap"'*)
-    echo 'B62_WORKER_KDF220K_STATE=PASS_WEB314_ITERATION_CAP' ;;
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_KDF220K_STATE=PASS_PY313_LOCAL' ;;
   *) echo "B62_WORKER_KDF220K_STATE=FAIL body=$KDF220K_BODY" >&2; exit 1 ;;
 esac
 # #5479: the stored cost must be served by the provider this runtime is
