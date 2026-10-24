@@ -55,7 +55,11 @@ def test_sns_platform_switcher_is_skinned() -> None:
 
 
 def test_meeting_transcript_height_is_capped_for_the_first_screen() -> None:
-    assert "min-height: clamp(200px, 30vh, 330px)" in MEETING_CSS
+    # #5028: the idle transcript no longer over-expands the bright panel.
+    # The clamp stays the hard cap and its ceiling sits below the 330px it
+    # replaced, so the empty session keeps the export rows on the first screen.
+    assert "min-height: clamp(180px, 24vh, 260px)" in MEETING_CSS
+    assert "min-height: clamp(200px, 30vh, 330px)" not in MEETING_CSS
 
 
 def test_util_header_joins_the_shared_page_title_contract() -> None:

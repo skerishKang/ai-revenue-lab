@@ -123,3 +123,26 @@ test("a visitor may open the meeting page while the session guard stays on the c
   assert.match(capture, /driveText\.disabled = state\.active \|\| !text\.value\.trim\(\) \|\| !signedIn \|\| uploadInFlight/);
   assert.match(capture, /startButton\.disabled = !signedIn \|\| controller\.snapshot\(\)\.active/);
 });
+
+test("#5028: the meeting page nav lights up and its actions use the shared surface family", () => {
+  // The sidebar entry must highlight on this page the way calendar/library/
+  // claw already do; aria-current alone carried no visual state before.
+  assert.match(meetingCss, /#meetingNavButton\[aria-current="page"\]\s*\{[\s\S]*?background: rgba\(121, 188, 231, 0\.22\);/);
+  assert.match(meetingCss, /html\[data-theme="padiem-glass"\] #meetingNavButton\[aria-current="page"\]\s*\{/);
+  // The connectors/automation entries live in the shared standalone contract.
+  assert.match(views, /#connectorsNavButton\[aria-current="page"\],\s*\n#automationNavButton\[aria-current="page"\]\s*\{/);
+  assert.match(views, /html\[data-theme="padiem-glass"\] #connectorsNavButton\[aria-current="page"\],\s*\nhtml\[data-theme="padiem-glass"\] #automationNavButton\[aria-current="page"\]\s*\{/);
+  // Controls and exports share the bordered secondary chip family (util
+  // result actions) instead of a transparent ghost surface. The block is
+  // sliced so the negative assertion cannot reach later, legitimate
+  // `background: transparent` panel rules.
+  const actionsBlock = meetingCss.slice(
+    meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"),
+    meetingCss.indexOf("}", meetingCss.indexOf(".meeting-controls button, .meeting-exports button {"))
+  );
+  assert.match(actionsBlock, /background: var\(--panel, #ffffff\); color: var\(--text, #17202a\);/);
+  assert.doesNotMatch(actionsBlock, /background:\s*transparent/);
+  // The idle transcript area no longer over-expands the bright panel.
+  assert.match(meetingCss, /\.meeting-panel textarea \{[\s\S]*?min-height: clamp\(180px, 24vh, 260px\);/);
+  assert.doesNotMatch(meetingCss, /min-height: clamp\(200px, 30vh, 330px\)/);
+});
