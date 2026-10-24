@@ -453,20 +453,30 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
 
 
 async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
-    """Whether the resolved route's B14 catalog row declares native tools.
+    """Whether the resolved route's B14 registration declares native tools.
 
-    The catalog is the only authority: an unreadable catalog, a disabled row,
-    an owner-excluded route or a missing ``tools`` tag withholds the
-    declaration. This reads no model/provider policy and changes no route.
+    The registry is read through the existing normalized view
+    (``b14_model_choice_resolver`` — the same B14 owner-allowed/live-ready
+    catalog Claw and B66 consume), because B14's ``/api/pilot/models`` answers
+    with an object, not a list: the raw catalog source sees no rows and would
+    withhold the tools forever. An unreadable or unnormalized catalog withholds
+    the declaration, a disabled or owner-excluded route withholds it, and no
+    model/provider policy is copied here.
     """
-    source = getattr(request.app.state, "b14_catalog_source", None)
-    lister = getattr(source, "list_registered_models", None)
-    if not callable(lister):
-        return False
-    try:
-        rows = await lister()
-    except Exception:
-        return False
+    state = request.app.state
+    rows: Any = None
+    for name in ("b14_model_choice_resolver", "b14_catalog_source"):
+        source = getattr(state, name, None)
+        lister = getattr(source, "list_registered_models", None)
+        if not callable(lister):
+            continue
+        try:
+            candidate = await lister()
+        except Exception:
+            continue
+        if isinstance(candidate, list) and candidate:
+            rows = candidate
+            break
     if not isinstance(rows, list):
         return False
     for row in rows:
