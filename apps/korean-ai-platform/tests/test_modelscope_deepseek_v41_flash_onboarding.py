@@ -26,7 +26,7 @@ MID = "modelscope/deepseek-ai/DeepSeek-V4.1-Flash"
 UPSTREAM = "deepseek-ai/DeepSeek-V4.1-Flash"
 ORIGIN = "https://api-inference.modelscope.cn/v1"
 BINDING = "PADIEM_B14_CREDENTIAL_10"
-SECRET_NAME = "PADIEM_B14_CREDENTIAL_10"
+SECRET_NAME = "PADIEM_MODELSCOPE_API_KEY"
 SYNTHETIC_KEY = "synthetic-modelscope-private-token-no-real-api"
 
 
