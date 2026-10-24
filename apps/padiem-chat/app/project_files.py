@@ -346,7 +346,14 @@ class D1ProjectFileStore:
     ) -> ProjectFileRecord:
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
-        if media_type.startswith("extracted/"):
+        if media_type in IMAGE_PROJECT_FILE_MEDIA:
+            # #5728: photos carry no extractable text — the record keeps the
+            # declared image media type with an empty body. Routing them
+            # through validate_document_fields would 422 every upload on the
+            # real store (the in-memory fakes bypass this branch, which is
+            # how the merged slice shipped without seeing it).
+            document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
+        elif media_type.startswith("extracted/"):
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         else:
             document = validate_document_fields(name, media_type, text)
