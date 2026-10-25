@@ -502,6 +502,7 @@ async def test_a_user_dismissed_status_alert_is_never_reopened():
         created_at=alert.created_at,
         status=ClawAlertStatus.DISMISSED,
         visible_to_members=alert.visible_to_members,
+        linked_refs=alert.linked_refs,
     )
 
     second = await _project(store, rule=rule, row=row)
