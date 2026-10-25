@@ -42,7 +42,12 @@ CENTRAL CTO 작성, Owner 승인 범위. 추적: #5573. 2차 구현: #5689.
 | 3-C-1 — declared_plan | #5712 | 배포됨 |
 | 3-D-1 — 진행 이벤트 | #5717 | 미배포 |
 | 3-D-2 — Chat(진행 중) | 미등록 | 미배포 |
-| 3-C-2 — 키워드 게이트 제거 | #5751 | 미배포 |
+| 3-C-2 — 키워드 게이트 제거 | #5751·#5765 | 코드 조건 충족; 운영 수용은 아래 모든 연산 검증으로 판정 |
+
+### 3-C-2 조건 충족 상태·장부 통합 결정 (2026-10-26)
+
+- 키워드 없는 모델 도구 선택 진입(#5751), 서버 검증 PC 컨텍스트의 Engine 전달·진행 중계(#5765), declared_plan admit·ceiling 강제는 병합된 코드 조건이다. 일반 스트리밍·분류 호출 0·모델/tier/BYOK 보존을 계속 검증한다. 목록·읽기만으로 전체 운영 수용 완료를 선언하지 않으며 드라이브(c)까지 포함한다.
+- **장부 통합 결정: `claw_runs` 단일. 새 길(Chat 도구 턴)은 scope admit 시점에 `promote_chat_pc_stream_run`을 재사용해 멱등 등록한다.** 기존 드라이브 엔드포인트의 뒤늦은 승격도 이미 행이 있으면 무해하게 통과해야 한다. 목록·읽기·드라이브·Claw 화면·자동화가 같은 run 행을 본다는 계약 테스트를 구현 PR에 포함한다. 이는 결정이며 해당 수정의 병합·배포·운영 검증 완료 선언이 아니다.
 
 ## 4. 2차 수용 기준
 
@@ -53,7 +58,7 @@ CENTRAL CTO 작성, Owner 승인 범위. 추적: #5573. 2차 구현: #5689.
 5. 첫 B14 호출 중복 0. 검증 PC 계정의 일반 질문 → Engine 호출 0(스트리밍 경로 무변경).
 6. wire 양방향 호환(Engine 새/Chat 옛, Chat 새/Engine 옛). 새 필드는 optional.
 7. 별도 분류 호출 0(호출 카운트 테스트).
-8. 배포 후 실제 제품 1회: Broker 0·Mesh 전용 계정으로 목록(list 1/read 0)·읽기(read 1·SHA 일치).
+8. 배포 후 실제 제품: Broker 0·Mesh 전용 계정에서 연산별 각 1회 — (a) 목록: command(list) 1 / read 0 / done, (b) 읽기: read 1 / done / SHA 기준선 일치, **(c) 드라이브(`query_drives`): command 1 / read 0 / done, 검증된 드라이브 목록과 최종 답변 도착**. 각 연산의 실제 응답 모델·fallback_used·run ID·공용 장부/dispatch 연결을 기록한다. 거부 시 코드 포함 로그와 사용자 문장·최종 레코드로 종료하며 준비 중으로 남지 않는다.
 
 기준 1~7은 기존 테스트 파일에 코딩하고 PR 본문에 테스트 이름을 매핑한다. 기준 6은 Chat의 헤더 없는 레거시 경로와 Engine의 레거시 본문 바이트 불변을 각각 증명한다. 기준 8은 배포 후 실제 제품 증빙으로 기록한다. 범위 안내 메시지(`<run_id>_scope`)가 있는 대화에서도 #5567 pending-result GET 복구가 최종 답변을 반환하고 안내문을 결과로 오인하지 않아야 한다.
 
@@ -93,3 +98,12 @@ CENTRAL CTO 작성, Owner 승인 범위. 추적: #5573. 2차 구현: #5689.
 - SDK 일반 line 한도는 65,536 bytes, lifecycle event 한도는 128개다. text_delta/pc_progress/heartbeat는 lifecycle count에 포함하지 않는다. 정확한 prefix `{"ok":true,"orchestration":`인 단일 최종 line만 8 MiB 한도를 쓴다. 누적 스트림 byte 한도는 두지 않는다(`apps/padiem-ai-engine/clients/python/padiem_ai_engine_client/orchestration_stream.py:14`, `:96`, `:141`). 빈 line·잘못된 UTF-8/JSON·미지원 모양·잘린 스트림·terminal 뒤 데이터는 계약 오류다.
 - 정상 흐름은 최초 event → event/표시 레코드들 → orchestration → EOF다. 시작 후 오류는 error로 종료하며 성공 result를 만들어내지 않는다. progress의 result stage와 lifecycle terminal event만으로 완료를 확정하지 않는다. 소비 중단 시 SDK·bridge·relay가 각각 upstream을 닫는다.
 - **현재 오류 전달의 결함과 목표를 구분한다.** 위 error 행은 기준 SHA의 실제 코드다. Engine error의 code·message 보존 및 진짜 형식 오류만 invalid_engine_stream으로 분류하는 변경은 별도 오류 수정 PR 범위다. 또한 현재 relay 일반 예외(`apps/padiem-chat/app/claw_live_events.py:414`)는 고정 invalid_engine_stream/message만 보내며 예외 클래스·레코드 종류 cause를 싣지 않는다. 이 문서는 해당 수정이 완료되었다고 주장하지 않는다.
+
+
+## 7. 고정 마감 폐지 — Owner 결정 (2026-10-26 새벽)
+
+- 툴 사용 턴은 고정 마감으로 끊지 않는다. 하트비트와 PC 단계·경과 시간을 표시하고, 실제 실패·취소·권한 거부는 코드와 사용자 문장으로 알린다. 하트비트는 실행 성공이나 권한·진척의 증거가 아니다.
+- **예측 → 질문 → 진행 → 초과 알림**: 예상 소요 시간·분량을 안내하고 필요한 진행 선택을 질문한 뒤 진행 상태를 보여준다. 예측 시간을 넘으면 계속 진행 중임을 알리며, 초과 자체를 timeout/503·실패·자동 재실행으로 바꾸지 않는다.
+- 큰 파일은 승인된 경로·권한 안에서 조각 읽기를 사용하거나 컴2 실행 경로로 처리한다. 응답·메모리 한도를 이유로 전체 작업을 조용히 잘라내지 않으며 부분 결과와 남은 작업을 표시한다. 새 기기·경로 권한을 부여하지 않는다.
+- 목록은 페이지네이션과 페이지별 개수 상한으로 나누어 반환하고 다음 페이지·남은 항목을 표시한다. 개수 상한은 전체 목록의 누락을 숨기거나 완료로 오인시키는 총량 마감으로 사용하지 않는다. 구체 값과 wire 변경은 구현 PR에서 계약 테스트로 검증한다.
+- 이 절은 목표 정책이다. 현재 남아 있는 ToolSpec/idle 제한·Cloudflare 플랫폼 제한이 제거됐다고 주장하지 않으며, 적용 변경·실제 운영 증빙은 별도 구현 PR과 정식 게이트에 기록한다.
