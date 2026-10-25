@@ -359,8 +359,56 @@ Rules the validator enforces, and why each one is load-bearing:
   what the control-plane validator already does, so a command cannot execute with
   a receipt no validator admits.
 
-What this contract still needs before the lane can run in production, stated as
-the exact remaining seam rather than a general TODO:
+Route authority, as decided by CENTRAL and now enforced in code
+(`local_xlsx_python_copy_editor.py:245-252`): `classify_xlsx(local_only=True)`
+owns the route. REJECT is refused, `office_ephemeral_or_desktop_fallback` stays
+on the existing Office route, and only a Python-eligible workbook reaches the copy
+editor. Measured eligibility, reported separately as required:
+
+- openpyxl-authored workbooks — including plain ones with no merges — classify as
+  OFFICE_FALLBACK with `fidelity_sensitive_workbook_features`, because openpyxl
+  always writes `xl/styles.xml` and a theme, gives cells an `s` index and writes
+  `pageMargins`. Real Excel files add the same elements.
+- `BLOCKED_XML_TAGS` treats `f`, `mergeCells`, `pageMargins`, `pageSetup`,
+  `hyperlinks`, `autoFilter`, `sheetProtection`, `definedNames` and the rest as
+  fidelity-sensitive, and `xl/calcchain.xml`, `xl/styles.xml`, `xl/theme/theme1.xml`
+  as advanced parts by name. So the Python-eligible structure is genuinely narrow:
+  inline/numeric cells only, no styles part, no theme, no formula.
+- Consequence: a customer's ordinary .xlsx will be routed to the Office path. The
+  Python copy editor is a narrow fast path for simple generated sheets, and the
+  synthetic openpyxl runs recorded earlier in this document prove editor and
+  digest behaviour, not eligibility for the production Python route.
+- Refusing on the classifier is not redundant with the editor's own part and
+  formula checks: those stay as defence in depth, and the targeted tests pin that
+  a styled workbook the editor *could* copy byte-wise is still refused.
+
+The attestation order this contract forces (found while building the consumer,
+and it changes who must sign the write half):
+
+- `file_request_fingerprint` and `windows_file_tool_invocation` both bind
+  `content_bytes` and `content_sha256` (`windows_local_filesystem.py:165-199`).
+  The write half's `request_fingerprint` and `pause.invocation_sha256` therefore
+  cannot be computed until the revised bytes exist.
+- The revised bytes exist only after the PC has read the approved workcopy and
+  applied the reviewed edits. A browser cannot know the result digest of a file
+  that lives on a PC it has not sent yet.
+- So the accepted envelope's write half is attestable only by a **PC-side
+  production authority after the read**, not by the web in advance. The consumer
+  must therefore resolve the WRITE evidence lazily — the existing
+  `/v1/broker/p01-evidence` loopback route, keyed by the exact
+  `request_fingerprint` the lane computes, is the one that already does this
+  (browser.open and the resident execution lane both use it that way) — and the
+  READ half can still be delivered with the command, because a read binds no
+  content.
+- `TrustedP01XlsxRevisionPlan` as built in #5835 carries both halves up front,
+  which is exactly right for a test-owned producer and wrong for a lazy WRITE.
+  That is a change to my own modules, not to the accepted wire format: the plan
+  keeps the read half eagerly and lets the bridge serve the write evidence when
+  the P01 port asks for it by fingerprint, one-shot, after verifying the
+  recomputed invocation digest equals what the authority attested.
+
+Producer notes stay as recorded above, with the read half delivered through the
+existing command-material path and the write half attested locally:
 
 1. **Producer.** Nothing mints this format yet. The mint belongs on the Chat side
    beside `connector_txt_approval_material.py`, and the control plane must admit
