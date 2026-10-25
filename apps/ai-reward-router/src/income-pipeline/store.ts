@@ -3,20 +3,27 @@ import type { UserIncomeRecord } from './domain.js';
 /**
  * Repository interface for user income records.
  * In-memory implementation for development/testing. Production implementation
- * will use D1/KV after all-clear. The interface is the contract that both
- * implementations must satisfy.
+ * uses the D1 adapter (see d1-user-income-repository.ts). The interface is the
+ * contract that both implementations must satisfy.
+ *
+ * There is deliberately NO global "delete everything" operation on this
+ * contract: production income records are per-user data, and no code path or
+ * operator convenience may wipe every user's records at once. Test fixtures
+ * reset their own test-only stores.
  */
 export interface UserIncomeRepository {
   getByUser(userId: string): Promise<readonly UserIncomeRecord[]>;
   save(record: UserIncomeRecord): Promise<void>;
   delete(userId: string, recordId: string): Promise<boolean>;
-  clear(): Promise<void>;
 }
 
 /**
  * In-memory repository (PROTOTYPE — NOT durable persistence).
  * Records are lost on process restart or Worker isolate change.
- * Labeled as prototype until D1/KV binding is available (all-clear required).
+ * Labeled as prototype until the D1 binding is available (all-clear required).
+ * `clear()` exists on this class only so tests can reset the prototype store;
+ * it is NOT part of the `UserIncomeRepository` contract and has no D1
+ * counterpart.
  */
 export class InMemoryUserIncomeRepository implements UserIncomeRepository {
   private readonly store = new Map<string, UserIncomeRecord[]>();
@@ -98,11 +105,14 @@ export function deleteUserRecord(userId: string, recordId: string): boolean {
   return true;
 }
 
+// Test-only reset for the prototype in-memory store. The production D1
+// repository deliberately exposes no global delete path: nothing can wipe
+// every user's income records at once.
 export function clearStore(): void {
-  const repo = repository as InMemoryUserIncomeRepository;
-  const store = (repo as any)._syncStore as Map<string, UserIncomeRecord[]>;
-  store.clear();
-  repository.clear().catch(() => {});
+  const store = (repository as InMemoryUserIncomeRepository)._syncStore as
+    | Map<string, UserIncomeRecord[]>
+    | undefined;
+  store?.clear();
 }
 
 export function getStoreSize(): number {

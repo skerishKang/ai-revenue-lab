@@ -1,5 +1,10 @@
 # Migration boundary
 
+This directory holds two separated dialect subtrees. They are never mixed:
+
+- Top level (`*.sql`): the product-local **PostgreSQL** persistence contract (below).
+- `d1/`: the product's **Cloudflare D1/SQLite** subtree, applied only by the dispatch-only provision gate (`.github/workflows/b64-d1-provision-gate.yml`, issue #987). Application code never executes this DDL at runtime, and the gate is the only activation path — adding the `B64_INCOME_DB` binding in `wrangler.jsonc` activates nothing by itself.
+
 W2 introduces the first product-local PostgreSQL persistence contract for generalized **EARNING OPPORTUNITY** trust, inventory, evidence, versioning, and review data.
 
 `0001_w2_generalized_opportunity.sql` persists the accepted W1 source/policy/gate semantics and adds immutable source snapshots, optional merchants, stable opportunity identities (`offers`), immutable opportunity versions, field-level evidence, requirements, generalized compensation components, windows, material-change history, and auditable review records.

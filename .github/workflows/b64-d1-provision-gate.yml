@@ -1,0 +1,122 @@
+name: B64 Income D1 Provision Gate
+
+# Issue #987 — provisions the Cloudflare D1 database `padiem-b64` and applies
+# the user income pipeline migration. Dispatch-only by contract: an ordinary
+# pull request can never trigger it. This workflow does NOT edit
+# wrangler.jsonc and does NOT deploy the worker. It prints the real database
+# id so an operator can replace the placeholder `database_id` in
+# apps/ai-reward-router/wrangler.jsonc before any deployment binds it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to provision from'
+        required: true
+      confirmation:
+        description: 'Type PROVISION_B64_INCOME_D1 to authorize provisioning'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  provision-d1:
+    if: github.event.inputs.confirmation == 'PROVISION_B64_INCOME_D1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Create or reuse D1 database (idempotent)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 list --json > /tmp/d1-list.json
+          DB_ID=$(python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-list.json'))
+          hit = [r for r in rows if r.get('name') == 'padiem-b64']
+          print(hit[0]['uuid'] if hit else '')
+          PY
+          )
+          if [ -n "$DB_ID" ]; then
+            echo "D1_CREATE=SKIPPED_ALREADY_EXISTS"
+          else
+            npx --yes wrangler@4 d1 create padiem-b64
+            npx --yes wrangler@4 d1 list --json > /tmp/d1-list-after-create.json
+            DB_ID=$(python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-list-after-create.json'))
+          hit = [r for r in rows if r.get('name') == 'padiem-b64']
+          print(hit[0]['uuid'] if hit else '')
+          PY
+            )
+            test -n "$DB_ID"
+            echo "D1_CREATE=PASS"
+          fi
+          echo "D1_DATABASE_ID=$DB_ID"
+          echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
+
+      - name: Apply migration 0001_b64_user_income to remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # 0001 is CREATE TABLE / CREATE INDEX IF NOT EXISTS and replay-safe.
+          npx --yes wrangler@4 d1 execute padiem-b64 --remote \
+            --file=apps/ai-reward-router/migrations/d1/0001_b64_user_income.sql
+          echo 'D1_MIGRATION_0001=APPLIED_OR_REPLAY_SAFE'
+          echo 'D1_MIGRATIONS=0001'
+
+      - name: Assert schema table and index exist
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute padiem-b64 --remote --json \
+            --command "SELECT name FROM sqlite_master WHERE type IN ('table','index')" > /tmp/d1-tables.json
+          python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-tables.json'))
+          results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
+          names = {r['name'] for r in results}
+          for required in ('b64_user_income', 'idx_b64_user_income_user_updated'):
+              assert required in names, f'missing schema object: {required} (have {sorted(names)})'
+          print('D1_TABLE_ASSERT=PASS')
+          print('D1_INDEX_ASSERT=PASS')
+          # Schema object names only; no row content, no user data is read or emitted.
+          PY
+
+      - name: Final evidence
+        run: |
+          echo 'D1_PROVISION=PASS'
+          echo "D1_DATABASE_ID=$DB_ID"
+          echo 'D1_MIGRATIONS=0001'
+          echo 'D1_TABLE_ASSERT=PASS'
+          echo 'D1_INDEX_ASSERT=PASS'
+          echo 'WORKER_DEPLOYED=0'
+          echo 'WRANGLER_JSONC_MODIFIED=0'
+          echo 'OPERATOR_ACTION=replace the placeholder database_id in apps/ai-reward-router/wrangler.jsonc with the real id above before any deployment'

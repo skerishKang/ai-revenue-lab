@@ -3,5 +3,34 @@
   "main": "dist/src/worker.js",
   "compatibility_date": "2026-08-30",
   "workers_dev": true,
-  "preview_urls": true
+  "preview_urls": true,
+  // Issue #987: canonical-session liveness relay. Binding target and call
+  // pattern reuse the only existing second-product session bridge in this
+  // repository (reference/business-66-padiem-quote-v1/_worker.js): the cookie
+  // header is forwarded to the chat product's revocation-aware
+  // GET /api/auth/status through this binding. Merely adding the binding does
+  // NOT change chat's own authority or routes.
+  "services": [
+    {
+      "binding": "PADIEM_CHAT_SERVICE",
+      "service": "padiem-chat"
+    }
+  ],
+  // Issue #987: durable storage for the user income pipeline.
+  // The `padiem-b64` database is created and migrations/d1/*.sql applied ONLY
+  // by the dispatch-only B64 D1 provision gate
+  // (.github/workflows/b64-d1-provision-gate.yml); app code never provisions
+  // schema and no migration has been executed yet. `database_id` below is a
+  // PLACEHOLDER: the provision gate prints the real id it created/reused, and
+  // an operator must replace this value with that id before the Worker can
+  // bind the database at deployment time. Merely adding the binding does NOT
+  // activate storage permissions or copy any data.
+  "d1_databases": [
+    {
+      "binding": "B64_INCOME_DB",
+      "database_name": "padiem-b64",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations/d1"
+    }
+  ]
 }

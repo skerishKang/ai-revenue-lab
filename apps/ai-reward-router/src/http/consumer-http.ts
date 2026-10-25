@@ -18,6 +18,7 @@ import {
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
 import { defaultAuthResolver, type AuthResolver, type AuthResult } from '../income-pipeline/auth.js';
+import { PADIEM_SESSION_COOKIE_NAME } from '../income-pipeline/padiem-session-auth.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
@@ -32,8 +33,21 @@ export type ConsumerCandidateLoader = (
 export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
   readonly resolveAuth?: AuthResolver;
-  /** Server-owned, per-deployment storage dependency; default remains prototype. */
+  /**
+   * Server-owned, per-deployment storage dependency; default remains prototype.
+   * Production wiring must inject a durable repository (D1); the in-memory
+   * prototype default exists for tests and local prototypes only.
+   */
   readonly incomeRepository?: UserIncomeRepository;
+  /**
+   * Exact reviewed browser origin (scheme + host + port) cookie-authenticated
+   * pipeline mutations must come from, mirroring the repository's single
+   * reviewed origin-isolation policy (#3476) for the `padiem_session` cookie.
+   * Derived from server configuration only — never from the request's own
+   * Host/Origin. When a pipeline mutation carries the session cookie and this
+   * is not configured, the request is denied 503 (fail closed).
+   */
+  readonly expectedBrowserOrigin?: string | undefined;
   /**
    * Optional public-supply lane: manually curated, publicly verified opportunities.
    * The public lane never grants provider authority; it only links users to
@@ -111,6 +125,26 @@ function supplyUnavailable(request: Request): Response {
       'retry-after': '60',
     },
   });
+}
+
+function carriesPadiemSessionCookie(cookieHeader: string): boolean {
+  for (const part of cookieHeader.split(';')) {
+    const separator = part.indexOf('=');
+    const name = separator < 0 ? part : part.slice(0, separator);
+    if (name.trim() === PADIEM_SESSION_COOKIE_NAME) return true;
+  }
+  return false;
+}
+
+function jsonErrorResponse(request: Request, status: number, error: string): Response {
+  return responseForMethod(request, JSON.stringify({ error }), {
+    status,
+    headers: { 'content-type': 'application/json; charset=utf-8' },
+  });
+}
+
+function storageUnavailableResponse(request: Request): Response {
+  return jsonErrorResponse(request, 503, 'storage_unavailable');
 }
 
 /**
@@ -214,8 +248,31 @@ export function createConsumerHttpHandler(
     }
 
     if (url.pathname === '/pipeline' || url.pathname === '/income') {
+      // Same-origin guard for cookie-authenticated mutations (#3476 policy,
+      // mirrored from apps/padiem-chat/app/same_origin_guard.py): SameSite=Lax
+      // is a site boundary, not an origin boundary, so a request carrying the
+      // `padiem_session` cookie must present an Origin header exactly equal to
+      // the reviewed deployment origin. Missing Origin is denied (fail
+      // closed); an unconfigured expected origin denies everything with 503
+      // rather than weakening to "allow without expectation". Requests without
+      // the session cookie carry no ambient browser authority, are not CSRF
+      // subjects, and keep their existing auth error semantics (401 below).
+      if (request.method === 'POST') {
+        const cookieHeader = request.headers.get('cookie');
+        if (cookieHeader !== null && carriesPadiemSessionCookie(cookieHeader)) {
+          const expectedOrigin = dependencies.expectedBrowserOrigin;
+          if (!expectedOrigin) {
+            return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
+          }
+          const origin = request.headers.get('origin');
+          if (!origin || origin !== expectedOrigin) {
+            return jsonErrorResponse(request, 403, 'origin_rejected');
+          }
+        }
+      }
+
       const resolveAuth = dependencies.resolveAuth ?? defaultAuthResolver;
-      const auth = resolveAuth(request);
+      const auth = await resolveAuth(request);
       const userId = auth.authenticated ? auth.userId : null;
 
       // Handle POST for CRUD operations
@@ -266,8 +323,15 @@ export function createConsumerHttpHandler(
             });
           }
           const repo = dependencies.incomeRepository ?? getRepository();
-          // Guard: if updating, verify ownership
-          const existingRecords = await repo.getByUser(userId);
+          // Guard: if updating, verify ownership. Storage failures fail
+          // closed with 503 — never silently degraded to empty data or the
+          // non-durable prototype.
+          let existingRecords: readonly UserIncomeRecord[];
+          try {
+            existingRecords = await repo.getByUser(userId);
+          } catch {
+            return storageUnavailableResponse(request);
+          }
           const existingRecord = existingRecords.find((r) => r.id === recordId);
           if (existingRecord && existingRecord.userId !== userId) {
             return responseForMethod(request, JSON.stringify({ error: 'forbidden' }), {
@@ -285,7 +349,11 @@ export function createConsumerHttpHandler(
           if (existingRecord) {
             record = { ...record, createdAt: existingRecord.createdAt };
           }
-          await repo.save(record);
+          try {
+            await repo.save(record);
+          } catch {
+            return storageUnavailableResponse(request);
+          }
           return new Response(null, {
             status: 303,
             headers: { location: '/pipeline', ...Object.fromEntries(withSecurityHeaders(new Headers()).entries()) },
@@ -295,15 +363,21 @@ export function createConsumerHttpHandler(
           const recordId = formData.get('recordId')?.toString();
           if (recordId) {
             const repo = dependencies.incomeRepository ?? getRepository();
-            const existingRecords = await repo.getByUser(userId);
+            let existingRecords: readonly UserIncomeRecord[];
+            try {
+              existingRecords = await repo.getByUser(userId);
+            } catch {
+              return storageUnavailableResponse(request);
+            }
             const existingRecord = existingRecords.find((r) => r.id === recordId);
             if (existingRecord && existingRecord.userId !== userId) {
-              return responseForMethod(request, JSON.stringify({ error: 'forbidden' }), {
-                status: 403,
-                headers: { 'content-type': 'application/json; charset=utf-8' },
-              });
+              return jsonErrorResponse(request, 403, 'forbidden');
             }
-            await repo.delete(userId, recordId);
+            try {
+              await repo.delete(userId, recordId);
+            } catch {
+              return storageUnavailableResponse(request);
+            }
           }
           return new Response(null, {
             status: 303,
@@ -317,7 +391,11 @@ export function createConsumerHttpHandler(
       let records: readonly UserIncomeRecord[] = [];
       if (userId) {
         const repo = dependencies.incomeRepository ?? getRepository();
-        records = await repo.getByUser(userId);
+        try {
+          records = await repo.getByUser(userId);
+        } catch {
+          return storageUnavailableResponse(request);
+        }
       }
       const filterStatus = url.searchParams.get('status') as IncomePipelineStatus | null;
       const filterVendor = url.searchParams.get('vendor');
