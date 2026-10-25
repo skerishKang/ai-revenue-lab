@@ -1,7 +1,7 @@
 """Read-only observer: no execution deadlines, cancellation or value logging."""
 import asyncio
 import pytest
-from padiem_ai_core import _pc_core_invoke as diag
+import padiem_ai_core._pc_core_invoke as diag
 
 TOOL = "claw.pc.query_drives"
 
