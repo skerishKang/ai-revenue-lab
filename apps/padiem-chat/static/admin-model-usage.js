@@ -462,7 +462,7 @@
   async function boot() {
     const { status, payload } = await getJSON(SESSION_PATH);
     const caps = payload && payload.capabilities;
-    if (!payload || payload.authenticated !== true || caps && caps.model_usage_admin !== true) {
+    if (!payload || payload.authenticated !== true || !caps || caps.central_model_admin !== true) {
       $("gatePanel").hidden = false;
       setStatus("roleBadge", status === 401 ? "미인증" : "권한 없음");
       setStatus("storageStatus", "권한 확인 실패");

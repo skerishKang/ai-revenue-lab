@@ -351,20 +351,17 @@ class CloudflareB14ServiceTransport:
         proof: that API refuses an unsigned caller by contract, so an
         un-attested GET would only ever come back 401.
         """
-        ledger_read = path.startswith(self.LEDGER_READ_PREFIXES)
+        ledger_read = path.startswith(self.LEDGER_READ_PREFIXES) and ".." not in path
         if not ledger_read and path not in (
             "/api/pilot/models",
             "/api/pilot/provider-readiness",
         ):
             raise ValueError("unsupported B14 model-authority read endpoint")
-        headers = (
-            service_proof_headers(self.proof_secret, b"")
-            if ledger_read else None
-        )
         request = Request(
             "https://b14.internal" + path,
-            method="GET",
-            headers=headers,
+            **({"method": "GET",
+                "headers": service_proof_headers(self.proof_secret, b"")}
+               if ledger_read else {"method": "GET"}),
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)

@@ -14,6 +14,8 @@ import asyncio
 import json
 from urllib.parse import parse_qsl, quote
 
+import pytest
+
 from starlette.datastructures import State
 from starlette.requests import Request
 
@@ -346,9 +348,13 @@ def test_the_routes_and_the_hub_card_are_wired_to_the_existing_authority():
     ):
         assert f'Route("{path}", {handler}, methods=["GET"])' in factory
     capabilities = (root / "app" / "platform_admin_routes.py").read_text(encoding="utf-8")
-    assert '"model_usage_admin": role in ROLES' in capabilities
+    # The screen answers to the authority model management already uses. Minting a
+    # second capability would need its own grant path and could drift from it.
+    assert '"model_usage_admin"' not in capabilities
     hub = (root / "static" / "admin.js").read_text(encoding="utf-8")
-    assert "./admin/model-usage" in hub and "caps.model_usage_admin === true" in hub
+    assert '"./admin/model-usage"' in hub
+    usage_card = hub.split('key: "model-usage"', 1)[1].split("},", 1)[0]
+    assert "caps.central_model_admin === true" in usage_card
     page = (root / "static" / "admin" / "model-usage.html").read_text(encoding="utf-8")
     screen = (root / "static" / "admin-model-usage.js").read_text(encoding="utf-8")
     # Same conventions as the rest of the console: no second login, no form,
@@ -362,3 +368,83 @@ def test_the_routes_and_the_hub_card_are_wired_to_the_existing_authority():
     # Nothing in the console asks the browser for a service proof or a secret.
     for forbidden in ("proof", "secret", "HMAC"):
         assert forbidden not in screen.lower()
+
+
+def test_the_worker_transport_widens_only_by_the_ledger_prefix():
+    """Run the real transport class against a fake binding, no network.
+
+    The console hands this class a path assembled from its own constants, so this
+    prefix rule is the only thing between an owner screen and an arbitrary signed
+    read of the B14 Worker. The model-authority reads are re-checked here because
+    they must keep the exact unsigned shape they had before the ledger joined.
+    """
+    import ast
+    from pathlib import Path
+
+    worker_path = Path(__file__).resolve().parents[1] / "worker.py"
+    tree = ast.parse(worker_path.read_text("utf-8"))
+    node = next(
+        item for item in tree.body
+        if isinstance(item, ast.ClassDef)
+        and item.name == "CloudflareB14ServiceTransport"
+    )
+    captured = []
+
+    class Request:
+        def __init__(self, url, **kwargs):
+            captured.append((url, kwargs))
+            self.js_object = self
+
+    class Response:
+        status = 200
+
+    class Binding:
+        async def fetch(self, request):
+            return Response()
+
+    async def read_body(response, *, max_bytes):
+        return b"{}"
+
+    class TooLarge(Exception):
+        pass
+
+    class BadRead(Exception):
+        pass
+
+    module = ast.Module(body=[
+        ast.ImportFrom(module="__future__", names=[
+            ast.alias(name="annotations")], level=0),
+        node,
+    ], type_ignores=[])
+    ns = {
+        "Request": Request,
+        "json": json,
+        "MAX_B14_RESPONSE_BYTES": 1024 * 1024,
+        "read_bounded_service_binding_body": read_body,
+        "ServiceBindingResponseTooLarge": TooLarge,
+        "ServiceBindingResponseError": BadRead,
+        "service_proof_headers": lambda secret, body: {"x-padiem-b14-proof": "signed"},
+    }
+    exec(compile(ast.fix_missing_locations(module), str(worker_path), "exec"), ns)
+    transport = ns["CloudflareB14ServiceTransport"](Binding(), "the-secret")
+
+    detail = f"{LEDGER_LIST_PATH}/{LOG_ID}"
+    accepted = (LEDGER_LIST_PATH, detail, LEDGER_AGGREGATE_PATH, "/api/pilot/models")
+
+    async def scenario():
+        for path in accepted:
+            assert await transport.get_json(path) == (200, b"{}")
+        for smuggled in (
+            f"{LEDGER_LIST_PATH}/../model-registration",
+            "/api/pilot/v1/admin",
+            "https://attacker.invalid/api/pilot/v1/admin/model-calls",
+            "/",
+        ):
+            with pytest.raises(ValueError):
+                await transport.get_json(smuggled)
+    asyncio.run(scenario())
+
+    assert [url for url, _ in captured] == ["https://b14.internal" + p for p in accepted]
+    for url, kwargs in captured[:3]:
+        assert kwargs["headers"] == {"x-padiem-b14-proof": "signed"}, url
+    assert captured[3][1] == {"method": "GET"}
