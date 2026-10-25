@@ -3,6 +3,7 @@ import {
   buildAdClickFirstTodayRoute,
   buildAdClickFirstBrowse,
   buildAdClickFirstOpportunityDetail,
+  type BuildAdClickFirstBrowseOptions,
   type ConsumerBrowseCategory,
 } from '../ad-click-first/consumer-home.js';
 import type { AdClickConsumerCandidate } from '../ad-click-first/consumer-card.js';
@@ -12,6 +13,8 @@ import {
   renderAdClickFirstBrowseWeb,
   renderAdClickFirstOpportunityDetailWeb,
 } from '../ad-click-first/consumer-web.js';
+import type { PublicOpportunity, PublicOpportunityLoader } from '../public-supply/domain.js';
+import { loadVerifiedPublicOpportunities } from '../public-supply/verified-public-opportunities.js';
 
 export type ConsumerCandidateLoader = (
   request: Request,
@@ -19,6 +22,12 @@ export type ConsumerCandidateLoader = (
 
 export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
+  /**
+   * Optional public-supply lane: manually curated, publicly verified opportunities.
+   * The public lane never grants provider authority; it only links users to
+   * official provider pages and pays PADIEM nothing.
+   */
+  readonly loadPublicOpportunities?: PublicOpportunityLoader;
 }
 
 const SECURITY_HEADERS = Object.freeze({
@@ -127,8 +136,20 @@ export function createConsumerHttpHandler(
       return supplyUnavailable(request);
     }
 
+    // The public lane degrades to an honest empty state when its loader fails;
+    // the ad-click lane above already failed closed with 503.
+    const publicLoader: PublicOpportunityLoader | undefined = dependencies.loadPublicOpportunities;
+    let publicOpportunities: readonly PublicOpportunity[] = [];
+    if (publicLoader) {
+      try {
+        publicOpportunities = await publicLoader(request);
+      } catch {
+        publicOpportunities = [];
+      }
+    }
+
     if (url.pathname === '/today') {
-      const todayViewModel = buildAdClickFirstTodayRoute(candidates);
+      const todayViewModel = buildAdClickFirstTodayRoute(candidates, { publicOpportunities });
       const html = renderAdClickFirstTodayRouteWeb(todayViewModel);
       return responseForMethod(request, html, {
         status: 200,
@@ -143,7 +164,8 @@ export function createConsumerHttpHandler(
       const query = url.searchParams.get('q') ?? '';
       const maxRaw = url.searchParams.get('maxSeconds');
       const maxSeconds = maxRaw && Number.isFinite(Number(maxRaw)) && Number(maxRaw) > 0 ? Number(maxRaw) : null;
-      const browseViewModel = buildAdClickFirstBrowse(candidates, { category, query, maxSeconds });
+      const browseOptions: BuildAdClickFirstBrowseOptions = { category, query, maxSeconds, publicOpportunities };
+      const browseViewModel = buildAdClickFirstBrowse(candidates, browseOptions);
       const html = renderAdClickFirstBrowseWeb(browseViewModel);
       return responseForMethod(request, html, {
         status: 200,
@@ -156,7 +178,7 @@ export function createConsumerHttpHandler(
       if (!id) {
         return notFound(request);
       }
-      const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id);
+      const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id, { publicOpportunities });
       if (!detailViewModel.found) {
         return responseForMethod(request, renderAdClickFirstOpportunityDetailWeb(detailViewModel), {
           status: 404,
@@ -182,4 +204,17 @@ export function createConsumerHttpHandler(
 
 export function createEmptySupplyConsumerHttpHandler(): (request: Request) => Promise<Response> {
   return createConsumerHttpHandler({ loadCandidates: () => [] });
+}
+
+/**
+ * Public-supply consumer boundary: the ad-click lane stays honest zero-supply
+ * (no provider approval), while verified, manually curated public opportunities
+ * are served on /browse, /today and /detail. This does not grant any B2B
+ * provider authority.
+ */
+export function createPublicSupplyConsumerHttpHandler(): (request: Request) => Promise<Response> {
+  return createConsumerHttpHandler({
+    loadCandidates: () => [],
+    loadPublicOpportunities: loadVerifiedPublicOpportunities,
+  });
 }

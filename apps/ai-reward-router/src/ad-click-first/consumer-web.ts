@@ -5,6 +5,7 @@ import type {
   AdClickFirstOpportunityDetailViewModel,
 } from './consumer-home.js';
 import type { AdClickConsumerCard } from './consumer-card.js';
+import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
 
 const ACTION_LABELS: Readonly<Record<AdClickConsumerCard['actionKind'], string>> = Object.freeze({
   AD_VIEW: '광고 보기',
@@ -101,6 +102,87 @@ function renderCard(card: AdClickConsumerCard): string | null {
     <a class="reward-cta" href="${href}" target="_blank" rel="noopener noreferrer nofollow">적립하러 가기<span aria-hidden="true"> ↗</span></a>
     <a class="detail-link" href="/detail?id=${escapeHtml(card.id)}">자세히 보기<span aria-hidden="true"> →</span></a>
   </article>`;
+}
+
+function renderPublicOpportunityCard(card: PublicOpportunityCard): string | null {
+  const href = safeOutboundHref(card.applyUrl);
+  if (!href) return null;
+  const rewardNote = card.rewardConfirmed ? card.rewardBasisLabel : `${card.rewardBasisLabel} · 미확인`;
+  return `<article class="reward-card public-card" data-card-id="${escapeHtml(card.id)}">
+    <div class="reward-card__topline">
+      <span class="action-chip action-chip--public">공개 기회</span>
+      <span class="freshness">${formatFreshness(card.verifiedAt)}</span>
+    </div>
+    <h3 title="${escapeHtml(card.titleKo)}">${escapeHtml(card.titleKo)}</h3>
+    <div class="reward-card__reward">
+      <strong>${escapeHtml(card.rewardLabel)}</strong>
+      <span>${escapeHtml(rewardNote)}</span>
+    </div>
+    <p class="condition" title="${escapeHtml(card.country)}">${escapeHtml(card.vendor)} · ${escapeHtml(card.country)}</p>
+    <div class="reward-card__meta" aria-label="참여 정보">
+      <span class="tier-chip${card.todayTier === 'IMMEDIATE' ? ' tier-chip--immediate' : ' tier-chip--screening'}">${escapeHtml(card.tierLabel)}</span>
+      <span aria-hidden="true" class="meta-dot">·</span>
+      <span>사용자 가치 ${card.userValueScore}/10</span>
+    </div>
+    <a class="reward-cta" href="${href}" target="_blank" rel="noopener noreferrer nofollow">공식 페이지에서 신청하기<span aria-hidden="true"> ↗</span></a>
+    <a class="detail-link" href="/detail?id=${escapeHtml(card.id)}">자세히 보기<span aria-hidden="true"> →</span></a>
+  </article>`;
+}
+
+function renderPublicCardGrid(cards: readonly PublicOpportunityCard[]): string {
+  return cards.map(renderPublicOpportunityCard).filter((card): card is string => card !== null).join('\n');
+}
+
+function renderPublicDetail(detail: PublicOpportunityDetail): string {
+  const { card } = detail;
+  const rewardNote = card.rewardConfirmed ? card.rewardBasisLabel : `${card.rewardBasisLabel} · 미확인`;
+  const applyHref = safeOutboundHref(card.applyUrl);
+  const sourceHref = safeOutboundHref(detail.sourceUrl);
+  return `<a class="back-link" href="/browse">← 수익 기회 목록</a>
+  <section id="public-opportunity-detail" aria-labelledby="detail-title">
+    <div class="detail-card">
+      <p class="eyebrow detail-card__eyebrow">공개 기회 상세</p>
+      <h2 id="detail-title">${escapeHtml(card.titleKo)}</h2>
+      <div class="detail-reward">
+        <strong>${escapeHtml(card.rewardLabel)}</strong>
+        <span>${escapeHtml(rewardNote)}</span>
+      </div>
+      <div class="detail-facts">
+        <div class="detail-fact">
+          <span class="detail-fact__label">신청 방법</span>
+          <span class="detail-fact__value">${escapeHtml(detail.participationMethod)}</span>
+        </div>
+        <div class="detail-fact">
+          <span class="detail-fact__label">참여 자격·조건</span>
+          <span class="detail-fact__value">${escapeHtml(detail.qualifications)}</span>
+        </div>
+        <div class="detail-fact">
+          <span class="detail-fact__label">지급 주체</span>
+          <span class="detail-fact__value">${escapeHtml(detail.payer)}</span>
+        </div>
+        <div class="detail-fact">
+          <span class="detail-fact__label">국가·지역</span>
+          <span class="detail-fact__value">${escapeHtml(card.country)}${card.koreaStatus === 'CONFIRMED' ? ' · 한국 참여 확인' : ' · 한국 지원 미확인'}</span>
+        </div>
+        <div class="detail-fact">
+          <span class="detail-fact__label">참여 단계</span>
+          <span class="detail-fact__value">${escapeHtml(card.tierLabel)}</span>
+        </div>
+        <div class="detail-fact">
+          <span class="detail-fact__label">PADIEM 수익</span>
+          <span class="detail-fact__value">0 (이용자 가치 제공용 — PADIEM 제휴 수익 없음)</span>
+        </div>
+      </div>
+      <div class="detail-meta">
+        <span>공식 출처${sourceHref ? ` · <a href="${sourceHref}" target="_blank" rel="noopener noreferrer nofollow">원본 링크</a>` : ''}</span>
+        <span>확인 · ${formatVerifiedAtKst(card.verifiedAt)}</span>
+      </div>
+      <div class="detail-actions">
+        ${applyHref ? `<a class="reward-cta detail-cta" href="${applyHref}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 신청하기<span aria-hidden="true"> ↗</span></a>` : ''}
+        <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
+      </div>
+    </div>
+  </section>`;
 }
 
 function renderEmptyState(): string {
@@ -250,6 +332,11 @@ function renderShell(
     .reward-card:hover { border-color: rgba(136,201,255,.38); transform: translateY(-2px); }
     .reward-card__topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .action-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid rgba(136,201,255,.25); }
+    .action-chip--public { background: rgba(239,201,132,.14); color: var(--gold); border: 1px solid rgba(239,201,132,.32); }
+    .tier-chip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
+    .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
+    .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
     .reward-card h3 { margin: 13px 0 10px; font-size: 16px; line-height: 1.4; letter-spacing: -.015em; font-weight: 650; overflow-wrap: anywhere; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 8px; }
@@ -344,6 +431,7 @@ function renderShell(
     .detail-fact__label { color: var(--faint); font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; padding-top: 2px; }
     .detail-fact__value { font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
     .detail-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 4px 0 18px; color: var(--faint); font-size: 11.5px; }
+    .detail-meta a { color: var(--accent); text-decoration: underline; }
     .detail-cta { margin-top: 0; }
     .detail-actions { display: grid; gap: 10px; margin-top: 18px; }
     .ghost-btn { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: var(--radius-btn); border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 13.5px; font-weight: 600; transition: border-color .16s ease, background .16s ease; }
@@ -495,22 +583,60 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
   const renderedCards = viewModel.cards
     .map(renderCard)
     .filter((card): card is string => card !== null);
+  const hasImmediate = (viewModel.publicImmediateCards ?? []).length > 0;
+  const hasScreening = (viewModel.publicScreeningCards ?? []).length > 0;
+  const hasPublic = hasImmediate || hasScreening;
 
-  const content = renderedCards.length > 0
-    ? `<section id="available-now" aria-labelledby="available-title">
-      <div class="section-head">
-        <h2 id="available-title">오늘 바로 가능한 적립</h2>
-        <span>${renderedCards.length}개 확인됨</span>
-      </div>
-      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
-    </section>`
-    : `<section id="available-now" aria-labelledby="available-title">
+  let content: string;
+  if (renderedCards.length === 0 && !hasPublic) {
+    content = `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">오늘 바로 가능한 적립</h2>
         <span>실시간 확인</span>
       </div>
       ${renderEmptyState()}
     </section>`;
+  } else {
+    const sections: string[] = [];
+    if (renderedCards.length > 0) {
+      sections.push(`<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">광고·클릭 적립</h2>
+        <span>${renderedCards.length}개 확인됨</span>
+      </div>
+      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
+    </section>`);
+    } else {
+      sections.push(`<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">광고·클릭 적립</h2>
+        <span>아직 미확인</span>
+      </div>
+      <p class="later-tier-notice">광고·클릭·방문 적립은 공급자 승인이 완료되면 표시됩니다.</p>
+    </section>`);
+    }
+    if (hasImmediate) {
+      sections.push(`<section id="today-public-immediate" aria-labelledby="today-public-immediate-title">
+      <div class="section-head">
+        <h2 id="today-public-immediate-title">지금 바로 시작 가능</h2>
+        <span>${(viewModel.publicImmediateCards ?? []).length}개 확인됨</span>
+      </div>
+      <p class="public-note">선발·심사 없이 참여 가능한 공개 기회입니다. PADIEM 수익은 0이며 각 업체에서 직접 참여합니다.</p>
+      <div class="reward-grid" data-public-card-count="${(viewModel.publicImmediateCards ?? []).length}">${renderPublicCardGrid(viewModel.publicImmediateCards ?? [])}</div>
+    </section>`);
+    }
+    if (hasScreening) {
+      sections.push(`<section id="today-public-screening" aria-labelledby="today-public-screening-title">
+      <div class="section-head">
+        <h2 id="today-public-screening-title">신청·심사 후 참여</h2>
+        <span>${(viewModel.publicScreeningCards ?? []).length}개 확인됨</span>
+      </div>
+      <p class="public-note">지원·선발이 필요한 프로젝트로, 지금 바로 보상이 확정되는 항목은 아닙니다.</p>
+      <div class="reward-grid" data-public-card-count="${(viewModel.publicScreeningCards ?? []).length}">${renderPublicCardGrid(viewModel.publicScreeningCards ?? [])}</div>
+    </section>`);
+    }
+    content = sections.join('\n');
+  }
 
   const navItems = renderPrimaryNav('TODAY');
 
@@ -526,6 +652,8 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
 
 export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewModel): string {
   const renderedCards = viewModel.cards.map(renderCard).filter((card): card is string => card !== null);
+  const publicCards = viewModel.publicCards ?? [];
+  const hasPublic = publicCards.length > 0;
 
   const categoryTabs = viewModel.categories
     .map((cat) => {
@@ -548,15 +676,9 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
     <button type="submit">기회 찾기</button>
   </form>`;
 
-  const content = renderedCards.length > 0
-    ? `<section id="available-now" aria-labelledby="available-title">
-      <div class="section-head">
-        <h2 id="available-title">수익 기회 탐색</h2>
-        <span>${renderedCards.length}개 확인됨</span>
-      </div>
-      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
-    </section>`
-    : `<section id="available-now" aria-labelledby="available-title">
+  let content: string;
+  if (!hasPublic && renderedCards.length === 0) {
+    content = `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">수익 기회 탐색</h2>
         <span>실시간 확인</span>
@@ -564,6 +686,53 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
       ${renderEmptyState()}
       <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>
     </section>`;
+  } else if (!hasPublic) {
+    content = `<section id="available-now" aria-labelledby="available-title">
+      <div class="section-head">
+        <h2 id="available-title">수익 기회 탐색</h2>
+        <span>${renderedCards.length}개 확인됨</span>
+      </div>
+      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
+    </section>`;
+  } else {
+    const sections: string[] = [];
+    if (renderedCards.length > 0) {
+      sections.push(`<section id="ad-click-supply" aria-labelledby="ad-click-supply-title">
+      <div class="section-head">
+        <h2 id="ad-click-supply-title">광고·클릭 적립</h2>
+        <span>${renderedCards.length}개 확인됨</span>
+      </div>
+      <div class="reward-grid" data-visible-card-count="${renderedCards.length}">${renderedCards.join('\n')}</div>
+    </section>`);
+    } else {
+      sections.push(`<section id="ad-click-supply" aria-labelledby="ad-click-supply-title">
+      <div class="section-head">
+        <h2 id="ad-click-supply-title">광고·클릭 적립</h2>
+        <span>아직 미확인</span>
+      </div>
+      <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>
+    </section>`);
+    }
+    if (publicCards.length > 0) {
+      sections.push(`<section id="public-opportunities" aria-labelledby="public-opportunities-title">
+      <div class="section-head">
+        <h2 id="public-opportunities-title">검증된 공개 기회</h2>
+        <span>${publicCards.length}개 확인됨</span>
+      </div>
+      ${viewModel.publicSupplyNote ? `<p class="public-note">${escapeHtml(viewModel.publicSupplyNote)}</p>` : ''}
+      <div class="reward-grid" data-public-card-count="${publicCards.length}">${renderPublicCardGrid(publicCards)}</div>
+    </section>`);
+    } else {
+      sections.push(`<section id="public-opportunities" aria-labelledby="public-opportunities-title">
+      <div class="section-head">
+        <h2 id="public-opportunities-title">검증된 공개 기회</h2>
+        <span>실시간 확인</span>
+      </div>
+      ${renderEmptyState()}
+    </section>`);
+    }
+    content = sections.join('\n');
+  }
 
   const navItems = renderPrimaryNav('BROWSE');
 
@@ -583,8 +752,10 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
 
 export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel): string {
   const card = viewModel.card;
-  const content = card
-    ? `<a class="back-link" href="/browse">← 수익 기회 목록</a>
+  const publicDetail = viewModel.publicDetail ?? null;
+  let content: string;
+  if (card) {
+    content = `<a class="back-link" href="/browse">← 수익 기회 목록</a>
     <section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="detail-card">
         <p class="eyebrow detail-card__eyebrow">수익 기회 상세</p>
@@ -616,8 +787,11 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
           <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
         </div>
       </div>
-    </section>`
-    : `<a class="back-link" href="/browse">← 수익 기회 목록</a>
+    </section>`;
+  } else if (publicDetail) {
+    content = renderPublicDetail(publicDetail);
+  } else {
+    content = `<a class="back-link" href="/browse">← 수익 기회 목록</a>
     <section id="opportunity-detail" aria-labelledby="detail-title">
       <div class="empty-state" role="status" data-empty-state="NO_LIVE_REWARD_SUPPLY">
         <div class="empty-state__mark" aria-hidden="true">${renderBrandMark('empty-state__mark-svg')}</div>
@@ -626,6 +800,7 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
         <a class="ghost-btn" href="/browse">수익 기회 탐색으로 이동</a>
       </div>
     </section>`;
+  }
 
   const navItems = renderPrimaryNav(null);
 
