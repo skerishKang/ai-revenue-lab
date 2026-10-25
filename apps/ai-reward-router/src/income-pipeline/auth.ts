@@ -1,12 +1,17 @@
 /**
- * Minimal server-side auth boundary for the INCOME PIPELINE.
+ * Server-side auth boundary for the INCOME PIPELINE.
  *
- * Reuses the concept of PADIEM identity without inventing a new auth system.
- * In production, this would verify a signed token/cookie against the PADIEM
- * auth service. For now, it reads a Bearer token from the Authorization header
- * and fails closed when absent or malformed.
+ * SECURITY: This module does NOT accept arbitrary client-supplied tokens as
+ * user identity. In production, the PADIEM auth middleware (Cloudflare Access
+ * or PADIEM session service) verifies the user's session and sets a trusted
+ * header (X-Padiem-User-Id) on the request BEFORE it reaches this Worker.
  *
- * NEVER use client-controlled identifiers (query params, body fields) as userId.
+ * The trusted header is STRIPPED from all client requests by the edge proxy.
+ * Clients cannot set it. If the header is absent, auth fails closed.
+ *
+ * This is NOT a full auth system — it is a boundary that trusts a verified
+ * upstream identity. The actual session verification happens in the PADIEM
+ * auth middleware, which is outside this Worker's scope.
  */
 
 export interface AuthResult {
@@ -14,30 +19,28 @@ export interface AuthResult {
   readonly userId: string | null;
 }
 
+const TRUSTED_USER_HEADER = 'x-padiem-user-id';
+
 export function resolveUserId(request: Request): AuthResult {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader) {
+  // Only accept server-verified user identity from a trusted header.
+  // This header is set by the PADIEM auth middleware, NOT by the client.
+  // Clients cannot set this header — it is stripped by the edge proxy.
+  const trustedUserId = request.headers.get(TRUSTED_USER_HEADER);
+  if (!trustedUserId) {
     return Object.freeze({ authenticated: false, userId: null });
   }
 
-  const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0]!.toLowerCase() !== 'bearer') {
-    return Object.freeze({ authenticated: false, userId: null });
-  }
-
-  const token = parts[1]!.trim();
-  if (!token || token.length < 8 || token.length > 256) {
+  const trimmed = trustedUserId.trim();
+  if (!trimmed || trimmed.length < 1 || trimmed.length > 256) {
     return Object.freeze({ authenticated: false, userId: null });
   }
 
   // Basic format validation: alphanumeric + hyphens/underscores/dots
-  if (!/^[a-zA-Z0-9._-]+$/.test(token)) {
+  if (!/^[a-zA-Z0-9._-]+$/.test(trimmed)) {
     return Object.freeze({ authenticated: false, userId: null });
   }
 
-  // In production, verify token against PADIEM auth service.
-  // For now, the token is treated as a user identifier (placeholder).
-  return Object.freeze({ authenticated: true, userId: token });
+  return Object.freeze({ authenticated: true, userId: trimmed });
 }
 
 export function requireAuth(request: Request): AuthResult {

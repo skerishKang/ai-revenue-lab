@@ -32,7 +32,7 @@ test('pipeline rejects POST without auth', async () => {
 test('pipeline CRUD: save and retrieve record', async () => {
   clearStore();
   const handler = createConsumerHttpHandler({ loadCandidates: () => [] });
-  const auth = { authorization: 'Bearer test-crud-user-12345678' };
+  const auth = { 'x-padiem-user-id': 'test-crud-user-12345678' };
   // Save
   const saveRes = await handler(new Request('https://b64.example/pipeline', {
     method: 'POST',
@@ -53,8 +53,8 @@ test('pipeline CRUD: save and retrieve record', async () => {
 test('pipeline cross-user isolation: user B cannot see user A records', async () => {
   clearStore();
   const handler = createConsumerHttpHandler({ loadCandidates: () => [] });
-  const userA = { authorization: 'Bearer user-aaaaaaaaaaaaaaaa' };
-  const userB = { authorization: 'Bearer user-bbbbbbbbbbbbbbbb' };
+  const userA = { 'x-padiem-user-id': 'user-aaaaaaaaaaaaaaaa' };
+  const userB = { 'x-padiem-user-id': 'user-bbbbbbbbbbbbbbbb' };
   // Save as user A
   await handler(new Request('https://b64.example/pipeline', {
     method: 'POST',
@@ -79,7 +79,7 @@ test('pipeline cross-user isolation: user B cannot see user A records', async ()
 test('pipeline delete removes record', async () => {
   clearStore();
   const handler = createConsumerHttpHandler({ loadCandidates: () => [] });
-  const auth = { authorization: 'Bearer del-user-12345678' };
+  const auth = { 'x-padiem-user-id': 'del-user-12345678' };
   // Save
   await handler(new Request('https://b64.example/pipeline', {
     method: 'POST',
@@ -98,7 +98,7 @@ test('pipeline delete removes record', async () => {
 test('pipeline filter by status', async () => {
   clearStore();
   const handler = createConsumerHttpHandler({ loadCandidates: () => [] });
-  const auth = { authorization: 'Bearer filter-user-12345678' };
+  const auth = { 'x-padiem-user-id': 'filter-user-12345678' };
   // Save two records with different statuses
   await handler(new Request('https://b64.example/pipeline', {
     method: 'POST',
