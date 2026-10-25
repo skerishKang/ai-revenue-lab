@@ -443,6 +443,67 @@ including the shared-decision refusal, the under-declared edit refusal
 shape layer admits bounded refs while correlation stays the plan source's job.
 Existing TXT material tests are unchanged (69 passed across the five suites).
 
+## Consumer, broker admission and the pin (2026-10-26, after the timing decision)
+
+The timing CENTRAL confirmed is implemented on both ends:
+
+- **Envelope** (`kagent/local_agent_command_material.py`) — `claw-xlsx-revision-approval.v1`
+  carries one approval (the READ) plus `{sheet_name, edits, result_path_relative,
+  write_action_id, write_requested_at}`. A write approval or a result digest on
+  this wire is refused as a schema error, not ignored: `file_request_fingerprint`
+  and `windows_file_tool_invocation` bind `content_bytes`/`content_sha256`, so any
+  digest asserted before the PC produced the bytes would be a web-supplied
+  fingerprint posed as a decision.
+- **Store boundary** (`packages/padiem-control-plane/local_agent_broker_material_store.py`)
+  — a third admitted format, `validate_xlsx_revision_receipt`, structural only and
+  bilateral by constants; a command whose receipt no validator admits is refused
+  rather than downgraded. `tests/test_4434_xlsx_revision_material_admission.py`
+  (23 cases) and the kagent parity test pin the shared names by reading the source,
+  because the two apps share no import surface.
+- **Consumer** (`kagent/verified_p01_xlsx_revision_plan_source.py`) —
+  `note_admitted()` registers and validates the envelope at admission, so malformed
+  revision material stops its command before `on_execution_start` instead of
+  executing and discovering the absence later. `approved_revision_plan()` recomputes
+  the read fingerprint and the invocation digest rather than trusting the received
+  ones, binds the envelope to the acknowledged command, and returns a plan.
+  `P01EvidenceWriteAttester` resolves the WRITE afterwards through the existing
+  authenticated `/v1/broker/p01-evidence` route with the same four correlation
+  facts the resident execution lane and browser.open send — no new route, endpoint,
+  store or authority. The answer must itself carry an approved user-confirmation
+  decision naming that invocation, under a matching `filesystem.write` permission
+  and a decision distinct from the read; unreachable, silent, incomplete, denied,
+  wrong-tool, wrong-fingerprint or already-spent answers all refuse.
+- **Lane order** (`local_resident_xlsx_revision_delivery.py`) —
+  `TrustedP01XlsxRevisionPlan` now holds the read attestation, the derived path and
+  the write action; `bridge.expect_write(request, now=)` is reached only after the
+  editor produced and the independent verifier accepted the bytes, and the file
+  authority commits afterwards. A refusal leaves the original and the derived copy
+  untouched and stages nothing: pinned by `test_a_refused_write_attestation_blocks_the_file_and_the_staging`,
+  `test_an_attestation_for_different_bytes_blocks_the_commit` and
+  `test_the_write_is_attested_only_after_the_result_bytes_exist`.
+- **Pin** — `installed_runtime.XLSX_REVISION_PLAN_SOURCE` names
+  `kagent.verified_p01_xlsx_revision_plan_source:make_p01_xlsx_revision_plan_source`.
+  The factory needs no path, credential or approval and reads no file; until a
+  producer mints an envelope no command carries one, so the lane remains inert.
+  `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays `False` for that reason.
+
+What still separates this from a working customer flow, in order:
+
+1. **Producer route.** Nothing mints the envelope. The TXT precedent shows the
+   shape (`connector_txt_read_routes.py` → `connector_txt_approval_material.py` →
+   dispatch), and its consent is an owner-authenticated, CSRF-checked web request
+   naming a path chosen from a ready listing. A revision needs the same owner-facing
+   step for *a file on the PC*: a bounded route that takes the selected workbook,
+   the worksheet and the literal edits, shows them to the signed-in owner, and mints
+   the read attestation from that decision. This is a new customer-facing consent
+   surface, so it is written as a separate PR rather than folded in here.
+2. **PC-side write consent.** The party answering `/v1/broker/p01-evidence` for the
+   write must be the one that can compute the same result bytes — that is the local
+   owner process, not the web. Its producer side is not in this repository's
+   Python tree, so its availability is an operational fact to confirm, not something
+   to assume from code that reads it.
+3. Chunk gate and device session (CENTRAL's).
+
 ## Still not enabled, and who owns it
 
 | Item | State | Owner |

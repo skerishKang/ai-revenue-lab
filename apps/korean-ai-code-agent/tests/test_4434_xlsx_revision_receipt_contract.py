@@ -267,6 +267,33 @@ class XlsxRevisionEnvelopeTests(unittest.TestCase):
             validate_xlsx_revision_receipt(orphan)
 
 
+class XlsxRevisionWireParityTests(unittest.TestCase):
+    def test_the_broker_admits_the_same_format_under_the_same_constants(self) -> None:
+        """Both ends of the wire are pinned to one set of names.
+
+        The store boundary has its own closed validator; if its constants drift,
+        it would start storing envelopes the Resident refuses, or refusing ones it
+        accepts. Checked against the source text because the two apps share no
+        import surface.
+        """
+        from pathlib import Path
+
+        store = (Path(__file__).resolve().parents[3]
+                 / "packages" / "padiem-control-plane"
+                 / "local_agent_broker_material_store.py")
+        source = store.read_text(encoding="utf-8")
+
+        for expected in (
+            f'XLSX_REVISION_RECEIPT_FORMAT = "{XLSX_REVISION_RECEIPT_FORMAT}"',
+            f'XLSX_REVISION_POLICY_REF = "{XLSX_REVISION_POLICY_REF}"',
+            'XLSX_REVISION_AUTHORITY_REF = "claw_connector_xlsx_revision_request_v1"',
+            "approval.get(\"format\") == XLSX_REVISION_RECEIPT_FORMAT",
+            "receipt = validate_xlsx_revision_receipt(approval)",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, source)
+
+
 class XlsxRevisionEditsTests(unittest.TestCase):
     def test_edits_must_be_distinct_bounded_literals(self) -> None:
         cases = {
