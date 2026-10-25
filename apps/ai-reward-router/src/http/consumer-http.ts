@@ -17,8 +17,10 @@ import {
   buildIncomePipelineViewModel,
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
-import type { UserIncomeRecord, UserIncomeLoader } from '../income-pipeline/domain.js';
-import type { IncomePipelineStatus } from '../income-pipeline/domain.js';
+import { resolveUserId } from '../income-pipeline/auth.js';
+import { getUserRecords, saveUserRecord, deleteUserRecord } from '../income-pipeline/store.js';
+import { validateUserIncomeRecord } from '../income-pipeline/domain.js';
+import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
 
 import type { PublicOpportunity, PublicOpportunityLoader } from '../public-supply/domain.js';
 import { loadVerifiedPublicOpportunities } from '../public-supply/verified-public-opportunities.js';
@@ -126,7 +128,11 @@ export function createConsumerHttpHandler(
       return notFound(request);
     }
 
-    if (request.method !== 'GET' && request.method !== 'HEAD') {
+    if (request.method !== 'GET' && request.method !== 'HEAD' && request.method !== 'POST') {
+      return methodNotAllowed(request);
+    }
+
+    if (request.method === 'POST' && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
 
@@ -205,14 +211,79 @@ export function createConsumerHttpHandler(
     }
 
     if (url.pathname === '/pipeline' || url.pathname === '/income') {
-      const userId = url.searchParams.get('user');
-      let records: readonly UserIncomeRecord[] = [];
-      if (dependencies.loadIncomeRecords) {
-        try {
-          records = await dependencies.loadIncomeRecords(request, userId);
-        } catch {
-          return supplyUnavailable(request);
+      const auth = resolveUserId(request);
+      const userId = auth.authenticated ? auth.userId : null;
+
+      // Handle POST for CRUD operations
+      if (request.method === 'POST') {
+        if (!userId) {
+          return responseForMethod(request, JSON.stringify({ error: 'unauthorized' }), {
+            status: 401,
+            headers: { 'content-type': 'application/json; charset=utf-8' },
+          });
         }
+        // Parse form data
+        const formData = await request.formData().catch((e) => { console.error('formData error:', e?.message); return null; });
+        if (!formData) {
+          return responseForMethod(request, 'Bad Request', { status: 400, headers: { 'content-type': 'text/plain; charset=utf-8' } });
+        }
+        const action = formData.get('action')?.toString();
+        if (action === 'save') {
+          const recordId = formData.get('id')?.toString() ?? crypto.randomUUID();
+          const now = new Date().toISOString();
+          const record: UserIncomeRecord = {
+            id: recordId,
+            userId,
+            opportunityId: formData.get('opportunityId')?.toString() || null,
+            externalRef: formData.get('externalRef')?.toString() || null,
+            sourceType: (formData.get('sourceType')?.toString() as any) || 'MANUAL',
+            title: formData.get('title')?.toString() || '',
+            vendor: formData.get('vendor')?.toString() || '',
+            status: (formData.get('status')?.toString() as any) || 'SAVED',
+            expectedAmount: formData.get('expectedAmount') ? Number(formData.get('expectedAmount')) : null,
+            expectedCurrency: (formData.get('expectedCurrency')?.toString() as any) || null,
+            actualAmount: formData.get('actualAmount') ? Number(formData.get('actualAmount')) : null,
+            actualCurrency: (formData.get('actualCurrency')?.toString() as any) || null,
+            appliedAt: formData.get('appliedAt')?.toString() || null,
+            acceptedAt: formData.get('acceptedAt')?.toString() || null,
+            completedAt: formData.get('completedAt')?.toString() || null,
+            paidAt: formData.get('paidAt')?.toString() || null,
+            expiresAt: formData.get('expiresAt')?.toString() || null,
+            note: formData.get('note')?.toString() || null,
+            sourceUrl: formData.get('sourceUrl')?.toString() || null,
+            createdAt: now,
+            updatedAt: now,
+          };
+          const errors = validateUserIncomeRecord(record);
+          if (errors.length > 0) {
+            return responseForMethod(request, JSON.stringify({ errors }), {
+              status: 400,
+              headers: { 'content-type': 'application/json; charset=utf-8' },
+            });
+          }
+          saveUserRecord(record);
+          return new Response(null, {
+            status: 303,
+            headers: { location: '/pipeline', ...Object.fromEntries(withSecurityHeaders(new Headers()).entries()) },
+          });
+        }
+        if (action === 'delete') {
+          const recordId = formData.get('recordId')?.toString();
+          if (recordId) {
+            deleteUserRecord(userId, recordId);
+          }
+          return new Response(null, {
+            status: 303,
+            headers: { location: '/pipeline', ...Object.fromEntries(withSecurityHeaders(new Headers()).entries()) },
+          });
+        }
+        return responseForMethod(request, 'Bad Request', { status: 400, headers: { 'content-type': 'text/plain; charset=utf-8' } });
+      }
+
+      // GET: render dashboard
+      let records: readonly UserIncomeRecord[] = [];
+      if (userId) {
+        records = getUserRecords(userId);
       }
       const filterStatus = url.searchParams.get('status') as IncomePipelineStatus | null;
       const filterVendor = url.searchParams.get('vendor');
