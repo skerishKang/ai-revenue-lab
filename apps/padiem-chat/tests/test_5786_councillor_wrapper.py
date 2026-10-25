@@ -120,6 +120,36 @@ def test_theme_switch_stays_on_the_existing_mechanism() -> None:
     )
 
 
+def test_small_text_stays_readable_in_light() -> None:
+    """Measured on the live page 2026-10-25: at 12-13px the theme's own
+    --muted/#gold fell to 4.37 and 2.75:1 against the light canvas -- under
+    WCAG AA. The fix derives stronger values from the same tokens instead of
+    re-declaring them, so Dark keeps working untouched."""
+    css = read(WRAP / "councillor.css")
+    assert "--cine-muted-strong:" in css and "--cine-gold-strong:" in css
+    assert "color-mix(in srgb, var(--muted)" in css
+    assert "color-mix(in srgb, var(--gold)" in css
+    for selector, token in (
+        (".cine-fact dt", "--cine-muted-strong"),
+        (".cine-source", "--cine-muted-strong"),
+        (".cine-note-date", "--cine-muted-strong"),
+        (".councillor-footer-line", "--cine-muted-strong"),
+        (".cine-timeline-date", "--cine-gold-strong"),
+    ):
+        block = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", css)
+        assert block, selector
+        assert f"var({token})" in block.group(1), f"{selector} still uses the raw token"
+
+
+def test_topbar_controls_stay_tappable_and_focussable() -> None:
+    css = read(WRAP / "councillor.css")
+    blocks = re.findall(r"\.councillor-ghost\s*(?::not\([^)]*\))?\s*\{([^}]*)\}", css)
+    assert blocks, "no .councillor-ghost rule found"
+    assert any("min-height: 44px" in body for body in blocks), (
+        "the topbar controls measured 33px tall, under the 44px touch target")
+    assert ":focus-visible" in css, "keyboard focus must survive the theme switch"
+
+
 def test_wrapper_keeps_its_own_layout_baseline() -> None:
     """The page does not load Chat's styles.css, so it must restate the layout
     baseline. Without border-box the hero's padding is added to min-height and
