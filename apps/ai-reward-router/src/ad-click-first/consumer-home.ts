@@ -3,6 +3,14 @@ import {
   type AdClickConsumerCandidate,
   type AdClickConsumerCard,
 } from './consumer-card.js';
+import {
+  isPublicOpportunityDisplayable,
+  toPublicOpportunityCard,
+  toPublicOpportunityDetail,
+  type PublicOpportunity,
+  type PublicOpportunityCard,
+  type PublicOpportunityDetail,
+} from '../public-supply/domain.js';
 
 export type ConsumerPrimaryNavId = 'EARN_NOW';
 export type ConsumerSectionId = 'AVAILABLE_NOW';
@@ -40,6 +48,8 @@ export interface AdClickFirstTodayRouteViewModel {
   readonly cards: readonly AdClickConsumerCard[];
   readonly emptyState: AdClickFirstConsumerEmptyState | null;
   readonly laterTierSuggestionsVisible: false;
+  readonly publicImmediateCards: readonly PublicOpportunityCard[];
+  readonly publicScreeningCards: readonly PublicOpportunityCard[];
 }
 
 export type ConsumerBrowseCategory = 'ALL' | 'AD_CLICK' | 'SURVEY' | 'USABILITY' | 'MICROTASK' | 'SHORT_GIG';
@@ -63,9 +73,11 @@ export interface AdClickFirstBrowseViewModel {
   readonly selectedCategory: ConsumerBrowseCategory;
   readonly categories: readonly ConsumerBrowseCategoryItem[];
   readonly cards: readonly AdClickConsumerCard[];
+  readonly publicCards: readonly PublicOpportunityCard[];
   readonly filters: AdClickFirstBrowseFilterState;
   readonly emptyState: AdClickFirstConsumerEmptyState | null;
   readonly laterTierNotice: string;
+  readonly publicSupplyNote: string | null;
   readonly accountOnboardingVisibleToConsumer: false;
   readonly laterTierNavigationVisible: false;
 }
@@ -74,6 +86,7 @@ export interface AdClickFirstOpportunityDetailViewModel {
   readonly mode: 'OPPORTUNITY_DETAIL_AD_CLICK_FIRST';
   readonly primaryNavigation: readonly ConsumerPrimaryNavItem[];
   readonly card: AdClickConsumerCard | null;
+  readonly publicDetail: PublicOpportunityDetail | null;
   readonly found: boolean;
   readonly emptyState: AdClickFirstConsumerEmptyState | null;
   readonly accountOnboardingVisibleToConsumer: false;
@@ -124,8 +137,10 @@ export function buildAdClickFirstConsumerHome(
 }
 
 /**
- * Today Route is intentionally narrow during P0: it only reuses already
- * eligible AD_CLICK cards and never falls back to survey/microtask/gig/job data.
+ * Today Route reuses eligible AD_CLICK cards plus verified public opportunities.
+ * Public opportunities are split by participation tier: IMMEDIATE (rolling
+ * participation, no selection) and SCREENING_REQUIRED (application/qualification
+ * needed, never shown as instant reward).
  */
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
 export { buildAdClickFirstBrowse as buildAdClickFirstOpportunityBrowse };
@@ -135,29 +150,73 @@ export { buildAdClickFirstOpportunityDetail as buildOpportunityDetail };
 
 export function buildAdClickFirstTodayRoute(
   candidates: readonly AdClickConsumerCandidate[],
+  options: BuildAdClickFirstTodayRouteOptions = {},
 ): AdClickFirstTodayRouteViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
+  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const publicImmediateCards = Object.freeze(
+    publicCards
+      .filter((card) => card.todayTier === 'IMMEDIATE')
+      .sort((a, b) => b.userValueScore - a.userValueScore),
+  );
+  const publicScreeningCards = Object.freeze(
+    publicCards
+      .filter((card) => card.todayTier === 'SCREENING_REQUIRED')
+      .sort((a, b) => b.userValueScore - a.userValueScore),
+  );
+  const hasAnySupply = cards.length > 0 || publicImmediateCards.length > 0 || publicScreeningCards.length > 0;
   return Object.freeze({
     mode: 'TODAY_ROUTE_AD_CLICK_FIRST' as const,
     cards,
-    emptyState: cards.length === 0 ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
+    emptyState: hasAnySupply ? null : ('NO_LIVE_REWARD_SUPPLY' as const),
     laterTierSuggestionsVisible: false as const,
+    publicImmediateCards,
+    publicScreeningCards,
   });
 }
 
-const BROWSE_CATEGORIES: ReadonlyArray<{ id: ConsumerBrowseCategory; label: string; active: boolean }> = Object.freeze([
-  Object.freeze({ id: 'ALL' as const, label: '전체', active: true }),
-  Object.freeze({ id: 'AD_CLICK' as const, label: '광고·클릭·방문', active: true }),
-  Object.freeze({ id: 'SURVEY' as const, label: '설문·리서치', active: false }),
-  Object.freeze({ id: 'USABILITY' as const, label: '사용성 테스트', active: false }),
-  Object.freeze({ id: 'MICROTASK' as const, label: 'AI 데이터·마이크로태스크', active: false }),
-  Object.freeze({ id: 'SHORT_GIG' as const, label: '단기 온라인 작업', active: false }),
+const BROWSE_CATEGORIES: ReadonlyArray<{ id: ConsumerBrowseCategory; label: string }> = Object.freeze([
+  Object.freeze({ id: 'ALL' as const, label: '전체' }),
+  Object.freeze({ id: 'AD_CLICK' as const, label: '광고·클릭·방문' }),
+  Object.freeze({ id: 'SURVEY' as const, label: '설문·리서치' }),
+  Object.freeze({ id: 'USABILITY' as const, label: '사용성 테스트' }),
+  Object.freeze({ id: 'MICROTASK' as const, label: 'AI 데이터·마이크로태스크' }),
+  Object.freeze({ id: 'SHORT_GIG' as const, label: '단기 온라인 작업' }),
 ]);
+
+/** Public lane labels shown to consumers; the ad-click lane keeps its own activation policy. */
+const PUBLIC_BROWSE_CATEGORY_IDS: ReadonlySet<string> = Object.freeze(
+  new Set<string>(['SURVEY', 'USABILITY', 'MICROTASK', 'SHORT_GIG']),
+);
 
 export interface BuildAdClickFirstBrowseOptions {
   readonly category?: ConsumerBrowseCategory;
   readonly query?: string;
   readonly maxSeconds?: number | null;
+  readonly publicOpportunities?: readonly PublicOpportunity[];
+}
+
+export interface BuildAdClickFirstTodayRouteOptions {
+  readonly publicOpportunities?: readonly PublicOpportunity[];
+}
+
+export interface BuildAdClickFirstOpportunityDetailOptions {
+  readonly publicOpportunities?: readonly PublicOpportunity[];
+}
+
+export function displayablePublicCards(opportunities: readonly PublicOpportunity[]): readonly PublicOpportunityCard[] {
+  return Object.freeze(
+    opportunities
+      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity))
+      .map(toPublicOpportunityCard),
+  );
+}
+
+function publicCardMatchesQuery(card: PublicOpportunityCard, lowerQuery: string): boolean {
+  return (
+    card.titleKo.toLowerCase().includes(lowerQuery) ||
+    card.vendor.toLowerCase().includes(lowerQuery)
+  );
 }
 
 export function buildAdClickFirstBrowse(
@@ -183,15 +242,56 @@ export function buildAdClickFirstBrowse(
   }
   const cards = Object.freeze(filtered);
 
+  // Public lane: verified public opportunities only. The ad-click lane activation
+  // policy is untouched; public categories become active with real verified supply.
+  const allPublicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  let publicCards: readonly PublicOpportunityCard[];
+  if (selectedCategory === 'ALL') {
+    publicCards = allPublicCards;
+  } else if (selectedCategory === 'AD_CLICK') {
+    publicCards = [];
+  } else {
+    publicCards = allPublicCards.filter((card) => card.category === selectedCategory);
+  }
+  if (query) {
+    const lower = query.toLowerCase();
+    publicCards = publicCards.filter((card) => publicCardMatchesQuery(card, lower));
+  }
+  publicCards = Object.freeze(
+    [...publicCards].sort((a, b) => b.userValueScore - a.userValueScore),
+  );
+
+  const publicCountByCategory: Readonly<Record<string, number>> = Object.freeze(
+    allPublicCards.reduce<Record<string, number>>(
+      (acc, card) => {
+        acc[card.category] = (acc[card.category] ?? 0) + 1;
+        return acc;
+      },
+      {},
+    ),
+  );
+
+  const hasPublicInput = (options.publicOpportunities ?? []).length > 0;
   const categories: readonly ConsumerBrowseCategoryItem[] = Object.freeze(
-    BROWSE_CATEGORIES.map((cat) =>
-      Object.freeze({
+    BROWSE_CATEGORIES.map((cat) => {
+      const count =
+        cat.id === 'ALL'
+          ? baseCards.length + allPublicCards.length
+          : cat.id === 'AD_CLICK'
+            ? baseCards.length
+            : (publicCountByCategory[cat.id] ?? 0);
+      const active = PUBLIC_BROWSE_CATEGORY_IDS.has(cat.id)
+        ? count > 0
+        : cat.id === 'AD_CLICK'
+          ? baseCards.length > 0
+          : true;
+      return Object.freeze({
         id: cat.id,
         label: cat.label,
-        active: cat.active,
-        count: cat.id === 'AD_CLICK' || cat.id === 'ALL' ? baseCards.length : 0,
-      }),
-    ),
+        active,
+        count,
+      });
+    }),
   );
 
   return Object.freeze({
@@ -200,9 +300,16 @@ export function buildAdClickFirstBrowse(
     selectedCategory,
     categories,
     cards,
+    publicCards,
     filters: Object.freeze({ query, maxSeconds, category: selectedCategory }),
-    emptyState: cards.length === 0 ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
-    laterTierNotice: '광고·클릭·방문 적립만 현재 공개됩니다. 그 외 카테고리는 준비 중입니다.',
+    emptyState: cards.length === 0 && publicCards.length === 0 ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
+    laterTierNotice: hasPublicInput
+      ? '광고·클릭·방문 적립은 공급자 승인이 완료되면 표시됩니다.'
+      : '광고·클릭·방문 적립만 현재 공개됩니다. 그 외 카테고리는 준비 중입니다.',
+    publicSupplyNote:
+      hasPublicInput && allPublicCards.length > 0
+        ? '공개 기회는 PADIEM에 수익을 주지 않고, 이용자가 각 업체에서 직접 신청·참여합니다.'
+        : null,
     accountOnboardingVisibleToConsumer: false as const,
     laterTierNavigationVisible: false as const,
   });
@@ -211,15 +318,25 @@ export function buildAdClickFirstBrowse(
 export function buildAdClickFirstOpportunityDetail(
   candidates: readonly AdClickConsumerCandidate[],
   id: string,
+  options: BuildAdClickFirstOpportunityDetailOptions = {},
 ): AdClickFirstOpportunityDetailViewModel {
   const cards = buildDefaultAdClickCards(candidates);
   const card = cards.find((c) => c.id === id) ?? null;
+  const publicOpportunity =
+    card === null
+      ? ((options.publicOpportunities ?? []).find(
+          (opportunity) => opportunity.id === id && isPublicOpportunityDisplayable(opportunity),
+        ) ?? null)
+      : null;
+  const publicDetail = publicOpportunity ? toPublicOpportunityDetail(publicOpportunity) : null;
+  const found = card !== null || publicDetail !== null;
   return Object.freeze({
     mode: 'OPPORTUNITY_DETAIL_AD_CLICK_FIRST' as const,
     primaryNavigation: PRIMARY_NAVIGATION,
     card,
-    found: card !== null,
-    emptyState: card === null ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
+    publicDetail,
+    found,
+    emptyState: found ? null : ('NO_LIVE_REWARD_SUPPLY' as const),
     accountOnboardingVisibleToConsumer: false as const,
     laterTierNavigationVisible: false as const,
   });
