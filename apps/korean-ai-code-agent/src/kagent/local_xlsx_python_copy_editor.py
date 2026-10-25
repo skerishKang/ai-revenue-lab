@@ -41,14 +41,16 @@ import xml.etree.ElementTree as ET
 
 from .contracts import ContractError
 from .local_xlsx_revision_pdf import ReviewedCellRevision
-from .xlsx_fidelity_route import MAX_XML_BYTES, XlsxRoute, classify_xlsx
+from .xlsx_fidelity_route import (
+    BLOCKED_PARTS, MAX_XML_BYTES, XlsxRoute, classify_xlsx,
+)
 
 SHEET_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PACKAGE_REL_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
 WORKBOOK_PART = "xl/workbook.xml"
 WORKBOOK_RELS_PART = "xl/_rels/workbook.xml.rels"
-CALC_CHAIN_PART = "xl/calcchain.xml"
+CALC_CHAIN_PART = "xl/calcchain.xml"  # Excel writes calcChain; matched case-folded
 _SHARED_PREFIX = re.compile(r"^xl/(?:sharedStrings|sharedstrings)\.xml$")
 
 PYTHON_VALUE_PATH_IMPLEMENTED = True
@@ -175,8 +177,22 @@ class _WorkbookParts:
             )
         return ()
 
+    def advanced_parts(self) -> tuple[str, ...]:
+        """Parts whose semantics this surgical edit cannot re-verify.
+
+        ``classify_xlsx`` already refuses to convert them; a byte copy keeps
+        them intact but cannot tell whether a macro, an external link, a pivot
+        cache or a chart still agrees with the changed value, so those workbooks
+        belong to the Office path.
+        """
+        lowered = {name.casefold(): name for name in self.names}
+        return tuple(
+            name for key, name in lowered.items()
+            if any(key.startswith(prefix.casefold()) for prefix in BLOCKED_PARTS)
+        )
+
     def has_formula(self) -> bool:
-        if CALC_CHAIN_PART in self.names:
+        if any(name.casefold() == CALC_CHAIN_PART for name in self.names):
             return True
         for name in self.names:
             if not name.startswith("xl/worksheets/") or not name.endswith(".xml"):
@@ -200,7 +216,11 @@ def _read_cell(cell: ET.Element, shared: tuple[str, ...]) -> _SheetCell:
     kind = cell.attrib.get("t") or "n"
     if kind == "inlineStr":
         node = _child(cell, "is")
-        return _SheetCell(ref, kind, "".join(p.text or "" for p in _children(node, "t")) if node else "")
+        if node is None:
+            return _SheetCell(ref, kind, "")
+        return _SheetCell(ref, kind, "".join(
+            part.text or "" for item in _children(node, "r") for part in _children(item, "t")
+        ) or "".join(part.text or "" for part in _children(node, "t")))
     value = _child(cell, "v")
     raw = value.text if value is not None else None
     if kind == "s":
@@ -228,6 +248,9 @@ class PythonXlsxValueCopyEditor:
 
         source = _WorkbookParts(source_bytes)
         try:
+            advanced = source.advanced_parts()
+            if advanced:
+                raise OfficeFidelityRequired("workbook carries parts the Office path must handle")
             if source.has_formula():
                 raise OfficeFidelityRequired("cached formula results would go stale")
             shared = source.shared_strings()

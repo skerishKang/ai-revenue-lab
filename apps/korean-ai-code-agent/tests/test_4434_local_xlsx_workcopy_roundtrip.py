@@ -91,12 +91,15 @@ def workbook_bytes(*, formula: bool = False) -> bytes:
     return buffer.getvalue()
 
 
-def device(root_path: str) -> LocalAgentDeviceProfile:
+def device(
+    root_path: str, *, device_id: str = DEVICE_ID, workspace_ref: str = WORKSPACE,
+    root_ref: str = "work",
+) -> LocalAgentDeviceProfile:
     return LocalAgentDeviceProfile(
-        device_id=DEVICE_ID,
-        workspace_ref=WORKSPACE,
+        device_id=device_id,
+        workspace_ref=workspace_ref,
         platform=LocalAgentPlatform.WINDOWS,
-        roots=(LocalRoot(root_ref="work", windows_path=root_path),),
+        roots=(LocalRoot(root_ref=root_ref, windows_path=root_path),),
     )
 
 
@@ -109,6 +112,7 @@ def file_request(
     run_id: str = RUN,
     device_id: str = DEVICE_ID,
     root_ref: str = "work",
+    at: datetime = NOW,
 ) -> LocalFileRequest:
     return LocalFileRequest(
         action_id=action_id,
@@ -117,12 +121,12 @@ def file_request(
         root_ref=root_ref,
         operation=operation,
         path_relative=path_relative,
-        requested_at=NOW - timedelta(minutes=1),
+        requested_at=at - timedelta(minutes=1),
         content=content,
     )
 
 
-def evidence_for(request: LocalFileRequest) -> WindowsFileAuthorityEvidence:
+def evidence_for(request: LocalFileRequest, *, at: datetime = NOW) -> WindowsFileAuthorityEvidence:
     invocation = windows_file_tool_invocation(request)
     fingerprint = file_request_fingerprint(request)
     permission = request.capability
@@ -145,8 +149,8 @@ def evidence_for(request: LocalFileRequest) -> WindowsFileAuthorityEvidence:
             invocation_sha256=tool_invocation_digest(invocation),
             requirement=ApprovalRequirement.USER_CONFIRMATION,
             step_index=1,
-            created_at=NOW - timedelta(minutes=2),
-            expires_at=NOW + timedelta(minutes=10),
+            created_at=at - timedelta(minutes=2),
+            expires_at=at + timedelta(minutes=10),
             approval_scope=(request.capability.value,),
         ),
         approval_decision=VerifiedApprovalDecision(
@@ -155,10 +159,10 @@ def evidence_for(request: LocalFileRequest) -> WindowsFileAuthorityEvidence:
             outcome=ApprovalOutcome.APPROVED,
             authority_ref="p01_4434_authority",
             evidence_ref="p01_4434_evidence",
-            decided_at=NOW - timedelta(seconds=30),
+            decided_at=at - timedelta(seconds=30),
         ),
         local_policy_ref="local_file_policy_v1",
-        expires_at=NOW + timedelta(minutes=5),
+        expires_at=at + timedelta(minutes=5),
     )
 
 
