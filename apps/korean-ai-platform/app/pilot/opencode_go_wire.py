@@ -275,6 +275,42 @@ def prepare_go_request(
     return wire, body, headers
 
 
+def _malformed_shape(reason: str) -> MalformedUpstreamResponse:
+    """The public 502 stays exactly as before; only the log gains the check name."""
+    error = MalformedUpstreamResponse()
+    error._go_shape_reason = reason
+    return error
+
+
+def _attach_go_shape_diagnostic(
+    error: MalformedUpstreamResponse, *, wire: str, upstream_model: str,
+    session_id: str | None, vendor_status: int, body: bytes, headers: dict[str, str],
+) -> None:
+    """Record which envelope check rejected a 2xx body, for the server log only.
+
+    A provider that answers 200 with an unusable shape gave the operator no
+    HTTP status to key on, so without the received prefix and the failing
+    check name the log line cannot say anything about the defect.
+    """
+    if getattr(error, "_go_vendor_diagnostic", None) is not None:
+        return
+    try:
+        message = _mask_vendor_body(
+            body[:_VENDOR_BODY_BYTES].decode("utf-8", errors="replace"), headers)
+    except Exception:
+        # A diagnostic must never change which error the caller receives.
+        message = "[vendor body unavailable]"
+    error._go_vendor_diagnostic = {
+        "vendor_status": vendor_status,
+        "vendor_message": message,
+        "provider_id": "opencode-go",
+        "reason": getattr(error, "_go_shape_reason", "unspecified"),
+        "upstream_model": upstream_model,
+        "vendor_path": _go_vendor_path(wire),
+        "session_header_kind": "minted" if session_id is None else "conversation",
+    }
+
+
 def _responses_function_calls(
     payload: dict[str, Any], declared_names: frozenset[str] | None,
 ) -> list[dict[str, Any]]:
@@ -308,31 +344,31 @@ def _responses_function_calls(
     try:
         validated = validate_tool_calls(calls, 0)
     except InvalidToolDeclaration as exc:
-        raise MalformedUpstreamResponse() from exc
+        raise _malformed_shape("tool_call_declaration_invalid") from exc
     if any(call["function"]["name"] not in permitted for call in validated):
         # The request is refused rather than relayed: an unvalidated call could
         # reach a tool executor that trusts whatever name the answer carried.
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("undeclared_tool_call")
     return validated
 
 
 def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latency_ms: int, response_bytes: int, declared_names: frozenset[str] | None = None) -> dict[str, Any]:
     """Normalize three incompatible envelopes to B14 chat completion shape."""
     if not isinstance(payload, dict):
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("payload_not_object")
     actual = payload.get("model")
     if actual is not None and actual != upstream_model:
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("model_name_mismatch")
     usage = payload.get("usage")
     usage = usage if isinstance(usage, dict) else {}
     tool_calls: list[dict[str, Any]] = []
     if wire == "chat/completions":
         choices = payload.get("choices")
         if not isinstance(choices, list) or not choices:
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("choices_missing")
         item = choices[0]
         if not isinstance(item, dict) or not isinstance(item.get("message"), dict):
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("choice_message_missing")
         text = item["message"].get("content")
         finish = item.get("finish_reason")
         in_tokens = usage.get("prompt_tokens")
@@ -340,10 +376,10 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
     elif wire == _TOOL_WIRE:
         status = payload.get("status")
         if status != "completed":
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("responses_status_incomplete")
         chunks = []
         if not isinstance(payload.get("output"), list):
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("responses_output_missing")
         for item in payload["output"]:
             if isinstance(item, dict) and item.get("type") == "message":
                 for part in item.get("content", []):
@@ -358,9 +394,9 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
         out_tokens = usage.get("output_tokens")
     elif wire == "messages":
         if payload.get("type") != "message" or payload.get("role") != "assistant":
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("messages_type_or_role")
         if not isinstance(payload.get("content"), list):
-            raise MalformedUpstreamResponse()
+            raise _malformed_shape("messages_content_missing")
         chunks = [p["text"] for p in payload["content"]
                   if isinstance(p, dict) and p.get("type") == "text" and isinstance(p.get("text"), str)]
         text = "".join(chunks)
@@ -368,13 +404,13 @@ def _normalize_go_answer(wire: str, upstream_model: str, payload: Any, *, latenc
         in_tokens = usage.get("input_tokens")
         out_tokens = usage.get("output_tokens")
     else:
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("unknown_wire")
     if not isinstance(text, str):
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("answer_text_not_string")
     if not text.strip() and not tool_calls:
         raise UpstreamEmptyAnswer(finish)
     if any(v is not None and (type(v) is not int or v < 0) for v in (in_tokens, out_tokens)):
-        raise MalformedUpstreamResponse()
+        raise _malformed_shape("usage_tokens_invalid")
     message: dict[str, Any] = {"role": "assistant", "content": text or None}
     if tool_calls:
         message["tool_calls"] = tool_calls
@@ -442,43 +478,59 @@ def _go_url(wire: str) -> str:
     return base + "/" + wire
 
 
+_VENDOR_BODY_BYTES = 512
+
+
+def _go_vendor_path(wire: str) -> str:
+    return "/inference/go/" + ("anthropic/v1/" if wire == "messages" else "openai/v1/") + wire
+
+
+def _mask_vendor_body(text: str, headers: dict[str, str]) -> str:
+    """Reduce a raw vendor body to a loggable 200-char prefix.
+
+    Exact values this request itself sent are masked first, so a provider that
+    echoes the credential back cannot leak it through the diagnostic; the
+    generic redaction chain then covers anything else credential-shaped.
+    """
+    from .redaction import redact_sensitive
+    message = text
+    for key in ("Authorization", "x-api-key", "x-opencode-session"):
+        value = headers.get(key, "")
+        if key == "Authorization" and value.startswith("Bearer "):
+            value = value[7:]
+        if value:
+            message = message.replace(value, "[REDACTED]")
+    message = redact_sensitive(message)
+    message = re.sub(r"(?i)\bbearer\s+[^\s\"'<>;,]+", "[REDACTED]", message)
+    message = re.sub(r"(?i)\bsk-[A-Za-z0-9_.-]*", "[REDACTED]", message)
+    message = re.sub(
+        r"""(?i)\b(?:api[ _-]?key|access[_-]?token|refresh[_-]?token|"""
+        r"""client[_-]?secret|password|token|secret|authorization)\b["']?"""
+        r"""\s*[:=]\s*["']?[^\s"';,}]*""",
+        "[REDACTED]", message,
+    )
+    message = re.sub(r"[A-Za-z0-9_+/=.-]{24,}", "[REDACTED]", message)
+    message = re.sub(r"[\x00-\x1f\x7f]", " ", message)
+    return message[:200]
+
+
 async def _go_vendor_diagnostic(
     response: httpx.Response, *, upstream_model: str, session_id: str | None,
     wire: str, headers: dict[str, str],
 ) -> dict[str, Any]:
     """Read a bounded error prefix for server logs; never alter the public error."""
-    from .redaction import redact_sensitive
     raw = bytearray()
     try:
-        iterator = response.aiter_bytes(chunk_size=512)
+        iterator = response.aiter_bytes(chunk_size=_VENDOR_BODY_BYTES)
         try:
             async for block in iterator:
-                raw.extend(block[:512 - len(raw)])
-                if len(raw) == 512:
+                raw.extend(block[:_VENDOR_BODY_BYTES - len(raw)])
+                if len(raw) == _VENDOR_BODY_BYTES:
                     break
         finally:
             await iterator.aclose()
-        message = raw.decode("utf-8", errors="replace")
-        # Also mask exact values already used for this request, including a
-        # provider session echo. No header value becomes diagnostic metadata.
-        for key in ("Authorization", "x-api-key", "x-opencode-session"):
-            value = headers.get(key, "")
-            if key == "Authorization" and value.startswith("Bearer "):
-                value = value[7:]
-            if value:
-                message = message.replace(value, "[REDACTED]")
-        message = redact_sensitive(message)
-        message = re.sub(r"(?i)\bbearer\s+[^\s\"'<>;,]+", "[REDACTED]", message)
-        message = re.sub(r"(?i)\bsk-[A-Za-z0-9_.-]*", "[REDACTED]", message)
-        message = re.sub(
-            r"""(?i)\b(?:api[ _-]?key|access[_-]?token|refresh[_-]?token|"""
-            r"""client[_-]?secret|password|token|secret|authorization)\b["']?"""
-            r"""\s*[:=]\s*["']?[^\s"';,}]*""",
-            "[REDACTED]", message,
-        )
-        message = re.sub(r"[A-Za-z0-9_+/=.-]{24,}", "[REDACTED]", message)
-        message = re.sub(r"[\x00-\x1f\x7f]", " ", message)
-        message = message[:200]
+        message = _mask_vendor_body(
+            raw.decode("utf-8", errors="replace"), headers)
     except Exception:
         # An unreadable error body must still map to the original HTTP error.
         message = "[vendor body unavailable]"
@@ -486,10 +538,9 @@ async def _go_vendor_diagnostic(
         "vendor_status": response.status_code,
         "vendor_message": message,
         "provider_id": "opencode-go",
+        "reason": "upstream_http_status",
         "upstream_model": upstream_model,
-        "vendor_path": "/inference/go/" + (
-            "anthropic/v1/" if wire == "messages" else "openai/v1/"
-        ) + wire,
+        "vendor_path": _go_vendor_path(wire),
         "session_header_kind": "minted" if session_id is None else "conversation",
     }
 
@@ -522,10 +573,11 @@ def log_go_vendor_error(
         return False
     logger.warning(
         "alpha_error request_id=%s code=%s status=%d attempt=%d "
-        "provider_id=%s upstream_model=%s request_path=%s vendor_path=%s "
+        "provider_id=%s reason=%s upstream_model=%s request_path=%s vendor_path=%s "
         "session_header_kind=%s fallback=%s vendor_status=%d vendor_message=%s",
         request_id, error.code, error.status_code, attempt,
-        diagnostic["provider_id"], diagnostic["upstream_model"],
+        diagnostic["provider_id"], diagnostic.get("reason", "unspecified"),
+        diagnostic["upstream_model"],
         json.dumps(request_path[:200]), diagnostic["vendor_path"],
         diagnostic["session_header_kind"], "fallback" if fallback else "primary",
         diagnostic["vendor_status"],
@@ -547,9 +599,11 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
     start = time.monotonic()
+    vendor_status = 0
     try:
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
             async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
+                vendor_status = resp.status_code
                 if not 200 <= resp.status_code < 300:
                     await _raise_go_vendor_error(
                         resp, upstream_model=upstream_model, session_id=session_id,
@@ -563,14 +617,28 @@ async def call_go_model(*, model_id: str, upstream_model: str,
         raise UpstreamTimeout() from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
+
+    def describe(error: MalformedUpstreamResponse) -> None:
+        _attach_go_shape_diagnostic(
+            error, wire=wire, upstream_model=upstream_model,
+            session_id=session_id, vendor_status=vendor_status,
+            body=raw, headers=headers,
+        )
+
     try:
         parsed = json.loads(raw)
     except (ValueError, UnicodeError) as e:
-        raise MalformedUpstreamResponse() from e
-    return _normalize_go_answer(wire, upstream_model, parsed,
-                                latency_ms=int((time.monotonic() - start) * 1000),
-                                response_bytes=len(raw),
-                                declared_names=_permitted_tool_names(body))
+        error = _malformed_shape("response_not_json")
+        describe(error)
+        raise error from e
+    try:
+        return _normalize_go_answer(wire, upstream_model, parsed,
+                                    latency_ms=int((time.monotonic() - start) * 1000),
+                                    response_bytes=len(raw),
+                                    declared_names=_permitted_tool_names(body))
+    except MalformedUpstreamResponse as error:
+        describe(error)
+        raise
 
 
 def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: str) -> tuple[str | None, str | None, StreamUsage | None, bool]:
