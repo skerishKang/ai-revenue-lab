@@ -284,6 +284,40 @@ placeholder source into a customer-facing route.
   Cloudflare authentication), and doing it by hand outside that workflow would
   bypass the reviewed gate.
 
+## The write-consent precedent is web-side, and it is not the TXT transcript (2026-10-26)
+
+Refinement to the section above, found while checking whether a write approval
+shape exists at all. It does — just not as a PC command-material format:
+
+- `docs/operations/CLAW_HARK_3933_EXPLICIT_WEB_WRITE_ENGINE_P01_20261011.md`
+  records an implemented, default-OFF milestone: `POST /quote-edit/request`
+  reserves a WRITE pause in migration 034
+  `claw_web_xlsx_quote_write_pauses`, calls the private Engine ToolRuntime, and
+  returns `waiting_p01`; `POST /quote-edit/decision` accepts only
+  `{"decision":"approve"}` or `{"decision":"deny"}`, reserves a separately
+  scoped owner WRITE consent row (033) *before* dispatch, submits the first-party
+  Core decision with server-held pause/continuation, and consumes once. A denied
+  or unverifiable result never writes a workbook, and the browser gets a second,
+  distinct "save the revised XLSX" click.
+- The flag chain that turns it on is explicit and stacked
+  (`apps/padiem-chat/worker.py:1410-1444`):
+  `PADIEM_WEB_XLSX_P01_TOOL_DISPATCH_ENABLED` →
+  `PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED=true` →
+  `PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED=true` (plus `runtime_mode == "b14"`
+  and a workspace document store) → `PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED`, each
+  with its own operator-managed caller. None of these appears in
+  `apps/padiem-chat/wrangler.toml`, so the whole web write lane is off in the
+  committed production configuration.
+
+So the shape the PC revision lane wants — a real owner decision on a XLSX write,
+recorded durably, verified before any byte is written — already exists on the
+web side. What it is bound to is a **private R2 workcopy**, not a file on a
+customer PC, and it reaches the Engine rather than a device command. The
+integration question is therefore narrower than "invent write consent": make the
+PC workcopy the object of that same pause/decision flow, so the #5835 lane's
+trusted plan source can be satisfied by a decision the owner actually gave,
+instead of the TXT lane's server-transcribed read.
+
 ## Still not enabled, and who owns it
 
 | Item | State | Owner |
