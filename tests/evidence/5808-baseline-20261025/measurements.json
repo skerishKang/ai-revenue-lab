@@ -1,0 +1,115 @@
+{
+  "audit_date_utc": "2026-10-25T04:37:50.523216+00:00",
+  "ci_run": 40160769048,
+  "ci_job": 121072827160,
+  "ci_message": "tablet-portrait-768 Claw conversation overlaps topbar: y=-198.0 topbar_bottom=65.0",
+  "assertion_script": ".github/scripts/b62_chat_gutter_visual_qa.py:491-494",
+  "predicate": "conversation_y >= round(topbar_bottom, 2) - 1",
+  "ci_artifact": {
+    "id": 12586473309,
+    "name": "b62-browser-visual-qa",
+    "gutter_screenshots": [
+      "desktop-1920-shared-gutter.png",
+      "compact-1280-shared-gutter.png",
+      "tablet-landscape-960-shared-gutter.png"
+    ],
+    "tablet-portrait-768-shared-gutter.png": "absent; exception precedes screenshot statement at line 548"
+  },
+  "execution": "Linux local runtime after Desktop Commander monthly quota blocked CGI access",
+  "font_note": "Local screenshots show missing Korean glyphs/fallback font; absolute y differs from CI. All three local cases use identical browser, fonts, server command and viewport. No reruns were made.",
+  "server_command": "python -m uvicorn app.main:app --host 127.0.0.1 --port 8765",
+  "cases": [
+    {
+      "case": "a",
+      "sha": "7e766592c0198c013cadbf4bdf74ef6e22177015",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "chromium": "140.0.7339.16",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "conversation_y": -139.0,
+      "topbar_bottom": 65.0,
+      "expected_y_min": 64.0,
+      "target_status": "FAIL",
+      "capture_status": "FAIL",
+      "scroll_y": 201,
+      "tracked_status_after": "",
+      "message": "tablet-portrait-768 Claw conversation overlaps topbar: y=-139.0 topbar_bottom=65.0",
+      "screenshot": "a-7e766592-768x1024.png",
+      "screenshot_sha256": "135d522d65336b71ff611c193dbe3e34b120a2c2f421079fb6b38f4199f0fa46"
+    },
+    {
+      "case": "b",
+      "sha": "9d5b0060ea415fcf275089addc4ceedf93684d93",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "chromium": "140.0.7339.16",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "conversation_y": -139.0,
+      "topbar_bottom": 65.0,
+      "expected_y_min": 64.0,
+      "target_status": "FAIL",
+      "capture_status": "FAIL",
+      "scroll_y": 201,
+      "tracked_status_after": "",
+      "message": "tablet-portrait-768 Claw conversation overlaps topbar: y=-139.0 topbar_bottom=65.0",
+      "screenshot": "b-9d5b0060-768x1024.png",
+      "screenshot_sha256": "e8ce3637859ecb1a2368f5c36648b135fec2f1d1d40ac579cd64af7add61e37d"
+    },
+    {
+      "case": "c",
+      "sha": "8bb7bd3ae357236395f70946d79b71bd78599124",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "chromium": "140.0.7339.16",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "conversation_y": -90.0,
+      "topbar_bottom": -90.0,
+      "expected_y_min": -91.0,
+      "target_status": "PASS",
+      "capture_status": "PASS",
+      "scroll_y": 156,
+      "tracked_status_after": "",
+      "screenshot": "c-8bb7bd3a-768x1024.png",
+      "screenshot_sha256": "8ebbdd70276fd4bc81a16214f36b80cb1867fca96bed552ec41aa94684d6fe95"
+    }
+  ],
+  "source_changes": 0,
+  "ci_reruns": 0,
+  "merges": 0
+}
