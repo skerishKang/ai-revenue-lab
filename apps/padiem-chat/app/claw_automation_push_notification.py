@@ -36,6 +36,7 @@ Invariants
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any
 
 from .claw_push_subscriptions import deliver_inbox_push
@@ -43,6 +44,13 @@ from .claw_push_subscriptions import deliver_inbox_push
 # The existing inbox surface the notification links back to.
 INBOX_ALERTS_PATH = "/claw?view=inbox&kind=alerts"
 INBOX_TASKS_PATH = "/claw?view=inbox&kind=tasks"
+
+# #5034: the deep link into the run that produced this result. The reference is
+# the server-derived run id only — no title, no document, no ERP content and no
+# secret ever reaches the lock screen or the URL. An id outside the existing
+# logical-id grammar falls back to the plain inbox surface.
+RUN_LINK_PATH = "/claw?notify=run&run_id={run_id}"
+_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
 
 _COMPLETED_TITLE = "자동화 완료"
 _COMPLETED_BODY = "예약 작업이 완료되었습니다."
@@ -64,7 +72,9 @@ class AutomationPushOutcome:
         return False
 
 
-def _notification_text(*, created_kind: str | None, run_status: str) -> tuple[str, str, str]:
+def _notification_text(
+    *, created_kind: str | None, run_status: str, run_id: str | None,
+) -> tuple[str, str, str]:
     """The bounded lock-screen text and the result link for one terminal run."""
 
     failed = str(run_status).upper() not in {"COMPLETED"}
@@ -72,8 +82,11 @@ def _notification_text(*, created_kind: str | None, run_status: str) -> tuple[st
         title, body = _FAILED_TITLE, _FAILED_BODY
     else:
         title, body = _COMPLETED_TITLE, _COMPLETED_BODY
-    url = INBOX_TASKS_PATH if created_kind == "task" else INBOX_ALERTS_PATH
-    return title, body, url
+    if created_kind == "task":
+        return title, body, INBOX_TASKS_PATH
+    if isinstance(run_id, str) and _RUN_ID.match(run_id):
+        return title, body, RUN_LINK_PATH.format(run_id=run_id)
+    return title, body, INBOX_ALERTS_PATH
 
 
 async def notify_terminal_run(
@@ -86,6 +99,7 @@ async def notify_terminal_run(
     created_kind: str | None,
     created: bool,
     run_status: str,
+    run_id: str | None = None,
 ) -> AutomationPushOutcome:
     """Attempt one device notification for an already-projected terminal run.
 
@@ -102,7 +116,7 @@ async def notify_terminal_run(
     if not workspace_id or not member_id:
         return AutomationPushOutcome(state="not_configured")
     title, body, url = _notification_text(
-        created_kind=created_kind, run_status=run_status
+        created_kind=created_kind, run_status=run_status, run_id=run_id
     )
     try:
         outcome = await deliver_inbox_push(

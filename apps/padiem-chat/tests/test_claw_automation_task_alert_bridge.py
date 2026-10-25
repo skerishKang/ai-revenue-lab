@@ -218,6 +218,9 @@ def _seed_alert(*, store: MemoryTaskAlertStore, row, status: ClawAlertStatus) ->
         created_at=NOW,
         status=status,
         visible_to_members=(make_owner().member_id,),
+        # #5034: a seeded row is a row this projection wrote, so it carries the
+        # same result references. A seed without them is a foreign identity.
+        linked_refs=(row.run_id, row.rule_id),
     )
     store.alerts[alert.alert_id] = alert
     return alert

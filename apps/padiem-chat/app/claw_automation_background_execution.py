@@ -576,6 +576,7 @@ async def _project_terminal_run(
             created_kind=getattr(projection, "created_kind", None),
             created=bool(getattr(projection, "created", False)),
             run_status=str(getattr(scheduled_run, "status", "")),
+            run_id=getattr(scheduled_run, "run_id", None),
         )
 
 

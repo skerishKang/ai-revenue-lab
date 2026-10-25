@@ -152,6 +152,12 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
             visible_to_members: tuple[str, ...] = (
                 () if visible_to_all else ((member_id,) if member_id else ())
             )
+            # #5034: read the result reference back in the order it was written,
+            # so a projected alert can point a click at its own run instead of
+            # an undifferentiated inbox.
+            linked_refs = tuple(
+                str(value) for value in (row.get("source_id"), row.get("linked_ref")) if value
+            )
             return ClawAlert(
                 alert_id=str(row["id"]),
                 workspace_id=str(row["workspace_id"]),
@@ -161,6 +167,7 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
                 created_at=_parse_time(row["created_at"]),
                 status=ClawAlertStatus(row["status"]),
                 visible_to_members=visible_to_members,
+                linked_refs=linked_refs,
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise WorkspaceStorageError("claw alert row is invalid") from exc
@@ -217,11 +224,18 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         now = _utcnow()
         visible_to_all = alert.visible_to_all
         member_id = "" if visible_to_all else (alert.visible_to_members[0] if alert.visible_to_members else "")
+        # #5034: an alert's result reference is carried in the two logical-ref
+        # columns a task already uses, in order. No second reference table and
+        # no migration is introduced, and a third reference is refused rather
+        # than silently dropped.
+        if len(alert.linked_refs) > 2:
+            raise WorkspaceStorageError("claw alert carries more refs than the row can store")
+        refs = list(alert.linked_refs) + [None, None]
         await self._run(
             f"INSERT INTO {_TASK_ALERT_TABLE} "
             "(id, workspace_id, kind, status, title, created_at, updated_at, "
             " member_id, due_date, source_id, linked_ref, severity, kind_value, visible_to_all) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?)",
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)",
             alert.alert_id,
             alert.workspace_id,
             "alert",
@@ -230,6 +244,8 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
             alert.created_at.isoformat(),
             now.isoformat(),
             member_id,
+            refs[0],
+            refs[1],
             alert.severity.value,
             alert.kind.value,
             1 if visible_to_all else 0,

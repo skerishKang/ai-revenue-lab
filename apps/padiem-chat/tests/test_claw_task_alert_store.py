@@ -74,6 +74,7 @@ def _A(
     status: ClawAlertStatus = ClawAlertStatus.ACTIVE,
     created_at: _dt.datetime | None = None,
     visible_to_members: tuple[str, ...] = (),
+    linked_refs: tuple[str, ...] = (),
 ) -> ClawAlert:
     return ClawAlert(
         alert_id=alert_id,
@@ -84,6 +85,7 @@ def _A(
         created_at=created_at or _now(),
         status=status,
         visible_to_members=visible_to_members,
+        linked_refs=linked_refs,
     )
 
 
@@ -264,6 +266,39 @@ async def test_alert_member_scoped_is_visible_to_only_listed_member():
     assert none_view is None
     own_view = await store.get_alert("alert-1", workspace_id="ws-1", member_id="member-1")
     assert own_view is not None
+
+
+# ---- #5034: the alert result reference rides the existing ref columns ----
+async def test_alert_result_reference_round_trips_in_order():
+    store, db = _store()
+    await store.add_alert(_A(
+        kind=ClawAlertKind.AUTOMATION,
+        linked_refs=("sched_run_" + "a" * 64, "rule-1"),
+    ))
+    row = db.rows["alert-1"]
+    assert row["source_id"] == "sched_run_" + "a" * 64
+    assert row["linked_ref"] == "rule-1"
+    got = await store.get_alert("alert-1", workspace_id="ws-1")
+    assert got is not None
+    assert got.linked_refs == ("sched_run_" + "a" * 64, "rule-1")
+    listed = await store.list_alerts("ws-1")
+    assert listed[0].linked_refs == ("sched_run_" + "a" * 64, "rule-1")
+
+
+async def test_alert_without_a_reference_keeps_the_empty_state():
+    store, db = _store()
+    await store.add_alert(_A())
+    assert db.rows["alert-1"]["source_id"] is None
+    assert db.rows["alert-1"]["linked_ref"] is None
+    got = await store.get_alert("alert-1", workspace_id="ws-1")
+    assert got is not None and got.linked_refs == ()
+
+
+async def test_a_third_alert_reference_is_refused_not_dropped():
+    store, db = _store()
+    with pytest.raises(WorkspaceStorageError):
+        await store.add_alert(_A(linked_refs=("a-1", "b-2", "c-3")))
+    assert "alert-1" not in db.rows
 
 
 # ---- 3. task status update ----

@@ -1415,10 +1415,38 @@
   // The other projections read the same rule so they cannot drift apart.
   window.PadiemSessionPresentation = resolveSessionPresentation;
 
+  // #5034: a Web Push click can be a cold start, so the run reference arrives in
+  // the URL before any view exists. The query carries only the server-derived
+  // occurrence id — no title, no document, no secret. It is consumed once, only
+  // after the session proves this owner, and it opens the SAME run target the
+  // calendar link-back already owns instead of a second navigation authority.
+  const NOTIFICATION_RUN_REF = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+  let pendingNotificationRunId = "";
+  {
+    const params = new URLSearchParams(window.location.search || "");
+    const candidate = params.get("notify") === "run" ? params.get("run_id") : "";
+    if (typeof candidate === "string" && NOTIFICATION_RUN_REF.test(candidate)) {
+      pendingNotificationRunId = candidate;
+    }
+  }
+
   function applyAuthState(data) {
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    if (authenticated && pendingNotificationRunId) {
+      const notificationRunId = pendingNotificationRunId;
+      pendingNotificationRunId = "";
+      const remaining = new URLSearchParams(window.location.search || "");
+      remaining.delete("notify");
+      remaining.delete("run_id");
+      const remainingText = remaining.toString();
+      window.history.replaceState(
+        null, "",
+        window.location.pathname + (remainingText ? `?${remainingText}` : "") + (window.location.hash || ""),
+      );
+      openClawRunTarget(notificationRunId);
+    }
     // A completed or concurrent sign-in invalidates any pending Android handoff.
     if (authenticated && androidHandoff) clearAndroidHandoff();
     // #4488: a decision that began in a previous session generation must never
