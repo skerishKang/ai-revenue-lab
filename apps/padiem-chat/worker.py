@@ -154,10 +154,10 @@ def _push_delivery_parts(env: Any, db_binding: Any) -> tuple[Any, Any, str]:
 
     The scheduled lane runs outside the request app, so it reads the same
     reviewed Worker bindings the request app already reads: the device registry
-    from ``PADIEM_CHAT_DB``, the VAPID authority from the three push secrets and
-    the subscription scope from the reviewed public origin. A missing part is
-    reported honestly through the existing ``not_configured`` state; the inbox
-    record and the automation run itself are never affected.
+    from the existing Chat D1 binding, the VAPID authority from the three push
+    secrets and the subscription scope from the reviewed public origin. A
+    missing part is reported honestly through the existing ``not_configured``
+    state; the inbox record and the automation run itself are never affected.
     """
     origin = binding_value(env, _PUSH_SCOPE_ORIGIN_ENV)
     if db_binding is None or not isinstance(origin, str) or not origin.strip():
