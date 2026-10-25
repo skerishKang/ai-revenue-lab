@@ -187,6 +187,25 @@ until a REAL chat session is carried through B64 end-to-end (login-verified
 read AND a revoked-session denial both observed live). `D1_LIVE_VERIFIED=NO`
 until the migration is applied and a live record round-trip is observed.
 
+**Secret-binding verification levels (do not conflate):** the activation
+gate's settings readback proves EXISTENCE and TYPE of
+`PADIEM_SESSION_SECRET` only. Cloudflare secret values are write-only, so
+equality with the chat product's `PADIEM_CHAT_SESSION_SECRET` can be proven
+ONLY by the live signed-session E2E (a chat-issued cookie must verify in B64,
+and a revoked session must be denied). Note that sharing the signing key
+expands credential authority even though B64 code only verifies — the B64
+worker contains no minting code, and the secret value never leaves the
+approval path.
+
+**Binding-baseline contract:** any operational binding change on this worker
+follows `docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md` §8 — owner
+decision recorded first, a reviewed
+`.github/binding_baselines/b64-ai-reward-router.json` amendment travelling
+with the same PR, and the run logged (binding names/types, device, KST time,
+wrangler log filename — never values, tokens or account IDs). The
+activation gate's readback is evidence for that record, not a baseline
+amendment by itself.
+
 ## Auth decision: Plan A confirmed — Plan B (chat-verifies-identity) is NOT implementable without changing the chat product (2026-10-26)
 
 Measured from the current chat source:
