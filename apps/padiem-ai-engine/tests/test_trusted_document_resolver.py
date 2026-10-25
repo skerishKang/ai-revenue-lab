@@ -110,7 +110,7 @@ PINNED_SHA256 = {
 # files changed on those commits; the guards these canaries exist to catch —
 # path, encryption, DTD, inflation — are untouched.
 # Original note for the first re-pin: the OOXML archive gate now refuses a    # decompression bomb by inflation ratio instead of refusing a document for    # its size or member count. Both files changed on that commit; the guard this    # canary exists to catch is untouched.
-    CORE_PACKAGE / "document_normalization.py": "bead6ceffd336c2158586af4c92486c45f2b3f5609ca7f6250794d3b39c5db5a",
+    CORE_PACKAGE / "document_normalization.py": "8bede4cbba00c1ffdc1d1cd066175cd68fc1e916049af3dedf0dcd528aa58a64",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "226c0e210cb302c354340fb388e6baa2d4b8db62aa240e07434a395d674a7bef",
