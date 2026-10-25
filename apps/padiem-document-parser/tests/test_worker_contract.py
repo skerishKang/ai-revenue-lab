@@ -387,3 +387,258 @@ def test_worker_has_no_identity_storage_or_logging_surface(worker_module) -> Non
     for forbidden in ("D1", "R2", "owner", "account", "workspace", "print(", "console.log"):
         assert forbidden not in source
     assert "handle_isolated_parser_request" in source
+
+
+# --- E: bounded streaming receive (CENTRAL review of #5817) -------------------
+#
+# A production Workers request exposes its body as a ReadableStream, so the
+# Worker must enforce the contract ceiling while bytes arrive. These cases use
+# the workerd shape (body.getReader()) and deliberately no text() method: a
+# fallback to whole-body buffering would raise AttributeError instead of passing.
+
+
+class _StreamResult:
+    def __init__(self, *, value: Any = None, done: bool = False) -> None:
+        self.value = value
+        self.done = done
+
+
+class _StreamReader:
+    def __init__(self, chunks: list[Any], *, fail_at: int | None = None) -> None:
+        self._chunks = list(chunks)
+        self.read_calls = 0
+        self.cancel_calls = 0
+        self.release_calls = 0
+        self._fail_at = fail_at
+
+    async def read(self) -> _StreamResult:
+        self.read_calls += 1
+        if self._fail_at is not None and self.read_calls == self._fail_at:
+            raise RuntimeError(r"stream read failed C:\Users\operator\secret.pdf")
+        if not self._chunks:
+            return _StreamResult(done=True)
+        return _StreamResult(value=self._chunks.pop(0))
+
+    async def cancel(self) -> None:
+        self.cancel_calls += 1
+
+    def releaseLock(self) -> None:
+        self.release_calls += 1
+
+
+class _StreamBody:
+    def __init__(self, reader: _StreamReader) -> None:
+        self.reader = reader
+        self.get_reader_calls = 0
+
+    def getReader(self) -> _StreamReader:
+        self.get_reader_calls += 1
+        return self.reader
+
+
+class _StreamRequest:
+    """A Workers-shaped request: streaming body, no text() convenience."""
+
+    def __init__(
+        self,
+        chunks: list[Any],
+        *,
+        headers: Any = None,
+        url: str = PARSE_URL,
+        method: str = "POST",
+        fail_at: int | None = None,
+    ) -> None:
+        self.url = url
+        self.method = method
+        self.headers = _Headers({"content-type": "application/json", **(headers or {})})
+        self.reader = _StreamReader(chunks, fail_at=fail_at)
+        self.body = _StreamBody(self.reader)
+
+
+def _stream_request(chunks: list[Any], **overrides: Any) -> _StreamRequest:
+    return _StreamRequest(chunks, **overrides)
+
+
+async def _fetch(worker_module, request: Any):
+    return await worker_module.Default().fetch(request)
+
+
+async def test_stream_request_is_reassembled_and_parsed(worker_module) -> None:
+    body = encode_request(name="report.pdf", media_type=PDF_MIME, payload=_text_pdf(["streamed"]))
+    chunks = [body[i : i + 97] for i in range(0, len(body), 97)]
+    request = _stream_request(chunks)
+
+    response = await _fetch(worker_module, request)
+    envelope = _envelope(response)
+
+    assert response.status == 200
+    assert envelope["type"] == "document"
+    assert "streamed" in envelope["text"]
+    # The stream was consumed to the end, never cancelled, and its lock released.
+    assert request.reader.read_calls == len(chunks) + 1
+    assert request.reader.cancel_calls == 0
+    assert request.reader.release_calls == 1
+    assert not hasattr(request, "text")
+
+
+async def test_oversized_stream_without_content_length_stops_mid_read(
+    worker_module, monkeypatch
+) -> None:
+    monkeypatch.setattr(worker_module, "ISOLATED_PARSER_MAX_REQUEST_BYTES", 32)
+    request = _stream_request([b"x" * 20, b"y" * 20, b"never-read"])
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 413
+    assert _envelope(response)["code"] == "request_too_large"
+    # The bound is enforced on the chunk that crosses it: the third chunk was
+    # never pulled, and the stream is cancelled rather than left open.
+    assert request.reader.read_calls == 2
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+    assert request.reader._chunks == [b"never-read"]
+
+
+async def test_understated_content_length_is_enforced_during_read(
+    worker_module, monkeypatch
+) -> None:
+    monkeypatch.setattr(worker_module, "ISOLATED_PARSER_MAX_REQUEST_BYTES", 8)
+    # The header claims eight bytes and the body does start with eight that fit;
+    # the ninth byte is what makes the request oversized.
+    request = _stream_request([b"1234", b"5678", b"9"], headers={"content-length": "8"})
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 413
+    assert _envelope(response)["code"] == "request_too_large"
+    assert request.body.get_reader_calls == 1
+    assert request.reader.read_calls == 3
+    assert request.reader.cancel_calls == 1
+
+
+async def test_declared_oversize_is_refused_before_the_stream_opens(
+    worker_module,
+) -> None:
+    request = _stream_request(
+        [b"x"],
+        headers={"content-length": str(ISOLATED_PARSER_MAX_REQUEST_BYTES + 1)},
+    )
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 413
+    assert _envelope(response)["code"] == "request_too_large"
+    assert request.body.get_reader_calls == 0
+    assert request.reader.read_calls == 0
+
+
+async def test_exact_bound_stream_is_not_refused_by_the_size_gate(worker_module, monkeypatch) -> None:
+    monkeypatch.setattr(worker_module, "ISOLATED_PARSER_MAX_REQUEST_BYTES", 4)
+    request = _stream_request([b"12", b"34"])
+
+    response = await _fetch(worker_module, request)
+
+    # A body of exactly the ceiling reaches the contract handler, which answers
+    # its bounded envelope error rather than a transport refusal.
+    assert response.status == 200
+    assert _envelope(response) == {"type": "error", "code": "isolated_parser_response_invalid"}
+    assert request.reader.read_calls == 3
+    assert request.reader.cancel_calls == 0
+
+
+async def test_empty_stream_is_refused_as_empty_body(worker_module) -> None:
+    request = _stream_request([])
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 400
+    assert _envelope(response)["code"] == "empty_request_body"
+    assert request.reader.release_calls == 1
+
+
+async def test_stream_failure_is_refused_without_leaking_detail(worker_module) -> None:
+    request = _stream_request([b"{}", b"more"], fail_at=2)
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 400
+    envelope = _envelope(response)
+    assert envelope == {"type": "error", "code": "invalid_request_body"}
+    assert "secret" not in response.body.decode("utf-8")
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+
+
+async def test_typed_array_shaped_chunks_are_decoded(worker_module) -> None:
+    class _ToPyChunk:
+        """A workerd chunk proxy that only exposes the Pyodide to_py() bridge."""
+
+        def __init__(self, raw: bytes) -> None:
+            self._raw = raw
+
+        def to_py(self) -> list[int]:
+            return list(self._raw)
+
+    class _ToBytesChunk:
+        """The shape the Python Workers SDK uses for a Uint8Array chunk."""
+
+        def __init__(self, raw: bytes) -> None:
+            self._raw = raw
+
+        def to_bytes(self) -> bytes:
+            return self._raw
+
+    body = encode_request(name="report.pdf", media_type=PDF_MIME, payload=_text_pdf(["proxy"]))
+    third = len(body) // 3
+    request = _stream_request(
+        [
+            _ToPyChunk(body[:third]),
+            _ToBytesChunk(body[third : 2 * third]),
+            memoryview(body[2 * third :]),
+        ]
+    )
+
+    response = await _fetch(worker_module, request)
+    envelope = _envelope(response)
+
+    assert response.status == 200
+    assert envelope["type"] == "document"
+    assert "proxy" in envelope["text"]
+
+
+async def test_unconvertible_chunk_is_refused_without_leaking(worker_module) -> None:
+    request = _stream_request([object()])
+
+    response = await _fetch(worker_module, request)
+
+    assert response.status == 400
+    assert _envelope(response)["code"] == "invalid_request_body"
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+
+
+@pytest.mark.parametrize(
+    ("name", "media_type", "payload", "expected"),
+    [
+        ("report.pdf", PDF_MIME, _text_pdf(["page one", "The launch code is 2824."]),
+         "The launch code is 2824."),
+        ("report.docx", DOCX_MIME, _zip_bytes({"word/document.xml": _docx_xml()}), "Alpha | 42"),
+        ("deck.pptx", PPTX_MIME,
+         _zip_bytes({"ppt/slides/slide1.xml": _pptx_xml("Slide one: overview")}),
+         "Slide one: overview"),
+        ("book.xlsx", XLSX_MIME, _xlsx_bytes(), "[Revenue!B2] 10"),
+    ],
+)
+async def test_document_parsing_regression_over_the_stream(
+    worker_module, name: str, media_type: str, payload: bytes, expected: str
+) -> None:
+    body = encode_request(name=name, media_type=media_type, payload=payload)
+    request = _stream_request([body[i : i + 64] for i in range(0, len(body), 64)])
+
+    response = await _fetch(worker_module, request)
+    envelope = _envelope(response)
+
+    assert response.status == 200
+    assert envelope["type"] == "document"
+    assert expected in envelope["text"]
+

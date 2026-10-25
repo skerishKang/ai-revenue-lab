@@ -22,6 +22,16 @@ parser. Every document-level failure is HTTP 200 with
 `{"type": "error", "code": "..."}`; route/method/content-type/size refusals are
 non-200 and Chat treats them as an unavailable parser service.
 
+`ISOLATED_PARSER_MAX_REQUEST_BYTES` is enforced while the body is received, not
+after: the ceiling is checked on every chunk of the request `ReadableStream` and
+the stream is cancelled at the chunk that crosses it, so an absent or
+understated `Content-Length` cannot make this Worker buffer more than the
+contract allows. A declared length that is oversized or unparsable is refused
+before the stream is opened. This is the same incremental reader shape as
+`apps/padiem-ai-engine/app/cloudflare_request_body.py` and
+`apps/padiem-chat/app/service_binding_response.py`; a Workers request exposes
+`body.getReader()` and chunk conversion, so no new byte limit is introduced.
+
 ## Exposure
 
 - `workers_dev = false`; no route is configured. The Worker is reachable only
@@ -71,6 +81,7 @@ closed; it never degrades to the in-process parser.
 ## Local verification
 
 - `apps/padiem-chat/tests/test_2824_isolated_parser_transport.py`
+- `apps/padiem-chat/tests/test_2824_parser_authority_concurrency.py`
 - `packages/padiem-ai-core/tests/test_isolated_parser_async_contract.py`
 - `apps/padiem-document-parser/tests/test_worker_contract.py`
 
