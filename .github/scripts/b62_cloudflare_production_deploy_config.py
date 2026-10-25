@@ -213,6 +213,7 @@ def build_production_config(
     attach_web_secrets_store: bool = False,
     commission_hark_browser: bool = False,
     attach_connector_broker_service: bool = False,
+    attach_document_parser_service: bool = False,
     activate_claw_public_search: bool = False,
     attach_grafana_telemetry: bool = False,
     attach_oracle_mesh: bool = False,
@@ -330,6 +331,22 @@ def build_production_config(
     # Exactly ONE new service is allowed and the existing canonical Identity
     # target must be present. No implicit new Broker, Edge or account authority.
     services_for_output = list(live["services"])
+    if attach_document_parser_service:
+        expected_name = "DOCUMENT_PARSER_SERVICE"
+        expected_target = "padiem-document-parser"
+        declared = [item for item in repo.get("services", []) if item.get("binding") == expected_name]
+        if len(declared) != 1 or declared[0].get("service") != expected_target:
+            raise ProductionConfigError("Parser binding source declaration mismatch")
+        all_names = ({item["name"] for key in ("assets", "services", "d1", "r2") for item in live[key]}
+                     | set(live["vars"]) | set(live["secret_names"]))
+        existing = [item for item in live["services"] if item["name"] == expected_name]
+        if existing:
+            if len(existing) != 1 or existing[0].get("service") != expected_target or existing[0].get("environment") not in (None, "production"):
+                raise ProductionConfigError("Parser live target drift")
+        elif expected_name in all_names:
+            raise ProductionConfigError("Parser binding name collision")
+        else:
+            services_for_output.append({"type": "service", "name": expected_name, "service": expected_target})
     if attach_connector_broker_service:
         if (owner_d1_database_id is not None or attach_web_secrets_store
                 or commission_hark_browser):
@@ -774,6 +791,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
     parser.add_argument("--attach-existing-web-secrets-store", action="store_true", help="add exactly two Owner-approved same-account web Secret Store bindings")
     parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
+    parser.add_argument("--attach-document-parser-service", action="store_true", help="add exactly the declared private Parser Worker service binding")
     parser.add_argument("--attach-existing-connector-broker", action="store_true",
                         help="generate a candidate with only the existing canonical Broker Service Binding; does not deploy")
     parser.add_argument("--attach-existing-grafana-telemetry", action="store_true",
@@ -856,11 +874,17 @@ def main(argv: list[str] | None = None) -> int:
             ):
                 if live["vars"].get(flag, "false").lower() == "true":
                     raise ProductionConfigError("active Hark flag blocks Browser install: " + flag)
+        if args.attach_document_parser_service and any((args.attach_existing_connector_broker, args.commission_hark_browser,
+                args.attach_existing_web_secrets_store, args.owner_d1_database_id is not None, args.activate_claw_public_search,
+                args.attach_existing_grafana_telemetry, args.attach_existing_oracle_mesh, args.attach_existing_claw_desktop_secret,
+                args.attach_existing_b14_service_proof_secret, args.attach_existing_resend_secret)):
+            raise ProductionConfigError("Parser attach must be the only additive mode")
         config_text = build_production_config(
             live, args.repo_config, args.public_base_url, args.owner_d1_database_id,
             attach_web_secrets_store=args.attach_existing_web_secrets_store,
             commission_hark_browser=args.commission_hark_browser,
             attach_connector_broker_service=args.attach_existing_connector_broker,
+            attach_document_parser_service=args.attach_document_parser_service,
             activate_claw_public_search=args.activate_claw_public_search,
             attach_grafana_telemetry=args.attach_existing_grafana_telemetry,
             attach_oracle_mesh=args.attach_existing_oracle_mesh,
