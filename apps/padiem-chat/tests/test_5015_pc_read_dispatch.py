@@ -608,3 +608,48 @@ def test_a_run_the_owner_does_not_have_gets_no_progress_write(monkeypatch):
     status, body = _dispatch(state, _base_payload(run_id="chat_pcq_" + "e" * 24))
     assert status == 404, body
     assert state.history_store.status_writes == []
+
+
+@pytest.mark.parametrize("pending,valid_proof", [(True, True), (False, True), (True, False)])
+def test_signed_stream_context_promotes_only_a_pending_owned_turn(monkeypatch, pending, valid_proof):
+    # A genuine Engine tool choice may promote the stored ordinary user turn;
+    # neither a browser request nor a signed request without that receipt may.
+    monkeypatch.setattr(__import__(__name__, fromlist=["RUN"]), "RUN", "chat_pcq_" + "c" * 32)
+    history = _History()
+    history.run_rows.clear()
+    promotions = []
+    async def promote(**fields):
+        promotions.append(fields)
+        if not pending or fields["user_id"] != OWNER:
+            return None
+        row = {"run_id": RUN, "user_id": OWNER, "conversation_id": CONVERSATION,
+               "workspace_id": WORKSPACE, "status": "pending", "action": fields["action"],
+               "result_summary": None}
+        history.run_rows[RUN] = row
+        return row
+    history.promote_chat_stream_pc_run = promote
+    state = _state(monkeypatch, history)
+    claim = {"version": 1, "requested": "files_list", "admitted": "files_list",
+             "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
+    request = _SignedRequest(state, _context_payload(), scope=claim)
+    if not valid_proof:
+        request.headers["X-Claw-Engine-Proof"] = "0" * 64
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(request))
+    body = json.loads(response.body)
+    if not valid_proof:
+        assert response.status_code == 401, body
+        assert promotions == [] and history.run_rows == {}
+    elif not pending:
+        assert response.status_code == 404, body
+        assert history.run_rows == {}
+    else:
+        assert response.status_code == 200, body
+        assert len(promotions) == 1
+        assert promotions[0]["action"] == "pc_files_query"
+        assert history.scopes[(OWNER, RUN)] == claim
+        assert history.rows == {}  # context selection never creates a dispatch
+        denied = asyncio.run(routes.oracle_mesh_engine_chat_files_call(
+            _SignedRequest(state, _base_payload(op="read", path="notes.txt"), scope=claim)))
+        assert denied.status_code == 403, json.loads(denied.body)
+        assert json.loads(denied.body)["error"]["code"] == "pc_scope_denied"
+        assert history.rows == {}

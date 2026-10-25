@@ -452,21 +452,90 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
     return await _check_mesh_grant(request, session, device_id=device_id)
 
 
-async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
-    """Whether the resolved route's B14 catalog row declares native tools.
-
-    The catalog is the only authority: an unreadable catalog, a disabled row,
-    an owner-excluded route or a missing ``tools`` tag withholds the
-    declaration. This reads no model/provider policy and changes no route.
-    """
-    source = getattr(request.app.state, "b14_catalog_source", None)
-    lister = getattr(source, "list_registered_models", None)
-    if not callable(lister):
-        return False
+async def resolve_chat_pc_stream_context(
+    request: Request, *, uid: str, requested_device_id: str | None = None,
+) -> dict | None:
+    """Server-authored context only; no browser field or Broker registration grants it."""
+    from .pc_work_context import (
+        SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+        read_saved_device_selection, resolve_pc_work_context,
+    )
     try:
-        rows = await lister()
+        session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
+        if session is None or not subject_id:
+            return None
+        selection = await read_saved_device_selection(request, owner_id=uid, workspace_id=workspace_id)
+        if selection.status == SAVED_SELECTION_UNAVAILABLE:
+            return None
+        selected = selection.device_id if selection.status == SAVED_SELECTION_SELECTED else None
+        context = await resolve_pc_work_context(
+            request, owner_id=uid, workspace_id=workspace_id,
+            session_id=session.session_id, selected_device_id=selected,
+        )
+        if not context.tool_available or not context.selected_confirmed:
+            return None
+        device_id = context.execution_device_id
+        if not is_pc_device_id(device_id):
+            return None
+        if requested_device_id is not None and requested_device_id != device_id:
+            return None
+        if not await _check_mesh_grant(request, session, device_id=device_id):
+            return None
+        # The existing command grant allows drive inventory; file scopes also
+        # require the same approved root that the signed file API resolves.
+        from .oracle_mesh_read_return_routes import _engine_pc_files_target
+        target, error = await _engine_pc_files_target(
+            request, session=session, selected_device_id=device_id,
+        )
+        scopes = ["query_drives"]
+        if error is None and target is not None:
+            scopes.extend(["files_list", "files"])
+        return {"pc_tools": {"device_id": device_id, "allowed_scopes": scopes},
+                "subject_id": subject_id, "workspace_id": workspace_id}
     except Exception:
-        return False
+        # An unreadable authority withholds tools and preserves the normal turn.
+        return None
+
+
+async def promote_chat_pc_stream_run(
+    request: Request, *, uid: str, run_id: str, device_id: str | None, action: str,
+) -> dict | None:
+    """For signed Engine callbacks only; no receipt means no new run."""
+    store = getattr(request.app.state, "history_store", None)
+    promoter = getattr(store, "promote_chat_stream_pc_run", None)
+    if not callable(promoter) or _client_lane_run_id(run_id) is None:
+        return None
+    session, _subject, workspace = await _resolve_chat_owner(request, uid)
+    if not await _check_mesh_grant(request, session, device_id=device_id):
+        return None
+    return await promoter(user_id=uid, run_id=run_id, workspace_id=workspace, action=action)
+
+
+async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
+    """Whether the resolved route's B14 registration declares native tools.
+
+    The registry is read through the existing normalized view
+    (``b14_model_choice_resolver`` — the same B14 owner-allowed/live-ready
+    catalog Claw and B66 consume), because B14's ``/api/pilot/models`` answers
+    with an object, not a list: the raw catalog source sees no rows and would
+    withhold the tools forever. An unreadable or unnormalized catalog withholds
+    the declaration, a disabled or owner-excluded route withholds it, and no
+    model/provider policy is copied here.
+    """
+    state = request.app.state
+    rows: Any = None
+    for name in ("b14_model_choice_resolver", "b14_catalog_source"):
+        source = getattr(state, name, None)
+        lister = getattr(source, "list_registered_models", None)
+        if not callable(lister):
+            continue
+        try:
+            candidate = await lister()
+        except Exception:
+            continue
+        if isinstance(candidate, list) and candidate:
+            rows = candidate
+            break
     if not isinstance(rows, list):
         return False
     for row in rows:

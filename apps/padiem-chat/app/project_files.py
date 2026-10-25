@@ -11,7 +11,30 @@ from .documents import MAX_DOCUMENT_CHARS, validate_document_fields
 
 PDF_MEDIA_TYPE = "application/pdf"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE})
+#: #5728 — SNS photo composition stores its images through the same
+#: project-file channel. The set matches the chat attachment allow-list
+#: (attachments.py); no new size or count limits are introduced, images reuse
+#: the existing binary body bound (MAX_BINARY_DOCUMENT_BYTES).
+IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
+BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
+
+#: #5728 — the same honesty the document path enforces through its parser:
+#: the declared image media type must match the bytes actually uploaded, so a
+#: text payload renamed to .png can never masquerade as a stored original.
+_IMAGE_MAGIC: dict[str, tuple[bytes, ...]] = {
+    "image/png": (b"\x89PNG\r\n\x1a\n",),
+    "image/jpeg": (b"\xff\xd8\xff",),
+}
+
+
+def image_media_type_matches(media_type: str, head: bytes) -> bool:
+    if media_type == "image/webp":
+        # RIFF container: the WEBP form tag sits at offset 8.
+        return head[:4] == b"RIFF" and head[8:12] == b"WEBP"
+    signature = _IMAGE_MAGIC.get(media_type)
+    if signature is None:
+        return False
+    return any(head.startswith(prefix) for prefix in signature)
 
 
 def _extracted_media_type(original_media_type: str) -> str:
@@ -323,7 +346,14 @@ class D1ProjectFileStore:
     ) -> ProjectFileRecord:
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
-        if media_type.startswith("extracted/"):
+        if media_type in IMAGE_PROJECT_FILE_MEDIA:
+            # #5728: photos carry no extractable text — the record keeps the
+            # declared image media type with an empty body. Routing them
+            # through validate_document_fields would 422 every upload on the
+            # real store (the in-memory fakes bypass this branch, which is
+            # how the merged slice shipped without seeing it).
+            document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
+        elif media_type.startswith("extracted/"):
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         else:
             document = validate_document_fields(name, media_type, text)

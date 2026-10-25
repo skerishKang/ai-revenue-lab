@@ -3239,6 +3239,12 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _error(503, "oracle_mesh_unconfigured")
     try:
         run_row = await history_store.get_claw_run(uid, payload["run_id"])
+        if run_row is None and product == "chat" and mode == "context" and scope_claim is not None:
+            from .chat_pc_drive import promote_chat_pc_stream_run
+            run_row = await promote_chat_pc_stream_run(
+                request, uid=uid, run_id=payload["run_id"], device_id=selected,
+                action="pc_files_query",
+            )
     except Exception:
         return _error(503, "oracle_mesh_run_unavailable")
     if (
@@ -3853,6 +3859,16 @@ async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_workspace_unavailable")
     if not command_workspace:
         return _error(503, "oracle_mesh_workspace_unavailable")
+    try:
+        store = getattr(request.app.state, "history_store", None)
+        if await store.get_claw_run(uid, payload["run_id"]) is None:
+            from .chat_pc_drive import promote_chat_pc_stream_run
+            await promote_chat_pc_stream_run(
+                request, uid=uid, run_id=payload["run_id"],
+                device_id=payload["device_id"], action="pc_drive_query",
+            )
+    except Exception:
+        return _error(503, "oracle_mesh_run_unavailable")
     return await dispatch_oracle_mesh_command_intent(
         request, command=payload["command"],
         wire={"run_id": payload["run_id"], "device_id": payload["device_id"], "confirmed": True},

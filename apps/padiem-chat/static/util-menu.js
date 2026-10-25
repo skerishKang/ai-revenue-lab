@@ -54,6 +54,46 @@
     return data && data.file ? data.file : null;
   }
 
+  // #5728: photos persist through the SAME project-file channel as text
+  // drafts — binary original upload, owner/project scoped, no new limits.
+  async function uploadProjectImage(pid, file) {
+    const res = await fetch("/api/projects/" + pid + "/files", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Padiem-Filename": encodeURIComponent(file.name),
+        "X-Padiem-Media-Type": file.type,
+      },
+      body: file,
+    });
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && data.file ? data.file : null;
+  }
+
+  async function deleteProjectFile(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId), {
+      method: "DELETE",
+      credentials: "include",
+    });
+    return res.ok || res.status === 404;
+  }
+
+  async function fetchOriginalDataUrl(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId) + "/original", {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   async function listProjectFiles(pid) {
     const res = await fetch("/api/projects/" + pid + "/files", { credentials: "include" });
     if (!res.ok) return [];
@@ -412,6 +452,29 @@
         });
       }
 
+      // #5728: the roster is one small text file that carries the
+      // composition's order and the blog insertion positions; the photo
+      // originals themselves are already stored (each add uploaded them).
+      // Rewrites replace the previous roster in place, so a stale roster can
+      // never resurrect a photo the owner deleted.
+      const PHOTO_ROSTER_NAME = "SNS 사진 구성.json";
+      // Roster writes serialize: two changes landing together must never
+      // leave two roster files behind (an older one would win a name lookup
+      // and silently revert the newer order or position).
+      let rosterWriteChain = Promise.resolve();
+      function writePhotoRoster(pid) {
+        if (!pid) return;
+        rosterWriteChain = rosterWriteChain.then(async () => {
+          const roster = { version: 1, photos: photos
+            .map((p) => ({ fileId: String(p.id), name: p.name, position: p.position })) };
+          const existing = await listProjectFiles(pid);
+          const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (previous) await deleteProjectFile(pid, previous.id);
+          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster));
+        }).catch(() => { /* the composition keeps working; the roster stays last-known */ });
+        return rosterWriteChain;
+      }
+
       function renderPhotoList() {
         photoCount.textContent = photos.length + "장";
         photoNote.textContent = photoNoteText();
@@ -430,7 +493,7 @@
             const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
             opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
             sel.value = item.position;
-            sel.addEventListener("change", () => { item.position = sel.value; renderPreview(); });
+            sel.addEventListener("change", () => { item.position = sel.value; renderPreview(); writePhotoRoster(currentPid); });
             posLabel.appendChild(sel);
             controls.appendChild(posLabel);
           }
@@ -443,11 +506,13 @@
         });
       }
 
-      photoList.addEventListener("click", (ev) => {
+      photoList.addEventListener("click", async (ev) => {
         const target = ev.target;
         if (!target || !target.dataset) return;
-        const id = Number(target.dataset.photoId);
-        const index = photos.findIndex((p) => p.id === id);
+        // Stored photos carry server ids like "file_<hex>"; local-only rows
+        // carry numeric ids. Compare as strings so both resolve.
+        const id = String(target.dataset.photoId);
+        const index = photos.findIndex((p) => String(p.id) === id);
         if (index < 0) return;
         if (target.dataset.move) {
           const to = index + Number(target.dataset.move);
@@ -455,26 +520,45 @@
           const [moved] = photos.splice(index, 1);
           photos.splice(to, 0, moved);
         } else if (target.dataset.action === "remove") {
+          if (photos[index].id && currentPid) {
+            const gone = await deleteProjectFile(currentPid, photos[index].id);
+            if (!gone) { alert("사진 삭제 실패: " + photos[index].name); return; }
+          }
           photos.splice(index, 1);
         } else {
           return;
         }
         renderPhotoList();
         renderPreview();
+        // #5728: every durable composition change (reorder and removal here,
+        // insertion positions on the selects) rewrites the roster file, so
+        // the order and the blog insertion positions outlive the session.
+        writePhotoRoster(currentPid);
       });
 
       photoAdd.addEventListener("click", () => photoInput.click());
       photoInput.addEventListener("change", async () => {
         const files = Array.from(photoInput.files || []);
+        const failed = [];
         for (const file of files) {
-          if (file && String(file.type || "").indexOf("image/") === 0) {
-            const item = await readPhotoFile(file);
-            if (item) photos.push(item);
-          }
+          if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
+          // #5728: a photo joins the composition only once the project-file
+          // upload succeeded — the thumbnail and the stored original are the
+          // same bytes, and a failed upload never looks "saved".
+          if (!currentPid) currentPid = await ensureProject();
+          if (!currentPid) { failed.push(file.name); continue; }
+          const stored = await uploadProjectImage(currentPid, file);
+          if (!stored) { failed.push(file.name); continue; }
+          const item = await readPhotoFile(file);
+          if (item) { item.id = stored.id; photos.push(item); }
         }
+        if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
         photoInput.value = "";
         renderPhotoList();
         renderPreview();
+        // An added photo is part of the durable composition as soon as its
+        // upload landed — the roster records it right away.
+        if (!failed.length) writePhotoRoster(currentPid);
       });
 
       function blogParagraphs(text) {
@@ -549,6 +633,53 @@
 
       panel.replaceChildren(form, result);
       const title = h3;
+
+      // #5728: re-entry restores the persisted composition ONCE, at build
+      // time — before any interaction with the photo list. The stored image
+      // files are the originals; when the roster file exists it fixes the
+      // order and the blog insertion positions, and photos it does not
+      // mention still surface after it so nothing the owner stored vanishes.
+      (async () => {
+        try {
+          if (!currentPid) currentPid = await ensureProject();
+          if (!currentPid) return;
+          const files = await listProjectFiles(currentPid);
+          const imageFiles = files.filter((f) => f.media_type === "image/png"
+            || f.media_type === "image/jpeg" || f.media_type === "image/webp");
+          if (photos.length || !imageFiles.length) return;
+          let order = null;
+          const rosterFile = files.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (rosterFile) {
+            const detailRes = await fetch("/api/projects/" + currentPid + "/files/" + encodeURIComponent(rosterFile.id), { credentials: "include" });
+            if (detailRes.ok) {
+              const detail = await detailRes.json().catch(() => null);
+              try {
+                const roster = JSON.parse(String((detail && detail.file && detail.file.content) || ""));
+                if (roster && Array.isArray(roster.photos)) order = roster.photos;
+              } catch (_) { /* unreadable roster falls back to the stored order */ }
+            }
+          }
+          const ordered = [];
+          if (order && order.length) {
+            order.forEach((entry) => {
+              const meta = imageFiles.find((f) => f.id === (entry && entry.fileId));
+              if (meta) ordered.push({ meta: meta, position: entry && typeof entry.position === "string" && entry.position ? entry.position : "auto" });
+            });
+            imageFiles.forEach((meta) => {
+              if (!ordered.some((o) => o.meta.id === meta.id)) ordered.push({ meta: meta, position: "auto" });
+            });
+          } else {
+            imageFiles.forEach((meta) => ordered.push({ meta: meta, position: "auto" }));
+          }
+          for (const entry of ordered) {
+            const dataUrl = await fetchOriginalDataUrl(currentPid, entry.meta.id);
+            if (!dataUrl) continue;
+            photos.push({ id: entry.meta.id, name: entry.meta.name, dataUrl: dataUrl, position: entry.position });
+          }
+          renderPhotoList();
+          renderPreview();
+        } catch (_) { /* restore is best effort; an empty composition stays honest */ }
+      })();
 
       async function gen() {
         const d = new FormData(form);

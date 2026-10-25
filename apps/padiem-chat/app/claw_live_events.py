@@ -296,3 +296,128 @@ def live_claw_sse(
         events(), media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
     )
+
+
+_PC_PROGRESS_FIELDS = frozenset({"pc_run_id", "dispatch_id", "kind", "stage", "sequence", "elapsed_ms"})
+_PC_HEARTBEAT_FIELDS = frozenset({"run_id", "trace_id", "elapsed_ms"})
+_PC_PROGRESS_STAGES = ("accepted", "picked_up", "executing", "result")
+
+
+def project_pc_stream_record(record: Any, *, pc_run_id: str) -> tuple[str, dict]:
+    """Closed display projection; no tool args, paths, outputs or authority."""
+    import re
+    if not isinstance(record, dict) or len(record) != 1:
+        raise ValueError("invalid PC display record")
+    kind = next(iter(record))
+    value = record[kind]
+    expected = _PC_PROGRESS_FIELDS if kind == "pc_progress" else _PC_HEARTBEAT_FIELDS
+    if kind not in ("pc_progress", "heartbeat") or not isinstance(value, dict) or set(value) != expected:
+        raise ValueError("invalid PC display fields")
+    ids = ("pc_run_id", "dispatch_id") if kind == "pc_progress" else ("run_id", "trace_id")
+    if any(not isinstance(value[k], str) or re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", value[k]) is None for k in ids):
+        raise ValueError("invalid PC display identity")
+    numbers = ("sequence", "elapsed_ms") if kind == "pc_progress" else ("elapsed_ms",)
+    if any(type(value[k]) is not int or value[k] < (1 if k == "sequence" else 0) for k in numbers):
+        raise ValueError("invalid PC display sequence")
+    if kind == "pc_progress" and (
+        value["pc_run_id"] != pc_run_id or value["kind"] not in ("command", "read")
+        or value["stage"] not in _PC_PROGRESS_STAGES
+    ):
+        raise ValueError("PC display correlation failed")
+    return kind, dict(value)
+
+
+def chat_pc_orchestration_sse(
+    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None,
+) -> StreamingResponse:
+    """Relay one verified Engine stream; heartbeats are presentation only."""
+    from .orchestration_bridge import B62OrchestrationError, _safe_events
+    async def events():
+        text_seen = False
+        pc_seen = False
+        scope_sent = False
+        progress = {}
+        identity = None
+        last_sequence = 0
+        observed_events = []
+        terminal = None
+        settled = False
+        try:
+            async for item in stream:
+                if "event" in item:
+                    event = _safe_events([item["event"]])[0]
+                    current = (event["run_id"], event["trace_id"], event["app_id"])
+                    if ((identity is not None and identity != current)
+                            or event["sequence"] <= last_sequence or terminal is not None):
+                        raise ValueError("Engine lifecycle correlation failed")
+                    identity, last_sequence = current, event["sequence"]
+                    observed_events.append(event)
+                    if event["kind"] in ("run_completed", "run_failed", "run_cancelled", "approval_paused"):
+                        terminal = event["kind"]
+                    # The final result, not a partial terminal, commits UI truth.
+                    continue
+                if "pc_progress" in item or "heartbeat" in item:
+                    kind, value = project_pc_stream_record(item, pc_run_id=pc_run_id)
+                    if kind == "heartbeat":
+                        if identity is None or (value["run_id"], value["trace_id"]) != identity[:2]:
+                            raise ValueError("Heartbeat correlation failed")
+                    else:
+                        pc_seen = True
+                        prior = progress.get(value["dispatch_id"])
+                        stage_index = _PC_PROGRESS_STAGES.index(value["stage"])
+                        if (prior is None and stage_index != 0) or (
+                            prior is not None and (value["sequence"] <= prior[0] or stage_index <= prior[1])
+                        ):
+                            raise ValueError("PC progress replay or regression")
+                        progress[value["dispatch_id"]] = (value["sequence"], stage_index)
+                        if not scope_sent and on_scope is not None:
+                            notice = await on_scope()
+                            from .history import PC_SCOPE_NOTICE_LABELS
+                            if notice in PC_SCOPE_NOTICE_LABELS.values():
+                                yield _frame("scope_notice", {"scope_notice": notice})
+                                scope_sent = True
+                    yield _frame(kind, value)
+                    continue
+                if "text_delta" in item:
+                    value = item["text_delta"]
+                    if not isinstance(value, dict) or set(value) != {"delta"} or not isinstance(value["delta"], str):
+                        raise ValueError("Invalid text delta")
+                    if terminal is not None:
+                        raise ValueError("Text after terminal")
+                    text_seen = True
+                    yield _frame("delta", value)
+                    continue
+                if set(item) != {"result"} or settled:
+                    raise ValueError("Invalid Engine result")
+                result = item["result"]
+                result_events = result.orchestration.get("events", [])
+                if not result_events or result_events != observed_events or terminal != result_events[-1]["kind"]:
+                    raise ValueError("Unverified Engine terminal")
+                if result.orchestration.get("approval_pause") is not None:
+                    yield _frame("orchestration_pause", {"orchestration": dict(result.orchestration)})
+                    settled = True
+                    return
+                if terminal != "run_completed" or not isinstance(result.answer, str) or not result.answer:
+                    raise B62OrchestrationError("engine_execution_failed", "Engine 실행이 완료되지 않았습니다.", status_code=502)
+                # The final PC answer is additional to a model's pre-tool text;
+                # ordinary streamed answers must never be emitted twice.
+                if pc_seen or not text_seen:
+                    yield _frame("delta", {"delta": result.answer})
+                fields = await on_completed(result)
+                done = {"done": True, **dict(done_fields or {}), **dict(fields or {})}
+                yield _frame("done", done)
+                settled = True
+            if not settled:
+                raise ValueError("Engine stream ended without a result")
+        except B62OrchestrationError as exc:
+            yield _frame("error", {"error": {"code": exc.code, "message": exc.user_message}})
+        except Exception:
+            yield _frame("error", {"error": {
+                "code": "invalid_engine_stream", "message": "AI 작업 스트림을 확인할 수 없습니다.",
+            }})
+        finally:
+            close = getattr(stream, "aclose", None)
+            if callable(close):
+                await close()
+    return StreamingResponse(events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})

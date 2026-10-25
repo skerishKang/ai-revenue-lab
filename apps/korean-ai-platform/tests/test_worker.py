@@ -95,20 +95,24 @@ class TestWranglerConfig:
         assert all(b["store_id"] == "f0b09ca04a7b43248154c773704a5616" for b in bindings)
         assert len({b["binding"] for b in bindings}) == len(bindings)
         expected_secret_targets = {
-            "PADIEM_B14_CREDENTIAL_01": "PADIEM_AGNES_API_KEY",
-            "PADIEM_B14_CREDENTIAL_02": "PADIEM_ATRIA_API_KEY",
-            "PADIEM_B14_CREDENTIAL_03": "PADIEM_B_AI_API_KEY",
-            "PADIEM_B14_CREDENTIAL_04": "PADIEM_EXLAB_API_KEY",
-            "PADIEM_B14_CREDENTIAL_05": "PADIEM_GEMINI_API_KEY",
-            "PADIEM_B14_CREDENTIAL_06": "PADIEM_INCEPTION_MERCURY_API_KEY",
-            "PADIEM_B14_CREDENTIAL_07": "PADIEM_INFRON_API_KEY",
-            "PADIEM_B14_CREDENTIAL_08": "PADIEM_KILO_API_KEY",
-            "PADIEM_B14_CREDENTIAL_09": "PADIEM_KIRAAI_API_KEY",
-            "PADIEM_B14_CREDENTIAL_10": "PADIEM_MODELSCOPE_API_KEY",
-            "PADIEM_B14_CREDENTIAL_11": "PADIEM_OPENCODE_API_KEY",
-            "PADIEM_B14_CREDENTIAL_12": "PADIEM_POOLSIDE_API_KEY",
-            "PADIEM_B14_CREDENTIAL_13": "PADIEM_TOKEN_HARBOR_API_KEY",
-            "PADIEM_B14_CREDENTIAL_14": "PADIEM_ZANSLAB_API_KEY",
+            # Owner decision 2026-10-25: every B14 slot points at the neutral
+            # Secrets Store entity of the same name; the provider-alias
+            # originals are retained in the store but are no longer referenced
+            # by this Worker's bindings.
+            "PADIEM_B14_CREDENTIAL_01": "PADIEM_B14_CREDENTIAL_01",
+            "PADIEM_B14_CREDENTIAL_02": "PADIEM_B14_CREDENTIAL_02",
+            "PADIEM_B14_CREDENTIAL_03": "PADIEM_B14_CREDENTIAL_03",
+            "PADIEM_B14_CREDENTIAL_04": "PADIEM_B14_CREDENTIAL_04",
+            "PADIEM_B14_CREDENTIAL_05": "PADIEM_B14_CREDENTIAL_05",
+            "PADIEM_B14_CREDENTIAL_06": "PADIEM_B14_CREDENTIAL_06",
+            "PADIEM_B14_CREDENTIAL_07": "PADIEM_B14_CREDENTIAL_07",
+            "PADIEM_B14_CREDENTIAL_08": "PADIEM_B14_CREDENTIAL_08",
+            "PADIEM_B14_CREDENTIAL_09": "PADIEM_B14_CREDENTIAL_09",
+            "PADIEM_B14_CREDENTIAL_10": "PADIEM_B14_CREDENTIAL_10",
+            "PADIEM_B14_CREDENTIAL_11": "PADIEM_B14_CREDENTIAL_11",
+            "PADIEM_B14_CREDENTIAL_12": "PADIEM_B14_CREDENTIAL_12",
+            "PADIEM_B14_CREDENTIAL_13": "PADIEM_B14_CREDENTIAL_13",
+            "PADIEM_B14_CREDENTIAL_14": "PADIEM_B14_CREDENTIAL_14",
             "PADIEM_GRAFANA_OTLP_TOKEN": "PADIEM_GRAFANA_OTLP_TOKEN",
             # #5224 deployment-owned server-to-server caller proof for the
             # platform-credential execution lane. Metadata only, like the rest.
@@ -124,7 +128,7 @@ class TestWranglerConfig:
         assert '[[secrets_store_secrets]]' in content
         assert 'binding = "PADIEM_B14_CREDENTIAL_03"' in content
         assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-        assert 'secret_name = "PADIEM_B_AI_API_KEY"' in content
+        assert 'secret_name = "PADIEM_B14_CREDENTIAL_03"' in content
         assert "PADIEM_B14_CREDENTIAL_03 =" not in content
 
 
@@ -184,7 +188,7 @@ def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     worker = WORKER_SRC.read_text()
     assert 'binding = "PADIEM_B14_CREDENTIAL_08"' in content
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_KILO_API_KEY"' in content
+    assert 'secret_name = "PADIEM_B14_CREDENTIAL_08"' in content
     assert 'secret_name = "KILO_API_KEY"' not in content
     assert "PADIEM_B14_CREDENTIAL_08 =" not in content
     assert '"PADIEM_B14_CREDENTIAL_08"' in worker
@@ -201,7 +205,7 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     assert '[[secrets_store_secrets]]' in content
     assert 'binding = "PADIEM_B14_CREDENTIAL_05"' in content
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_GEMINI_API_KEY"' in content
+    assert 'secret_name = "PADIEM_B14_CREDENTIAL_05"' in content
     assert "PADIEM_B14_CREDENTIAL_05 =" not in content
     # The declared binding must be the one the provider spec requires.
     assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"' in provider

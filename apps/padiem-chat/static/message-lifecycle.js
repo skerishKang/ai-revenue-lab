@@ -135,9 +135,56 @@
 
   // The real live status of this turn. The Claw lane already has a recorded
   // stage; the plain lane uses its own real facts.
+  const pcProgressByArticle = new WeakMap();
+  const pcStages = ["accepted", "picked_up", "executing", "result"];
+  const pcStageNames = {
+    accepted: ["PC 요청 접수", "PC request accepted"],
+    picked_up: ["PC 집기", "PC picked up"],
+    executing: ["PC 실행 중", "PC executing"],
+    result: ["PC 결과 확인", "PC result received"],
+  };
+  function exactFields(value, fields) {
+    return value && typeof value === "object" && !Array.isArray(value)
+      && Object.keys(value).sort().join("|") === fields.slice().sort().join("|");
+  }
+  function recordPcProgress(article, value, expectedRunId) {
+    if (!article || terminalCatalog[article.dataset.lifecycle]
+        || !exactFields(value, ["pc_run_id", "dispatch_id", "kind", "stage", "sequence", "elapsed_ms"])
+        || value.pc_run_id !== expectedRunId || !["command", "read"].includes(value.kind)
+        || !pcStages.includes(value.stage) || !Number.isSafeInteger(value.sequence) || value.sequence < 1
+        || !Number.isSafeInteger(value.elapsed_ms) || value.elapsed_ms < 0
+        || typeof value.dispatch_id !== "string" || !/^[A-Za-z0-9_.:-]{1,128}$/.test(value.dispatch_id)) return false;
+    const state = pcProgressByArticle.get(article) || { dispatches: new Map(), elapsed: 0 };
+    const prior = state.dispatches.get(value.dispatch_id);
+    const stage = pcStages.indexOf(value.stage);
+    if ((!prior && stage !== 0) || (prior && (value.sequence <= prior.sequence || stage <= prior.stage))) return false;
+    state.dispatches.set(value.dispatch_id, { sequence: value.sequence, stage });
+    state.stage = value.stage;
+    state.elapsed = Math.max(state.elapsed, value.elapsed_ms);
+    pcProgressByArticle.set(article, state);
+    refreshTaskStatus(article);
+    return true;
+  }
+  function recordPcHeartbeat(article, value) {
+    const state = article && pcProgressByArticle.get(article);
+    if (!state || terminalCatalog[article.dataset.lifecycle]
+        || !exactFields(value, ["run_id", "trace_id", "elapsed_ms"])
+        || !Number.isSafeInteger(value.elapsed_ms) || value.elapsed_ms < 0) return false;
+    // Liveness changes only the displayed clock, never a phase or completion.
+    state.elapsed = Math.max(state.elapsed, value.elapsed_ms);
+    refreshTaskStatus(article);
+    return true;
+  }
+
   function taskStatusFor(article, presentation) {
     const lifecycle = article && article.dataset ? article.dataset.lifecycle : null;
     if (lifecycle === states.WAITING_APPROVAL) return labeledStatus(taskStatusCatalog.approval);
+    const pc = article && pcProgressByArticle.get(article);
+    if (pc && !terminalCatalog[lifecycle]) {
+      const names = pcStageNames[pc.stage];
+      return Object.freeze({ state: "active",
+        label: text(names[0], names[1]) + " · " + Math.floor(pc.elapsed / 1000) + "s" });
+    }
     const hint = article && article.dataset ? article.dataset.taskHint : "";
     // A hint is a live status, so a turn that already has a real outcome stops
     // carrying it: the wording of a running turn cannot survive into a finished
@@ -222,6 +269,8 @@
     },
     set(article, state) {
       if (!article || !Object.values(states).includes(state)) return;
+      const pcLiveLabel = pcProgressByArticle.has(article) ? taskStatusFor(article, null)?.label : null;
+      if (terminalCatalog[state]) pcProgressByArticle.delete(article);
       article.dataset.lifecycle = state;
       // The card takes over the live status; the badge takes the terminal
       // outcome back when the turn ends. A turn that is no longer running keeps
@@ -230,6 +279,8 @@
       const current = article.querySelector ? article.querySelector(".capability-current") : null;
       if (current && !cardShowsLiveStatus(article)) {
         if (LIVE_STATUS_TEXTS.has((current.textContent || "").trim())) {
+          current.textContent = "";
+        } else if (pcLiveLabel && (current.textContent || "").trim() === pcLiveLabel) {
           current.textContent = "";
         }
         current.classList?.remove?.("padiem-activity-sweep");
@@ -248,6 +299,8 @@
     renderTaskStatus,
     recordTaskEvent,
     setTaskHint,
+    recordPcProgress,
+    recordPcHeartbeat,
   });
 
   const orchestrationKinds = Object.freeze({

@@ -9,7 +9,7 @@ The defect was measured twice on each side of the trust boundary:
   model picks ``claw.pc.read_file`` produces zero read dispatches and the
   Engine's own refusal body: ``400`` with ``error.code = "agent_step_failed"``.
 * This file runs the same turn from the other end — the shipped
-  ``static/chat-transport.js`` in a real Node VM, the real ``/api/orchestration``
+  ``static/chat-transport.js`` in a real Node VM, the direct Chat stream
   route, the real PC lane, the real ``B62EngineOrchestrationBridge`` and the real
   ``PadiemAiEngineClient`` — and pins the body that client actually puts on the
   wire plus the refusal the user actually sees.
@@ -174,7 +174,7 @@ def _flow(*, outcome: str):
         harness = _PcHarness()
         _, transport = _real_bridge(harness, outcome=outcome)
         steps = [{"messages": [{"role": "user", "content": CHROME_5574_TEXT}], "mint": True}]
-        result = await _run_flow(harness, steps, orchestration=True)
+        result = await _run_flow(harness, steps, orchestration=False)
         return harness, transport, result
 
     return asyncio.run(run())
@@ -232,20 +232,11 @@ def test_a_refused_pc_turn_is_a_refusal_and_never_a_general_answer() -> None:
     assert step["answer"] == "", step
     assert step["events"] == [], step
 
-    # The refusal arrives on the lane the turn runs on: the orchestration
-    # surface deferred, and the Engine's refusal came back on the stream route.
-    deferred = [
-        call for call in step["calls"]
-        if call["method"] == "POST" and call["path"] == "/api/orchestration"
-    ]
-    assert len(deferred) == 1, step["calls"]
-    assert deferred[0]["status"] == 409, deferred
-    refused = [
-        call for call in step["calls"]
-        if call["method"] == "POST" and call["path"] == "/api/chat/stream"
-    ]
-    assert len(refused) == 1, step["calls"]
-    assert refused[0]["status"] == ENGINE_REFUSAL_STATUS, refused
+    # This remains the legacy direct Chat JSON-wire control. The new Engine
+    # stream has separate transport/HTTP tests; this measured body stays exact.
+    assert not _has_call(step, "POST", "/api/orchestration")
+    refused = [call for call in step["calls"] if call["method"] == "POST" and call["path"] == "/api/chat/stream"]
+    assert len(refused) == 1 and refused[0]["status"] == ENGINE_REFUSAL_STATUS
 
     # The refusal is terminal for this turn: no answer frame was painted and
     # the turn was never re-asked as an ordinary chat answer.
