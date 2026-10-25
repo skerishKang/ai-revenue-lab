@@ -693,3 +693,54 @@ async def test_iterator_failure_does_not_blame_previous_valid_record():
     assert error["code"] == "invalid_engine_stream"
     assert error["cause"] == {"exception_class": "RuntimeError", "record_kind": "unknown"}
     assert "PRIVATE_DO_NOT_LEAK" not in text and "event: done" not in text
+
+
+@pytest.mark.parametrize("status", ["pending", "running", "completed", None])
+@pytest.mark.parametrize("typed_error", [True, False])
+async def test_terminal_stream_error_settles_only_the_existing_owner_pc_run(status, typed_error):
+    """Real D1 SQL: errors settle pending/running, never completed or text-only turns."""
+    import test_5015_multi_tool_result_storage as db
+    from app.claw_live_events import chat_pc_orchestration_sse
+    connection = db._database()
+    try:
+        store = db._store(connection)
+        if status is not None:
+            db._stage_run(connection, status=status, action="pc_files_query")
+        async def stream():
+            if typed_error:
+                raise B62OrchestrationError("upstream_auth_error", "safe error", status_code=403)
+            yield {"invalid": "PRIVATE_DO_NOT_LEAK"}
+        async def complete(result):
+            raise AssertionError("error cannot complete a run")
+        async def fail():
+            # Mirrors the owner-bound route callback, using the real atomic guard.
+            assert not await store.update_claw_run_status(db.OTHER_OWNER, db.RUN, "failed")
+            await store.update_claw_run_status(db.OWNER, db.RUN, "failed")
+        response = chat_pc_orchestration_sse(stream(), pc_run_id=db.RUN,
+            on_completed=complete, on_failed=fail)
+        text = b"".join([part async for part in response.body_iterator]).decode()
+        assert "event: error" in text and "event: done" not in text
+        assert "PRIVATE_DO_NOT_LEAK" not in text
+        row = await store.get_claw_run(db.OWNER, db.RUN)
+        assert (row["status"] if row else None) == (
+            "failed" if status in ("pending", "running") else status)
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+    finally:
+        connection.close()
+
+
+async def test_disconnected_pc_stream_does_not_claim_a_terminal_failure():
+    from app.claw_live_events import chat_pc_orchestration_sse
+    failures = []
+    async def stream():
+        raise asyncio.CancelledError()
+        yield
+    async def complete(result):
+        raise AssertionError("no final result")
+    async def fail():
+        failures.append(True)
+    response = chat_pc_orchestration_sse(stream(), pc_run_id="chat_pcq_" + "a" * 32,
+        on_completed=complete, on_failed=fail)
+    with pytest.raises(asyncio.CancelledError):
+        _ = [part async for part in response.body_iterator]
+    assert failures == []

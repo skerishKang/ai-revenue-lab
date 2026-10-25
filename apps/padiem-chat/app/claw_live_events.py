@@ -350,10 +350,19 @@ def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
 
 
 def chat_pc_orchestration_sse(
-    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None,
+    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None, on_failed=None,
 ) -> StreamingResponse:
     """Relay one verified Engine stream; heartbeats are presentation only."""
     from .orchestration_bridge import B62OrchestrationError, _safe_events
+    async def settle_failure():
+        if on_failed is not None:
+            try:
+                await on_failed()
+            except Exception:
+                # Preserve the original terminal error; never expose storage details.
+                import logging
+                logging.getLogger(__name__).warning("chat_pc_run_settle_unavailable")
+
     async def events():
         text_seen = False
         pc_seen = False
@@ -442,11 +451,13 @@ def chat_pc_orchestration_sse(
             if not settled:
                 raise ValueError("Engine stream ended without a result")
         except B62OrchestrationError as exc:
+            await settle_failure()
             error = {"code": exc.code, "message": exc.user_message}
             if exc.code == "invalid_engine_stream":
                 error["cause"] = _engine_stream_cause(exc, record_kind)
             yield _frame("error", {"error": error})
         except Exception as exc:
+            await settle_failure()
             yield _frame("error", {"error": {
                 "cause": _engine_stream_cause(exc, record_kind),
                 "code": "invalid_engine_stream", "message": "AI 작업 스트림을 확인할 수 없습니다.",
