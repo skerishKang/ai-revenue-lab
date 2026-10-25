@@ -12,7 +12,6 @@ test('pipeline accepts server-injected async repository rather than process sing
     async getByUser(userId) { calls.push('get:' + userId); return records.get(userId) ?? []; },
     async save(record) { calls.push('save:' + record.userId); records.set(record.userId, [...(records.get(record.userId) ?? []).filter(r => r.id !== record.id), record]); },
     async delete(userId, id) { calls.push('delete:' + userId); const before = records.get(userId) ?? []; records.set(userId, before.filter(r => r.id !== id)); return before.length !== records.get(userId)!.length; },
-    async clear() { records.clear(); },
   };
   const handler = createConsumerHttpHandler({
     loadCandidates: () => [],
