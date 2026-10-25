@@ -338,6 +338,115 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
     return bytes(buf)
 
 
+def _signature_as_extra_content(entry: dict[str, Any]) -> dict[str, Any]:
+    """Move B14's canonical ``signature`` onto Google's compatible field.
+
+    The same opaque token travels at ``extra_content.google.thought_signature``
+    whether it belongs to a tool call or to the assistant turn's own answer
+    text. The caller's object is never mutated.
+    """
+
+    clean = {key: value for key, value in entry.items() if key != "signature"}
+    extra = clean.get("extra_content")
+    extra = dict(extra) if isinstance(extra, dict) else {}
+    google = extra.get("google")
+    google = dict(google) if isinstance(google, dict) else {}
+    google["thought_signature"] = entry["signature"]
+    extra["google"] = google
+    clean["extra_content"] = extra
+    return clean
+
+
+def _openai_compatible_messages(
+    messages: list[dict[str, Any]], platform_provider_id: str,
+) -> list[dict[str, Any]]:
+    """Project B14's opaque signature onto an OpenAI-compatible wire.
+
+    B14's canonical field is ``signature`` (#4727), carried on a tool call and
+    on the assistant turn that answered with text. Google's compatible endpoint
+    expects the same value at ``extra_content.google.thought_signature``; every
+    other provider never saw this field and receives the exact message it
+    received before it existed. A call or turn without a signature keeps its
+    shape, and an unsigned message is passed through as the same object.
+    """
+
+    def project(entry: dict[str, Any]) -> dict[str, Any]:
+        if platform_provider_id == "google":
+            return _signature_as_extra_content(entry)
+        return {key: value for key, value in entry.items() if key != "signature"}
+
+    projected: list[dict[str, Any]] = []
+    for message in messages:
+        if not isinstance(message, dict):
+            projected.append(message)
+            continue
+        if message.get("role") == "tool" and "execution" in message:
+            # A compatible tool message has no outcome field, so the executor's
+            # status stays inside B14 and the provider receives the text its own
+            # schema allows. The native wire is the lane that carries it.
+            message = {
+                key: value for key, value in message.items() if key != "execution"
+            }
+        calls = message.get("tool_calls")
+        if isinstance(calls, list) and any(
+            isinstance(call, dict) and "signature" in call for call in calls
+        ):
+            message = {
+                **message,
+                "tool_calls": [
+                    project(call) if isinstance(call, dict) else call
+                    for call in calls
+                ],
+            }
+        if "signature" in message:
+            message = project(message)
+        projected.append(message)
+    return projected
+
+
+def _canonicalize_google_compat_signatures(response_data: dict[str, Any]) -> None:
+    """Move a Google compatible response's signature onto B14's own field."""
+
+    from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+    def canonical(entry: Any) -> None:
+        """One message or one tool call: provider field in, canonical field out."""
+
+        if not isinstance(entry, dict):
+            return
+        extra = entry.get("extra_content")
+        google = extra.get("google") if isinstance(extra, dict) else None
+        if not isinstance(google, dict) or "thought_signature" not in google:
+            return
+        signature = google.pop("thought_signature")
+        if (
+            not isinstance(signature, str)
+            or not signature.strip()
+            or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+        ):
+            raise MalformedUpstreamResponse()
+        entry["signature"] = signature
+        if not google:
+            extra.pop("google", None)
+        if not extra:
+            entry.pop("extra_content", None)
+
+    choices = response_data.get("choices")
+    if not isinstance(choices, list):
+        return
+    for choice in choices:
+        message = choice.get("message") if isinstance(choice, dict) else None
+        if not isinstance(message, dict):
+            continue
+        # The turn's own answer text can carry the token, not only its calls.
+        canonical(message)
+        calls = message.get("tool_calls")
+        if not isinstance(calls, list):
+            continue
+        for call in calls:
+            canonical(call)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -399,7 +508,7 @@ async def call_platform_chat_completions(
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
@@ -485,6 +594,10 @@ async def call_platform_chat_completions(
     # A small output budget may exhaust on reasoning alone; never call it success.
     # #5536: a declared tool makes a tool call a valid answer of its own.
     require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+    # #4727: a Google compatible call's thought signature is relayed under
+    # B14's canonical contract field so a consumer can return it unchanged.
+    if platform_provider_id == "google":
+        _canonicalize_google_compat_signatures(response_data)
     choices = response_data["choices"]
 
     usage = response_data.get("usage")
@@ -609,7 +722,7 @@ async def stream_platform_chat_completions(
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
         "stream": True,
     }
     if temperature is not None:

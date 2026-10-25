@@ -161,6 +161,9 @@ class ChatToolCall:
     name: str
     arguments: Mapping[str, Any]
     index: int | None = None
+    # #4727: opaque provider continuation token; the product relays it, never
+    # interprets it, and it grants no execution authority.
+    signature: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,6 +187,7 @@ def _project_tool_call(raw: B14StreamToolCall | None) -> ChatToolCall | None:
         name=raw.name,
         arguments=dict(raw.arguments),
         index=raw.index,
+        signature=raw.signature,
     )
 
 

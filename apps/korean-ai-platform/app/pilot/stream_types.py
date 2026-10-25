@@ -21,9 +21,15 @@ class StreamUsage:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
+    # A provider that bills reasoning separately reports it beside the answer.
+    # It is stored as the provider reported it, never folded into completion by
+    # arithmetic, so a later reader can tell a measured value from a derived one.
+    reasoning_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        for name in (
+            "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
+        ):
             value = getattr(self, name)
             if value is not None and (
                 isinstance(value, bool) or not isinstance(value, int) or value < 0
@@ -33,12 +39,18 @@ class StreamUsage:
 
 @dataclass(frozen=True, slots=True)
 class StreamToolCall:
-    """One complete function call, never an executable partial argument chunk."""
+    """One complete function call, never an executable partial argument chunk.
+
+    ``signature`` is the provider's opaque continuation token for this call
+    (a Gemini thought signature today). It is relayed verbatim and must be
+    returned on a native follow-up; nothing here interprets it.
+    """
 
     id: str
     name: str
     arguments: str
     index: int
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         if isinstance(self.index, bool) or not isinstance(self.index, int) or self.index < 0:
@@ -47,6 +59,15 @@ class StreamToolCall:
             raise ValueError("tool call fields must be non-empty strings")
         if not isinstance(json.loads(self.arguments), dict):
             raise ValueError("tool call arguments must encode an object")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("tool call signature must be a bounded string")
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,12 +79,26 @@ class StreamEvent:
     usage: StreamUsage | None = None
     done: bool = False
     tool_call: StreamToolCall | None = None
+    # The provider's opaque continuation token for THIS event's own text part.
+    # A call carries its token on the call itself; a signed answer text carries
+    # it here, so a native follow-up can return each token with the part it
+    # belonged to. Nothing in B14 interprets it.
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("event signature must be a bounded string")
         if self.usage is not None and not isinstance(self.usage, StreamUsage):
             raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):
@@ -74,6 +109,7 @@ class StreamEvent:
             self.delta_content is not None
             or self.usage is not None
             or self.tool_call is not None
+            or self.signature is not None
         ):
             raise ValueError("done event must not contain delta, tool call, or usage")
 
@@ -108,7 +144,13 @@ def _usage_from_payload(raw: Any) -> StreamUsage | None:
         ):
             raise MalformedUpstreamResponse()
         values[name] = value
-    return StreamUsage(**values)
+    details = raw.get("completion_tokens_details")
+    reasoning = details.get("reasoning_tokens") if isinstance(details, dict) else None
+    if reasoning is not None and (
+        isinstance(reasoning, bool) or not isinstance(reasoning, int) or reasoning < 0
+    ):
+        raise MalformedUpstreamResponse()
+    return StreamUsage(**values, reasoning_tokens=reasoning)
 
 
 def _parse_sse_frame(frame: bytes) -> StreamEvent | None:

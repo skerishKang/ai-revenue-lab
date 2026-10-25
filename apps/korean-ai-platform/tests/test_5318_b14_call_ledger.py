@@ -1098,3 +1098,137 @@ async def test_stream_enqueue_after_worker_reset_is_scheduled_on_ctx(monkeypatch
         while pending:
             await pending.pop()
         deferred._CURRENT.reset(outer_token)
+
+
+# ---------------------------------------------------------------------------
+# #5818 x #5806: the Google native tool wire and the ledger agree on what ran
+# ---------------------------------------------------------------------------
+
+_STREAM_PREVIEW = "/api/pilot/v1/chat/completions/stream-preview"
+_GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
+_PC_TOOL = {"type": "function", "function": {
+    "name": "pc_files",
+    "parameters": {"type": "object", "properties": {"path": {"type": "string"}}},
+}}
+
+
+def _capture_stream_lane(monkeypatch):
+    from app.pilot import stream_gateway as sg
+    from app.pilot.b14_runtime_config import runtime_config
+
+    written: list = []
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    monkeypatch.setattr(sg, "record_call", capture)
+    return written
+
+
+def _native_frame(parts, *, finish=None, usage=None) -> bytes:
+    candidate = {"index": 0, "content": {"role": "model", "parts": parts}}
+    if finish is not None:
+        candidate["finishReason"] = finish
+    payload = {
+        "responseId": "up_native", "modelVersion": "gemini-3.1-flash-lite",
+        "candidates": [candidate],
+    }
+    if usage is not None:
+        payload["usageMetadata"] = usage
+    return ("data: " + json.dumps(payload, ensure_ascii=False) + "\n\n").encode()
+
+
+def _stream_record(sse: bytes, payload: dict):
+    import httpx
+
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200, content=sse, headers={"Content-Type": "text/event-stream"}
+        )
+    )
+    with TestClient(app) as client:
+        response = client.post(_STREAM_PREVIEW, json=payload)
+    return response
+
+
+@pytest.mark.asyncio
+async def test_a_tool_stream_records_the_native_wire_and_its_thinking_tokens(
+    monkeypatch,
+):
+    """The tool lane answers on a different endpoint and bills a third count.
+
+    A row that said ``chat/completions`` here would name a wire the request
+    never used, and a total that exceeds its stored parts would look like an
+    arithmetic fault rather than a thinking model reporting its reasoning.
+    """
+    written = _capture_stream_lane(monkeypatch)
+    sse = b"".join([
+        _native_frame([{
+            "functionCall": {"id": "call_1", "name": "pc_files",
+                             "args": {"path": "a.txt"}},
+            "thoughtSignature": "sig_native",
+        }]),
+        _native_frame([], finish="STOP", usage={
+            "promptTokenCount": 120, "candidatesTokenCount": 9,
+            "totalTokenCount": 169, "thoughtsTokenCount": 40,
+        }),
+    ])
+
+    response = _stream_record(sse, {
+        "model": _GOOGLE_TOOL_MODEL, "stream": True,
+        "messages": [{"role": "user", "content": "파일 내용을 알려줘"}],
+        "tools": [_PC_TOOL],
+    })
+    assert response.status_code == 200, response.text
+    assert "event: tool_call" in response.text
+
+    await drain()
+    assert len(written) == 1
+    record = written[0]
+    assert record.protocol == "native"
+    assert record.attempts[0].protocol == "native"
+    assert record.outcome == "success"
+    assert record.finish_reason == "tool_calls"
+    assert record.token_source == "measured"
+    assert (record.prompt_tokens, record.completion_tokens, record.total_tokens) == (
+        120, 9, 169,
+    )
+    # The thinking count is stored as the provider reported it, never folded
+    # into the answer count by arithmetic.
+    assert record.reasoning_tokens == 40
+    assert record.attempts[0].reasoning_tokens == 40
+    # A completed tool call is visible output, so TTFT is measurable on this lane.
+    assert record.ttft_ms is not None and record.ttft_ms >= 0
+
+
+@pytest.mark.asyncio
+async def test_a_text_stream_keeps_the_compatible_wire_it_used(monkeypatch):
+    written = _capture_stream_lane(monkeypatch)
+
+    def frame(payload):
+        return ("data: " + json.dumps(payload) + "\n\n").encode()
+
+    sse = b"".join([
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {"content": "답"}, "finish_reason": None}]}),
+        frame({"id": "up_1", "model": "gemini-3.1-flash-lite", "choices": [
+            {"index": 0, "delta": {}, "finish_reason": "stop"}]}),
+        b"data: [DONE]\n\n",
+    ])
+
+    response = _stream_record(sse, {
+        "model": _GOOGLE_TOOL_MODEL, "stream": True,
+        "messages": [{"role": "user", "content": "한 마디만"}],
+    })
+    assert response.status_code == 200, response.text
+
+    await drain()
+    assert len(written) == 1
+    record = written[0]
+    assert record.protocol == "chat/completions"
+    assert record.reasoning_tokens is None

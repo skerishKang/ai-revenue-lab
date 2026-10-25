@@ -163,6 +163,22 @@ def _usage_dict(usage: StreamUsage) -> dict[str, int | None]:
     }
 
 
+def _ledger_usage(usage: StreamUsage) -> dict[str, Any]:
+    """The usage the ledger sees, which is the wire usage plus the reasoning part.
+
+    The public frame keeps its existing three counts; a provider that bills
+    reasoning tokens beside the answer is recorded with them, because the
+    ledger has a column for exactly that number and a stored total would
+    otherwise exceed the parts stored with it.
+    """
+    recorded = _usage_dict(usage)
+    if usage.reasoning_tokens is not None:
+        recorded["completion_tokens_details"] = {
+            "reasoning_tokens": usage.reasoning_tokens,
+        }
+    return recorded
+
+
 def _route_metadata(
     *,
     request_id: str,
@@ -245,10 +261,15 @@ def _encode_event(
 ) -> bytes:
     if event.tool_call is not None:
         call = event.tool_call
-        return b"event: tool_call\n" + _encode_data_frame({
+        payload = {
             "id": call.id, "name": call.name,
             "arguments": call.arguments, "index": call.index,
-        })
+        }
+        # #4727: an opaque provider continuation token is relayed only when
+        # the provider issued one; a call without it keeps its exact shape.
+        if call.signature is not None:
+            payload["signature"] = call.signature
+        return b"event: tool_call\n" + _encode_data_frame(payload)
     if event.done:
         if event.finish_reason is not None:
             return b"event: done\n" + _encode_data_frame({
@@ -285,6 +306,11 @@ def _encode_event(
     }
     if event.usage is not None:
         payload["usage"] = _usage_dict(event.usage)
+    # #4727: the token a provider attached to this chunk's own text part. It is
+    # present only when one was issued, so every other provider's frame keeps
+    # its exact pre-#4727 bytes.
+    if event.signature is not None:
+        payload["signature"] = event.signature
     return _encode_data_frame(payload)
 
 
@@ -367,6 +393,7 @@ async def _finalize_stream_ledger(
     *, outcome: str, error_code: str | None, usage: dict[str, Any] | None,
     finish_reason: str | None, response_model: str | None,
     attempt_started: float | None, ttft_ms: int | None, fallback_used: bool,
+    tools_declared: bool,
 ) -> None:
     """Close one streamed attempt and append its ledger row.
 
@@ -380,7 +407,8 @@ async def _finalize_stream_ledger(
         if attempt_started is not None else None
     )
     protocol = _protocol_for(
-        candidate.get("platform_provider_id"), candidate.get("upstream_model")
+        candidate.get("platform_provider_id"), candidate.get("upstream_model"),
+        tools_declared=tools_declared,
     )
     ledger.record_attempt(
         provider=candidate.get("provider"), model_id=candidate.get("model_id"),
@@ -423,6 +451,7 @@ async def _stream_body(
     ledger: LedgerDraft | None = None,
     candidate: dict[str, str] | None = None,
     attempt_started: float | None = None,
+    tools_declared: bool = False,
 ) -> AsyncIterator[bytes]:
     """Emit the primed events; after the first visible event, never switch routes."""
     # #5318: the stream lane is where TTFT is observable at all. First visible
@@ -440,7 +469,7 @@ async def _stream_body(
         if event.model:
             response_model = event.model
         if event.usage is not None:
-            reported_usage = _usage_dict(event.usage)
+            reported_usage = _ledger_usage(event.usage)
         if event.finish_reason:
             finish_reason = event.finish_reason
         if ttft_ms is None and attempt_started is not None and (
@@ -508,7 +537,7 @@ async def _stream_body(
                     error_code=error_code, usage=reported_usage,
                     finish_reason=finish_reason, response_model=response_model,
                     attempt_started=attempt_started, ttft_ms=ttft_ms,
-                    fallback_used=fallback_used,
+                    fallback_used=fallback_used, tools_declared=tools_declared,
                 )
             except Exception as ledger_exc:
                 skipped(request_id, ledger_exc)
@@ -562,6 +591,9 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             None,
             *fallback_candidates,
         ]
+        # A declared tool decides which Google wire family serves the request,
+        # so the ledger needs it before it knows who answered.
+        tools_declared = bool(body.get("tools"))
         # #5318: the streaming lane is the only place TTFT can be measured, and
         # it is also where a pre-token fallback can hide a failed provider. The
         # draft stays open across candidates so both survive into one record.
@@ -570,7 +602,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             ledger = LedgerDraft(
                 log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
                 protocol=_protocol_for(decision.platform_provider_id,
-                                       decision.selected_upstream_model),
+                                       decision.selected_upstream_model,
+                                       tools_declared=tools_declared),
                 streaming=True, requested_model_id=body["model"],
                 started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
             )
@@ -609,7 +642,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             dispatched = False
             attempt_started = time.perf_counter()
 
-            if body.get("tools"):
+            if tools_declared:
                 # #4727: a fallback candidate is a different provider wire, so
                 # the adapter check runs again for the model that will answer.
                 # A candidate refused here never reached a provider, and the
@@ -625,7 +658,9 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                                 upstream_model=upstream_model,
                                 route_id=attempt_candidate["route_id"], outcome="error",
                                 error_code=exc.code, dispatched=False,
-                                protocol=_protocol_for(platform_provider_id, upstream_model),
+                                protocol=_protocol_for(platform_provider_id,
+                                                       upstream_model,
+                                                       tools_declared=tools_declared),
                             )
                         except Exception as ledger_exc:
                             ledger = None
@@ -689,7 +724,8 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                                                 for event in reversed(initial_events)
                                                 if event.finish_reason), None),
                             dispatched=dispatched,
-                            protocol=_protocol_for(platform_provider_id, upstream_model),
+                            protocol=_protocol_for(platform_provider_id, upstream_model,
+                                                   tools_declared=tools_declared),
                         )
                     except Exception as ledger_exc:
                         ledger = None
@@ -719,6 +755,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     ledger=ledger,
                     candidate=attempt_candidate,
                     attempt_started=attempt_started,
+                    tools_declared=tools_declared,
                 ),
                 status_code=200,
                 media_type="text/event-stream",

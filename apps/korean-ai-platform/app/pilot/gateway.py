@@ -791,18 +791,28 @@ def _first_finish_reason(response_data: dict[str, Any]) -> str | None:
     return reason if isinstance(reason, str) and reason.strip() else None
 
 
-def _protocol_for(platform_provider_id: str | None, upstream_model: str | None) -> str:
+def _protocol_for(
+    platform_provider_id: str | None,
+    upstream_model: str | None,
+    *,
+    tools_declared: bool = False,
+) -> str:
     """Which wire family this physical call actually used.
 
     The ledger records a protocol per attempt because a fallback chain can walk
     two providers that speak different transports. Anything the gateway cannot
     name is stored as ``unknown`` rather than assumed to be chat completions.
+    #4727 added a second Google family: a declared tool is served by the native
+    ``streamGenerateContent`` adapter, not by the compatible endpoint, so the
+    row has to say which of the two answered.
     """
     if platform_provider_id == "opencode-go" and upstream_model:
         from .opencode_go_wire import _WIRE
 
         return _WIRE.get(upstream_model, "unknown")
     if platform_provider_id == "google":
+        if tools_declared:
+            return "native"
         return "chat/completions"
     return "chat/completions" if platform_provider_id else "unknown"
 

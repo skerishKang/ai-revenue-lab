@@ -25,12 +25,15 @@ from .contracts import (
     UsageMetadata,
 )
 from .tool_channel import (
+    TOOL_COMPLETED_STATUS,
     ToolCall,
     ToolDefinition,
     ToolResult,
+    normalize_execution_event,
     normalize_tool_choice,
     normalize_tool_definitions,
     normalize_tool_results,
+    normalize_turn_signature,
     parse_tool_calls,
     tool_result_messages,
 )
@@ -116,7 +119,7 @@ def _normalize_messages(
         if role == "assistant":
             # #5536: an assistant turn may carry the tool calls the model
             # requested, so the round trip can be replayed to the model.
-            extra = fields - {"role", "content", "tool_calls"}
+            extra = fields - {"role", "content", "tool_calls", "signature"}
             if extra:
                 raise ValueError(
                     f"messages[{index}] has unexpected fields: "
@@ -129,9 +132,19 @@ def _normalize_messages(
                 raise ValueError(
                     f"messages[{index}].content must be a non-empty string"
                 )
+            # #4727: the token a provider attached to this turn's answer text.
+            signature = message.get("signature")
+            if signature is not None:
+                if content is None:
+                    raise ValueError(
+                        f"messages[{index}] signature needs the answer text it belongs to"
+                    )
+                signature = normalize_turn_signature(signature)
             turn: dict[str, Any] = {"role": "assistant"}
             if content is not None:
                 turn["content"] = content.strip()
+            if signature is not None:
+                turn["signature"] = signature
             if "tool_calls" in message:
                 calls = parse_tool_calls(message.get("tool_calls"))
                 if not calls:
@@ -149,7 +162,7 @@ def _normalize_messages(
             continue
 
         # role == "tool": the result of one earlier tool call.
-        extra = fields - {"role", "content", "tool_call_id", "name"}
+        extra = fields - {"role", "content", "tool_call_id", "name", "execution"}
         if extra:
             raise ValueError(
                 f"messages[{index}] has unexpected fields: "
@@ -160,8 +173,16 @@ def _normalize_messages(
             raise ValueError(
                 f"messages[{index}].tool_call_id must be a non-empty string"
             )
+        # #4727: the executor's own outcome travels with its result.
+        execution = message.get("execution")
+        if execution is not None:
+            execution = dict(normalize_execution_event(execution))
         content = message.get("content")
-        if not isinstance(content, str) or not content.strip():
+        if not isinstance(content, str):
+            raise ValueError(f"messages[{index}].content must be a string")
+        if not content.strip() and (
+            execution is None or execution["status"] == TOOL_COMPLETED_STATUS
+        ):
             raise ValueError(
                 f"messages[{index}].content must be a non-empty string"
             )
@@ -173,6 +194,8 @@ def _normalize_messages(
         name = message.get("name")
         if isinstance(name, str) and name.strip():
             result_message["name"] = name.strip()
+        if execution is not None:
+            result_message["execution"] = execution
         normalized.append(MappingProxyType(result_message))
     return tuple(normalized)
 
