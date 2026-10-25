@@ -69,6 +69,12 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .byok_client import CustomProviderError, complete_owner_custom
 from .byok_credentials import CustomProviderSelectionError
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
+from .binary_attachment_frame import decode_binary_attachment_frame
+from .claw_attachment_context import (
+    CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
+    AttachmentValidationError,
+    parse_claw_turn_attachments,
+)
 from .request_contract import BrowserRequestError, parse_custom_selection
 from .claw_first_turn_authority import (
     B54VerifiedCodingContextV1,
@@ -1287,7 +1293,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """
     turn_started = time.perf_counter()
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
-    if content_type != "application/json":
+    # #2505: an attached binary document travels in the same frame the Chat lane
+    # already accepts, so the Claw lane reads it with the same decoder.
+    binary_frame = content_type == "application/octet-stream"
+    if content_type not in ("application/json", "application/octet-stream"):
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
     try:
@@ -1301,9 +1310,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
 
     try:
-        data = json.loads(raw_body.decode("utf-8"))
+        data = (
+            decode_binary_attachment_frame(raw_body)
+            if binary_frame else json.loads(raw_body.decode("utf-8"))
+        )
     except (UnicodeDecodeError, json.JSONDecodeError):
         return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+    except ValueError:
+        return _error(400, "invalid_attachment_frame", "첨부 파일 요청 형식이 올바르지 않습니다.")
 
     if not isinstance(data, dict):
         return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
@@ -1311,6 +1325,34 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text, text_error = _claw_general_user_text(data)
     if text_error is not None:
         return text_error
+
+    # #2505: an attached file is read with the SAME Chat attachment contract, and
+    # a document becomes the same untrusted reference context Chat builds. It
+    # travels on the existing `additional_system_context` seam below, so the
+    # Claw lane gains no second parser, storage row or Engine argument. Both
+    # refusals happen before quota, first-turn claim, Engine dispatch and any
+    # provider call.
+    try:
+        document_context, image_attachments = parse_claw_turn_attachments(
+            data.get("attachments")
+        )
+    except AttachmentValidationError as exc:
+        return _error(422, "invalid_attachment", str(exc))
+    if image_attachments:
+        return _error(
+            422, "claw_image_attachment_unsupported",
+            CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
+        )
+    # A document is model reference data for the answer lane. A lane that runs a
+    # PC tool, a desktop op or the owner's direct provider never reads it, so a
+    # mixed request is refused instead of silently dropping the file.
+    attachment_conflict = (
+        _error(
+            422, "attachment_lane_unsupported",
+            "첨부한 문서는 일반 AI 답변 요청에만 사용할 수 있습니다. 문서 없이 다시 요청해 주세요.",
+        )
+        if document_context is not None else None
+    )
 
     # PADIEM Custom is a direct text completion: it cannot drive a PC tool,
     # desktop op or local file lane, and it never mixes with a PADIEM-managed
@@ -1348,6 +1390,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "custom_tool_unsupported",
                 "PADIEM Custom은 현재 PC 실행·파일 도구 요청에 사용할 수 없습니다.",
             )
+        if attachment_conflict is not None:
+            # Same contract as the Chat lane: PADIEM Custom is a text-only
+            # direct completion and never mixes with an attachment.
+            return _error(422, "attachment_lane_unsupported",
+                          "PADIEM Custom은 현재 텍스트 대화만 지원합니다.")
         uid = current_user_id(request) if auth_ready(request) else None
         if not isinstance(uid, str) or not uid:
             return _error(401, "unauthorized", "로그인이 필요합니다.")
@@ -1359,6 +1406,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # first: a span that parses as a desktop op is never executed as one.
     desktop_requested, desktop_op = _requested_local_desktop(user_text)
     if desktop_requested:
+        if attachment_conflict is not None:
+            return attachment_conflict
         if desktop_op is None:
             return _error(422, "desktop_op_required",
                           "수행할 데스크톱 동작을 백틱으로 하나만 지정해 주세요.")
@@ -1374,6 +1423,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         r"(?:캡처|찍|보여|봐|capture|observe)",
         user_text, re.I,
     ))
+    if initial_pc_capture and attachment_conflict is not None:
+        return attachment_conflict
     # A selected PC is shape-checked once here and then bound to the two PC
     # lanes below. It is only a target hint: the server re-verifies that the
     # account actually has this Mesh execution target before dispatch.
@@ -1384,6 +1435,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     command_requested, command_text = _requested_local_command(user_text)
     if command_requested:
+        if attachment_conflict is not None:
+            return attachment_conflict
         if command_text is None:
             return _error(422, "command_text_required",
                           "실행할 명령을 백틱으로 하나만 지정해 주세요.")
@@ -1396,6 +1449,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # single-command/TXT lanes so a named TXT is read by the model from the
     # actual listing rather than by a fixed-path shortcut.
     pc_files_requested = _requested_natural_pc_files(user_text)
+    if pc_files_requested and attachment_conflict is not None:
+        return attachment_conflict
     # The browser hint was already shape-checked once above; the saved target
     # or the server-verified target replaces it before dispatch.
     pc_files_device_id = requested_device_id if pc_files_requested else None
@@ -1404,6 +1459,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # question about the verified PC to a bounded inventory command on that PC.
     natural_pc_requested, natural_pc_command = _requested_natural_pc_query(user_text)
     if natural_pc_requested:
+        if attachment_conflict is not None:
+            return attachment_conflict
         if natural_pc_command is None:
             return _error(422, "natural_pc_command_required",
                           "PC 조회 명령을 결정할 수 없습니다.")
@@ -1418,6 +1475,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
     if txt_requested and not pc_files_requested:
+        if attachment_conflict is not None:
+            return attachment_conflict
         if txt_path is None:
             return _error(422, "txt_read_path_required",
                           "내 PC에서 읽을 TXT 파일의 상대 경로를 하나 지정해 주세요.")
@@ -1941,7 +2000,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # #5015: the verified PC context travels on the same optional
     # `additional_system_context` seam grounding already uses. It is composed
     # server-side per request; the browser cannot supply or suppress it.
-    combined_system_context = _combine_system_context(grounding_context, pc_work_text)
+    # #2505: an attached document rides the same seam, as the same untrusted
+    # reference data Chat already builds for its own turn.
+    combined_system_context = _combine_system_context(
+        grounding_context, document_context, pc_work_text,
+    )
 
     if live_requested:
         from .claw_live_events import live_claw_sse

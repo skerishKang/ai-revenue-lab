@@ -861,6 +861,13 @@
     if (!file) return;
     try {
       let next;
+      // #2505: the Claw turn reads attached documents through the same path as
+      // Chat, but the P01 Engine execution request has no image input yet. The
+      // image is refused here, before any upload, instead of being sent and
+      // answered as if nothing had been read. Chat keeps images unchanged.
+      if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
+        throw new Error(uiT("claw-image-attachment-unsupported"));
+      }
       if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
       else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
       else next = await readDocumentFile(file);
@@ -3113,15 +3120,14 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
-      if (clawGeneralRequest && attachments) {
-        // #3554: text-only P01 model choice must never be sent to a
-        // standalone direct-B14 completed-request path.
-        throw new Error(uiT("claw-model-text-only-error"));
-      }
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
-      if (attachments) {
+      // #2505: an attached document travels on the lane the product selected.
+      // Chat keeps its existing completed-attachment request unchanged; a Claw
+      // submit stays on the canonical P01 Engine lane and never falls back to
+      // the standalone direct-B14 /api/chat route (#3539).
+      if (attachments && !clawGeneralRequest) {
         const completedOk = await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
         if (completedOk) {
           lastCompletedAnswerRequest = { outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest: Boolean(clawGeneralRequest), article };
