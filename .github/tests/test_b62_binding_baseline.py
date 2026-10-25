@@ -244,3 +244,28 @@ def test_the_b14_version_payload_shape_is_accepted():
         ]}},
     }
     assert mod.assert_matches_baseline(B14_WORKER, payload) == len(entries)
+
+
+def test_b14_additive_transition_is_allowed_only_before_deploy():
+    baseline = mod.load_baseline(B14_WORKER)
+    live = [(name, kind) for name, kind in baseline.items() if name != LEDGER_BINDING]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(B14_WORKER, _payload(live))
+    assert mod.assert_matches_baseline(
+        B14_WORKER, _payload(live), allow_target_additions=True
+    ) == len(live)
+
+
+def test_b14_additive_transition_rejects_unknown_and_retyped_bindings():
+    live = list(mod.load_baseline(B14_WORKER).items())
+    extra = live + [("UNREVIEWED_BINDING", "d1")]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(
+            B14_WORKER, _payload(extra), allow_target_additions=True
+        )
+    retyped = [(name, "plain_text") if name == LEDGER_BINDING else (name, kind)
+               for name, kind in live]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(
+            B14_WORKER, _payload(retyped), allow_target_additions=True
+        )
