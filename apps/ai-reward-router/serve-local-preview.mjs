@@ -1,6 +1,9 @@
 /**
  * Local preview server for B64 consumer screens (screenshot capture only).
- * Not committed: wraps the compiled Worker fetch handler in a node http server.
+ * Wraps the compiled Worker fetch handler (npm run build first) in a node
+ * http server so the checked-in docs/screenshots/theme-5822 captures stay
+ * reproducible: node serve-local-preview.mjs, then open http://127.0.0.1:8791.
+ * Local evidence tooling only — not part of the deployed Worker.
  */
 import http from 'node:http';
 import worker from './dist/src/worker.js';
