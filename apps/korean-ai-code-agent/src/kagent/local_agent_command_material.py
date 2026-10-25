@@ -217,13 +217,18 @@ def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
     return receipt
 
 
-#: #4434: the closed XLSX revision approval envelope. A revision touches a file
-#: twice — the approved READ of the workcopy and the approved WRITE of the derived
-#: result — and the existing P01 file authority consumes one decision per file
-#: access, so this envelope carries TWO complete pause/decision pairs. The TXT
-#: envelope's read-only constants are not reused for the write half: a write
-#: names its own tool, scope and policy, and the result digest is bound into the
-#: write request fingerprint before any byte exists on disk.
+#: #4434: the closed XLSX revision envelope carried with one command.
+#:
+#: It attests the half that can honestly be attested before the file is touched:
+#: the READ of the approved workcopy. The revision instruction itself (worksheet,
+#: literal edits, the derived result name and the write action the PC will name)
+#: travels beside it. The WRITE is *not* approved here — its request fingerprint
+#: and tool-invocation digest both bind the result bytes, and nobody but the PC
+#: can know those before it produces and independently verifies them. So the write
+#: half is attested separately, later, through the existing canonical P01 evidence
+#: route keyed by that exact fingerprint. Two independent P01 decisions remain in
+#: force; what is forbidden is elevating a locally produced or web-supplied
+#: fingerprint into an approval decision.
 #:
 #: Shape only, exactly as the TXT validator: digests, expiry against now, command
 #: correlation, edit legality and the one-shot use are the plan source's job.
@@ -243,12 +248,15 @@ _XLSX_CELL_RE = re.compile(r"^[A-Z]{1,3}[1-9][0-9]{0,6}$")
 _XLSX_SHEET_RE = re.compile(r"^[^\\/:*?[\]]{1,31}$")
 _XLSX_RECEIPT_KEYS = frozenset({
     "format", "evidence_ref", "command_id", "request_id", "local_policy_ref",
-    "expires_at", "source_approval", "result_approval", "revision",
+    "expires_at", "source_approval", "revision",
 })
 _XLSX_APPROVAL_KEYS = frozenset({
     "approval_pause", "approval_decision", "exact_tool_arguments",
 })
-_XLSX_REVISION_KEYS = frozenset({"sheet_name", "edits", "result_path_relative"})
+_XLSX_REVISION_KEYS = frozenset({
+    "sheet_name", "edits", "result_path_relative", "write_action_id",
+    "write_requested_at",
+})
 _XLSX_EDIT_KEYS = frozenset({"cell", "previous_value", "replacement_value"})
 
 
@@ -269,17 +277,16 @@ def _xlsx_relative_path(value: Any, field_name: str) -> str:
     return value
 
 
-def _xlsx_approval(value: Any, *, side: str, run_id: str, device_id: str,
+def _xlsx_approval(value: Any, *, run_id: str, device_id: str,
                    root_ref: str) -> dict[str, Any]:
-    """Validate one pause/decision/arguments triple for the named side."""
+    """Validate the READ pause/decision/arguments triple the envelope attests."""
 
+    side = "source"
     if type(value) is not dict or frozenset(value) != _XLSX_APPROVAL_KEYS:
         raise ContractError(f"XLSX {side} approval schema mismatch")
-    tool_id = (XLSX_REVISION_READ_TOOL_ID if side == "source"
-               else XLSX_REVISION_WRITE_TOOL_ID)
-    scope = (XLSX_REVISION_READ_SCOPE if side == "source"
-             else XLSX_REVISION_WRITE_SCOPE)
-    operation = "read" if side == "source" else "write"
+    tool_id = XLSX_REVISION_READ_TOOL_ID
+    scope = XLSX_REVISION_READ_SCOPE
+    operation = "read"
     pause = value["approval_pause"]
     if type(pause) is not dict or frozenset(pause) != _TXT_PAUSE_KEYS:
         raise ContractError(f"XLSX {side} approval pause schema mismatch")
@@ -288,9 +295,7 @@ def _xlsx_approval(value: Any, *, side: str, run_id: str, device_id: str,
     if pause["tool_id"] != tool_id:
         raise ContractError(f"XLSX {side} approval pause tool mismatch")
     _digest(pause["invocation_sha256"], f"{side}.pause.invocation_sha256")
-    expected_requirement = (XLSX_REVISION_READ_REQUIREMENT if side == "source"
-                            else XLSX_REVISION_WRITE_REQUIREMENT)
-    if pause["requirement"] != expected_requirement:
+    if pause["requirement"] != XLSX_REVISION_READ_REQUIREMENT:
         raise ContractError(f"XLSX {side} approval pause requirement mismatch")
     if type(pause["step_index"]) is not int or not 1 <= pause["step_index"] <= 64:
         raise ContractError(f"XLSX {side} approval pause step_index out of range")
@@ -333,17 +338,12 @@ def _xlsx_approval(value: Any, *, side: str, run_id: str, device_id: str,
     _xlsx_relative_path(args["path_relative"], f"{side}.args.path_relative")
     _txt_iso_text(args["requested_at"], f"{side}.args.requested_at")
     _digest(args["request_fingerprint"], f"{side}.args.request_fingerprint")
-    if side == "source":
-        # A pre-read intent carries no content, exactly as the TXT envelope.
-        if type(args["content_bytes"]) is not int or args["content_bytes"] != 0:
-            raise ContractError("XLSX source approval arguments must describe a pre-read intent")
-        if args["content_sha256"] is not None:
-            raise ContractError("XLSX source approval arguments must describe a pre-read intent")
-    else:
-        # The approved result is named by its digest before it is written.
-        if type(args["content_bytes"]) is not int or args["content_bytes"] < 1:
-            raise ContractError("XLSX result approval arguments must name written content")
-        _digest(args["content_sha256"], "result.args.content_sha256")
+    # A pre-read intent carries no content, exactly as the TXT envelope. The
+    # write half is absent by design: its digest cannot exist yet.
+    if type(args["content_bytes"]) is not int or args["content_bytes"] != 0:
+        raise ContractError("XLSX source approval arguments must describe a pre-read intent")
+    if args["content_sha256"] is not None:
+        raise ContractError("XLSX source approval arguments must describe a pre-read intent")
     for flag in ("directory_enumeration", "recursive_delete", "admin_elevation"):
         if args[flag] is not False:
             raise ContractError(f"XLSX {side} approval arguments {flag} must be false")
@@ -366,34 +366,15 @@ def validate_xlsx_revision_receipt(value: Any) -> dict[str, Any]:
     _txt_iso_text(receipt["expires_at"], "receipt.expires_at")
 
     source = receipt["source_approval"]
-    result = receipt["result_approval"]
     if type(source) is not dict or frozenset(source) != _XLSX_APPROVAL_KEYS:
         raise ContractError("XLSX revision source approval schema mismatch")
-    if type(result) is not dict or frozenset(result) != _XLSX_APPROVAL_KEYS:
-        raise ContractError("XLSX revision result approval schema mismatch")
     source_args = source["exact_tool_arguments"]
-    result_args = result["exact_tool_arguments"]
-    if (type(source_args) is not dict or type(result_args) is not dict
-            or frozenset(source_args) != _TXT_ARG_KEYS
-            or frozenset(result_args) != _TXT_ARG_KEYS):
+    if type(source_args) is not dict or frozenset(source_args) != _TXT_ARG_KEYS:
         raise ContractError("XLSX revision approval arguments schema mismatch")
     for field_name in ("run_id", "device_id", "root_ref"):
         _ref(source_args[field_name], f"source.args.{field_name}")
-    run_id = source_args["run_id"]
-    device_id = source_args["device_id"]
-    root_ref = source_args["root_ref"]
-    _xlsx_approval(source, side="source", run_id=run_id, device_id=device_id,
-                   root_ref=root_ref)
-    _xlsx_approval(result, side="result", run_id=run_id, device_id=device_id,
-                   root_ref=root_ref)
-    if source_args["action_id"] == result_args["action_id"]:
-        raise ContractError("XLSX revision read and write must be distinct actions")
-    if (source["approval_pause"]["pause_id"] == result["approval_pause"]["pause_id"]
-            or source["approval_decision"]["decision_id"]
-            == result["approval_decision"]["decision_id"]):
-        # One P01 decision authorizes one file access; reusing it would let the
-        # read approval stand in for the write.
-        raise ContractError("XLSX revision read and write approvals must be distinct")
+    _xlsx_approval(source, run_id=source_args["run_id"],
+                   device_id=source_args["device_id"], root_ref=source_args["root_ref"])
 
     revision = receipt["revision"]
     if type(revision) is not dict or frozenset(revision) != _XLSX_REVISION_KEYS:
@@ -402,8 +383,14 @@ def validate_xlsx_revision_receipt(value: Any) -> dict[str, Any]:
     if (not isinstance(sheet, str) or not _XLSX_SHEET_RE.fullmatch(sheet)
             or sheet.strip() != sheet):
         raise ContractError("revision.sheet_name must be a bounded worksheet name")
-    if revision["result_path_relative"] != result_args["path_relative"]:
-        raise ContractError("XLSX revision result path does not match the approved WRITE")
+    _xlsx_relative_path(revision["result_path_relative"], "revision.result_path_relative")
+    # The write action the PC will name when it asks the canonical evidence route.
+    # It is an identifier, never an approval: approval arrives with the envelope
+    # that route returns for the exact write request fingerprint.
+    _ref(revision["write_action_id"], "revision.write_action_id")
+    if revision["write_action_id"] == source_args["action_id"]:
+        raise ContractError("XLSX revision read and write must be distinct actions")
+    _txt_iso_text(revision["write_requested_at"], "revision.write_requested_at")
     edits = revision["edits"]
     if (not isinstance(edits, list) or not 1 <= len(edits) <= XLSX_REVISION_EDIT_LIMIT):
         raise ContractError("revision.edits must be a bounded non-empty list")

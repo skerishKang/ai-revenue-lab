@@ -1,20 +1,24 @@
-"""#4434: the closed XLSX revision approval envelope the PC will accept.
+"""#4434: the closed XLSX revision envelope, and what it is forbidden to contain.
 
-Nothing here reads a file or grants access. These tests pin the one shape a
-revision command may carry to a customer PC: two complete pause/decision pairs
-(one read, one write), a literal edit list, and the result bytes named by digest
-before they exist. The Chat worker and the Broker must produce this key for key;
-until something does, no command resolves with a revision receipt and the lane
-stays off, so admitting the shape changes no behaviour.
+CENTRAL fixed the attestation timing: the READ is attested when the command is
+admitted, and the WRITE is attested only after the PC has produced and
+independently verified the result bytes, through the existing canonical P01
+evidence route keyed by that exact fingerprint. So this envelope carries one
+approval — the read — plus the revision instruction, and nothing that would pass
+a locally produced or web-supplied fingerprint off as a decision.
 
-Real workbook bytes and the real file-request fingerprint function are used, so
-the digest the envelope names is the one the existing authority recomputes.
+Nothing here reads a file or grants access. Real workbook bytes and the real
+fingerprint and invocation-digest functions are used, so the digest the read half
+names is the one the existing authority recomputes.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 import unittest
+
+from padiem_ai_core.agent_approval import tool_invocation_digest
 
 from kagent.contracts import ContractError
 from kagent.local_agent_command_material import (
@@ -22,16 +26,16 @@ from kagent.local_agent_command_material import (
     validate_xlsx_revision_receipt,
 )
 from kagent.local_xlsx_python_copy_editor import (
-    IndependentZipXlsxRevisionVerifier, PythonXlsxValueCopyEditor,
+    IndependentZipXlsxRevisionVerifier, OfficeFidelityRequired, PythonXlsxValueCopyEditor,
 )
+from kagent.local_xlsx_workcopy_roundtrip import revised_path_for
 from kagent.windows_local_filesystem import (
     LocalFileOperation, LocalFileRequest, file_request_fingerprint,
     windows_file_tool_invocation,
 )
-from kagent.local_agent_permissions import LocalCapability
 
 from test_4434_local_xlsx_workcopy_roundtrip import (
-    EDIT, TEXT_EDIT, file_request, workbook_bytes,
+    EDIT, TEXT_EDIT, eligible_workbook_bytes, file_request,
 )
 
 NOW = datetime(2026, 10, 26, 12, 0, tzinfo=timezone.utc)
@@ -41,38 +45,43 @@ RUN = "run_4434_receipt"
 COMMAND = "cmd_4434_receipt"
 REQUEST = "req_4434_receipt"
 SOURCE_PATH = "quote\\book.xlsx"
-RESULT_PATH = "quote\\book_revised.xlsx"
+RESULT_PATH = revised_path_for(SOURCE_PATH)
+WRITE_ACTION = "act_write_4434"
 
 
 def _iso(moment: datetime) -> str:
     return moment.isoformat().replace("+00:00", "Z")
 
 
-def _pair(*, request: LocalFileRequest, side: str, edits: bool) -> dict:
-    """One canonical pause/decision/arguments triple for one file request."""
+def _read_request() -> LocalFileRequest:
+    return file_request(LocalFileOperation.READ, path_relative=SOURCE_PATH,
+                        action_id="act_read", device_id=DEVICE, root_ref=ROOT,
+                        run_id=RUN, at=NOW)
+
+
+def _source_approval(request: LocalFileRequest) -> dict:
+    """The one half that can honestly be attested before the file is touched."""
 
     invocation = windows_file_tool_invocation(request)
-    tool_id = "local.filesystem.read" if side == "source" else "local.filesystem.write"
-    scope = ["filesystem.read"] if side == "source" else ["filesystem.write"]
     return {
         "approval_pause": {
-            "pause_id": f"pause_{side}",
+            "pause_id": "pause_source",
             "run_id": request.run_id,
             "agent_runtime_id": "agent_4434",
-            "tool_id": tool_id,
-            "invocation_sha256": _digest_of(invocation),
+            "tool_id": "local.filesystem.read",
+            "invocation_sha256": tool_invocation_digest(invocation),
             "requirement": "user_confirmation",
-            "step_index": 1 if side == "source" else 2,
+            "step_index": 1,
             "created_at": _iso(NOW - timedelta(minutes=2)),
             "expires_at": _iso(NOW + timedelta(minutes=3)),
-            "approval_scope": scope,
+            "approval_scope": ["filesystem.read"],
         },
         "approval_decision": {
-            "decision_id": f"decision_{side}",
-            "pause_id": f"pause_{side}",
+            "decision_id": "decision_source",
+            "pause_id": "pause_source",
             "outcome": "approved",
             "authority_ref": "claw_connector_xlsx_revision_request_v1",
-            "evidence_ref": f"evidence_{side}",
+            "evidence_ref": "evidence_source",
             "decided_at": _iso(NOW - timedelta(minutes=1)),
         },
         "exact_tool_arguments": {
@@ -80,12 +89,12 @@ def _pair(*, request: LocalFileRequest, side: str, edits: bool) -> dict:
             "run_id": request.run_id,
             "device_id": request.device_id,
             "root_ref": request.root_ref,
-            "operation": "read" if side == "source" else "write",
+            "operation": "read",
             "path_relative": request.path_relative,
             "requested_at": _iso(request.requested_at),
             "request_fingerprint": file_request_fingerprint(request),
-            "content_bytes": 0 if side == "source" else len(request.content or b""),
-            "content_sha256": None if side == "source" else _sha(request.content or b""),
+            "content_bytes": 0,
+            "content_sha256": None,
             "directory_enumeration": False,
             "recursive_delete": False,
             "admin_elevation": False,
@@ -93,34 +102,8 @@ def _pair(*, request: LocalFileRequest, side: str, edits: bool) -> dict:
     }
 
 
-def _sha(data: bytes) -> str:
-    from hashlib import sha256
-
-    return sha256(data).hexdigest()
-
-
-def _digest_of(invocation) -> str:
-    from padiem_ai_core.agent_approval import tool_invocation_digest
-
-    return tool_invocation_digest(invocation)
-
-
-def _requests(edits=(EDIT, TEXT_EDIT)):
-    """The real read/write pair over real workbook bytes."""
-
-    source_bytes = workbook_bytes()
-    revised = PythonXlsxValueCopyEditor().revise_xlsx_copy(source_bytes, edits)
-    read = file_request(LocalFileOperation.READ, path_relative=SOURCE_PATH,
-                        action_id="act_read", device_id=DEVICE, root_ref=ROOT,
-                        run_id=RUN, at=NOW)
-    write = file_request(LocalFileOperation.WRITE, path_relative=RESULT_PATH,
-                         action_id="act_write", content=revised, device_id=DEVICE,
-                         root_ref=ROOT, run_id=RUN, at=NOW)
-    return source_bytes, revised, read, write
-
-
-def receipt(*, edits=(EDIT, TEXT_EDIT), **overrides) -> dict:
-    _, revised, read, write = _requests(edits)
+def receipt(**overrides) -> dict:
+    request = _read_request()
     built = {
         "format": XLSX_REVISION_RECEIPT_FORMAT,
         "evidence_ref": "evidence_command",
@@ -128,60 +111,99 @@ def receipt(*, edits=(EDIT, TEXT_EDIT), **overrides) -> dict:
         "request_id": REQUEST,
         "local_policy_ref": XLSX_REVISION_POLICY_REF,
         "expires_at": _iso(NOW + timedelta(minutes=3)),
-        "source_approval": _pair(request=read, side="source", edits=edits),
-        "result_approval": _pair(request=write, side="result", edits=edits),
+        "source_approval": _source_approval(request),
         "revision": {
             "sheet_name": "Quote",
-            "edits": [{"cell": e.cell, "previous_value": e.previous_value,
-                       "replacement_value": e.replacement_value} for e in edits],
+            "edits": [{"cell": item.cell, "previous_value": item.previous_value,
+                       "replacement_value": item.replacement_value}
+                      for item in (EDIT, TEXT_EDIT)],
             "result_path_relative": RESULT_PATH,
+            "write_action_id": WRITE_ACTION,
+            "write_requested_at": _iso(NOW),
         },
     }
     built.update(overrides)
     return built
 
 
-class XlsxRevisionReceiptShapeTests(unittest.TestCase):
-    def test_the_canonical_pair_is_admitted_and_reports_the_write_digest(self) -> None:
+def _mutate(envelope: dict, path: tuple, value) -> dict:
+    node = envelope
+    for key in path[:-1]:
+        node = node[key]
+    node[path[-1]] = value
+    return envelope
+
+
+class XlsxRevisionEnvelopeTests(unittest.TestCase):
+    def test_the_canonical_envelope_is_admitted(self) -> None:
         admitted = validate_xlsx_revision_receipt(receipt())
 
         self.assertEqual(admitted["format"], XLSX_REVISION_RECEIPT_FORMAT)
-        write_args = admitted["result_approval"]["exact_tool_arguments"]
-        self.assertEqual(write_args["path_relative"], RESULT_PATH)
-        # The digest named here is the one the editor actually produces, so the
-        # approved write and the verified bytes are comparable later.
-        self.assertEqual(write_args["content_sha256"], _sha(
-            PythonXlsxValueCopyEditor().revise_xlsx_copy(workbook_bytes(), (EDIT, TEXT_EDIT))))
-        self.assertGreater(write_args["content_bytes"], 0)
+        args = admitted["source_approval"]["exact_tool_arguments"]
+        self.assertEqual(args["operation"], "read")
+        self.assertEqual(args["path_relative"], SOURCE_PATH)
+        self.assertEqual(admitted["revision"]["result_path_relative"], RESULT_PATH)
+        self.assertEqual(admitted["revision"]["write_action_id"], WRITE_ACTION)
 
-    def test_the_result_bytes_are_verified_against_the_edits_by_the_same_editor(self) -> None:
-        source_bytes, revised, _, _ = _requests()
-        verifier = IndependentZipXlsxRevisionVerifier()
+    def test_the_read_half_carries_the_fingerprint_the_authority_recomputes(self) -> None:
+        request = _read_request()
 
-        self.assertTrue(verifier.verify_only_reviewed_edits(
-            source_bytes, revised, (EDIT, TEXT_EDIT)))
-        # An under-declared edit set is refused: B2 changed but is not reviewed,
-        # so the bytes the receipt names would not be the bytes verified.
-        self.assertFalse(verifier.verify_only_reviewed_edits(
-            source_bytes, revised, (TEXT_EDIT,)))
-        self.assertFalse(verifier.verify_only_reviewed_edits(
-            source_bytes, revised, (EDIT,)))
+        self.assertEqual(
+            validate_xlsx_revision_receipt(receipt())["source_approval"]
+            ["exact_tool_arguments"]["request_fingerprint"],
+            file_request_fingerprint(request),
+        )
 
-    def test_the_command_fields_are_bounded_refs_correlated_later(self) -> None:
-        """The shape layer admits any well-formed ref; the plan source correlates.
+    def test_the_envelope_names_no_write_approval_and_no_result_digest(self) -> None:
+        """The write half arrives from the evidence route, not from the wire."""
 
-        Mirrors the TXT envelope: a receipt that names a foreign command is not
-        rejected here, it is rejected when it is bound to an admitted command.
-        """
-        for key, value in (
-            ("command_id", "cmd_other"), ("request_id", "req_other"),
-            ("evidence_ref", "evidence_other"),
+        self.assertEqual(
+            set(validate_xlsx_revision_receipt(receipt())),
+            {"format", "evidence_ref", "command_id", "request_id", "local_policy_ref",
+             "expires_at", "source_approval", "revision"},
+        )
+        self.assertEqual(
+            set(validate_xlsx_revision_receipt(receipt())["revision"]),
+            {"sheet_name", "edits", "result_path_relative", "write_action_id",
+             "write_requested_at"},
+        )
+
+    def test_a_supplied_write_approval_is_refused_rather_than_ignored(self) -> None:
+        """A fingerprint nobody attested cannot be smuggled in as a decision."""
+
+        for path, value in (
+            (("result_approval",), {"approval_pause": {}, "approval_decision": {},
+                                    "exact_tool_arguments": {}}),
+            (("revision", "result_content_sha256"), "0" * 64),
+            (("revision", "result_content_bytes"), 4994),
+            (("revision", "write_approval"), {"outcome": "approved"}),
         ):
-            mutated = receipt(**{key: value})
-            with self.subTest(key=key):
-                self.assertEqual(validate_xlsx_revision_receipt(mutated)[key], value)
+            smuggled = _mutate(receipt(), path, value)
+            with self.subTest(path=path), self.assertRaises(ContractError):
+                validate_xlsx_revision_receipt(smuggled)
 
-    def test_the_constants_that_cannot_be_reused_are_enforced(self) -> None:
+    def test_the_read_half_must_stay_a_pre_read_intent(self) -> None:
+        for field, value in (("content_bytes", 1024), ("content_sha256", "0" * 64)):
+            loaded = receipt()
+            loaded["source_approval"]["exact_tool_arguments"][field] = value
+            with self.subTest(field=field), self.assertRaises(ContractError):
+                validate_xlsx_revision_receipt(loaded)
+
+    def test_the_write_action_must_be_distinct_from_the_read_action(self) -> None:
+        reused = receipt()
+        reused["revision"]["write_action_id"] = "act_read"
+        with self.assertRaises(ContractError):
+            validate_xlsx_revision_receipt(reused)
+
+    def test_the_result_name_must_stay_inside_the_selected_root(self) -> None:
+        for path in ("..\\other\\book.xlsx", "\\share\\book.xlsx", "C:\\x\\book.xlsx",
+                     "quote/book.txt"):
+            escaped = receipt()
+            escaped["revision"]["result_path_relative"] = path
+            with self.subTest(path=path), self.assertRaises(ContractError):
+                validate_xlsx_revision_receipt(escaped)
+
+    def test_only_the_admitted_constants_travel_on_the_envelope(self) -> None:
         for key, value in (
             ("format", "claw-txt-read-approval.v1"),
             ("local_policy_ref", "padiem_txt_selected_root_read_policy_v1"),
@@ -189,98 +211,74 @@ class XlsxRevisionReceiptShapeTests(unittest.TestCase):
             mutated = receipt(**{key: value})
             with self.subTest(key=key), self.assertRaises(ContractError):
                 validate_xlsx_revision_receipt(mutated)
+
         borrowed = receipt()
-        borrowed["result_approval"]["approval_decision"]["authority_ref"] = (
+        borrowed["source_approval"]["approval_decision"]["authority_ref"] = (
             "claw_connector_txt_request_v1")
         with self.assertRaises(ContractError):
             validate_xlsx_revision_receipt(borrowed)
 
-    def test_the_write_half_names_the_capability_the_authority_recomputes(self) -> None:
-        _, _, _, write = _requests()
-
-        self.assertIs(write.capability, LocalCapability.FILESYSTEM_WRITE)
-        admitted = validate_xlsx_revision_receipt(receipt())
-        self.assertEqual(admitted["result_approval"]["approval_pause"]["approval_scope"],
-                         ["filesystem.write"])
-
-class XlsxRevisionReceiptRefusalTests(unittest.TestCase):
-    def test_extra_or_missing_top_level_keys_are_refused(self) -> None:
-        broadened = receipt()
-        broadened["device_credential_b64"] = "aGVsbG8="
+        read_tool = receipt()
+        read_tool["source_approval"]["approval_pause"]["tool_id"] = "local.filesystem.write"
+        read_tool["source_approval"]["approval_pause"]["approval_scope"] = ["filesystem.write"]
+        read_tool["source_approval"]["exact_tool_arguments"]["operation"] = "write"
         with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(broadened)
-        for key in sorted(receipt()):
-            narrowed = receipt()
-            del narrowed[key]
-            with self.subTest(key=key), self.assertRaises(ContractError):
-                validate_xlsx_revision_receipt(narrowed)
+            validate_xlsx_revision_receipt(read_tool)
 
-    def test_one_decision_cannot_authorize_both_file_accesses(self) -> None:
-        """The existing P01 authority consumes one decision per file access."""
+    def test_run_device_and_root_are_self_consistent_in_shape_and_correlated_later(self) -> None:
+        """The envelope cannot vouch for its own ownership; the command does.
 
-        shared = receipt()
-        shared["result_approval"]["approval_decision"]["decision_id"] = (
-            shared["source_approval"]["approval_decision"]["decision_id"])
+        A triple pointing at another run/device/root is a well-formed shape, so
+        the shape layer admits it, and the plan source refuses it the moment it is
+        bound to an admitted command. That refusal is pinned in the consumer tests
+        rather than claimed here.
+        """
+        for path, value in (
+            (("source_approval", "exact_tool_arguments", "run_id"), "run_other"),
+            (("source_approval", "exact_tool_arguments", "device_id"), "device_other"),
+            (("source_approval", "exact_tool_arguments", "root_ref"), "root_other"),
+        ):
+            foreign = _mutate(receipt(), path, value)
+            with self.subTest(path=path):
+                args = validate_xlsx_revision_receipt(foreign)["source_approval"][
+                    "exact_tool_arguments"]
+                self.assertEqual(args[path[-1]], value)
+
+    def test_command_and_request_refs_are_bounded_refs_correlated_later(self) -> None:
+        for key, value in (("command_id", "cmd_other"), ("request_id", "req_other"),
+                           ("evidence_ref", "evidence_other")):
+            self.assertEqual(validate_xlsx_revision_receipt(receipt(**{key: value}))[key], value)
+
+    def test_pause_window_and_outcome_are_enforced(self) -> None:
+        late = receipt()
+        _mutate(late, ("source_approval", "approval_decision", "decided_at"),
+                _iso(NOW + timedelta(minutes=30)))
         with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(shared)
+            validate_xlsx_revision_receipt(late)
 
-        shared_pause = receipt()
-        shared_pause["result_approval"]["approval_pause"]["pause_id"] = (
-            shared_pause["source_approval"]["approval_pause"]["pause_id"])
-        shared_pause["result_approval"]["approval_decision"]["pause_id"] = (
-            shared_pause["source_approval"]["approval_pause"]["pause_id"])
+        denied = receipt()
+        _mutate(denied, ("source_approval", "approval_decision", "outcome"), "denied")
         with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(shared_pause)
+            validate_xlsx_revision_receipt(denied)
 
-    def test_the_read_half_cannot_be_asked_to_write(self) -> None:
-        swapped = receipt()
-        swapped["source_approval"]["exact_tool_arguments"]["operation"] = "write"
+        orphan = receipt()
+        _mutate(orphan, ("source_approval", "approval_decision", "pause_id"), "pause_other")
         with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(swapped)
+            validate_xlsx_revision_receipt(orphan)
 
-        mislabelled = receipt()
-        mislabelled["result_approval"]["approval_pause"]["tool_id"] = "local.filesystem.read"
-        mislabelled["result_approval"]["approval_pause"]["approval_scope"] = ["filesystem.read"]
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(mislabelled)
 
-    def test_the_source_half_must_stay_a_pre_read_intent(self) -> None:
-        loaded = receipt()
-        loaded["source_approval"]["exact_tool_arguments"]["content_bytes"] = 1024
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(loaded)
-
-        empty_result = receipt()
-        empty_result["result_approval"]["exact_tool_arguments"]["content_bytes"] = 0
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(empty_result)
-
-    def test_paths_outside_the_selected_root_are_refused(self) -> None:
-        for path in ("..\\other\\book.xlsx", "\\share\\book.xlsx",
-                     "C:\\reports\\book.xlsx", "quote/book.txt"):
-            escaped = receipt()
-            escaped["revision"]["result_path_relative"] = path
-            escaped["result_approval"]["exact_tool_arguments"]["path_relative"] = path
-            with self.subTest(path=path), self.assertRaises(ContractError):
-                validate_xlsx_revision_receipt(escaped)
-
-    def test_the_named_result_path_must_be_the_approved_write_path(self) -> None:
-        divergent = receipt()
-        divergent["revision"]["result_path_relative"] = "quote\\other_revised.xlsx"
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(divergent)
-
+class XlsxRevisionEditsTests(unittest.TestCase):
     def test_edits_must_be_distinct_bounded_literals(self) -> None:
         cases = {
             "empty": [],
-            "repeated": [{"cell": "B2", "previous_value": 88000000, "replacement_value": 90000000},
-                         {"cell": "B2", "previous_value": 88000000, "replacement_value": 91000000}],
+            "repeated": [{"cell": "B2", "previous_value": 88000000, "replacement_value": 1},
+                         {"cell": "B2", "previous_value": 88000000, "replacement_value": 2}],
             "formula": [{"cell": "B2", "previous_value": 88000000, "replacement_value": "=B1*2"}],
             "float": [{"cell": "B2", "previous_value": 88000000, "replacement_value": 1.5}],
             "boolean": [{"cell": "B2", "previous_value": 88000000, "replacement_value": True}],
             "bad_cell": [{"cell": "b2", "previous_value": 88000000, "replacement_value": 1}],
-            "extra_key": [{"cell": "B2", "previous_value": 88000000,
-                           "replacement_value": 1, "path": "quote\\book.xlsx"}],
+            "extra_key": [{"cell": "B2", "previous_value": 88000000, "replacement_value": 1,
+                           "path": SOURCE_PATH}],
             "empty_replacement": [{"cell": "B2", "previous_value": 88000000,
                                    "replacement_value": ""}],
         }
@@ -290,62 +288,42 @@ class XlsxRevisionReceiptRefusalTests(unittest.TestCase):
             with self.subTest(case=name), self.assertRaises(ContractError):
                 validate_xlsx_revision_receipt(mutated)
 
-    def test_the_result_fingerprint_is_the_one_the_authority_will_recompute(self) -> None:
-        """Positive binding: the envelope names the fingerprint the port derives.
+    def test_the_declared_edits_produce_bytes_the_independent_verifier_accepts(self) -> None:
+        """The edits on the wire are the edits the PC will run and re-check."""
 
-        The shape layer admits a digest of the right form; the plan source is what
-        refuses when it no longer matches the request it recomputes.
-        """
-        _, _, _, write = _requests()
-        admitted = validate_xlsx_revision_receipt(receipt())
+        source = eligible_workbook_bytes()
+        revised = PythonXlsxValueCopyEditor().revise_xlsx_copy(source, (EDIT, TEXT_EDIT))
 
-        self.assertEqual(
-            admitted["result_approval"]["exact_tool_arguments"]["request_fingerprint"],
-            file_request_fingerprint(write),
-        )
-        malformed = receipt()
-        malformed["result_approval"]["exact_tool_arguments"]["request_fingerprint"] = "zz" * 32
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(malformed)
+        self.assertIs(IndependentZipXlsxRevisionVerifier().verify_only_reviewed_edits(
+            source, revised, (EDIT, TEXT_EDIT)), True)
+        # Nothing on the envelope names these bytes; the write attestation does.
+        self.assertNotIn(sha256(revised).hexdigest(), repr(
+            validate_xlsx_revision_receipt(receipt())))
 
-    def test_pause_window_and_decision_ordering_are_enforced(self) -> None:
-        late = receipt()
-        late["result_approval"]["approval_decision"]["decided_at"] = _iso(
-            NOW + timedelta(minutes=30))
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(late)
 
-        inverted = receipt()
-        inverted["source_approval"]["approval_pause"]["created_at"] = _iso(NOW)
-        inverted["source_approval"]["approval_pause"]["expires_at"] = _iso(NOW - timedelta(seconds=1))
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(inverted)
+class XlsxRevisionRouteIndependenceTests(unittest.TestCase):
+    def test_the_envelope_never_routes_and_the_classifier_always_does(self) -> None:
+        """A revision envelope cannot promote a fidelity-sensitive workbook."""
 
-    def test_deny_is_never_an_admitted_outcome(self) -> None:
-        denied = receipt()
-        denied["result_approval"]["approval_decision"]["outcome"] = "denied"
-        with self.assertRaises(ContractError):
-            validate_xlsx_revision_receipt(denied)
+        from kagent.xlsx_fidelity_route import XlsxRoute, classify_xlsx
+        from openpyxl import Workbook
+        from io import BytesIO
 
-    def test_the_receipt_admits_no_path_authority_or_credential_fields(self) -> None:
-        """Only the closed keys survive; nothing names a device root or secret."""
+        styled = BytesIO()
+        book = Workbook()
+        book.active.title = "Quote"
+        book.active["B2"] = 88_000_000
+        book.active["C2"] = "text kept"
+        book.save(styled)
+        book.close()
+        styled_bytes = styled.getvalue()
 
-        admitted = validate_xlsx_revision_receipt(receipt())
-
-        self.assertEqual(
-            set(admitted),
-            {"format", "evidence_ref", "command_id", "request_id", "local_policy_ref",
-             "expires_at", "source_approval", "result_approval", "revision"},
-        )
-        for args in (admitted["source_approval"]["exact_tool_arguments"],
-                     admitted["result_approval"]["exact_tool_arguments"]):
-            # Relative to the selected root only: no drive, no UNC, no absolute path.
-            path = args["path_relative"]
-            self.assertFalse(path.startswith("\\"))
-            self.assertNotIn(":", path)
-            self.assertNotIn("..", path)
-            self.assertTrue(path.lower().endswith(".xlsx"))
-            self.assertNotIn("credential", repr(args))
+        self.assertIs(classify_xlsx(styled_bytes, local_only=True).route,
+                      XlsxRoute.OFFICE_FALLBACK)
+        # The same edits, carried by an admitted envelope, are still refused.
+        with self.assertRaises(OfficeFidelityRequired):
+            PythonXlsxValueCopyEditor().revise_xlsx_copy(
+                styled_bytes, (EDIT,))
 
 
 if __name__ == "__main__":

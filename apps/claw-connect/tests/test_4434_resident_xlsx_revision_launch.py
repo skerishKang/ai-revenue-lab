@@ -251,35 +251,49 @@ def test_environment_carries_only_the_canonical_keys(monkeypatch, tmp_path):
 # -- the installed customer release -----------------------------------------
 
 
-def test_installed_release_clears_an_ambient_revision_source(tmp_path):
-    """A customer machine cannot arm the revision lane from the environment.
+def test_installed_release_pins_the_reviewed_revision_source(tmp_path):
+    """A customer machine gets the reviewed factory, never an ambient name.
 
-    The installed release pins its own reviewed plan sources. No reviewed XLSX
-    revision factory exists yet, so this proves the one safe outcome: the value
-    is dropped, the lane stays off, and no test fixture or unreviewed module can
-    be named into a customer's Resident.
+    The installed release pins its own reviewed plan sources, so an exported
+    value cannot substitute a test fixture or an unreviewed module, and the
+    pinned name is the one #5835 implements.
     """
+    from claw_connect.installed_runtime import (
+        XLSX_REVISION_PLAN_SOURCE, installed_resident_environ,
+    )
+
     ambient = {
         RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE: "kagent.test_fixture:make_fake_plan_source",
         RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE: "untrusted_module:factory",
     }
     installed = installed_resident_environ(state_dir=tmp_path, environ=ambient)
 
-    assert RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE not in installed
+    assert installed[RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE] == XLSX_REVISION_PLAN_SOURCE
     plan, reason = plan_resident_launch(record=_record(), environ=installed)
 
     assert reason == "planned"
-    assert plan.xlsx_revision_plan_source is None
+    assert plan.xlsx_revision_plan_source == XLSX_REVISION_PLAN_SOURCE
     assert plan.verified_text_plan_source is not None
-    assert RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE not in plan.environment(base={})
+    assert plan.environment(base={})[RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE] == (
+        XLSX_REVISION_PLAN_SOURCE)
     # The caller's mapping is not mutated by planning.
     assert ambient[RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE] == (
         "kagent.test_fixture:make_fake_plan_source"
     )
 
 
+def test_the_pinned_revision_source_is_a_module_the_resident_can_resolve():
+    """The pin names a real importable factory, not a hoped-for one."""
+
+    from claw_connect.installed_runtime import XLSX_REVISION_PLAN_SOURCE
+
+    module_name, _, attribute = XLSX_REVISION_PLAN_SOURCE.partition(":")
+    assert module_name == "kagent.verified_p01_xlsx_revision_plan_source"
+    assert attribute == "make_p01_xlsx_revision_plan_source"
+
+
 def test_installed_device_still_launches_with_the_canonical_boundary(tmp_path):
-    """Clearing one optional lane must not break the boundary itself."""
+    """Pinning one optional lane must not disturb the boundary itself."""
     installed = installed_resident_environ(state_dir=tmp_path, environ={})
 
     plan, reason = plan_resident_launch(record=_record(), environ=installed)

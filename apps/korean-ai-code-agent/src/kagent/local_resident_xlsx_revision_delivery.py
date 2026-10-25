@@ -12,11 +12,22 @@ authority, no approval and no transport:
 * ``LocalOfficeChunkPublisher`` remains the only outbound byte path, so the
   broker still validates the acknowledged command and the device authority.
 
-Two ordering facts the pieces above could not express on their own live here.
+Three ordering facts the pieces above could not express on their own live here.
+
 A revision command is consumed exactly once per ``(binding, command)`` pair, so a
-reconnect or duplicate delivery cannot revise the file a second time. And the
-approved WRITE is bound to exact result bytes: the plan carries the content the
-P01 decision approved, and the lane refuses to write anything else.
+reconnect or duplicate delivery cannot revise the file a second time.
+
+The WRITE is attested *after* its bytes exist. The write request fingerprint and
+the tool-invocation digest both bind ``content_bytes``/``content_sha256``
+(``windows_local_filesystem.py:165-199``), so nothing that has not produced the
+result can honestly approve it. The lane therefore prepares and independently
+verifies the revised bytes, resolves the write evidence through the trusted
+attester for exactly that fingerprint, and only then lets the file authority
+commit the derived workcopy — a refusal writes nothing and stages nothing.
+
+A fingerprint is a key, never a decision. The attester's answer must carry its
+own approved pause and decision naming that invocation, and the read and write
+halves must be two distinct decisions.
 
 The Python value editor, the independent verifier and the original-preserving
 path rule come from ``local_xlsx_python_copy_editor`` and
@@ -32,6 +43,11 @@ import threading
 from pathlib import PureWindowsPath
 from typing import Any, Callable, Protocol
 
+from padiem_ai_core.agent_approval import (
+    ApprovalOutcome, ApprovalPause, ApprovalRequirement, VerifiedApprovalDecision,
+    tool_invocation_digest,
+)
+
 from .contracts import ContractError
 from .local_agent_control_plane_admission import ControlPlaneAdmittedExecutionReceipt
 from .local_agent_pairing import DeviceBinding, DeviceCommandEnvelope
@@ -45,7 +61,7 @@ from .windows_local_executor import WindowsExecutionTermination
 from .windows_local_filesystem import (
     LocalFileOperation, LocalFileRequest, P01LocalPermissionWindowsFileAuthorizationPort,
     WindowsFileAuthorityEvidence, WindowsSelectedRootFileRuntime,
-    file_request_fingerprint,
+    file_request_fingerprint, windows_file_tool_invocation,
 )
 
 MAX_PREAPPROVED_XLSX_REVISION_PLANS = 32
@@ -61,10 +77,12 @@ XLSX_REVISION_MINTS_APPROVAL = False
 class TrustedP01XlsxRevisionPlan:
     """Attested P01 material for one revision of one acknowledged command.
 
-    The trusted host supplies the approved READ, the reviewed literal edits and
-    the approved WRITE of the *expected result bytes*. This object never creates
-    an approval: the pause, decision and local permission evidence are the ones
-    the existing P01 authority already issued.
+    The trusted host supplies the approved READ with its evidence, the reviewed
+    literal edits, and the derived workcopy name plus the write action the PC will
+    name when it asks for the write attestation. This object creates no approval:
+    the read pause, decision and local permission evidence are the ones the
+    existing P01 authority already issued, and the write half is attested by the
+    injected attester only after the result bytes exist.
     """
 
     binding_ref: str
@@ -77,49 +95,62 @@ class TrustedP01XlsxRevisionPlan:
     sequence: int
     read_request: LocalFileRequest
     read_evidence: WindowsFileAuthorityEvidence
-    write_request: LocalFileRequest
-    write_evidence: WindowsFileAuthorityEvidence
+    derived_path_relative: str
+    write_action_id: str
+    write_requested_at: datetime
+    write_attester: Any
     edits: tuple[ReviewedCellRevision, ...]
 
     def __post_init__(self) -> None:
-        if not isinstance(self.read_request, LocalFileRequest) or not isinstance(
-            self.write_request, LocalFileRequest
-        ):
-            raise ContractError("canonical XLSX read and write requests required")
-        if not isinstance(self.read_evidence, WindowsFileAuthorityEvidence) or not isinstance(
-            self.write_evidence, WindowsFileAuthorityEvidence
-        ):
-            raise ContractError("canonical P01 evidence for both file steps required")
+        if not isinstance(self.read_request, LocalFileRequest):
+            raise ContractError("canonical XLSX read request required")
+        if not isinstance(self.read_evidence, WindowsFileAuthorityEvidence):
+            raise ContractError("canonical P01 evidence for the approved READ required")
         if (self.read_request.operation is not LocalFileOperation.READ
                 or not self.read_request.path_relative.lower().endswith(".xlsx")):
             raise ContractError("XLSX revision plan requires an approved XLSX READ")
-        if (self.write_request.operation is not LocalFileOperation.WRITE
-                or not self.write_request.path_relative.lower().endswith(".xlsx")):
-            raise ContractError("XLSX revision plan requires an approved XLSX WRITE")
-        if not isinstance(self.write_request.content, bytes) or not self.write_request.content:
-            raise ContractError("the approved WRITE must carry the expected result bytes")
+        if self.read_evidence.request_fingerprint != file_request_fingerprint(
+                self.read_request):
+            raise ContractError("P01 evidence does not match its file request")
+        if self.read_request.run_id != self.run_id:
+            raise ContractError("file request is foreign to the plan run")
+
         derived = revised_path_for(self.read_request.path_relative)
-        if _normalize(self.write_request.path_relative) != _normalize(derived):
-            raise ContractError("approved WRITE must target the derived revised workcopy")
-        for request, evidence in (
-            (self.read_request, self.read_evidence), (self.write_request, self.write_evidence),
-        ):
-            if evidence.request_fingerprint != file_request_fingerprint(request):
-                raise ContractError("P01 evidence does not match its file request")
-            if request.run_id != self.run_id:
-                raise ContractError("file request is foreign to the plan run")
+        if _normalize(self.derived_path_relative) != _normalize(derived):
+            raise ContractError(
+                "XLSX revision plan must target the derived revised workcopy")
+        if not isinstance(self.write_action_id, str) or not self.write_action_id.strip():
+            raise ContractError("the deferred WRITE needs its own bounded action id")
+        if self.write_action_id == self.read_request.action_id:
+            raise ContractError("read and write must be distinct actions")
+        if (not isinstance(self.write_requested_at, datetime)
+                or self.write_requested_at.tzinfo is None
+                or self.write_requested_at.utcoffset() is None):
+            raise ContractError("the deferred WRITE needs a timezone-aware requested_at")
+        if not callable(getattr(self.write_attester, "attest", None)):
+            raise ContractError("a trusted write attester is required")
+
         edits = tuple(self.edits)
         if not edits or any(not isinstance(item, ReviewedCellRevision) for item in edits):
             raise ContractError("reviewed cell revisions required")
         object.__setattr__(self, "edits", edits)
         if len(self.command_fingerprint) != 64:
             raise ContractError("canonical command fingerprint required")
-        if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence <= 0:
+        if (isinstance(self.sequence, bool) or not isinstance(self.sequence, int)
+                or self.sequence <= 0):
             raise ContractError("positive canonical command sequence required")
-        if self.read_request.device_id != self.write_request.device_id:
-            raise ContractError("read and write must belong to one device")
-        if self.read_request.root_ref != self.write_request.root_ref:
-            raise ContractError("read and write must belong to one selected root")
+
+    def write_request_for(self, content: bytes) -> LocalFileRequest:
+        """The WRITE request for bytes the editor produced and the verifier accepted."""
+
+        if not isinstance(content, bytes) or not content:
+            raise ContractError("verified result bytes are required before a WRITE exists")
+        return LocalFileRequest(
+            action_id=self.write_action_id, run_id=self.run_id,
+            device_id=self.read_request.device_id, root_ref=self.read_request.root_ref,
+            operation=LocalFileOperation.WRITE, path_relative=self.derived_path_relative,
+            requested_at=self.write_requested_at, content=content,
+        )
 
 
 class TrustedP01XlsxRevisionPlanSource(Protocol):
@@ -197,23 +228,88 @@ class TrustedP01XlsxRevisionBridge:
                 or plan.read_request.device_id != binding.device_id
                 or plan.read_request.requested_at > now + _MAX_CLOCK_SKEW
                 or plan.read_evidence.expires_at <= now - _MAX_CLOCK_SKEW
-                or plan.write_evidence.expires_at <= now - _MAX_CLOCK_SKEW
                 or plan.read_evidence.approval_pause.run_id != command.run_id
-                or plan.write_evidence.approval_pause.run_id != command.run_id):
+                or _normalize(plan.derived_path_relative) != _normalize(
+                    revised_path_for(plan.read_request.path_relative))):
             raise ContractError("XLSX revision plan/approval correlation invalid")
         with self._lock:
-            if len(self._pending) + 2 > MAX_PREAPPROVED_XLSX_REVISION_PLANS:
+            if len(self._pending) + 1 > MAX_PREAPPROVED_XLSX_REVISION_PLANS:
                 raise ContractError("XLSX revision evidence queue full")
-            for request, evidence in (
-                (plan.read_request, plan.read_evidence),
-                (plan.write_request, plan.write_evidence),
-            ):
-                fingerprint = file_request_fingerprint(request)
-                if fingerprint in self._pending:
-                    raise ContractError("XLSX revision evidence already queued")
-                self._pending[fingerprint] = evidence
+            fingerprint = file_request_fingerprint(plan.read_request)
+            if fingerprint in self._pending:
+                raise ContractError("XLSX revision evidence already queued")
+            self._pending[fingerprint] = plan.read_evidence
             self._plan = plan
         return plan
+
+    def expect_write(self, request: LocalFileRequest, *, now: datetime
+                     ) -> WindowsFileAuthorityEvidence:
+        """Attest the deferred WRITE for bytes that now exist, and queue it once.
+
+        Called after the editor produced and the independent verifier accepted the
+        result. The attester is the deployment's trusted P01 evidence route; its
+        answer must itself carry an approved decision naming this exact
+        invocation. Nothing here turns a fingerprint into an approval.
+        """
+        with self._lock:
+            plan = self._plan
+        if plan is None:
+            raise ContractError("no XLSX revision plan is registered for this command")
+        if (not isinstance(request, LocalFileRequest)
+                or request.operation is not LocalFileOperation.WRITE
+                or _normalize(request.path_relative) != _normalize(plan.derived_path_relative)
+                or request.action_id != plan.write_action_id
+                or request.run_id != plan.run_id
+                or request.device_id != plan.read_request.device_id
+                or request.root_ref != plan.read_request.root_ref
+                or request.requested_at != plan.write_requested_at
+                or not isinstance(request.content, bytes) or not request.content):
+            raise ContractError("the deferred WRITE does not match the registered plan")
+
+        fingerprint = file_request_fingerprint(request)
+        evidence = plan.write_attester.attest(request)
+        if not isinstance(evidence, WindowsFileAuthorityEvidence):
+            raise ContractError("XLSX write attester returned invalid evidence")
+        if evidence.request_fingerprint != fingerprint:
+            raise ContractError("XLSX write evidence does not name this write request")
+        pause = evidence.approval_pause
+        decision = evidence.approval_decision
+        if (not isinstance(pause, ApprovalPause)
+                or not isinstance(decision, VerifiedApprovalDecision)):
+            raise ContractError("XLSX write requires a canonical P01 pause and decision")
+        if (pause.tool_id != "local.filesystem.write"
+                or pause.requirement is not ApprovalRequirement.USER_CONFIRMATION
+                or pause.approval_scope != ("filesystem.write",)
+                or pause.run_id != plan.run_id
+                or decision.pause_id != pause.pause_id
+                or decision.outcome is not ApprovalOutcome.APPROVED):
+            raise ContractError("XLSX write evidence is not an approved write confirmation")
+        if pause.invocation_sha256 != tool_invocation_digest(
+                windows_file_tool_invocation(request)):
+            raise ContractError("XLSX write evidence does not bind the verified result bytes")
+        if decision.decision_id == plan.read_evidence.approval_decision.decision_id:
+            raise ContractError("read and write must be two distinct P01 decisions")
+        if (not isinstance(now, datetime) or now.tzinfo is None
+                or now.utcoffset() is None):
+            raise ContractError("a trusted current clock is required for the write attestation")
+        if evidence.expires_at <= now or pause.expires_at <= now:
+            raise ContractError("XLSX write approval has expired before the write")
+
+        with self._lock:
+            if fingerprint in self._pending:
+                raise ContractError("XLSX revision evidence already queued")
+            if len(self._pending) + 1 > MAX_PREAPPROVED_XLSX_REVISION_PLANS:
+                raise ContractError("XLSX revision evidence queue full")
+            self._pending[fingerprint] = evidence
+        return evidence
+
+    def note_admitted(self, **admitted: Any) -> bool:
+        """Give the trusted source the revision material that rode this command."""
+
+        note = getattr(self._source, "note_admitted", None)
+        if not callable(note):
+            return False
+        return bool(note(**admitted))
 
     def resolve(self, request_fingerprint: str) -> WindowsFileAuthorityEvidence:
         if type(request_fingerprint) is not str or len(request_fingerprint) != 64:
@@ -265,6 +361,11 @@ class ResidentXlsxRevisionStager:
         self._publisher = publisher
         self._clock = clock
 
+    def note_admitted(self, **admitted: Any) -> bool:
+        """Forward admitted revision material to the trusted source, before execution."""
+
+        return self._bridge.note_admitted(**admitted)
+
     def on_acknowledged(
         self, *, binding: DeviceBinding, command: DeviceCommandEnvelope,
         receipt: ControlPlaneAdmittedExecutionReceipt, credential: bytes,
@@ -302,12 +403,13 @@ class ResidentXlsxRevisionStager:
         ref = sha256(f"{command.command_id}:{plan.read_request.action_id}".encode()).hexdigest()[:28]
 
         def result_request(content: bytes, path: str) -> LocalFileRequest:
-            # The approval is bound to the exact bytes the P01 decision approved.
-            if content != plan.write_request.content:
-                raise ContractError("revision result bytes differ from the approved WRITE")
-            if _normalize(path) != _normalize(plan.write_request.path_relative):
-                raise ContractError("approved WRITE path does not match the derived result")
-            return plan.write_request
+            # Reached only after the independent verifier accepted these bytes.
+            # The WRITE is named now, attested now, and only then written.
+            if _normalize(path) != _normalize(plan.derived_path_relative):
+                raise ContractError("derived result path does not match the registered plan")
+            request = plan.write_request_for(content)
+            self._bridge.expect_write(request, now=now)
+            return request
 
         roundtrip = revise_and_stage_approved_xlsx_workcopy(
             runtime=self._runtime, device=self._device,

@@ -7,6 +7,7 @@ the sibling Office test already uses. No Drive, no model call, no live network.
 
 from __future__ import annotations
 
+import base64
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 import inspect
@@ -29,7 +30,8 @@ from kagent.local_resident_xlsx_revision_delivery import (
 from kagent.local_xlsx_python_copy_editor import PythonXlsxValueCopyEditor
 from kagent.local_xlsx_workcopy_roundtrip import revised_path_for
 from kagent.windows_local_filesystem import (
-    DeterministicFakeWindowsFileAuthorizationPort, LocalFileOperation,
+    DeterministicFakeWindowsFileAuthorizationPort, LocalFileOperation, LocalFileRequest,
+    file_request_fingerprint,
 )
 
 from test_4434_local_xlsx_workcopy_roundtrip import (
@@ -83,18 +85,50 @@ class FollowClock:
         return self._now
 
 
+class LocalWriteAuthority:
+    """Stand-in for the PC-side P01 evidence route that attests a finished write.
+
+    It is asked *after* the lane has produced and independently verified the
+    result bytes, and it answers for the exact request fingerprint. The refusal
+    modes are the point: no attestation, or an attestation for different bytes,
+    must leave the file unwritten and nothing staged.
+    """
+
+    def __init__(self, *, at: datetime, mode: str = "attest") -> None:
+        self.at = at
+        self.mode = mode
+        self.asks: list[str] = []
+
+    def attest(self, request: LocalFileRequest):
+        self.asks.append(file_request_fingerprint(request))
+        if self.mode == "refuse":
+            raise ContractError("the P01 evidence boundary has not approved this write")
+        evidence = evidence_for(request, at=self.at)
+        if self.mode == "mismatch":
+            # Attested for a different write request than the one being committed.
+            other = file_request(
+                LocalFileOperation.WRITE, path_relative=DERIVED_PATH,
+                action_id=request.action_id + "_other", content=request.content,
+                device_id=request.device_id, root_ref=ROOT_REF, run_id=request.run_id,
+                at=self.at,
+            )
+            return evidence_for(other, at=self.at)
+        return evidence
+
+
 class PlanSource:
     """A deployment-shaped P01 revision source built from real local files."""
 
-    def __init__(self, *, root: str, edits, off=False, tamper=None,
+    def __init__(self, *, root: str, edits, off=False, attest="attest",
                  clock: "FollowClock | None" = None) -> None:
         self.root = root
         self.edits = tuple(edits)
         self.off = off
-        self.tamper = tamper
+        self.attest = attest
         self.clock = clock
         self.calls: list[tuple[str, str]] = []
         self.context: dict[str, object] = {}
+        self.authorities: list[LocalWriteAuthority] = []
 
     def approved_revision_plan(self, *, binding, command, receipt):
         self.calls.append((binding.binding_ref, command.command_id))
@@ -113,17 +147,8 @@ class PlanSource:
             device_id=binding.device_id, root_ref=ROOT_REF, run_id=command.run_id,
             at=at,
         )
-        with open(os.path.join(self.root, "quote", "book.xlsx"), "rb") as handle:
-            source_bytes = handle.read()
-        revised = PythonXlsxValueCopyEditor().revise_xlsx_copy(source_bytes, self.edits)
-        if self.tamper is not None:
-            revised = self.tamper(revised)
-        write_request = file_request(
-            LocalFileOperation.WRITE, path_relative=DERIVED_PATH,
-            action_id=f"write_{command.command_id}", content=revised,
-            device_id=binding.device_id, root_ref=ROOT_REF, run_id=command.run_id,
-            at=at,
-        )
+        authority = LocalWriteAuthority(at=at, mode=self.attest)
+        self.authorities.append(authority)
         return TrustedP01XlsxRevisionPlan(
             binding_ref=binding.binding_ref, command_id=command.command_id,
             tool_request_ref=command.tool_request_ref, run_id=command.run_id,
@@ -131,8 +156,10 @@ class PlanSource:
             command_fingerprint=fact.request_fingerprint, sequence=command.sequence,
             read_request=read_request,
             read_evidence=evidence_for(read_request, at=at),
-            write_request=write_request,
-            write_evidence=evidence_for(write_request, at=at),
+            derived_path_relative=DERIVED_PATH,
+            write_action_id=f"write_{command.command_id}",
+            write_requested_at=at,
+            write_attester=authority,
             edits=self.edits,
         )
 
@@ -170,10 +197,10 @@ class ResidentXlsxRevisionLaneTests(unittest.TestCase):
     def tearDown(self) -> None:
         InMemorySingleInstanceLock.reset()
 
-    def _run(self, *, edits=(EDIT, TEXT_EDIT), deny=False, off=False, tamper=None):
+    def _run(self, *, edits=(EDIT, TEXT_EDIT), deny=False, off=False, attest="attest"):
         host, runtime, port, clock = _harness()
         follower = FollowClock()
-        source = PlanSource(root=self.root, edits=edits, off=off, tamper=tamper,
+        source = PlanSource(root=self.root, edits=edits, off=off, attest=attest,
                              clock=follower)
         transport = RecordingTransport(port.broker_authority, deny=deny)
         stager = _stager(self.root, transport=transport, source=source, clock=follower)
@@ -238,14 +265,46 @@ class ResidentXlsxRevisionLaneTests(unittest.TestCase):
         self.assertFalse(os.path.exists(self.result))
         self.assertEqual(self._disk_sha(self.source), self.source_sha)
 
-    def test_result_bytes_outside_the_approval_are_refused_before_any_write(self) -> None:
-        result = self._run(tamper=lambda data: data + b"x")
+    def test_a_refused_write_attestation_blocks_the_file_and_the_staging(self) -> None:
+        """No attestation, no commit. The acknowledged command keeps its truth."""
+
+        result = self._run(attest="refuse")
         self.assertEqual(result["answered"], 1)
         self.assertEqual(result["transport"].calls, [])
         self.assertFalse(os.path.exists(self.result))
+        self.assertEqual(self._disk_sha(self.source), self.source_sha)
         self.assertEqual(result["port"].broker_authority._commands["cmd_host_1"].state.value,
                          "acknowledged")
         self.assertEqual(result["runtime"].executed, ["req_host_1"])
+
+    def test_an_attestation_for_different_bytes_blocks_the_commit(self) -> None:
+        """The evidence must name this write, not merely any write."""
+
+        result = self._run(attest="mismatch")
+        self.assertEqual(result["transport"].calls, [])
+        self.assertFalse(os.path.exists(self.result))
+        self.assertEqual(self._disk_sha(self.source), self.source_sha)
+
+    def test_the_write_is_attested_only_after_the_result_bytes_exist(self) -> None:
+        """Ordering CENTRAL fixed: prepare and verify, attest, then commit."""
+
+        result = self._run()
+        authority = result["source"].authorities[-1]
+        receipt = result["source"].context["receipt"]
+        self.assertEqual(len(authority.asks), 1)
+
+        with open(self.result, "rb") as handle:
+            written = handle.read()
+        request = LocalFileRequest(
+            action_id="write_cmd_host_1", run_id="run_host_1", device_id=DEVICE_ID,
+            root_ref=ROOT_REF, operation=LocalFileOperation.WRITE,
+            path_relative=DERIVED_PATH, requested_at=receipt.acknowledged_at,
+            content=written,
+        )
+        self.assertEqual(authority.asks[0], file_request_fingerprint(request))
+        # The bytes the authority vouched for are the bytes that reached the wire.
+        parts = result["transport"].calls
+        self.assertEqual(b"".join(base64.b64decode(p["data_b64"]) for p in parts), written)
 
     def test_staging_refusal_keeps_the_acknowledged_command_truth(self) -> None:
         result = self._run(deny=True)

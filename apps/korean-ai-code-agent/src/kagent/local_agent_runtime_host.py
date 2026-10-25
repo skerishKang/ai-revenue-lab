@@ -555,12 +555,26 @@ class LocalAgentResidentRuntimeHost:
             self._active_request_id = None
 
     def _declare_text_read_pending(self, **admitted: Any) -> None:
-        """Pre-ACK hook: declare `pending` for an admitted, unacknowledged read.
+        """Pre-ACK hook: register admitted material before anything executes.
 
         A failure propagates out of the canonical coordinator, which stops
         before `on_execution_start`, so a refused declaration never becomes an
         execution, a READ or a successful acknowledgement.
         """
+        staging = self._xlsx_revision_staging
+        if staging is not None:
+            note = getattr(staging, "note_admitted", None)
+            if callable(note):
+                # #4434: an admitted revision command carries its read approval.
+                # A malformed envelope stops the command here instead of letting
+                # it execute and discover the absence later. Commands that carry
+                # no revision envelope are untouched and keep their own path.
+                note(
+                    binding=admitted.get("binding"), command=admitted.get("command"),
+                    request_id=admitted.get("request_id"),
+                    request_fingerprint=admitted.get("request_fingerprint"),
+                    receipt=admitted.get("receipt"),
+                )
         lane = self._verified_text_lane
         if lane is None:
             return
