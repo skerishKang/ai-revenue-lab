@@ -234,3 +234,68 @@ approved secret store — no code change.
   (`apps/padiem-chat-react`) renders a single view and uses NONE of B64's
   consumer paths as client routes — no client-side navigation conflict with
   `/pipeline`, `/today`, `/browse`, `/detail`, `/earn`, `/income`.
+
+## Session secret activation — measured source situation and the decision tree (2026-10-26)
+
+Measured facts:
+
+- The live Cloudflare secret value CANNOT be read back through any API —
+  `secret_text` bindings are write-only. Copying the existing value by API
+  is impossible by design; any tooling claiming otherwise must not be used.
+- The repository has NO stored source for the chat session secret:
+  `gh secret list` on this repo shows `CLOUDFLARE_API_TOKEN`,
+  `CLOUDFLARE_ACCOUNT_ID` and product tokens — **no
+  `PADIEM_CHAT_SESSION_SECRET`**. The chat secret was registered on the
+  worker without a repo-secret source.
+- `PADIEM_CHAT_SESSION_SECRET` is confirmed to EXIST on the live
+  `padiem-chat` worker (`secret_text` binding, verified by the b62 auth
+  activation gate's settings readback pattern).
+
+Decision tree (owner decision required — LOCAL executes none of these):
+
+- **Option A (preferred, zero user impact)** — if the approved private store
+  still holds the ORIGINAL chat session secret value: register it once as
+  the repository secret `PADIEM_SESSION_SECRET_SOURCE`, then dispatch
+  `.github/workflows/b64-session-secret-activation-gate.yml` (dispatch-only,
+  production environment, exact-SHA check). The gate copies the value onto
+  `b64-ai-reward-router` as `PADIEM_SESSION_SECRET` without ever printing
+  it, and verifies existence/type via the settings API. Existing chat
+  sessions stay valid.
+- **Option B (rotation)** — if no original value is held anywhere: generate a
+  NEW session secret, register it as `PADIEM_SESSION_SECRET_SOURCE`, update
+  chat's `PADIEM_CHAT_SESSION_SECRET` with the same value, then dispatch the
+  gate. Every live chat session is invalidated (all users re-login) — this
+  is an owner decision with an explicit user-impact acknowledgment, and it
+  must be coordinated with the chat product's release.
+- **Option C (not recommended)** — a chat-side change that publishes a
+  one-way derived verification key for B64. It avoids secret sharing but
+  requires modifying the B62 authority product; rejected for now on
+  change-cost vs. benefit.
+
+## Zone route probe and change procedure (2026-10-26)
+
+- `.github/workflows/b54-cloudflare-zone-route-readonly-probe.yml` is the
+  in-repo precedent for AUTHORIZED zone reads: the repo secret
+  `CLOUDFLARE_API_TOKEN` derives the `padiem.net` zone id from
+  `/accounts/{account}/workers/domains` and reads
+  `/zones/{zone}/workers/routes`. Its 2026-09-04 runs FAILED (token scope);
+  since then the OAuth custom-domain work succeeded through the same
+  credential path, so the scope situation may have changed — it must be
+  re-measured, not assumed.
+- `.github/workflows/b64-cloudflare-zone-route-readonly-probe.yml` (added
+  here) runs the same GET-only pattern for `chat.padiem.net`: it prints the
+  route table (pattern → script), detects an existing host wildcard, and
+  lists the assignment state of every B64 path. GET-only contract enforced
+  by the workflow's own source check. The output IS the
+  `DASHBOARD_ROUTE_COLLISION` evidence for the #987 checklist.
+- Route change (CENTRAL, after the probe passes):
+  `PUT /zones/{zone_id}/workers/routes` with each B64 path pattern
+  (`chat.padiem.net/earn*`, `/today*`, `/browse*`, `/detail*`,
+  `/pipeline*`, `/income*`) → `b64-ai-reward-router`, keeping `/`, `/api/*`
+  and `/healthz` on `padiem-chat`. If a host wildcard exists, verify the
+  specific routes take precedence (most specific pattern wins) with the
+  post-add smoke from the checklist.
+- Rollback: `DELETE /zones/{zone_id}/workers/routes/{route_id}` for the
+  added routes (record every `route_id` at add time). Because the routes
+  only ADD new host paths, rollback restores the exact pre-change serving.
+  The workers.dev fallback host remains enabled until live E2E passes.
