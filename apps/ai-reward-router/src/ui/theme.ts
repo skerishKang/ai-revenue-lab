@@ -179,7 +179,9 @@ export const THEME_CSS_VARIABLES = `
 
 /** Top-bar theme-toggle styles shared by both renderers. The control keeps a
  * 44×44px hit area (iOS HIG / Material minimum touch target) at every width,
- * with a clearly visible keyboard focus ring. */
+ * with a clearly visible keyboard focus ring. THEME_CSS_SHELL_INSET is the
+ * shared sticky-header inset: the `#top` anchor target clears the sticky
+ * header when the brand link or a restored scroll lands on it. */
 export const THEME_CSS_TOGGLE = `
     .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 8px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface); color: var(--muted); transition: color .16s ease, background .16s ease, border-color .16s ease; }
     .theme-toggle:hover { color: var(--text); border-color: var(--accent-border); background: var(--surface-strong); }
@@ -189,3 +191,7 @@ export const THEME_CSS_TOGGLE = `
     @media (max-width: 480px) {
       .theme-toggle { width: 44px; height: 44px; margin-left: 4px; }
     }`;
+
+/** Shared sticky-header inset for the `#top` scroll target (issue #5822 QA). */
+export const THEME_CSS_SHELL_INSET = `
+    main#top { scroll-margin-top: 96px; }`;

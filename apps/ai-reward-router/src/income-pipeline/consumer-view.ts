@@ -3,6 +3,7 @@ import { INCOME_PIPELINE_STATUS_LABELS, INCOME_PIPELINE_STATUSES, formatCurrency
 import type { PublicOpportunity } from '../public-supply/domain.js';
 import { toPublicOpportunityCard, isPublicOpportunityDisplayable } from '../public-supply/domain.js';
 import {
+  THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
   THEME_CSS_VARIABLES,
   renderThemeToggleButton,
@@ -220,6 +221,7 @@ ${THEME_CSS_VARIABLES}
     .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
     .trust-note { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; }
 ${THEME_CSS_TOGGLE}
+${THEME_CSS_SHELL_INSET}
     .primary-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; width: 100%; order: 3; padding: 8px 0 2px; }
     .primary-nav::-webkit-scrollbar { display: none; }
     .nav-item { flex: 0 0 auto; padding: 7px 13px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); border: 1px solid transparent; transition: color .16s ease, background .16s ease, border-color .16s ease; }
