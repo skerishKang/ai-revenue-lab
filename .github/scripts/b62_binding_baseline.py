@@ -159,7 +159,10 @@ def assert_matches_baseline(worker: str, payload: object, *, allow_target_additi
     expected = load_baseline(worker)
     live = extract_entries(payload)
     missing, unexpected = compare_entries(live, expected)
-    if unexpected or (missing and not allow_target_additions):
+    live_map = dict(live)
+    retyped = any(name in live_map and live_map[name] != kind
+                  for name, kind in expected.items())
+    if unexpected or retyped or (missing and not allow_target_additions):
         raise BindingBaselineError("BINDING_SET_DRIFT")
     # Pre-deploy only: the target may add reviewed bindings that the current
     # settings do not yet carry. Existing names/kinds must still match.
