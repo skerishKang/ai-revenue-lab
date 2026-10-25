@@ -154,12 +154,132 @@ lane the way it already carries the TXT lane:
   `IndependentZipXlsxRevisionVerifier`. The original path is never the write
   target; the result digest is the one that was verified before the write.
 
+## Web entry path: why the chooser route stays 503 (2026-10-26, 작업 A)
+
+Composition state, read at the two places that decide it:
+
+- `apps/padiem-chat/app/app_factory.py:1362` assigns
+  `app.state.claw_office_chooser_source = claw_office_chooser_source`, and the
+  parameter default at `app_factory.py:462` is `None` with the comment that the
+  chooser "is fail-closed until the real trusted Engine/Resident operator
+  supplies an owner-bound, pre-approved candidate/approval source".
+- The production composition root is `apps/padiem-chat/worker.py:1141`
+  (`create_app(...)`), which passes the named ports for the surfaces that are
+  live — `oracle_mesh_return_source`, `b66_pc_access_policy`,
+  `claw_drive_artifact_uploader`, and the rest — and does **not** pass
+  `claw_office_chooser_source`. Sibling trusted sources are built worker-side
+  from a Cloudflare Service Binding and assigned onto `app.state` after
+  `create_app`; there is no `module:attribute` environment pattern in the Chat
+  app. So the route answers `503 office_chooser_unconfigured` in production
+  because nothing constructs a source, not because a flag is off.
+
+No production implementation of the protocol exists: the only object with
+`configured` + `candidates()` + `select()` is the test double in
+`tests/test_3580_claw_office_chooser_routes.py`. PR #5817 (parser authority,
+33 files) contains no Office or chooser code, so the conflict resolved on that
+PR was never an Office conflict, and it cannot supply the missing source.
+
+Why the missing half is not a worker-side wire:
+
+- `select()` is refused unless the source returns a *genuinely started* Engine
+  pause (`status == "awaiting_approval"`, `engine_run_id`) **and** the route
+  independently re-reads the durable `claw_approval_handoff` row and requires
+  `p01_run_id`, `continuation_ref`, `pause_id` and `trusted_request` to match
+  (`claw_office_chooser_routes.py:143-178`). A Chat-local source that read the
+  same D1 row it is checked against would be self-attesting, which is exactly
+  what the route was written to prevent.
+- The only writer of that row is `_record_claw_approval_handoff`
+  (`app/claw_routes.py:992`, called at `:766` and `:1238`) — the ordinary Claw
+  run path, reached when an Engine run pauses. Nothing today pauses an Engine
+  run from an office-candidate selection.
+- The one working "web request → P01 → PC command" precedent is TXT, and it is
+  **read-only by construction**: `apps/padiem-chat/app/connector_txt_approval_material.py:302`
+  puts a `p01_approval_payload` on the command, and the PC accepts that format
+  only for `operation == "read"` on a `.txt` path under the selected root
+  (`kagent/local_agent_command_material.py:198`, `:137`).
+  `grep` across `apps/padiem-chat` and `apps/korean-ai-platform` finds **no**
+  write or revision approval format anywhere.
+
+So the real gate for the web XLSX request is a *new write-capable approval
+format*, and in the TXT design the pause/decision transcript comes from the
+server rather than from a prompt the PC showed its own user. Carrying that over
+to a WRITE would let a server transcript stand in for on-PC consent. The #5835
+lane therefore takes the opposite position: `ResidentXlsxRevisionStager` accepts
+only `P01LocalPermissionWindowsFileAuthorizationPort`, the deployment names a
+trusted factory, and no server-supplied transcript is honored. Choosing between
+"the PC prompts for the write" and "the web approval is trusted for the write"
+is an owner/CENTRAL security decision, not something to settle by wiring a
+placeholder source into a customer-facing route.
+
+## Device connection facts on COM2 (2026-10-26, 작업 C)
+
+- `padiem-oracle-mesh-executor.service` and `padiem-meshcentral.service` are
+  `active`/`running`; the executor's main process started Sun 2026-10-25
+  14:50:13 KST with `Result=success`.
+- The same lane completed real dispatches: `phase=submit_ok ... status=200` and
+  `oracle-mesh-executor result ok=True retryable=False quarantined=False` at
+  19:34:57 and 19:39:27 on 2026-10-25.
+- Exactly one failure appears in the journal: `23:16:57 oracle-mesh-executor
+  channel refusal: chat channel transport refused`, emitted at
+  `local_agent_oracle_mesh_executor.py:1432` from the transport branch at
+  `:259-260` (a non-HTTP failure — DNS/TLS/connect), during repeated WSL
+  `systemd-resolved: Clock change detected. Flushing caches.` entries. Nothing
+  like it recurred on 2026-10-26 (`--since 2026-10-26` shows no entries, no
+  refusals), so this was transient, not a persistent outage.
+- The poll channel is deployed: an unauthenticated `POST
+  https://chat.padiem.net/api/claw/connector/mesh-reads/poll` answers
+  `403 {"ok":false,"error":{"code":"oracle_mesh_channel_rejected"}` — the
+  bounded refusal for a request with no device channel token. No grant was
+  created and no authentication was bypassed to obtain this.
+- The `ACTION_REQUIRED` / `usable=false` device row is **the designed shape** for
+  a PC whose authority comes from a Mesh grant, not from a Broker heartbeat:
+  `apps/padiem-chat/app/claw_device_directory_routes.py:333-351` appends
+  `{"state": "ACTION_REQUIRED", "usable": False, "executable": True,
+  "selectable": True}` under the comment "A Mesh grant proves execution
+  authority, not a Broker heartbeat." Only canonical `online`, which the server
+  derives from binding + broker session + heartbeat evidence, projects as
+  `usable` (`app/claw_local_projection.py:107-116`, `:202-207`). So the
+  selection-vs-execution difference is intended, the PC remains selectable and
+  executable, and what is missing is Broker-session liveness for that device —
+  an operational item, not a code change.
+- `wrangler whoami` on COM2 reports "You are not authenticated", so Worker logs,
+  config reads, secret changes and any deployment are unavailable from this
+  machine; the B54 workflow's own `wrangler whoami || exit 1` preflight shows
+  what CENTRAL uses.
+
+## Chunk transfer gate: support and the approved way to turn it on (작업 D)
+
+- Code support is present and asserted by the protected workflow: the device
+  route allowlist contains exactly one Office staging route
+  (`/office-part`), authentication happens before any byte is written, and the
+  state worker composes the store
+  (`.github/workflows/b54-local-agent-public-ingress-activation.yml:129-160`).
+- The gate is a plain text var read as
+  `str(getattr(env, "LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED", "")).lower() !=
+  "true"` → `None` store
+  (`packages/padiem-control-plane/local_agent_broker_office_chunks.py:327`).
+- It is unset in the deployed configuration: the var appears in no
+  `wrangler.*.jsonc` in this repository (`grep -l` over all worker configs
+  returns nothing), while `wrangler.local-agent-broker.jsonc` does carry other
+  `LOCAL_AGENT_BROKER_*` vars in its `vars` block. That is the proof the flag is
+  off in production, and it is why the authenticated route answers
+  `503 office_transfer_not_configured`.
+- Enabling it is a committed config change to that `vars` block, shipped through
+  the existing B54 activation workflow — preflight asserts, `environment:
+  production` approval, served-version resolution through
+  `cloudflare_served_version_cli.py resolve-active`, and its rollback job. That
+  workflow deploys; it neither rewrites existing Secrets nor removes Worker
+  bindings, which is what "preserve the Cloudflare Secrets and existing
+  bindings" requires in practice. Doing it from COM2 is impossible (no
+  Cloudflare authentication), and doing it by hand outside that workflow would
+  bypass the reviewed gate.
+
 ## Still not enabled, and who owns it
 
 | Item | State | Owner |
 |---|---|---|
-| Resident revision lane composition | implemented and fail-closed: `build_resident_host(xlsx_revision_plan_source=...)`; `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays `False` because no deployment supplies a trusted P01 plan source yet | CENTRAL with the #5573 executor/connector lane |
+| Resident revision lane composition | implemented and fail-closed, and the Connector can now carry the key (`resident_launch.py`, installed release clears it); `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays `False` because no reviewed `module:factory` exists to pin | CENTRAL with the #5573 executor/connector lane |
 | Broker staging gate `LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED` | unset in every environment; route answers `503 office_transfer_not_configured` | operator configuration, CENTRAL |
-| Web `claw_office_chooser_source` composition | still `None`, so `/api/claw/office/candidates` answers 503 | Chat `worker.py`/`app_factory.py`, held while #5817 is open |
+| Web `claw_office_chooser_source` composition | no production implementation exists and `worker.py:1141` never passes it, so `/api/claw/office/candidates` answers 503 `office_chooser_unconfigured`; the blocker is a write-capable approval format plus the "who consents to the write" decision, not a missing wire | owner/CENTRAL decision, then Engine + Chat (#5817 holds no Office code) |
 | Device row `ACTION_REQUIRED` / executor poll refusal | observed live on COM2 on 2026-10-25 | CENTRAL operational recovery (#5573) |
 | Full web -> PC -> web E2E with an approved write | not run; blocked by the rows above. The web routes were probed locally through the ASGI app and answer their bounded refusals without an authenticated device/owner session (`401 unauthorized`, `local_runner_result_forbidden`) | after the above clear, with the Owner performing the approval |
