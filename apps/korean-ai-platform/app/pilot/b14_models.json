@@ -173,7 +173,8 @@
       "capabilities": [
         "chat",
         "coding",
-        "image"
+        "image",
+        "tools"
       ],
       "context_window": 1048576,
       "input_price_usd_per_1m": 0.3,

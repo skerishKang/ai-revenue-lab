@@ -66,22 +66,58 @@ def test_wrapper_loads_the_existing_theme_stack() -> None:
     # loads, so a theme change upstream reaches this page without an edit here.
     for asset in ("../theme-init.js", "../padiem-cinematic-chat.css", "../padiem-themes.css"):
         assert asset in html, f"wrapper must reference {asset}"
-    # padiem.net의 톤은 크 시네마틱이다. 이 페이지도 같은 테마를 선언한다.
-    assert 'data-theme="cinematic"' in html
+    # Owner decision 2026-10-25: the page defaults to Light and offers Dark.
+    # theme-init.js still owns the interpretation; the wrapper only supplies the
+    # default when ?theme= is absent, and it must run first to do that.
+    assert 'data-theme="light"' in html
+    bootstrap = html.index("./councillor-theme-default.js")
+    assert bootstrap < html.index("../theme-init.js"), (
+        "the default must be in the URL before theme-init.js reads it")
+    assert "../padiem-glass.css" not in html, "glass is the Chat default, not this page's"
 
 
 def test_wrapper_declares_no_color_or_font_tokens() -> None:
     css = read(WRAP / "councillor.css")
     for token in ("--bg:", "--text:", "--font-display:", "--accent:", "--gold:", "--radius-md:"):
         assert token not in css, f"{token} must come from the Chat theme, not be re-declared"
-    # Media surfaces must be painted from the theme's tokens. Only the
-    # decorative hero scrim carries its own literal gradient, because that layer
-    # is the fallback material itself.
-    assert css.count("var(--glass-card-surface") >= 2, "media surfaces use the glass token"
-    assert css.count("var(--card-border") >= 3, "borders use the theme border token"
+    # The reading surfaces follow the theme: they must be painted from tokens so
+    # Light and Dark both work without an edit here.
     assert css.count("var(--muted") >= 8 and css.count("var(--text") >= 6
-    assert css.count("var(--font-") >= 4, "typography must come from the theme stack"
+    assert css.count("var(--line") >= 8 and css.count("var(--accent") >= 12
+    assert css.count("var(--gold") >= 4, "the accent metal stays the theme's"
+    assert css.count("var(--font-") >= 3, "face stacks must wrap the theme families, not replace them"
     assert css.count("var(--") > 60, "the palette must ride on the shared tokens"
+    # Fixed colours are allowed only where content sits on video or on the one
+    # dark band the owner approved (hero, topbar-over-hero, media section).
+    offenders = []
+    for block in re.finditer(r"([^{}]+)\{([^}]*)\}", css):
+        selector, body = block.group(1), block.group(2)
+        on_media = re.search(r"cine-(hero|media|veil|film|name|lead|eyebrow|actions|primary|secondary"
+                             r"|facts|cue|grain|poster|video|feature|tile|links|link-row|link-title"
+                             r"|link-kind|link-arrow|on-media)|cine-section-media"
+                             r"|councillor-(topbar|brand|ghost)|:root", selector)
+        if on_media:
+            continue
+        if "#f7f8fa" in body or "rgba(247, 248, 250" in body or "#04070d" in body:
+            offenders.append(selector.strip().splitlines()[-1][:48])
+    assert not offenders, f"fixed media colours leaked into themed rules: {offenders}"
+
+
+def test_theme_switch_stays_on_the_existing_mechanism() -> None:
+    """Owner decision: Light is the default and Dark is selectable, using the
+    ?theme= state the Chat app already has -- not a second theme system."""
+    js = _code_only(wrapper_js())
+    assert 'THEMES = Object.freeze(["light", "dark"])' in js
+    assert 'DEFAULT_THEME = "light"' in js
+    # the toggle flips the attribute in place; nothing reloads the document
+    assert "location.reload" not in js and "document.write" not in js
+    assert 'setAttribute("data-theme", next)' in js
+    assert "writeTheme(next)" in js
+    bootstrap = _code_only(read(WRAP / "councillor-theme-default.js"))
+    assert 'params.set("theme", "light")' in bootstrap
+    assert "localStorage" not in bootstrap and "sessionStorage" not in bootstrap, (
+        "theme preference stays in the URL, as the Chat privacy contract requires"
+    )
 
 
 def test_wrapper_keeps_its_own_layout_baseline() -> None:
@@ -133,8 +169,10 @@ def test_wrapper_does_not_duplicate_the_util_screens() -> None:
 
 def _code_only(source: str) -> str:
     """주석은 소유권 서술을 담고 있으므로 계약 검사에서는 본문만 본다."""
-    source = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
-    return re.sub(r"(?m)^\s*//.*$", "", source)
+    # 순서가 의미 있다: 줄 주석 안의 brands/<id> 같은 텍스트가 /* 로 보이면
+    # 블록 주석 제거가 본문까지 삼킨다. 그래서 줄 주석을 먼저 지운다.
+    source = re.sub(r"(?m)^\s*//.*$", "", source)
+    return re.sub(r"/\*.*?\*/", "", source, flags=re.S)
 
 
 def test_wrapper_builds_no_second_ai_login_or_store() -> None:

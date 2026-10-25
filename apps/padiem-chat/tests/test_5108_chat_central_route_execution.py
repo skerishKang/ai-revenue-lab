@@ -30,7 +30,7 @@ from app.model_policy import (
 )
 
 ROUTED_MODEL = "opencode-go/muse-spark-1.2-contributor"
-DECLARED_MODEL = "opencode-go/muse-spark-1.3-contributor"
+DECLARED_MODEL = "google/gemini-3.5-flash-lite"
 NOT_A_ROUTE = "opencode-go/not-a-product-route"
 
 

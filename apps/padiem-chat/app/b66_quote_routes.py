@@ -52,8 +52,8 @@ from .b66_grade_models import (
 )
 from padiem_control_plane.product_tier_routes import (
     FREE_PRIMARY_B14_MODEL_ID,
-    MUSE_B14_MODEL_ID,
 )
+from .model_policy import ADMIN_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -483,13 +483,13 @@ async def b66_quote_models(request: Request) -> JSONResponse:
                 grade_model, transport_supported=_reasoning_transport_supported(request)),
         })
     if (await b66_verified_admin(request, uid)
-            and MUSE_B14_MODEL_ID in live_ready_ids
-            and MUSE_B14_MODEL_ID not in disabled):
+            and ADMIN_B14_MODEL_ID in live_ready_ids
+            and ADMIN_B14_MODEL_ID not in disabled):
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
-             "model_id": MUSE_B14_MODEL_ID,
+             "model_id": ADMIN_B14_MODEL_ID,
              "reasoning_levels": reasoning_options_for_model(
-                 MUSE_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+                 ADMIN_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
         )
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
@@ -554,7 +554,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         if selected_grade == B66_ADMIN_GRADE:
             if not await b66_verified_admin(request, uid):
                 return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
-            expected_model = MUSE_B14_MODEL_ID
+            expected_model = ADMIN_B14_MODEL_ID
         else:
             member_grade = await verified_member_grade(request, uid, access)
             if grade_order.index(selected_grade) > grade_order.index(member_grade):
