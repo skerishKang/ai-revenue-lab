@@ -114,6 +114,46 @@ result's integrity comes from the runtime's atomic write (temp file, `fsync`,
   whole-file digests, two-command isolation, foreign owner/run/command/kind
   refusal, tamper refusal, and recovery after a missing part.
 
+## Connector configuration path (2026-10-26, #5835 작업 B)
+
+`apps/claw-connect/claw_connect/resident_launch.py` can now carry the revision
+lane the way it already carries the TXT lane:
+
+- `RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE = "PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE"`
+  is the exact key `local_agent_resident_process` reads, pinned as text and
+  cross-checked against that file's own source in
+  `test_4434_resident_xlsx_revision_launch.py` — a rename on either side fails a
+  test instead of silently leaving the lane off.
+- A configured value is forwarded; an absent value emits no key; a malformed one
+  refuses the launch with `xlsx_revision_plan_source_invalid` rather than
+  spawning a child that has to fail closed by itself. A value the plan never
+  authorized is dropped from the emitted environment.
+- The shared `module:attribute` shape check now requires every dotted segment to
+  be a real identifier. `kagent.:factory`, `.pkg:factory` and `pkg..mod:factory`
+  could never import, and the old pattern accepted them for all three keys
+  (request port, TXT, revision). Nothing that actually imports got stricter.
+- `installed_runtime.py` pins **no** revision source and clears an ambient one,
+  so a customer machine cannot arm the lane by exporting a name: no fake grant
+  and no test-only plan source reaches an installed Resident. `XLSX_REVISION_-
+  PLAN_SOURCE = None` is where CENTRAL records a reviewed factory when one
+  exists; until then `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays
+  `False`.
+- What a real factory would have to be: the existing command material carries one
+  closed-validated `p01_approval_payload` shaped as a TXT *read* receipt
+  (`local_agent_command_material.validate_txt_approval_receipt`). A production
+  revision source needs the matching WRITE approval to ride an acknowledged
+  command, which means a Chat-side receipt format plus its validator. Inventing a
+  PC-side-only source would mean trusting approval material no server minted, so
+  it is deliberately not done here.
+- Composition proof on the Resident side
+  (`test_4434_resident_xlsx_revision_lane.py`): the composed stager holds a real
+  `LocalOfficeChunkPublisher`, a `WindowsSelectedRootFileRuntime` whose
+  authorization port type is exactly
+  `P01LocalPermissionWindowsFileAuthorizationPort`, and the roundtrip module's
+  omitted editor/verifier resolve to `PythonXlsxValueCopyEditor` and
+  `IndependentZipXlsxRevisionVerifier`. The original path is never the write
+  target; the result digest is the one that was verified before the write.
+
 ## Still not enabled, and who owns it
 
 | Item | State | Owner |

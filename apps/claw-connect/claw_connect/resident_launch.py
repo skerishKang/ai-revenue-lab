@@ -50,6 +50,10 @@ RESIDENT_ENV_BROKER_URL = "PADIEM_AGENT_BROKER_URL"
 #: Optional P01 verified-text plan material supplied by deployment (module:attribute).
 #: Absent leaves the TXT lane inactive; never minted locally.
 RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE = "PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"
+#: #4434: optional P01 XLSX revision plan material, same convention and the exact
+#: key ``kagent.local_agent_resident_process`` reads. Absent leaves the revision
+#: lane inactive; this module never mints a plan, a grant or an approval.
+RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE = "PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE"
 
 #: Bounded, secret-free refusal reasons. Each one names a *missing fact*, so an
 #: operator can act on it, and none of them carries a value.
@@ -62,10 +66,16 @@ REASON_AUTHORITY_REF_UNCONFIGURED = "broker_authority_ref_unconfigured"
 REASON_REQUEST_PORT_UNCONFIGURED = "broker_request_port_unconfigured"
 REASON_BROKER_URL_UNCONFIGURED = "broker_url_unconfigured"
 REASON_VERIFIED_TEXT_PLAN_SOURCE_INVALID = "verified_text_plan_source_invalid"
+REASON_XLSX_REVISION_PLAN_SOURCE_INVALID = "xlsx_revision_plan_source_invalid"
 
 #: The Resident's ``module:attribute`` factory shape. Shape-checked only: this
 #: module never imports or calls the factory, and never stands up a transport.
-_REQUEST_PORT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_.]*:[A-Za-z_][A-Za-z0-9_]*$")
+#: Each dotted segment must be a real identifier, so a name that could never
+#: import (``pkg.:attr``, ``.pkg:attr``, ``pkg..attr``) is refused here instead of
+#: reaching a child that would fail closed without ever saying why.
+_REQUEST_PORT_RE = re.compile(
+    r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*:[A-Za-z_][A-Za-z0-9_]*$"
+)
 _REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 #: Keep in step with ``enrollment._BROKER_URL_RE``: the Resident carries the
 #: device credential to this origin, so it is held to the same TLS-only,
@@ -85,6 +95,7 @@ class ResidentLaunchPlan:
     request_port: str
     broker_url: str
     verified_text_plan_source: str | None = None
+    xlsx_revision_plan_source: str | None = None
 
     def environment(self, *, base: Mapping[str, str] | None = None) -> dict[str, str]:
         """The child environment, over the inherited one.
@@ -92,7 +103,9 @@ class ResidentLaunchPlan:
         Only the canonical keys are set. The credential directory is a
         *path*; the credential itself is never placed in the environment, and
         the Resident keeps loading it from the protected store. The optional
-        verified-text plan source is forwarded only when configured.
+        plan-source keys are forwarded only when configured, and are dropped
+        otherwise so an ambient value cannot arm a lane the owner did not
+        configure.
         """
         env = dict(os.environ if base is None else base)
         env[RESIDENT_ENV_DEVICE_ID] = self.device_id
@@ -104,6 +117,10 @@ class ResidentLaunchPlan:
             env.pop(RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE, None)
         else:
             env[RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE] = self.verified_text_plan_source
+        if self.xlsx_revision_plan_source is None:
+            env.pop(RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE, None)
+        else:
+            env[RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE] = self.xlsx_revision_plan_source
         return env
 
     def safe_dict(self) -> dict[str, Any]:
@@ -185,6 +202,20 @@ def plan_resident_launch(
     if not verified_text_plan_source:
         verified_text_plan_source = None
 
+    # Optional #4434 P01 XLSX revision material. CENTRAL supplies module:factory;
+    # absent leaves the revision lane off. Shape-checked for the same reason as
+    # the TXT lane: the Resident resolves this key itself, and a broken value
+    # would reach a child that has to fail closed on its own.
+    xlsx_revision_plan_source = (
+        env.get(RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE) or ""
+    ).strip()
+    if xlsx_revision_plan_source and not _REQUEST_PORT_RE.fullmatch(
+        xlsx_revision_plan_source
+    ):
+        return None, REASON_XLSX_REVISION_PLAN_SOURCE_INVALID
+    if not xlsx_revision_plan_source:
+        xlsx_revision_plan_source = None
+
     return (
         ResidentLaunchPlan(
             device_id=device_id,
@@ -193,6 +224,7 @@ def plan_resident_launch(
             request_port=request_port,
             broker_url=broker_url,
             verified_text_plan_source=verified_text_plan_source,
+            xlsx_revision_plan_source=xlsx_revision_plan_source,
         ),
         "planned",
     )
@@ -202,6 +234,7 @@ __all__ = [
     "REASON_AUTHORITY_REF_UNCONFIGURED",
     "REASON_BROKER_URL_UNCONFIGURED",
     "REASON_VERIFIED_TEXT_PLAN_SOURCE_INVALID",
+    "REASON_XLSX_REVISION_PLAN_SOURCE_INVALID",
     "REASON_CREDENTIAL_DIR_INVALID",
     "REASON_CREDENTIAL_DIR_UNCONFIGURED",
     "REASON_ENROLLMENT_NOT_LIVE",
@@ -212,6 +245,7 @@ __all__ = [
     "RESIDENT_ENV_BROKER_URL",
     "RESIDENT_ENV_CREDENTIAL_DIR",
     "RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE",
+    "RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE",
     "RESIDENT_ENV_DEVICE_ID",
     "RESIDENT_ENV_REQUEST_PORT",
     "ResidentLaunchPlan",

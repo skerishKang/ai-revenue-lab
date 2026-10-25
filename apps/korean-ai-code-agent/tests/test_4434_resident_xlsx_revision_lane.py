@@ -331,5 +331,67 @@ class ResidentXlsxRevisionCompositionTests(unittest.TestCase):
         self.assertIsNone(host_params["xlsx_revision_staging"].default)
         self.assertIsNone(process_params["xlsx_revision_plan_source"].default)
 
+    def test_the_composition_builds_the_canonical_editor_verifier_publisher(self) -> None:
+        """Nothing in the Resident's revision lane is a stand-in.
+
+        The lane the host composes is the one function that runs the file
+        operations, and its collaborators are the same Windows editor,
+        independent verifier, canonical chunk publisher and P01 authority the
+        standalone roundtrip test uses. A synthetic root path is enough here:
+        this proves *composition*, and the lane test proves execution.
+        """
+        from kagent.local_xlsx_workcopy_roundtrip import (
+            revise_and_stage_approved_xlsx_workcopy,
+        )
+        from kagent.local_xlsx_python_copy_editor import (
+            IndependentZipXlsxRevisionVerifier, PythonXlsxValueCopyEditor,
+        )
+        from kagent.windows_local_filesystem import (
+            P01LocalPermissionWindowsFileAuthorizationPort,
+            WindowsSelectedRootFileRuntime,
+        )
+
+        signature = inspect.signature(revise_and_stage_approved_xlsx_workcopy)
+        self.assertIsNone(signature.parameters["editor"].default)
+        self.assertIsNone(signature.parameters["verifier"].default)
+        self.assertIn("PythonXlsxValueCopyEditor", signature.parameters["editor"].annotation)
+        self.assertIn("IndependentZipXlsxRevisionVerifier",
+                      signature.parameters["verifier"].annotation)
+        # Omitted collaborators are resolved by the roundtrip module itself, so
+        # the names it binds are the editors and verifiers the lane can run.
+        import kagent.local_xlsx_workcopy_roundtrip as roundtrip_module
+
+        self.assertIs(roundtrip_module.PythonXlsxValueCopyEditor, PythonXlsxValueCopyEditor)
+        self.assertIs(roundtrip_module.IndependentZipXlsxRevisionVerifier,
+                      IndependentZipXlsxRevisionVerifier)
+
+        profile = device("C:\\synthetic\\4434-root", device_id=DEVICE_ID,
+                         workspace_ref=WORKSPACE, root_ref=ROOT_REF)
+        stager = compose_resident_xlsx_revision_stager(
+            device=profile,
+            revision_plan_source=PlanSource(root="C:\\synthetic\\4434-root", edits=(EDIT,)),
+            permission_profile=default_device_permission_profile(device=profile),
+            publisher_config=CONFIG, transport=RecordingTransport(), clock=FollowClock(),
+        )
+
+        self.assertIsInstance(stager, ResidentXlsxRevisionStager)
+        self.assertIsInstance(stager._publisher, LocalOfficeChunkPublisher)
+        self.assertIsInstance(stager._runtime, WindowsSelectedRootFileRuntime)
+        self.assertIsInstance(
+            stager._runtime._authorization, P01LocalPermissionWindowsFileAuthorizationPort,
+        )
+        self.assertIs(type(stager._runtime._authorization),
+                      P01LocalPermissionWindowsFileAuthorizationPort)
+
+    def test_the_original_workcopy_is_never_the_write_target(self) -> None:
+        """The lane derives a new name; the invariant is checked, not assumed."""
+        from kagent.local_resident_xlsx_revision_delivery import (
+            XLSX_REVISION_WRITES_THE_ORIGINAL,
+        )
+
+        self.assertIs(XLSX_REVISION_WRITES_THE_ORIGINAL, False)
+        self.assertNotEqual(SOURCE_PATH, DERIVED_PATH)
+        self.assertEqual(os.path.dirname(DERIVED_PATH), os.path.dirname(SOURCE_PATH))
+
 if __name__ == "__main__":
     unittest.main()

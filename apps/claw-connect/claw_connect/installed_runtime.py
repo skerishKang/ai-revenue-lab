@@ -14,6 +14,11 @@ REQUEST_PORT = "kagent.local_agent_broker_production_entry:make_production_reque
 VERIFIED_TEXT_PLAN_SOURCE = (
     "kagent.verified_engine_text_read_plan_source:make_verified_text_plan_source"
 )
+#: #4434: the installed release has no reviewed XLSX revision plan factory, so no
+#: value is pinned and any ambient one is cleared below. The revision lane stays
+#: off on a customer machine until CENTRAL reviews and pins a real source; a test
+#: fixture cannot arm it through the environment.
+XLSX_REVISION_PLAN_SOURCE = None
 
 
 def installed_resident_environ(
@@ -29,6 +34,9 @@ def installed_resident_environ(
     # This only loads the canonical parser of authenticated Broker material.
     # It cannot approve a path or read without that command's verified receipt.
     result["PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"] = VERIFIED_TEXT_PLAN_SOURCE
+    # No reviewed revision source is pinned, so an ambient module name must not
+    # reach the supervised Resident either.
+    result.pop("PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE", None)
     result["PADIEM_AGENT_CREDENTIAL_DIR"] = str(
         protected_credential_directory(state_dir)
     )
