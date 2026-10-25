@@ -1886,3 +1886,243 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
         assert "pc_query_chat_call mode=dispatch status=" in output
     if "exception" in case:
         assert "reason=KeyError" in output
+
+
+@pytest.mark.parametrize("argument_form", ["missing", "empty_object"])
+@pytest.mark.parametrize("step_failure", [False, True])
+@pytest.mark.parametrize("decision_source", ["native", "model_step"])
+@pytest.mark.asyncio
+async def test_drives_decision_invokes_real_handler_and_finishes(
+    monkeypatch, argument_form, decision_source, step_failure,
+):
+    """Real PC turn/Core/step driver; only model answers and Chat are fakes.
+
+    Native names follow the advertised query_drives schema; the corresponding
+    step selection is claw.pc.query_drives. No raw event or driver is replaced.
+    Retain the pre-Core exception traceback in assertion diagnostics because
+    BoundedAgentRuntime deliberately suppresses the original exception chain.
+    """
+    import traceback
+    from padiem_ai_core import StreamingExecutionRuntime
+    from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+    from padiem_ai_core.tool_channel import parse_tool_calls
+    import app.claw_pc_query_step_driver as driver
+    from tests.test_5574_pc_read_boundary_end_to_end import (
+        _Request, _Response, _ScriptedModel, SIGNING_SECRET,
+    )
+
+    calls, failures, decisions = [], [], []
+    if step_failure:
+        def fail_decision(_):
+            raise KeyError("synthetic_step_failure")
+        monkeypatch.setattr(driver, "_model_step_payload", fail_decision)
+
+    class PC:
+        async def fetch(self, request):
+            body = json.loads(request.body)
+            calls.append(body)
+            mode = body["mode"]
+            if mode == "context":
+                return _Response({"ok": True, "device": {
+                    "device_id": "office-pc", "roots": ["C:\\\\"]},
+                    "tools": ["query_drives"]})
+            assert request.url == driver.CHAT_ENGINE_PC_DRIVE_URL
+            if mode == "dispatch":
+                return _Response({"ok": True, "dispatch": {
+                    "dispatch_id": "drive_dispatch", "run_id": body["run_id"],
+                    "device_id": body["device_id"], "kind": "command"}})
+            assert mode in {"command_status", "result"}
+            return _Response({"ok": True, "dispatch": {
+                "dispatch_id": "drive_dispatch", "run_id": body["run_id"],
+                "kind": "command", "state": "done", "output": '[{"Name":"C"}]',
+                "termination": "exited", "exit_code": 0}})
+
+    class Native:
+        async def stream(self, request):
+            function = {"name": "query_drives"}
+            if argument_form == "empty_object":
+                function["arguments"] = "{}"
+            call, = parse_tool_calls([{"id": "drive_call", "function": function}])
+            route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
+            yield B14StreamEvent(tool_call=B14StreamToolCall(
+                id=call.id, name=call.name, arguments=call.arguments), route=route)
+            yield B14StreamEvent(done=True, finish_reason="tool_calls", route=route)
+        def stream_auto(self, request):
+            return self.stream(request)
+
+    decision = {"action": "tool", "tool_id": "claw.pc.query_drives"}
+    if argument_form == "empty_object":
+        decision["arguments"] = {}
+    answers = [json.dumps({"action": "complete", "answer": "drive C"})]
+    if decision_source == "model_step":
+        answers.insert(0, json.dumps(decision))
+    model = _ScriptedModel(answers)
+    pc = PC()
+    binding = driver.build_chat_pc_query_tool_binding(
+        service=pc, request_factory=_Request, secret=SIGNING_SECRET)
+    def factory(model_id, model_policy, task_type, optimize_for, **options):
+        built = driver.build_live_pc_query_driver(
+            b14_client=model, model_id=model_id, model_policy=model_policy,
+            task_type=task_type, optimize_for=optimize_for, service=pc,
+            request_factory=_Request, secret=SIGNING_SECRET, **options)
+        original = built._select_step
+        async def observe(**kwargs):
+            try:
+                selected = await original(**kwargs)
+                decisions.append(selected)
+                return selected
+            except Exception:
+                failures.append(traceback.format_exc())
+                raise
+        built._select_step = observe
+        return built
+    async def capable(_): return True
+    async def no_sleep(_): pass
+    monkeypatch.setattr(asyncio, "sleep", no_sleep)
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(
+            app_id=app, b14_stream_client=Native()), pc_tools_capability=capable,
+        tool_binding_resolver=lambda _: binding, pc_query_step_driver_factory=factory)
+    payload = _pc_turn_payload()
+    payload["pc_tools"]["allowed_scopes"] = ["query_drives"]
+    if decision_source == "model_step":
+        payload.pop("pc_tools")
+        payload.update(agent_plan={"agent_id": "agent:padiem:chat-pc-query@1", "steps": [
+            {"step_id": "query_drives", "tool_id": "claw.pc.query_drives", "objective": "Query drives"}]},
+            declared_plan="query_drives", tool_arguments={"query_drives": {"device_id": "office-pc"}})
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(payload).encode(), pc_progress=True)
+    assert isinstance(prepared, PreparedOrchestrationStream), prepared
+    assert prepared.pc_turn
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    diagnostic = "\n".join(failures) or repr(records)
+    if step_failure:
+        assert len(failures) == 1 and "KeyError: 'synthetic_step_failure'" in diagnostic
+        assert "claw_pc_query_step_driver.py" in diagnostic and "_model_step_payload(answer)" in diagnostic
+        assert records[-1]["ok"] is False and "error" in records[-1], diagnostic
+        assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run", diagnostic
+        assert "synthetic_step_failure" not in repr(records)
+        assert len([c for c in calls if c["mode"] == "dispatch"]) == (decision_source == "native")
+        return
+    assert not failures, diagnostic
+    assert calls[0]["mode"] == "context", diagnostic
+    assert [c["mode"] for c in calls if c["mode"] != "context"] == [
+        "dispatch", "command_status", "result"], diagnostic
+    assert decisions[0]["tool_id"] == "claw.pc.query_drives", diagnostic
+    assert "orchestration" in records[-1], diagnostic
+    assert records[-1]["orchestration"]["execution"]["answer"] == "drive C", diagnostic
+
+
+@pytest.mark.parametrize("pc_progress", [False, True])
+@pytest.mark.parametrize("failure", [
+    "service", "orchestration", "projection", "execution", "idempotency",
+    "unexpected", "runner_cancelled", "error_mapping", "error_encoding", "result_encoding", "event_encoding",
+])
+@pytest.mark.asyncio
+async def test_pc_stream_every_failure_has_one_final_error_with_stage(monkeypatch, failure, pc_progress):
+    from padiem_ai_core import OrchestrationError, ExecutionRuntimeError
+    from padiem_ai_core.execution_context import IdempotencyConflictError
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    from app.tool_projection import EngineToolProjectionError
+    first = OrchestrationEvent(
+        event_id="evt_failure", run_id="run_failure", trace_id="tr_failure", app_id="padiem-chat",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1, timestamp_iso="2026-10-25T00:00:00Z")
+    metadata = RunMetadata(trace_id="tr_failure", app_id="padiem-chat",
+                           agent_id="agent:test", status=RunStatus.FAILED)
+    errors = {
+        "service": ServiceContractError("invalid_request", "Safe failure"),
+        "orchestration": OrchestrationError("pc_failure", "Safe failure"),
+        "projection": EngineToolProjectionError("tool_runtime_unavailable", "Safe failure"),
+        "execution": ExecutionRuntimeError("model_unavailable", "Safe failure", metadata=metadata),
+        "idempotency": IdempotencyConflictError("Safe failure"),
+        "unexpected": KeyError("PRIVATE_SENTINEL"),
+        "runner_cancelled": asyncio.CancelledError(),
+        "error_mapping": OrchestrationError("pc_failure", "Safe failure"),
+        "error_encoding": ServiceContractError("invalid_request", object()),
+    }
+    async def run():
+        if failure in {"result_encoding", "event_encoding"}:
+            return object()
+        raise errors[failure]
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    if failure == "error_mapping":
+        def broken_mapping(_):
+            raise KeyError("PRIVATE_SENTINEL")
+        monkeypatch.setattr(service, "_orchestration_run_error_response", broken_mapping)
+    if failure == "result_encoding":
+        async def broken_result(*args, **kwargs):
+            return {"execution": {"answer": object()}}
+        monkeypatch.setattr(service, "_orchestration_body", broken_result)
+    task = asyncio.create_task(run())
+    await asyncio.wait({task})
+    queue = asyncio.Queue()
+    if failure == "event_encoding":
+        queue.put_nowait(object())
+    prepared = PreparedOrchestrationStream(first_event=first, queue=queue, task=task,
+                                           app_id="padiem-chat", pc_progress=pc_progress, pc_turn=True)
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert len(records) == 2
+    assert records[-1]["ok"] is False and "error" in records[-1]
+    stage = records[-1]["error"]["metadata"]["stage"]
+    assert stage == {"result_encoding": "pc_stream_result", "event_encoding": "pc_stream_event"}.get(
+        failure, "pc_stream_run")
+    assert "PRIVATE_SENTINEL" not in repr(records)
+    if failure == "runner_cancelled":
+        assert records[-1]["error"]["code"] == "pc_turn_cancelled"
+    if failure in {"error_mapping", "error_encoding", "result_encoding", "unexpected"}:
+        assert records[-1]["error"]["code"] == "engine_internal_error"
+
+
+@pytest.mark.asyncio
+async def test_pc_stream_consumer_cancellation_propagates_and_cleans_runner():
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    first = OrchestrationEvent(
+        event_id="evt_cancel", run_id="run_cancel", trace_id="tr_cancel", app_id="padiem-chat",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1, timestamp_iso="2026-10-25T00:00:00Z")
+    entered = asyncio.Event()
+    class WaitingQueue(asyncio.Queue):
+        async def get(self):
+            entered.set()
+            return await super().get()
+    task = asyncio.create_task(asyncio.Event().wait())
+    prepared = PreparedOrchestrationStream(first_event=first, queue=WaitingQueue(), task=task,
+                                           app_id="padiem-chat", pc_progress=True)
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    stream = service.iter_ndjson(prepared)
+    assert "event" in json.loads(await anext(stream))
+    consumer = asyncio.create_task(anext(stream))
+    await entered.wait()
+    consumer.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await consumer
+    await stream.aclose()
+    assert task.cancelled()
+
+
+@pytest.mark.parametrize("pc_progress", [False, True])
+@pytest.mark.asyncio
+async def test_pc_turn_classification_keeps_heartbeat_opt_in(monkeypatch, pc_progress):
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    import app.orchestration_service as module
+    first = OrchestrationEvent(
+        event_id="evt_opt_in", run_id="run_opt_in", trace_id="tr_opt_in", app_id="padiem-chat",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1, timestamp_iso="2026-10-25T00:00:00Z")
+    finish, timeouts = asyncio.Event(), []
+    original_wait = asyncio.wait
+    async def observe_wait(tasks, **options):
+        timeouts.append(options.get("timeout"))
+        finish.set()
+        return await original_wait(tasks, **options)
+    async def run():
+        await finish.wait()
+        raise KeyError("synthetic_failure")
+    monkeypatch.setattr(asyncio, "wait", observe_wait)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(run()),
+        app_id="padiem-chat", pc_progress=pc_progress, pc_turn=True)
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS if pc_progress else None]
+    assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run"
