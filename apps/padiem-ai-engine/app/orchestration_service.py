@@ -282,6 +282,7 @@ class PreparedOrchestrationStream:
     app_id: str
     request_fingerprint_value: str | None = None
     pc_progress: bool = False
+    pc_turn: bool = False
 
 
 PC_STREAM_HEARTBEAT_SECONDS = 10.0
@@ -1781,9 +1782,8 @@ class OrchestrationEngineService:
             declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
-        pc_stream = pc_progress is True and (
-            _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
-        )
+        pc_turn = _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
+        pc_stream = pc_progress is True and pc_turn
         from app.pc_tools_turn import _PC_TURN_STREAM_SINK
         turn_sink_token = _PC_TURN_STREAM_SINK.set(queue.put_nowait if pc_stream else None)
         progress_token = _PC_PROGRESS_SINK.set(
@@ -1815,6 +1815,7 @@ class OrchestrationEngineService:
                 app_id=app_id,
                 request_fingerprint_value=request_fingerprint_value,
                 pc_progress=pc_stream,
+                pc_turn=pc_turn,
             )
         if task in done:
             if first_event_task not in done:
@@ -1836,6 +1837,7 @@ class OrchestrationEngineService:
                     app_id=app_id,
                     request_fingerprint_value=request_fingerprint_value,
                     pc_progress=pc_stream,
+                    pc_turn=pc_turn,
                 )
             try:
                 await task
@@ -1863,6 +1865,7 @@ class OrchestrationEngineService:
             app_id=app_id,
             request_fingerprint_value=request_fingerprint_value,
             pc_progress=pc_stream,
+            pc_turn=pc_turn,
         )
 
     async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
@@ -1876,7 +1879,34 @@ class OrchestrationEngineService:
 
         if not isinstance(prepared, PreparedOrchestrationStream):
             raise ValueError("prepared must be PreparedOrchestrationStream")
+        pc_turn = prepared.pc_turn or prepared.pc_progress
+
+        def failure_line(exc: BaseException, stage: str) -> str:
+            # Error conversion/encoding is itself fallible. Keep one literal,
+            # serializable fallback outside those operations; never send raw
+            # exception messages or tool/model arguments to the client.
+            fallback = _service_error(
+                "engine_internal_error", "Orchestration streaming failed.", status_code=500,
+                metadata={"stage": stage} if pc_turn else None,
+            )
+            try:
+                if isinstance(exc, ServiceContractError):
+                    response = _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+                elif isinstance(exc, asyncio.CancelledError):
+                    response = _service_error("pc_turn_cancelled", "PC turn was cancelled.", status_code=500)
+                else:
+                    response = self._orchestration_run_error_response(exc) or fallback
+                body = dict(response.body)
+                if pc_turn:
+                    error = dict(body["error"])
+                    error["metadata"] = {**(error.get("metadata") or {}), "stage": stage}
+                    body["error"] = error
+                return _encode_line(body)
+            except Exception:
+                return _stream_error_line(fallback)
+
         started = asyncio.get_running_loop().time()
+        stage = "pc_stream_event"
         try:
             yield _stream_event_line(prepared.first_event)
             while not prepared.task.done():
@@ -1884,7 +1914,7 @@ class OrchestrationEngineService:
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
-                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS if pc_turn else None,
                 )
                 if not done:
                     event_task.cancel()
@@ -1907,26 +1937,26 @@ class OrchestrationEngineService:
                     event_task.cancel()
             while not prepared.queue.empty():
                 yield _stream_event_line(prepared.queue.get_nowait())
+            stage = "pc_stream_run"
             result = prepared.task.result()
+            stage = "pc_stream_result"
             orchestration_body = await self._orchestration_body(
                 result,
                 app_id=prepared.app_id,
                 request_fingerprint_value=prepared.request_fingerprint_value,
             )
             yield _stream_result_line(orchestration_body)
-        except asyncio.CancelledError:
-            raise
-        except ServiceContractError as exc:
-            yield _stream_error_line(_service_error(exc.code, exc.safe_message, status_code=exc.status_code))
-        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
-            response = self._orchestration_run_error_response(exc)
-            if response is None:
-                response = _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
-            yield _stream_error_line(response)
-        except Exception:
-            yield _stream_error_line(
-                _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
-            )
+        except asyncio.CancelledError as exc:
+            # A cancelled producer must settle the still-connected PC stream.
+            # Cancellation of the consumer/disconnect still propagates and the
+            # finally block cleans up the producer; never write to a closed peer.
+            consumer = asyncio.current_task()
+            if pc_turn and prepared.task.cancelled() and not consumer.cancelling():
+                yield failure_line(exc, stage)
+            else:
+                raise
+        except Exception as exc:
+            yield failure_line(exc, stage)
         finally:
             pending_event = locals().get("event_task")
             if pending_event is not None and not pending_event.done():
