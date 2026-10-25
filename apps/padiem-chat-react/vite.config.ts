@@ -106,6 +106,11 @@ const apiProxy = apiBaseUrl
  * console error, and the clone would learn the same thing from a failing
  * request instead of from a well-formed answer. The projection says the API is
  * not ready, so the clone stays in its offline mode and says so.
+ *
+ * `/health` is answered for the same reason: the operational
+ * `static/locale.js` the clone imports probes it for the #2824 binary attachment
+ * capability. The clone composes no server, so it reports no readiness either way
+ * and the probe leaves the composer copy exactly as the offline clone shows it.
  */
 function offlineAuthStatusPlugin() {
   return {
@@ -115,12 +120,17 @@ function offlineAuthStatusPlugin() {
         setHeader: (name: string, value: string) => void;
         end: (body: string) => void;
       }, next: () => void) => {
-        if (req.url?.split("?")[0] !== "/api/auth/status") {
+        const path = req.url?.split("?")[0];
+        if (path !== "/api/auth/status" && path !== "/health") {
           next();
           return;
         }
         res.setHeader("Content-Type", "application/json; charset=utf-8");
         res.setHeader("Cache-Control", "no-store");
+        if (path === "/health") {
+          res.end(JSON.stringify({ status: "offline", app: "padiem-chat-react" }));
+          return;
+        }
         res.end(
           JSON.stringify({
             ready: false,
