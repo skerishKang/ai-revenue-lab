@@ -116,8 +116,14 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # Proposed re-pin after #5815: PDF/PPTX/DOCX provenance segments and
 # DOCX table-row / XLSX formula-and-cached-value text changed in Core.
 # Only this source pin moves; the other hashes are unchanged. CTO review pending.
+# Re-pinned for #4976: the single Core PDF reader boundary now retries a damaged
+# cross-reference section once through the lenient reader, for document-text reads
+# only. It adds no parser, process, network, filesystem, OCR, provider or
+# Production authority, changes no declared-metadata bound or decision, and keeps
+# the magic, encryption and page gates plus the strict reader for merge, split,
+# markdown and preview. Only this source pin moves; the other hashes are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "2c90b79d0234d4a507c7568f690b961efab341c382540d7b1c0d65b42c6189d6",
+    CORE_PACKAGE / "document_normalization.py": "bfd0369ae52d8173fe247f6c2e6d451989ac006109ea9a33daf4235728554213",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "8ca8a31abe59db7ef38ea81a1c288df273237746b90dd0a1480abc9b929947e2",
