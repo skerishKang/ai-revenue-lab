@@ -553,32 +553,46 @@
       <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
         <header class="util-header">
           <div>
-            <p class="standalone-view-kicker">Padiem Util</p>
+            <p class="standalone-view-kicker" id="utilKicker">Padiem Speech</p>
             <!-- #5727: the title names the selected tool (JS keeps it in sync
-                 with the active tab); the shared kicker/tagline hierarchy stays. -->
+                 with the active tab); the shared kicker/tagline hierarchy stays.
+                 #5799: the kicker and tagline follow the active tool the same
+                 way, starting from the speech template. -->
             <h2 id="utilTitle" class="standalone-view-title">축사·인사말</h2>
-            <p class="standalone-view-tagline">AI 홍보·기록 비서</p>
+            <p class="standalone-view-tagline" id="utilTagline">행사에 맞는 축사·인사말 초안을 준비합니다</p>
           </div>
         </header>
         <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
-          <button class="util-tab active" data-util="speech">축사·인사말</button>
+          <button class="util-tab active" data-util="speech" data-kicker="Padiem Speech" data-tagline="행사에 맞는 축사·인사말 초안을 준비합니다">축사·인사말</button>
           <button class="util-tab" data-util="sns">SNS 홍보</button>
           <button class="util-tab" data-util="meeting">회의정리·책 제작</button>
           <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
         </nav>
         <div class="util-panel" id="utilSpeechPanel">
           <form class="util-form" id="utilSpeechForm">
-            <label>행사명 <input name="event" type="text" required /></label>
-            <label>행사 날짜 <input name="date" type="date" /></label>
-            <label>장소 <input name="place" type="text" /></label>
-            <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
-            <label>참석 대상 <input name="audience" type="text" /></label>
-            <label>작성자/직책 <input name="author" type="text" /></label>
-            <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
-            <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
-            <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
-            <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
-            <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+            <!-- #5799: the speech form follows the meeting-modes grouping
+                 pattern — same legend/border family, three sections: basics,
+                 content, tone/reference. Field names and behavior unchanged. -->
+            <fieldset class="util-fieldset">
+              <legend>기본 정보</legend>
+              <label>행사명 <input name="event" type="text" required /></label>
+              <label>행사 날짜 <input name="date" type="date" /></label>
+              <label>장소 <input name="place" type="text" /></label>
+              <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
+              <label>참석 대상 <input name="audience" type="text" /></label>
+              <label>작성자/직책 <input name="author" type="text" /></label>
+            </fieldset>
+            <fieldset class="util-fieldset">
+              <legend>내용</legend>
+              <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
+              <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
+            </fieldset>
+            <fieldset class="util-fieldset">
+              <legend>분량·말투·참고</legend>
+              <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
+              <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
+              <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+            </fieldset>
             <!-- #5727: the form area owns the two authoring actions — generate
                  and save. The result area below carries only copy/download. -->
             <div class="util-form-actions">

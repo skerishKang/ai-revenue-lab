@@ -70,6 +70,29 @@ html[data-theme="padiem-glass"] .pdfmd-btn-primary {
 .util-form-actions button:disabled { opacity: .5; cursor: not-allowed; }
 .util-form-actions .util-generate { align-self: flex-start; }
 
+/* #5799: the speech template — meeting-header parity and readable controls.
+ * Every rule here is scoped to #utilSpeechPanel so the other tools keep their
+ * current presentation until their own pass. The brand ink #334a5b is the
+ * eyebrow ink from standalone-views.css; no new palette. */
+#utilSpeechPanel .util-form { gap: 16px; }
+.util-fieldset { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 14px 16px 16px; border: 1px solid var(--glass-chat-border, rgba(51, 74, 91, .18)); border-radius: 12px; background: transparent; }
+.util-fieldset legend { padding: 0 6px; font-size: 13px; font-weight: 650; color: #334a5b; }
+#utilSpeechPanel .util-form label { gap: 6px; font-size: 13px; font-weight: 600; color: #334a5b; }
+/* The glass --line token is a white hairline meant for dark chrome; on the
+ * light form card it read as no outline at all. The speech controls draw a
+ * real ink border on a solid surface instead. */
+#utilSpeechPanel .util-form input,
+#utilSpeechPanel .util-form textarea,
+#utilSpeechPanel .util-form select { border: 1px solid rgba(51, 74, 91, .34); background: #ffffff; }
+#utilSpeechPanel .util-form input:hover, #utilSpeechPanel .util-form textarea:hover, #utilSpeechPanel .util-form select:hover { border-color: rgba(51, 74, 91, .58); }
+#utilSpeechPanel .util-form input:focus, #utilSpeechPanel .util-form textarea:focus, #utilSpeechPanel .util-form select:focus { border-color: var(--accent, #79bce7); }
+/* The speech primary action joins the light PADIEM blue the brand dot and the
+ * selection states already use; dark ink keeps the contrast the old navy
+ * carried. Other tools keep the composer-matched navy until their pass. */
+html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate { background: var(--accent, #79bce7); color: #10202e; }
+html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disabled) { filter: none; background: #8cc8ee; }
+#utilSpeechPanel .util-form-actions .util-save { border-color: rgba(51, 74, 91, .34); }
+
 /* #5728: SNS photo composition — pick, preview, reorder, remove. Same token
  * family as the form surfaces; no new palette. */
 .util-photos { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px; background: var(--panel, #ffffff); }
@@ -181,7 +204,17 @@ html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255,
 @media (min-width: 700px) {
   .util-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
   .util-form label:has(textarea) { grid-column: 1 / -1; }
+  /* #5799: the speech sections keep the same two-lane rhythm inside each
+   * fieldset, and the action row owns a full-width lane at the bottom so it
+   * never lands in a cell stretched to a tall section's height. */
+  #utilSpeechPanel .util-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  #utilSpeechPanel .util-fieldset label:has(textarea) { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions .util-save { height: 44px; }
 }
+/* Below the two-lane breakpoint the speech action row still pins its buttons
+ * to 44px instead of stretching with the stacked column. */
+#utilSpeechPanel .util-form-actions .util-save { height: 44px; }
 /* The platform switcher shipped markup without skin, so blog/facebook/instagram
  * rendered as raw browser buttons. Same row language as .util-tab. */
 .util-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
