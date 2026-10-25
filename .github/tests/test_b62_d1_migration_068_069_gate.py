@@ -11,7 +11,9 @@ spec.loader.exec_module(release)
 
 def payload(db):
     def block(query):
-        return {"success": True, "results": [dict(zip([x[0] for x in cur.description], row)) for row in cur.fetchall()] if (cur := db.execute(query)).description else []}
+        cur = db.execute(query)
+        cols = [part[0] for part in cur.description] if cur.description else []
+        return {"success": True, "results": [dict(zip(cols, row)) for row in cur.fetchall()]}
     return {"success": True, "result": [
         block("SELECT type,name,sql FROM sqlite_master WHERE name IN ('project_files','idx_project_files_owner_project','idx_project_files_project_updated')"),
         block("SELECT count(*) AS n FROM project_files"),
