@@ -760,16 +760,18 @@ def test_cold_start_push_link_reuses_the_existing_run_target_once() -> None:
     )
     assert block, "the Web Push cold-start link is missing"
     body = block.group(1)
-    assert 'params.get("notify") === "run"' in body
-    assert 'params.get("run_id")' in body
-    assert "NOTIFICATION_RUN_REF.test(candidate)" in body
+    assert 'part.startsWith("run_id=")' in body
+    assert 'part !== "notify=run"' in body
+    assert "NOTIFICATION_RUN_REF.test(runPart.slice(\"run_id=\".length))" in body
     assert "if (authenticated && pendingNotificationRunId)" in app
     assert "pendingNotificationRunId = \"\"" in body
-    assert 'remaining.delete("notify")' in body and 'remaining.delete("run_id")' in body
     assert "window.history.replaceState" in body
     assert app.count("openClawRunTarget(notificationRunId)") == 1
     assert "window.PadiemNotification" not in app, "no second opener authority is allowed"
     assert "navigator.serviceWorker" not in app, "push registration stays in its own module"
+    # app.js runs inside curated VM harnesses that do not define it; a top-level
+    # use once took down 61 browser tests at load time.
+    assert "URLSearchParams" not in app, "the app shell must not depend on URLSearchParams"
 
 
 def test_module_touches_only_the_existing_inbox_contract() -> None:

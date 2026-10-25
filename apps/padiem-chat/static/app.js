@@ -1423,10 +1423,16 @@
   const NOTIFICATION_RUN_REF = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
   let pendingNotificationRunId = "";
   {
-    const params = new URLSearchParams(window.location.search || "");
-    const candidate = params.get("notify") === "run" ? params.get("run_id") : "";
-    if (typeof candidate === "string" && NOTIFICATION_RUN_REF.test(candidate)) {
-      pendingNotificationRunId = candidate;
+    // Parsed with the plain-split shape the connector return already uses: this
+    // file is also loaded inside curated VM harnesses that do not define the
+    // query-string helper, and a percent-escaped reference fails the grammar
+    // above rather than being decoded into a target.
+    const notificationParts = String((window.location && window.location.search) || "")
+      .replace(/^\?/, "").split("&");
+    const runPart = notificationParts.find((part) => part.startsWith("run_id=")) || "";
+    if (notificationParts.indexOf("notify=run") >= 0
+        && NOTIFICATION_RUN_REF.test(runPart.slice("run_id=".length))) {
+      pendingNotificationRunId = runPart.slice("run_id=".length);
     }
   }
 
@@ -1437,13 +1443,12 @@
     if (authenticated && pendingNotificationRunId) {
       const notificationRunId = pendingNotificationRunId;
       pendingNotificationRunId = "";
-      const remaining = new URLSearchParams(window.location.search || "");
-      remaining.delete("notify");
-      remaining.delete("run_id");
-      const remainingText = remaining.toString();
+      const remaining = String((window.location && window.location.search) || "")
+        .replace(/^\?/, "").split("&").filter(Boolean)
+        .filter((part) => part !== "notify=run" && !part.startsWith("run_id="));
       window.history.replaceState(
         null, "",
-        window.location.pathname + (remainingText ? `?${remainingText}` : "") + (window.location.hash || ""),
+        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
       );
       openClawRunTarget(notificationRunId);
     }
