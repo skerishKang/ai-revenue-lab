@@ -327,6 +327,28 @@ def project_pc_stream_record(record: Any, *, pc_run_id: str) -> tuple[str, dict]
     return kind, dict(value)
 
 
+def _engine_stream_record_kind(record) -> str:
+    if isinstance(record, dict):
+        kinds = set(record) & {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}
+        if len(kinds) == 1:
+            return next(iter(kinds))
+    return "unknown"
+
+
+def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
+    # Class names and a closed record-kind vocabulary only: never exception
+    # messages, untrusted keys, payloads, credentials or provider response text.
+    current = exc
+    seen = set()
+    while current.__cause__ is not None and id(current) not in seen:
+        seen.add(id(current))
+        current = current.__cause__
+    kind = getattr(current, "record_kind", record_kind)
+    if kind not in {"event", "pc_progress", "heartbeat", "text_delta", "result", "orchestration", "error"}:
+        kind = "unknown"
+    return {"exception_class": type(current).__name__, "record_kind": kind}
+
+
 def chat_pc_orchestration_sse(
     stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None,
 ) -> StreamingResponse:
@@ -342,8 +364,18 @@ def chat_pc_orchestration_sse(
         observed_events = []
         terminal = None
         settled = False
+        record_kind = "unknown"
+        iterator = aiter(stream)
         try:
-            async for item in stream:
+            while True:
+                # An iterator failure has no current record: do not attribute
+                # it to the preceding valid event.
+                record_kind = "unknown"
+                try:
+                    item = await anext(iterator)
+                except StopAsyncIteration:
+                    break
+                record_kind = _engine_stream_record_kind(item)
                 if "event" in item:
                     event = _safe_events([item["event"]])[0]
                     current = (event["run_id"], event["trace_id"], event["app_id"])
@@ -410,9 +442,13 @@ def chat_pc_orchestration_sse(
             if not settled:
                 raise ValueError("Engine stream ended without a result")
         except B62OrchestrationError as exc:
-            yield _frame("error", {"error": {"code": exc.code, "message": exc.user_message}})
-        except Exception:
+            error = {"code": exc.code, "message": exc.user_message}
+            if exc.code == "invalid_engine_stream":
+                error["cause"] = _engine_stream_cause(exc, record_kind)
+            yield _frame("error", {"error": error})
+        except Exception as exc:
             yield _frame("error", {"error": {
+                "cause": _engine_stream_cause(exc, record_kind),
                 "code": "invalid_engine_stream", "message": "AI 작업 스트림을 확인할 수 없습니다.",
             }})
         finally:

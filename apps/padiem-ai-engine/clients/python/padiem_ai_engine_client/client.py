@@ -15,7 +15,7 @@ import re
 from types import MappingProxyType
 from typing import Any, AsyncIterator, Mapping, Protocol
 
-from .orchestration_stream import EngineNdjsonContractError, decode_orchestration_ndjson
+from .orchestration_stream import EngineNdjsonContractError, EngineStreamError, decode_orchestration_ndjson
 
 ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
@@ -743,13 +743,12 @@ class PadiemAiEngineClient:
         try:
             async for item in decode_orchestration_ndjson(response.chunks):
                 yield item
+        except EngineStreamError as exc:
+            raise PadiemAiEngineClientError(exc.code, str(exc)) from exc
         except EngineNdjsonContractError as exc:
-            # #5015: carry the Engine's bounded stage code (when present)
-            # alongside the contract reason so callers can attribute the
-            # failure without re-reading any Engine text.
-            metadata: dict[str, Any] = {"reason": exc.code}
-            if exc.engine_code is not None:
-                metadata["engine_code"] = exc.engine_code
+            metadata: dict[str, Any] = {
+                "reason": exc.code, "record_kind": exc.record_kind,
+            }
             raise PadiemAiEngineClientError(
                 "invalid_engine_stream", "Engine streaming contract failed",
                 metadata=metadata,
