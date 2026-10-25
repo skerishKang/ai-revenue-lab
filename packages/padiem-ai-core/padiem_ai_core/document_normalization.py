@@ -1078,7 +1078,17 @@ class PdfInspection:
         }
 
 
-def _open_pdf_reader(payload: Any) -> Any:
+def _open_pdf_reader(payload: Any, *, recover_broken_structure: bool = False) -> Any:
+    """Open a PDF through the single Core reader boundary.
+
+    `recover_broken_structure` is offered only to document-text reads. Some
+    exporters write a cross-reference section that strict pypdf refuses outright
+    while the objects themselves are intact, so the whole document disappears from
+    search and reading. Recovery re-reads the same bytes leniently; bytes that are
+    not a PDF at all still fail, and the encryption and page gates below are
+    unchanged.
+    """
+
     if hasattr(payload, "seek") and hasattr(payload, "read"):
         payload.seek(0)
         magic = payload.read(5)
@@ -1096,7 +1106,13 @@ def _open_pdf_reader(payload: Any) -> Any:
     try:
         reader = PdfReader(source, strict=True)
     except Exception as exc:
-        raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+        if not recover_broken_structure:
+            raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+        try:
+            source.seek(0)
+            reader = PdfReader(source, strict=False)
+        except Exception as recovery_exc:
+            raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from recovery_exc
     if reader.is_encrypted:
         raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
     if len(reader.pages) < 1:
@@ -1113,7 +1129,7 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
         raise DocumentNormalizationError("invalid_binary_payload", "PDF payload must be non-empty bytes.")
     binary = bytes(payload)
     # #4379: a binary document carries no PADIEM byte total.
-    reader = _open_pdf_reader(binary)
+    reader = _open_pdf_reader(binary, recover_broken_structure=True)
     try:
         page_count = len(reader.pages)
         pages: list[PdfPageInspection] = []
@@ -1247,7 +1263,7 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
 
 
 def _extract_pdf_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
-    reader = _open_pdf_reader(payload)
+    reader = _open_pdf_reader(payload, recover_broken_structure=True)
     try:
         parts: list[str] = []
         segments: list[DocumentSegment] = []
