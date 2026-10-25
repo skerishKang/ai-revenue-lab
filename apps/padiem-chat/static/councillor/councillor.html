@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ko" data-theme="cinematic">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="robots" content="noindex" />
   <title>임미란 의원</title>
   <link rel="icon" href="data:," />
@@ -12,13 +12,16 @@
 
     * PADIEM Chat과 같은 정적 마운트에서 서빙되는 공개 문서입니다. 서버가 강제하는
       비공개 라우트가 아니며, 이 문서 자체에 비공개 자료가 없습니다.
-    * 테마는 Chat이 이미 쓰는 cinematic 토큰을 그대로 읽습니다(padiem-themes.css).
-      padiem.net의 다크 시네마틱 톤과 같은 값이라 이 페이지도 같은 계보입니다.
+    * 테마는 Chat이 이미 쓰는 light/dark 토큰을 그대로 읽습니다(padiem-themes.css).
+      기본은 Light, Dark는 상단 버튼으로 고릅니다. 값이 없으면
+      councillor-theme-default.js 가 ?theme=light 로 채우고, 해석은 theme-init.js 가
+      그대로 담당합니다(테마 전환 로직을 복제하지 않습니다).
     * 미디어는 media.padiem.net(R2) 허용 출처만 받습니다. 화면을 다시 올리면
       brands/<id>.json 의 hero/media 값만 바뀌고 코드는 그대로입니다.
     * 의원3종 진입로는 공개면에 카드를 두지 않고 하단 관리 경로로 옮겼습니다.
       열림 여부는 GET /api/auth/status 서버 응답이 결정합니다(fail-closed).
   -->
+  <script src="./councillor-theme-default.js"></script>
   <script src="../theme-init.js"></script>
   <link rel="stylesheet" href="../padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="../padiem-themes.css" />
@@ -34,6 +37,7 @@
     </div>
     <div class="councillor-topbar-actions">
       <span class="councillor-badge" id="stageBadge">시제품</span>
+      <button class="councillor-ghost" id="themeToggle" type="button" aria-pressed="false">어둡게</button>
       <button class="councillor-ghost" id="motionToggle" type="button" aria-pressed="false">움직임 줄이기</button>
       <a class="councillor-ghost" id="adminTopLink" href="../">로그인</a>
     </div>
@@ -80,7 +84,7 @@
       <p class="cine-source" id="activitySource"></p>
     </section>
 
-    <section class="cine-section cine-section-lead" id="sectionMedia" aria-labelledby="mediaTitle">
+    <section class="cine-section cine-section-media" id="sectionMedia" aria-labelledby="mediaTitle">
       <p class="cine-kicker">VIDEO &amp; PHOTOS</p>
       <h2 class="cine-title" id="mediaTitle">영상과 사진으로 보는 의정활동</h2>
       <article class="cine-feature">

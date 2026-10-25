@@ -96,6 +96,8 @@ def create_app() -> Starlette:
 
     app = Starlette(routes=routes, on_startup=None)
     app.state.jinja_env = jinja_env
+    from app.pilot.deferred_writes import DeferredWritesMiddleware
+    app.add_middleware(DeferredWritesMiddleware)
 
     if _STATIC_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
