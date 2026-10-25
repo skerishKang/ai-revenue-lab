@@ -3,6 +3,7 @@ import { loadVerifiedPublicOpportunities } from './public-supply/verified-public
 import {
   createPadiemSessionAuthResolver,
   createChatSessionStatusProbe,
+  createUnconfiguredLivenessProbe,
 } from './income-pipeline/padiem-session-auth.js';
 import {
   D1UserIncomeRepository,
@@ -21,12 +22,13 @@ import {
  *   algorithm. Without it no request is authenticated.
  * - `PADIEM_CHAT_SERVICE`: service binding to the deployed chat product
  *   worker, declared exactly like the existing reference bridge
- *   (`reference/business-66-padiem-quote-v1/_worker.js`). When bound, the
- *   liveness of each verified session is confirmed through chat's existing
- *   revocation-aware `GET /api/auth/status`, so logged-out or revoked
- *   canonical sessions are blocked. Without it the resolver uses the offline
- *   signature and expiry check only (the same posture as the
- *   `padiem-designer` precedent).
+ *   (`reference/business-66-padiem-quote-v1/_worker.js`). REQUIRED for the
+ *   income path: the liveness of every verified session is confirmed
+ *   through chat's existing revocation-aware `GET /api/auth/status`, so
+ *   logged-out or revoked canonical sessions are blocked. When the binding
+ *   is absent every cookie-authenticated request is denied (fail closed) —
+ *   the deployed B64 path never falls back to signature-only verification.
+ *   Signature-only checking exists only in isolated test helpers.
  * - `PADIEM_B64_PUBLIC_BASE_URL`: reviewed public origin of this deployment
  *   (e.g. `https://chat.padiem.net` when B64 is served under the chat
  *   origin). Required for cookie-authenticated pipeline mutations to pass
@@ -43,6 +45,7 @@ export interface B64WorkerEnv {
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
+const INCOME_CHAT_BINDING_NAME = 'PADIEM_CHAT_SERVICE';
 
 /** Reviewed-origins only: a non-https or unparseable value is ignored so the
  * same-origin guard fails closed instead of trusting a sloppy expectation. */
@@ -74,9 +77,12 @@ function reviewedBrowserOrigin(value: string | undefined): string | undefined {
  */
 export default {
   async fetch(request: Request, env: B64WorkerEnv = {}): Promise<Response> {
+    // The deployed income path requires canonical-session liveness: with the
+    // binding, probe chat's revocation-aware /api/auth/status; without it,
+    // fail closed so a revoked session can never pass on its signature alone.
     const livenessProbe = env.PADIEM_CHAT_SERVICE
       ? createChatSessionStatusProbe({ chatService: env.PADIEM_CHAT_SERVICE })
-      : undefined;
+      : createUnconfiguredLivenessProbe(INCOME_CHAT_BINDING_NAME);
     const handler = createConsumerHttpHandler({
       loadCandidates: () => [],
       loadPublicOpportunities: loadVerifiedPublicOpportunities,
