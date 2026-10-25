@@ -854,6 +854,12 @@ def create_app(
             CONNECTOR_TXT_READ_REQUEST_PATH,
             connector_txt_read_request,
         )
+        from .connector_xlsx_revision_routes import (
+            XLSX_REVISION_PREVIEW_PATH,
+            XLSX_REVISION_REQUEST_PATH,
+            preview_revision,
+            request_revision,
+        )
         from .connector_android_read_routes import (
             CONNECTOR_ANDROID_FOLDERS_PATH,
             CONNECTOR_ANDROID_READ_REQUEST_PATH,
@@ -867,6 +873,12 @@ def create_app(
         routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))
         routes[-1:-1] = [
             Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
+            # #4434: the owner-visible XLSX revision pair. Preview shows the exact
+            # worksheet, cell, current value and proposed value; request confirms
+            # that same intent and mints the READ attestation only. Mounted by the
+            # same canonical Identity+Broker composition as the TXT lane.
+            Route(XLSX_REVISION_PREVIEW_PATH, preview_revision, methods=["POST"]),
+            Route(XLSX_REVISION_REQUEST_PATH, request_revision, methods=["POST"]),
             # #5080: the Android device enrollment challenge. Same canonical
             # enrollment, Identity consent and Broker challenge as the browser
             # issue route; the one-time pairing code is released to the DEVICE

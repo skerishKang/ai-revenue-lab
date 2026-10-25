@@ -579,20 +579,43 @@ class CloudflareCanonicalBrokerPairingClient:
     async def enqueue_txt_read_command(
         self, *, command: dict[str, Any], material: dict[str, Any],
     ) -> dict[str, Any]:
-        """Enqueue one TXT read command with its approval material, atomically.
+        """Enqueue one TXT read command with its approval material, atomically."""
 
-        Calls the existing ``enqueue_command_with_material`` Service Binding
-        RPC with two positional arguments (the DO method takes
-        ``(payload, material)``). Only the closed shapes built by the TXT
-        issuance module are accepted; anything else fails closed here before
-        any Broker state is touched.
+        return await self._enqueue_approved_command(
+            command=command, material=material, slug="txt", label="TXT",
+        )
+
+    async def enqueue_xlsx_revision_command(
+        self, *, command: dict[str, Any], material: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Enqueue one owner-approved XLSX revision command with its material.
+
+        The same RPC, the same correlation checks and the same atomicity as the
+        TXT lane: one Broker authority for queued device work, no second path. The
+        material carries a READ attestation only — the write is attested on the PC.
+        """
+
+        return await self._enqueue_approved_command(
+            command=command, material=material, slug="xlsx_revision",
+            label="XLSX revision",
+        )
+
+    async def _enqueue_approved_command(
+        self, *, command: dict[str, Any], material: dict[str, Any],
+        slug: str, label: str,
+    ) -> dict[str, Any]:
+        """Calls the existing ``enqueue_command_with_material`` Service Binding RPC
+        with two positional arguments (the DO method takes ``(payload, material)``).
+
+        Only the closed shapes built by the issuance modules are accepted;
+        anything else fails closed here before any Broker state is touched.
         """
         if not isinstance(command, dict) or not isinstance(material, dict):
-            raise IdentityBridgeError(503, "broker_rpc_invalid", "TXT command shape is invalid.")
+            raise IdentityBridgeError(503, "broker_rpc_invalid", f"{label} command shape is invalid.")
         for key in ("command_id", "binding_ref", "run_id", "tool_request_ref",
                     "request_fingerprint"):
             if not isinstance(command.get(key), str) or not command[key]:
-                raise IdentityBridgeError(503, "broker_rpc_invalid", "TXT command identity is invalid.")
+                raise IdentityBridgeError(503, "broker_rpc_invalid", f"{label} command identity is invalid.")
         method = getattr(self._binding, "enqueue_command_with_material", None)
         if not callable(method):
             raise IdentityBridgeError(503, "canonical_broker_unavailable", "Canonical Broker service is unavailable.")
@@ -601,7 +624,7 @@ class CloudflareCanonicalBrokerPairingClient:
         except Exception as exc:
             raise IdentityBridgeError(503, "canonical_broker_unavailable", "Canonical Broker service is unavailable.") from exc
         if result is None or result.get("ok") is not True:
-            raise IdentityBridgeError(409, "txt_command_refused", "Canonical Broker refused the TXT command.")
+            raise IdentityBridgeError(409, f"{slug}_command_refused", f"Canonical Broker refused the {label} command.")
         returned = _dict(result.get("command"))
         if returned is None or returned.get("command_id") != command["command_id"]:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical Broker command receipt is invalid.")
