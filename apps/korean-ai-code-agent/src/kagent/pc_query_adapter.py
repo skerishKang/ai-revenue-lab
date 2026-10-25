@@ -161,17 +161,22 @@ async def signed_chat_call(
     body = json.dumps(body_data, sort_keys=True, separators=(",", ":")).encode()
     timestamp = str(int(time.time()))
     signature = hmac.new(secret.encode(), timestamp.encode() + b"." + body, hashlib.sha256).hexdigest()
-    request = request_factory(endpoint_url,
-        method="POST", headers={"Content-Type": "application/json", "X-Claw-Engine-Time": timestamp,
-        "X-Claw-Engine-Proof": signature}, body=body.decode())
+    # Record the boundary before either await, including a failed Request build.
+    # No command, target, proof or response body belongs in these diagnostics.
+    print(f"pc_query_chat_call mode={mode} stage=request", flush=True)
     try:
+        request = request_factory(endpoint_url,
+            method="POST", headers={"Content-Type": "application/json", "X-Claw-Engine-Time": timestamp,
+            "X-Claw-Engine-Proof": signature}, body=body.decode())
+        print(f"pc_query_chat_call mode={mode} stage=fetch", flush=True)
         response = await service.fetch(request.js_object)
         status = int(response.status)
+        print(f"pc_query_chat_call mode={mode} stage=body", flush=True)
         data = json.loads(await response.text())
     except Exception as exc:
-        print("pc_query_chat_call=transport_error", flush=True)
+        print(f"pc_query_chat_call mode={mode} stage=transport_error reason={type(exc).__name__}", flush=True)
         raise ToolHandlerError("pc_query_unavailable", "PC query outcome unavailable; do not replay") from exc
-    print(f"pc_query_chat_call status={status} ok={data.get('ok') if isinstance(data, dict) else None}", flush=True)
+    print(f"pc_query_chat_call mode={mode} status={status} ok={data.get('ok') if isinstance(data, dict) else None}", flush=True)
     if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
         raise ToolHandlerError("pc_query_denied", "PC query was denied or failed; no fallback execution")
     return data
