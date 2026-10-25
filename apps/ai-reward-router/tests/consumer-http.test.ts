@@ -26,6 +26,7 @@ function assertSecurityHeaders(response: Response): void {
   assert.equal(response.headers.get('x-frame-options'), 'DENY');
   assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
   assert.match(response.headers.get('content-security-policy') ?? '', /script-src 'none'/);
+  assert.match(response.headers.get('content-security-policy') ?? '', /form-action 'self'/);
 }
 
 test('default HTTP entrypoint renders honest zero-supply P0 Home at root', async () => {

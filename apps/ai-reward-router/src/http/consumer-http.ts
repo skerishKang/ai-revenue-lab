@@ -47,7 +47,7 @@ export interface ConsumerHttpDependencies {
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
-  'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+  'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   'cross-origin-opener-policy': 'same-origin',
   'referrer-policy': 'no-referrer',
   'x-content-type-options': 'nosniff',
