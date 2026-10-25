@@ -193,22 +193,32 @@ Why the missing half is not a worker-side wire:
   run path, reached when an Engine run pauses. Nothing today pauses an Engine
   run from an office-candidate selection.
 - The one working "web request → P01 → PC command" precedent is TXT, and it is
-  **read-only by construction**: `apps/padiem-chat/app/connector_txt_approval_material.py:302`
-  puts a `p01_approval_payload` on the command, and the PC accepts that format
-  only for `operation == "read"` on a `.txt` path under the selected root
-  (`kagent/local_agent_command_material.py:198`, `:137`).
+  **read-only by construction**: `apps/padiem-chat/app/connector_txt_approval_material.py:249-288`
+  builds the receipt from the authenticated owner's confirmed request
+  (`POST /api/claw/connector/text-reads/request`, body exactly
+  `{device_id, root_ref, path_relative, run_id, confirmed: true}`), and the
+  `approval_pause` / `approval_decision` blocks are written there server-side —
+  no Engine call and no on-PC prompt — over a
+  `tool_invocation_digest` of the canonical Windows READ. The Chat side puts it
+  on the command as `p01_approval_payload` (`:302`; Android twin
+  `connector_android_saf_approval_material.py`), the control plane admits only
+  those two formats under `claw-local-command-material.v2`
+  (`packages/padiem-control-plane/local_agent_broker_material_store.py:252-295`),
+  and the PC accepts the format only for `operation == "read"` on a `.txt` path
+  under the selected root with `content_bytes == 0` and `content_sha256 is None`
+  (`kagent/local_agent_command_material.py:137`, `:198`, `:203-206`).
   `grep` across `apps/padiem-chat` and `apps/korean-ai-platform` finds **no**
   write or revision approval format anywhere.
 
-So the real gate for the web XLSX request is a *new write-capable approval
-format*, and in the TXT design the pause/decision transcript comes from the
-server rather than from a prompt the PC showed its own user. Carrying that over
-to a WRITE would let a server transcript stand in for on-PC consent. The #5835
-lane therefore takes the opposite position: `ResidentXlsxRevisionStager` accepts
-only `P01LocalPermissionWindowsFileAuthorizationPort`, the deployment names a
-trusted factory, and no server-supplied transcript is honored. Choosing between
-"the PC prompts for the write" and "the web approval is trusted for the write"
-is an owner/CENTRAL security decision, not something to settle by wiring a
+So the TXT lane reaches a customer PC on consent the *web* transcribed, and the
+reason that is defensible there is that the transcript can only ever describe a
+read. Carrying the same shape over to a WRITE would let a server transcript stand
+in for on-PC consent to modifying a file. The #5835 lane therefore takes the
+opposite position: `ResidentXlsxRevisionStager` accepts only
+`P01LocalPermissionWindowsFileAuthorizationPort`, the deployment names a trusted
+factory, and no server-supplied transcript is honored. Choosing between "the PC
+prompts for the write" and "the web approval is trusted for the write" is an
+owner/CENTRAL security decision, not something to settle by wiring a
 placeholder source into a customer-facing route.
 
 ## Device connection facts on COM2 (2026-10-26, 작업 C)
