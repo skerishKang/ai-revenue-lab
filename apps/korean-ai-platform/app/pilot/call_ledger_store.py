@@ -33,6 +33,10 @@ BINDING_NAME = "B14_CALL_LEDGER_D1"
 
 MAX_PAGE_LIMIT = 200
 DEFAULT_PAGE_LIMIT = 50
+# A page is bounded, but the history is not: the owner console walks a filtered
+# range with this cursor so a fourth month of calls is reachable rather than
+# silently truncated to the first 200 rows.
+MAX_PAGE_OFFSET = 100_000
 
 # Aggregate groupings are a fixed vocabulary. A free-form column name from a
 # request would be an injection vector and would also let a caller group by a
@@ -40,8 +44,16 @@ DEFAULT_PAGE_LIMIT = 50
 AGGREGATE_DIMENSIONS = frozenset({
     "selected_model_id", "selected_provider", "actual_response_model",
     "product", "membership_tier", "outcome", "error_code", "cost_basis",
-    "token_source", "protocol",
+    "token_source", "protocol", "day",
 })
+
+# `day` is a UTC date bucket over the stored `started_at`, not a column. The
+# expression is a constant chosen from this table; no part of it comes from a
+# request, so grouping by time stays inside the same allowlist discipline as
+# grouping by a column.
+AGGREGATE_EXPRESSIONS = {
+    "day": "substr(started_at, 1, 10)",
+}
 
 FILTERABLE_COLUMNS = frozenset({
     "request_id", "log_id", "product", "subject_ref", "tenant_ref",
@@ -175,14 +187,16 @@ class CallLedgerStore:
     async def list_calls(
         self, *, filters: Mapping[str, Any] | None = None,
         since: str | None = None, until: str | None = None, limit: int = DEFAULT_PAGE_LIMIT,
+        offset: int = 0,
     ) -> list[dict[str, Any]]:
         clause, params = self._where(filters, since, until)
         bounded = max(1, min(int(limit), MAX_PAGE_LIMIT))
+        start = max(0, min(int(offset), MAX_PAGE_OFFSET))
         sql = (
             f"SELECT {', '.join(_CALL_COLUMNS)} FROM {CALL_TABLE}"
-            f"{clause} ORDER BY started_at DESC LIMIT ?"
+            f"{clause} ORDER BY started_at DESC, log_id DESC LIMIT ? OFFSET ?"
         )
-        return await self._all(sql, *params, bounded)
+        return await self._all(sql, *params, bounded, start)
 
     async def count_calls(
         self, *, filters: Mapping[str, Any] | None = None,
@@ -218,10 +232,14 @@ class CallLedgerStore:
         """
         if group_by not in AGGREGATE_DIMENSIONS:
             raise ValueError("unsupported aggregate dimension")
+        # A bucket name resolves to a constant expression; a column name is
+        # already inside the allowlist, so the interpolated text is never the
+        # caller's.
+        expression = AGGREGATE_EXPRESSIONS.get(group_by, group_by)
         clause, params = self._where(filters, since, until)
         bounded = max(1, min(int(limit), MAX_PAGE_LIMIT))
         sql = (
-            f"SELECT {group_by} AS dimension, COUNT(*) AS calls, "
+            f"SELECT {expression} AS dimension, COUNT(*) AS calls, "
             "SUM(CASE WHEN token_source = 'measured' THEN 1 ELSE 0 END) AS calls_with_tokens, "
             "SUM(CASE WHEN token_source = 'missing' THEN 1 ELSE 0 END) AS calls_without_tokens, "
             "SUM(CASE WHEN outcome = 'success' THEN 1 ELSE 0 END) AS succeeded, "
@@ -231,8 +249,10 @@ class CallLedgerStore:
             "SUM(total_tokens) AS total_tokens, SUM(reasoning_tokens) AS reasoning_tokens, "
             "SUM(estimated_usd) AS estimated_usd, SUM(estimated_krw) AS estimated_krw, "
             "AVG(elapsed_ms) AS avg_elapsed_ms, AVG(ttft_ms) AS avg_ttft_ms "
-            f"FROM {CALL_TABLE}{clause} GROUP BY {group_by} "
-            "ORDER BY calls DESC LIMIT ?"
+            f"FROM {CALL_TABLE}{clause} GROUP BY {expression} "
+            # A trend is read left to right; a ranking is read by weight.
+            + ("ORDER BY dimension ASC " if group_by == "day" else "ORDER BY calls DESC ")
+            + "LIMIT ?"
         )
         return await self._all(sql, *params, bounded)
 

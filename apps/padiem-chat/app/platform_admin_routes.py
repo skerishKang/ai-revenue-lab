@@ -69,6 +69,9 @@ def _capabilities(
         "b66_platform_admin": b66_platform,
         "b66_customer_admin": b66_customer,
         "central_model_admin": role in ROLES,
+        # #5318: the model usage screen shows every customer's call rows, so it
+        # follows the same authority as model management, not the hub role.
+        "model_usage_admin": role in ROLES,
     }
 
 

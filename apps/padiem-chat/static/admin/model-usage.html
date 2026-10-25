@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <title>모델 사용 현황 · Padiem</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/admin-models.css">
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/admin-model-usage.js" defer></script>
+</head>
+<body class="admin-product" data-product="model-usage">
+  <div class="shell">
+    <aside class="side" aria-label="관리 메뉴">
+      <a class="brand" href="/" aria-label="Padiem 홈"><span class="brand-symbol" aria-hidden="true">P</span><strong>Padiem</strong></a>
+      <nav class="side-nav" aria-label="관리 메뉴">
+        <a class="nav-link" href="/admin"><span class="nav-icon" aria-hidden="true">←</span><span>총관리자</span></a>
+        <a class="nav-link" href="/admin-models"><span class="nav-icon" aria-hidden="true">◇</span><span>B14 모델 관리</span></a>
+        <a class="nav-link" href="/"><span class="nav-icon" aria-hidden="true">⌂</span><span>서비스 홈</span></a>
+      </nav>
+      <div class="side-bottom"><span class="side-caption">Padiem Admin</span><span id="roleCaption">권한 확인 중</span></div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div class="header-title">모델 사용 현황 <span class="preview-pill" id="roleBadge">권한 확인 중</span></div>
+        <div class="header-actions"><a class="icon-button" href="/admin" aria-label="총관리자로 돌아가기" title="총관리자로 돌아가기">←</a></div>
+      </header>
+      <div class="content">
+        <div class="intro">
+          <div>
+            <h1>모델 사용 현황</h1>
+            <p>B14가 실제로 실행한 호출과 물리적 시도는 이력 저장소에 기록된 값으로 표시합니다. 공급자가 보고하지 않은 사용량과 미설정 가격은 0이 아니라 <strong>미보고·확인 불가</strong>로 남습니다.</p>
+          </div>
+          <a class="small-count" href="/admin">총관리자</a>
+        </div>
+
+        <div class="notice" id="accessNotice" role="status" aria-live="polite" hidden></div>
+        <section class="panel gate-panel" id="gatePanel" hidden>
+          <h2>이 화면을 열 권한이 없습니다</h2>
+          <p>모델 관리 권한이 있는 계정으로 로그인한 뒤 다시 열어 주세요.</p>
+          <div class="gate-actions"><a class="btn primary gate-button" href="/">Padiem Chat으로 이동</a><a class="btn gate-button" href="/admin">총관리자로 이동</a></div>
+        </section>
+
+        <section class="panel" id="usageContent" hidden>
+          <div class="section-head">
+            <h2>조회 조건</h2>
+            <span class="tiny-status" id="storageStatus">확인 중</span>
+          </div>
+          <div class="usage-filters">
+            <label class="usage-field"><span>시작(UTC)</span><input id="sinceInput" type="date" lang="en"></label>
+            <label class="usage-field"><span>종료(UTC)</span><input id="untilInput" type="date" lang="en"></label>
+            <label class="usage-field"><span>모델</span><input id="modelInput" type="text" maxlength="128" placeholder="등록 모델 ID"></label>
+            <label class="usage-field"><span>공급사</span><input id="providerInput" type="text" maxlength="64" placeholder="실제 공급사명"></label>
+            <label class="usage-field"><span>등급</span><select id="tierSelect"><option value="">등급 구분 없음</option></select></label>
+            <label class="usage-field"><span>제품</span><select id="productSelect"><option value="">전체</option></select></label>
+            <label class="usage-field"><span>결과</span><select id="outcomeSelect"><option value="">전체</option></select></label>
+            <label class="usage-field"><span>페이지 크기</span><select id="limitSelect"></select></label>
+            <button class="btn primary" id="applyButton" type="button">조회</button>
+          </div>
+          <p class="caption-note" id="evidenceNote"></p>
+
+          <div class="section-head"><h2>합계</h2><span class="tiny-status" id="summaryScope">기간 전체</span></div>
+          <div class="usage-cards" id="summaryCards"></div>
+          <p class="caption-note" id="summaryNote"></p>
+
+          <div class="section-head"><h2>날짜별 추세</h2><span class="tiny-status" id="trendStatus">확인 중</span></div>
+          <div class="usage-table-wrap"><table class="usage-table" id="trendTable"><caption class="visually-hidden">날짜별 호출 수와 사용량</caption><thead><tr><th scope="col">날짜</th><th scope="col">호출</th><th scope="col">성공</th><th scope="col">실패</th><th scope="col">토큰</th><th scope="col">추정 비용</th></tr></thead><tbody id="trendBody"></tbody></table></div>
+
+          <div class="section-head"><h2>모델·공급사별 집계</h2><span class="tiny-status" id="groupByStatus">확인 중</span></div>
+          <div class="usage-inline-nav" id="groupByTabs"></div>
+          <div class="usage-table-wrap"><table class="usage-table" id="groupByTable"><caption class="visually-hidden">선택한 기준으로 묶은 사용 집계</caption><thead><tr><th scope="col" id="dimensionHead">구분</th><th scope="col">호출</th><th scope="col">성공</th><th scope="col">실패</th><th scope="col">폴백</th><th scope="col">토큰</th><th scope="col">추정 비용</th></tr></thead><tbody id="groupByBody"></tbody></table></div>
+
+          <div class="section-head"><h2>호출 이력</h2><span class="tiny-status" id="pageStatus">확인 중</span></div>
+          <div class="usage-table-wrap"><table class="usage-table" id="callsTable"><caption class="visually-hidden">개별 모델 호출 이력</caption><thead><tr><th scope="col">시작(UTC)</th><th scope="col">제품</th><th scope="col">요청 모델</th><th scope="col">실제 모델</th><th scope="col">결과</th><th scope="col">토큰</th><th scope="col">추정 비용</th><th scope="col">지연</th><th scope="col">상세</th></tr></thead><tbody id="callsBody"></tbody></table></div>
+          <div class="usage-inline-nav">
+            <button class="btn" id="prevButton" type="button">이전</button>
+            <button class="btn" id="nextButton" type="button">다음</button>
+            <span class="tiny-status" id="pageCaption"></span>
+          </div>
+
+          <div class="section-head"><h2>호출 상세</h2><span class="tiny-status" id="detailStatus">선택되지 않음</span></div>
+          <div id="detailPanel" class="usage-detail"><p class="caption-note">이력 표에서 상세를 열면 이 영역에 저장된 물리적 시도 각각이 표시됩니다. 폴백으로 실패한 첫 시도는 성공 기록에 덮어써지지 않고 남습니다.</p></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

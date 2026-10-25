@@ -50,6 +50,11 @@ from .platform_admin_routes import (
     platform_admin_role_revoke,
     platform_admin_session,
 )
+from .platform_model_usage_routes import (
+    model_usage_aggregate,
+    model_usage_call_detail,
+    model_usage_calls,
+)
 from .central_model_route_routes import (
     central_model_route_apply, central_model_route_preview,
     central_model_route_rollback_preview, central_model_routes_get,
@@ -494,6 +499,12 @@ def create_app(
         Route("/api/admin/session", platform_admin_session, methods=["GET"]),
         Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
         Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
+        # #5318 owner read of the B14 call ledger. The B14 API accepts only the
+        # server-side service proof, so these are the only way the console (and a
+        # browser) can see usage rows, and each one re-checks the model-admin role.
+        Route("/api/admin/model-usage/calls", model_usage_calls, methods=["GET"]),
+        Route("/api/admin/model-usage/calls/{log_id}", model_usage_call_detail, methods=["GET"]),
+        Route("/api/admin/model-usage/aggregate", model_usage_aggregate, methods=["GET"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),

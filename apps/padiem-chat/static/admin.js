@@ -25,6 +25,14 @@
       allowed: (caps) => caps.central_model_admin === true,
     },
     {
+      key: "model-usage",
+      title: "모델 사용 현황",
+      href: "./admin/model-usage",
+      copy: "B14이 실제로 실행한 호출·토큰·추정 비용·폴백과 등급별 이용 현황을 저장된 이력에서 조회합니다.",
+      tag: "사용 이력",
+      allowed: (caps) => caps.model_usage_admin === true,
+    },
+    {
       key: "chat",
       title: "Chat 관리",
       href: "./admin/chat",

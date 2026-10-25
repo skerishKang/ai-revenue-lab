@@ -16,7 +16,10 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_execution import (
+    MAX_B14_RESPONSE_BYTES,
+    MAX_CONFIGURED_B14_RESPONSE_BYTES,
+)
 from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -330,22 +333,39 @@ class CloudflareB14ServiceTransport:
         self.binding = binding
         self.proof_secret = proof_secret
 
+    LEDGER_READ_PREFIXES = (
+        "/api/pilot/v1/admin/model-calls",
+    )
+
     async def get_json(self, path: str) -> tuple[int, bytes]:
-        """Read only two fixed B14 model authority endpoints over Service Binding."""
-        if path not in (
+        """Read the two fixed B14 model authority endpoints, plus the call ledger.
+
+        The ledger paths are #5318's owner console reads. They are still a fixed
+        prefix rather than a caller-supplied URL, and only they carry the service
+        proof: that API refuses an unsigned caller by contract, so an
+        un-attested GET would only ever come back 401.
+        """
+        ledger_read = path.startswith(self.LEDGER_READ_PREFIXES)
+        if not ledger_read and path not in (
             "/api/pilot/models",
             "/api/pilot/provider-readiness",
         ):
             raise ValueError("unsupported B14 model-authority read endpoint")
+        headers = (
+            service_proof_headers(self.proof_secret, b"")
+            if ledger_read else None
+        )
         request = Request(
             "https://b14.internal" + path,
             method="GET",
+            headers=headers,
         )
         response = await self.binding.fetch(request.js_object)
         status = int(response.status)
         try:
             body = await read_bounded_service_binding_body(
-                response, max_bytes=131072,
+                response,
+                max_bytes=MAX_B14_RESPONSE_BYTES if ledger_read else 131072,
             )
         except (ServiceBindingResponseTooLarge, ServiceBindingResponseError):
             raise RuntimeError("bounded B14 model authority read unavailable") from None
@@ -1339,6 +1359,10 @@ class Default(WorkerEntrypoint):
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
                 )
+                # #5318: the owner console reads the B14 call ledger through this
+                # same signed service-binding handle. The proof secret stays here,
+                # on the server; nothing about it is passed to a browser.
+                _worker_app.state.b14_service_transport = service_transport
                 # #3760 owner correction: quote extraction validates one user-selected,
                 # owner-allowed, chat-capable and live-ready B14 registered
                 # model; pricing and generic B14 auto flags do not qualify it.

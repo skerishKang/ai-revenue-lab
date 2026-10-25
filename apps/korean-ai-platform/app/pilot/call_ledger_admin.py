@@ -33,6 +33,7 @@ from app.pilot.call_ledger import CallLedgerError, LEDGER_ID_PREFIX
 from app.pilot.call_ledger_store import (
     DEFAULT_PAGE_LIMIT,
     MAX_PAGE_LIMIT,
+    MAX_PAGE_OFFSET,
     AGGREGATE_DIMENSIONS,
     FILTERABLE_COLUMNS,
     store_from_env,
@@ -63,7 +64,7 @@ async def _denial(request: Request) -> JSONResponse | None:
                   status=denial.status_code)
 
 
-def _query(request: Request) -> tuple[dict[str, Any], str | None, str | None, int, str | None]:
+def _query(request: Request) -> tuple[dict[str, Any], str | None, str | None, int, int, str | None]:
     """Parse the bounded query surface. An unknown parameter is refused.
 
     Filters are a fixed allowlist rather than passthrough column names, so a
@@ -72,7 +73,9 @@ def _query(request: Request) -> tuple[dict[str, Any], str | None, str | None, in
     params = request.query_params
     unknown = sorted(
         key for key in set(params)
-        if key not in (set(FILTERABLE_COLUMNS) | {"since", "until", "limit", "group_by"})
+        if key not in (
+            set(FILTERABLE_COLUMNS) | {"since", "until", "limit", "offset", "group_by"}
+        )
     )
     if unknown:
         raise CallLedgerError("unknown query parameter: " + unknown[0])
@@ -89,12 +92,20 @@ def _query(request: Request) -> tuple[dict[str, Any], str | None, str | None, in
         raise CallLedgerError("limit must be an integer") from exc
     if not 1 <= limit <= MAX_PAGE_LIMIT:
         raise CallLedgerError(f"limit must be between 1 and {MAX_PAGE_LIMIT}")
+    offset_raw = params.get("offset")
+    try:
+        offset = int(offset_raw) if offset_raw else 0
+    except ValueError as exc:
+        raise CallLedgerError("offset must be an integer") from exc
+    if not 0 <= offset <= MAX_PAGE_OFFSET:
+        raise CallLedgerError(f"offset must be between 0 and {MAX_PAGE_OFFSET}")
     since = (params.get("since") or "").strip() or None
     until = (params.get("until") or "").strip() or None
     for name, value in (("since", since), ("until", until)):
         if value is not None and (len(value) > 32 or not _is_timestamp(value)):
             raise CallLedgerError(f"{name} must be an ISO-8601 UTC timestamp")
-    return filters, since, until, limit, (params.get("group_by") or "").strip() or None
+    return (filters, since, until, limit, offset,
+            (params.get("group_by") or "").strip() or None)
 
 
 def _is_timestamp(value: str) -> bool:
@@ -151,8 +162,8 @@ async def list_model_calls(request: Request):
     if store is None:
         return _unavailable()
     try:
-        filters, since, until, limit, _group = _query(request)
-        rows, total = await _list(store, filters, since, until, limit)
+        filters, since, until, limit, offset, _group = _query(request)
+        rows, total = await _list(store, filters, since, until, limit, offset)
     except CallLedgerError as exc:
         return _error("invalid_query", str(exc))
     except Exception:
@@ -162,6 +173,7 @@ async def list_model_calls(request: Request):
             "calls": rows,
             "total": total,
             "limit": limit,
+            "offset": offset,
             "storage_state": _state(store),
             "evidence_note": (
                 "tokens=missing means the provider reported no usage; it is not a zero. "
@@ -172,8 +184,9 @@ async def list_model_calls(request: Request):
     )
 
 
-async def _list(store, filters, since, until, limit):
-    rows = await store.list_calls(filters=filters, since=since, until=until, limit=limit)
+async def _list(store, filters, since, until, limit, offset):
+    rows = await store.list_calls(filters=filters, since=since, until=until,
+                                  limit=limit, offset=offset)
     total = await store.count_calls(filters=filters, since=since, until=until)
     return rows, total
 
@@ -187,7 +200,7 @@ async def aggregate_model_calls(request: Request):
     if store is None:
         return _unavailable()
     try:
-        filters, since, until, limit, group_by = _query(request)
+        filters, since, until, limit, _offset, group_by = _query(request)
         if group_by not in AGGREGATE_DIMENSIONS:
             return _error("invalid_group_by", "group_by 대상이 올바르지 않습니다.")
         rows = await store.aggregate(
