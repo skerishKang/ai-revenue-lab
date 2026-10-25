@@ -1,4 +1,4 @@
-name: B62 Claw Mesh D1 Migration 068/069 Gate
+name: B62 Project Files D1 Migration 068/069 Gate
 
 on:
   pull_request:
@@ -34,7 +34,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-claw-mesh-d1-migration-067-gate
+  group: b62-project-files-d1-068-069-gate
   cancel-in-progress: false
 
 env:
@@ -119,14 +119,15 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
             -o "${RUNNER_TEMP}/schema.json"
           python .github/scripts/b62_d1_migration_068_069_schema.py classify "${RUNNER_TEMP}/schema.json" | tee "${RUNNER_TEMP}/result.txt"
-          STATE="$(sed -n 's/^B62_D1_PROJECT_FILES_SCHEMA=//p' "${RUNNER_TEMP}/result.txt")"
+          STATE="$(sed -n 's/^B62_PROJECT_FILES_SCHEMA=//p' "${RUNNER_TEMP}/result.txt")"
           case "${STATE}" in 003|068|069|DRIFT) ;; *) exit 1 ;; esac
+          test "${STATE}" != "DRIFT"
           echo "schema=${STATE}" >> "${GITHUB_OUTPUT}"
           echo 'D1_SCHEMA_QUERY=READ_ONLY'
           echo 'ROW_DATA_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
-  apply-migration-067:
+  apply-migration-068-069:
     needs: [source-contract, cloudflare-readonly]
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_068_069' }}
     runs-on: ubuntu-24.04
@@ -142,7 +143,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "${CONFIRMATION}" = "APPLY_B62_CLAW_MESH_D1_PROJECT_FILES_FROM_EXACT_MAIN"
+          test "${CONFIRMATION}" = "APPLY_B62_PROJECT_FILES_068_069_FROM_EXACT_MAIN"
           case "${READONLY_SCHEMA}" in 003|068|069) ;; *) exit 1 ;; esac
           echo 'B62_PROJECT_FILES_PRODUCTION_AUTHORITY=PASS'
       - uses: actions/checkout@v4
@@ -179,8 +180,11 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
             -o "${RUNNER_TEMP}/before.json"
           python .github/scripts/b62_d1_migration_068_069_schema.py classify "${RUNNER_TEMP}/before.json" | tee "${RUNNER_TEMP}/result.txt"
-          STATE="$(sed -n 's/^B62_D1_PROJECT_FILES_SCHEMA=//p' "${RUNNER_TEMP}/result.txt")"
+          STATE="$(sed -n 's/^B62_PROJECT_FILES_SCHEMA=//p' "${RUNNER_TEMP}/result.txt")"
           test "${STATE}" = "${READONLY_SCHEMA}"
+          BEFORE_COUNT="$(sed -n 's/^B62_PROJECT_FILES_ROW_COUNT=//p' "${RUNNER_TEMP}/result.txt")"
+          test "${BEFORE_COUNT}" -ge 0
+          echo "BEFORE_COUNT=${BEFORE_COUNT}" >> "${GITHUB_ENV}"
           echo "STATE=${STATE}" >> "${GITHUB_ENV}"
           echo 'B62_PROJECT_FILES_PREMUTATION_GUARD=PASS'
       - name: Apply only additive table schema when missing
@@ -212,6 +216,9 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
             -o "${RUNNER_TEMP}/post.json"
           python .github/scripts/b62_d1_migration_068_069_schema.py classify "${RUNNER_TEMP}/post.json" | tee "${RUNNER_TEMP}/post-state.txt"
-          grep -qx 'B62_D1_PROJECT_FILES_SCHEMA=EXACT' "${RUNNER_TEMP}/post-state.txt"
+          grep -qx 'B62_PROJECT_FILES_SCHEMA=069' "${RUNNER_TEMP}/post-state.txt"
           echo 'B62_PROJECT_FILES_POSTMUTATION_SCHEMA=PASS'
-          echo 'PROJECT_FILES_ROWS_PRESERVED=POSTCHECK_REQUIRED'
+          POST_COUNT="$(sed -n 's/^B62_PROJECT_FILES_ROW_COUNT=//p' \"${RUNNER_TEMP}/post-state.txt\")"
+          test "${POST_COUNT}" = "${BEFORE_COUNT}"
+          echo 'B62_PROJECT_FILES_ROW_PRESERVATION=PASS'
+          echo 'PROJECT_FILES_POST_SCHEMA=069'
