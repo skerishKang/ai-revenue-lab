@@ -31,49 +31,32 @@ html[data-theme="padiem-glass"] body .sidebar-bottom .settings-button > span:fir
   line-height: 1;
 }
 
-/* Desktop home-frame breathing room ------------------------------------ */
+/* Desktop first-screen and thread breathing room --------------------------
+ * One contract for every surface that carries the conversation. This used to be
+ * two blocks with the same four values -- one for the two Chat states, one for
+ * Claw added later under #2594, which already said Claw is an extension of the
+ * Chat composer and not a separate visual product. Listing the three states in
+ * one rule is the same decision; two copies were how the next product would add
+ * a third. */
 @media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .conversation {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation {
     margin-top: 16px !important;
     margin-bottom: 16px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
-    bottom: 16px !important;
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer-wrap {
+    /* The lane position itself belongs to the shared frame, which puts the
+     * composer inside the six-panel box; only the inner padding is this
+     * sheet's first-use treatment. */
     padding-top: 20px !important;
     padding-bottom: 16px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer {
     padding: 12px 12px 11px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer textarea {
-    padding: 9px 9px 7px !important;
-  }
-}
-
-
-/* Chat / Claw shared frame ------------------------------------------------
- * #2594: Claw manual intake is an extension of the Chat composer, not a
- * separate visual product. Reuse the same desktop breathing-room contract. */
-@media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
-    margin-top: 16px !important;
-    margin-bottom: 16px !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
-    bottom: 16px !important;
-    padding-top: 20px !important;
-    padding-bottom: 16px !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer {
-    padding: 12px 12px 11px !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer textarea {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer textarea {
     padding: 9px 9px 7px !important;
   }
 }

@@ -313,8 +313,34 @@
   const AUTOMATION_ROUTE_HASH = "#padiem-automation";
   const CLAW_ROUTE_HASH = "#padiem-claw";
   let automationDestinationReady = false;
+  // One page contract for every shell screen. This table is the only place a
+  // screen names itself, says which dedicated panel it owns, lists the
+  // sub-views that show the shared hero and marks its navigation entry; the
+  // shell publishes `data-page-id` and `data-layout-variant` from it and the
+  // shared stylesheet selects on those two attributes. A new page therefore
+  // adds one entry here and reuses the Chat/Claw geometry instead of declaring
+  // a second set of product rules. It moves existing conditions into data and
+  // does not change which element is shown or hidden.
+  const PAGE_VIEWS = Object.freeze([
+    Object.freeze({ pageId: "home", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "chat", navigationId: "newChatButton", layoutVariant: "conversation", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "claw", navigationId: "clawNavButton", layoutVariant: "workspace", panelId: "clawWorkspace", heroViews: Object.freeze(["general"]) }),
+    Object.freeze({ pageId: "connectors", navigationId: "connectorsNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "automation", navigationId: "automationNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "meeting", navigationId: "meetingNavButton", layoutVariant: "panel", panelId: "meetingView", heroViews: null }),
+    Object.freeze({ pageId: "calendar", navigationId: "calendarNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "library", navigationId: "filesNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+    Object.freeze({ pageId: "util", navigationId: "utilNavButton", layoutVariant: "panel", panelId: null, heroViews: null }),
+  ]);
+  const PAGE_VIEW_BY_ID = Object.freeze(
+    PAGE_VIEWS.reduce((index, view) => Object.assign(index, { [view.pageId]: view }), {})
+  );
+  function pageViewFor(state) {
+    return PAGE_VIEW_BY_ID[state] || PAGE_VIEW_BY_ID.home;
+  }
   function setNavActive() {
     const state = shell.dataset.state;
+    const page = pageViewFor(state);
     // The URL fragment is the destination bookmark; no browser persistence.
     if (automationDestinationReady && window.history && window.location) {
       const currentHash = String(window.location.hash || "");
@@ -332,16 +358,26 @@
       }
     }
     const workspace = document.getElementById("clawWorkspace");
-    if (workspace) workspace.hidden = state !== "claw";
-    const meetingView = document.getElementById("meetingView");
-    if (meetingView) meetingView.hidden = state !== "meeting";
+    const view = workspace ? String(workspace.dataset.view || "") : "";
+    // The contract attribute the shared stylesheet selects on. Claw keeps one
+    // conversation surface and changes only its working panel, so the hero
+    // geometry follows the sub-views the entry lists instead of a product rule.
+    const conversationHero = page.layoutVariant === "conversation" ||
+      (Array.isArray(page.heroViews) && page.heroViews.includes(view));
+    shell.dataset.pageId = page.pageId;
+    shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant;
+    PAGE_VIEWS.forEach((entry) => {
+      if (!entry.panelId) return;
+      const panel = document.getElementById(entry.panelId);
+      if (panel) panel.hidden = entry.panelId !== page.panelId;
+    });
     const modeBar = document.getElementById("clawManualForm");
-    if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    if (modeBar) modeBar.hidden = !(page.pageId === "claw" && view === "manual");
     // #3531: the explicit manual-entry control lives in the fixed composer
     // wrap and shows only on the general Claw view — never by default
     // elsewhere, never inside the manual form it opens.
     const entryBar = document.getElementById("clawManualEntryBar");
-    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
+    if (entryBar) entryBar.hidden = !(page.pageId === "claw" && page.heroViews.includes(view));
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");

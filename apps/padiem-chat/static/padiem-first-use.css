@@ -53,30 +53,19 @@
 }
 
 /* #5634: the greeting plus the four entry cards sit in the upper part of the
- * first screen instead of its middle, so the top : bottom spacing of the
- * screen is about 1 : 2. The band is the space between the top of the content
- * column and the fixed composer; its free height after the block is divided in
- * three, and the block takes the top third. Measured on main at 1440x900: the
- * content column starts at 94px and the composer starts 177px above the bottom,
- * which gives the offset the shared token carries. The floor keeps the block
- * readable in a very short window, where the ratio cannot hold at all. The
- * phone keeps its own 16px start: there the block is taller than the screen, so
- * the screen scrolls instead of the ratio holding.
+ * first screen instead of its middle, so the top : bottom spacing of the screen
+ * is about 1 : 2 — the block takes the top third of the band between the top of
+ * the content column and the fixed composer, and the floor keeps it readable in
+ * a very short window where the ratio cannot hold at all.
  *
- * #5561: Chat and Claw used to divide two different numbers here (747px and
- * 836px), because the Claw hero block is 565px against Chat's 476px. A content
- * difference moved the shared origin, so the Claw brand line sat ~30px below the
- * Chat one on the same screen. Both now read the one token from
- * shared-six-panel-frame.css; the product's own block height no longer enters
- * the origin, and the extra Claw height stays where it belongs — under the hero. */
-@media (min-width: 641px) {
-  .app-shell:is([data-state="home"], [data-state="chat"])
-    .conversation:has(#emptyState:not([hidden])),
-  .app-shell[data-state="claw"] .claw-workspace[data-view="general"]
-    ~ .conversation:has(#emptyState:not([hidden])) {
-      padding-top: var(--padiem-first-screen-inset, max(12px, calc((100dvh - 747px) / 3)));
-    }
-}
+ * That composition is declared once, in shared-six-panel-frame.css, for the
+ * layout variant `conversation`. It used to be divided here per product (747px
+ * for Chat, 836px for Claw, because the Claw hero block measures 565px against
+ * Chat's 476px), which let a content difference move the shared origin and put
+ * the Claw brand line ~30px below the Chat one on the same screen. The phone
+ * compaction — 16px start, its own block padding and card gap, because there
+ * the block is taller than the screen and the page scrolls instead of the ratio
+ * holding — is one rule for every product in interaction-polish.css. */
 
 /* Give the composer slightly stronger first-use hierarchy without changing hooks.
  * The first screen is the authority for the Glass input box: the Glass chat

@@ -771,11 +771,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 }
 /* Chat uses the same introductory block; only Claw's copy and four
  * destinations differ. Respect JS's hidden state after a real message.
- */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
-  /* Use Chat's grid: flex shrank the eyebrow and shifted the hero right. */
-  display: grid !important;
-}
+ * The block's own layout model is no longer declared here: the shared frame
+ * makes the first screen a grid for every product that opts into the
+ * `conversation` layout variant, so the Claw hero and the Chat hero start on
+ * the same row instead of Claw carrying a second copy of the decision. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ #clawTaskHub {
   display: none !important;
 }

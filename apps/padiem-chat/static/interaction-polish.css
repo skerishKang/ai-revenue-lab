@@ -145,30 +145,35 @@
 }
 
 
-/* #5014: Chat phone home should leave room for the composer above the fold.
- * Scope to Chat only; Claw has its own compact 2x2 connection layout.
+/* #5014: the phone first screen leaves room for the composer above the fold.
+ * This is one compaction for every product that opts into the conversation
+ * layout, not a Chat-only exception: the Claw landing used to fall through to
+ * the theme sheet's 30px start with no block padding and a 25px card gap, so
+ * the same brand line began 14px lower on one phone and 6px lower on the other
+ * for no product reason (measured at 390x844). Claw keeps its own card sizes —
+ * those are its content — and shares only the composition decisions here.
  * The first screen runs in the "home" state, so the compaction has to cover
  * it as well: the phone landing was rendered with the desktop card sizes and
  * the last card row ended under the fixed input. */
 @media (max-width: 620px) {
-  .app-shell:is([data-state="home"], [data-state="chat"]) .conversation:has(#emptyState:not([hidden])) {
+  .app-shell[data-layout-variant="conversation"] .conversation:has(#emptyState:not([hidden])) {
     min-height: auto !important;
     padding-top: 16px !important;
     /* #5014: the reserved bottom space and the scroll padding stay owned by
      * the shared rule above, so the software keyboard inset is included. */
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
     min-height: 0 !important;
     height: auto !important;
     padding-block: 8px 16px !important;
     margin-block: 0 !important;
     align-content: start;
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) h1 {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) h1 {
     font-size: clamp(25px, 7vw, 34px) !important;
     line-height: 1.22 !important;
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .empty-copy {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .empty-copy {
     margin-top: 8px !important;
   }
   /* The explanatory copy of a live thread keeps its existing phone size. The
@@ -177,16 +182,16 @@
   .app-shell[data-state="chat"] #emptyState:not([hidden]) .empty-copy {
     font-size: 13px !important;
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter-grid {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter-grid {
     margin-top: 16px !important;
     gap: 8px !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter {
     min-height: 84px !important;
     padding: 11px !important;
   }
-  .app-shell:is([data-state="home"], [data-state="chat"]) #emptyState:not([hidden]) .starter small {
+  .app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) .starter small {
     display: none;
   }
   /* #5014: the shared scroll padding above already carries the composer

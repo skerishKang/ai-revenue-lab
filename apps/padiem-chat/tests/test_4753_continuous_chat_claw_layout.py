@@ -11,8 +11,12 @@ APP = (S / "app.js").read_text(encoding="utf8")
 def test_chat_active_thread_uses_home_frame_and_same_composer_geometry():
     # This catches the actual owner screenshot regression: home width 728px,
     # first submit silently widened chat to a 1080px "new" surface.
-    assert ':is([data-state="home"],[data-state="chat"]) .conversation' in CHAT
-    assert ':is([data-state="home"],[data-state="chat"]) .composer-wrap' in CHAT
+    # One desktop frame contract for every surface that carries the
+    # conversation. #2594 originally added Claw by pasting the Chat block a
+    # second time with the same four values; the two blocks are one rule now, so
+    # the assertion names the merged form instead of the Chat-only enumeration.
+    assert ':is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in CHAT
+    assert ':is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer-wrap' in CHAT
     assert '--padiem-chat-active-lane-width' not in CHAT
     assert 'body .app-shell[data-state="chat"] .conversation {\\n    width:' not in CHAT
 

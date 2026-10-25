@@ -31,6 +31,30 @@ html[data-theme="padiem-glass"] body .app-shell {
    * only the space under it. Every consumer reads this one value. */
   --padiem-first-screen-inset: max(12px, calc((100dvh - 747px) / 3));
 }
+
+/* The first screen is one surface. A page opts into it with the layout variant
+ * the shell publishes from the page contract in app.js (`conversation`), so the
+ * hero container, its layout model and its origin are declared here once and a
+ * new page inherits all three instead of adding a product sheet.
+ *
+ * The container is a grid in every product because the theme sheet leaves it a
+ * block sequence: inside a block the brand line sits on a text line box, inside
+ * a grid it is the first row, and the same content started 7.66px lower in Chat
+ * than in Claw at 900x900 and at 820x1180 (measured, identical blocks). Claw
+ * carried its own `display: grid` copy of this decision; it is here now. */
+.app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
+  display: grid;
+}
+
+/* #5634: the greeting and the entry row take the top third of the band between
+ * the content column and the fixed composer. This is the only desktop origin
+ * rule; every product and page reads the token above through the variant. */
+@media (min-width: 641px) {
+  .app-shell[data-layout-variant="conversation"]
+    .conversation:has(#emptyState:not([hidden])) {
+      padding-top: var(--padiem-first-screen-inset);
+    }
+}
 @media (min-width: 1024px) and (max-width: 1439px) {
   html[data-theme="padiem-glass"] body .app-shell {
     --padiem-six-panel-left: 24px;
@@ -317,8 +341,10 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
     opacity: .34 !important;
   }
-  /* The composer keeps its original position even during stop/send swaps. */
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
+  /* The composer keeps its original position even during stop/send swaps. One
+     rule for the three surfaces that carry it: the Claw copy below was the same
+     value pasted a second time when Claw joined the Chat frame. */
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {
     bottom: 16px !important;
   }
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
@@ -450,9 +476,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-present
     margin: 0 !important;
     min-height: 0 !important;
     padding: 0 !important;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
-    bottom: 16px !important;
   }
 }
 /* The card surface, its height and the ON/OFF switch placement are shared by
