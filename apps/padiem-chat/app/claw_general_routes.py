@@ -73,7 +73,7 @@ from .binary_attachment_frame import decode_binary_attachment_frame
 from .claw_attachment_context import (
     CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
     AttachmentValidationError,
-    parse_claw_turn_attachments,
+    parse_claw_turn_attachments_async,
 )
 from .request_contract import BrowserRequestError, parse_custom_selection
 from .claw_first_turn_authority import (
@@ -1333,7 +1333,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # refusals happen before quota, first-turn claim, Engine dispatch and any
     # provider call.
     try:
-        document_context, image_attachments = parse_claw_turn_attachments(
+        document_context, image_attachments = await parse_claw_turn_attachments_async(
             data.get("attachments")
         )
     except AttachmentValidationError as exc:

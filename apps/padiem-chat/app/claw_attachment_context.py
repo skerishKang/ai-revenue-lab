@@ -30,6 +30,7 @@ from .attachments import (
     AttachmentValidationError,
     ImageAttachment,
     parse_attachments,
+    parse_attachments_async,
 )
 from .documents import DocumentAttachment, build_document_context
 
@@ -37,6 +38,17 @@ from .documents import DocumentAttachment, build_document_context
 CLAW_IMAGE_ATTACHMENT_UNSUPPORTED = (
     "Claw는 아직 사진 첨부를 모델에 전달할 수 없습니다. 사진은 Chat에서 사용해 주세요."
 )
+
+
+def _project_attachments(
+    attachments: tuple[ImageAttachment | DocumentAttachment, ...],
+) -> tuple[str | None, tuple[ImageAttachment, ...]]:
+    document = next(
+        (item for item in attachments if isinstance(item, DocumentAttachment)), None
+    )
+    images = tuple(item for item in attachments if isinstance(item, ImageAttachment))
+    context = build_document_context(document) if document is not None else None
+    return context, images
 
 
 def parse_claw_turn_attachments(
@@ -50,17 +62,20 @@ def parse_claw_turn_attachments(
     ``AttachmentValidationError`` exactly where Chat raises it, with the same
     message.
     """
-    attachments = parse_attachments(raw)
-    document = next(
-        (item for item in attachments if isinstance(item, DocumentAttachment)), None
-    )
-    images = tuple(item for item in attachments if isinstance(item, ImageAttachment))
-    context = build_document_context(document) if document is not None else None
-    return context, images
+    return _project_attachments(parse_attachments(raw))
+
+
+async def parse_claw_turn_attachments_async(
+    raw: Any,
+) -> tuple[str | None, tuple[ImageAttachment, ...]]:
+    """Worker request path for the Claw turn attachment contract."""
+
+    return _project_attachments(await parse_attachments_async(raw))
 
 
 __all__ = [
     "CLAW_IMAGE_ATTACHMENT_UNSUPPORTED",
     "AttachmentValidationError",
     "parse_claw_turn_attachments",
+    "parse_claw_turn_attachments_async",
 ]

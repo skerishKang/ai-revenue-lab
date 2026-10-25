@@ -17,6 +17,7 @@ from padiem_ai_core.document_normalization import (
 from padiem_ai_core.document_parser_boundary import (
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE,
     parse_binary_document_via_authority,
+    parse_binary_document_via_authority_async,
 )
 
 from .documents import DocumentAttachment
@@ -52,6 +53,11 @@ _BINARY_ERROR_MESSAGES = {
     "xlsx_empty": "XLSX에서 읽을 값을 찾지 못했습니다.",
     "document_dependency_unavailable": "문서 처리 기능을 사용할 수 없습니다.",
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE: "현재 실행 환경에서는 격리된 문서 파서를 사용할 수 없어 문서를 처리할 수 없습니다.",
+    "isolated_parser_transport_failed": "문서 파서 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_request_unbounded": "문서 파서 요청이 허용 크기를 초과했습니다.",
+    "isolated_parser_response_invalid": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_response_unbounded": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_internal_error": "문서 파서가 문서를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
 }
 _OOXML_CODES = {
     "ooxml_archive_size",
@@ -101,7 +107,7 @@ def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) ->
     return BinaryDocumentValidationError(message or "지원하지 않는 문서 형식입니다.")
 
 
-def parse_binary_document_item(item: Any) -> DocumentAttachment:
+def _validated_item_payload(item: Any) -> tuple[Any, Any, bytes]:
     if not isinstance(item, dict) or set(item) not in ({"type", "name", "media_type", "base64"}, {"type", "name", "media_type", "raw_bytes"}):
         raise BinaryDocumentValidationError("지원하지 않는 바이너리 문서 첨부 항목이 있습니다.")
     if item.get("type") != "document":
@@ -115,14 +121,10 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
     except DocumentNormalizationError as exc:
         raise _translate_binary_error(exc, item.get("media_type")) from exc
     payload = _decode_payload(item.get("raw_bytes") if "raw_bytes" in item else item.get("base64"))
-    try:
-        document = parse_binary_document_via_authority(
-            name=item.get("name"),
-            media_type=item.get("media_type"),
-            payload=payload,
-        )
-    except DocumentNormalizationError as exc:
-        raise _translate_binary_error(exc, item.get("media_type")) from exc
+    return item.get("name"), item.get("media_type"), payload
+
+
+def _attachment_from_document(document: Any) -> DocumentAttachment:
     return DocumentAttachment(
         name=document.name,
         media_type=document.media_type,
@@ -130,3 +132,31 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         byte_size=document.byte_size,
         segments=tuple(document.segments),
     )
+
+
+def parse_binary_document_item(item: Any) -> DocumentAttachment:
+    name, media_type, payload = _validated_item_payload(item)
+    try:
+        document = parse_binary_document_via_authority(
+            name=name,
+            media_type=media_type,
+            payload=payload,
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_binary_error(exc, media_type) from exc
+    return _attachment_from_document(document)
+
+
+async def parse_binary_document_item_async(item: Any) -> DocumentAttachment:
+    """Worker request path: parse through the async isolated authority."""
+
+    name, media_type, payload = _validated_item_payload(item)
+    try:
+        document = await parse_binary_document_via_authority_async(
+            name=name,
+            media_type=media_type,
+            payload=payload,
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_binary_error(exc, media_type) from exc
+    return _attachment_from_document(document)

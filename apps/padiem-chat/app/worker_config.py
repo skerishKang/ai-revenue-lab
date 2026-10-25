@@ -48,6 +48,10 @@ B14_SERVICE_PROOF_SECRET_BINDING_NAME = "PADIEM_B14_SERVICE_PROOF_SECRET"
 # to None and every voice route fails closed with `voice_stt_unavailable`.
 VOICE_STT_SERVICE_BINDING_NAME = "VOICE_STT_SERVICE"
 B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
+# #2824: the private isolated Parser Authority Worker. Chat forwards the bounded
+# Core request envelope over this Service Binding; absent binding keeps the
+# async parser authority uninstalled, so binary parsing fails closed.
+DOCUMENT_PARSER_SERVICE_BINDING_NAME = "DOCUMENT_PARSER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
 # #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from

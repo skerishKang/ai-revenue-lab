@@ -93,6 +93,15 @@ service = "padiem-local-agent-broker-state"
 binding = "VOICE_STT_SERVICE"
 service = "padiem-voice-stt"
 
+# #2824 isolated Parser Authority. Chat forwards the bounded Core request
+# envelope over this binding; the private parser Worker runs the reviewed
+# pypdf/openpyxl extraction, so Chat never parses a binary document in its own
+# isolate. Deployment order: deploy padiem-document-parser first, then Chat;
+# the target Worker must exist or the Chat deploy fails.
+[[services]]
+binding = "DOCUMENT_PARSER_SERVICE"
+service = "padiem-document-parser"
+
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
 [[secrets_store_secrets]]
