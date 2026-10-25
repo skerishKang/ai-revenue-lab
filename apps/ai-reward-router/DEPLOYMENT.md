@@ -95,3 +95,55 @@ Deployment operations that remain OWNER/operator actions:
    through `PADIEM_CHAT_SERVICE` to `GET /api/auth/status` is acceptable
    load-wise; the endpoint is the same one the reference B66 bridge already
    calls.
+
+## Operational connection runbook (2026-10-26 measured, read-only)
+
+All facts below were measured read-only on the **Charliekant** account
+(`9be14bb7b8974e65d0afba647ab16932`, OAuth `ACCOUNT_MATCH` per
+`docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md` §0):
+
+- **D1 inventory (7 databases):** padiem-b14-call-ledger, cgi_quotes,
+  padiem-connector-acceptance-4139, padiem-b66-cgi-qa-261011,
+  padiem-browser-owner-p01, padiem-engine (`6b77ad02…`), padiem-chat-db
+  (`702bb62b…`). **No `padiem-b64` database exists** — the provision gate's
+  create-or-reuse flow cannot collide, and the other products' databases must
+  NOT be reused by B64 (product isolation).
+- **Deployed workers:** `padiem-chat` is active (deployment 2026-10-25, name
+  matches the declared `PADIEM_CHAT_SERVICE` target) and
+  `b64-ai-reward-router` exists on the account (uploaded 2026-10-23 — the P0
+  shell; redeploying the integrated code is a CENTRAL step below).
+- **chat.padiem.net** is served through Cloudflare (`Server: cloudflare`) and
+  `GET /api/auth/status` answers `200` — the liveness relay target is live.
+- **Path-collision audit:** chat's FastAPI route table contains NONE of B64's
+  consumer paths (`/`, `/earn`, `/today`, `/browse`, `/detail`, `/pipeline`,
+  `/income`, `/healthz`); no `padiem_session`-conflicting `/healthz` exists.
+- No route declarations for chat.padiem.net exist in-repo (serving is
+  dashboard-side); LOCAL has no zone-read scope, so the dashboard route table
+  itself is UNKNOWN here and is not asserted.
+
+CENTRAL execution steps (exact commands; nothing below has been executed by
+LOCAL):
+
+1. Provision the D1 database (or dispatch the `B64 Income D1 Provision Gate`
+   workflow — create-or-reuse is safe because no `padiem-b64` exists):
+   `npx wrangler@4 d1 create padiem-b64` — then replace the PLACEHOLDER
+   `database_id` in `apps/ai-reward-router/wrangler.jsonc` with the printed id.
+2. Apply the schema:
+   `npx wrangler@4 d1 execute padiem-b64 --remote --file=apps/ai-reward-router/migrations/d1/0001_b64_user_income.sql`
+   (replay-safe `IF NOT EXISTS`; no existing B64 table can conflict).
+3. Bind the session secret (same value as chat's
+   `PADIEM_CHAT_SESSION_SECRET`):
+   `wrangler secret put PADIEM_SESSION_SECRET --name b64-ai-reward-router`.
+4. Deploy the integrated Worker — the `[[services]]` binding
+   `PADIEM_CHAT_SERVICE → padiem-chat` is already declared in
+   `wrangler.jsonc` and matches the measured worker name:
+   `wrangler deploy` (from `apps/ai-reward-router`).
+5. Cookie delivery route — the ONLY remaining auth prerequisite: add
+   dashboard routes on **chat.padiem.net** for the B64 paths
+   (`/earn*`, `/today*`, `/browse*`, `/detail*`, `/pipeline*`, `/income*`)
+   targeting `b64-ai-reward-router`, keeping `/` and `/api/*` on
+   `padiem-chat`. The `padiem_session` cookie is host-only for
+   chat.padiem.net, so serving B64 under that host is the only
+   no-new-login delivery path; a workers.dev host cannot receive it.
+6. Run the live E2E after steps 1–5, then record `AUTH_LIVE_VERIFIED` /
+   `D1_LIVE_VERIFIED` evidence on #987.
