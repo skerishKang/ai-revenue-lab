@@ -55,15 +55,17 @@ MAX_OOXML_MEMBER_NAME_CHARS = 255
 #: bounded per member by the declared size the ratio check just admitted.
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
 MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
+#: Retained for import compatibility and no longer enforced: the reader walks
+#: every worksheet a workbook declares.
 MAX_XLSX_SHEETS = 20
-#: Retained as the default a caller gets when it asks for a table without
-#: saying how big; it no longer caps what a caller may ask for, and a workbook
-#: is never refused for exceeding it.
+#: The default a caller gets when it asks for a table without saying how big.
+#: It is no longer a ceiling on what may be asked for: a caller may name any
+#: positive bound, and a worksheet bigger than these numbers is not refused.
 MAX_XLSX_ROWS = 500
 MAX_XLSX_COLUMNS = 50
 #: Retained for import compatibility and no longer enforced: counting the cells
 #: a document contains and then refusing the document is a capacity limit, not
-#: integrity.
+#: integrity. A sheet is read for as long as the caller asked for it.
 MAX_XLSX_NONEMPTY_CELLS = 5_000
 
 TEXT_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
@@ -1451,20 +1453,18 @@ def read_xlsx_table(
             "invalid_sheet_index",
             "Sheet index must be a non-negative integer.",
         )
-    if isinstance(max_rows, bool) or not isinstance(max_rows, int) or not 1 <= max_rows <= MAX_XLSX_ROWS:
-        raise DocumentNormalizationError(
-            "invalid_row_bound",
-            "Row bound is outside the supported range.",
-        )
-    if (
-        isinstance(max_columns, bool)
-        or not isinstance(max_columns, int)
-        or not 1 <= max_columns <= MAX_XLSX_COLUMNS
+    # A caller asking for a bigger table is asking for a bigger table. The bound
+    # has to be a usable positive number; the old ceiling that refused anything
+    # past 500 rows or 50 columns was a PADIEM preference applied to someone
+    # else's document, and it is gone.
+    for name, value, code in (
+        ("max_rows", max_rows, "invalid_row_bound"),
+        ("max_columns", max_columns, "invalid_column_bound"),
     ):
-        raise DocumentNormalizationError(
-            "invalid_column_bound",
-            "Column bound is outside the supported range.",
-        )
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise DocumentNormalizationError(
+                code, f"{name} must be a positive integer without coercion.",
+            )
 
     validate_ooxml_archive(bytes(binary))
     try:
@@ -1497,7 +1497,6 @@ def read_xlsx_table(
         headers: tuple[str, ...] = ()
         rows: list[tuple[str, ...]] = []
         total_rows_seen = 0
-        nonempty_cells = 0
         truncated = declared_rows > max_rows + 1
         column_limit = min(declared_columns, max_columns)
         row_limit = min(declared_rows, max_rows + 1)
@@ -1511,12 +1510,6 @@ def read_xlsx_table(
             if not any(value.strip() for value in values):
                 continue
             total_rows_seen += 1
-            nonempty_cells += sum(1 for value in values if value.strip())
-            if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
-                raise DocumentNormalizationError(
-                    "xlsx_cell_budget",
-                    "XLSX contains too many non-empty cells.",
-                )
             if len(rows) >= max_rows:
                 truncated = True
                 continue

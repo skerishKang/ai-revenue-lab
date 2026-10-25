@@ -39,6 +39,8 @@ from padiem_ai_core.document_normalization import (
     extract_pptx_text,
     inspect_pdf,
     read_xlsx_table,
+    MAX_XLSX_COLUMNS,
+    MAX_XLSX_ROWS,
     normalize_pdf_inspection,
     normalize_text_document,
     parse_hwpx_sections,
@@ -739,6 +741,61 @@ def test_xlsx_table_row_bound_truncates_instead_of_reading_the_whole_sheet() -> 
     assert table.rows == (("A-1", "베어링", "10"),)
     assert table.truncated is True
     assert table.total_rows_seen == 1
+
+
+def test_a_workbook_beyond_the_old_row_column_and_cell_bounds_reads_fully() -> None:
+    """#5734 stage 2: the table reader has no capacity ceiling any more.
+
+    The old shape of this call was a refusal — 500 rows, 50 columns, 5,000
+    non-empty cells were PADIEM numbers, and a normal procurement sheet passes
+    all three. A caller that asks for a bigger bound now gets it, and a sheet
+    larger than the old bounds is read instead of rejected.
+    """
+
+    _require_xlsx_extra()
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Items"
+    header = ["코드"] + [f"열{index}" for index in range(55)]
+    sheet.append(header)
+    for row in range(1, 621):
+        sheet.append([f"A-{row}"] + [f"값{row}-{index}" for index in range(55)])
+    output = BytesIO()
+    workbook.save(output)
+    workbook.close()
+    payload = output.getvalue()
+
+    capped = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=MAX_XLSX_ROWS, max_columns=MAX_XLSX_COLUMNS,
+    )
+    assert len(capped.rows) == MAX_XLSX_ROWS
+    assert capped.truncated is True
+
+    whole = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=700, max_columns=60,
+    )
+    assert whole.truncated is False
+    assert len(whole.rows) == 620
+    assert whole.total_rows_seen == 620
+    assert len(whole.rows[0]) == 56
+    assert whole.rows[-1][0] == "A-620"
+
+
+def test_a_bound_beyond_the_old_ceiling_is_accepted_as_written() -> None:
+    """Asking for 20,000 rows used to be refused as out of range."""
+
+    payload = _xlsx_table_bytes()
+
+    table = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=20_000, max_columns=4096,
+    )
+    assert table.rows
+    with pytest.raises(DocumentNormalizationError) as zero:
+        read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, max_rows=0)
+    assert zero.value.code == "invalid_row_bound"
 
 
 def test_xlsx_table_rejects_a_non_xlsx_media_identity_and_a_missing_sheet() -> None:
