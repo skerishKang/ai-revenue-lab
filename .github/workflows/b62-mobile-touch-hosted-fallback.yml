@@ -116,3 +116,24 @@ jobs:
           PY
           )"
           curl --fail --silent --show-error -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/$EXPECTED" --data "$payload"
+      - name: Terminalize the hosted fallback dispatch marker
+        if: ${{ always() }}
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED: ${{ inputs.expected_sha }}
+          PR: ${{ inputs.pr_number }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]]
+          # The marker is failover bookkeeping, not a QA verdict: the watchdog leaves it
+          # pending and treats a pending marker as handled, so a run that ends without
+          # resolving it strands that PR head and blocks its own retry. The verdict
+          # context above keeps its own skip guard; this one always resolves.
+          STATE=failure
+          if [[ "$JOB_STATUS" == success ]]; then STATE=success; fi
+          export STATE
+          curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR}" | EXPECTED="$EXPECTED" python3 -c 'import json,os,sys;p=json.load(sys.stdin);assert p["state"]=="open" and p["head"]["sha"]==os.environ["EXPECTED"] and p["head"]["repo"]["full_name"]==os.environ["GITHUB_REPOSITORY"]'
+          payload="$(python3 -c 'import json,os; print(json.dumps({"state":os.environ["STATE"],"context":"COM2 mobile hosted fallback dispatch","description":"Hosted mobile fallback completed: "+os.environ["STATE"],"target_url":"https://github.com/"+os.environ["GITHUB_REPOSITORY"]+"/actions/runs/"+os.environ["GITHUB_RUN_ID"]}))')"
+          curl --fail --silent --show-error -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/$EXPECTED" --data "$payload"
