@@ -3,15 +3,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import worker from '../src/worker.js';
 
-test('dedicated Worker serves honest zero-supply P0 consumer surface', async () => {
+test('dedicated Worker home leads with verified public supply, ad lane stays honest (#5830)', async () => {
   const response = await worker.fetch(new Request('https://b64.example/'));
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type') ?? '', /text\/html/);
 
   const html = await response.text();
-  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+  assert.match(html, /data-public-card-count="6"/, 'verified public opportunities are the first actionable content');
+  assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/, 'the unapproved ad lane keeps its honest status');
+  assert.match(html, /공급자 승인 대기/);
+  assert.doesNotMatch(html, /지금 바로|즉시 적립|바로 적립 가능/, 'no unapproved lane is advertised as startable');
+  assert.doesNotMatch(html, /publisher|onboarding|API key/i);
   assert.match(html, /홈/);
-  assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
 });
 
 test('dedicated Worker health route keeps live provider permission disabled', async () => {

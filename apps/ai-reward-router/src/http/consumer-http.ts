@@ -457,7 +457,7 @@ export function createConsumerHttpHandler(
       });
     }
 
-    const homeViewModel = buildAdClickFirstConsumerHome(candidates);
+    const homeViewModel = buildAdClickFirstConsumerHome(candidates, { publicOpportunities });
     const html = renderAdClickFirstConsumerWeb(homeViewModel, themeInfo);
     return responseForMethod(request, html, {
       status: 200,

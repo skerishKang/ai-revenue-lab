@@ -37,6 +37,12 @@ export interface AdClickFirstConsumerHomeViewModel {
     description: string;
   }>;
   readonly sections: readonly AdClickFirstConsumerSection[];
+  /**
+   * Verified public opportunities (issue #5830): shown FIRST on the home
+   * screen when present, because they are the only earning opportunities a
+   * visitor can actually start today. Empty while no verified supply exists.
+   */
+  readonly publicCards: readonly PublicOpportunityCard[];
   readonly emptyState: AdClickFirstConsumerEmptyState | null;
   readonly accountOnboardingVisibleToConsumer: false;
   readonly laterTierNavigationVisible: false;
@@ -109,10 +115,16 @@ function byLowestActiveTime(a: AdClickConsumerCard, b: AdClickConsumerCard): num
  * Later earning tiers and owner/operator account onboarding never enter this
  * consumer view-model.
  */
+export interface BuildAdClickFirstConsumerHomeOptions {
+  readonly publicOpportunities?: readonly PublicOpportunity[];
+}
+
 export function buildAdClickFirstConsumerHome(
   candidates: readonly AdClickConsumerCandidate[],
+  options: BuildAdClickFirstConsumerHomeOptions = {},
 ): AdClickFirstConsumerHomeViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
+  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
   return Object.freeze({
     mode: 'AD_CLICK_FIRST' as const,
     issueNumber: 1112 as const,
@@ -129,7 +141,8 @@ export function buildAdClickFirstConsumerHome(
         cards,
       }),
     ]),
-    emptyState: cards.length === 0 ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
+    publicCards,
+    emptyState: cards.length === 0 && publicCards.length === 0 ? 'NO_LIVE_REWARD_SUPPLY' as const : null,
     accountOnboardingVisibleToConsumer: false as const,
     laterTierNavigationVisible: false as const,
     laterTierSectionsVisible: false as const,

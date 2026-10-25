@@ -195,3 +195,35 @@ export const THEME_CSS_TOGGLE = `
 /** Shared sticky-header inset for the `#top` scroll target (issue #5822 QA). */
 export const THEME_CSS_SHELL_INSET = `
     main#top { scroll-margin-top: 96px; }`;
+
+/**
+ * Category icons for the consumer screens (issue #5830). Inline SVG only —
+ * no external images, fonts or scripts, so the CSP stays untouched. These
+ * label the earning TYPE; they never imply provider approval or payout
+ * amounts.
+ */
+const CATEGORY_ICONS: Readonly<Record<string, string>> = Object.freeze({
+  ALL: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.6" stroke="currentColor" stroke-width="1.5"/></svg>',
+  AD_CLICK: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="15" height="10" rx="1.6" stroke="currentColor" stroke-width="1.5"/><path d="M10 14v3M7 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6 7l2.2 1.5L6 10z" fill="currentColor"/></svg>',
+  SURVEY: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 4.5h12a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 8h7M6.5 11h7M6.5 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  USABILITY: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8 2.5h4a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 12 17.5H8A1.5 1.5 0 0 1 6.5 16V4A1.5 1.5 0 0 1 8 2.5Z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="15" r="1" fill="currentColor"/><path d="M13.5 6.5c1.5.8 2.5 2 2.5 3.5s-1 2.7-2.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  MICROTASK: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M11 2 4.5 11h4L9 18l6.5-9h-4L11 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  SHORT_GIG: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 5.5V10l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  // Pipeline summary chips (#5830) — status visuals, not earning categories.
+  IN_PROGRESS: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 5.5V10l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  COMPLETED: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10.5l2.4 2.4 4.6-5.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  PAID: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 10h7M10.5 7l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  EXPECTED: '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 12.5c.6-1 1.7-1.5 3-1.5s2.4.5 3 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="8" r="1" fill="currentColor"/><circle cx="12.5" cy="8" r="1" fill="currentColor"/></svg>',
+});
+
+export function renderCategoryIcon(categoryId: string, className = 'category-icon'): string {
+  const icon = CATEGORY_ICONS[categoryId] ?? CATEGORY_ICONS['ALL']!;
+  return `<span class="${className}" aria-hidden="true">${icon}</span>`;
+}
+
+export const CATEGORY_ICON_CSS = `
+    .category-icon { display: inline-flex; width: 15px; height: 15px; flex: 0 0 auto; color: var(--accent); }
+    .category-icon svg { width: 100%; height: 100%; }
+    .summary-icon { display: inline-flex; width: 16px; height: 16px; color: var(--faint); }
+    .summary-icon svg { width: 100%; height: 100%; }`;
+
