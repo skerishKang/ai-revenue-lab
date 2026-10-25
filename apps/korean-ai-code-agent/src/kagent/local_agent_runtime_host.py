@@ -224,6 +224,7 @@ class LocalAgentResidentRuntimeHost:
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
         office_staging=None,
+        xlsx_revision_staging=None,
         verified_text_lane=None,
         clock: Callable[[], datetime] | None = None,
         monotonic: Callable[[], float] | None = None,
@@ -295,6 +296,16 @@ class LocalAgentResidentRuntimeHost:
         ):
             raise ContractError("trusted post-ACK Office output delivery port required")
         self._office_staging = office_staging
+        # #4434: an approved XLSX workcopy revision is the same kind of post-ACK
+        # side effect as the Office pair lane. It is composed from a
+        # deployment-owned P01 plan source only, consumes one acknowledged
+        # command exactly once, and never becomes part of the command result or
+        # the acknowledgement authority.
+        if xlsx_revision_staging is not None and not callable(
+            getattr(xlsx_revision_staging, "on_acknowledged", None)
+        ):
+            raise ContractError("trusted post-ACK XLSX revision staging port required")
+        self._xlsx_revision_staging = xlsx_revision_staging
         # #4139: the bounded TXT read lane is ordered, so it is wired into three
         # points of the one command path and nowhere else: pending is declared
         # while the command is admitted and unacknowledged, the approved READ
@@ -544,12 +555,26 @@ class LocalAgentResidentRuntimeHost:
             self._active_request_id = None
 
     def _declare_text_read_pending(self, **admitted: Any) -> None:
-        """Pre-ACK hook: declare `pending` for an admitted, unacknowledged read.
+        """Pre-ACK hook: register admitted material before anything executes.
 
         A failure propagates out of the canonical coordinator, which stops
         before `on_execution_start`, so a refused declaration never becomes an
         execution, a READ or a successful acknowledgement.
         """
+        staging = self._xlsx_revision_staging
+        if staging is not None:
+            note = getattr(staging, "note_admitted", None)
+            if callable(note):
+                # #4434: an admitted revision command carries its read approval.
+                # A malformed envelope stops the command here instead of letting
+                # it execute and discover the absence later. Commands that carry
+                # no revision envelope are untouched and keep their own path.
+                note(
+                    binding=admitted.get("binding"), command=admitted.get("command"),
+                    request_id=admitted.get("request_id"),
+                    request_fingerprint=admitted.get("request_fingerprint"),
+                    receipt=admitted.get("receipt"),
+                )
         lane = self._verified_text_lane
         if lane is None:
             return
@@ -899,6 +924,35 @@ class LocalAgentResidentRuntimeHost:
                             self._record_diagnostic(
                                 "office", "STAGING_REFUSED",
                                 "Private Office staging incomplete; no Drive upload",
+                            )
+                    if self._xlsx_revision_staging is not None:
+                        try:
+                            fact = receipt.execution
+                            if (fact.command_id != command.command_id
+                                    or fact.run_id != command.run_id
+                                    or fact.termination.value != "exited"
+                                    or fact.exit_code != 0
+                                    or fact.revision_ref != command.revision_ref):
+                                raise ContractError("successful exact broker receipt required")
+                            credential = self._credential_store.load(
+                                binding=binding, now=self._now(),
+                            )
+                            revised = self._xlsx_revision_staging.on_acknowledged(
+                                binding=binding, command=command, receipt=receipt,
+                                credential=credential,
+                            )
+                            if revised is not None:
+                                self._record_diagnostic(
+                                    "xlsx_revision", "REVISION_STAGED",
+                                    "Authorized XLSX revision staged in private broker",
+                                )
+                        except Exception:
+                            # The acknowledged command keeps its truth. No second
+                            # execution, no re-read of the original as a new
+                            # command, and no claim about file contents or paths.
+                            self._record_diagnostic(
+                                "xlsx_revision", "REVISION_REFUSED",
+                                "XLSX revision not staged; no result claimed",
                             )
                     if self._verified_text_lane is not None:
                         try:

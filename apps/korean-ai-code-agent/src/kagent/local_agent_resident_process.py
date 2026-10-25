@@ -214,6 +214,33 @@ def verified_text_plan_source_from_environment() -> Any | None:
     return source
 
 
+#: #4434: the deployment-supplied P01 XLSX revision plan source, resolved with
+#: the same ``module:attribute`` factory convention as the text and Office lanes.
+#: The environment names only an importable trusted factory; it never names a
+#: file, a path, a device or an approval, and an absent or shape-invalid source
+#: leaves the revision lane off.
+XLSX_REVISION_PLAN_SOURCE_ENV = "PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE"
+
+
+def xlsx_revision_plan_source_from_environment() -> Any | None:
+    """Resolve the deployment's P01 XLSX revision plan material, or None (fail closed)."""
+
+    factory_path = os.environ.get(XLSX_REVISION_PLAN_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        source = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(source, "approved_revision_plan", None)):
+        return None
+    return source
+
+
 #: #4139 trial: the deployment-supplied private-MeshCentral text material,
 #: resolved with the same ``module:attribute`` factory convention. The trial
 #: swap is the *executor* of the approved READ only; the canonical receipt, the
@@ -924,6 +951,7 @@ def build_resident_host(
     office_file_authorization_port: Any | None = None,
     office_renderer: Any | None = None,
     office_p01_plan_source: Any | None = None,
+    xlsx_revision_plan_source: Any | None = None,
     verified_text_plan_source: Any | None = None,
     meshcentral_trial_text_material: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
@@ -1047,6 +1075,25 @@ def build_resident_host(
                 config=config,
             ),
         )
+    # #4434: an approved XLSX workcopy revision is a third post-ACK side lane on
+    # this same host. It reuses the canonical P01 file authority, the canonical
+    # chunk publisher and the acknowledged-command correlation; nothing here
+    # approves a file, names a path or opens a second upload route.
+    xlsx_revision_staging = None
+    if xlsx_revision_plan_source is not None:
+        from .local_agent_control_plane_https import StdlibPinnedHttpsJsonRequestPort
+        from .local_resident_xlsx_revision_delivery import (
+            compose_resident_xlsx_revision_stager,
+        )
+
+        xlsx_revision_staging = compose_resident_xlsx_revision_stager(
+            device=device,
+            revision_plan_source=xlsx_revision_plan_source,
+            permission_profile=default_device_permission_profile(device=device),
+            publisher_config=config,
+            transport=StdlibPinnedHttpsJsonRequestPort(),
+            clock=clock,
+        )
     # #4139: a bounded TXT read result is ordered around the existing command
     # path — `pending` while the command is admitted and unacknowledged, the
     # approved READ after the execution and before the acknowledgement, and the
@@ -1141,6 +1188,7 @@ def build_resident_host(
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
         office_staging=office_staging,
+        xlsx_revision_staging=xlsx_revision_staging,
         verified_text_lane=verified_text_lane,
     )
     _observe_phase("host_build_host_done")
@@ -1241,6 +1289,9 @@ def main(argv: list[str] | None = None) -> int:
                 # host, from the deployment's own P01 material. Absent material
                 # leaves it off; nothing here approves, names or reads a file.
                 verified_text_plan_source=verified_text_plan_source_from_environment(),
+                # #4434: same fail-closed convention; absent material leaves the
+                # XLSX revision lane off rather than substituting anything.
+                xlsx_revision_plan_source=xlsx_revision_plan_source_from_environment(),
                 meshcentral_trial_text_material=meshcentral_trial_text_material_from_environment(),
             )
         except ContractError as exc:

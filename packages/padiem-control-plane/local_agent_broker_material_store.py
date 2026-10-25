@@ -30,6 +30,35 @@ TXT_RECEIPT_SUFFIX = ".txt"
 # relaxation of the Windows one: a receipt is validated against exactly the
 # authority/policy its own discriminator names.
 ANDROID_TXT_RECEIPT_FORMAT = "claw-android-saf-txt-read-approval.v1"
+
+#: #4434: the closed XLSX revision envelope. It attests the READ of a PC workcopy
+#: and carries the reviewed literal edits; the WRITE is attested Resident-side only
+#: after the result bytes exist, so nothing on this wire can approve a write.
+#: These constants are bilateral with ``kagent.local_agent_command_material`` and
+#: are pinned key for key by a cross-implementation test.
+XLSX_REVISION_RECEIPT_FORMAT = "claw-xlsx-revision-approval.v1"
+XLSX_REVISION_READ_TOOL_ID = "local.filesystem.read"
+XLSX_REVISION_OUTCOME = "approved"
+XLSX_REVISION_REQUIREMENT = "user_confirmation"
+XLSX_REVISION_READ_SCOPE = ("filesystem.read",)
+XLSX_REVISION_AUTHORITY_REF = "claw_connector_xlsx_revision_request_v1"
+XLSX_REVISION_POLICY_REF = "padiem_xlsx_selected_root_revision_policy_v1"
+XLSX_REVISION_SUFFIX = ".xlsx"
+XLSX_REVISION_EDIT_LIMIT = 64
+_XLSX_REVISION_CELL_RE = re.compile(r"^[A-Z]{1,3}[1-9][0-9]{0,6}$")
+_XLSX_REVISION_SHEET_RE = re.compile(r"^[^\\/:*?[\]]{1,31}$")
+_XLSX_REVISION_KEYS = frozenset({
+    "format", "evidence_ref", "command_id", "request_id", "local_policy_ref",
+    "expires_at", "source_approval", "revision",
+})
+_XLSX_APPROVAL_KEYS = frozenset({
+    "approval_pause", "approval_decision", "exact_tool_arguments",
+})
+_XLSX_REVISION_INSTRUCTION_KEYS = frozenset({
+    "sheet_name", "edits", "result_path_relative", "write_action_id",
+    "write_requested_at",
+})
+_XLSX_EDIT_KEYS = frozenset({"cell", "previous_value", "replacement_value"})
 ANDROID_TXT_RECEIPT_AUTHORITY_REF = "claw_connector_android_txt_request_v1"
 ANDROID_TXT_RECEIPT_POLICY_REF = "padiem_android_saf_selected_root_read_policy_v1"
 _TXT_RECEIPT_KEYS = frozenset({
@@ -209,6 +238,106 @@ def validate_android_txt_approval_receipt(value: Any) -> dict[str, Any]:
     )
 
 
+def validate_xlsx_revision_receipt(value: Any) -> dict[str, Any]:
+    """Validate the closed XLSX revision envelope (grants nothing).
+
+    Shape only, exactly as the TXT receipts here: exact keys, bounded types, enum
+    constants, digest shapes and parseable timestamps. The Resident's plan source
+    recomputes the digests, correlates the envelope to the admitted command and
+    resolves the write approval separately; this store only refuses a malformed
+    envelope, and it refuses any attempt to carry a write approval or a result
+    digest on a wire that cannot honestly attest either.
+    """
+    if type(value) is not dict or frozenset(value) != _XLSX_REVISION_KEYS:
+        raise ValueError("XLSX revision receipt schema mismatch")
+    receipt = value
+    if receipt["format"] != XLSX_REVISION_RECEIPT_FORMAT:
+        raise ValueError("XLSX revision receipt format mismatch")
+    safe_ref(receipt["evidence_ref"], "receipt.evidence_ref")
+    safe_ref(receipt["command_id"], "receipt.command_id")
+    safe_ref(receipt["request_id"], "receipt.request_id")
+    if receipt["local_policy_ref"] != XLSX_REVISION_POLICY_REF:
+        raise ValueError("XLSX revision receipt policy mismatch")
+    parse_iso(receipt["expires_at"], "receipt.expires_at")
+
+    approval = receipt["source_approval"]
+    if type(approval) is not dict or frozenset(approval) != _XLSX_APPROVAL_KEYS:
+        raise ValueError("XLSX revision source approval schema mismatch")
+    pause = approval["approval_pause"]
+    decision = approval["approval_decision"]
+    args = approval["exact_tool_arguments"]
+    if type(pause) is not dict or frozenset(pause) != _TXT_PAUSE_KEYS:
+        raise ValueError("XLSX revision approval pause schema mismatch")
+    if type(decision) is not dict or frozenset(decision) != _TXT_DECISION_KEYS:
+        raise ValueError("XLSX revision approval decision schema mismatch")
+    if type(args) is not dict or frozenset(args) != _TXT_ARG_KEYS:
+        raise ValueError("XLSX revision approval arguments schema mismatch")
+    for field_name in ("pause_id", "run_id", "agent_runtime_id"):
+        safe_ref(pause[field_name], f"pause.{field_name}")
+    if pause["tool_id"] != XLSX_REVISION_READ_TOOL_ID:
+        raise ValueError("XLSX revision approval pause tool mismatch")
+    if pause["requirement"] != XLSX_REVISION_REQUIREMENT:
+        raise ValueError("XLSX revision approval pause requirement mismatch")
+    if tuple(pause["approval_scope"]) != XLSX_REVISION_READ_SCOPE:
+        raise ValueError("XLSX revision approval pause scope mismatch")
+    digest(pause["invocation_sha256"], "pause.invocation_sha256")
+    if decision["pause_id"] != pause["pause_id"]:
+        raise ValueError("XLSX revision approval decision does not belong to the pause")
+    if decision["outcome"] != XLSX_REVISION_OUTCOME:
+        raise ValueError("XLSX revision approval decision outcome mismatch")
+    if decision["authority_ref"] != XLSX_REVISION_AUTHORITY_REF:
+        raise ValueError("XLSX revision approval decision authority mismatch")
+    for field_name in ("action_id", "run_id", "device_id", "root_ref"):
+        safe_ref(args[field_name], f"args.{field_name}")
+    if args["operation"] != "read":
+        raise ValueError("XLSX revision approval arguments operation mismatch")
+    if args["content_bytes"] != 0 or args["content_sha256"] is not None:
+        raise ValueError("XLSX revision approval arguments must describe a pre-read intent")
+    digest(args["request_fingerprint"], "args.request_fingerprint")
+
+    revision = receipt["revision"]
+    if (type(revision) is not dict
+            or frozenset(revision) != _XLSX_REVISION_INSTRUCTION_KEYS):
+        raise ValueError("XLSX revision instruction schema mismatch")
+    if not isinstance(revision["sheet_name"], str):
+        raise ValueError("XLSX revision worksheet name must be text")
+    if not _XLSX_REVISION_SHEET_RE.fullmatch(revision["sheet_name"]):
+        raise ValueError("XLSX revision worksheet name is not bounded")
+    result_path = revision["result_path_relative"]
+    if not isinstance(result_path, str) or not result_path:
+        raise ValueError("XLSX revision result path must be a relative file path")
+    lowered = result_path.replace("/", "\\").casefold()
+    if (lowered.startswith("\\") or (len(lowered) >= 2 and lowered[1] == ":")
+            or ".." in lowered.replace("\\", "/").split("/")
+            or not lowered.endswith(XLSX_REVISION_SUFFIX)):
+        raise ValueError("XLSX revision result path must remain inside the selected root")
+    safe_ref(revision["write_action_id"], "revision.write_action_id")
+    if revision["write_action_id"] == args["action_id"]:
+        raise ValueError("XLSX revision read and write must be distinct actions")
+    parse_iso(revision["write_requested_at"], "revision.write_requested_at")
+    edits = revision["edits"]
+    if type(edits) is not list or not 1 <= len(edits) <= XLSX_REVISION_EDIT_LIMIT:
+        raise ValueError("XLSX revision edits must be a bounded non-empty list")
+    seen: set[str] = set()
+    for item in edits:
+        if type(item) is not dict or frozenset(item) != _XLSX_EDIT_KEYS:
+            raise ValueError("XLSX revision edit schema mismatch")
+        cell = item["cell"]
+        if not isinstance(cell, str) or not _XLSX_REVISION_CELL_RE.fullmatch(cell):
+            raise ValueError("XLSX revision edit cell is not an A1 reference")
+        if cell in seen:
+            raise ValueError("XLSX revision edit cell is repeated")
+        seen.add(cell)
+        for field_name in ("previous_value", "replacement_value"):
+            literal = item[field_name]
+            if isinstance(literal, bool) or not isinstance(literal, (str, int)):
+                raise ValueError("XLSX revision edit value must be a literal")
+            if isinstance(literal, str) and (not literal or len(literal) > 4096
+                                             or literal.startswith("=")):
+                raise ValueError("XLSX revision edit value is not a bounded literal")
+    return receipt
+
+
 def canonical_json(value: dict[str, Any], *, maximum_bytes: int, label: str) -> tuple[str, bytes]:
     try:
         text = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -275,20 +404,30 @@ class CloudflareDurableObjectCommandMaterialStore:
                 raise ValueError("command approval receipt must be a mapping")
             if approval.get("format") == TXT_RECEIPT_FORMAT:
                 receipt = validate_txt_approval_receipt(approval)
+                side = "TXT"
             elif approval.get("format") == ANDROID_TXT_RECEIPT_FORMAT:
                 receipt = validate_android_txt_approval_receipt(approval)
+                side = "Android TXT"
+            elif approval.get("format") == XLSX_REVISION_RECEIPT_FORMAT:
+                receipt = validate_xlsx_revision_receipt(approval)
+                side = "XLSX revision"
             else:
                 raise ValueError("unsupported command approval receipt format")
             if receipt["command_id"] != command_id:
-                raise ValueError("TXT approval receipt does not belong to this command")
-            if receipt["exact_tool_arguments"]["run_id"] != material["run_id"]:
-                raise ValueError("TXT approval receipt run does not match the material")
-            if receipt["exact_tool_arguments"]["device_id"] != material["device_id"]:
-                raise ValueError("TXT approval receipt device does not match the material")
-            if receipt["exact_tool_arguments"]["root_ref"] != material["root_ref"]:
-                raise ValueError("TXT approval receipt root does not match the material")
+                raise ValueError(f"{side} approval receipt does not belong to this command")
+            read_args = (receipt["source_approval"]["exact_tool_arguments"]
+                         if side == "XLSX revision"
+                         else receipt["exact_tool_arguments"])
+            if read_args["run_id"] != material["run_id"]:
+                raise ValueError(f"{side} approval receipt run does not match the material")
+            if read_args["device_id"] != material["device_id"]:
+                raise ValueError(
+                    f"{side} approval receipt device does not match the material")
+            if read_args["root_ref"] != material["root_ref"]:
+                raise ValueError(
+                    f"{side} approval receipt root does not match the material")
             if receipt["request_id"] != material["request_id"]:
-                raise ValueError("TXT approval receipt request does not match the material")
+                raise ValueError(f"{side} approval receipt request does not match the material")
         argv = material["argv"]
         if type(argv) is not list or not all(type(item) is str for item in argv):
             raise ValueError("command material argv must be a JSON text list")

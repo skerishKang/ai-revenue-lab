@@ -1,0 +1,517 @@
+# #4434 — local XLSX workcopy revision and staging (2026-10-25, COM2 LOCAL1)
+
+Scope record for the PC side of the web -> PC -> web Excel round trip. Public
+technical evidence only: no credentials, no device identifiers, no customer data.
+
+## What was already there
+
+`kagent.local_xlsx_revision_pdf` already owned the revision *contract* — an
+approved source handoff, literal `ReviewedCellRevision` edits, an editor port, an
+independent verifier port, and canonical artifact/lineage registration. The
+selected-root runtime already performed authorized real reads and writes, the
+chunk publisher already staged bounded 48 KiB parts over the pinned HTTPS/443
+broker transport, and the Chat side already reassembled and re-verified them.
+The two ports had no production implementation, and nothing ordered the steps
+so that the original file could not be the write target.
+
+## What this change adds
+
+- `kagent/local_xlsx_python_copy_editor.py`
+  - `PythonXlsxValueCopyEditor` — the production editor for the ordinary Python
+    path. It rewrites only the worksheet part that holds a target cell and copies
+    every other package member byte-for-byte, so styles, theme, merged ranges,
+    print settings and every untouched cell are preserved by construction rather
+    than by promise. Text replacements are written as `inlineStr` so
+    `xl/sharedStrings.xml` is never mutated.
+  - `IndependentZipXlsxRevisionVerifier` — proves from the two byte blobs alone
+    that the part set is unchanged, exactly the expected parts differ, every
+    non-target cell keeps its value, and each target cell holds the reviewed
+    replacement.
+  - `OfficeFidelityRequired` — a workbook that carries any formula, or a
+    calculation chain, is refused before a byte is written and routed to the
+    existing Office/Local Runner path (`windows_excel_pdf_renderer`,
+    `supervised_windows_excel_pdf`), because replacing an input makes the cached
+    results of dependent formulas stale. `classify_xlsx` stays the untrusted-input
+    gate; `REJECT` is refused, and a DTD or entity declaration in any part is
+    refused before parsing.
+- `kagent/local_xlsx_workcopy_roundtrip.py`
+  - `revise_and_stage_approved_xlsx_workcopy` — one ordered composition over the
+    existing authorities: approved READ (canonical P01) -> source handoff ->
+    editor -> independent verifier -> canonical `working.xlsx` record -> approved
+    WRITE to a *derived* path -> staging through `LocalOfficeChunkPublisher`.
+  - `revised_path_for` derives the only legal result name (`<source>_revised.xlsx`
+    beside the source). The caller cannot supply a target, the original can never
+    be the write target, and an existing result file is refused instead of
+    silently overwritten.
+  - The WRITE is approved against the exact result bytes, so the host validates
+    the built request against the verified bytes, the derived path, and the
+    source's device, root and run before performing it.
+
+No second parser, no second store, no new ceiling, no new approval step: the
+result's integrity comes from the runtime's atomic write (temp file, `fsync`,
+`os.replace`) rather than from an extra customer-facing approval.
+
+## Verified on COM2 (real files, real disk, real P01 evidence)
+
+`python scripts/kagent_local_test.py -- -p "test_4434_local_xlsx_workcopy_roundtrip.py"`
+→ 13 tests OK, `IMPORT_ORIGIN_CHECK=PASS`.
+
+- Revision on disk: `quote\book.xlsx` -> `quote\book_revised.xlsx`; original SHA-256
+  unchanged; result SHA-256 equals the canonical record; merged range and untouched
+  cells preserved; Korean text kept.
+- Only `xl/worksheets/sheet1.xml` differs between original and result;
+  `xl/styles.xml` is byte-identical.
+- Formula workbook → `OfficeFidelityRequired`, no result file, nothing staged.
+- Stale `previous_value`, unapproved WRITE, non-derived target, pre-existing result
+  file, cross-run/cross-device request, and a non-OOXML source are each refused with
+  no write and no staging call.
+- Staged parts reassemble to the verified digest; each `part_sha256` matches; the
+  wire carries run/command ids only — no path, no destination, no Drive claim. A
+  broker-refused part yields no receipt, and an explicit retry of the same bytes
+  produces identical part digests.
+- The production editor and verifier satisfy the existing
+  `revise_and_render_local_xlsx_pdf` ports and its lineage registration.
+
+## Resident integration (2026-10-26 follow-up)
+
+- `kagent/local_resident_xlsx_revision_delivery.py`
+  - `TrustedP01XlsxRevisionPlan` — the P01 material for one revision of one
+    acknowledged command: approved READ, literal reviewed edits, and an approved
+    WRITE whose fingerprint binds the *expected result bytes*. It creates no
+    approval; the pause, decision and local permission evidence are the existing
+    canonical ones.
+  - `TrustedP01XlsxRevisionBridge` — hands out that evidence once per file
+    request and consumes one `(binding, command)` pair once, so a reconnect or a
+    duplicate delivery cannot revise the workbook a second time.
+  - `ResidentXlsxRevisionStager` / `compose_resident_xlsx_revision_stager` —
+    post-ACK execution through the existing P01 file authority plus the canonical
+    `LocalOfficeChunkPublisher`. It refuses an authorization port that is not
+    `P01LocalPermissionWindowsFileAuthorizationPort`, so the deterministic test
+    grant cannot enter this path.
+- `local_agent_resident_process.build_resident_host` gained
+  `xlsx_revision_plan_source`; the environment may only name an importable
+  trusted factory (`PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE=module:attribute`),
+  never a path or an approval, and `main()` resolves it with the same fail-closed
+  convention as the text and Office lanes.
+- `LocalAgentResidentRuntimeHost` invokes the lane after the acknowledgement,
+  with the same discipline as its siblings: an acknowledged command keeps its
+  truth, a staging refusal records `REVISION_REFUSED`, and nothing re-executes.
+- Capability boundary confirmed by `test_4434_xlsx_capability_scope.py`: the
+  Python path handles later-sheet edits, Korean text with leading and trailing
+  spaces, negative and large integers, merges and styles (only the target
+  worksheet part changes); anything with a formula, a calculation chain (matched
+  case-insensitively, as Excel writes `xl/calcChain.xml`), or an
+  `xlsx_fidelity_route.BLOCKED_PARTS` member (VBA, external links, pivots,
+  charts, comments, custom XML) is routed to the Office path with no write. The
+  literal-only `ReviewedCellRevision` contract still refuses floats, booleans and
+  formula-like strings.
+- Broker coupling: `apps/padiem-chat/tests/test_4434_office_chunk_broker_web_coupling.py`
+  runs the real publisher over the real editor output and serves those recorded
+  payloads to the real `BrokerOfficeBinaryReader` (the Durable Object rows are the
+  only stand-in, and the store has its own SQLite contract test). It pins the
+  shared wire schema against `local_agent_broker_office_chunks._WIRE` after the
+  device route strips `binding_ref`/`credential_b64`, checks per-part and
+  whole-file digests, two-command isolation, foreign owner/run/command/kind
+  refusal, tamper refusal, and recovery after a missing part.
+
+## Connector configuration path (2026-10-26, #5835 작업 B)
+
+`apps/claw-connect/claw_connect/resident_launch.py` can now carry the revision
+lane the way it already carries the TXT lane:
+
+- `RESIDENT_ENV_XLSX_REVISION_PLAN_SOURCE = "PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE"`
+  is the exact key `local_agent_resident_process` reads, pinned as text and
+  cross-checked against that file's own source in
+  `test_4434_resident_xlsx_revision_launch.py` — a rename on either side fails a
+  test instead of silently leaving the lane off.
+- A configured value is forwarded; an absent value emits no key; a malformed one
+  refuses the launch with `xlsx_revision_plan_source_invalid` rather than
+  spawning a child that has to fail closed by itself. A value the plan never
+  authorized is dropped from the emitted environment.
+- The shared `module:attribute` shape check now requires every dotted segment to
+  be a real identifier. `kagent.:factory`, `.pkg:factory` and `pkg..mod:factory`
+  could never import, and the old pattern accepted them for all three keys
+  (request port, TXT, revision). Nothing that actually imports got stricter.
+- `installed_runtime.py` pins **no** revision source and clears an ambient one,
+  so a customer machine cannot arm the lane by exporting a name: no fake grant
+  and no test-only plan source reaches an installed Resident. `XLSX_REVISION_-
+  PLAN_SOURCE = None` is where CENTRAL records a reviewed factory when one
+  exists; until then `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays
+  `False`.
+- What a real factory would have to be: the existing command material carries one
+  closed-validated `p01_approval_payload` shaped as a TXT *read* receipt
+  (`local_agent_command_material.validate_txt_approval_receipt`). A production
+  revision source needs the matching WRITE approval to ride an acknowledged
+  command, which means a Chat-side receipt format plus its validator. Inventing a
+  PC-side-only source would mean trusting approval material no server minted, so
+  it is deliberately not done here.
+- Composition proof on the Resident side
+  (`test_4434_resident_xlsx_revision_lane.py`): the composed stager holds a real
+  `LocalOfficeChunkPublisher`, a `WindowsSelectedRootFileRuntime` whose
+  authorization port type is exactly
+  `P01LocalPermissionWindowsFileAuthorizationPort`, and the roundtrip module's
+  omitted editor/verifier resolve to `PythonXlsxValueCopyEditor` and
+  `IndependentZipXlsxRevisionVerifier`. The original path is never the write
+  target; the result digest is the one that was verified before the write.
+
+## Web entry path: why the chooser route stays 503 (2026-10-26, 작업 A)
+
+Composition state, read at the two places that decide it:
+
+- `apps/padiem-chat/app/app_factory.py:1362` assigns
+  `app.state.claw_office_chooser_source = claw_office_chooser_source`, and the
+  parameter default at `app_factory.py:462` is `None` with the comment that the
+  chooser "is fail-closed until the real trusted Engine/Resident operator
+  supplies an owner-bound, pre-approved candidate/approval source".
+- The production composition root is `apps/padiem-chat/worker.py:1141`
+  (`create_app(...)`), which passes the named ports for the surfaces that are
+  live — `oracle_mesh_return_source`, `b66_pc_access_policy`,
+  `claw_drive_artifact_uploader`, and the rest — and does **not** pass
+  `claw_office_chooser_source`. Sibling trusted sources are built worker-side
+  from a Cloudflare Service Binding and assigned onto `app.state` after
+  `create_app`; there is no `module:attribute` environment pattern in the Chat
+  app. So the route answers `503 office_chooser_unconfigured` in production
+  because nothing constructs a source, not because a flag is off.
+
+No production implementation of the protocol exists: the only object with
+`configured` + `candidates()` + `select()` is the test double in
+`tests/test_3580_claw_office_chooser_routes.py`. PR #5817 (parser authority,
+33 files) contains no Office or chooser code, so the conflict resolved on that
+PR was never an Office conflict, and it cannot supply the missing source.
+
+Why the missing half is not a worker-side wire:
+
+- `select()` is refused unless the source returns a *genuinely started* Engine
+  pause (`status == "awaiting_approval"`, `engine_run_id`) **and** the route
+  independently re-reads the durable `claw_approval_handoff` row and requires
+  `p01_run_id`, `continuation_ref`, `pause_id` and `trusted_request` to match
+  (`claw_office_chooser_routes.py:143-178`). A Chat-local source that read the
+  same D1 row it is checked against would be self-attesting, which is exactly
+  what the route was written to prevent.
+- The only writer of that row is `_record_claw_approval_handoff`
+  (`app/claw_routes.py:992`, called at `:766` and `:1238`) — the ordinary Claw
+  run path, reached when an Engine run pauses. Nothing today pauses an Engine
+  run from an office-candidate selection.
+- The one working "web request → P01 → PC command" precedent is TXT, and it is
+  **read-only by construction**: `apps/padiem-chat/app/connector_txt_approval_material.py:249-288`
+  builds the receipt from the authenticated owner's confirmed request
+  (`POST /api/claw/connector/text-reads/request`, body exactly
+  `{device_id, root_ref, path_relative, run_id, confirmed: true}`), and the
+  `approval_pause` / `approval_decision` blocks are written there server-side —
+  no Engine call and no on-PC prompt — over a
+  `tool_invocation_digest` of the canonical Windows READ. The Chat side puts it
+  on the command as `p01_approval_payload` (`:302`; Android twin
+  `connector_android_saf_approval_material.py`), the control plane admits only
+  those two formats under `claw-local-command-material.v2`
+  (`packages/padiem-control-plane/local_agent_broker_material_store.py:252-295`),
+  and the PC accepts the format only for `operation == "read"` on a `.txt` path
+  under the selected root with `content_bytes == 0` and `content_sha256 is None`
+  (`kagent/local_agent_command_material.py:137`, `:198`, `:203-206`).
+  `grep` across `apps/padiem-chat` and `apps/korean-ai-platform` finds **no**
+  write or revision approval format anywhere.
+
+So the TXT lane reaches a customer PC on consent the *web* transcribed, and the
+reason that is defensible there is that the transcript can only ever describe a
+read. Carrying the same shape over to a WRITE would let a server transcript stand
+in for on-PC consent to modifying a file. The #5835 lane therefore takes the
+opposite position: `ResidentXlsxRevisionStager` accepts only
+`P01LocalPermissionWindowsFileAuthorizationPort`, the deployment names a trusted
+factory, and no server-supplied transcript is honored. Choosing between "the PC
+prompts for the write" and "the web approval is trusted for the write" is an
+owner/CENTRAL security decision, not something to settle by wiring a
+placeholder source into a customer-facing route.
+
+## Device connection facts on COM2 (2026-10-26, 작업 C)
+
+- `padiem-oracle-mesh-executor.service` and `padiem-meshcentral.service` are
+  `active`/`running`; the executor's main process started Sun 2026-10-25
+  14:50:13 KST with `Result=success`.
+- The same lane completed real dispatches: `phase=submit_ok ... status=200` and
+  `oracle-mesh-executor result ok=True retryable=False quarantined=False` at
+  19:34:57 and 19:39:27 on 2026-10-25.
+- Exactly one failure appears in the journal: `23:16:57 oracle-mesh-executor
+  channel refusal: chat channel transport refused`, emitted at
+  `local_agent_oracle_mesh_executor.py:1432` from the transport branch at
+  `:259-260` (a non-HTTP failure — DNS/TLS/connect), during repeated WSL
+  `systemd-resolved: Clock change detected. Flushing caches.` entries. Nothing
+  like it recurred on 2026-10-26 (`--since 2026-10-26` shows no entries, no
+  refusals), so this was transient, not a persistent outage.
+- The poll channel is deployed: an unauthenticated `POST
+  https://chat.padiem.net/api/claw/connector/mesh-reads/poll` answers
+  `403 {"ok":false,"error":{"code":"oracle_mesh_channel_rejected"}` — the
+  bounded refusal for a request with no device channel token. No grant was
+  created and no authentication was bypassed to obtain this.
+- The `ACTION_REQUIRED` / `usable=false` device row is **the designed shape** for
+  a PC whose authority comes from a Mesh grant, not from a Broker heartbeat:
+  `apps/padiem-chat/app/claw_device_directory_routes.py:333-351` appends
+  `{"state": "ACTION_REQUIRED", "usable": False, "executable": True,
+  "selectable": True}` under the comment "A Mesh grant proves execution
+  authority, not a Broker heartbeat." Only canonical `online`, which the server
+  derives from binding + broker session + heartbeat evidence, projects as
+  `usable` (`app/claw_local_projection.py:107-116`, `:202-207`). So the
+  selection-vs-execution difference is intended, the PC remains selectable and
+  executable, and what is missing is Broker-session liveness for that device —
+  an operational item, not a code change.
+- `wrangler whoami` on COM2 reports "You are not authenticated", so Worker logs,
+  config reads, secret changes and any deployment are unavailable from this
+  machine; the B54 workflow's own `wrangler whoami || exit 1` preflight shows
+  what CENTRAL uses.
+
+## Chunk transfer gate: support and the approved way to turn it on (작업 D)
+
+- Code support is present and asserted by the protected workflow: the device
+  route allowlist contains exactly one Office staging route
+  (`/office-part`), authentication happens before any byte is written, and the
+  state worker composes the store
+  (`.github/workflows/b54-local-agent-public-ingress-activation.yml:129-160`).
+- The gate is a plain text var read as
+  `str(getattr(env, "LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED", "")).lower() !=
+  "true"` → `None` store
+  (`packages/padiem-control-plane/local_agent_broker_office_chunks.py:327`).
+- It is unset in the deployed configuration: the var appears in no
+  `wrangler.*.jsonc` in this repository (`grep -l` over all worker configs
+  returns nothing), while `wrangler.local-agent-broker.jsonc` does carry other
+  `LOCAL_AGENT_BROKER_*` vars in its `vars` block. That is the proof the flag is
+  off in production, and it is why the authenticated route answers
+  `503 office_transfer_not_configured`.
+- Enabling it is a committed config change to that `vars` block, shipped through
+  the existing B54 activation workflow — preflight asserts, `environment:
+  production` approval, served-version resolution through
+  `cloudflare_served_version_cli.py resolve-active`, and its rollback job. That
+  workflow deploys; it neither rewrites existing Secrets nor removes Worker
+  bindings, which is what "preserve the Cloudflare Secrets and existing
+  bindings" requires in practice. Doing it from COM2 is impossible (no
+  Cloudflare authentication), and doing it by hand outside that workflow would
+  bypass the reviewed gate.
+
+## The write-consent precedent is web-side, and it is not the TXT transcript (2026-10-26)
+
+Refinement to the section above, found while checking whether a write approval
+shape exists at all. It does — just not as a PC command-material format:
+
+- `docs/operations/CLAW_HARK_3933_EXPLICIT_WEB_WRITE_ENGINE_P01_20261011.md`
+  records an implemented, default-OFF milestone: `POST /quote-edit/request`
+  reserves a WRITE pause in migration 034
+  `claw_web_xlsx_quote_write_pauses`, calls the private Engine ToolRuntime, and
+  returns `waiting_p01`; `POST /quote-edit/decision` accepts only
+  `{"decision":"approve"}` or `{"decision":"deny"}`, reserves a separately
+  scoped owner WRITE consent row (033) *before* dispatch, submits the first-party
+  Core decision with server-held pause/continuation, and consumes once. A denied
+  or unverifiable result never writes a workbook, and the browser gets a second,
+  distinct "save the revised XLSX" click.
+- The flag chain that turns it on is explicit and stacked
+  (`apps/padiem-chat/worker.py:1410-1444`):
+  `PADIEM_WEB_XLSX_P01_TOOL_DISPATCH_ENABLED` →
+  `PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED=true` →
+  `PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED=true` (plus `runtime_mode == "b14"`
+  and a workspace document store) → `PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED`, each
+  with its own operator-managed caller. None of these appears in
+  `apps/padiem-chat/wrangler.toml`, so the whole web write lane is off in the
+  committed production configuration.
+
+So the shape the PC revision lane wants — a real owner decision on a XLSX write,
+recorded durably, verified before any byte is written — already exists on the
+web side. What it is bound to is a **private R2 workcopy**, not a file on a
+customer PC, and it reaches the Engine rather than a device command. The
+integration question is therefore narrower than "invent write consent": make the
+PC workcopy the object of that same pause/decision flow, so the #5835 lane's
+trusted plan source can be satisfied by a decision the owner actually gave,
+instead of the TXT lane's server-transcribed read.
+
+## The revision approval envelope the PC admits (2026-10-26, 작업 A + #5573 integration contract)
+
+`kagent/local_agent_command_material.py` now admits a second closed format on the
+existing `p01_approval_payload` slot, beside the two read-only TXT ones:
+
+```
+claw-xlsx-revision-approval.v1
+  format / evidence_ref / command_id / request_id / local_policy_ref / expires_at
+  source_approval  = {approval_pause, approval_decision, exact_tool_arguments}   # READ,  content_bytes 0
+  result_approval  = {approval_pause, approval_decision, exact_tool_arguments}   # WRITE, content_sha256 names the result
+  revision         = {sheet_name, edits[1..64], result_path_relative}
+```
+
+Rules the validator enforces, and why each one is load-bearing:
+
+- The write half names its own tool (`local.filesystem.write`), requirement and
+  scope (`filesystem.write`), authority
+  (`claw_connector_xlsx_revision_request_v1`) and policy
+  (`padiem_xlsx_selected_root_revision_policy_v1`). The read constants are not
+  reused: a read approval cannot describe a write.
+- **Two distinct decisions are required.** `P01LocalPermissionWindowsFileAuthorizationPort.authorize`
+  consumes one `decision_id` per file access
+  (`windows_local_filesystem.py:493-497`), so one pause covering both halves is
+  refused at the shape layer rather than half-executing later.
+- The approved result is bound by digest *before* it exists:
+  `result_approval.exact_tool_arguments.content_sha256` must equal what the
+  editor produces from the declared edits, and `revision.result_path_relative`
+  must equal the approved WRITE path. A mismatch is caught by the existing
+  stager guard (`"revision result bytes differ from the approved WRITE"`), so the
+  PC never writes bytes the owner did not approve.
+- Edits stay literal: `^[A-Z]{1,3}[1-9][0-9]{0,6}$` cells, no duplicates, values
+  limited to bounded strings or integers, a leading `=` refused, floats and
+  booleans refused. Paths stay relative to the selected root — no drive letter,
+  no leading backslash, no `..`, `.xlsx` only.
+- The envelope carries no credential, no absolute path, no capability grant. It
+  is *attested input* for the existing authority, exactly like the TXT receipt.
+- Unrecognized approval material is now refused outright instead of being
+  silently ignored (`"unsupported command approval receipt format"`), matching
+  what the control-plane validator already does, so a command cannot execute with
+  a receipt no validator admits.
+
+Route authority, as decided by CENTRAL and now enforced in code
+(`local_xlsx_python_copy_editor.py:245-252`): `classify_xlsx(local_only=True)`
+owns the route. REJECT is refused, `office_ephemeral_or_desktop_fallback` stays
+on the existing Office route, and only a Python-eligible workbook reaches the copy
+editor. Measured eligibility, reported separately as required:
+
+- openpyxl-authored workbooks — including plain ones with no merges — classify as
+  OFFICE_FALLBACK with `fidelity_sensitive_workbook_features`, because openpyxl
+  always writes `xl/styles.xml` and a theme, gives cells an `s` index and writes
+  `pageMargins`. Real Excel files add the same elements.
+- `BLOCKED_XML_TAGS` treats `f`, `mergeCells`, `pageMargins`, `pageSetup`,
+  `hyperlinks`, `autoFilter`, `sheetProtection`, `definedNames` and the rest as
+  fidelity-sensitive, and `xl/calcchain.xml`, `xl/styles.xml`, `xl/theme/theme1.xml`
+  as advanced parts by name. So the Python-eligible structure is genuinely narrow:
+  inline/numeric cells only, no styles part, no theme, no formula.
+- Consequence: a customer's ordinary .xlsx will be routed to the Office path. The
+  Python copy editor is a narrow fast path for simple generated sheets, and the
+  synthetic openpyxl runs recorded earlier in this document prove editor and
+  digest behaviour, not eligibility for the production Python route.
+- Refusing on the classifier is not redundant with the editor's own part and
+  formula checks: those stay as defence in depth, and the targeted tests pin that
+  a styled workbook the editor *could* copy byte-wise is still refused.
+
+The attestation order this contract forces (found while building the consumer,
+and it changes who must sign the write half):
+
+- `file_request_fingerprint` and `windows_file_tool_invocation` both bind
+  `content_bytes` and `content_sha256` (`windows_local_filesystem.py:165-199`).
+  The write half's `request_fingerprint` and `pause.invocation_sha256` therefore
+  cannot be computed until the revised bytes exist.
+- The revised bytes exist only after the PC has read the approved workcopy and
+  applied the reviewed edits. A browser cannot know the result digest of a file
+  that lives on a PC it has not sent yet.
+- So the accepted envelope's write half is attestable only by a **PC-side
+  production authority after the read**, not by the web in advance. The consumer
+  must therefore resolve the WRITE evidence lazily — the existing
+  `/v1/broker/p01-evidence` loopback route, keyed by the exact
+  `request_fingerprint` the lane computes, is the one that already does this
+  (browser.open and the resident execution lane both use it that way) — and the
+  READ half can still be delivered with the command, because a read binds no
+  content.
+- `TrustedP01XlsxRevisionPlan` as built in #5835 carries both halves up front,
+  which is exactly right for a test-owned producer and wrong for a lazy WRITE.
+  That is a change to my own modules, not to the accepted wire format: the plan
+  keeps the read half eagerly and lets the bridge serve the write evidence when
+  the P01 port asks for it by fingerprint, one-shot, after verifying the
+  recomputed invocation digest equals what the authority attested.
+
+Producer notes stay as recorded above, with the read half delivered through the
+existing command-material path and the write half attested locally:
+
+1. **Producer.** Nothing mints this format yet. The mint belongs on the Chat side
+   beside `connector_txt_approval_material.py`, and the control plane must admit
+   the new format in `local_agent_broker_material_store.py:252-295` (currently
+   two formats only). Consent must come from the *existing* owner WRITE approval
+   flow (`/quote-edit/request` → `/quote-edit/decision`, migration 034
+   `claw_web_xlsx_quote_write_pauses`), not from a server-invented pause: the
+   TXT lane's transcript model is defensible for reads only because it cannot
+   describe a write.
+2. **Consumer.** `verified_p01_xlsx_revision_plan_source.py` — build both
+   `LocalFileRequest`s from the envelope, recompute
+   `file_request_fingerprint` and `tool_invocation_digest`, bind
+   `command_id`/`request_id`/`run_id`/`device_id`/`root_ref` to the admitted
+   command, check expiry against the lane clock, and hand
+   `TrustedP01XlsxRevisionPlan` to the bridge that already exists. Its
+   `module:attribute` factory is then the value of
+   `PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE`, and `installed_runtime.py` gains a
+   reviewed pin.
+3. **Delivery of the payload.** The plan source signature receives
+   `(binding, command, receipt)`; the approval payload lives in resolved command
+   material (`local_agent_control_plane_channel.py:110` →
+   `ResolvedLocalCommandMaterial.approval_receipt`). The lane needs that resolved
+   material handed to it — either the host passes it at execution time, or the
+   source re-reads it through the existing authenticated `/material` device
+   route (`ControlPlaneHttpsOperation.MATERIAL`, already in the closed allowlist).
+   Both keep one authority; neither adds a route.
+
+Tests: `tests/test_4434_xlsx_revision_receipt_contract.py` (16) pins admitted and
+refused shapes with real workbook bytes and the real fingerprint function,
+including the shared-decision refusal, the under-declared edit refusal
+(`IndependentZipXlsxRevisionVerifier` returns `False`), and the fact that the
+shape layer admits bounded refs while correlation stays the plan source's job.
+Existing TXT material tests are unchanged (69 passed across the five suites).
+
+## Consumer, broker admission and the pin (2026-10-26, after the timing decision)
+
+The timing CENTRAL confirmed is implemented on both ends:
+
+- **Envelope** (`kagent/local_agent_command_material.py`) — `claw-xlsx-revision-approval.v1`
+  carries one approval (the READ) plus `{sheet_name, edits, result_path_relative,
+  write_action_id, write_requested_at}`. A write approval or a result digest on
+  this wire is refused as a schema error, not ignored: `file_request_fingerprint`
+  and `windows_file_tool_invocation` bind `content_bytes`/`content_sha256`, so any
+  digest asserted before the PC produced the bytes would be a web-supplied
+  fingerprint posed as a decision.
+- **Store boundary** (`packages/padiem-control-plane/local_agent_broker_material_store.py`)
+  — a third admitted format, `validate_xlsx_revision_receipt`, structural only and
+  bilateral by constants; a command whose receipt no validator admits is refused
+  rather than downgraded. `tests/test_4434_xlsx_revision_material_admission.py`
+  (23 cases) and the kagent parity test pin the shared names by reading the source,
+  because the two apps share no import surface.
+- **Consumer** (`kagent/verified_p01_xlsx_revision_plan_source.py`) —
+  `note_admitted()` registers and validates the envelope at admission, so malformed
+  revision material stops its command before `on_execution_start` instead of
+  executing and discovering the absence later. `approved_revision_plan()` recomputes
+  the read fingerprint and the invocation digest rather than trusting the received
+  ones, binds the envelope to the acknowledged command, and returns a plan.
+  `P01EvidenceWriteAttester` resolves the WRITE afterwards through the existing
+  authenticated `/v1/broker/p01-evidence` route with the same four correlation
+  facts the resident execution lane and browser.open send — no new route, endpoint,
+  store or authority. The answer must itself carry an approved user-confirmation
+  decision naming that invocation, under a matching `filesystem.write` permission
+  and a decision distinct from the read; unreachable, silent, incomplete, denied,
+  wrong-tool, wrong-fingerprint or already-spent answers all refuse.
+- **Lane order** (`local_resident_xlsx_revision_delivery.py`) —
+  `TrustedP01XlsxRevisionPlan` now holds the read attestation, the derived path and
+  the write action; `bridge.expect_write(request, now=)` is reached only after the
+  editor produced and the independent verifier accepted the bytes, and the file
+  authority commits afterwards. A refusal leaves the original and the derived copy
+  untouched and stages nothing: pinned by `test_a_refused_write_attestation_blocks_the_file_and_the_staging`,
+  `test_an_attestation_for_different_bytes_blocks_the_commit` and
+  `test_the_write_is_attested_only_after_the_result_bytes_exist`.
+- **Pin** — `installed_runtime.XLSX_REVISION_PLAN_SOURCE` names
+  `kagent.verified_p01_xlsx_revision_plan_source:make_p01_xlsx_revision_plan_source`.
+  The factory needs no path, credential or approval and reads no file; until a
+  producer mints an envelope no command carries one, so the lane remains inert.
+  `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays `False` for that reason.
+
+What still separates this from a working customer flow, in order:
+
+1. **Producer route.** Nothing mints the envelope. The TXT precedent shows the
+   shape (`connector_txt_read_routes.py` → `connector_txt_approval_material.py` →
+   dispatch), and its consent is an owner-authenticated, CSRF-checked web request
+   naming a path chosen from a ready listing. A revision needs the same owner-facing
+   step for *a file on the PC*: a bounded route that takes the selected workbook,
+   the worksheet and the literal edits, shows them to the signed-in owner, and mints
+   the read attestation from that decision. This is a new customer-facing consent
+   surface, so it is written as a separate PR rather than folded in here.
+2. **PC-side write consent.** The party answering `/v1/broker/p01-evidence` for the
+   write must be the one that can compute the same result bytes — that is the local
+   owner process, not the web. Its producer side is not in this repository's
+   Python tree, so its availability is an operational fact to confirm, not something
+   to assume from code that reads it.
+3. Chunk gate and device session (CENTRAL's).
+
+## Still not enabled, and who owns it
+
+| Item | State | Owner |
+|---|---|---|
+| Resident revision lane composition | consumer, deferred write attestation, Broker format admission and the installed pin are implemented on #5835; `RESIDENT_XLSX_REVISION_LANE_PRODUCTION_CONFIGURED` stays `False` because nothing mints an envelope yet, so no command carries one | LOCAL wrote it; CENTRAL reviews before merge |
+| Producer route that mints the envelope | missing. The shape to copy is `connector_txt_read_routes.py` → `connector_txt_approval_material.py` → dispatch: an owner-authenticated, CSRF-checked request naming a file chosen from a ready listing. A revision needs the same owner-facing step showing the worksheet and the literal edits before the read is attested | separate PR (Chat), with the owner's consent design |
+| Local authority answering `/v1/broker/p01-evidence` for a write | the consumer resolves through that existing route; the producer side of the route is not in this repository's Python tree, so whether a running owner process can answer for recomputable result bytes is an operational fact to confirm, not assumed | CENTRAL operational confirmation |
+| Broker staging gate `LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED` | unset in every environment; route answers `503 office_transfer_not_configured` | operator configuration, CENTRAL |
+| Web `claw_office_chooser_source` composition | no production implementation exists and `worker.py:1141` never passes it, so `/api/claw/office/candidates` answers 503 `office_chooser_unconfigured`. Its `select()` half can only be answered by whoever starts the Engine pause, so it belongs after the producer route above rather than being wired to a self-attesting reader | separate PR (Chat), sequenced behind the producer route |
+| Device row `ACTION_REQUIRED` / executor poll refusal | observed live on COM2 on 2026-10-25 | CENTRAL operational recovery (#5573) |
+| Full web -> PC -> web E2E with an approved write | not run; blocked by the rows above. The web routes were probed locally through the ASGI app and answer their bounded refusals without an authenticated device/owner session (`401 unauthorized`, `local_runner_result_forbidden`) | after the above clear, with the Owner performing the approval |

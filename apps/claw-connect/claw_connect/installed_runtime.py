@@ -14,6 +14,14 @@ REQUEST_PORT = "kagent.local_agent_broker_production_entry:make_production_reque
 VERIFIED_TEXT_PLAN_SOURCE = (
     "kagent.verified_engine_text_read_plan_source:make_verified_text_plan_source"
 )
+#: #4434: the reviewed P01 XLSX revision plan source. The name resolves inside the
+#: Resident to a module that attests the approved READ that rode the command and
+#: asks the existing canonical P01 evidence route for the WRITE once the result
+#: bytes exist; it mints no approval and reads no file itself. Until something
+#: mints the envelope, no command carries one and the lane stays off.
+XLSX_REVISION_PLAN_SOURCE = (
+    "kagent.verified_p01_xlsx_revision_plan_source:make_p01_xlsx_revision_plan_source"
+)
 
 
 def installed_resident_environ(
@@ -29,6 +37,8 @@ def installed_resident_environ(
     # This only loads the canonical parser of authenticated Broker material.
     # It cannot approve a path or read without that command's verified receipt.
     result["PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"] = VERIFIED_TEXT_PLAN_SOURCE
+    # This only names the reviewed plan source; it approves no file and reads none.
+    result["PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE"] = XLSX_REVISION_PLAN_SOURCE
     result["PADIEM_AGENT_CREDENTIAL_DIR"] = str(
         protected_credential_directory(state_dir)
     )

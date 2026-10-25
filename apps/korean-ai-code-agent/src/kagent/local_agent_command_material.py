@@ -217,6 +217,205 @@ def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
     return receipt
 
 
+#: #4434: the closed XLSX revision envelope carried with one command.
+#:
+#: It attests the half that can honestly be attested before the file is touched:
+#: the READ of the approved workcopy. The revision instruction itself (worksheet,
+#: literal edits, the derived result name and the write action the PC will name)
+#: travels beside it. The WRITE is *not* approved here — its request fingerprint
+#: and tool-invocation digest both bind the result bytes, and nobody but the PC
+#: can know those before it produces and independently verifies them. So the write
+#: half is attested separately, later, through the existing canonical P01 evidence
+#: route keyed by that exact fingerprint. Two independent P01 decisions remain in
+#: force; what is forbidden is elevating a locally produced or web-supplied
+#: fingerprint into an approval decision.
+#:
+#: Shape only, exactly as the TXT validator: digests, expiry against now, command
+#: correlation, edit legality and the one-shot use are the plan source's job.
+XLSX_REVISION_RECEIPT_FORMAT = "claw-xlsx-revision-approval.v1"
+XLSX_REVISION_READ_TOOL_ID = "local.filesystem.read"
+XLSX_REVISION_WRITE_TOOL_ID = "local.filesystem.write"
+XLSX_REVISION_READ_REQUIREMENT = "user_confirmation"
+XLSX_REVISION_WRITE_REQUIREMENT = "user_confirmation"
+XLSX_REVISION_OUTCOME = "approved"
+XLSX_REVISION_READ_SCOPE = ("filesystem.read",)
+XLSX_REVISION_WRITE_SCOPE = ("filesystem.write",)
+XLSX_REVISION_AUTHORITY_REF = "claw_connector_xlsx_revision_request_v1"
+XLSX_REVISION_POLICY_REF = "padiem_xlsx_selected_root_revision_policy_v1"
+XLSX_REVISION_SUFFIX = ".xlsx"
+XLSX_REVISION_EDIT_LIMIT = 64
+_XLSX_CELL_RE = re.compile(r"^[A-Z]{1,3}[1-9][0-9]{0,6}$")
+_XLSX_SHEET_RE = re.compile(r"^[^\\/:*?[\]]{1,31}$")
+_XLSX_RECEIPT_KEYS = frozenset({
+    "format", "evidence_ref", "command_id", "request_id", "local_policy_ref",
+    "expires_at", "source_approval", "revision",
+})
+_XLSX_APPROVAL_KEYS = frozenset({
+    "approval_pause", "approval_decision", "exact_tool_arguments",
+})
+_XLSX_REVISION_KEYS = frozenset({
+    "sheet_name", "edits", "result_path_relative", "write_action_id",
+    "write_requested_at",
+})
+_XLSX_EDIT_KEYS = frozenset({"cell", "previous_value", "replacement_value"})
+
+
+def _xlsx_relative_path(value: Any, field_name: str) -> str:
+    """The same selected-root discipline as TXT, for an exact .xlsx name."""
+
+    if not isinstance(value, str) or not value.strip() or len(value) > 1024:
+        raise ContractError(f"{field_name} must be a bounded relative Windows file path")
+    if value.strip() != value:
+        raise ContractError(f"{field_name} must not carry surrounding whitespace")
+    lowered = value.replace("/", "\\")
+    if lowered.startswith("\\") or (len(lowered) >= 2 and lowered[1] == ":"):
+        raise ContractError(f"{field_name} must remain inside the selected root")
+    if any(part == ".." for part in lowered.replace("\\", "/").split("/")):
+        raise ContractError(f"{field_name} traversal is not allowed")
+    if not lowered.lower().endswith(XLSX_REVISION_SUFFIX):
+        raise ContractError(f"{field_name} must name an exact XLSX file")
+    return value
+
+
+def _xlsx_approval(value: Any, *, run_id: str, device_id: str,
+                   root_ref: str) -> dict[str, Any]:
+    """Validate the READ pause/decision/arguments triple the envelope attests."""
+
+    side = "source"
+    if type(value) is not dict or frozenset(value) != _XLSX_APPROVAL_KEYS:
+        raise ContractError(f"XLSX {side} approval schema mismatch")
+    tool_id = XLSX_REVISION_READ_TOOL_ID
+    scope = XLSX_REVISION_READ_SCOPE
+    operation = "read"
+    pause = value["approval_pause"]
+    if type(pause) is not dict or frozenset(pause) != _TXT_PAUSE_KEYS:
+        raise ContractError(f"XLSX {side} approval pause schema mismatch")
+    for field_name in ("pause_id", "run_id", "agent_runtime_id"):
+        _ref(pause[field_name], f"{side}.pause.{field_name}")
+    if pause["tool_id"] != tool_id:
+        raise ContractError(f"XLSX {side} approval pause tool mismatch")
+    _digest(pause["invocation_sha256"], f"{side}.pause.invocation_sha256")
+    if pause["requirement"] != XLSX_REVISION_READ_REQUIREMENT:
+        raise ContractError(f"XLSX {side} approval pause requirement mismatch")
+    if type(pause["step_index"]) is not int or not 1 <= pause["step_index"] <= 64:
+        raise ContractError(f"XLSX {side} approval pause step_index out of range")
+    _txt_iso_text(pause["created_at"], f"{side}.pause.created_at")
+    _txt_iso_text(pause["expires_at"], f"{side}.pause.expires_at")
+    if (not isinstance(pause["approval_scope"], list)
+            or tuple(pause["approval_scope"]) != scope):
+        raise ContractError(f"XLSX {side} approval pause scope mismatch")
+    decision = value["approval_decision"]
+    if type(decision) is not dict or frozenset(decision) != _TXT_DECISION_KEYS:
+        raise ContractError(f"XLSX {side} approval decision schema mismatch")
+    _ref(decision["decision_id"], f"{side}.decision.decision_id")
+    if decision["pause_id"] != pause["pause_id"]:
+        raise ContractError(f"XLSX {side} approval decision does not belong to the pause")
+    if decision["outcome"] != XLSX_REVISION_OUTCOME:
+        raise ContractError(f"XLSX {side} approval decision outcome mismatch")
+    if decision["authority_ref"] != XLSX_REVISION_AUTHORITY_REF:
+        raise ContractError(f"XLSX {side} approval decision authority mismatch")
+    _ref(decision["evidence_ref"], f"{side}.decision.evidence_ref")
+    _txt_iso_text(decision["decided_at"], f"{side}.decision.decided_at")
+    created = datetime.fromisoformat(pause["created_at"].replace("Z", "+00:00"))
+    expires = datetime.fromisoformat(pause["expires_at"].replace("Z", "+00:00"))
+    decided = datetime.fromisoformat(decision["decided_at"].replace("Z", "+00:00"))
+    if not created < expires:
+        raise ContractError(f"XLSX {side} approval pause window is empty")
+    if not created <= decided <= expires:
+        raise ContractError(f"XLSX {side} approval decision is outside the pause window")
+
+    args = value["exact_tool_arguments"]
+    if type(args) is not dict or frozenset(args) != _TXT_ARG_KEYS:
+        raise ContractError(f"XLSX {side} approval arguments schema mismatch")
+    for field_name in ("action_id", "run_id", "device_id", "root_ref"):
+        _ref(args[field_name], f"{side}.args.{field_name}")
+    if args["run_id"] != run_id or args["device_id"] != device_id:
+        raise ContractError(f"XLSX {side} approval arguments belong to another run or device")
+    if args["root_ref"] != root_ref:
+        raise ContractError(f"XLSX {side} approval arguments belong to another selected root")
+    if args["operation"] != operation:
+        raise ContractError(f"XLSX {side} approval arguments operation mismatch")
+    _xlsx_relative_path(args["path_relative"], f"{side}.args.path_relative")
+    _txt_iso_text(args["requested_at"], f"{side}.args.requested_at")
+    _digest(args["request_fingerprint"], f"{side}.args.request_fingerprint")
+    # A pre-read intent carries no content, exactly as the TXT envelope. The
+    # write half is absent by design: its digest cannot exist yet.
+    if type(args["content_bytes"]) is not int or args["content_bytes"] != 0:
+        raise ContractError("XLSX source approval arguments must describe a pre-read intent")
+    if args["content_sha256"] is not None:
+        raise ContractError("XLSX source approval arguments must describe a pre-read intent")
+    for flag in ("directory_enumeration", "recursive_delete", "admin_elevation"):
+        if args[flag] is not False:
+            raise ContractError(f"XLSX {side} approval arguments {flag} must be false")
+    return value
+
+
+def validate_xlsx_revision_receipt(value: Any) -> dict[str, Any]:
+    """Admit the closed XLSX revision envelope shape; grant nothing."""
+
+    if type(value) is not dict or frozenset(value) != _XLSX_RECEIPT_KEYS:
+        raise ContractError("XLSX revision receipt schema mismatch")
+    receipt = value
+    if receipt["format"] != XLSX_REVISION_RECEIPT_FORMAT:
+        raise ContractError("XLSX revision receipt format mismatch")
+    _ref(receipt["evidence_ref"], "receipt.evidence_ref")
+    _ref(receipt["command_id"], "receipt.command_id")
+    _ref(receipt["request_id"], "receipt.request_id")
+    if receipt["local_policy_ref"] != XLSX_REVISION_POLICY_REF:
+        raise ContractError("XLSX revision receipt policy mismatch")
+    _txt_iso_text(receipt["expires_at"], "receipt.expires_at")
+
+    source = receipt["source_approval"]
+    if type(source) is not dict or frozenset(source) != _XLSX_APPROVAL_KEYS:
+        raise ContractError("XLSX revision source approval schema mismatch")
+    source_args = source["exact_tool_arguments"]
+    if type(source_args) is not dict or frozenset(source_args) != _TXT_ARG_KEYS:
+        raise ContractError("XLSX revision approval arguments schema mismatch")
+    for field_name in ("run_id", "device_id", "root_ref"):
+        _ref(source_args[field_name], f"source.args.{field_name}")
+    _xlsx_approval(source, run_id=source_args["run_id"],
+                   device_id=source_args["device_id"], root_ref=source_args["root_ref"])
+
+    revision = receipt["revision"]
+    if type(revision) is not dict or frozenset(revision) != _XLSX_REVISION_KEYS:
+        raise ContractError("XLSX revision instruction schema mismatch")
+    sheet = revision["sheet_name"]
+    if (not isinstance(sheet, str) or not _XLSX_SHEET_RE.fullmatch(sheet)
+            or sheet.strip() != sheet):
+        raise ContractError("revision.sheet_name must be a bounded worksheet name")
+    _xlsx_relative_path(revision["result_path_relative"], "revision.result_path_relative")
+    # The write action the PC will name when it asks the canonical evidence route.
+    # It is an identifier, never an approval: approval arrives with the envelope
+    # that route returns for the exact write request fingerprint.
+    _ref(revision["write_action_id"], "revision.write_action_id")
+    if revision["write_action_id"] == source_args["action_id"]:
+        raise ContractError("XLSX revision read and write must be distinct actions")
+    _txt_iso_text(revision["write_requested_at"], "revision.write_requested_at")
+    edits = revision["edits"]
+    if (not isinstance(edits, list) or not 1 <= len(edits) <= XLSX_REVISION_EDIT_LIMIT):
+        raise ContractError("revision.edits must be a bounded non-empty list")
+    seen_cells: set[str] = set()
+    for index, item in enumerate(edits):
+        if type(item) is not dict or frozenset(item) != _XLSX_EDIT_KEYS:
+            raise ContractError(f"revision.edits[{index}] schema mismatch")
+        cell = item["cell"]
+        if not isinstance(cell, str) or not _XLSX_CELL_RE.fullmatch(cell):
+            raise ContractError(f"revision.edits[{index}].cell is not an A1 reference")
+        if cell in seen_cells:
+            raise ContractError(f"revision.edits[{index}].cell is repeated")
+        seen_cells.add(cell)
+        for field_name in ("previous_value", "replacement_value"):
+            literal = item[field_name]
+            if isinstance(literal, bool) or not isinstance(literal, (str, int)):
+                raise ContractError(
+                    f"revision.edits[{index}].{field_name} must be a literal string or integer")
+            if isinstance(literal, str) and (not literal or len(literal) > 4096
+                                             or literal.startswith("=")):
+                raise ContractError(
+                    f"revision.edits[{index}].{field_name} is not a bounded literal value")
+    return receipt
+
+
 def _closed_mapping(payload: Any, expected: frozenset[str], label: str) -> dict[str, Any]:
     if type(payload) is not dict:
         raise ContractError(f"{label} must be a plain mapping")
@@ -452,17 +651,31 @@ def parse_command_material_wire_projection(
     _require_false(material, "admin_elevation")
     for field_name in ("environment_payload", "provider_authority"):
         _require_none(material, field_name)
-    # #4139: the material may carry one closed TXT approval receipt, minted
-    # by the Chat worker from the authenticated owner request and persisted
-    # atomically with this command. Absent for every other command. Shape is
-    # admitted here; digests, expiry, correlation and one-shot use are
-    # verified by the plan source before any READ.
+    # #4139: the material may carry one closed approval receipt, minted by the
+    # Chat worker from the authenticated owner request and persisted atomically
+    # with this command. Absent for every other command. Shape is admitted here;
+    # digests, expiry, correlation and one-shot use are verified by the plan
+    # source before any file access. #4434 adds the second admitted format.
     approval_payload = material["p01_approval_payload"]
     approval_receipt: Any | None = None
+    receipt_args: dict[str, Any] | None = None
     if approval_payload is not None:
-        approval_receipt = validate_txt_approval_receipt(approval_payload)
+        if (type(approval_payload) is dict
+                and approval_payload.get("format") == XLSX_REVISION_RECEIPT_FORMAT):
+            approval_receipt = validate_xlsx_revision_receipt(approval_payload)
+            receipt_args = approval_receipt["source_approval"]["exact_tool_arguments"]
+            label = "XLSX revision"
+        elif (type(approval_payload) is dict
+                and approval_payload.get("format") == TXT_RECEIPT_FORMAT):
+            approval_receipt = validate_txt_approval_receipt(approval_payload)
+            receipt_args = approval_receipt["exact_tool_arguments"]
+            label = "TXT"
+        else:
+            # Unrecognized approval material is refused, never downgraded: a
+            # command cannot execute with a receipt no validator admits.
+            raise ContractError("unsupported command approval receipt format")
         if approval_receipt["command_id"] != command.command_id:
-            raise ContractError("TXT approval receipt does not belong to this command")
+            raise ContractError(f"{label} approval receipt does not belong to this command")
 
     argv = material["argv"]
     if type(argv) is not list:
@@ -495,15 +708,14 @@ def parse_command_material_wire_projection(
         raise ContractError("command material recomputed request fingerprint mismatch")
 
     if approval_receipt is not None:
-        receipt_args = approval_receipt["exact_tool_arguments"]
         if receipt_args["run_id"] != local_request.run_id:
-            raise ContractError("TXT approval receipt run does not match the material")
+            raise ContractError("approval receipt run does not match the material")
         if receipt_args["device_id"] != local_request.device_id:
-            raise ContractError("TXT approval receipt device does not match the material")
+            raise ContractError("approval receipt device does not match the material")
         if receipt_args["root_ref"] != local_request.root_ref:
-            raise ContractError("TXT approval receipt root does not match the material")
+            raise ContractError("approval receipt root does not match the material")
         if approval_receipt["request_id"] != local_request.request_id:
-            raise ContractError("TXT approval receipt request does not match the material")
+            raise ContractError("approval receipt request does not match the material")
 
     return ResolvedLocalCommandMaterial(
         command_id=command.command_id,
