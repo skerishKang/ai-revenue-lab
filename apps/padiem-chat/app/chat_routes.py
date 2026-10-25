@@ -9,6 +9,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 
 from .attachments import ImageAttachment
+from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import AutoGroundingService, auto_grounding_may_continue
@@ -771,23 +772,10 @@ async def api_chat_stream(request: Request):
     )
 
 
-def _decode_completed_binary_attachment(body: bytes) -> dict[str, Any]:
-    """One bounded binary original plus JSON request metadata; no browser Base64."""
-    if len(body) < 6:
-        raise ValueError("invalid binary attachment frame")
-    header_size = int.from_bytes(body[:4], "big")
-    if not 0 < header_size <= 65536 or len(body) <= 4 + header_size:
-        raise ValueError("invalid binary attachment frame")
-    raw = json.loads(body[4:4 + header_size].decode("utf-8"))
-    if not isinstance(raw, dict) or not isinstance(raw.get("attachments"), list) or len(raw["attachments"]) != 1:
-        raise ValueError("invalid binary attachment metadata")
-    item = raw["attachments"][0]
-    if not isinstance(item, dict) or set(item) != {"type", "name", "media_type"}:
-        raise ValueError("invalid binary attachment metadata")
-    if item["type"] not in ("image", "document"):
-        raise ValueError("invalid binary attachment type")
-    item["raw_bytes"] = body[4 + header_size:]
-    return raw
+# #2505: the frame decoder moved to ``app/binary_attachment_frame.py`` so the
+# Claw lane reads the same bytes. The module-level alias keeps every existing
+# Chat import (and its test) working unchanged.
+_decode_completed_binary_attachment = decode_binary_attachment_frame
 
 
 async def api_chat(request: Request) -> JSONResponse:

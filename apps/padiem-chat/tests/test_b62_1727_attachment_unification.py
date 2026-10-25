@@ -61,7 +61,9 @@ def test_binary_attachment_payload_uses_existing_completed_chat_path():
     assert 'media_type: attachment.mediaType, file: attachment.file' in APP_JS
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
-    assert "if (attachments) {" in APP_JS
+    # #2505: the Chat completed-attachment path is unchanged for Chat; the same
+    # guard now also keeps a Claw attachment on its own P01 lane.
+    assert "if (attachments && !clawGeneralRequest) {" in APP_JS
     # Success recording for one-click regenerate keeps the same dispatch
     # shape: completed JSON for attachments, streaming otherwise.
     assert "await requestCompletedAnswer(" in APP_JS
