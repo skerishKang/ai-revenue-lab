@@ -13,6 +13,13 @@ import {
   renderAdClickFirstBrowseWeb,
   renderAdClickFirstOpportunityDetailWeb,
 } from '../ad-click-first/consumer-web.js';
+import {
+  buildIncomePipelineViewModel,
+  renderIncomePipelineWeb,
+} from '../income-pipeline/consumer-view.js';
+import type { UserIncomeRecord, UserIncomeLoader } from '../income-pipeline/domain.js';
+import type { IncomePipelineStatus } from '../income-pipeline/domain.js';
+
 import type { PublicOpportunity, PublicOpportunityLoader } from '../public-supply/domain.js';
 import { loadVerifiedPublicOpportunities } from '../public-supply/verified-public-opportunities.js';
 
@@ -28,6 +35,11 @@ export interface ConsumerHttpDependencies {
    * official provider pages and pays PADIEM nothing.
    */
   readonly loadPublicOpportunities?: PublicOpportunityLoader;
+  /**
+   * Optional income-pipeline lane: user income tracking records.
+   * Requires a userId for user isolation. Returns empty when no user is identified.
+   */
+  readonly loadIncomeRecords?: UserIncomeLoader;
 }
 
 const SECURITY_HEADERS = Object.freeze({
@@ -125,7 +137,7 @@ export function createConsumerHttpHandler(
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail) {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return notFound(request);
     }
 
@@ -192,9 +204,33 @@ export function createConsumerHttpHandler(
       });
     }
 
+    if (url.pathname === '/pipeline' || url.pathname === '/income') {
+      const userId = url.searchParams.get('user');
+      let records: readonly UserIncomeRecord[] = [];
+      if (dependencies.loadIncomeRecords) {
+        try {
+          records = await dependencies.loadIncomeRecords(request, userId);
+        } catch {
+          return supplyUnavailable(request);
+        }
+      }
+      const filterStatus = url.searchParams.get('status') as IncomePipelineStatus | null;
+      const filterVendor = url.searchParams.get('vendor');
+      const pipelineViewModel = buildIncomePipelineViewModel({
+        userId,
+        records,
+        filters: { status: filterStatus, vendor: filterVendor },
+        availableOpportunities: publicOpportunities,
+      });
+      const html = renderIncomePipelineWeb(pipelineViewModel);
+      return responseForMethod(request, html, {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
+
     const homeViewModel = buildAdClickFirstConsumerHome(candidates);
     const html = renderAdClickFirstConsumerWeb(homeViewModel);
-
     return responseForMethod(request, html, {
       status: 200,
       headers: { 'content-type': 'text/html; charset=utf-8' },
