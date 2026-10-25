@@ -1888,12 +1888,12 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
         assert "reason=KeyError" in output
 
 
-@pytest.mark.parametrize("argument_form", ["missing", "empty_object"])
+@pytest.mark.parametrize("argument_form", ["missing", "none", "empty_object"])
 @pytest.mark.parametrize("step_failure", [False, True])
 @pytest.mark.parametrize("decision_source", ["native", "model_step"])
 @pytest.mark.asyncio
 async def test_drives_decision_invokes_real_handler_and_finishes(
-    monkeypatch, argument_form, decision_source, step_failure,
+    monkeypatch, capsys, argument_form, decision_source, step_failure,
 ):
     """Real PC turn/Core/step driver; only model answers and Chat are fakes.
 
@@ -1940,8 +1940,8 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
     class Native:
         async def stream(self, request):
             function = {"name": "query_drives"}
-            if argument_form == "empty_object":
-                function["arguments"] = "{}"
+            if argument_form != "missing":
+                function["arguments"] = None if argument_form == "none" else "{}"
             call, = parse_tool_calls([{"id": "drive_call", "function": function}])
             route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
             yield B14StreamEvent(tool_call=B14StreamToolCall(
@@ -1951,16 +1951,23 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
             return self.stream(request)
 
     decision = {"action": "tool", "tool_id": "claw.pc.query_drives"}
-    if argument_form == "empty_object":
-        decision["arguments"] = {}
+    if argument_form != "missing":
+        decision["arguments"] = None if argument_form == "none" else {}
     answers = [json.dumps({"action": "complete", "answer": "drive C"})]
     if decision_source == "model_step":
         answers.insert(0, json.dumps(decision))
-    model = _ScriptedModel(answers)
+    class Model(_ScriptedModel):
+        async def execute(self, request):
+            if decision_source == "native":
+                assert len([c for c in calls if c["mode"] == "dispatch"]) == 1
+            return await super().execute(request)
+    model = Model(answers)
     pc = PC()
     binding = driver.build_chat_pc_query_tool_binding(
         service=pc, request_factory=_Request, secret=SIGNING_SECRET)
+    initial_decisions = []
     def factory(model_id, model_policy, task_type, optimize_for, **options):
+        initial_decisions.append(options.get("initial_decision"))
         built = driver.build_live_pc_query_driver(
             b14_client=model, model_id=model_id, model_policy=model_policy,
             task_type=task_type, optimize_for=optimize_for, service=pc,
@@ -1984,6 +1991,12 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
         pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(
             app_id=app, b14_stream_client=Native()), pc_tools_capability=capable,
         tool_binding_resolver=lambda _: binding, pc_query_step_driver_factory=factory)
+    attachments = []
+    attach = service._attach_pc_query_step_driver
+    def observe_attach(**options):
+        attachments.append(options.get("initial_decision"))
+        return attach(**options)
+    monkeypatch.setattr(service, "_attach_pc_query_step_driver", observe_attach)
     payload = _pc_turn_payload()
     payload["pc_tools"]["allowed_scopes"] = ["query_drives"]
     if decision_source == "model_step":
@@ -1998,6 +2011,18 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
     assert prepared.pc_turn
     records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
     diagnostic = "\n".join(failures) or repr(records)
+    output = capsys.readouterr().out
+    if decision_source == "native":
+        expected_initial = {"action": "tool", "tool_id": "claw.pc.query_drives", "arguments": {}}
+        assert attachments == initial_decisions == [expected_initial]
+        assert output.count("pc_step_select source=initial") == 1
+        assert output.index("pc_step_select source=initial") < output.index("pc_tool_invoke tool=claw.pc.query_drives")
+        assert output.index("pc_tool_invoke tool=claw.pc.query_drives") < output.index("pc_step_model_call stage=start")
+    else:
+        assert attachments == initial_decisions == [None]
+        assert "pc_step_select source=initial" not in output
+    assert "pc_step_select source=model" in output
+    assert "pc_step_model_call stage=done status=ok" in output
     if step_failure:
         assert len(failures) == 1 and "KeyError: 'synthetic_step_failure'" in diagnostic
         assert "claw_pc_query_step_driver.py" in diagnostic and "_model_step_payload(answer)" in diagnostic

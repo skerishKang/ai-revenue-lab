@@ -22,6 +22,7 @@ re-exported so every existing import path keeps working unchanged.
 from __future__ import annotations
 
 from contextvars import ContextVar
+import asyncio
 import hashlib
 import hmac
 import json
@@ -741,7 +742,10 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             first_decisions.clear()
             observations = tuple(observations) + (refusal,)
         if first_decisions:
+            print("pc_step_select source=initial", flush=True)
             return first_decisions.pop()
+        print("pc_step_select source=model", flush=True)
+        from padiem_ai_core.b14_execution import B14ExecutionError
         from padiem_ai_core.b14_execution import B14RoutingOptions
         from padiem_ai_core.b14_execution import B14ChatRequest
         pc_context = await _pc_context_text()
@@ -802,15 +806,27 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
                 max_retries=model_policy.get("max_retries") if model_policy else None,
                 task_type=task_type, optimize_for=optimize_for))
+        print("pc_step_model_call stage=start", flush=True)
         try:
             response = await b14_client.execute(request)
+        except asyncio.CancelledError:
+            print("pc_step_model_call stage=done status=cancelled", flush=True)
+            raise
         except Exception as exc:
+            # The parsed success object has no HTTP status; "ok" below means
+            # execute returned. Only the typed error's bounded HTTP code may
+            # enter this log. Never stringify model output or exception text.
+            status = exc.upstream_status_code if isinstance(exc, B14ExecutionError) else None
+            print("pc_step_model_call stage=done status=%s" % (
+                status if isinstance(status, int) and not isinstance(status, bool)
+                and 100 <= status <= 599 else "error"), flush=True)
             # #5015: a model-call failure is its own step detail. The provider
             # policy (routing, retries, fallback) is unchanged and the original
             # exception is not chained past this boundary.
             raise PCQueryStepError(
                 "model call failed", detail="model_call_failed",
             ) from exc
+        print("pc_step_model_call stage=done status=ok", flush=True)
         answer = getattr(response, "answer", None)
         if not isinstance(answer, str):
             raise PCQueryStepError(
