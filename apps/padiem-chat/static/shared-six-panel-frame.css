@@ -107,7 +107,7 @@ html[data-theme="padiem-glass"] body .app-shell {
 }
   /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
    * one token, minus the 6px the page header box adds above its first line, so the
-   * brand line lands on the same row as the hero at any viewport height. The
+   * brand line lands on the same row as the hero at desktop viewport heights
    * previous copy of the inset here matched only one height. */
   html[data-theme="padiem-glass"] body .app-shell :is(
     .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view
