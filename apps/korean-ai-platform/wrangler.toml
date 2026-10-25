@@ -6,6 +6,7 @@ preserve_file_names = true
 
 compatibility_date = "2026-07-25"
 compatibility_flags = ["python_workers"]
+workers_dev = true
 
 # #5318: durable B14 model-call ledger. Application code never creates or
 # mutates this schema; the 0001 migration is applied by the D1 provision gate.
@@ -14,8 +15,6 @@ compatibility_flags = ["python_workers"]
 binding = "B14_CALL_LEDGER_D1"
 database_name = "padiem-b14-call-ledger"
 database_id = "a40e2601-59d9-4a46-b19f-c7d296e39cba"
-
-workers_dev = true
 
 # #3554 owner-approved B14 504 forensics (2026-10-10): persist bounded Worker
 # invocation logs, safe provider timeout phase and overall gateway deadline.
