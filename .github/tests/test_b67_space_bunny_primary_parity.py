@@ -118,21 +118,23 @@ def test_legacy_tier_registry_keeps_the_plus_hold_and_space_bunny_data_only() ->
     assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
 
 
-def test_live_product_tier_contract_is_active_only_without_the_legacy_plus_hold() -> None:
+def test_live_product_tier_contract_uses_google_and_holds_muse_without_the_legacy_plus_hold() -> None:
     """The live route contract carries the owner-decided routes only.
 
-    #5009 / #5218: one EXECUTABLE route per tier (Free Google, paid tiers
-    Muse). The successor-pending Plus hold route and the superseded Space
+    Owner decision 2026-10-25: one executable Google route per tier with
+    Muse held as data. The successor-pending Plus hold and superseded Space
     Bunny / Agnes routes are not live routes and must not reappear in the
     route table.
     """
     text = PRODUCT_TIERS.read_text(encoding="utf-8")
 
-    # The owner-decided paid-tier route is executable and explicit.
-    assert 'route_id=f"{label.value.split()[-1].lower()}.muse-spark.v1"' in text
-    assert "model_id=MUSE_B14_MODEL_ID" in text
-    assert 'provider_id="opencode-go"' in text
-    assert 'evidence="Owner Plus/Pro/Max Muse primary decision #5009."' in text
+    # The owner-decided Google route is explicit; Muse is preserved as HOLD.
+    assert 'route_id=f"{tier}.gemini-3.5-flash-lite.v1"' in text
+    assert "model_id=TEST_PHASE_PRIMARY_B14_MODEL_ID" in text
+    assert 'provider_id="google"' in text
+    assert 'evidence="Owner test-phase Google primary decision 2026-10-25."' in text
+    assert "MUSE_ROUTE_STATUS = ProductRouteStatus.HOLD_AS_DATA_ONLY" in text
+    assert "status=MUSE_ROUTE_STATUS" in text
 
     # The historical HOLD identity survives as an identity marker only, and
     # the data-only status is still part of the contract vocabulary.
