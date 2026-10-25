@@ -658,25 +658,27 @@ def test_ooxml_backslash_member_guard_is_actually_executed() -> None:
         assert path_error.value.code == "ooxml_unsafe_path"
 
 
-def test_ooxml_entry_count_and_uncompressed_bounds_fail_closed() -> None:
-    entries = {f"safe/{index}.xml": b"x" for index in range(MAX_OOXML_ENTRIES + 1)}
-    with pytest.raises(DocumentNormalizationError) as count:
-        validate_ooxml_archive(_zip_bytes(entries))
-    assert count.value.code == "ooxml_entry_count"
+def test_a_normal_large_or_many_member_archive_is_no_longer_refused_for_size() -> None:
+    """#5573: entry count and member bytes are capacity, not integrity.
 
-    oversized = _zip_bytes({"oversized.bin": b"x" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)})
-    with pytest.raises(DocumentNormalizationError) as entry:
-        validate_ooxml_archive(oversized)
-    assert entry.value.code == "ooxml_entry_size"
+    A workbook with many parts, and a part far bigger than the old 1MiB bound,
+    are ordinary documents. The shape that must still be refused is a
+    decompression bomb: content that claims to expand enormously relative to
+    the bytes actually handed over.
+    """
 
-    chunk = b"x" * MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-    total_entries = {
-        f"safe/{index}.bin": chunk
-        for index in range((MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES // MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES) + 1)
-    }
-    with pytest.raises(DocumentNormalizationError) as total:
-        validate_ooxml_archive(_zip_bytes(total_entries))
-    assert total.value.code == "ooxml_total_size"
+    many = {f"safe/{index}.xml": b"<a/>" for index in range(MAX_OOXML_ENTRIES * 4)}
+    validate_ooxml_archive(_zip_bytes(many))
+
+    big = _zip_bytes({"big.bin": b"abcdefgh" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES)})
+    validate_ooxml_archive(big)
+
+    # 4MiB of one repeated byte stores to a few kilobytes: that is the
+    # amplification the guard exists for, and nothing about it is a size limit.
+    bomb = _zip_bytes({"bomb.bin": bytes(4 * 1024 * 1024)})
+    with pytest.raises(DocumentNormalizationError) as inflated:
+        validate_ooxml_archive(bomb)
+    assert inflated.value.code == "ooxml_total_inflation"
 
 
 def test_xlsx_extracts_values_and_archive_dtd_is_rejected_before_openpyxl() -> None:
