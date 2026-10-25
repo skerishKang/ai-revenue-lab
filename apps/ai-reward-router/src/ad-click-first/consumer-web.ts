@@ -7,6 +7,19 @@ import type {
 import type { AdClickConsumerCard } from './consumer-card.js';
 import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
 import { koreaEligibilityLabel, publicRewardNote } from '../public-supply/domain.js';
+import {
+  THEME_CSS_TOGGLE,
+  THEME_CSS_VARIABLES,
+  renderThemeToggleButton,
+  type B64Theme,
+} from '../ui/theme.js';
+
+export interface ConsumerRenderTheme {
+  /** Active theme; defaults to Light (first visit). */
+  readonly theme?: B64Theme;
+  /** Toggle-link target for THIS route (path + query with theme=toggle). */
+  readonly themeToggleHref?: string;
+}
 
 const ACTION_LABELS: Readonly<Record<AdClickConsumerCard['actionKind'], string>> = Object.freeze({
   AD_VIEW: '광고 보기',
@@ -235,43 +248,25 @@ function renderShell(
   hero: string,
   content: string,
   options: { howItWorks?: boolean } = {},
+  themeInfo: ConsumerRenderTheme = {},
 ): string {
+  const theme = themeInfo.theme ?? 'light';
+  const toggleHref = themeInfo.themeToggleHref ?? '/?theme=toggle';
+  const toggleButton = renderThemeToggleButton(theme, toggleHref);
   return `<!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="${theme}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="color-scheme" content="${theme}" />
   <title>AI Reward Router | PADIEM</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #06080d;
-      --bg-soft: #0b0f16;
-      --surface: rgba(255,255,255,.055);
-      --surface-strong: rgba(255,255,255,.105);
-      --line: rgba(255,255,255,.14);
-      --line-soft: rgba(255,255,255,.09);
-      --text: #f4f6fb;
-      --muted: rgba(255,255,255,.68);
-      --faint: rgba(255,255,255,.45);
-      --accent: #88c9ff;
-      --accent-strong: #5fb3ff;
-      --accent-dim: rgba(136,201,255,.14);
-      --gold: #efc984;
-      --radius-card: 16px;
-      --radius-btn: 10px;
-      --pad: clamp(16px, 4vw, 64px);
-      font-family: "SUIT Variable", "SUIT", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
-      font-synthesis: none;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-    }
+${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-width: 320px;
-      background: radial-gradient(1100px 480px at 50% -120px, rgba(136,201,255,.075), transparent 62%) var(--bg);
+      background: var(--bg-glow) var(--bg);
       color: var(--text);
     }
     a { color: inherit; text-decoration: none; }
@@ -281,16 +276,17 @@ function renderShell(
     .topbar {
       position: sticky; top: 0; z-index: 10;
       margin: 0 calc(var(--pad) * -1); padding: 10px var(--pad) 8px;
-      background: rgba(6,8,13,.78); backdrop-filter: blur(16px);
+      background: var(--topbar-bg); backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--line-soft);
     }
     .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; }
     .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: .16em; }
-    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: drop-shadow(0 0 12px rgba(136,201,255,.25)); }
+    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: var(--brand-glow); }
     .brand-wordmark { line-height: 1; }
     .brand-divider { width: 1px; height: 14px; background: var(--line); flex: 0 0 auto; }
     .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
     .trust-note { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; }
+${THEME_CSS_TOGGLE}
 
     .primary-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; width: 100%; order: 3; padding: 8px 0 2px; }
     .primary-nav::-webkit-scrollbar { display: none; }
@@ -318,7 +314,7 @@ function renderShell(
     .cta-link:hover { text-decoration: underline; }
     .home-actions { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 10px; }
     .home-cta { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-btn); font-size: 15px; font-weight: 700; letter-spacing: -.01em; transition: background .16s ease, transform .16s ease; }
-    .home-cta--primary { background: var(--accent); color: #06080d; }
+    .home-cta--primary { background: var(--accent); color: var(--on-accent); }
     .home-cta--secondary { background: var(--surface); border: 1px solid var(--line); color: var(--text); }
     .home-cta--primary:hover { background: var(--accent-strong); }
     .home-cta--secondary:hover { background: var(--surface-strong); }
@@ -330,13 +326,13 @@ function renderShell(
     .reward-card {
       display: flex; flex-direction: column;
       padding: 18px; border: 1px solid var(--line-soft); border-radius: var(--radius-card);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045));
+      background: var(--card-bg);
       transition: border-color .16s ease, transform .16s ease;
     }
-    .reward-card:hover { border-color: rgba(136,201,255,.38); transform: translateY(-2px); }
+    .reward-card:hover { border-color: var(--accent-border-hover); transform: translateY(-2px); }
     .reward-card__topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .action-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid rgba(136,201,255,.25); }
-    .action-chip--public { background: rgba(239,201,132,.14); color: var(--gold); border: 1px solid rgba(239,201,132,.32); }
+    .action-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid var(--accent-border); }
+    .action-chip--public { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
     .tier-chip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
     .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
@@ -355,7 +351,7 @@ function renderShell(
     .meta-dot { color: var(--faint); }
     .reward-cta {
       display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px;
-      border-radius: var(--radius-btn); background: var(--accent); color: #06080d;
+      border-radius: var(--radius-btn); background: var(--accent); color: var(--on-accent);
       font-size: 14px; font-weight: 700; letter-spacing: -.01em;
       transition: background .16s ease, transform .16s ease;
       margin-top: auto;
@@ -368,10 +364,10 @@ function renderShell(
     .empty-state {
       display: grid; justify-items: center;
       padding: 44px 24px; border: 1px solid var(--line-soft); border-radius: var(--radius-card);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      background: var(--card-bg);
       text-align: center;
     }
-    .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(136,201,255,.22); color: var(--accent); }
+    .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
     .empty-state__mark-svg { width: 28px; height: 28px; }
     .empty-state h3 { margin: 16px 0 8px; font-size: 17px; letter-spacing: -.02em; font-weight: 650; }
     .empty-state p { margin: 0; max-width: 380px; color: var(--muted); font-size: 14px; line-height: 1.6; }
@@ -401,7 +397,7 @@ function renderShell(
     .filter-bar select { height: 44px; }
     .filter-bar button {
       grid-column: 1 / -1; min-height: 46px; padding: 0 22px; border-radius: var(--radius-btn);
-      border: 1px solid var(--accent); background: var(--accent); color: #06080d;
+      border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent);
       font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: -.01em;
       transition: background .16s ease;
     }
@@ -425,7 +421,7 @@ function renderShell(
     .back-link { display: inline-flex; align-items: center; gap: 6px; margin: 18px 0 0; font-size: 13px; color: var(--muted); font-weight: 600; }
     .back-link:hover { color: var(--text); }
 
-    .detail-card { padding: 22px 18px 20px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04)); }
+    .detail-card { padding: 22px 18px 20px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--card-bg); }
     .detail-card h2 { margin: 12px 0 16px; font-size: 24px; line-height: 1.25; letter-spacing: -.03em; font-weight: 660; overflow-wrap: anywhere; }
     .detail-reward { display: flex; align-items: baseline; gap: 10px; padding-bottom: 18px; border-bottom: 1px solid var(--line-soft); }
     .detail-reward strong { color: var(--gold); font-size: 32px; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
@@ -440,7 +436,7 @@ function renderShell(
     .detail-cta { margin-top: 0; }
     .detail-actions { display: grid; gap: 10px; margin-top: 18px; }
     .ghost-btn { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: var(--radius-btn); border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 13.5px; font-weight: 600; transition: border-color .16s ease, background .16s ease; }
-    .ghost-btn:hover { border-color: rgba(136,201,255,.4); background: rgba(255,255,255,.04); }
+    .ghost-btn:hover { border-color: var(--accent-border-hover); background: var(--ghost-hover-bg); }
 
     @media (min-width: 680px) {
       .reward-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -523,6 +519,7 @@ function renderShell(
           <span class="brand-product">AI Reward Router</span>
         </a>
         <span class="trust-note">확인된 적립만 표시</span>
+        ${toggleButton}
         <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
       </div>
     </header>
@@ -537,7 +534,7 @@ function renderShell(
 </html>`;
 }
 
-export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHomeViewModel): string {
+export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHomeViewModel, themeInfo: ConsumerRenderTheme = {}): string {
   const renderedCards = viewModel.sections
     .flatMap((section) => section.cards)
     .map(renderCard)
@@ -575,7 +572,7 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
         <p>${escapeHtml(viewModel.hero.description)}</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${actions}${content}`, { howItWorks: false });
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${actions}${content}`, { howItWorks: false }, themeInfo);
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
@@ -584,7 +581,7 @@ export { renderAdClickFirstBrowseWeb as renderOpportunityBrowseWeb };
 export { renderAdClickFirstOpportunityDetailWeb as renderAdClickFirstOpportunityDetailPageWeb };
 export { renderAdClickFirstOpportunityDetailWeb as renderOpportunityDetailWeb };
 
-export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRouteViewModel): string {
+export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRouteViewModel, themeInfo: ConsumerRenderTheme = {}): string {
   const renderedCards = viewModel.cards
     .map(renderCard)
     .filter((card): card is string => card !== null);
@@ -652,10 +649,10 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
         <p>확인된 광고·클릭 적립과 공개 참여 기회를 함께 보여드립니다. 신청·심사가 필요한 프로젝트는 별도 구분됩니다.</p>
       </section>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, {}, themeInfo);
 }
 
-export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewModel): string {
+export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewModel, themeInfo: ConsumerRenderTheme = {}): string {
   const renderedCards = viewModel.cards.map(renderCard).filter((card): card is string => card !== null);
   const publicCards = viewModel.publicCards ?? [];
   const hasPublic = publicCards.length > 0;
@@ -752,10 +749,10 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
         ${filterForm}
       </div>`;
 
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: false });
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content, { howItWorks: false }, themeInfo);
 }
 
-export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel): string {
+export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOpportunityDetailViewModel, themeInfo: ConsumerRenderTheme = {}): string {
   const card = viewModel.card;
   const publicDetail = viewModel.publicDetail ?? null;
   let content: string;
@@ -811,5 +808,5 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
 
   // Keep one semantic title within the detail card; the hero previously repeated it.
   const hero = '<h1 class="visually-hidden">수익 기회 상세</h1>';
-  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, `<div class="detail-page">${content}</div>`);
+  return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, `<div class="detail-page">${content}</div>`, {}, themeInfo);
 }
