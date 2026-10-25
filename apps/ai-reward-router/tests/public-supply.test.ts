@@ -247,11 +247,19 @@ test('public-supply handler serves verified opportunities on browse, today, and 
   assert.equal(missing.status, 404);
 });
 
-test('deployed worker keeps honest zero-supply home while browse serves public supply', async () => {
+test('deployed worker home leads with verified public supply and keeps the ad lane honest (#5830)', async () => {
   const home = await worker.fetch(new Request('https://b64.example/'));
   const homeHtml = await home.text();
+  // OWNER decision #5830: existing verified public opportunities are the first
+  // actionable content on the home screen; the unapproved ad lane stays an
+  // honest compact status and is never advertised as startable.
+  const publicIndex = homeHtml.indexOf('home-public-opportunities');
+  const adIndex = homeHtml.indexOf('id="available-now"');
+  assert.ok(publicIndex >= 0 && adIndex > publicIndex, 'verified public supply renders first');
+  assert.match(homeHtml, /data-public-card-count="6"/);
   assert.match(homeHtml, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
-  assert.doesNotMatch(homeHtml, /검증된 공개 기회/);
+  assert.match(homeHtml, /공급자 승인 대기/);
+  assert.doesNotMatch(homeHtml, /지금 바로|즉시 적립|바로 적립 가능/);
 
   const browse = await worker.fetch(new Request('https://b64.example/browse'));
   assert.match(await browse.text(), /data-public-card-count="6"/);

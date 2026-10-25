@@ -3,9 +3,11 @@ import { INCOME_PIPELINE_STATUS_LABELS, INCOME_PIPELINE_STATUSES, formatCurrency
 import type { PublicOpportunity } from '../public-supply/domain.js';
 import { toPublicOpportunityCard, isPublicOpportunityDisplayable } from '../public-supply/domain.js';
 import {
+  CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
   THEME_CSS_VARIABLES,
+  renderCategoryIcon,
   renderThemeToggleButton,
   type B64Theme,
 } from '../ui/theme.js';
@@ -97,22 +99,27 @@ function renderSummary(summary: UserIncomeSummary): string {
     </div>
     <div class="summary-grid">
       <div class="summary-card">
+        ${renderCategoryIcon('IN_PROGRESS', 'summary-icon')}
         <span class="summary-label">진행 중</span>
         <strong class="summary-value">${summary.activeCount}</strong>
       </div>
       <div class="summary-card">
+        ${renderCategoryIcon('COMPLETED', 'summary-icon')}
         <span class="summary-label">완료</span>
         <strong class="summary-value">${summary.completedCount}</strong>
       </div>
       <div class="summary-card">
+        ${renderCategoryIcon('PAID', 'summary-icon')}
         <span class="summary-label">지급 완료</span>
         <strong class="summary-value">${summary.paidCount}</strong>
       </div>
       <div class="summary-card">
+        ${renderCategoryIcon('EXPECTED', 'summary-icon')}
         <span class="summary-label">예상 수익</span>
         <strong class="summary-value summary-value--expected">${escapeHtml(expectedStr)}</strong>
       </div>
       <div class="summary-card">
+        ${renderCategoryIcon('PAID', 'summary-icon')}
         <span class="summary-label">실제 지급</span>
         <strong class="summary-value summary-value--actual">${escapeHtml(actualStr)}</strong>
       </div>
@@ -221,6 +228,7 @@ ${THEME_CSS_VARIABLES}
     .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
     .trust-note { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; }
 ${THEME_CSS_TOGGLE}
+${CATEGORY_ICON_CSS}
 ${THEME_CSS_SHELL_INSET}
     .primary-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; width: 100%; order: 3; padding: 8px 0 2px; }
     .primary-nav::-webkit-scrollbar { display: none; }
@@ -361,7 +369,7 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel, them
   const navItems = renderPrimaryNav('PIPELINE');
 
   if (viewModel.emptyState === 'NO_USER') {
-    const content = renderEmptyState('로그인이 필요합니다. PADIEM 계정으로 로그인 후 이용해 주세요.');
+    const content = renderEmptyState('PADIEM 계정 로그인 후 이용할 수 있습니다.');
     return renderShell('내 수익 관리', navItems, content, themeInfo);
   }
 

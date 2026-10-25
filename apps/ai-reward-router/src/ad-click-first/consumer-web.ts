@@ -8,9 +8,11 @@ import type { AdClickConsumerCard } from './consumer-card.js';
 import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
 import { koreaEligibilityLabel, publicRewardNote } from '../public-supply/domain.js';
 import {
+  CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
   THEME_CSS_VARIABLES,
+  renderCategoryIcon,
   renderThemeToggleButton,
   type B64Theme,
 } from '../ui/theme.js';
@@ -101,7 +103,7 @@ function renderCard(card: AdClickConsumerCard): string | null {
   const certaintyLabel = card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시';
   return `<article class="reward-card" data-card-id="${escapeHtml(card.id)}">
     <div class="reward-card__topline">
-      <span class="action-chip">${ACTION_LABELS[card.actionKind]}</span>
+      <span class="action-chip">${renderCategoryIcon('AD_CLICK')}${ACTION_LABELS[card.actionKind]}</span>
       <span class="freshness">${formatFreshness(card.lastVerifiedAt)}</span>
     </div>
     <h3 title="${escapeHtml(card.title)}">${escapeHtml(card.title)}</h3>
@@ -125,7 +127,7 @@ function renderPublicOpportunityCard(card: PublicOpportunityCard): string | null
   if (!href) return null;
   return `<article class="reward-card public-card" data-card-id="${escapeHtml(card.id)}">
     <div class="reward-card__topline">
-      <span class="action-chip action-chip--public">공개 기회</span>
+      <span class="action-chip action-chip--public">${renderCategoryIcon(card.category)}공개 기회</span>
       <span class="freshness">${formatFreshness(card.verifiedAt)}</span>
     </div>
     <h3 title="${escapeHtml(card.titleKo)}">${escapeHtml(card.titleKo)}</h3>
@@ -165,40 +167,44 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
         <strong>${escapeHtml(card.rewardLabel)}</strong>
         <span>${escapeHtml(card.rewardNote)}</span>
       </div>
-      <div class="detail-facts">
-        <div class="detail-fact">
-          <span class="detail-fact__label">신청 방법</span>
-          <span class="detail-fact__value">${escapeHtml(detail.participationMethod)}</span>
-        </div>
-        <div class="detail-fact">
-          <span class="detail-fact__label">참여 자격·조건</span>
-          <span class="detail-fact__value">${escapeHtml(detail.qualifications)}</span>
-        </div>
-        <div class="detail-fact">
-          <span class="detail-fact__label">지급 주체</span>
-          <span class="detail-fact__value">${escapeHtml(detail.payer)}</span>
-        </div>
-        <div class="detail-fact">
-          <span class="detail-fact__label">국가·지역</span>
-          <span class="detail-fact__value">${escapeHtml(card.country)} · ${escapeHtml(card.koreaLabel)}</span>
-        </div>
-        <div class="detail-fact">
-          <span class="detail-fact__label">참여 단계</span>
-          <span class="detail-fact__value">${escapeHtml(stageValue)}</span>
-        </div>
-        <div class="detail-fact">
-          <span class="detail-fact__label">PADIEM 수익</span>
-          <span class="detail-fact__value">0 (이용자 가치 제공용 — PADIEM 제휴 수익 없음)</span>
-        </div>
-      </div>
-      <div class="detail-meta">
-        <span>공식 출처${sourceHref ? ` · <a href="${sourceHref}" target="_blank" rel="noopener noreferrer nofollow">원본 링크</a>` : ''}</span>
-        <span>확인 · ${formatVerifiedAtKst(card.verifiedAt)}</span>
-      </div>
-      <div class="detail-actions">
+      <div class="detail-actions detail-actions--top">
         ${applyHref ? `<a class="reward-cta detail-cta" href="${applyHref}" target="_blank" rel="noopener noreferrer nofollow">${escapeHtml(card.ctaLabel)}<span aria-hidden="true"> ↗</span></a>` : ''}
         <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
       </div>
+      <p class="detail-cta-note">${applyHref ? '외부 제공자 사이트에서 직접 참여합니다. PADIEM이 지급을 대행하거나 보장하지 않습니다.' : ''}</p>
+      <details class="detail-more">
+        <summary>상세 정보 · 참여 조건 · 출처</summary>
+        <div class="detail-facts">
+          <div class="detail-fact">
+            <span class="detail-fact__label">신청 방법</span>
+            <span class="detail-fact__value">${escapeHtml(detail.participationMethod)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">참여 자격·조건</span>
+            <span class="detail-fact__value">${escapeHtml(detail.qualifications)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">지급 주체</span>
+            <span class="detail-fact__value">${escapeHtml(detail.payer)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">국가·지역</span>
+            <span class="detail-fact__value">${escapeHtml(card.country)} · ${escapeHtml(card.koreaLabel)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">참여 단계</span>
+            <span class="detail-fact__value">${escapeHtml(stageValue)}</span>
+          </div>
+          <div class="detail-fact">
+            <span class="detail-fact__label">PADIEM 수익</span>
+            <span class="detail-fact__value">0 (이용자 가치 제공용 — PADIEM 제휴 수익 없음)</span>
+          </div>
+        </div>
+        <div class="detail-meta">
+          <span>공식 출처${sourceHref ? ` · <a href="${sourceHref}" target="_blank" rel="noopener noreferrer nofollow">원본 링크</a>` : ''}</span>
+          <span>확인 · ${formatVerifiedAtKst(card.verifiedAt)}</span>
+        </div>
+      </details>
     </div>
   </section>`;
 }
@@ -209,6 +215,12 @@ function renderEmptyState(): string {
     <h3>아직 확인된 적립이 없습니다</h3>
     <p>검증된 공급자가 연결되면 여기에 바로 표시됩니다.</p>
   </div>`;
+}
+
+/** Compact honest-status line for lanes with no verified supply yet (#5830):
+ * the large empty card is reserved for the detail page. */
+function renderEmptyNotice(): string {
+  return `<p class="later-tier-notice" data-empty-state="NO_LIVE_REWARD_SUPPLY">아직 확인된 적립이 없습니다. 검증된 공급자가 연결되면 이곳에 표시됩니다.</p>`;
 }
 
 function renderHowItWorks(): string {
@@ -288,6 +300,7 @@ ${THEME_CSS_VARIABLES}
     .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
     .trust-note { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; }
 ${THEME_CSS_TOGGLE}
+${CATEGORY_ICON_CSS}
 ${THEME_CSS_SHELL_INSET}
 
     .primary-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; width: 100%; order: 3; padding: 8px 0 2px; }
@@ -333,7 +346,7 @@ ${THEME_CSS_SHELL_INSET}
     }
     .reward-card:hover { border-color: var(--accent-border-hover); transform: translateY(-2px); }
     .reward-card__topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .action-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid var(--accent-border); }
+    .action-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid var(--accent-border); }
     .action-chip--public { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
     .tier-chip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
     .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
@@ -407,7 +420,7 @@ ${THEME_CSS_SHELL_INSET}
 
     .category-tabs { display: flex; gap: 6px; padding: 14px 0 2px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
     .category-tabs::-webkit-scrollbar { display: none; }
-    .category-tabs .nav-item { font-size: 12px; }
+    .category-tabs .nav-item { font-size: 12px; gap: 5px; display: inline-flex; align-items: center; }
     .nav-item[aria-disabled="true"] { color: var(--faint); cursor: default; }
 
     .hero--browse { padding-bottom: 8px; }
@@ -437,6 +450,16 @@ ${THEME_CSS_SHELL_INSET}
     .detail-meta a { color: var(--accent); text-decoration: underline; }
     .detail-cta { margin-top: 0; }
     .detail-actions { display: grid; gap: 10px; margin-top: 18px; }
+    .detail-actions--top { margin-top: 14px; margin-bottom: 2px; }
+    .detail-cta-note { margin: 8px 0 4px; color: var(--faint); font-size: 12px; line-height: 1.5; }
+    .detail-more { margin-top: 14px; border-top: 1px dashed var(--line-soft); }
+    .detail-more summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 13px 0 11px; color: var(--accent); font-size: 13.5px; font-weight: 650; }
+    .detail-more summary::-webkit-details-marker { display: none; }
+    .detail-more summary::after { content: "＋"; font-weight: 700; color: var(--muted); }
+    .detail-more[open] summary::after { content: "－"; }
+    .detail-more summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .detail-more[open] summary { border-bottom: 1px dashed var(--line-soft); margin-bottom: 6px; }
+    .detail-more .detail-facts, .detail-more .detail-meta { padding-top: 4px; }
     .ghost-btn { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: var(--radius-btn); border: 1px solid var(--line); background: transparent; color: var(--text); font-size: 13.5px; font-weight: 600; transition: border-color .16s ease, background .16s ease; }
     .ghost-btn:hover { border-color: var(--accent-border-hover); background: var(--ghost-hover-bg); }
 
@@ -542,14 +565,36 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
     .map(renderCard)
     .filter((card): card is string => card !== null);
 
-  const actions = `
-    <section class="home-actions" aria-labelledby="actions-title">
-      <h2 id="actions-title" class="visually-hidden">수익 기회 탐색</h2>
-      <a class="home-cta home-cta--primary" href="/browse">수익 기회 찾기<span aria-hidden="true"> →</span></a>
-      <a class="cta-link cta-link--secondary" href="/today">오늘의 추천 보기<span aria-hidden="true"> →</span></a>
-    </section>`;
+  // #5830: one short value line, then the primary CTA — the visitor decides in
+  // about a second where to look for earning opportunities.
+  const hero = `
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">${escapeHtml(viewModel.hero.eyebrow)}</p>
+        <h1 id="hero-title">${escapeHtml(viewModel.hero.title)}</h1>
+        <p>${escapeHtml(viewModel.hero.description)}</p>
+      </section>
+      <section class="home-actions" aria-labelledby="actions-title">
+        <h2 id="actions-title" class="visually-hidden">수익 기회 탐색</h2>
+        <a class="home-cta home-cta--primary" href="/browse">수익 기회 보기<span aria-hidden="true"> →</span></a>
+        <a class="cta-link cta-link--secondary" href="/today">오늘의 추천 보기<span aria-hidden="true"> →</span></a>
+      </section>`;
 
-  const content = renderedCards.length > 0
+  // Verified public opportunities come first — they are the only things a
+  // visitor can actually start today. The unapproved ad lane is a compact
+  // honest status, never a "start now" invitation.
+  const publicCards = viewModel.publicCards ?? [];
+  const publicSection = publicCards.length > 0
+    ? `<section id="home-public-opportunities" aria-labelledby="home-public-title">
+      <div class="section-head">
+        <h2 id="home-public-title">검증된 공개 기회</h2>
+        <span>${publicCards.length}개 확인됨</span>
+      </div>
+      <p class="public-note">아래 기회는 각 업체에서 직접 참여하며 PADIEM 수익은 0입니다.</p>
+      <div class="reward-grid" data-public-card-count="${publicCards.length}">${renderPublicCardGrid(publicCards)}</div>
+    </section>`
+    : '';
+
+  const adLaneContent = renderedCards.length > 0
     ? `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">${escapeHtml(viewModel.sections[0]?.title ?? '바로 가능한 적립')}</h2>
@@ -560,21 +605,14 @@ export function renderAdClickFirstConsumerWeb(viewModel: AdClickFirstConsumerHom
     : `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">${escapeHtml(viewModel.sections[0]?.title ?? '바로 가능한 적립')}</h2>
-        <span>실시간 확인</span>
+        <span data-empty-state="NO_LIVE_REWARD_SUPPLY">공급자 승인 대기</span>
       </div>
-      ${renderEmptyState()}
+      ${renderEmptyNotice()}
     </section>`;
 
   const navItems = renderPrimaryNav('HOME');
 
-  const hero = `
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">${escapeHtml(viewModel.hero.eyebrow)}</p>
-        <h1 id="hero-title">${escapeHtml(viewModel.hero.title)}</h1>
-        <p>${escapeHtml(viewModel.hero.description)}</p>
-      </section>`;
-
-  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${actions}${content}`, { howItWorks: false }, themeInfo);
+  return renderShell({ mode: viewModel.mode, issueNumber: viewModel.issueNumber }, navItems, hero, `${publicSection}${adLaneContent}`, { howItWorks: false }, themeInfo);
 }
 
 // Backwards/alias exports for compatibility with alternate naming used by tests/CTO contracts.
@@ -598,7 +636,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
         <h2 id="available-title">오늘 바로 가능한 적립</h2>
         <span>실시간 확인</span>
       </div>
-      ${renderEmptyState()}
+      ${renderEmptyNotice()}
     </section>`;
   } else {
     const sections: string[] = [];
@@ -625,7 +663,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
         <h2 id="today-public-immediate-title">참가자 등록 가능</h2>
         <span>${(viewModel.publicImmediateCards ?? []).length}개 확인됨</span>
       </div>
-      <p class="public-note">선발 없이 참여를 시작할 수 있는 공개 기회입니다. 설문·프로젝트 가용성은 기간에 따라 달라질 수 있습니다. PADIEM 수익은 0이며 각 업체에서 직접 참여합니다.</p>
+      <p class="public-note">선발 없이 참여할 수 있는 공개 기회입니다. 각 업체에서 직접 참여하며 PADIEM 수익은 0입니다.</p>
       <div class="reward-grid" data-public-card-count="${(viewModel.publicImmediateCards ?? []).length}">${renderPublicCardGrid(viewModel.publicImmediateCards ?? [])}</div>
     </section>`);
     }
@@ -664,7 +702,7 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
       const active = cat.id === viewModel.selectedCategory;
       const href = cat.active ? `/browse?category=${cat.id}` : '#';
       const label = cat.active ? `${cat.label} (${cat.count})` : `${cat.label} (준비 중)`;
-      return `<a class="nav-item${active ? ' nav-item--active' : ''}" href="${escapeHtml(href)}" ${active ? 'aria-current="page"' : ''} ${cat.active ? '' : 'aria-disabled="true"'}>${escapeHtml(label)}</a>`;
+      return `<a class="nav-item${active ? ' nav-item--active' : ''}" href="${escapeHtml(href)}" ${active ? 'aria-current="page"' : ''} ${cat.active ? '' : 'aria-disabled="true"'}>${renderCategoryIcon(cat.id)}${escapeHtml(label)}</a>`;
     })
     .join('');
 
@@ -768,28 +806,32 @@ export function renderAdClickFirstOpportunityDetailWeb(viewModel: AdClickFirstOp
           <strong>${escapeHtml(card.rewardLabel)}</strong>
           <span>${escapeHtml(card.certainty === 'GUARANTEED' ? '확정 보상' : '조건 충족 시')}</span>
         </div>
-        <div class="detail-facts">
-          <div class="detail-fact">
-            <span class="detail-fact__label">예상 소요 시간</span>
-            <span class="detail-fact__value">${formatActiveTime(card.estimatedActiveSeconds)}</span>
-          </div>
-          <div class="detail-fact">
-            <span class="detail-fact__label">참여 자격·조건</span>
-            <span class="detail-fact__value">${escapeHtml(card.conditionSummary)}</span>
-          </div>
-          <div class="detail-fact">
-            <span class="detail-fact__label">보상 제공 업체</span>
-            <span class="detail-fact__value">${escapeHtml(card.sourceId)}</span>
-          </div>
-        </div>
-        <div class="detail-meta">
-          <span>출처 · ${escapeHtml(card.sourceId)}</span>
-          <span>최종 검증 · ${formatVerifiedAtKst(card.lastVerifiedAt)}</span>
-        </div>
-        <div class="detail-actions">
+        <div class="detail-actions detail-actions--top">
           ${safeOutboundHref(card.canonicalDestinationUrl) ? `<a class="reward-cta detail-cta" href="${safeOutboundHref(card.canonicalDestinationUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 참여하기<span aria-hidden="true"> ↗</span></a>` : ''}
           <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
         </div>
+        <p class="detail-cta-note">외부 제공자 사이트에서 직접 참여합니다. PADIEM이 지급을 대행하거나 보장하지 않습니다.</p>
+        <details class="detail-more">
+          <summary>상세 정보 · 참여 조건 · 출처</summary>
+          <div class="detail-facts">
+            <div class="detail-fact">
+              <span class="detail-fact__label">예상 소요 시간</span>
+              <span class="detail-fact__value">${formatActiveTime(card.estimatedActiveSeconds)}</span>
+            </div>
+            <div class="detail-fact">
+              <span class="detail-fact__label">참여 자격·조건</span>
+              <span class="detail-fact__value">${escapeHtml(card.conditionSummary)}</span>
+            </div>
+            <div class="detail-fact">
+              <span class="detail-fact__label">보상 제공 업체</span>
+              <span class="detail-fact__value">${escapeHtml(card.sourceId)}</span>
+            </div>
+          </div>
+          <div class="detail-meta">
+            <span>출처 · ${escapeHtml(card.sourceId)}</span>
+            <span>최종 검증 · ${formatVerifiedAtKst(card.lastVerifiedAt)}</span>
+          </div>
+        </details>
       </div>
     </section>`;
   } else if (publicDetail) {
