@@ -103,7 +103,10 @@ html[data-theme="padiem-glass"] #automationNavButton[aria-current="page"] {
  * different brand lines. */
 html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="claw"], [data-state="connectors"], [data-state="automation"],
-  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"],
+  /* #5799: the util header joins the same brand eyebrow — the header is one
+   * shared surface for every tool, so the dot lands with the page state. */
+  [data-state="util"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker) {
   display: inline-flex;
   align-items: center;
@@ -117,7 +120,8 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="claw"], [data-state="connectors"], [data-state="automation"],
-  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"],
+  [data-state="util"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker)::before {
   content: "";
   display: inline-block;

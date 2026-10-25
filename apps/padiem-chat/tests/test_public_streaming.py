@@ -698,6 +698,29 @@ def test_the_tools_capability_is_read_from_the_real_b14_registry_view():
     assert asyncio.run(raw_source.list_registered_models()) == []
 
 
+def test_gemini_35_registry_declaration_exposes_pc_tools_but_gemma_does_not():
+    from pathlib import Path
+    from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+
+    registry_path = (
+        Path(__file__).resolve().parents[3]
+        / "apps/korean-ai-platform/app/pilot/b14_models.json"
+    )
+    models = {row["id"]: row for row in json.loads(registry_path.read_text())["models"]}
+    for model_id, expected in (
+        ("google/gemini-3.5-flash-lite", True),
+        ("google/gemma-4-31b-it", False),
+    ):
+        row = models[model_id]
+        resolver = B66ExplicitQuoteModelResolver(_RegistryTransport(
+            _real_registry_payload(model_id, row["capabilities"], enabled=row["enabled"]),
+        ))
+        request, reader = _registry_request(
+            b14_catalog_source=None, b14_model_choice_resolver=resolver,
+        )
+        assert asyncio.run(reader(request, model_id)) is expected
+
+
 def test_raw_catalog_source_sees_no_rows_in_the_real_b14_payload():
     """Why the normalized view is required: the object payload is not a list."""
     from app.final_dispatch_guard_wiring import SimpleB14CatalogSource

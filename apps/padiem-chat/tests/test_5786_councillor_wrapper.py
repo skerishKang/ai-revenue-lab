@@ -62,25 +62,71 @@ def brand() -> dict:
 
 def test_wrapper_loads_the_existing_theme_stack() -> None:
     html = read(WRAP / "councillor.html")
-    # theme-init.js + the glass/cinematic stylesheets are the same files Chat
+    # theme-init.js + the cinematic stylesheet chain are the same files Chat
     # loads, so a theme change upstream reaches this page without an edit here.
-    for asset in ("../theme-init.js", "../padiem-glass.css", "../padiem-cinematic-chat.css"):
+    for asset in ("../theme-init.js", "../padiem-cinematic-chat.css", "../padiem-themes.css"):
         assert asset in html, f"wrapper must reference {asset}"
+    # Owner decision 2026-10-25: the page defaults to Light and offers Dark.
+    # theme-init.js still owns the interpretation; the wrapper only supplies the
+    # default when ?theme= is absent, and it must run first to do that.
+    assert 'data-theme="light"' in html
+    bootstrap = html.index("./councillor-theme-default.js")
+    assert bootstrap < html.index("../theme-init.js"), (
+        "the default must be in the URL before theme-init.js reads it")
+    assert "../padiem-glass.css" not in html, "glass is the Chat default, not this page's"
 
 
 def test_wrapper_declares_no_color_or_font_tokens() -> None:
     css = read(WRAP / "councillor.css")
     for token in ("--bg:", "--text:", "--font-display:", "--accent:", "--gold:", "--radius-md:"):
         assert token not in css, f"{token} must come from the Chat theme, not be re-declared"
-    # The reading surfaces (cards, facts, bio, admin panels) must be painted
-    # from the theme. Only the decorative hero scrim may carry its own literal
-    # gradient, because that layer is the placeholder material itself.
-    # Every reading surface must be painted from the theme's glass tokens.
-    assert css.count("var(--glass-card-surface") >= 5, "cards must use the glass surface token"
-    assert css.count("var(--card-border") >= 4, "card borders must use the theme border token"
-    assert css.count("var(--muted") >= 4 and css.count("var(--text") >= 1
-    assert css.count("var(--font-") >= 4, "typography must come from the theme stack"
-    assert css.count("var(--") > 30, "the palette must ride on the shared tokens"
+    # The reading surfaces follow the theme: they must be painted from tokens so
+    # Light and Dark both work without an edit here.
+    assert css.count("var(--muted") >= 8 and css.count("var(--text") >= 6
+    assert css.count("var(--line") >= 8 and css.count("var(--accent") >= 12
+    assert css.count("var(--gold") >= 4, "the accent metal stays the theme's"
+    assert css.count("var(--font-") >= 3, "face stacks must wrap the theme families, not replace them"
+    assert css.count("var(--") > 60, "the palette must ride on the shared tokens"
+    # Fixed colours are allowed only where content sits on video or on the one
+    # dark band the owner approved (hero, topbar-over-hero, media section).
+    offenders = []
+    for block in re.finditer(r"([^{}]+)\{([^}]*)\}", css):
+        selector, body = block.group(1), block.group(2)
+        on_media = re.search(r"cine-(hero|media|veil|film|name|lead|eyebrow|actions|primary|secondary"
+                             r"|facts|cue|grain|poster|video|feature|tile|links|link-row|link-title"
+                             r"|link-kind|link-arrow|on-media)|cine-section-media"
+                             r"|councillor-(topbar|brand|ghost)|:root", selector)
+        if on_media:
+            continue
+        if "#f7f8fa" in body or "rgba(247, 248, 250" in body or "#04070d" in body:
+            offenders.append(selector.strip().splitlines()[-1][:48])
+    assert not offenders, f"fixed media colours leaked into themed rules: {offenders}"
+
+
+def test_theme_switch_stays_on_the_existing_mechanism() -> None:
+    """Owner decision: Light is the default and Dark is selectable, using the
+    ?theme= state the Chat app already has -- not a second theme system."""
+    js = _code_only(wrapper_js())
+    assert 'THEMES = Object.freeze(["light", "dark"])' in js
+    assert 'DEFAULT_THEME = "light"' in js
+    # the toggle flips the attribute in place; nothing reloads the document
+    assert "location.reload" not in js and "document.write" not in js
+    assert 'setAttribute("data-theme", next)' in js
+    assert "writeTheme(next)" in js
+    bootstrap = _code_only(read(WRAP / "councillor-theme-default.js"))
+    assert 'params.set("theme", "light")' in bootstrap
+    assert "localStorage" not in bootstrap and "sessionStorage" not in bootstrap, (
+        "theme preference stays in the URL, as the Chat privacy contract requires"
+    )
+
+
+def test_wrapper_keeps_its_own_layout_baseline() -> None:
+    """The page does not load Chat's styles.css, so it must restate the layout
+    baseline. Without border-box the hero's padding is added to min-height and
+    the fact strip falls below the fold (measured 1101px in a 900px viewport)."""
+    css = read(WRAP / "councillor.css")
+    assert "box-sizing: border-box" in css
+    assert ".councillor-body" in css.split("box-sizing: border-box")[0][-400:]
 
 
 def test_wrapper_has_no_inline_script() -> None:
@@ -123,8 +169,10 @@ def test_wrapper_does_not_duplicate_the_util_screens() -> None:
 
 def _code_only(source: str) -> str:
     """주석은 소유권 서술을 담고 있으므로 계약 검사에서는 본문만 본다."""
-    source = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
-    return re.sub(r"(?m)^\s*//.*$", "", source)
+    # 순서가 의미 있다: 줄 주석 안의 brands/<id> 같은 텍스트가 /* 로 보이면
+    # 블록 주석 제거가 본문까지 삼킨다. 그래서 줄 주석을 먼저 지운다.
+    source = re.sub(r"(?m)^\s*//.*$", "", source)
+    return re.sub(r"/\*.*?\*/", "", source, flags=re.S)
 
 
 def test_wrapper_builds_no_second_ai_login_or_store() -> None:
@@ -162,37 +210,94 @@ def test_admin_surface_is_fail_closed() -> None:
     assert ".cine-admin-tools[hidden]" in css and ".cine-admin-gate[hidden]" in css
 
 
+def test_public_copy_stays_visitor_facing() -> None:
+    """Owner direction 2026-10-25: the prototype notice stays, the build
+    diagnostics do not. Missing media, CSP, HTTP statuses and file names belong
+    to this issue, not to a page a constituent reads."""
+    data = json.dumps(brand(), ensure_ascii=False)
+    # URL 값은 방문자가 읽는 문장이 아니다(미디어 주소의 확장자 등은 검사에서 제외).
+    prose = re.sub(r"https?://[^\"]+", "", _code_only(wrapper_js()) + data)
+    for diagnostic in ("미확보", "frame-src", "m3u8", "brands/miraen.json",
+                       "404", "502", "CSP", "API 이슈"):
+        assert diagnostic not in prose, f"visitor copy still says: {diagnostic}"
+    # 실패 진단은 console.error 로 보내고, 화면에는 일반 안내만 남긴다.
+    js = _code_only(wrapper_js())
+    assert "표시할 자료를 불러오지 못했습니다." in js
+    assert "console.error" in js
+    assert "시제품" in prose
+    assert "공식 웹사이트가 아닙니다" in brand()["prototypeNotice"]
+
+
 def test_wrapper_links_only_to_the_existing_app_and_public_official_pages() -> None:
     js = wrapper_js()
     assert 'const CHAT_ROOT = "../"' in js
     for tool in ("speech", "sns", "meeting"):
         assert f'CHAT_ROOT + "#padiem-util/{tool}"' in js, tool
     data = brand()
-    urls = [item.get("url", "") for item in data["media"]["items"]]
+    urls = [item.get("url", "") for item in data["media"]["tiles"] + data["media"]["links"]]
     urls += [c.get("url", "") for c in data["sns"]["channels"]]
     urls += [i.get("url", "") for i in data["activity"]["items"] if i.get("url")]
     assert urls, "brand must carry the researched sources"
+    # 선례: 중앙선관위 공개 데이터는 443을 제공하지 않는다(2026-10-25 관측).
+    # 공식 당선 근거 링크만 예외로, 호스트와 리소스 경로까지 못 박는다.
+    OFFICIAL_HTTP_ALLOWLIST = ("http://data.nec.go.kr/resource/Cnddt_",)
     for url in urls:
-        assert url.startswith("https://"), url
+        assert url.startswith("https://") or url.startswith(OFFICIAL_HTTP_ALLOWLIST), url
     # nothing is re-hosted from the assembly or the press: only page links.
     for url in urls:
         assert "/attach/" not in url, url
         assert not url.lower().endswith((".jpg", ".jpeg", ".png", ".mp4", ".webp", ".m3u8")), url
 
 
-def test_placeholder_media_is_declared_and_not_faked() -> None:
+def test_media_state_is_declared_and_never_faked() -> None:
+    """Two states, one contract: an unconfirmed brand must disclose the
+    placeholder, and a confirmed brand must credit the source instead. Neither
+    state may borrow the other's wording."""
     data = brand()
     hero = data["hero"]
-    assert hero["mediaKind"] == "PLACEHOLDER"
-    assert hero["videoSources"] == [] and hero["poster"] == ""
-    assert data["stage"] == "시제품"
-    assert "시제품" in data["prototypeNotice"]
     js = wrapper_js()
-    # the disclosure is rendered from mediaKind, so a confirmed asset cannot
-    # silently inherit the placeholder wording -- or the other way round.
-    assert 'CONFIRMED' in js and "시제품" in js
-    assets = [p.name for p in WRAP.rglob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm", ".m3u8"}]
-    assert assets == [], f"unlicensed media must not be committed: {assets}"
+    assert hero["mediaKind"] in ("PLACEHOLDER", "CONFIRMED")
+    assert "PLACEHOLDER_NOTE" in js and 'mediaKind === "CONFIRMED"' in js
+    if hero["mediaKind"] == "CONFIRMED":
+        assert hero["videoSources"] and hero["poster"], "confirmed state must carry real media"
+        assert hero["credit"], "confirmed media must say where it came from"
+    else:
+        assert hero["videoSources"] == [] and hero["poster"] == ""
+    # 승인된 자산도 저장소에 복사하지 않는다: 미디어 파일은 커밋 금지.
+    assets = [f.name for f in WRAP.rglob("*")
+              if f.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm", ".m3u8"}]
+    assert assets == [], f"media must stay on the R2 host, not be committed: {assets}"
+    assert data["stage"] == "시제품" and "시제품" in data["prototypeNotice"]
+
+
+def test_media_urls_stay_on_the_allowed_host() -> None:
+    js = wrapper_js()
+    assert 'MEDIA_HOSTS = Object.freeze(["media.padiem.net"])' in js, (
+        "brand files are hand-edited, so <video>/<img> sources stay allowlisted")
+    hero = brand()["hero"]
+    feature = brand()["feature"]
+    for url in list(hero["videoSources"]) + [hero["poster"]] + list(feature["sources"]):
+        assert url.startswith("https://media.padiem.net/councillor/miraen/"), url
+    assert "new URL(value)" in js and 'parsed.protocol !== "https:"' in js
+
+
+def test_dated_media_is_labelled_so_it_cannot_read_as_current() -> None:
+    """Owner note 2026-10-25: the 2025 introduction interview must not pass as a
+    present-day statement of office."""
+    feature = brand()["feature"]
+    assert "2025" in feature["kind"] and "2025" in feature["title"]
+    assert "촬영" in feature["note"] and "현재 직위" in feature["note"]
+    assert "2026년 6월 3일" in brand()["profile"][3]["value"], "current office must be stated separately"
+
+
+def test_admin_entry_is_not_a_public_landing_card() -> None:
+    """Owner note 2026-10-25: the councillor tools move off the visitor page into
+    a management path, so the admin block must live in the footer only."""
+    html = read(WRAP / "councillor.html")
+    main = html[html.index("<main"):html.index("</main>")]
+    footer = html[html.index("<footer"):]
+    assert "adminTools" not in main and "adminGate" not in main
+    assert 'id="adminTools"' in footer and 'id="adminGate"' in footer
 
 
 # --------------------------------------------------------------------------

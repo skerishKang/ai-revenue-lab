@@ -8,7 +8,7 @@
 // and nothing here invents a product behaviour or a second API.
 //
 // Usage: node _5785_util_harness.js <util-menu.js path> <scenario>
-//   scenario = speech | sns | meeting | shared
+//   scenario = speech | sns | meeting | shared | tier
 // Prints one JSON object of observations; the Python test modules own the
 // assertions so a changed contract fails in the readable place.
 const fs = require("node:fs");
@@ -138,6 +138,7 @@ class FakeFormData {
 // ── recording backend: only the endpoints the util tools already use ────────
 const requests = [];
 const chatPayloads = [];
+let chatResponseOverride = null;
 const storedFiles = [];
 const alerts = [];
 // A browser logs an unhandled rejection and keeps the page alive; model that so
@@ -166,7 +167,7 @@ async function fetch(url, opts) {
 
   if (method === "POST" && path === "/api/chat") {
     chatPayloads.push(body);
-    return json({ answer: ANSWER });
+    return chatResponseOverride || json({ answer: ANSWER });
   }
   if (method === "GET" && path === "/api/projects") {
     return json({ projects: [{ id: PROJECT_ID, name: "유틸 작업" }] });
@@ -197,7 +198,7 @@ async function fetch(url, opts) {
 }
 
 // ── one util-menu.js execution against a fresh fake DOM ─────────────────────
-function spawnSession() {
+function spawnSession(windowState = {}) {
   const root = new N("html");
   const byId = {};
   const mk = (tag, id, cls) => {
@@ -288,7 +289,7 @@ function spawnSession() {
       createElement: (tag) => new N(tag),
       addEventListener() {},
     },
-    window: {},
+    window: windowState,
     navigator: { clipboard: { writeText: async () => {} } },
     fetch,
     alert: (message) => alerts.push(String(message)),
@@ -335,6 +336,47 @@ function endpointSet() {
 
 // ── scenarios ──────────────────────────────────────────────────────────────
 const SCENARIOS = {
+  async tier() {
+    const windowState = {};
+    const session = spawnSession(windowState);
+    await openTool(session, "speech");
+    const form = find(session, "utilSpeechForm");
+    form.querySelector("[name=event]").value = "등급 전달 검증";
+    const tiers = [];
+    const cases = [
+      ...["free", "plus", "pro", "max", "admin"].map((value) => [value, value]),
+      ["absent", undefined], ["missing_getter", undefined],
+      ["unknown", "other"], ["uppercase", "MAX"], ["null", null],
+      ["number", 3], ["undefined", undefined],
+    ];
+    for (const [name, value] of cases) {
+      if (name === "absent") delete windowState.PadiemTierSelection;
+      else if (name === "missing_getter") windowState.PadiemTierSelection = {};
+      else windowState.PadiemTierSelection = { get: () => value };
+      const before = chatPayloads.length;
+      await form.dispatch("submit");
+      await sleep(20);
+      tiers.push({ name, payload: chatPayloads[before], calls: chatPayloads.length - before,
+        output: find(session, "utilSpeechOutput").value });
+    }
+    const errors = [];
+    windowState.PadiemTierSelection = { get: () => "admin" };
+    for (const [name, response] of [
+      ["server_message", json({ error: { message: "관리자 인증을 확인해 주세요." } }, 403)],
+      ["no_message", json({ error: { code: "unavailable" } }, 502)],
+      ["non_string", json({ error: { message: { unsafe: true } } }, 403)],
+      ["not_json", { ok: false, status: 503, json: async () => { throw new Error("not JSON"); } }],
+    ]) {
+      chatResponseOverride = response;
+      const before = chatPayloads.length;
+      await form.dispatch("submit");
+      await sleep(20);
+      errors.push({ name, output: find(session, "utilSpeechOutput").value,
+        calls: chatPayloads.length - before });
+    }
+    chatResponseOverride = null;
+    return { tiers, errors, pageErrors };
+  },
   async speech() {
     const session = spawnSession();
     await openTool(session, "speech");

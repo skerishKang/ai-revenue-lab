@@ -65,9 +65,13 @@ def test_meeting_transcript_height_is_capped_for_the_first_screen() -> None:
 def test_util_header_joins_the_shared_page_title_contract() -> None:
     html = (ROOT / "static/index.html").read_text(encoding="utf-8")
     header = html[html.index('class="util-header"') : html.index("</header>", html.index('class="util-header"'))]
-    assert 'class="standalone-view-kicker"' in header and "Padiem Util" in header
+    # #5799: the header ships in its speech-template state and the kicker and
+    # tagline follow the active tool (speech carries its own values; the other
+    # tabs fall back to the shared Padiem Util defaults in activateUtilTab).
+    assert 'class="standalone-view-kicker" id="utilKicker"' in header and "Padiem Speech" in header
+    assert 'data-kicker="Padiem Speech"' in html and 'data-util="speech"' in html
     assert 'class="standalone-view-title"' in header
-    assert "standalone-view-tagline" in header
+    assert 'class="standalone-view-tagline" id="utilTagline"' in header
     STANDALONE_CSS = (ROOT / "static/standalone-views.css").read_text(encoding="utf-8")
     title_list = STANDALONE_CSS[STANDALONE_CSS.index(".app-shell:is([data-state=\"meeting\"],") : STANDALONE_CSS.index("font-weight: 770")]
     assert '[data-state="util"]' in title_list

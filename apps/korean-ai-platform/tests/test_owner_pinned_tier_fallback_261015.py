@@ -109,3 +109,9 @@ def test_b14_rejects_invalid_attempt_budget(value):
     from app.pilot.gateway import _InvalidBody, _validate_b14_options
     with pytest.raises(_InvalidBody):
         _validate_b14_options({"max_attempts": value})
+
+
+@pytest.mark.parametrize("tier", ["plus", "pro", "max", "admin"])
+def test_owner_test_phase_google_rosters_have_the_exact_recovery_order(tier):
+    assert TIER_FALLBACK_B14_MODELS[tier] == (
+        "google/gemini-3.1-flash-lite", "google/gemma-4-31b-it")

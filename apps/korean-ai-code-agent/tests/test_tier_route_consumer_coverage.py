@@ -19,7 +19,7 @@ from pathlib import Path
 import unittest
 
 from padiem_control_plane.product_tier_routes import (
-    MUSE_B14_MODEL_ID,
+    TEST_PHASE_PRIMARY_B14_MODEL_ID,
     ProductTierLabel,
     active_route_for,
 )
@@ -100,7 +100,7 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
                 active_route_for(ProductTierLabel.PLUS).model_id,
                 active_route_for(ProductTierLabel.PRO).model_id,
             },
-            {MUSE_B14_MODEL_ID},
+            {TEST_PHASE_PRIMARY_B14_MODEL_ID},
         )
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
