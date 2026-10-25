@@ -32,6 +32,8 @@ export type ConsumerCandidateLoader = (
 export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
   readonly resolveAuth?: AuthResolver;
+  /** Server-owned, per-deployment storage dependency; default remains prototype. */
+  readonly incomeRepository?: UserIncomeRepository;
   /**
    * Optional public-supply lane: manually curated, publicly verified opportunities.
    * The public lane never grants provider authority; it only links users to
@@ -263,7 +265,7 @@ export function createConsumerHttpHandler(
               headers: { 'content-type': 'application/json; charset=utf-8' },
             });
           }
-          const repo = getRepository();
+          const repo = dependencies.incomeRepository ?? getRepository();
           // Guard: if updating, verify ownership
           const existingRecords = await repo.getByUser(userId);
           const existingRecord = existingRecords.find((r) => r.id === recordId);
@@ -292,7 +294,7 @@ export function createConsumerHttpHandler(
         if (action === 'delete') {
           const recordId = formData.get('recordId')?.toString();
           if (recordId) {
-            const repo = getRepository();
+            const repo = dependencies.incomeRepository ?? getRepository();
             const existingRecords = await repo.getByUser(userId);
             const existingRecord = existingRecords.find((r) => r.id === recordId);
             if (existingRecord && existingRecord.userId !== userId) {
@@ -314,7 +316,7 @@ export function createConsumerHttpHandler(
       // GET: render dashboard
       let records: readonly UserIncomeRecord[] = [];
       if (userId) {
-        const repo = getRepository();
+        const repo = dependencies.incomeRepository ?? getRepository();
         records = await repo.getByUser(userId);
       }
       const filterStatus = url.searchParams.get('status') as IncomePipelineStatus | null;
