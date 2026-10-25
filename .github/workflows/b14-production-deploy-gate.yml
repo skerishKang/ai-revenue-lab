@@ -91,7 +91,7 @@ jobs:
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/settings" \
             -o /tmp/b14-baseline-settings.json
           python3 .github/scripts/b62_binding_baseline.py \
-            --worker ai-revenue-korean-ai-platform --payload /tmp/b14-baseline-settings.json
+            --worker ai-revenue-korean-ai-platform --allow-target-additions --payload /tmp/b14-baseline-settings.json
           echo 'B14_BINDING_BASELINE_PREMUTATION=PASS'
           echo 'B14_BINDING_BASELINE_VALUES_EMITTED=0'
           echo 'PRODUCTION_MUTATION=0'
