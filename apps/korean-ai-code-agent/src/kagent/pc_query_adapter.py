@@ -41,6 +41,7 @@ import json
 import time
 from typing import Any, Awaitable, Callable, Mapping
 
+from padiem_ai_core._pc_core_invoke import pc_core_log, pc_core_stage
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
 from padiem_ai_core.agent_profile_adapter import (
     CompiledAgentProfile,
@@ -50,7 +51,7 @@ from padiem_ai_core.agent_profile_adapter import (
 )
 from padiem_ai_core.agent_runtime import AgentStepContext, AgentStepDecision
 from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
-from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.pc_device_identity import PC_DEVICE_ID_PATTERN, is_pc_device_id
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_resource_policy import ToolResourcePolicy
 from padiem_ai_core.tool_runtime import (
@@ -274,7 +275,7 @@ def pc_drives_tool_spec() -> ToolSpec:
         description="Query filesystem drives on the currently verified owner PC",
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_QUERY_SCOPE,), input_schema={"type":"object","properties":{
-            "device_id":{"type":"string","pattern":"^[A-Za-z0-9_.:-]{1,128}$"},
+            "device_id":{"type":"string","pattern":PC_DEVICE_ID_PATTERN},
         },"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=300.0)
 
@@ -542,10 +543,12 @@ class StructuredPCQueryStepDriver:
             if tool_id == PC_DRIVES_TOOL_ID and arguments == {} and not observations:
                 # The server-verified target travels as a trusted plan argument;
                 # the model still cannot name a device.
-                return AgentStepDecision.use_tool(
-                    ToolInvocation(tool_id=PC_DRIVES_TOOL_ID,
-                                   arguments=dict(self._static_arguments))
-                )
+                pc_core_log("drives_branch", tool_id, "enter")
+                with pc_core_stage("invocation", tool_id):
+                    invocation = ToolInvocation(tool_id=PC_DRIVES_TOOL_ID,
+                                                arguments=dict(self._static_arguments))
+                pc_core_log("drives_branch", tool_id, "done")
+                return AgentStepDecision.use_tool(invocation)
             if (
                 tool_id in PC_FILE_TOOL_IDS
                 and isinstance(arguments, Mapping)
@@ -569,9 +572,9 @@ class StructuredPCQueryStepDriver:
                     isinstance(path, str) and 0 < len(path) <= 2048
                     and not any(ord(ch) < 32 for ch in path)
                 ):
-                    return AgentStepDecision.use_tool(
-                        ToolInvocation(tool_id=tool_id, arguments={"path": path})
-                    )
+                    with pc_core_stage("invocation", tool_id):
+                        invocation = ToolInvocation(tool_id=tool_id, arguments={"path": path})
+                    return AgentStepDecision.use_tool(invocation)
         raise PCQueryStepError(
             "model tool selection is invalid or unauthorized", detail="tool_selection_invalid",
         )
