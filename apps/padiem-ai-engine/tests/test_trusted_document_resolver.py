@@ -94,8 +94,11 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # filesystem, OCR, provider or Production authority is introduced and no
 # declared-metadata bound, decision or error code changes. Only the two pins
 # for the changed files move; the other two are unchanged.
+# Proposed re-pin after #5815: PDF/PPTX/DOCX provenance segments and
+# DOCX table-row / XLSX formula-and-cached-value text changed in Core.
+# Only this source pin moves; the other hashes are unchanged. CTO review pending.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "7b4809f1758662e2d94f8b767557d82367cd6f7372640103ebe2d6ef0126c78f",
+    CORE_PACKAGE / "document_normalization.py": "2c90b79d0234d4a507c7568f690b961efab341c382540d7b1c0d65b42c6189d6",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "8ca8a31abe59db7ef38ea81a1c288df273237746b90dd0a1480abc9b929947e2",
