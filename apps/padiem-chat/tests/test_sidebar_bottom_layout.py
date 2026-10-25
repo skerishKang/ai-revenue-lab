@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 UI_POLISH = (ROOT / "static" / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+SIX_PANEL_FRAME = (ROOT / "static" / "shared-six-panel-frame.css").read_text(encoding="utf-8")
 ACCESSIBILITY_POLISH = (ROOT / "static" / "accessibility-polish.css").read_text(encoding="utf-8")
 
 
@@ -92,19 +94,29 @@ def test_padiem_home_is_final_sidebar_bottom_utility() -> None:
 
 
 def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
+    # One rule lists the three surfaces that carry the conversation; #2594 used
+    # to reach the same result by pasting the Chat block again for Claw. The
+    # lane position itself belongs to the shared frame, which puts the composer
+    # inside the six-panel box, so it is asserted there and its absence here is
+    # what keeps the frame from being restyled per product.
     assert '@media (min-width: 921px)' in UI_POLISH
-    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .conversation' in UI_POLISH
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in UI_POLISH
     assert 'margin-top: 16px !important' in UI_POLISH
     assert 'margin-bottom: 16px !important' in UI_POLISH
-    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap' in UI_POLISH
-    assert 'bottom: 16px !important' in UI_POLISH
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer-wrap' in UI_POLISH
     assert 'padding-bottom: 16px !important' in UI_POLISH
+    # The property has to start a declaration: a note about the lane, a comment
+    # between the brace and the property, or `margin-bottom` must not read as the
+    # frame's position being restyled here.
+    assert not re.search(r"(?:^|[;{}\s])bottom\s*:\s*16px !important", UI_POLISH), \
+        "the composer lane position belongs to the shared frame"
+    assert '.app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {\n    bottom: 16px !important;' in SIX_PANEL_FRAME
 
 
 def test_glass_home_composer_vertical_padding_is_balanced() -> None:
-    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer {' in UI_POLISH
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer {' in UI_POLISH
     assert 'padding: 12px 12px 11px !important' in UI_POLISH
-    assert '.app-shell:is([data-state="home"],[data-state="chat"]) .composer textarea {' in UI_POLISH
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .composer textarea {' in UI_POLISH
     assert 'padding: 9px 9px 7px !important' in UI_POLISH
 
 
