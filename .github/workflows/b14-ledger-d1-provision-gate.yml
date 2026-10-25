@@ -97,8 +97,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          # wrangler skips the interactive confirmation under CI (the runner sets
-          # CI=true), so a dispatch cannot stall waiting for a keystroke.
+          # In a non-interactive context wrangler answers its own confirmation
+          # prompt with a fallback value: "Using fallback value in non-interactive context: yes".
           npx --yes wrangler@4 d1 migrations apply padiem-b14-call-ledger --remote
           echo 'D1_MIGRATION_0001=APPLIED_OR_REPLAY_SAFE'
           echo 'D1_MIGRATIONS=0001'
