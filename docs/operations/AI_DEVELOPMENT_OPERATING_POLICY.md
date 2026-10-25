@@ -61,7 +61,7 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
 
 ### 0F. 장애 분석 원칙 (Owner 결정 2026-10-24)
 
-1. 모델은 고정이다. 유료·관리자 레인 = opencode-go muse-spark-1.3-contributor. 장애가 나도 모델·route 변경을 제안하지 않는다. Free(Google)는 RPM으로 실패할 수 있으며 Free 경로로 테스트하지 않는다.
+1. 모델은 고정이다. 유료·관리자 레인 = opencode-go muse-spark-1.3-contributor. 장애가 나도 모델·route 변경을 제안하지 않는다. Free(Google)는 RPM으로 실패할 수 있으며 Free 경로로 **기능 테스트**를 하지 않는다. 다만 배포 직후 자격 확인용 1회 호출은 예외다(코드만 기록).
 2. TinyFish 검색의 크레딧·인증은 원인 후보에서 제외한다.
 3. upstream_auth_error / 401 / 403을 보면 가설을 세우기 전에 **같은 시간대에 공급자를 터미널에서 직접 호출**한다(B14를 거치지 않고, 같은 모델·같은 키). 직접 호출 200 → B14 또는 우리 설정 문제. 직접 호출도 401/403 → 키·공급자 문제로 분류해 Owner에게 보고하고 추적을 멈춘다. 이 단계 없이 "키 문제"라고 보고하지 않는다.
 4. HTTP 코드만으로 결론 내지 않는다. 오류를 **만든 서비스의 로그 코드**(B14: upstream_auth_failed / b14_service_proof_required / missing_provider_key 등)를 확보한 뒤 판정한다. 로그는 Workers Logs 또는 wrangler tail로 같은 시각에 잡는다.
