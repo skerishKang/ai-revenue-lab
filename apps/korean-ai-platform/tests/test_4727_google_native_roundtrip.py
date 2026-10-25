@@ -439,3 +439,89 @@ def test_an_untagged_google_model_is_refused_before_dispatch(model_id) -> None:
 def test_a_non_google_provider_keeps_its_existing_refusal() -> None:
     with pytest.raises(StreamNotSupported):
         require_stream_tool_wire(GOOGLE_TOOL_MODEL, "tokenharbor")
+
+
+# ---------------------------------------------------------------------------
+# The whole round trip over the real route, not over the translator alone
+# ---------------------------------------------------------------------------
+
+
+def _answer_transport(seen: list) -> httpx.MockTransport:
+    """Serve a plain text answer and record the exact outbound native request."""
+    def handler(request):
+        seen.append((str(request.url), json.loads(request.content)))
+        return httpx.Response(
+            200,
+            stream=_ChunkStream([
+                _native_frame([{"text": "파일 내용은 hello 입니다."}]),
+                _native_frame(finish="STOP"),
+            ]),
+            headers={"Content-Type": "text/event-stream"},
+        )
+
+    return httpx.MockTransport(handler)
+
+
+def _replay(messages) -> tuple[str, dict]:
+    """Send a follow-up turn through the route and return the outbound request."""
+    seen: list = []
+    response = _client(_answer_transport(seen)).post(
+        STREAM_URL, json=_payload(tools=[PC_TOOL], messages=messages)
+    )
+    assert response.status_code == 200, response.text
+    assert "파일 내용은 hello 입니다." in response.text
+    assert len(seen) == 1
+    return seen[0]
+
+
+def _followup_turn(call_entry) -> list:
+    return [
+        {"role": "user", "content": "파일 내용을 알려줘"},
+        {"role": "assistant", "content": None, "tool_calls": [call_entry]},
+        {"role": "tool", "tool_call_id": "call_native", "name": "pc_files",
+         "content": "hello"},
+    ]
+
+
+def test_the_replayed_call_reaches_the_native_endpoint_still_signed(monkeypatch) -> None:
+    _google_live(monkeypatch)
+    url, body = _replay(_followup_turn(_call("call_native", signature=SIGNATURE)))
+
+    # The tool turn is served by the native wire, not the compatible endpoint.
+    assert url.startswith("https://generativelanguage.googleapis.com/v1beta/models/")
+    assert ":streamGenerateContent" in url
+    model_part = body["contents"][1]["parts"][0]
+    assert model_part["functionCall"] == {
+        "id": "call_native", "name": "pc_files", "args": {"path": "a.txt"},
+    }
+    assert model_part["thoughtSignature"] == SIGNATURE
+    assert body["contents"][2]["parts"][0]["functionResponse"]["response"] == {
+        "result": "hello",
+    }
+
+
+def test_a_caller_echoing_the_compatible_field_replays_the_same_body(monkeypatch) -> None:
+    _google_live(monkeypatch)
+    """A consumer that returns the provider's own field verbatim is accepted."""
+    echoed = {
+        "id": "call_native", "type": "function",
+        "function": {"name": "pc_files", "arguments": '{"path":"a.txt"}'},
+        "extra_content": {"google": {"thought_signature": SIGNATURE}},
+    }
+    _url, body = _replay(_followup_turn(echoed))
+
+    assert body["contents"][1]["parts"][0]["thoughtSignature"] == SIGNATURE
+    assert "signature" not in json.dumps(body)
+
+
+def test_a_denied_tool_is_replayed_as_the_result_the_executor_returned(monkeypatch) -> None:
+    _google_live(monkeypatch)
+    """Refusal is data the model reads, never a success the gateway asserts."""
+    messages = _followup_turn(_call("call_native", signature=SIGNATURE))
+    messages[2] = {"role": "tool", "tool_call_id": "call_native",
+                   "name": "pc_files", "content": "사용자가 승인을 거부했습니다."}
+    _url, body = _replay(messages)
+
+    part = body["contents"][2]["parts"][0]["functionResponse"]
+    assert part["response"] == {"result": "사용자가 승인을 거부했습니다."}
+    assert part["id"] == "call_native" and part["name"] == "pc_files"

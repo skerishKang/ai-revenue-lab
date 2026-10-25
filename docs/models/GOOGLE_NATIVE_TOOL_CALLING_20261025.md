@@ -60,6 +60,44 @@ owner-approved model-policy change and remains open.
 - The normal text lane keeps its exact request bytes: the signature field is
   present only when a provider issued one.
 
+## Ledger interaction (the merged #5806 write path)
+
+A declared tool changes which wire the call physically used and which counts the
+provider reports, so the #5318 ledger row describes the request as it ran:
+
+- `protocol` is `native` for a Google tool stream
+  (`models/{model}:streamGenerateContent`) and stays `chat/completions` for the
+  text lane. `native` is already in the stored vocabulary and its D1 `CHECK`, so
+  this needs no migration.
+- `usageMetadata.thoughtsTokenCount` is stored in the existing
+  `reasoning_tokens` column instead of being dropped. `completion_tokens` stays
+  exactly `candidatesTokenCount`: the thinking count is never folded into it, so
+  a stored total that exceeds its parts is explained by a number the provider
+  reported rather than by derived arithmetic.
+- A completed tool call is visible output, so TTFT is measured on this lane, and
+  the parent row still counts one logical request whatever the tool turn did.
+
+## Known limits, stated rather than worked around
+
+1. **A signature on a non-call part is not carried.** The cited provider page
+   says a signature can attach to any part of the model turn while a follow-up
+   must echo every signature that was returned. This channel carries one opaque
+   value per tool call only, so a signature that arrived on a thinking or text
+   part is dropped at the decoder and cannot be replayed. Closing it needs a
+   turn-level field across the SSE frame, Core and Chat — the consumer boundary
+   of #5573, not something the adapter can decide alone.
+2. **A refused or failed tool has no error channel.** `role: tool` carries text
+   and nothing else, so the executor's refusal or failure reaches the model as
+   result text. B14 never marks a call executed: it relays the call and the
+   caller's own result.
+3. **Unverified wire shapes.** Two behaviours of the native stream are tested
+   only against frames this repo wrote: whether Gemini splits one
+   `functionCall`'s arguments across frames (the decoder requires a complete,
+   named call in a single part and refuses the stream otherwise) and whether
+   `thinkingLevel` accepts every mapped `reasoning_effort` value. Both fail
+   closed as `malformed_upstream_response` or a provider 4xx, never as a
+   partial call. The first live echo has to confirm them.
+
 ## Consumer boundary
 
 Chat and Engine already receive the model-selected call through the existing
@@ -73,7 +111,11 @@ step-driver answer is the #5573 Chat/Engine boundary, not this adapter slice.
 ## Verification level
 
 - Static contract and MockTransport tests:
-  `apps/korean-ai-platform/tests/test_4727_google_native_roundtrip.py`,
+  `apps/korean-ai-platform/tests/test_4727_google_native_roundtrip.py` (the
+  replay is driven through the streaming route, so the outbound native body and
+  the returned answer are both observed),
+  `apps/korean-ai-platform/tests/test_5318_b14_call_ledger.py` (the tool stream's
+  protocol and thinking counts as stored),
   `apps/korean-ai-platform/tests/test_streaming_gateway.py`,
   `packages/padiem-ai-core/tests/test_tool_channel.py`,
   `packages/padiem-ai-core/tests/test_b14_streaming.py`.

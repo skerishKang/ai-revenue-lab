@@ -21,9 +21,15 @@ class StreamUsage:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
+    # A provider that bills reasoning separately reports it beside the answer.
+    # It is stored as the provider reported it, never folded into completion by
+    # arithmetic, so a later reader can tell a measured value from a derived one.
+    reasoning_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        for name in (
+            "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
+        ):
             value = getattr(self, name)
             if value is not None and (
                 isinstance(value, bool) or not isinstance(value, int) or value < 0
@@ -123,7 +129,13 @@ def _usage_from_payload(raw: Any) -> StreamUsage | None:
         ):
             raise MalformedUpstreamResponse()
         values[name] = value
-    return StreamUsage(**values)
+    details = raw.get("completion_tokens_details")
+    reasoning = details.get("reasoning_tokens") if isinstance(details, dict) else None
+    if reasoning is not None and (
+        isinstance(reasoning, bool) or not isinstance(reasoning, int) or reasoning < 0
+    ):
+        raise MalformedUpstreamResponse()
+    return StreamUsage(**values, reasoning_tokens=reasoning)
 
 
 def _parse_sse_frame(frame: bytes) -> StreamEvent | None:

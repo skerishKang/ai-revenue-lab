@@ -352,10 +352,17 @@ class _GoogleToolStream:
             if usage is not None:
                 if not isinstance(usage, dict):
                     raise ValueError("invalid usage")
+                # The native wire reports the three counts and, for a thinking
+                # model, the thinking tokens beside them. Dropping that fourth
+                # number would leave a row whose total is larger than the parts
+                # it was built from, with nothing to explain the difference.
                 events.append(StreamEvent(**metadata, usage=_usage_from_payload({
                     "prompt_tokens": usage.get("promptTokenCount"),
                     "completion_tokens": usage.get("candidatesTokenCount"),
                     "total_tokens": usage.get("totalTokenCount"),
+                    "completion_tokens_details": {
+                        "reasoning_tokens": usage.get("thoughtsTokenCount"),
+                    },
                 })))
             return events
         except (ValueError, TypeError, AttributeError, KeyError, InvalidToolDeclaration) as exc:
