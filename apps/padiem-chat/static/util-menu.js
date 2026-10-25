@@ -137,6 +137,8 @@
     // that did not happen.
     const saveBtn = document.getElementById("utilSpeechSave");
     const utilTitleEl = document.getElementById("utilTitle");
+    const utilKickerEl = document.getElementById("utilKicker");
+    const utilTaglineEl = document.getElementById("utilTagline");
     const tabs = document.querySelectorAll(".util-tab");
     const panels = {
       speech: document.getElementById("utilSpeechPanel"),
@@ -228,6 +230,11 @@
       // #5727: the page title names the actual tool, the shared standalone
       // header hierarchy (kicker → task title → tagline) stays untouched.
       if (utilTitleEl && tab.textContent.trim()) utilTitleEl.textContent = tab.textContent.trim();
+      // #5799: the kicker and tagline follow the active tool the same way.
+      // Only the speech template carries its own values so far; the other
+      // tools keep the shared defaults until their own pass.
+      if (utilKickerEl) utilKickerEl.textContent = tab.dataset.kicker || "Padiem Util";
+      if (utilTaglineEl) utilTaglineEl.textContent = tab.dataset.tagline || "AI 홍보·기록 비서";
       if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
       if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
       if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
