@@ -1,0 +1,18 @@
+[project]
+name = "padiem-document-parser"
+version = "0.1.0"
+description = "Private isolated binary document Parser Authority for PADIEM Chat"
+requires-python = ">=3.13.2"
+dependencies = [
+  # The same Core package and extra the Chat Worker already vendors. This Worker
+  # adds no second parser and no parser-library fork: it runs the reviewed
+  # extract_binary_document implementation behind the Service Binding.
+  "padiem-ai-core[documents] @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
+]
+
+[tool.pywrangler]
+allow-build = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

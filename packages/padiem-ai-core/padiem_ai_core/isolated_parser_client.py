@@ -4,16 +4,16 @@ Why this module exists
 ----------------------
 ``padiem_ai_core.document_parser_boundary`` is the single binary parser
 *authority* decision: on the production Cloudflare Worker (Pyodide) it fails
-closed with ``document_parser_isolation_unavailable`` because the runtime has
-no subprocess/multiprocessing and therefore no reviewed in-Worker isolation
-for synchronous CPU parse work. A real Worker parser will require a
-separately reviewed isolated runtime/service binding.
+closed with ``document_parser_isolation_unavailable`` unless trusted server
+composition installs an isolated authority. This module is the caller side of
+that authority: a bounded request/response shape plus a transport port whose
+transport is injected exclusively by trusted server composition.
 
-This child defines only the missing **client/transport contract** for that
-later composition: a bounded request/response shape plus a transport port
-whose authority is injected exclusively by trusted server composition. It
-does not bind any live service, endpoint, host, command or sandbox, and it
-does not change the production Worker fail-closed default.
+The byte-level envelope (including document provenance) lives in
+``padiem_ai_core.isolated_parser_contract`` so the parser-side handler and this
+client can never drift. This module owns only the synchronous client surface
+used by local/CPython callers and the composition seam. The asynchronous
+Cloudflare Worker client lives in ``isolated_parser_async_client``.
 
 What this module deliberately does NOT do
 -----------------------------------------
@@ -22,93 +22,38 @@ What this module deliberately does NOT do
   the public surface. Callers provide only the canonical bounded document
   identity and payload.
 * No network, process, thread, signal or subprocess primitive is imported or
-  referenced. The transport port is abstract; production wiring (when later
-  reviewed) lives outside this module. Tests inject an in-memory fake.
+  referenced. The transport port is abstract; production wiring lives outside
+  this module. Tests inject an in-memory fake.
 * No raw exception text, traceback, host path, service metadata or
   credential value may cross back through the client: transport failures
   collapse to a bounded ``DocumentNormalizationError`` code.
-* ``document_parser_boundary.resolve_binary_document_parser_authority`` is
-  intentionally untouched. Importing this contract never arms a parser, and
-  the production Worker still raises isolation-unavailable until a later
-  explicitly reviewed composition binds a real authority.
+* Importing this contract never arms a parser. The production Worker still
+  raises isolation-unavailable until trusted composition binds a real
+  authority.
 """
 
 from __future__ import annotations
 
-import base64
-import binascii
-import json
-import re
 from typing import Any, Protocol, runtime_checkable
 
-from .document_normalization import (
-    MAX_BINARY_DOCUMENT_BYTES,
-    NormalizedDocument,
-    normalize_document_text,
-    validate_document_identity,
+from .document_normalization import NormalizedDocument, validate_document_identity
+from .document_semantics import DocumentNormalizationError
+from .isolated_parser_contract import (
+    ISOLATED_PARSER_DOCUMENT_KIND,
+    ISOLATED_PARSER_ERROR_KIND,
+    ISOLATED_PARSER_MAX_REQUEST_BYTES,
+    ISOLATED_PARSER_MAX_RESPONSE_BYTES,
+    ISOLATED_PARSER_REQUEST_KIND,
+    ISOLATED_PARSER_RESPONSE_INVALID,
+    ISOLATED_PARSER_RESPONSE_UNBOUNDED,
+    ISOLATED_PARSER_TRANSPORT_FAILED,
+    decode_response,
+    encode_request,
 )
-from .document_semantics import (
-    DocumentNormalizationError,
-    ExtractionStatus,
-    normalize_document_warnings,
-)
-
-#: JSON ``type`` discriminator for the outbound bounded request envelope.
-ISOLATED_PARSER_REQUEST_KIND = "isolated_parser_request"
-#: JSON ``type`` discriminator for a success response (document material).
-ISOLATED_PARSER_DOCUMENT_KIND = "document"
-#: JSON ``type`` discriminator for a bounded failure response (reason code).
-ISOLATED_PARSER_ERROR_KIND = "error"
-
-#: Response ceiling derived from Core document bounds: worst-case UTF-8
-#: expansion of the full ``MAX_DOCUMENT_CHARS`` text budget plus identity,
-#: status, warning and JSON structural overhead, with margin. Not caller
-#: configurable.
-ISOLATED_PARSER_MAX_RESPONSE_BYTES = 256 * 1024
-
-#: Request ceiling derived from ``MAX_BINARY_DOCUMENT_BYTES`` base64
-#: expansion plus fixed envelope overhead. Not caller configurable.
-ISOLATED_PARSER_MAX_REQUEST_BYTES = ((MAX_BINARY_DOCUMENT_BYTES + 2) // 3) * 4 + 4096
-
-#: Bounded transport-failure code (static message; never carries ``str(exc)``).
-ISOLATED_PARSER_TRANSPORT_FAILED = "isolated_parser_transport_failed"
-#: Bounded code for a response that exceeds the size ceiling.
-ISOLATED_PARSER_RESPONSE_UNBOUNDED = "isolated_parser_response_unbounded"
-#: Bounded code for a structurally invalid or over-wide response envelope.
-ISOLATED_PARSER_RESPONSE_INVALID = "isolated_parser_response_invalid"
-
-_REQUEST_KIND = ISOLATED_PARSER_REQUEST_KIND
-_DOCUMENT_KIND = ISOLATED_PARSER_DOCUMENT_KIND
-_ERROR_KIND = ISOLATED_PARSER_ERROR_KIND
 
 _TRANSPORT_FAILED_MESSAGE = (
     "Isolated parser transport failed before a bounded response was available."
 )
-_RESPONSE_UNBOUNDED_MESSAGE = "Isolated parser response exceeds the size ceiling."
-_RESPONSE_INVALID_MESSAGE = "Isolated parser response is not a bounded contract envelope."
-
-#: Only these keys may appear on a success document response.
-_DOCUMENT_RESPONSE_FIELDS = frozenset(
-    {
-        "type",
-        "name",
-        "media_type",
-        "text",
-        "byte_size",
-        "source_kind",
-        "status",
-        "warnings",
-    }
-)
-#: Only these keys may appear on a failure response.
-_ERROR_RESPONSE_FIELDS = frozenset({"type", "code"})
-
-#: Bounded, machine-only reason-code shape (lowercase token; no paths/spaces).
-_SAFE_CODE_RE = re.compile(r"^[a-z][a-z0-9._:-]{0,63}$")
-
-_TRANSPORT_FAILED_NAME = "isolated_parser_transport_failed"
-_UNBOUNDED_NAME = "isolated_parser_response_unbounded"
-_INVALID_NAME = "isolated_parser_response_invalid"
 
 
 @runtime_checkable
@@ -137,104 +82,14 @@ def _bounded_binary_payload(payload: Any) -> bytes:
     return binary
 
 
-def _encode_request(*, name: str, media_type: str, payload: bytes) -> bytes:
-    envelope = {
-        "type": _REQUEST_KIND,
-        "name": name,
-        "media_type": media_type,
-        "payload_b64": base64.b64encode(payload).decode("ascii"),
-    }
-    raw = json.dumps(envelope, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    # #4379: the parser request carries no PADIEM byte total. The parser
-    # process applies its own contract to what it accepts.
-    return raw
-
-
-def _reject(message_code: str, message: str) -> DocumentNormalizationError:
-    return DocumentNormalizationError(message_code, message)
-
-
-def _decode_json_object(raw: Any) -> dict[str, Any]:
-    if not isinstance(raw, (bytes, bytearray)):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    body = bytes(raw)
-    if not body:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    if len(body) > ISOLATED_PARSER_MAX_RESPONSE_BYTES:
-        raise _reject(_UNBOUNDED_NAME, _RESPONSE_UNBOUNDED_MESSAGE)
-    try:
-        decoded = json.loads(body.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE) from None
-    if not isinstance(decoded, dict):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    return decoded
-
-
-def _bounded_failure_code(value: Any) -> str:
-    if not isinstance(value, str) or not _SAFE_CODE_RE.fullmatch(value):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    return value
-
-
-def _document_from_response(
-    envelope: dict[str, Any],
-    *,
-    name: str,
-    media_type: str,
-    byte_size: int,
-) -> NormalizedDocument:
-    if set(envelope) - _DOCUMENT_RESPONSE_FIELDS:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    if envelope.get("type") != _DOCUMENT_KIND:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    if envelope.get("source_kind") != "binary":
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    if envelope.get("name") != name or envelope.get("media_type") != media_type:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    declared_size = envelope.get("byte_size")
-    if isinstance(declared_size, bool) or not isinstance(declared_size, int):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    if declared_size != byte_size:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    try:
-        text = normalize_document_text(envelope.get("text"))
-    except DocumentNormalizationError:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE) from None
-    raw_status = envelope.get("status", ExtractionStatus.COMPLETE.value)
-    try:
-        status = ExtractionStatus(raw_status)
-    except ValueError:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE) from None
-    raw_warnings = envelope.get("warnings", ())
-    if not isinstance(raw_warnings, (list, tuple)):
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-    try:
-        warnings = normalize_document_warnings(tuple(raw_warnings))
-    except DocumentNormalizationError:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE) from None
-    try:
-        return NormalizedDocument(
-            name=name,
-            media_type=media_type,
-            text=text,
-            byte_size=byte_size,
-            source_kind="binary",
-            status=status,
-            warnings=warnings,
-        )
-    except DocumentNormalizationError:
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE) from None
-
-
 class IsolatedParserClient:
     """Bounded isolated-parser client with no caller-controlled transport inputs.
 
     The constructor requires a trusted injected transport and nothing else.
     ``parse_binary_document`` accepts the same keyword-only surface as
     ``BinaryDocumentParserPort`` (``name``, ``media_type``, ``payload``) so a
-    later reviewed composition can present this client as that port without
-    widening any caller input.
+    reviewed composition can present this client as that port without widening
+    any caller input.
     """
 
     __slots__ = ("_transport",)
@@ -268,7 +123,7 @@ class IsolatedParserClient:
         # An explicitly binary-capable trusted transport receives original bytes.
         # Existing JSON-only transports retain their published wire contract.
         exchange_binary = getattr(self._transport, "exchange_binary", None)
-        request = None if callable(exchange_binary) else _encode_request(
+        request = None if callable(exchange_binary) else encode_request(
             name=safe_name, media_type=safe_media, payload=binary,
         )
         # Raise the bounded failure *after* the except block so the raw
@@ -286,24 +141,15 @@ class IsolatedParserClient:
             transport_failed = True
         if transport_failed:
             raise DocumentNormalizationError(
-                _TRANSPORT_FAILED_NAME,
+                ISOLATED_PARSER_TRANSPORT_FAILED,
                 _TRANSPORT_FAILED_MESSAGE,
             )
-        envelope = _decode_json_object(raw)
-        response_kind = envelope.get("type")
-        if response_kind == _ERROR_KIND:
-            if set(envelope) - _ERROR_RESPONSE_FIELDS:
-                raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
-            code = _bounded_failure_code(envelope.get("code"))
-            raise DocumentNormalizationError(code, "Isolated parser reported a bounded failure.")
-        if response_kind == _DOCUMENT_KIND:
-            return _document_from_response(
-                envelope,
-                name=safe_name,
-                media_type=safe_media,
-                byte_size=len(binary),
-            )
-        raise _reject(_INVALID_NAME, _RESPONSE_INVALID_MESSAGE)
+        return decode_response(
+            raw,
+            name=safe_name,
+            media_type=safe_media,
+            byte_size=len(binary),
+        )
 
 
 __all__ = [

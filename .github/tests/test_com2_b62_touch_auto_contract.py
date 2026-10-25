@@ -10,12 +10,29 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 AUTO = ROOT / ".github/workflows/com2-b62-touch-auto.yml"
 HOSTED = ROOT / ".github/workflows/b62-browser-qa-unified.yml"
+FALLBACK = ROOT / ".github/workflows/b62-mobile-touch-hosted-fallback.yml"
 
 class TouchAutoCanaryContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.auto = AUTO.read_text(encoding="utf-8")
         cls.hosted = HOSTED.read_text(encoding="utf-8")
+        cls.fallback = FALLBACK.read_text(encoding="utf-8")
+
+    def test_hosted_fallback_resolves_both_the_verdict_and_its_dispatch_marker(self):
+        # The watchdog posts a pending marker and treats pending as handled, so the
+        # fallback has to terminalize it. The policy failover pair already does this;
+        # the mobile pair was missing it and stranded PR heads in UNSTABLE.
+        self.assertIn('"context":"B62 mobile QA final"', self.fallback)
+        self.assertIn('"context":"COM2 mobile hosted fallback dispatch"', self.fallback)
+        self.assertIn("name: Terminalize the hosted fallback dispatch marker", self.fallback)
+        self.assertIn("if: ${{ always() }}", self.fallback)
+        self.assertIn('JOB_STATUS: ${{ job.status }}', self.fallback)
+        self.assertGreaterEqual(self.fallback.count('"state":os.environ["STATE"]'), 2)
+
+    def test_fallback_verdict_still_refuses_to_publish_an_unrun_qa(self):
+        self.assertIn("if: ${{ always() && steps.touch_qa.outcome != 'skipped' }}", self.fallback)
+        self.assertIn('if [[ "$RESULT" == success ]]; then export STATE=success; fi', self.fallback)
 
     def test_explicit_dispatch_independent_from_hosted_qa(self):
         self.assertIn("workflow_dispatch:", self.auto)

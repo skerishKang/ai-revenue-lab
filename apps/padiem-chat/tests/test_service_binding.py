@@ -136,6 +136,12 @@ def test_service_binding_target_is_fixed_in_repository_config():
             "binding": "VOICE_STT_SERVICE",
             "service": "padiem-voice-stt",
         },
+        {
+            # #2824: the private Parser Authority Worker. No public route, and the
+            # Chat Worker reaches it only through this fixed service binding.
+            "binding": "DOCUMENT_PARSER_SERVICE",
+            "service": "padiem-document-parser",
+        },
     ]
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"

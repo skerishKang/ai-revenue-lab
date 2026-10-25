@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from padiem_ai_core.document_parser_boundary import binary_document_parser_ready
+from padiem_ai_core.document_parser_boundary import binary_document_parser_ready_async
 
 from .android_auth_routes import (
     android_handoff_claim,
@@ -379,7 +379,7 @@ async def health(request: Request) -> JSONResponse:
         "deep_research_ready": research_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
-        "binary_document_attachment_ready": binary_document_parser_ready(),
+        "binary_document_attachment_ready": binary_document_parser_ready_async(),
         "auth_configured": settings.auth_mode != "off",
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,

@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/tests/test_b62_observability_deploy_contract.py"
       - ".github/scripts/b62_connector_broker_additive_preflight.py"
       - ".github/tests/test_b62_connector_broker_additive_preflight.py"
       - ".github/scripts/b62_connector_broker_served_version_readonly.py"
@@ -261,6 +262,14 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pytest
           python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q
           echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Verify Workers Logs deploy metadata contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_observability_deploy_contract.py -q
+          echo "B62_OBSERVABILITY_DEPLOY_CONTRACT=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       - name: Prove Owner-approved atomic web Secrets Store addition contract
@@ -631,6 +640,7 @@ jobs:
           settings="${RUNNER_TEMP}/b62-settings-readonly.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -c '.result.observability | {enabled, head_sampling_rate, logs: (.logs | {enabled, invocation_logs, head_sampling_rate})}' "${settings}" | sed 's/^/B62_LIVE_OBSERVABILITY=/'
 
           # #4194: live override may retain 20s although source default is
           # 600s. This is read-only; warn without blocking unrelated releases

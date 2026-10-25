@@ -3,8 +3,9 @@
 
 The live Cloudflare settings dump is the single authority for bindings and
 plain-text variables; the repository wrangler.toml only supplies build inputs
-(entrypoint, compatibility, assets directory). Secret bindings are carried by
-the platform and are never read or emitted here. Anything unsupported fails
+(entrypoint, compatibility, assets directory) and the declared observability
+settings passed through pywrangler to the Worker upload metadata. Secret
+bindings are carried by the platform and are never read or emitted here. Anything unsupported fails
 closed so no live binding can be silently dropped by a code deploy.
 """
 
@@ -171,6 +172,39 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     }
 
 
+def _observability_config_lines(observability: object) -> list[str]:
+    """Carry repository logging intent into Wrangler's upload metadata.
+
+    pywrangler proxies deploy --config to Wrangler, which serializes this table
+    as metadata.observability. Never substitute the already-disabled live state
+    or force a hardcoded enabled/sampling value over the repository setting.
+    """
+    if observability is None:
+        return []
+    if not isinstance(observability, dict) or set(observability) - {"enabled", "head_sampling_rate", "logs"}:
+        raise ProductionConfigError("unsupported repository [observability] settings")
+    lines: list[str] = []
+    for name, table, allowed in (
+        ("observability", observability, {"enabled", "head_sampling_rate", "logs"}),
+        ("observability.logs", observability.get("logs"), {"enabled", "head_sampling_rate", "invocation_logs"}),
+    ):
+        if table is None:
+            continue
+        if not isinstance(table, dict) or set(table) - allowed or type(table.get("enabled")) is not bool:
+            raise ProductionConfigError(f"invalid repository [{name}] settings")
+        lines.extend(["", f"[{name}]"])
+        for key, value in table.items():
+            if key == "logs":
+                continue
+            if key == "head_sampling_rate":
+                if type(value) not in (int, float) or not 0 <= value <= 1:
+                    raise ProductionConfigError(f"invalid repository [{name}].head_sampling_rate")
+            elif type(value) is not bool:
+                raise ProductionConfigError(f"invalid repository [{name}].{key}")
+            lines.append(f"{key} = {json.dumps(value)}")
+    return lines
+
+
 def build_production_config(
     live: dict[str, object],
     repo_config_path: Path,
@@ -240,6 +274,7 @@ def build_production_config(
     lines.append("preview_urls = true")
     if base_dir is not None:
         lines.append(f"base_dir = {_toml_string(base_dir)}")
+    lines.extend(_observability_config_lines(repo.get("observability")))
     # Preserve the already-attached canonical production Custom Domain. Without
     # this exact route, Wrangler --strict correctly rejects a deploy that would
     # detach chat.padiem.net from the production Worker.

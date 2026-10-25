@@ -3,7 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
+from .attachments import (
+    AttachmentValidationError,
+    ImageAttachment,
+    parse_attachments,
+    parse_attachments_async,
+)
 from .history import (
     validate_chat_pc_run_id,
     validate_conversation_id,
@@ -104,9 +109,9 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     raise BrowserRequestError("지원하지 않는 도구입니다.")
 
 
-def _validate_payload(
+def _validate_payload_parts(
     raw: Any,
-) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
     if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "pc_run_id", "web_search"}:
@@ -150,10 +155,17 @@ def _validate_payload(
         raise BrowserRequestError("사용자 질문이 필요합니다.")
 
     tool_request = _validate_tool_request(raw)
-    try:
-        attachments = parse_attachments(raw.get("attachments"))
-    except AttachmentValidationError as exc:
-        raise BrowserRequestError(str(exc)) from exc
+    return out, skill, tool_request
+
+
+def _finish_payload(
+    raw: dict[str, Any],
+    *,
+    messages: list[dict[str, str]],
+    skill: TaskMode,
+    tool_request: BrowserToolRequest | None,
+    attachments: tuple[Any, ...],
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     if tool_request is not None and any(isinstance(item, ImageAttachment) for item in attachments):
         raise BrowserRequestError("현재는 사진 첨부와 웹 도구를 한 요청에서 함께 사용할 수 없습니다.")
     custom = _validate_custom_selection(raw)
@@ -164,7 +176,43 @@ def _validate_payload(
         project_id = validate_project_id(raw.get("project_id"))
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
-    return out, skill, tool_request, attachments, conversation_id, project_id, custom
+    return messages, skill, tool_request, attachments, conversation_id, project_id, custom
+
+
+def _validate_payload(
+    raw: Any,
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+    messages, skill, tool_request = _validate_payload_parts(raw)
+    try:
+        attachments = parse_attachments(raw.get("attachments"))
+    except AttachmentValidationError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+    return _finish_payload(
+        raw,
+        messages=messages,
+        skill=skill,
+        tool_request=tool_request,
+        attachments=attachments,
+    )
+
+
+async def _validate_payload_async(
+    raw: Any,
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
+    """Worker request path: validate with the async isolated parser authority."""
+
+    messages, skill, tool_request = _validate_payload_parts(raw)
+    try:
+        attachments = await parse_attachments_async(raw.get("attachments"))
+    except AttachmentValidationError as exc:
+        raise BrowserRequestError(str(exc)) from exc
+    return _finish_payload(
+        raw,
+        messages=messages,
+        skill=skill,
+        tool_request=tool_request,
+        attachments=attachments,
+    )
 
 
 def _apply_b62_model_policy(
