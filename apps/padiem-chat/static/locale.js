@@ -759,6 +759,20 @@
     if (attachmentButton) window.PadiemSharedTooltip?.label?.(attachmentButton, capabilityCopy.fileButtonTitle);
   }
 
+  function syncBinaryAttachmentSupport() {
+    if (typeof fetch !== "function") return;
+    fetch("/health", { headers: { "Accept": "application/json" }, cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!data || typeof data.binary_document_attachment_ready !== "boolean") return;
+        if (typeof attachmentCapabilities.setBinarySupport !== "function") return;
+        attachmentCapabilities.setBinarySupport(data.binary_document_attachment_ready);
+        syncAttachmentCapabilityCopy(getCurrent());
+        window.dispatchEvent(new CustomEvent("padiem:attachmentcapabilitychange"));
+      })
+      .catch(() => {});
+  }
+
   function syncGlassCopy(lang) {
     const glassTheme = document.querySelector('[data-theme-value="padiem-glass"]');
     if (glassTheme) glassTheme.textContent = text("glass-theme", lang);
@@ -868,6 +882,7 @@
   function init() {
     installConfirmLocalization();
     apply(getUrlLocale() || "ko", false);
+    syncBinaryAttachmentSupport();
     document.getElementById("languagePicker")?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-locale-value]");
       const requested = button ? normalizeLocale(button.dataset.localeValue) : null;

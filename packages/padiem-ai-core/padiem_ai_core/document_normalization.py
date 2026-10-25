@@ -371,7 +371,36 @@ def _local_name(element: ElementTree.Element) -> str:
     return element.tag.rsplit("}", 1)[-1]
 
 
-def extract_docx_text(payload: bytes) -> str:
+def _docx_paragraph_text(paragraph: ElementTree.Element) -> str:
+    return "".join(
+        node.text or "" for node in paragraph.iter() if _local_name(node) == "t"
+    ).strip()
+
+
+def _docx_table_rows(table: ElementTree.Element) -> list[str]:
+    """Read one table as ordered rows of cell text, preserving empty rows."""
+
+    rows: list[str] = []
+    for row in table.iter():
+        if _local_name(row) != "tr":
+            continue
+        cells: list[str] = []
+        for cell in row:
+            if _local_name(cell) != "tc":
+                continue
+            paragraphs = [
+                value
+                for paragraph in cell.iter()
+                if _local_name(paragraph) == "p"
+                if (value := _docx_paragraph_text(paragraph))
+            ]
+            if paragraphs:
+                cells.append(" ".join(paragraphs))
+        rows.append(" | ".join(cells))
+    return rows
+
+
+def _extract_docx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
     validate_ooxml_archive(payload)
     try:
         with ZipFile(BytesIO(payload)) as archive:
@@ -388,18 +417,49 @@ def extract_docx_text(payload: bytes) -> str:
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 
-    paragraphs: list[str] = []
-    for paragraph in root.iter():
-        if _local_name(paragraph) != "p":
-            continue
-        pieces = [node.text or "" for node in paragraph.iter() if _local_name(node) == "t"]
-        value = "".join(pieces)
-        if value:
-            _append_bounded(paragraphs, value)
-    text = "\n".join(paragraphs).strip()
+    parts: list[str] = []
+    segments: list[DocumentSegment] = []
+    table_index = 0
+
+    def walk(container: ElementTree.Element) -> None:
+        nonlocal table_index
+        for child in container:
+            tag = _local_name(child)
+            if tag == "p":
+                value = _docx_paragraph_text(child)
+                if value:
+                    _append_bounded(parts, value)
+                    segments.append(DocumentSegment(text=value, order=len(segments)))
+            elif tag == "tbl":
+                table_index += 1
+                for row_index, row_value in enumerate(_docx_table_rows(child), start=1):
+                    if not row_value:
+                        continue
+                    _append_bounded(parts, row_value)
+                    segments.append(
+                        DocumentSegment(
+                            text=row_value,
+                            order=len(segments),
+                            locator=DocumentLocator(
+                                kind=LocatorKind.ROW,
+                                value=f"{table_index}.{row_index}",
+                                precision=LocatorPrecision.EXACT,
+                            ),
+                        )
+                    )
+            else:
+                walk(child)
+
+    body = next((element for element in root.iter() if _local_name(element) == "body"), root)
+    walk(body)
+    text = "\n".join(parts).strip()
     if not text:
         raise DocumentNormalizationError("docx_empty", "DOCX contains no readable text.")
-    return text
+    return text, tuple(segments)
+
+
+def extract_docx_text(payload: bytes) -> str:
+    return _extract_docx_blocks(payload)[0]
 
 
 def _slide_sort_key(name: str) -> tuple[int, str]:
@@ -408,7 +468,7 @@ def _slide_sort_key(name: str) -> tuple[int, str]:
     return (int(suffix) if suffix.isdigit() else 10**9, name)
 
 
-def extract_pptx_text(payload: bytes) -> str:
+def _extract_pptx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
     validate_ooxml_archive(payload)
     try:
         with ZipFile(BytesIO(payload)) as archive:
@@ -422,8 +482,12 @@ def extract_pptx_text(payload: bytes) -> str:
             )
             if not slide_names:
                 raise DocumentNormalizationError("pptx_missing_slides", "PPTX contains no slide XML parts.")
-            slides: list[str] = []
-            for slide_name in slide_names:
+            parts: list[str] = []
+            segments: list[DocumentSegment] = []
+            for position, slide_name in enumerate(slide_names, start=1):
+                slide_number = _slide_sort_key(slide_name)[0]
+                if slide_number >= 10**9:
+                    slide_number = position
                 root = _parse_xml(
                     _read_member_bounded(
                         archive, slide_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
@@ -431,16 +495,32 @@ def extract_pptx_text(payload: bytes) -> str:
                 )
                 pieces = [node.text or "" for node in root.iter() if _local_name(node) == "t"]
                 slide = "\n".join(piece for piece in pieces if piece).strip()
-                if slide:
-                    _append_bounded(slides, slide)
+                if not slide:
+                    continue
+                _append_bounded(parts, slide)
+                segments.append(
+                    DocumentSegment(
+                        text=slide,
+                        order=len(segments),
+                        locator=DocumentLocator(
+                            kind=LocatorKind.SLIDE,
+                            value=str(slide_number),
+                            precision=LocatorPrecision.EXACT,
+                        ),
+                    )
+                )
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
-    text = "\n".join(slides).strip()
+    text = "\n".join(parts).strip()
     if not text:
         raise DocumentNormalizationError("pptx_empty", "PPTX contains no readable text.")
-    return text
+    return text, tuple(segments)
+
+
+def extract_pptx_text(payload: bytes) -> str:
+    return _extract_pptx_blocks(payload)[0]
 
 
 def _hwpx_section_index(name: str) -> int | None:
@@ -1166,24 +1246,41 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
     )
 
 
-def _extract_pdf_text(payload: bytes) -> str:
+def _extract_pdf_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
     reader = _open_pdf_reader(payload)
     try:
         parts: list[str] = []
-        for page in reader.pages:
+        segments: list[DocumentSegment] = []
+        for index, page in enumerate(reader.pages):
             extracted = (page.extract_text() or "").strip()
-            if extracted:
-                _append_bounded(parts, extracted)
+            if not extracted:
+                continue
+            _append_bounded(parts, extracted)
+            segments.append(
+                DocumentSegment(
+                    text=extracted,
+                    order=len(segments),
+                    locator=DocumentLocator(
+                        kind=LocatorKind.PAGE,
+                        value=str(index + 1),
+                        precision=LocatorPrecision.EXACT,
+                    ),
+                )
+            )
         text = "\n\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("pdf_empty_text", "PDF contains no extractable text; OCR is not enabled.")
-        return text
+        return text, tuple(segments)
     except DocumentNormalizationError:
         raise
     except Exception as exc:
         raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
     finally:
         reader.close() if hasattr(reader, "close") else None
+
+
+def _extract_pdf_text(payload: bytes) -> str:
+    return _extract_pdf_blocks(payload)[0]
 
 
 def _cell_text(value: Any) -> str:
@@ -1200,37 +1297,58 @@ def _extract_xlsx_text(payload: bytes) -> str:
         from openpyxl import load_workbook
     except ModuleNotFoundError as exc:
         raise DocumentNormalizationError("document_dependency_unavailable", "XLSX extraction dependency is unavailable.") from exc
+    safe_payload = _bounded_ooxml_repackage(payload)
+    values_workbook = None
+    formulas_workbook = None
     try:
         # The third-party reader never receives the untrusted original archive:
-        # it reads the bounded, stored, sanitized copy instead.
-        workbook = load_workbook(
-            BytesIO(_bounded_ooxml_repackage(payload)),
+        # it reads the bounded, stored, sanitized copy instead. The second read
+        # keeps formula text next to the cached value of the same cell, so the
+        # model can see both what the formula means and what it currently shows.
+        values_workbook = load_workbook(
+            BytesIO(safe_payload),
             read_only=True,
             data_only=True,
             keep_links=False,
         )
+        formulas_workbook = load_workbook(
+            BytesIO(safe_payload),
+            read_only=True,
+            data_only=False,
+            keep_links=False,
+        )
     except Exception as exc:
+        if values_workbook is not None:
+            values_workbook.close()
         raise DocumentNormalizationError("xlsx_invalid", "XLSX could not be parsed safely.") from exc
     try:
-        if len(workbook.sheetnames) < 1:
+        if len(values_workbook.sheetnames) < 1:
             raise DocumentNormalizationError("xlsx_no_sheets", "XLSX contains no worksheets.")
         parts: list[str] = []
-        nonempty_cells = 0
-        for worksheet in workbook.worksheets:
-            max_row = int(worksheet.max_row or 0)
-            max_column = int(worksheet.max_column or 0)
-            for row in worksheet.iter_rows():
-                for cell in row:
-                    value = _cell_text(cell.value)
-                    if not value:
-                        continue
-                    _append_bounded(parts, f"[{worksheet.title}!{cell.coordinate}] {value}")
+        for value_sheet, formula_sheet in zip(
+            values_workbook.worksheets, formulas_workbook.worksheets
+        ):
+            for value_row, formula_row in zip(
+                value_sheet.iter_rows(), formula_sheet.iter_rows()
+            ):
+                for value_cell, formula_cell in zip(value_row, formula_row):
+                    value = _cell_text(value_cell.value)
+                    formula = formula_cell.value
+                    if isinstance(formula, str) and formula.startswith("="):
+                        shown = value or "(no cached value)"
+                        _append_bounded(
+                            parts,
+                            f"[{value_sheet.title}!{value_cell.coordinate}] {formula} => {shown}",
+                        )
+                    elif value:
+                        _append_bounded(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("xlsx_empty", "XLSX contains no readable values.")
         return text
     finally:
-        workbook.close()
+        formulas_workbook.close()
+        values_workbook.close()
 
 
 @dataclass(frozen=True, slots=True)
@@ -1414,12 +1532,13 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
     # #4379: a document payload carries no PADIEM byte total.
 
+    segments: tuple[DocumentSegment, ...] = ()
     if safe_media == "application/pdf":
-        text = _extract_pdf_text(binary)
+        text, segments = _extract_pdf_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        text = extract_docx_text(binary)
+        text, segments = _extract_docx_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-        text = extract_pptx_text(binary)
+        text, segments = _extract_pptx_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         text = _extract_xlsx_text(binary)
     elif safe_media == "application/hwp+zip":
@@ -1428,10 +1547,16 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         raise DocumentNormalizationError("unsupported_binary_media_type", "Unsupported binary document media type.")
 
     normalized = normalize_document_text(text)
+    # A pathological document can exceed the bounded segment count even under
+    # the character budget. Keep the flat text and let the single-segment
+    # fallback carry it instead of rejecting an otherwise readable document.
+    if len(segments) > MAX_DOCUMENT_SEGMENTS:
+        segments = ()
     return NormalizedDocument(
         name=safe_name,
         media_type=safe_media,
         text=normalized,
         byte_size=byte_size,
         source_kind="binary",
+        segments=segments,
     )
