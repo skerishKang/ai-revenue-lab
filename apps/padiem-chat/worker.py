@@ -59,6 +59,8 @@ from app.claw_artifact_delivery_receipt_store import (
     D1ArtifactDeliveryReceiptStore,
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
+from app.claw_push_subscriptions import D1ClawPushSubscriptionStore
+from app.claw_web_push_sender import VapidAuthority, WebPushSender
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.b14_service_proof import service_proof_headers
 from app.b66_search_boundary import authorized_b66_fact_search_binding
@@ -144,6 +146,44 @@ def _automation_source_enabled(env: Any) -> bool:
     return value is True
 
 
+_PUSH_SCOPE_ORIGIN_ENV = "PADIEM_CHAT_PUBLIC_BASE_URL"
+
+
+def _push_delivery_parts(env: Any, db_binding: Any) -> tuple[Any, Any, str]:
+    """Build the existing #5034 delivery parts for the background automation lane.
+
+    The scheduled lane runs outside the request app, so it reads the same
+    reviewed Worker bindings the request app already reads: the device registry
+    from ``PADIEM_CHAT_DB``, the VAPID authority from the three push secrets and
+    the subscription scope from the reviewed public origin. A missing part is
+    reported honestly through the existing ``not_configured`` state; the inbox
+    record and the automation run itself are never affected.
+    """
+    origin = binding_value(env, _PUSH_SCOPE_ORIGIN_ENV)
+    if db_binding is None or not isinstance(origin, str) or not origin.strip():
+        return None, None, ""
+    try:
+        store = D1ClawPushSubscriptionStore(db_binding)
+    except Exception:
+        return None, None, ""
+    private = str(binding_value(env, "PADIEM_PUSH_VAPID_PRIVATE_KEY") or "").strip()
+    public = str(binding_value(env, "PADIEM_PUSH_VAPID_PUBLIC_KEY") or "").strip()
+    subject = str(binding_value(env, "PADIEM_PUSH_VAPID_SUBJECT") or "").strip()
+    transport = build_push_transport()
+    sender = None
+    if private and public and subject and transport is not None:
+        try:
+            sender = WebPushSender(
+                authority=VapidAuthority(
+                    private_key=private, public_key=public, subject=subject,
+                ),
+                transport=transport,
+            )
+        except Exception:
+            sender = None
+    return store, sender, origin.rstrip("/") + "/"
+
+
 async def run_scheduled_automation_source(
     env: Any, *, now: datetime | None = None, execution_ports: Any | None = None
 ) -> Any:
@@ -197,11 +237,15 @@ async def run_scheduled_automation_source(
             )
             history_store = D1HistoryStore(db_binding)
             task_alert_store = D1ClawTaskAlertStore(db_binding)
+            push_store, push_sender, push_scope = _push_delivery_parts(env, db_binding)
         else:
             adapter = getattr(execution_ports, "adapter", None)
             owner_resolver = getattr(execution_ports, "owner_resolver", None)
             history_store = getattr(execution_ports, "history_store", None)
             task_alert_store = getattr(execution_ports, "task_alert_store", None)
+            push_store = getattr(execution_ports, "push_store", None)
+            push_sender = getattr(execution_ports, "push_sender", None)
+            push_scope = getattr(execution_ports, "push_scope", "")
             if any(
                 value is None
                 for value in (adapter, owner_resolver, history_store, task_alert_store)
@@ -215,6 +259,9 @@ async def run_scheduled_automation_source(
             owner_resolver=owner_resolver,
             history_store=history_store,
             task_alert_store=task_alert_store,
+            push_store=push_store,
+            push_sender=push_sender,
+            push_scope=push_scope,
             central_route_model_id=central_route_model_id,
             now=now or datetime.now(timezone.utc),
         )
