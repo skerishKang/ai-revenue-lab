@@ -14,7 +14,7 @@
   const DEFAULT_BRAND = "miraen";
   const STATUS_ENDPOINT = "../api/auth/status";
   const CHAT_ROOT = "../";
-  // 미디어는 R2 공개 도메인만 받습니다. brands/*.json 은 사람이 편집하는 자료이므로
+  // 미디어는 R2 공개 도메인만 받습니다. 브랜딩 파일은 사람이 편집하는 자료이므로
   // 임의 URL을 그대로 <video>/<img> 에 넣지 않습니다.
   const MEDIA_HOSTS = Object.freeze(["media.padiem.net"]);
   // 의원3종은 기존 util 화면의 소유입니다. 프래그먼트는 목적지 표식이고,
@@ -25,6 +25,10 @@
     Object.freeze({ tool: "meeting", href: CHAT_ROOT + "#padiem-util/meeting", title: "회의정리·활동집" }),
   ]);
   const PLACEHOLDER_NOTE = "이 화면은 시제품입니다. 대표 영상과 사진은 확보되는 대로 이 자리에 표시됩니다.";
+  // 테마는 Chat이 이미 쓰는 값 두 개만 사용합니다(기본 Light, 선택 Dark).
+  const THEMES = Object.freeze(["light", "dark"]);
+  const DEFAULT_THEME = "light";
+  const THEME_COLOR = Object.freeze({ light: "#f8f8fb", dark: "#131417" });
 
   const refs = {};
   let brand = null;
@@ -33,7 +37,7 @@
 
   function collectRefs() {
     [
-      "brandMark", "brandName", "stageBadge", "motionToggle", "adminTopLink",
+      "brandMark", "brandName", "stageBadge", "themeToggle", "motionToggle", "adminTopLink",
       "cineHero", "cinePoster", "cineVideo", "heroEyebrow", "heroName", "heroLead",
       "heroFacts", "heroMediaNote", "heroCue", "profileFacts", "profileBio",
       "activitySource", "activityFeed", "featureVideo", "featureKind", "featureTitle",
@@ -156,6 +160,47 @@
       if (mq.addEventListener) mq.addEventListener("change", onChange);
       else if (mq.addListener) mq.addListener(onChange);
     }
+  }
+
+  // ── theme ────────────────────────────────────────────────────────────
+  // 부팅 시 ?theme= 없음은 councillor-theme-default.js 가 light 로 채우고
+  // theme-init.js 가 해석합니다. 여기서는 그 결과를 다시 로드 없이 뒤집기만 합니다
+  // — 스크롤 위치·재생 중인 영상·콘텐츠가 초기화되지 않습니다.
+  function currentTheme() {
+    const value = document.documentElement.getAttribute("data-theme");
+    return THEMES.indexOf(value) === -1 ? DEFAULT_THEME : value;
+  }
+
+  function writeTheme(next) {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      params.set("theme", next);
+      window.history.replaceState(window.history.state, "",
+        window.location.pathname + "?" + params.toString() + (window.location.hash || ""));
+    } catch (_) { /* URL 갱신 실패는 이번 화면 세션에서만 반영 */ }
+  }
+
+  function applyTheme(next) {
+    document.documentElement.setAttribute("data-theme", next);
+    const scheme = document.querySelector('meta[name="color-scheme"]');
+    if (scheme) scheme.setAttribute("content", next === "dark" ? "dark" : "light dark");
+    const accent = document.querySelector('meta[name="theme-color"]');
+    if (accent) accent.setAttribute("content", THEME_COLOR[next] || THEME_COLOR[DEFAULT_THEME]);
+    if (refs.themeToggle) {
+      const dark = next === "dark";
+      refs.themeToggle.setAttribute("aria-pressed", dark ? "true" : "false");
+      text(refs.themeToggle, dark ? "밝게" : "어둡게");
+      refs.themeToggle.setAttribute("aria-label", dark ? "밝은 테마로 전환" : "어두운 테마로 전환");
+    }
+    writeTheme(next);
+  }
+
+  function wireTheme() {
+    if (!refs.themeToggle) return;
+    applyTheme(currentTheme());
+    refs.themeToggle.addEventListener("click", () => {
+      applyTheme(currentTheme() === "dark" ? "light" : "dark");
+    });
   }
 
   // ── hero media ───────────────────────────────────────────────────────
@@ -558,6 +603,7 @@
 
   async function start() {
     collectRefs();
+    wireTheme();
     wireMotion();
     try {
       brand = await loadBrand();
