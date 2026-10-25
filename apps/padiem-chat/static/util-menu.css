@@ -204,7 +204,17 @@ html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255,
 @media (min-width: 700px) {
   .util-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
   .util-form label:has(textarea) { grid-column: 1 / -1; }
+  /* #5799: the speech sections keep the same two-lane rhythm inside each
+   * fieldset, and the action row owns a full-width lane at the bottom so it
+   * never lands in a cell stretched to a tall section's height. */
+  #utilSpeechPanel .util-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  #utilSpeechPanel .util-fieldset label:has(textarea) { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions { grid-column: 1 / -1; }
+  #utilSpeechPanel .util-form-actions .util-save { height: 44px; }
 }
+/* Below the two-lane breakpoint the speech action row still pins its buttons
+ * to 44px instead of stretching with the stacked column. */
+#utilSpeechPanel .util-form-actions .util-save { height: 44px; }
 /* The platform switcher shipped markup without skin, so blog/facebook/instagram
  * rendered as raw browser buttons. Same row language as .util-tab. */
 .util-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
