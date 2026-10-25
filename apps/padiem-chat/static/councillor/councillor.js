@@ -43,8 +43,8 @@
     node.textContent = value === null || value === undefined ? "" : String(value);
   }
 
-  // 설정 파일은 사람이 편집하는 자료지만, 링크만은 프로토콜을 확인합니다.
-  // javascript: / data: URI 가 href 로 들어오면 링크를 만들지 않습니다.
+  // 설정 파일은 사람이 편집하는 자료지만, 링크는 프로토콜을 확인합니다.
+  // 스크립트 실행이나 데이터 삽입을 유발하는 주소는 href 로 만들지 않습니다.
   function safeHref(raw) {
     const value = String(raw || "").trim();
     if (!value) return null;
@@ -62,8 +62,8 @@
   }
 
   // ── motion ───────────────────────────────────────────────────────────
-  // 표현 설정은 URL 상태만 사용합니다. PADIEM Chat의 browser-persistence privacy
-  // 계약(theme/locale)과 같은 근거로 localStorage·sessionStorage 에 쓰지 않습니다.
+  // 표현 설정은 URL 상태만 사용합니다. theme/locale과 같은 근거로 브라우저
+  // 저장소에는 어떤 값도 남기지 않습니다.
   function motionParam() {
     try {
       const value = new URLSearchParams(window.location.search).get("motion");
