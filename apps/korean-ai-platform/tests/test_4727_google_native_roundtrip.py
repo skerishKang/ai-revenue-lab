@@ -20,7 +20,7 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 from app.pilot.errors import StreamNotSupported, ToolsNotSupported
-from app.pilot.google_provider import _google_tool_body
+from app.pilot.google_provider import _google_tool_body, _GoogleToolStream
 from app.pilot.platform import _openai_compatible_messages
 from app.pilot.tool_channel import (
     InvalidToolDeclaration,
@@ -501,8 +501,8 @@ def test_the_replayed_call_reaches_the_native_endpoint_still_signed(monkeypatch)
 
 
 def test_a_caller_echoing_the_compatible_field_replays_the_same_body(monkeypatch) -> None:
-    _google_live(monkeypatch)
     """A consumer that returns the provider's own field verbatim is accepted."""
+    _google_live(monkeypatch)
     echoed = {
         "id": "call_native", "type": "function",
         "function": {"name": "pc_files", "arguments": '{"path":"a.txt"}'},
@@ -515,8 +515,8 @@ def test_a_caller_echoing_the_compatible_field_replays_the_same_body(monkeypatch
 
 
 def test_a_denied_tool_is_replayed_as_the_result_the_executor_returned(monkeypatch) -> None:
-    _google_live(monkeypatch)
     """Refusal is data the model reads, never a success the gateway asserts."""
+    _google_live(monkeypatch)
     messages = _followup_turn(_call("call_native", signature=SIGNATURE))
     messages[2] = {"role": "tool", "tool_call_id": "call_native",
                    "name": "pc_files", "content": "사용자가 승인을 거부했습니다."}
@@ -525,3 +525,27 @@ def test_a_denied_tool_is_replayed_as_the_result_the_executor_returned(monkeypat
     part = body["contents"][2]["parts"][0]["functionResponse"]
     assert part["response"] == {"result": "사용자가 승인을 거부했습니다."}
     assert part["id"] == "call_native" and part["name"] == "pc_files"
+
+
+def test_korean_arguments_and_results_reach_the_wire_unchanged(monkeypatch) -> None:
+    """A call the model asked for in Korean is replayed and decoded in Korean."""
+    _google_live(monkeypatch)
+    path = "문서/견적 3분기.txt"
+    messages = _followup_turn(
+        _call("call_native", arguments=json.dumps({"path": path}, ensure_ascii=False),
+              signature=SIGNATURE)
+    )
+    messages[2]["content"] = "한글 결과 ∑ ✓"
+    _url, body = _replay(messages)
+
+    assert body["contents"][1]["parts"][0]["functionCall"]["args"] == {"path": path}
+    assert body["contents"][2]["parts"][0]["functionResponse"]["response"] == {
+        "result": "한글 결과 ∑ ✓",
+    }
+
+    decoded = _GoogleToolStream({"pc_files"}).decode(_native_frame([{
+        "functionCall": {"id": "call_native", "name": "pc_files", "args": {"path": path}},
+        "thoughtSignature": "생각 서명",
+    }]))[0].tool_call
+    assert json.loads(decoded.arguments) == {"path": path}
+    assert decoded.signature == "생각 서명"
