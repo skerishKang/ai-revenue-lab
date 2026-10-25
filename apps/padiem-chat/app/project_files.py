@@ -354,6 +354,7 @@ class D1ProjectFileStore:
             # how the merged slice shipped without seeing it).
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         elif media_type.startswith("extracted/"):
+
             document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
         else:
             document = validate_document_fields(name, media_type, text)
