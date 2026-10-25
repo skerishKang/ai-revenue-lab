@@ -37,6 +37,8 @@ export interface PublicOpportunity {
   readonly todayTier: PublicTodayTier;
   /** Extra truthful nuance shown next to the tier label (e.g. rolling availability). */
   readonly tierNote: string | null;
+  /** Action label on the outbound CTA (e.g. signup-only wording for registration listings). */
+  readonly ctaLabel: string;
   /**
    * Deterministic user-value score (0-10), computed from verified attributes only:
    * base 4 + reward confirmed (+2) + IMMEDIATE tier (+2) + Korea confirmed (+2).
@@ -66,6 +68,7 @@ export interface PublicOpportunityCard {
   readonly todayTier: PublicTodayTier;
   readonly tierLabel: string;
   readonly tierNote: string | null;
+  readonly ctaLabel: string;
   readonly userValueScore: number;
   readonly applyUrl: string;
   readonly verifiedAt: string;
@@ -97,7 +100,7 @@ const REWARD_BASIS_LABELS: Readonly<Record<PublicRewardBasis, string>> = Object.
 });
 
 const TIER_LABELS: Readonly<Record<PublicTodayTier, string>> = Object.freeze({
-  IMMEDIATE: '지금 바로 참여 시작',
+  IMMEDIATE: '참가자 등록 가능',
   SCREENING_REQUIRED: '신청·심사 후 참여',
 });
 
@@ -167,6 +170,7 @@ export function toPublicOpportunityCard(opportunity: PublicOpportunity): PublicO
     todayTier: opportunity.todayTier,
     tierLabel: TIER_LABELS[opportunity.todayTier],
     tierNote: opportunity.tierNote,
+    ctaLabel: opportunity.ctaLabel,
     userValueScore: opportunity.userValueScore,
     applyUrl: opportunity.applyUrl,
     verifiedAt: opportunity.verifiedAt,

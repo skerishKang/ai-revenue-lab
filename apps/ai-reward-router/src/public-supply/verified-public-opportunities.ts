@@ -19,8 +19,8 @@ import {
 const VERIFIED_AT = '2026-10-25T00:50:00.000Z';
 
 const record = (
-  input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole' | 'tierNote'> &
-    Partial<Pick<PublicOpportunity, 'userValueScore' | 'tierNote'>>,
+  input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole' | 'tierNote' | 'ctaLabel'> &
+    Partial<Pick<PublicOpportunity, 'userValueScore' | 'tierNote' | 'ctaLabel'>>,
 ): PublicOpportunity => {
   const score =
     input.userValueScore ??
@@ -29,7 +29,13 @@ const record = (
       todayTier: input.todayTier,
       koreaConfirmed: input.koreaStatus === 'CONFIRMED',
     });
-  return Object.freeze({ ...input, tierNote: input.tierNote ?? null, userValueScore: score, monetizationRole: 'NONE' as const });
+  return Object.freeze({
+    ...input,
+    tierNote: input.tierNote ?? null,
+    ctaLabel: input.ctaLabel ?? '공식 페이지에서 신청하기',
+    userValueScore: score,
+    monetizationRole: 'NONE' as const,
+  });
 };
 
 export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Object.freeze([
@@ -58,6 +64,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       status: 'OPEN' as const,
       todayTier: 'IMMEDIATE' as const,
       tierNote: '설문은 기간에 따라 공개됩니다 · 현재 가용 설문 수 미확인',
+      ctaLabel: '공식 사이트에서 가입하기',
     }),
   ),
   Object.freeze(
@@ -146,7 +153,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       category: 'MICROTASK',
       titleKo: 'DataAnnotation Korean Specialist (AI 학습 언어 스페셜리스트)',
       titleEn: 'Korean Specialist (Languages) — Up to $40/hr',
-      country: '글로벌 (한국어 직군 · 한국 거주 자격 미확인)',
+      country: '글로벌 (한국어 직군)',
       koreaStatus: 'UNCONFIRMED',
       participationMethod: 'DataAnnotation 지원 → 자격 평가 통과 후 프로젝트 배정 (원격, 과제 기반 프리랜서)',
       reward: Object.freeze({
