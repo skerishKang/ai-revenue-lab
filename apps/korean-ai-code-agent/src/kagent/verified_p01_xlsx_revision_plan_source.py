@@ -26,7 +26,7 @@ write is refused before any byte is committed and nothing is staged.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import threading
 from typing import Any, Callable
@@ -118,6 +118,7 @@ class P01EvidenceWriteAttester:
         self, *, base_url: str, command_id: str, binding_ref: str, request_id: str,
         local_policy_ref: str = XLSX_REVISION_POLICY_REF,
         opener: Callable[[bytes], dict[str, Any]] | None = None,
+        clock: Callable[[], datetime] | None = None,
     ) -> None:
         self._base_url = (base_url or "").rstrip("/")
         self._command_id = command_id
@@ -125,6 +126,7 @@ class P01EvidenceWriteAttester:
         self._request_id = request_id
         self._policy_ref = local_policy_ref
         self._opener = opener
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._spent: set[str] = set()
         self._lock = threading.Lock()
 
@@ -177,6 +179,14 @@ class P01EvidenceWriteAttester:
         envelope = payload.get("envelope")
         if not isinstance(envelope, dict):
             raise ContractError("the P01 evidence boundary returned no canonical envelope")
+        for name in ("approval_pause", "approval_decision", "permission_requests",
+                     "request_fingerprint", "local_policy_ref", "expires_at",
+                     "evidence_ref"):
+            if name not in envelope:
+                # A partial answer is a refusal, never a crash the host would
+                # have to guess the meaning of.
+                raise ContractError(
+                    "the P01 evidence boundary returned an incomplete envelope")
 
         pause = _pause_of(envelope["approval_pause"])
         decision = _decision_of(envelope["approval_decision"])
@@ -201,7 +211,7 @@ class P01EvidenceWriteAttester:
             raise ContractError("P01 write evidence carries no matching local permission")
         expires_at = min(pause.expires_at, decision.decided_at + _MAX_AGE,
                         _parsed(envelope["expires_at"], "evidence.expires_at"))
-        now = datetime.now(timezone.utc)
+        now = _aware(self._clock(), "write attestation clock")
         if (now < decision.decided_at - timedelta(seconds=30) or expires_at <= now
                 or resolve_approval_pause(pause, decision, now=now).status
                 is not ContinuationStatus.RESUMABLE):
