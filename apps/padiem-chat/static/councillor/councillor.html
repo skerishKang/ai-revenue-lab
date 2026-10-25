@@ -1,29 +1,26 @@
 <!doctype html>
-<html lang="ko" data-theme="padiem-glass">
+<html lang="ko" data-theme="cinematic">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light" />
+  <meta name="color-scheme" content="dark" />
   <meta name="robots" content="noindex" />
-  <title>의원 시네마틱 블로그</title>
+  <title>임미란 의원</title>
   <link rel="icon" href="data:," />
   <!--
     #5786 의원 공개 블로그 래퍼.
 
-    * PADIEM Chat과 같은 정적 마운트에서 서빙되는 공개 문서입니다. 서버가
-      강제하는 비공개 라우트가 아니며, 이 문서 자체에 비공개 자료가 없습니다.
-    * 관리자 영역은 GET /api/auth/status 의 서버 응답으로만 열립니다
-      (fail-closed). 실패·미로그인 상태에서는 로그인 안내만 표시됩니다.
-    * 의원3종 화면은 복제하지 않습니다. 링크는 기존 Chat 문서의
-      #padiem-util 프래그먼트 라우트이고, 실제 화면과 생성·저장 기능은
-      util-menu.js 와 기존 /api 계약이 그대로 소유합니다.
-    * hero.mediaKind 가 PLACEHOLDER 이면 영상·사진을 의원 실자료로 표시하지
-      않고 시제품 안내를 남깁니다.
+    * PADIEM Chat과 같은 정적 마운트에서 서빙되는 공개 문서입니다. 서버가 강제하는
+      비공개 라우트가 아니며, 이 문서 자체에 비공개 자료가 없습니다.
+    * 테마는 Chat이 이미 쓰는 cinematic 토큰을 그대로 읽습니다(padiem-themes.css).
+      padiem.net의 다크 시네마틱 톤과 같은 값이라 이 페이지도 같은 계보입니다.
+    * 미디어는 media.padiem.net(R2) 허용 출처만 받습니다. 화면을 다시 올리면
+      brands/<id>.json 의 hero/media 값만 바뀌고 코드는 그대로입니다.
+    * 의원3종 진입로는 공개면에 카드를 두지 않고 하단 관리 경로로 옮겼습니다.
+      열림 여부는 GET /api/auth/status 서버 응답이 결정합니다(fail-closed).
   -->
   <script src="../theme-init.js"></script>
   <link rel="stylesheet" href="../padiem-cinematic-chat.css" />
-  <link rel="stylesheet" href="../padiem-glass.css" data-padiem-glass-theme="true" />
-  <link rel="stylesheet" href="../padiem-glass-portrait.css" data-padiem-glass-portrait="true" />
   <link rel="stylesheet" href="../padiem-themes.css" />
   <link rel="stylesheet" href="./councillor.css" />
 </head>
@@ -32,84 +29,102 @@
 
   <header class="councillor-topbar">
     <div class="councillor-brand">
-      <span class="councillor-brand-mark" id="brandMark" aria-hidden="true">P</span>
-      <span class="councillor-brand-name" id="brandName">Padiem</span>
+      <span class="councillor-brand-mark" id="brandMark" aria-hidden="true">임</span>
+      <span class="councillor-brand-name" id="brandName">임미란 의원</span>
     </div>
     <div class="councillor-topbar-actions">
       <span class="councillor-badge" id="stageBadge">시제품</span>
       <button class="councillor-ghost" id="motionToggle" type="button" aria-pressed="false">움직임 줄이기</button>
-      <a class="councillor-ghost" id="adminTopLink" href="../">관리자</a>
+      <a class="councillor-ghost" id="adminTopLink" href="../">로그인</a>
     </div>
   </header>
 
   <main id="councillorMain">
     <section class="cine-hero" id="cineHero" aria-labelledby="heroName">
       <div class="cine-media" aria-hidden="true">
-        <div class="cine-film" id="cineFilm"></div>
+        <div class="cine-film"></div>
         <img class="cine-poster" id="cinePoster" alt="" hidden />
-        <video class="cine-video" id="cineVideo" muted loop playsinline preload="none" hidden></video>
+        <video class="cine-video" id="cineVideo" muted loop playsinline preload="metadata" hidden></video>
         <div class="cine-grain"></div>
       </div>
       <div class="cine-veil"></div>
-      <div class="cine-copy">
+
+      <div class="cine-hero-inner">
         <p class="cine-eyebrow" id="heroEyebrow"></p>
         <h1 class="cine-name" id="heroName"></h1>
         <p class="cine-lead" id="heroLead"></p>
         <div class="cine-actions">
-          <a class="cine-primary" href="#sectionProfile">의원 소개</a>
-          <a class="cine-secondary" href="#sectionActivity">의정활동 소식</a>
+          <a class="cine-primary" href="#sectionActivity">의정활동 보기</a>
+          <a class="cine-secondary" href="#sectionMedia">소개 영상 보기</a>
         </div>
+        <dl class="cine-hero-facts" id="heroFacts"></dl>
       </div>
+
       <p class="cine-media-note" id="heroMediaNote" role="note"></p>
-      <button class="cine-cue" id="heroCue" type="button" aria-label="다음 섹션으로 이동">▾</button>
+      <button class="cine-cue" id="heroCue" type="button" aria-label="다음 섹션으로 이동">SCROLL ▾</button>
     </section>
 
     <section class="cine-section" id="sectionProfile" aria-labelledby="profileTitle">
+      <p class="cine-kicker">PROFILE</p>
       <h2 class="cine-title" id="profileTitle">의원 소개</h2>
       <div class="cine-profile">
         <dl class="cine-facts" id="profileFacts"></dl>
-        <p class="cine-bio" id="profileBio"></p>
+        <div class="cine-bio" id="profileBio"></div>
       </div>
     </section>
 
     <section class="cine-section" id="sectionActivity" aria-labelledby="activityTitle">
-      <h2 class="cine-title" id="activityTitle">의정활동 소식</h2>
+      <p class="cine-kicker">RECENT ACTIVITY</p>
+      <h2 class="cine-title" id="activityTitle">최근 의정활동</h2>
+      <ul class="cine-timeline" id="activityFeed"></ul>
       <p class="cine-source" id="activitySource"></p>
-      <ul class="cine-feed" id="activityFeed"></ul>
     </section>
 
-    <section class="cine-section" id="sectionMedia" aria-labelledby="mediaTitle">
-      <h2 class="cine-title" id="mediaTitle">행사 사진·영상</h2>
+    <section class="cine-section cine-section-lead" id="sectionMedia" aria-labelledby="mediaTitle">
+      <p class="cine-kicker">VIDEO &amp; PHOTOS</p>
+      <h2 class="cine-title" id="mediaTitle">영상과 사진으로 보는 의정활동</h2>
+      <article class="cine-feature">
+        <video class="cine-feature-media" id="featureVideo" controls playsinline preload="metadata"></video>
+        <div class="cine-feature-body">
+          <p class="cine-feature-kind" id="featureKind"></p>
+          <h3 class="cine-feature-title" id="featureTitle"></h3>
+          <p class="cine-feature-note" id="featureNote"></p>
+        </div>
+      </article>
+      <ul class="cine-tiles" id="mediaTiles"></ul>
+      <div class="cine-links-block">
+        <p class="cine-links-title">의회 공식 기록 바로가기</p>
+        <ul class="cine-links" id="mediaLinks"></ul>
+      </div>
       <p class="cine-source" id="mediaSource"></p>
-      <ul class="cine-cards" id="mediaCards"></ul>
     </section>
 
     <section class="cine-section" id="sectionNotes" aria-labelledby="notesTitle">
-      <h2 class="cine-title" id="notesTitle">공개 글·공지</h2>
-      <ul class="cine-feed" id="notesFeed"></ul>
+      <p class="cine-kicker">NOTICES</p>
+      <h2 class="cine-title" id="notesTitle">알려드릴 사항</h2>
+      <ul class="cine-notes" id="notesFeed"></ul>
     </section>
 
     <section class="cine-section" id="sectionSns" aria-labelledby="snsTitle">
+      <p class="cine-kicker">OFFICIAL CHANNELS</p>
       <h2 class="cine-title" id="snsTitle">공식 채널</h2>
-      <p class="cine-source" id="snsSource"></p>
       <ul class="cine-chips" id="snsChips"></ul>
-    </section>
-
-    <section class="cine-section cine-admin" id="sectionAdmin" aria-labelledby="adminTitle">
-      <h2 class="cine-title" id="adminTitle">관리자</h2>
-      <p class="cine-admin-status" id="adminStatus" role="status" aria-live="polite"></p>
-      <div class="cine-admin-gate" id="adminGate" hidden>
-        <p class="cine-admin-gate-body" id="adminGateBody"></p>
-        <a class="cine-primary" id="adminSignIn" href="../">PADIEM에서 로그인</a>
-      </div>
-      <div class="cine-admin-tools" id="adminTools" hidden>
-        <p class="cine-admin-note" id="adminNote"></p>
-        <ul class="cine-cards" id="toolCards"></ul>
-      </div>
+      <p class="cine-source" id="snsSource"></p>
     </section>
   </main>
 
   <footer class="councillor-footer">
+    <div class="councillor-admin" id="adminSection">
+      <p class="councillor-admin-title" id="adminStatus" role="status" aria-live="polite"></p>
+      <div class="cine-admin-gate" id="adminGate" hidden>
+        <p class="cine-admin-gate-body" id="adminGateBody"></p>
+        <a class="cine-admin-signin" id="adminSignIn" href="../">PADIEM 로그인</a>
+      </div>
+      <div class="cine-admin-tools" id="adminTools" hidden>
+        <p class="cine-admin-note" id="adminNote"></p>
+        <ul class="cine-admin-links" id="toolCards"></ul>
+      </div>
+    </div>
     <p class="councillor-footer-line" id="footerPrototype"></p>
     <p class="councillor-footer-line" id="footerSource"></p>
   </footer>

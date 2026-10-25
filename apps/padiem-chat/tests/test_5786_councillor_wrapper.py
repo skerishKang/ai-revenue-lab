@@ -62,25 +62,35 @@ def brand() -> dict:
 
 def test_wrapper_loads_the_existing_theme_stack() -> None:
     html = read(WRAP / "councillor.html")
-    # theme-init.js + the glass/cinematic stylesheets are the same files Chat
+    # theme-init.js + the cinematic stylesheet chain are the same files Chat
     # loads, so a theme change upstream reaches this page without an edit here.
-    for asset in ("../theme-init.js", "../padiem-glass.css", "../padiem-cinematic-chat.css"):
+    for asset in ("../theme-init.js", "../padiem-cinematic-chat.css", "../padiem-themes.css"):
         assert asset in html, f"wrapper must reference {asset}"
+    # padiem.net의 톤은 크 시네마틱이다. 이 페이지도 같은 테마를 선언한다.
+    assert 'data-theme="cinematic"' in html
 
 
 def test_wrapper_declares_no_color_or_font_tokens() -> None:
     css = read(WRAP / "councillor.css")
     for token in ("--bg:", "--text:", "--font-display:", "--accent:", "--gold:", "--radius-md:"):
         assert token not in css, f"{token} must come from the Chat theme, not be re-declared"
-    # The reading surfaces (cards, facts, bio, admin panels) must be painted
-    # from the theme. Only the decorative hero scrim may carry its own literal
-    # gradient, because that layer is the placeholder material itself.
-    # Every reading surface must be painted from the theme's glass tokens.
-    assert css.count("var(--glass-card-surface") >= 5, "cards must use the glass surface token"
-    assert css.count("var(--card-border") >= 4, "card borders must use the theme border token"
-    assert css.count("var(--muted") >= 4 and css.count("var(--text") >= 1
+    # Media surfaces must be painted from the theme's tokens. Only the
+    # decorative hero scrim carries its own literal gradient, because that layer
+    # is the fallback material itself.
+    assert css.count("var(--glass-card-surface") >= 2, "media surfaces use the glass token"
+    assert css.count("var(--card-border") >= 3, "borders use the theme border token"
+    assert css.count("var(--muted") >= 8 and css.count("var(--text") >= 6
     assert css.count("var(--font-") >= 4, "typography must come from the theme stack"
-    assert css.count("var(--") > 30, "the palette must ride on the shared tokens"
+    assert css.count("var(--") > 60, "the palette must ride on the shared tokens"
+
+
+def test_wrapper_keeps_its_own_layout_baseline() -> None:
+    """The page does not load Chat's styles.css, so it must restate the layout
+    baseline. Without border-box the hero's padding is added to min-height and
+    the fact strip falls below the fold (measured 1101px in a 900px viewport)."""
+    css = read(WRAP / "councillor.css")
+    assert "box-sizing: border-box" in css
+    assert ".councillor-body" in css.split("box-sizing: border-box")[0][-400:]
 
 
 def test_wrapper_has_no_inline_script() -> None:
@@ -166,11 +176,17 @@ def test_public_copy_stays_visitor_facing() -> None:
     """Owner direction 2026-10-25: the prototype notice stays, the build
     diagnostics do not. Missing media, CSP, HTTP statuses and file names belong
     to this issue, not to a page a constituent reads."""
-    rendered = _code_only(wrapper_js()) + json.dumps(brand(), ensure_ascii=False)
-    for diagnostic in ("미확보", "frame-src", "mp4", "m3u8", "brands/miraen.json",
-                       "404", "502", "CSP ", "API 이슈"):
-        assert diagnostic not in rendered, f"visitor copy still says: {diagnostic}"
-    assert "시제품" in rendered
+    data = json.dumps(brand(), ensure_ascii=False)
+    # URL 값은 방문자가 읽는 문장이 아니다(미디어 주소의 확장자 등은 검사에서 제외).
+    prose = re.sub(r"https?://[^\"]+", "", _code_only(wrapper_js()) + data)
+    for diagnostic in ("미확보", "frame-src", "m3u8", "brands/miraen.json",
+                       "404", "502", "CSP", "API 이슈"):
+        assert diagnostic not in prose, f"visitor copy still says: {diagnostic}"
+    # 실패 진단은 console.error 로 보내고, 화면에는 일반 안내만 남긴다.
+    js = _code_only(wrapper_js())
+    assert "표시할 자료를 불러오지 못했습니다." in js
+    assert "console.error" in js
+    assert "시제품" in prose
     assert "공식 웹사이트가 아닙니다" in brand()["prototypeNotice"]
 
 
@@ -180,7 +196,7 @@ def test_wrapper_links_only_to_the_existing_app_and_public_official_pages() -> N
     for tool in ("speech", "sns", "meeting"):
         assert f'CHAT_ROOT + "#padiem-util/{tool}"' in js, tool
     data = brand()
-    urls = [item.get("url", "") for item in data["media"]["items"]]
+    urls = [item.get("url", "") for item in data["media"]["tiles"] + data["media"]["links"]]
     urls += [c.get("url", "") for c in data["sns"]["channels"]]
     urls += [i.get("url", "") for i in data["activity"]["items"] if i.get("url")]
     assert urls, "brand must carry the researched sources"
@@ -195,19 +211,55 @@ def test_wrapper_links_only_to_the_existing_app_and_public_official_pages() -> N
         assert not url.lower().endswith((".jpg", ".jpeg", ".png", ".mp4", ".webp", ".m3u8")), url
 
 
-def test_placeholder_media_is_declared_and_not_faked() -> None:
+def test_media_state_is_declared_and_never_faked() -> None:
+    """Two states, one contract: an unconfirmed brand must disclose the
+    placeholder, and a confirmed brand must credit the source instead. Neither
+    state may borrow the other's wording."""
     data = brand()
     hero = data["hero"]
-    assert hero["mediaKind"] == "PLACEHOLDER"
-    assert hero["videoSources"] == [] and hero["poster"] == ""
-    assert data["stage"] == "시제품"
-    assert "시제품" in data["prototypeNotice"]
     js = wrapper_js()
-    # the disclosure is rendered from mediaKind, so a confirmed asset cannot
-    # silently inherit the placeholder wording -- or the other way round.
-    assert 'CONFIRMED' in js and "시제품" in js
-    assets = [p.name for p in WRAP.rglob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm", ".m3u8"}]
-    assert assets == [], f"unlicensed media must not be committed: {assets}"
+    assert hero["mediaKind"] in ("PLACEHOLDER", "CONFIRMED")
+    assert "PLACEHOLDER_NOTE" in js and 'mediaKind === "CONFIRMED"' in js
+    if hero["mediaKind"] == "CONFIRMED":
+        assert hero["videoSources"] and hero["poster"], "confirmed state must carry real media"
+        assert hero["credit"], "confirmed media must say where it came from"
+    else:
+        assert hero["videoSources"] == [] and hero["poster"] == ""
+    # 승인된 자산도 저장소에 복사하지 않는다: 미디어 파일은 커밋 금지.
+    assets = [f.name for f in WRAP.rglob("*")
+              if f.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".mp4", ".webm", ".m3u8"}]
+    assert assets == [], f"media must stay on the R2 host, not be committed: {assets}"
+    assert data["stage"] == "시제품" and "시제품" in data["prototypeNotice"]
+
+
+def test_media_urls_stay_on_the_allowed_host() -> None:
+    js = wrapper_js()
+    assert 'MEDIA_HOSTS = Object.freeze(["media.padiem.net"])' in js, (
+        "brand files are hand-edited, so <video>/<img> sources stay allowlisted")
+    hero = brand()["hero"]
+    feature = brand()["feature"]
+    for url in list(hero["videoSources"]) + [hero["poster"]] + list(feature["sources"]):
+        assert url.startswith("https://media.padiem.net/councillor/miraen/"), url
+    assert "new URL(value)" in js and 'parsed.protocol !== "https:"' in js
+
+
+def test_dated_media_is_labelled_so_it_cannot_read_as_current() -> None:
+    """Owner note 2026-10-25: the 2025 introduction interview must not pass as a
+    present-day statement of office."""
+    feature = brand()["feature"]
+    assert "2025" in feature["kind"] and "2025" in feature["title"]
+    assert "촬영" in feature["note"] and "현재 직위" in feature["note"]
+    assert "2026년 6월 3일" in brand()["profile"][3]["value"], "current office must be stated separately"
+
+
+def test_admin_entry_is_not_a_public_landing_card() -> None:
+    """Owner note 2026-10-25: the councillor tools move off the visitor page into
+    a management path, so the admin block must live in the footer only."""
+    html = read(WRAP / "councillor.html")
+    main = html[html.index("<main"):html.index("</main>")]
+    footer = html[html.index("<footer"):]
+    assert "adminTools" not in main and "adminGate" not in main
+    assert 'id="adminTools"' in footer and 'id="adminGate"' in footer
 
 
 # --------------------------------------------------------------------------
