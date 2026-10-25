@@ -355,7 +355,11 @@ test('deployment worker wires the real bindings end to end', async () => {
 
   const unbound = await worker.fetch(
     saveRequest(USER_A_TOKEN, 'action=save&title=No+DB&vendor=V&status=SAVED'),
-    { PADIEM_SESSION_SECRET: FIXTURE_SECRET, PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN },
+    {
+      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
+      PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
+      PADIEM_CHAT_SERVICE: liveChatService,
+    },
   );
   assert.equal(unbound.status, 503);
   assert.equal(((await unbound.json()) as { error: string }).error, 'storage_unavailable');
@@ -366,7 +370,41 @@ test('deployment worker wires the real bindings end to end', async () => {
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: 'action=save&title=No+secret&vendor=V&status=SAVED',
     }),
-    { B64_INCOME_DB: binding },
+    { B64_INCOME_DB: binding, PADIEM_CHAT_SERVICE: liveChatService },
   );
   assert.equal(noSecret.status, 401, 'without the session secret no request is authenticated');
+});
+
+test("CENTRAL gap: a missing Chat binding blocks even a validly-signed session (no offline fallback on the deployed path)", async () => {
+  const worker = (await import('../src/worker.js')).default;
+  const { binding } = createSqliteD1Binding();
+  // Perfectly signed, unexpired cookie for a session whose canonical liveness
+  // CANNOT be confirmed because PADIEM_CHAT_SERVICE is not configured: the
+  // deployed path must deny it instead of trusting the signature alone.
+  const save = await worker.fetch(
+    saveRequest(USER_A_TOKEN, 'action=save&title=No+chat+binding&vendor=V&status=SAVED'),
+    {
+      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
+      PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
+      B64_INCOME_DB: binding,
+      // PADIEM_CHAT_SERVICE deliberately absent
+    },
+  );
+  assert.equal(save.status, 401, 'missing liveness dependency must block authentication');
+
+  const read = await worker.fetch(
+    new Request(`${EXPECTED_ORIGIN}/pipeline`, { headers: { cookie: `padiem_session=${USER_A_TOKEN}` } }),
+    {
+      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
+      PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
+      B64_INCOME_DB: binding,
+    },
+  );
+  assert.equal(read.status, 200);
+  const html = await read.text();
+  assert.doesNotMatch(html, /usr_fixture_user_0001/, 'the unauthenticated session must see no records');
+
+  const probe = (await import('../src/income-pipeline/padiem-session-auth.js'))
+    .createUnconfiguredLivenessProbe('PADIEM_CHAT_SERVICE');
+  await assert.rejects(() => probe('padiem_session=whatever'), /not configured/);
 });

@@ -193,6 +193,21 @@ export interface PadiemSessionAuthResolverOptions {
 export type SessionLivenessProbe = (cookieHeader: string) => Promise<void>;
 
 /**
+ * Fail-closed probe for a deployment that has NOT configured its Chat
+ * service binding. The deployed B64 income path never falls back to
+ * signature-only verification: without the binding there is no way to know
+ * whether a canonically valid signature still belongs to a live session, so
+ * every liveness question is answered "not live".
+ */
+export function createUnconfiguredLivenessProbe(bindingName: string): SessionLivenessProbe {
+  return async () => {
+    throw new Error(
+      `session_liveness_unavailable: ${bindingName} binding is not configured on this deployment`,
+    );
+  };
+}
+
+/**
  * Structural surface of a Cloudflare service binding used for the liveness
  * probe. Matches the only existing non-Python caller in this repository
  * (`reference/business-66-padiem-quote-v1/_worker.js` lines 440-447), which
