@@ -218,7 +218,7 @@ jobs:
           python .github/scripts/b62_d1_migration_068_069_schema.py classify "${RUNNER_TEMP}/post.json" | tee "${RUNNER_TEMP}/post-state.txt"
           grep -qx 'B62_PROJECT_FILES_SCHEMA=069' "${RUNNER_TEMP}/post-state.txt"
           echo 'B62_PROJECT_FILES_POSTMUTATION_SCHEMA=PASS'
-          POST_COUNT="$(sed -n 's/^B62_PROJECT_FILES_ROW_COUNT=//p' \"${RUNNER_TEMP}/post-state.txt\")"
+          POST_COUNT="$(sed -n 's/^B62_PROJECT_FILES_ROW_COUNT=//p' "${RUNNER_TEMP}/post-state.txt")"
           test "${POST_COUNT}" = "${BEFORE_COUNT}"
           echo 'B62_PROJECT_FILES_ROW_PRESERVATION=PASS'
           echo 'PROJECT_FILES_POST_SCHEMA=069'
