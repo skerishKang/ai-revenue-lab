@@ -27,6 +27,13 @@
   --cine-on-media-faint: rgba(247, 248, 250, .58);
   --cine-on-media-line: rgba(247, 248, 250, .26);
   --cine-media-bg: #04070d;
+  /* 테마 토큰을 다시 선언하지 않고, 작은 글자만 강도를 올려 읽히게 한다.
+     light 에서 --muted(#6f7079) 는 12px 기준 4.4:1, --gold(#b8923a) 는 13px 기준
+     2.9:1 로 AA 아래였다(2026-10-25 라이브 실측). dark 는 두 값 모두 이미 통과한다. */
+  --cine-muted-strong: #4b4f57;
+  --cine-muted-strong: color-mix(in srgb, var(--muted) 74%, var(--text));
+  --cine-gold-strong: #6f5a22;
+  --cine-gold-strong: color-mix(in srgb, var(--gold) 62%, var(--text));
 }
 
 /* 이 문서는 Chat의 styles.css 를 읽지 않으므로 레이아웃 기준 값을 자체 선언합니다.
@@ -124,6 +131,9 @@
 }
 .councillor-ghost {
   padding: 8px 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   border: 1px solid var(--cine-on-media-line);
   border-radius: 10px;
   background: rgba(247, 248, 250, .07);
@@ -133,6 +143,15 @@
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+}
+.councillor-ghost:focus-visible,
+.cine-primary:focus-visible,
+.cine-secondary:focus-visible,
+.cine-chip:focus-visible,
+.cine-timeline-link:focus-visible,
+.cine-link-title:focus-visible {
+  outline: 2px solid var(--accent, #6557e8);
+  outline-offset: 2px;
 }
 .councillor-topbar.is-anchored .councillor-ghost {
   border-color: var(--line, #e3e3e9);
@@ -341,7 +360,7 @@
   line-height: 1.08;
   letter-spacing: var(--cine-display-spacing);
 }
-.cine-source { margin: 26px 0 0; color: var(--muted, #6f7079); font-size: 12px; line-height: 1.6; }
+.cine-source { margin: 26px 0 0; color: var(--cine-muted-strong); font-size: 12px; line-height: 1.6; }
 
 /* 의원 소개 */
 .cine-profile { display: grid; gap: clamp(24px, 4vw, 56px); grid-template-columns: minmax(0, 1fr); }
@@ -358,7 +377,7 @@
   padding: 16px 0;
   border-bottom: 1px solid var(--line, #e3e3e9);
 }
-.cine-fact dt { color: var(--muted, #6f7079); font-size: 12px; letter-spacing: .04em; }
+.cine-fact dt { color: var(--cine-muted-strong); font-size: 12px; letter-spacing: .04em; }
 .cine-fact dd { margin: 0; font-size: 15px; line-height: 1.6; }
 .cine-bio { display: grid; gap: 18px; font-size: clamp(15px, 1.7vw, 17px); line-height: 1.85; color: var(--muted, #4b4f57); }
 .cine-bio p { margin: 0; }
@@ -375,7 +394,7 @@
   border-bottom: 1px solid var(--line, #e3e3e9);
 }
 .cine-timeline-date {
-  color: var(--gold, #b8923a);
+  color: var(--cine-gold-strong);
   font-family: var(--cine-label-face);
   font-size: 13px;
   font-weight: 700;
@@ -516,7 +535,7 @@
   padding: 22px 0;
   border-bottom: 1px solid var(--line, #e3e3e9);
 }
-.cine-note-date { color: var(--muted, #6f7079); font-family: var(--cine-label-face); font-size: 11px; letter-spacing: .08em; }
+.cine-note-date { color: var(--cine-muted-strong); font-family: var(--cine-label-face); font-size: 11px; letter-spacing: .08em; }
 .cine-note-title { font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
 .cine-note-body { margin: 0; color: var(--muted, #4b4f57); font-size: 14px; line-height: 1.75; }
 
@@ -549,7 +568,7 @@
 .councillor-admin { width: var(--cine-measure); margin: 0 auto clamp(28px, 4vw, 44px); }
 .councillor-admin-title {
   margin: 0 0 14px;
-  color: var(--muted, #6f7079);
+  color: var(--cine-muted-strong);
   font-family: var(--cine-label-face);
   font-size: 11px;
   font-weight: 700;
@@ -563,7 +582,7 @@
 .cine-admin-gate-body { margin: 0; color: var(--muted, #4b4f57); font-size: 13px; line-height: 1.7; }
 .cine-admin-signin { color: var(--accent, #6557e8); font-size: 13px; font-weight: 700; text-decoration: none; justify-self: start; }
 .cine-admin-signin:hover { text-decoration: underline; }
-.cine-admin-note { margin: 0; color: var(--muted, #6f7079); font-size: 12px; line-height: 1.6; }
+.cine-admin-note { margin: 0; color: var(--cine-muted-strong); font-size: 12px; line-height: 1.6; }
 .cine-admin-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
 .cine-admin-links a {
   color: var(--text, #19191d);
@@ -577,7 +596,7 @@
 .councillor-footer-line {
   width: var(--cine-measure);
   margin: 0 auto;
-  color: var(--muted, #6f7079);
+  color: var(--cine-muted-strong);
   font-size: 12px;
   line-height: 1.7;
 }
