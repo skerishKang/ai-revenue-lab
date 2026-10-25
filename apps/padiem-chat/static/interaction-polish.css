@@ -218,3 +218,43 @@
     line-height: 27.52px;
   }
 }
+
+/* Mobile browser chrome: the menu must not scroll out of the visual viewport.
+   The previous sticky header could leave the screen entirely on Android Edge
+   when the document and conversation scroll offsets diverged. This is shared
+   by Chat and Claw; no JS routing/side-effect behavior changes. */
+@media (max-width: 920px) {
+  .app-shell .main-panel {
+    padding-top: 62px;
+  }
+  .app-shell .main-panel > .topbar {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    top: 0 !important;
+    min-height: 62px;
+    box-sizing: border-box;
+    width: 100%;
+    z-index: 100 !important;
+  }
+  .app-shell .main-panel > .topbar #mobileMenu {
+    display: inline-grid !important;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px !important;
+    min-height: 44px;
+    height: 44px !important;
+    visibility: visible !important;
+  }
+  .app-shell.sidebar-open .sidebar {
+    z-index: 120;
+  }
+  .app-shell .sidebar-scrim {
+    z-index: 110;
+  }
+}
+@media (max-width: 620px) {
+  /* Preserve current input controls while avoiding surplus vertical space. */
+  .app-shell .composer-wrap .composer textarea {
+    min-height: 44px;
+  }
+}
