@@ -40,7 +40,7 @@ test('dedicated Worker preserves method and unknown-route fail-closed guards', a
 test('B64 Worker config is independent and declares no DNS or production route mutation', () => {
   const configUrl = new URL('../../wrangler.jsonc', import.meta.url);
   const configText = fs.readFileSync(configUrl, 'utf8')
-    .replace(/^.*\/\/.*$/gm, '') as string;
+    .replace(/^\s*\/\/.*$/gm, '') as string;
   const config = JSON.parse(configText) as Record<string, unknown>;
 
   assert.equal(config.name, 'b64-ai-reward-router');
@@ -55,10 +55,11 @@ test('B64 Worker config is independent and declares no DNS or production route m
 
 test('B64 Worker config declares the income D1 binding matching the worker env contract', () => {
   const configUrl = new URL('../../wrangler.jsonc', import.meta.url);
-  const configText = fs.readFileSync(configUrl, 'utf8').replace(/^.*\/\/.*$/gm, '');
+  const configText = fs.readFileSync(configUrl, 'utf8').replace(/^\s*\/\/.*$/gm, '');
   const config = JSON.parse(configText) as {
     d1_databases?: { binding: string; database_name: string; database_id: string; migrations_dir: string }[];
     services?: { binding: string; service: string }[];
+    vars?: Record<string, string>;
   };
 
   const binding = config.d1_databases?.find((db) => db.binding === 'B64_INCOME_DB');
@@ -69,6 +70,13 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
   const chatService = config.services?.find((svc) => svc.binding === 'PADIEM_CHAT_SERVICE');
   assert.ok(chatService, 'wrangler.jsonc must declare the PADIEM_CHAT_SERVICE liveness relay binding');
   assert.equal(chatService.service, 'padiem-chat');
+
+  const vars = config.vars as Record<string, string> | undefined;
+  assert.equal(
+    vars?.PADIEM_B64_PUBLIC_BASE_URL,
+    'https://chat.padiem.net',
+    'the reviewed mutation origin must be declared so authenticated POSTs pass the same-origin guard',
+  );
 
   const migrationUrl = new URL('../../migrations/d1/0001_b64_user_income.sql', import.meta.url);
   const migrationSql = fs.readFileSync(migrationUrl, 'utf8');

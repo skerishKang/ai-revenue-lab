@@ -30,6 +30,10 @@ The deployment target is intentionally **account-independent and fail-closed**. 
 - DNS mutation
 - provider secrets or variables
 
+`PADIEM_B64_PUBLIC_BASE_URL` (the reviewed mutation origin for the same-origin
+guard, declared in `wrangler.jsonc` as `https://chat.padiem.net`) is an
+operational configuration var, not a provider credential.
+
 The existing `ai-revenue-korean-ai-platform` production Worker is not a B64 deployment target and must not be modified as a side effect of this config.
 
 ## Verification before any deployment
@@ -122,28 +126,63 @@ All facts below were measured read-only on the **Charliekant** account
   itself is UNKNOWN here and is not asserted.
 
 CENTRAL execution steps (exact commands; nothing below has been executed by
-LOCAL):
+LOCAL; run `d1` commands from the **repository root** so the `--file` paths
+below resolve, or adjust them to the working directory):
 
-1. Provision the D1 database (or dispatch the `B64 Income D1 Provision Gate`
-   workflow — create-or-reuse is safe because no `padiem-b64` exists):
-   `npx wrangler@4 d1 create padiem-b64` — then replace the PLACEHOLDER
-   `database_id` in `apps/ai-reward-router/wrangler.jsonc` with the printed id.
-2. Apply the schema:
+1. Provision the D1 database — dispatch the `B64 Income D1 Provision Gate`
+   workflow and use the REAL `database_id` it prints (create-or-reuse is safe
+   because no `padiem-b64` exists). Do NOT dispatch a second gate run for the
+   same database, and do NOT run `wrangler d1 create` manually in addition to
+   a dispatched gate. Then replace the PLACEHOLDER `database_id` in
+   `apps/ai-reward-router/wrangler.jsonc` with that real id.
+2. Apply the schema (if the gate did not already):
    `npx wrangler@4 d1 execute padiem-b64 --remote --file=apps/ai-reward-router/migrations/d1/0001_b64_user_income.sql`
    (replay-safe `IF NOT EXISTS`; no existing B64 table can conflict).
 3. Bind the session secret (same value as chat's
-   `PADIEM_CHAT_SESSION_SECRET`):
+   `PADIEM_CHAT_SESSION_SECRET`; never paste the value into logs, PRs or
+   issues):
    `wrangler secret put PADIEM_SESSION_SECRET --name b64-ai-reward-router`.
-4. Deploy the integrated Worker — the `[[services]]` binding
+4. Configure the mutation origin: `PADIEM_B64_PUBLIC_BASE_URL` is already
+   declared in `wrangler.jsonc` (`vars`) as the reviewed origin
+   `https://chat.padiem.net` and takes effect at deploy time. Without it,
+   cookie-authenticated POSTs are DENIED (`origin_guard_unavailable`, fail
+   closed) — it is required BEFORE any live writes.
+5. Deploy the integrated Worker — the `[[services]]` binding
    `PADIEM_CHAT_SERVICE → padiem-chat` is already declared in
    `wrangler.jsonc` and matches the measured worker name:
    `wrangler deploy` (from `apps/ai-reward-router`).
-5. Cookie delivery route — the ONLY remaining auth prerequisite: add
+6. Post-deploy binding verification (from `apps/ai-reward-router`):
+   `npx wrangler@4 versions list --name b64-ai-reward-router` — the active
+   version's bindings must show ALL of:
+   `PADIEM_CHAT_SERVICE → padiem-chat`, `B64_INCOME_DB → padiem-b64`,
+   `PADIEM_SESSION_SECRET (secret)`,
+   `PADIEM_B64_PUBLIC_BASE_URL = https://chat.padiem.net (var)`.
+7. Cookie delivery route — the ONLY remaining auth prerequisite: add
    dashboard routes on **chat.padiem.net** for the B64 paths
    (`/earn*`, `/today*`, `/browse*`, `/detail*`, `/pipeline*`, `/income*`)
-   targeting `b64-ai-reward-router`, keeping `/` and `/api/*` on
-   `padiem-chat`. The `padiem_session` cookie is host-only for
+   targeting `b64-ai-reward-router`, keeping `/`, `/api/*` and `/healthz`
+   on `padiem-chat`. The `padiem_session` cookie is host-only for
    chat.padiem.net, so serving B64 under that host is the only
    no-new-login delivery path; a workers.dev host cannot receive it.
-6. Run the live E2E after steps 1–5, then record `AUTH_LIVE_VERIFIED` /
-   `D1_LIVE_VERIFIED` evidence on #987.
+8. Run the live E2E after steps 1–7, then record `AUTH_LIVE_VERIFIED` /
+   `D1_LIVE_VERIFIED` / `LIVENESS_LIVE_VERIFIED` evidence on #987.
+
+**Dashboard route checklist (verify before step 7 — do not skip):**
+`DASHBOARD_ROUTE_COLLISION=UNKNOWN` until the zone's existing routes are read
+through authorized access; the FastAPI route audit above is NOT zone-level
+evidence. For EACH B64 path pattern, record in #987:
+
+- the chat route it must coexist with (`/`, `/api/*`, `/healthz`, assets);
+- whether a zone wildcard `chat.padiem.net/*` already exists — if it does,
+  the new specific routes must actually take precedence for B64 paths
+  (Cloudflare applies the most specific matching route), and `/` plus
+  `/api/*` MUST still resolve to `padiem-chat`;
+- the smoke result after adding it: B64 path serves the B64 page AND
+  `chat.padiem.net/api/auth/status` still answers from chat.
+No overall "collision = 0" claim may be made from the FastAPI audit alone.
+
+**Verification boundaries:** `chat.padiem.net`'s anonymous `200` on
+`/api/auth/status` proves endpoint presence only. `LIVENESS_LIVE_VERIFIED=NO`
+until a REAL chat session is carried through B64 end-to-end (login-verified
+read AND a revoked-session denial both observed live). `D1_LIVE_VERIFIED=NO`
+until the migration is applied and a live record round-trip is observed.
