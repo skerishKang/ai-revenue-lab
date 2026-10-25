@@ -293,11 +293,16 @@ def test_the_first_screen_split_is_one_to_two():
     ~30px below the Chat one on the same screen. One token now holds the
     expression; a taller product block changes the space under the hero only.
     """
-    assert "@media (min-width: 641px)" in FIRST_USE_CSS
-    assert "var(--padiem-first-screen-inset" in FIRST_USE_CSS
-    assert "calc((100dvh - 836px) / 3)" not in FIRST_USE_CSS
+    # Phase 2 moved the consumer rule itself to the shared frame and keyed it on
+    # the layout variant, so a new page inherits the composition by declaring the
+    # variant instead of adding a sheet. This file now documents the decision.
     frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
     assert "max(12px, calc((100dvh - 747px) / 3))" in frame
+    assert "@media (min-width: 641px)" in frame
+    assert 'var(--padiem-first-screen-inset)' in frame
+    assert '.app-shell[data-layout-variant="conversation"]' in frame
+    assert "padding-top: var(--padiem-first-screen-inset" not in FIRST_USE_CSS
+    assert "calc((100dvh - 836px) / 3)" not in FIRST_USE_CSS
     # The composer keeps its own first-use treatment.
     assert '.app-shell[data-state="home"] .composer' in FIRST_USE_CSS
 
