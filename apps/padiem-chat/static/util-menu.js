@@ -10,13 +10,20 @@
   }
 
   async function apiChat(prompt) {
+    // Same rule as app.js selectedProductTier(), lines 3039-3040.
+    const selected = window.PadiemTierSelection?.get?.();
+    const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
     const res = await fetch("/api/chat", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }], mode: "auto" }),
+      body: JSON.stringify({ messages: [{ role: "user", content: prompt }], mode: "auto", tier }),
     });
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      const message = data?.error?.message;
+      throw new Error(typeof message === "string" && message ? message : "HTTP " + res.status);
+    }
     const data = await res.json();
     return (data && data.answer) ? data.answer : (data && data.message ? data.message : JSON.stringify(data));
   }

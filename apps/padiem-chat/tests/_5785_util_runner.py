@@ -24,7 +24,7 @@ CHAT_ROOT = Path(__file__).resolve().parents[1]
 UTIL_MENU_JS = CHAT_ROOT / "static" / "util-menu.js"
 HARNESS_JS = CHAT_ROOT / "tests" / "_5785_util_harness.js"
 
-SCENARIOS = ("speech", "sns", "meeting", "shared")
+SCENARIOS = ("speech", "sns", "meeting", "shared", "tier")
 
 
 @lru_cache(maxsize=len(SCENARIOS))
