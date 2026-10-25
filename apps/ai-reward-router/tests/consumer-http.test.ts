@@ -26,6 +26,7 @@ function assertSecurityHeaders(response: Response): void {
   assert.equal(response.headers.get('x-frame-options'), 'DENY');
   assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
   assert.match(response.headers.get('content-security-policy') ?? '', /script-src 'none'/);
+  assert.match(response.headers.get('content-security-policy') ?? '', /form-action 'self'/);
 }
 
 test('default HTTP entrypoint renders honest zero-supply P0 Home at root', async () => {
@@ -36,7 +37,7 @@ test('default HTTP entrypoint renders honest zero-supply P0 Home at root', async
   assertSecurityHeaders(response);
   const html = await response.text();
   assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
-  assert.match(html, /바로 적립/);
+  assert.match(html, /홈/);
   assert.doesNotMatch(html, /설문|마이크로태스크|단기 프로젝트|구직/);
 });
 

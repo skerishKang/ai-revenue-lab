@@ -532,20 +532,13 @@
   }
 
   // ── 관리 경로 (fail-closed) ──────────────────────────────────────────
-  function paintAdminSignedOut(reason) {
-    if (refs.adminGate) refs.adminGate.hidden = false;
-    if (refs.adminTools) refs.adminTools.hidden = true;
-    text(refs.adminGateBody, reason === "unavailable"
-      ? "로그인 상태를 확인하지 못했습니다. PADIEM에서 로그인한 뒤 다시 시도해 주세요."
-      : "의정3종은 PADIEM 로그인 후 이용하실 수 있습니다.");
-    text(refs.adminStatus, "관리자");
-  }
-
-  function paintAdminSignedIn(name) {
+  // The three existing PADIEM utility views are public navigation.
+  // Server-side generation and durable storage permissions remain authoritative.
+  function paintUtilLinks(name) {
     if (refs.adminGate) refs.adminGate.hidden = true;
     if (refs.adminTools) refs.adminTools.hidden = false;
-    text(refs.adminStatus, "관리자 · " + (name || "로그인됨"));
-    text(refs.adminNote, "의정3종은 기존 PADIEM 화면에서 그대로 동작합니다.");
+    text(refs.adminStatus, name ? "의정3종 · " + name : "의정3종");
+    text(refs.adminNote, "축사·인사말, SNS 홍보, 회의정리·활동집 바로가기");
     const list = refs.toolCards;
     if (!list) return;
     list.replaceChildren();
@@ -560,23 +553,23 @@
   }
 
   async function readSession() {
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => controller.abort(), 10000);
+    // Authentication is used only for optional display personalization.
+    // A network failure must not hide public navigation.
     try {
-      const res = await fetch(STATUS_ENDPOINT, { credentials: "include", signal: controller.signal });
-      if (!res.ok) { paintAdminSignedOut("unavailable"); return; }
-      const data = await res.json();
-      if (data && data.authenticated === true) {
-        const user = data.user || {};
-        paintAdminSignedIn(user.name || user.display_name || user.email || null);
-      } else {
-        paintAdminSignedOut("guest");
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 10000);
+      try {
+        const res = await fetch(STATUS_ENDPOINT, { credentials: "include", signal: controller.signal });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.authenticated === true) {
+          const user = data.user || {};
+          paintUtilLinks(user.name || user.display_name || user.email || null);
+        }
+      } finally {
+        window.clearTimeout(timer);
       }
-    } catch (_) {
-      paintAdminSignedOut("unavailable");
-    } finally {
-      window.clearTimeout(timer);
-    }
+    } catch (_) { /* public utility navigation remains available */ }
   }
 
   async function loadBrand() {
@@ -621,7 +614,7 @@
     paintMedia();
     paintNotes();
     paintSns();
-    paintAdminSignedOut("guest");
+    paintUtilLinks(null);
     wireScroll();
     void readSession();
   }

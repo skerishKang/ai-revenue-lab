@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/tests/*.test.js",
+    "test": "npm run build && node --experimental-sqlite --test dist/tests/*.test.js",
     "supply:check": "npm run build && node dist/src/supply-readiness-cli.js"
   },
   "devDependencies": {

@@ -188,6 +188,7 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "deep_research_ready",
             "image_attachment_ready",
             "text_document_attachment_ready",
+            "binary_document_attachment_ready",
             "auth_configured",
             "history_store_bound",
             "projects_code_ready",

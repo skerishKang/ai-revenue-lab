@@ -3287,6 +3287,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         folder_name = root.rsplit("/", 1)[-1]
         return _response({
             "ok": True,
+            "roots": [root],
             "device": {
                 "device_id": device_id,
                 "status": "configured",

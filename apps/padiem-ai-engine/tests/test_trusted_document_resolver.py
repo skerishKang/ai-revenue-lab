@@ -94,14 +94,9 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # filesystem, OCR, provider or Production authority is introduced and no
 # declared-metadata bound, decision or error code changes. Only the two pins
 # for the changed files move; the other two are unchanged.
-# Re-pinned for #2824: the extraction that already produced the flat text now
-# also returns it as located blocks -- PDF pages, DOCX body and table rows,
-# PPTX slides, XLSX sheet cells -- through the existing DocumentSegment and
-# DocumentLocator vocabulary, so a parsed document can carry provenance to the
-# model. The flat text entry points keep their output, and no new parser,
-# archive walk, process, network, filesystem, OCR, provider or Production
-# authority is introduced; no bound, decision or error code changes. Only this
-# pin moves; the other three are unchanged.
+# Proposed re-pin after #5815: PDF/PPTX/DOCX provenance segments and
+# DOCX table-row / XLSX formula-and-cached-value text changed in Core.
+# Only this source pin moves; the other hashes are unchanged. CTO review pending.
 PINNED_SHA256 = {
     CORE_PACKAGE / "document_normalization.py": "2c90b79d0234d4a507c7568f690b961efab341c382540d7b1c0d65b42c6189d6",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
