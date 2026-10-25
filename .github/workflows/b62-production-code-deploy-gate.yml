@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/tests/test_b62_observability_deploy_contract.py"
       - ".github/scripts/b62_connector_broker_additive_preflight.py"
       - ".github/tests/test_b62_connector_broker_additive_preflight.py"
       - ".github/scripts/b62_connector_broker_served_version_readonly.py"
@@ -267,7 +268,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pytest --noconftest apps/padiem-chat/tests/test_b62_production_deploy_config.py -k observability -q
+          python -m pytest .github/tests/test_b62_observability_deploy_contract.py -q
           echo "B62_OBSERVABILITY_DEPLOY_CONTRACT=PASS"
           echo "PRODUCTION_MUTATION=0"
 
