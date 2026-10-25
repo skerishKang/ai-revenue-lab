@@ -383,6 +383,7 @@ async def project_terminal_run_status_alert(
             severity=severity,
             title=title,
             visible_to_members=visible_to_members,
+            linked_refs=(run.run_id, rule.rule_id),
         )
         return AutomationTaskAlertProjectionResult("alert", alert_id, False)
 
@@ -396,6 +397,7 @@ async def project_terminal_run_status_alert(
             created_at=run.completed_at or run.started_at,
             status=ClawAlertStatus.ACTIVE,
             visible_to_members=visible_to_members,
+            linked_refs=(run.run_id, rule.rule_id),
         )
     )
     return AutomationTaskAlertProjectionResult("alert", alert_id, True)
