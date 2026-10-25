@@ -245,6 +245,11 @@ class PythonXlsxValueCopyEditor:
         decision = classify_xlsx(source_bytes, local_only=True)
         if decision.route is XlsxRoute.REJECT:
             raise ContractError(f"untrusted workbook refused: {decision.reason}")
+        if decision.route is XlsxRoute.OFFICE_FALLBACK:
+            # The classifier, not this editor, owns the route. A fidelity-sensitive
+            # workbook is the existing Office path's job; editing it here would
+            # silently downgrade it to Python on capability grounds.
+            raise OfficeFidelityRequired(decision.reason)
 
         source = _WorkbookParts(source_bytes)
         try:

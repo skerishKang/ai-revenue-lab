@@ -74,7 +74,13 @@ TEXT_EDIT = ReviewedCellRevision(
 )
 
 
-def workbook_bytes(*, formula: bool = False) -> bytes:
+def excel_workbook_bytes(*, formula: bool = False) -> bytes:
+    """A real Excel-shaped workbook: fidelity-sensitive, so the Office route owns it.
+
+    openpyxl writes a styles part, a theme, ``pageMargins`` and cell style
+    indices, and merges when asked, which is exactly what
+    ``classify_xlsx(local_only=True)`` treats as fidelity-sensitive.
+    """
     book = Workbook()
     sheet = book.active
     sheet.title = "Quote"
@@ -88,6 +94,101 @@ def workbook_bytes(*, formula: bool = False) -> bytes:
     buffer = BytesIO()
     book.save(buffer)
     book.close()
+    return buffer.getvalue()
+
+
+def workbook_bytes(*, formula: bool = False, styles: bool = False,
+                   second_sheet: bool = False) -> bytes:
+    """The bytes a Python-path revision may attempt: see ``eligible_workbook_bytes``."""
+    return eligible_workbook_bytes(formula=formula, styles=styles,
+                                   second_sheet=second_sheet)
+
+
+def eligible_workbook_bytes(*, styles: bool = False, formula: bool = False,
+                            second_sheet: bool = False) -> bytes:
+    """A workbook ``classify_xlsx(local_only=True)`` admits to the Python path.
+
+    openpyxl always writes ``xl/styles.xml`` and a theme, gives cells a style
+    index and writes ``pageMargins``/``mergeCells``, so anything it saves is
+    fidelity-sensitive and belongs to the existing Office route. This package has
+    no styles part, no ``s`` attribute and no blocked element unless the matching
+    flag asks for it, which is what makes the route refusal, the editor's own
+    formula refusal and the successful literal edit separately testable on real
+    bytes.
+    """
+    main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    pr = "http://schemas.openxmlformats.org/package/2006/relationships"
+    types = [
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>',
+        '<Default Extension="xml" ContentType="application/xml"/>',
+        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>',
+        '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>',
+    ]
+    workbook_rels = [
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>',
+    ]
+    styled = ' s="1"' if styles else ""
+    if styles:
+        types.append('<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>')
+        workbook_rels.append('<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>')
+    if second_sheet:
+        types.append('<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>')
+        workbook_rels.append('<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>')
+    sheets = '<sheet name="Quote" sheetId="1" r:id="rId1"/>'
+    if second_sheet:
+        sheets += '<sheet name="Later" sheetId="2" r:id="rId3"/>'
+    formula_cell = ('<c r="B3"><f>B2*0.1</f><v>8800000</v></c>' if formula else "")
+    parts = {
+        "[Content_Types].xml": (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+            + "".join(types) + "</Types>"
+        ),
+        "_rels/.rels": (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<Relationships xmlns="{pr}">'
+            '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+            "</Relationships>"
+        ),
+        "xl/workbook.xml": (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<workbook xmlns="{main}" xmlns:r="{rel}">'
+            f'<sheets>{sheets}</sheets></workbook>'
+        ),
+        "xl/_rels/workbook.xml.rels": (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<Relationships xmlns="{pr}">' + "".join(workbook_rels) + "</Relationships>"
+        ),
+        "xl/worksheets/sheet1.xml": (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<worksheet xmlns="{main}"><sheetData>'
+            f'<row r="1"><c r="A1"{styled} t="inlineStr"><is><t>기존 항목</t></is></c></row>'
+            f'<row r="2"><c r="B2"{styled}><v>88000000</v></c>'
+            f'<c r="C2"{styled} t="inlineStr"><is><t>text kept</t></is></c>'
+            f'{formula_cell}</row>'
+            "</sheetData></worksheet>"
+        ),
+    }
+    if second_sheet:
+        parts["xl/worksheets/sheet2.xml"] = (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<worksheet xmlns="{main}"><sheetData>'
+            f'<row r="1"><c r="A1"{styled} t="inlineStr"><is><t>  후행 시트  </t></is></c></row>'
+            f'<row r="2"><c r="B2"{styled}><v>-250</v></c>'
+            f'<c r="D2"{styled}><v>1234567890123</v></c></row>'
+            "</sheetData></worksheet>"
+        )
+    if styles:
+        parts["xl/styles.xml"] = (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<styleSheet xmlns="{main}"><fonts count="1"><font><sz val="11"/></font></fonts>'
+            '<cellXfs count="2"><xf/><xf fontId="0"/></cellXfs></styleSheet>'
+        )
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name, text in parts.items():
+            archive.writestr(name, text)
     return buffer.getvalue()
 
 
@@ -265,7 +366,7 @@ class LocalXlsxWorkcopyRoundtripTests(unittest.TestCase):
         return result, transport, revised
 
     def test_real_revision_writes_a_new_file_and_preserves_the_original(self) -> None:
-        source = workbook_bytes()
+        source = workbook_bytes(second_sheet=True)
         source_sha = sha256(source).hexdigest()
         result, transport, expected = self.run_roundtrip(source)
 
@@ -281,14 +382,20 @@ class LocalXlsxWorkcopyRoundtripTests(unittest.TestCase):
         self.assertEqual(result.public_projection()["atomic_write_verified"], True)
         self.assertEqual(result.public_projection()["original_preserved"], True)
 
-        sheet = load_workbook(BytesIO(written))["Quote"]
+        book = load_workbook(BytesIO(written))
+        sheet = book["Quote"]
         self.assertEqual(sheet["B2"].value, 91_500_000)
         self.assertEqual(sheet["C2"].value, "바뀐 값")
         self.assertEqual(sheet["A1"].value, "기존 항목")
-        self.assertEqual([str(r) for r in sheet.merged_cells.ranges], ["A5:C5"])
+        # A worksheet nobody approved stays exactly as it was.
+        later = book["Later"]
+        self.assertEqual(later["B2"].value, -250)
+        self.assertEqual(later["D2"].value, 1_234_567_890_123)
+        self.assertEqual(later["A1"].value, "  후행 시트  ")
+        book.close()
 
     def test_only_the_target_sheet_part_differs_from_the_original(self) -> None:
-        source = workbook_bytes()
+        source = workbook_bytes(second_sheet=True)
         result, _transport, _expected = self.run_roundtrip(source)
         with open(self.result_on_disk, "rb") as handle:
             written = handle.read()
@@ -296,7 +403,10 @@ class LocalXlsxWorkcopyRoundtripTests(unittest.TestCase):
         self.assertEqual(sorted(before.namelist()), sorted(after.namelist()))
         changed = [name for name in before.namelist() if before.read(name) != after.read(name)]
         self.assertEqual(changed, ["xl/worksheets/sheet1.xml"])
-        self.assertEqual(before.read("xl/styles.xml"), after.read("xl/styles.xml"))
+        self.assertEqual(before.read("xl/worksheets/sheet2.xml"),
+                         after.read("xl/worksheets/sheet2.xml"))
+        self.assertEqual(before.read("[Content_Types].xml"), after.read("[Content_Types].xml"))
+        self.assertEqual(before.read("xl/workbook.xml"), after.read("xl/workbook.xml"))
 
     def test_formula_workbook_is_routed_to_the_office_path_without_writing(self) -> None:
         source = workbook_bytes(formula=True)
