@@ -42,6 +42,7 @@ Contract markers
 from __future__ import annotations
 
 import inspect
+import json
 import re
 from datetime import datetime, timezone
 from typing import Any, Mapping, Protocol
@@ -235,24 +236,32 @@ async def claw_local_access(request: Request) -> JSONResponse:
 
     source = getattr(request.app.state, "claw_local_access_source", None)
     project = getattr(source, "project_local_access", None)
-    if project is None or getattr(source, "configured", True) is False:
-        return _failure(LOCAL_ACCESS_UNCONFIGURED_REASON, conversation_id)
-
-    try:
-        projected = project(
-            owner_id=uid,
-            conversation_id=conversation_id,
-            now=datetime.now(timezone.utc),
-        )
-        if inspect.isawaitable(projected):
-            projected = await projected
-    except Exception:
-        # Exception text can carry identifiers or storage detail, so only the
-        # bounded code is reported.
-        return _failure(_REASON_SOURCE_FAILED, conversation_id)
-
+    configured = callable(project) and getattr(source, "configured", True) is not False
+    reason = _REASON_SOURCE_FAILED if configured else LOCAL_ACCESS_UNCONFIGURED_REASON
+    projected = None
+    if configured:
+        try:
+            projected = project(owner_id=uid, conversation_id=conversation_id,
+                                now=datetime.now(timezone.utc))
+            if inspect.isawaitable(projected):
+                projected = await projected
+        except Exception:
+            projected = None  # No exception text/identifiers cross the boundary.
     if projected is None:
-        return _failure(_REASON_SOURCE_FAILED, conversation_id)
+        # Requirement 6: reuse the SAME verified directory, never require a
+        # Broker binding or enumerate unscoped presence rows for this panel.
+        try:
+            from .claw_device_directory_routes import _read_device_directory
+            from .claw_memory_routes import _resolve_memory_workspace
+            from .claw_local_access_source import mesh_directory_local_access_projection
+            workspace = await _resolve_memory_workspace(request, uid)
+            if workspace:
+                response = await _read_device_directory(request, uid=uid, workspace_id=workspace)
+                projected = mesh_directory_local_access_projection(json.loads(response.body))
+        except Exception:
+            pass
+    if projected is None:
+        return _failure(reason, conversation_id)
 
     return JSONResponse(
         {

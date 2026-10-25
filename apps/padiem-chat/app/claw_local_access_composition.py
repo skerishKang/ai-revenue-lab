@@ -135,9 +135,10 @@ def build_mesh_presence_generation_resolver(env: Any) -> Any:
 
     This reads the SAME owner-scoped ``device_truth`` RPC the access source
     consumes; it never invents a device lookup, an account or a generation.
-    The resolved binding must be the exact device the beat named, otherwise
-    the beat is not stamped and therefore not stored. Absent or incompatible
-    binding returns ``None`` and the poll keeps its exact behavior.
+    The resolved binding must be the exact device the beat named. Requirement 6:
+    absent/unresolved Broker registration returns None; the authenticated poll
+    still records a source=mesh receipt with NULL generation. It never invents
+    a Broker generation or a credential.
     """
 
     boundary = binding_value(env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME)

@@ -7,6 +7,10 @@ boundary**: the ``device_truth`` RPC of the #3080 Local Agent broker Worker
 (``packages/padiem-control-plane/local_agent_broker_worker.py``), consumed
 through the trusted ``LOCAL_AGENT_BROKER_AUTHORITY_SERVICE`` binding.
 
+Requirement 6: Broker is not a prerequisite for a Mesh-only device. The
+owner-verified directory may consume source=mesh receipts with NULL generation
+using the same 180-second freshness bound; it never grants execution.
+
 Authority boundary
 ------------------
 * The broker owns the facts. Its ``device_truth`` projection reports the
@@ -63,6 +67,7 @@ from datetime import datetime, timezone
 from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 from kagent.contracts import ContractError
 from kagent.local_agent_control_plane_runtime import ControlPlaneHeartbeatReceipt
 from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle, DeviceSession
@@ -208,6 +213,43 @@ def _mesh_presence_receipt(value: Any) -> MeshPresenceReceipt | None:
     )
 
 
+def mesh_presence_online(row: Any, *, device_id: str, now: datetime) -> bool:
+    """Requirement 6: Broker is not a prerequisite for mapped Mesh liveness.
+
+    Callers must first verify the owner/device against the deployment map.
+    This receipt is display evidence only; it creates no execution grant.
+    """
+    if not is_pc_device_id(device_id) or not isinstance(row, Mapping) or row.get("source") != "mesh":
+        return False
+    observed = _parse_iso(row.get("received_at", row.get("observed_at")))
+    if (row.get("device_id") != device_id or row.get("connected") is not True
+            or row.get("credential_generation") is not None or observed is None):
+        return False
+    return 0 <= (_aware(now, "now") - observed).total_seconds() <= MESH_PRESENCE_MAX_AGE_SECONDS
+
+
+def mesh_directory_local_access_projection(directory: Any) -> dict[str, Any] | None:
+    """Reuse the owner-verified directory for the read-only connection panel.
+
+    Requirement 6: no Broker registration is needed. This does not select a
+    device, issue a handoff, or change execution authorization.
+    """
+    if not isinstance(directory, Mapping) or directory.get("ownerScoped") is not True or directory.get("available") is not True:
+        return None
+    selected = directory.get("selectedDeviceId")
+    devices = directory.get("devices")
+    if not isinstance(devices, list):
+        return None
+    if not any(isinstance(row, Mapping) and row.get("executable") is True
+               and row.get("state") == "CONNECTED" and row.get("usable") is True
+               and row.get("revoked") is False and row.get("expired") is False
+               and (selected is None or selected == row.get("deviceId")) for row in devices):
+        return None
+    return {"canonical_state": DeviceLifecycle.ONLINE, "requires_local_access": True,
+            "required_capabilities": ["local_computer"], "desktop_installed": False,
+            "handoff_value": None}
+
+
 def mesh_presence_facts(
     row: Any, binding: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
@@ -227,7 +269,8 @@ def mesh_presence_facts(
     observed_at = _text(row.get("received_at"))
     connected = row.get("connected")
     account_ref = _text(binding.get("account_ref"))
-    if device_id is None or generation is None or observed_at is None:
+    mesh_only = row.get("source") == "mesh" and row.get("credential_generation") is None
+    if device_id is None or (generation is None and not mesh_only) or observed_at is None:
         return None
     if type(connected) is not bool or account_ref is None:
         return None
@@ -245,6 +288,7 @@ def mesh_presence_facts(
         "credential_generation": generation,
         "observed_at": observed_at,
         "connected": connected,
+        **({"source": "mesh"} if mesh_only else {}),
     }
 
 
@@ -441,6 +485,13 @@ class CanonicalClawLocalAccessTruthSource:
         session_facts = _mapping(facts.get("session"))
         if binding_facts is None:
             return None
+
+        mesh = _mapping(facts.get("mesh_presence"))
+        if (mesh is not None and _text(binding_facts.get("account_ref")) is not None
+                and mesh.get("account_ref") == binding_facts.get("account_ref")
+                and mesh.get("workspace_ref") == binding_facts.get("workspace_ref")
+                and mesh_presence_online(mesh, device_id=binding_facts.get("device_id"), now=now)):
+            return DeviceLifecycle.ONLINE
 
         presence = _mesh_presence_receipt(facts.get("mesh_presence"))
 
