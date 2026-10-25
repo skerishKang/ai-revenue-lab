@@ -127,6 +127,7 @@ def test_admin_model_choices_require_server_verified_admin(monkeypatch):
             assert user_id == "usr_fixture"
             return self.approved
 
+    assert ADMIN_B14_MODEL_ID == "google/gemini-3.5-flash-lite"
     catalog = Catalog([
         {"model_id": ADMIN_B14_MODEL_ID, "name": "Admin model"},
         {"model_id": "opencode-go/beam-free", "name": "Free model"},
