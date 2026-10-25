@@ -181,3 +181,24 @@ def test_the_real_store_writes_extracted_pdf_after_068(tmp_path) -> None:
     assert created.media_type == "extracted/pdf"
     assert fetched is not None and fetched.media_type == "extracted/pdf"
     assert [item.id for item in listed] == [created.id]
+
+
+def test_migration_069_keeps_all_project_file_indexes_and_rows(tmp_path) -> None:
+    db = sqlite3.connect(tmp_path / "chat.sqlite3")
+    _apply(db, "001_auth_history.sql", "002_projects.sql", "003_project_files.sql")
+    _seed_owner(db)
+    db.execute(
+        "INSERT INTO project_files (id, project_id, user_id, name, media_type, "
+        "content_text, content_chars, created_at, updated_at) "
+        "VALUES ('pfa_1', ?, ?, 'notes.txt', 'text/plain', 'hello', 5, "
+        "'2026-10-25T00:00:00Z', '2026-10-25T00:00:00Z')",
+        (PID, UID),
+    )
+    db.commit()
+    _apply(db, "068_project_files_extracted_media.sql", "069_project_files_image_media.sql")
+    indexes = {row[0] for row in db.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'project_files'"
+    )}
+    assert {"idx_project_files_owner_project", "idx_project_files_project_updated"} <= indexes
+    assert db.execute("SELECT content_text FROM project_files WHERE id = 'pfa_1'").fetchone()[0] == "hello"
+    assert db.execute("PRAGMA foreign_key_check").fetchall() == []
