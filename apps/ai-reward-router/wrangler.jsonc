@@ -36,7 +36,7 @@
     {
       "binding": "B64_INCOME_DB",
       "database_name": "padiem-b64",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "b7f7bbd7-442c-4bc6-bc0d-b1026b0d459a",
       "migrations_dir": "migrations/d1"
     }
   ]
