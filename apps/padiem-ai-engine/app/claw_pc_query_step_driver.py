@@ -227,7 +227,7 @@ def _pc_refusal(stage):
             "hint": "PC 작업이 거부되었거나 실패했습니다. 등록된 폴더 기준 상대경로만 허용됩니다. 실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."}
 
 
-def _pc_observing_handler(handler):
+def _pc_observing_handler(handler, *, unexpected_stage="pc_files_internal_error"):
     async def observed(arguments):
         token = _PC_CALL_PROGRESS.set(None)
         try:
@@ -235,6 +235,12 @@ def _pc_observing_handler(handler):
         except ToolHandlerError as exc:
             print("pc_files_chat_call mode=refusal stage=%s" % exc.code, flush=True)
             return _pc_refusal(exc.code)
+        except Exception as exc:
+            # A handler bug is a refused observation, not an abandoned PC turn.
+            # Cancellation still propagates; never log arguments or exception text.
+            print("pc_files_chat_call mode=refusal stage=%s reason=%s" % (
+                unexpected_stage, type(exc).__name__), flush=True)
+            return _pc_refusal(unexpected_stage)
         finally:
             _PC_CALL_PROGRESS.reset(token)
     return observed
@@ -597,7 +603,8 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     runtime = runtime or ToolRuntime()
     runtime.register(pc_drives_tool_spec(), _pc_observing_handler(
         _make_query_drives_handler(service=service, request_factory=request_factory,
-                                  secret=secret, endpoint_url=endpoint_url)))
+                                  secret=secret, endpoint_url=endpoint_url),
+        unexpected_stage="pc_query_internal_error"))
     runtime.register(pc_list_files_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_LIST_FILES_TOOL_ID, op="list", service=service,
         request_factory=request_factory, secret=secret)))
