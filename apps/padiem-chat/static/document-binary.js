@@ -18,8 +18,12 @@
     return MIME_BY_EXTENSION.get(extensionOf(file && file.name)) || null;
   }
 
+  function binaryEnabled() {
+    return attachmentCapabilities.binarySupported !== false;
+  }
+
   function canRead(file) {
-    return expectedMediaType(file) !== null;
+    return binaryEnabled() && expectedMediaType(file) !== null;
   }
 
   function canonicalMediaType(file) {
@@ -32,6 +36,7 @@
   }
 
   async function read(file) {
+    if (!binaryEnabled()) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
     const mediaType = canonicalMediaType(file);
     if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
     if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");

@@ -3609,6 +3609,9 @@
     const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
     if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
   });
+  window.addEventListener("padiem:attachmentcapabilitychange", () => {
+    if (!selectedAttachment) setNote(idleNote());
+  });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
   const clawNavButton = document.getElementById("clawNavButton");

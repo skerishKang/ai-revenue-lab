@@ -165,6 +165,10 @@ bounds that stop a decompression bomb.
 
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.
 
+The runtime reports binary parser readiness in `/health` as `binary_document_attachment_ready`, and the composer derives its accepted formats from that value. CPython runs the reviewed in-process Core parser. The production Worker keeps binary parsing fail-closed until trusted composition installs an isolated parser authority, so the composer does not promise parsing that the active runtime would refuse.
+
+Extraction keeps source provenance for the model: PDF segments carry the exact page number, PPTX segments carry the slide number, DOCX table rows are grouped as table/row, and XLSX cells keep their sheet/cell coordinate plus the formula text next to the cached value. These labels are reference metadata and do not grant instruction authority.
+
 Project files are a distinct persistence capability. They are validated UTF-8 text files only and remain separate from ephemeral composer attachments. PDF/DOCX/PPTX/XLSX composer support therefore does not imply those binary documents can be persisted as Project files.
 
 B62 owns attachment UX, extraction/product validation and user-facing errors. Core owns shared execution semantics. B14 owns actual inference execution.

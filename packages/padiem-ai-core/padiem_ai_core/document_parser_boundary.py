@@ -130,6 +130,18 @@ def production_worker_runtime() -> bool:
     return sys.platform == PRODUCTION_WORKER_PLATFORM
 
 
+def binary_document_parser_ready() -> bool:
+    """True only when this runtime can actually invoke a binary parser now.
+
+    CPython uses the reviewed in-process parser. The production Worker is ready
+    only after trusted composition installs an isolated authority; the default
+    fail-closed state is reported as not ready so product capability copy never
+    promises parsing that this runtime will refuse.
+    """
+
+    return not production_worker_runtime() or _WORKER_ISOLATED_PARSER_COMPOSITION is not None
+
+
 def install_worker_isolated_parser_composition(
     authority: BinaryDocumentParserPort,
 ) -> None:
@@ -201,6 +213,7 @@ __all__ = [
     "PRODUCTION_WORKER_PLATFORM",
     "BinaryDocumentParserPort",
     "DocumentParserAuthorityUnavailable",
+    "binary_document_parser_ready",
     "clear_worker_isolated_parser_composition",
     "install_worker_isolated_parser_composition",
     "parse_binary_document_via_authority",

@@ -128,4 +128,5 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         media_type=document.media_type,
         text=document.text,
         byte_size=document.byte_size,
+        segments=tuple(document.segments),
     )
