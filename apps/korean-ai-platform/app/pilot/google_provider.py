@@ -129,11 +129,31 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
     """
     import json
     from .tool_channel import (
+        TOOL_COMPLETED_STATUS,
         InvalidToolDeclaration,
         validate_messages,
         validate_tools,
         validate_tool_choice,
     )
+
+    def response_body(message):
+        """One result body. A non-completion is never shaped like a result.
+
+        A completed run answers with ``result``. Anything else answers with its
+        own status and cause, so the model cannot read a refusal, an executor
+        failure or a cancellation as the output the call produced.
+        """
+        execution = message.get("execution")
+        status = execution.get("status") if isinstance(execution, dict) else None
+        if status is None or status == TOOL_COMPLETED_STATUS:
+            return {"result": message["content"]}
+        body = {"status": status}
+        if message["content"]:
+            body["detail"] = message["content"]
+        for name in ("error_class", "error_code"):
+            if execution.get(name) is not None:
+                body[name] = execution[name]
+        return body
 
     declared = validate_tools(tools)
     declared_names = {tool["function"]["name"] for tool in declared}
@@ -181,7 +201,7 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
                 "name": call_name,
                 # The result is the executor's text, preserved verbatim. A
                 # provider requires an object here, so it travels as one field.
-                "response": {"result": message["content"]},
+                "response": response_body(message),
             }}
             continue
 
@@ -192,7 +212,12 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
         if role == "assistant":
             parts = []
             if message.get("content") is not None:
-                parts.append({"text": message["content"]})
+                text_part = {"text": message["content"]}
+                # The turn's own answer part returns with the token it arrived
+                # with; an unsigned answer keeps its plain part shape.
+                if message.get("signature") is not None:
+                    text_part["thoughtSignature"] = message["signature"]
+                parts.append(text_part)
             calls: dict[str, str] = {}
             for call in message.get("tool_calls") or ():
                 function = call["function"]
@@ -279,6 +304,20 @@ class _GoogleToolStream:
             validate_tool_calls,
         )
 
+        def part_signature(part):
+            """The opaque token attached to one part. Never parsed, only bounded."""
+
+            signature = part.get("thoughtSignature")
+            if signature is None:
+                return None
+            if (
+                not isinstance(signature, str)
+                or not signature.strip()
+                or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("invalid thought signature")
+            return signature
+
         try:
             data = "\n".join(
                 line[5:].lstrip(" ") for line in frame.decode("utf-8").splitlines()
@@ -315,13 +354,7 @@ class _GoogleToolStream:
                         name, args = call.get("name"), call.get("args", {})
                         if name not in self.names or not isinstance(args, dict):
                             raise ValueError("invalid function call")
-                        signature = part.get("thoughtSignature")
-                        if signature is not None and (
-                            not isinstance(signature, str)
-                            or not signature.strip()
-                            or len(signature) > MAX_TOOL_SIGNATURE_CHARS
-                        ):
-                            raise ValueError("invalid thought signature")
+                        signature = part_signature(part)
                         index = len(self.ids)
                         call_id = call.get("id", f"{self.call_prefix}_{index}")
                         arguments = json.dumps(args, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
@@ -339,7 +372,14 @@ class _GoogleToolStream:
                         text = part["text"]
                         if not isinstance(text, str) or self.finish_reason is not None:
                             raise ValueError("invalid text")
-                        events.append(StreamEvent(**metadata, delta_content=text))
+                        # A signed answer part relays its own token. A thinking
+                        # part is deliberately not relayed above, so its token
+                        # has no part to travel with; the turn's merge rule is
+                        # the last non-null token a consumer saw.
+                        events.append(StreamEvent(
+                            **metadata, delta_content=text,
+                            signature=part_signature(part),
+                        ))
                         self.saw_output |= bool(text.strip())
                 finish = candidate.get("finishReason")
                 if finish is not None:

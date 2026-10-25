@@ -26,6 +26,8 @@ from typing import Any
 import json
 import re
 
+from .contracts import ErrorClass, RunStatus
+
 # A tool name is a provider-side identifier, not free prose. The bound keeps a
 # declared name small enough to travel as an identifier and rejects separators
 # that a provider would silently rewrite.
@@ -85,6 +87,79 @@ def _freeze(value: Mapping[str, Any]) -> Mapping[str, Any]:
         else:
             frozen[key] = item
     return MappingProxyType(frozen)
+
+
+def _safe_code(value: Any) -> str:
+    """A bounded technical code: an executor stage code, never prose."""
+
+    if not isinstance(value, str):
+        raise ToolChannelError("tool result code must be a string")
+    text = value.strip()
+    if not _TOOL_NAME_RE.fullmatch(text):
+        raise ToolChannelError("tool result code must be a safe bounded identifier")
+    return text
+
+
+# The outcome a tool result reports is the status its executor already reported
+# -- contracts.RunStatus -- beside the bounded stage code ToolEvent has carried
+# since #5015. No second outcome vocabulary is created here.
+TOOL_COMPLETED_STATUS = RunStatus.COMPLETED.value
+_EXECUTION_FIELDS = frozenset(
+    {"tool_id", "status", "duration_ms", "error_class", "error_code"}
+)
+
+
+def normalize_execution_event(value: Any) -> Mapping[str, Any]:
+    """Validate one executor event projection: closed fields, known status."""
+
+    if not isinstance(value, Mapping):
+        raise ToolChannelError("tool result execution must be a mapping")
+    extra = set(value) - _EXECUTION_FIELDS
+    if extra:
+        raise ToolChannelError(
+            "tool result execution has unexpected fields: "
+            + ", ".join(sorted(map(str, extra)))
+        )
+    status = value.get("status")
+    try:
+        normalized_status = RunStatus(status).value
+    except ValueError as exc:
+        raise ToolChannelError(
+            "tool result execution status is not a RunStatus value"
+        ) from exc
+
+    event: dict[str, Any] = {"status": normalized_status}
+    error_class = value.get("error_class")
+    if error_class is not None:
+        try:
+            event["error_class"] = ErrorClass(error_class).value
+        except ValueError as exc:
+            raise ToolChannelError(
+                "tool result error_class is not an ErrorClass value"
+            ) from exc
+    error_code = value.get("error_code")
+    if error_code is not None:
+        event["error_code"] = _safe_code(error_code)
+    duration_ms = value.get("duration_ms")
+    if duration_ms is not None:
+        if isinstance(duration_ms, bool) or not isinstance(duration_ms, int) or duration_ms < 0:
+            raise ToolChannelError(
+                "tool result duration_ms must be a non-negative integer or None"
+            )
+        event["duration_ms"] = duration_ms
+    tool_id = value.get("tool_id")
+    if tool_id is not None:
+        event["tool_id"] = _safe_code(tool_id)
+    # A result that did not complete has to say why, so a refusal, an executor
+    # failure and a cancellation stay three different facts instead of one
+    # undifferentiated non-answer a later reader could read as success.
+    if normalized_status != TOOL_COMPLETED_STATUS and (
+        "error_code" not in event and "error_class" not in event
+    ):
+        raise ToolChannelError(
+            "a non-completed tool result must carry its error_class or error_code"
+        )
+    return MappingProxyType(event)
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,11 +288,18 @@ class ToolCall:
 
 @dataclass(frozen=True, slots=True)
 class ToolResult:
-    """The outcome of a tool call, handed back to the model."""
+    """The outcome of a tool call, handed back to the model.
+
+    ``execution`` is the executor's own ``ToolEvent`` projection (#5536, #4727).
+    A result may carry it, and a native follow-up then tells the model whether
+    the tool actually completed or came back refused, failed or cancelled. It
+    is a projection of trusted local state, never parsed for authority.
+    """
 
     tool_call_id: str
     name: str
     content: str
+    execution: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "tool_call_id", _safe_tool_call_id(self.tool_call_id))
@@ -227,23 +309,71 @@ class ToolResult:
         if len(self.content) > MAX_TOOL_RESULT_CHARS:
             raise ToolChannelError("tool result content exceeds the supported bound")
         object.__setattr__(self, "content", self.content)
+        if self.execution is not None:
+            object.__setattr__(
+                self, "execution", _freeze(normalize_execution_event(self.execution))
+            )
+        # #4727: a completed run has to carry the text the model reads. A result
+        # that reports its own failure may carry none, because the outcome block
+        # is the fact and inventing filler prose would only dress it up.
+        if self.completed and not self.content.strip():
+            raise ToolChannelError("a completed tool result needs non-empty content")
+
+    @property
+    def completed(self) -> bool:
+        """Whether the executor reported this result as an actual completion."""
+
+        return (
+            self.execution is None
+            or self.execution.get("status") == TOOL_COMPLETED_STATUS
+        )
+
+    @classmethod
+    def from_execution(
+        cls,
+        *,
+        tool_call_id: str,
+        name: str,
+        content: str,
+        event: Any,
+    ) -> "ToolResult":
+        """One executor result: the text plus the event that produced it."""
+
+        projection = event.to_public_dict() if hasattr(event, "to_public_dict") else event
+        return cls(
+            tool_call_id=tool_call_id,
+            name=name,
+            content=content,
+            execution=projection,
+        )
 
     def to_message(self) -> dict[str, Any]:
-        """The provider message that carries this result back to the model."""
+        """The provider message that carries this result back to the model.
 
-        return {
+        A completion is the message this channel always sent. Only a result that
+        did not complete adds its outcome, so an ordinary round trip keeps its
+        exact shape and a refusal cannot be read as an output.
+        """
+
+        message: dict[str, Any] = {
             "role": "tool",
             "tool_call_id": self.tool_call_id,
             "name": self.name,
             "content": self.content,
         }
+        if self.execution is not None and not self.completed:
+            message["execution"] = dict(self.execution)
+        return message
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "tool_call_id": self.tool_call_id,
             "name": self.name,
             "content": self.content,
         }
+        if self.execution is not None:
+            payload["execution"] = dict(self.execution)
+        return payload
 
 
 def _parse_arguments(raw: Any, *, tool_name: str) -> Mapping[str, Any]:
@@ -400,6 +530,7 @@ def normalize_tool_results(
                 tool_call_id=call_id,  # type: ignore[arg-type]
                 name=name,  # type: ignore[arg-type]
                 content=content,
+                execution=item.get("execution"),
             )
         else:
             raise ToolChannelError(f"tool_results[{index}] must be a mapping")
@@ -452,14 +583,41 @@ def parse_tool_calls(raw: Any) -> tuple[ToolCall, ...]:
     return tuple(calls)
 
 
-def tool_call_assistant_message(calls: Sequence[ToolCall]) -> dict[str, Any]:
-    """The assistant message that carries tool calls back into a conversation."""
+def normalize_turn_signature(value: Any) -> str:
+    """The opaque token attached to an assistant turn's own answer text (#4727).
 
-    return {
+    It is relayed unchanged and returned with that text on a native follow-up;
+    nothing here parses it. A turn without answer text has no part for the token
+    to travel with, so its caller does not call this.
+    """
+
+    if not isinstance(value, str) or not value.strip():
+        raise ToolChannelError("assistant signature must be a non-empty string")
+    if len(value) > MAX_TOOL_SIGNATURE_CHARS:
+        raise ToolChannelError("assistant signature exceeds the supported bound")
+    return value
+
+
+def tool_call_assistant_message(
+    calls: Sequence[ToolCall],
+    *,
+    signature: str | None = None,
+) -> dict[str, Any]:
+    """The assistant message that carries tool calls back into a conversation.
+
+    ``signature`` is the opaque token the provider attached to this turn's own
+    answer text (#4727), not a call token; it is relayed unchanged and a native
+    follow-up returns it with the text it belongs to.
+    """
+
+    message: dict[str, Any] = {
         "role": "assistant",
         "content": None,
         "tool_calls": [call.to_provider_payload() for call in calls],
     }
+    if signature is not None:
+        message["signature"] = signature
+    return message
 
 
 def tool_result_messages(results: Sequence[ToolResult]) -> tuple[dict[str, Any], ...]:

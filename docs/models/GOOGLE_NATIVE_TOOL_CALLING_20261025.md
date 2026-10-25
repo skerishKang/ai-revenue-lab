@@ -86,10 +86,17 @@ provider reports, so the #5318 ledger row describes the request as it ran:
    part is dropped at the decoder and cannot be replayed. Closing it needs a
    turn-level field across the SSE frame, Core and Chat — the consumer boundary
    of #5573, not something the adapter can decide alone.
+   **Closed by the follow-up slice** in
+   `GOOGLE_THOUGHT_SIGNATURE_AND_TOOL_OUTCOME_20261025.md`: the answer text's own
+   token now travels on the same event and returns on the part it signed. A
+   thinking part's token stays where the reasoning text stays — not carried —
+   because relaying that part was never this lane's contract.
 2. **A refused or failed tool has no error channel.** `role: tool` carries text
    and nothing else, so the executor's refusal or failure reaches the model as
    result text. B14 never marks a call executed: it relays the call and the
    caller's own result.
+   **Closed by the same follow-up slice**: a result can now carry the executor's
+   own `ToolEvent` projection, and a non-completion is never written as a result.
 3. **Unverified wire shapes.** Two behaviours of the native stream are tested
    only against frames this repo wrote: whether Gemini splits one
    `functionCall`'s arguments across frames (the decoder requires a complete,

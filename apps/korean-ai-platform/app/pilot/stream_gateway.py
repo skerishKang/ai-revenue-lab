@@ -306,6 +306,11 @@ def _encode_event(
     }
     if event.usage is not None:
         payload["usage"] = _usage_dict(event.usage)
+    # #4727: the token a provider attached to this chunk's own text part. It is
+    # present only when one was issued, so every other provider's frame keeps
+    # its exact pre-#4727 bytes.
+    if event.signature is not None:
+        payload["signature"] = event.signature
     return _encode_data_frame(payload)
 
 

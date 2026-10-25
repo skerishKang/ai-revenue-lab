@@ -19,7 +19,11 @@ from .b14_execution import (
     _safe_string,
 )
 from .contracts import UsageMetadata
-from .tool_channel import MAX_TOOL_ARGUMENT_CHARS, ToolCall
+from .tool_channel import (
+    MAX_TOOL_ARGUMENT_CHARS,
+    MAX_TOOL_SIGNATURE_CHARS,
+    ToolCall,
+)
 
 B14_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 B14_AUTO_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
@@ -66,12 +70,23 @@ class B14StreamEvent:
     route: B14RouteMetadata = field(default_factory=B14RouteMetadata)
     done: bool = False
     tool_call: B14StreamToolCall | None = None
+    # #4727: the provider's opaque continuation token for this event's own text.
+    # A call carries its token on the call; signed answer text carries it here.
+    # Consumers relay it unchanged and return it with the text it belongs to.
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
+        if self.signature is not None:
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("signature must be a bounded string")
         if not isinstance(self.usage, UsageMetadata):
             raise ValueError("usage must be UsageMetadata")
         if not isinstance(self.route, B14RouteMetadata):
@@ -85,6 +100,7 @@ class B14StreamEvent:
                 raise ValueError("tool call event must not contain delta or completion")
         if self.done and (
             self.delta_content is not None
+            or self.signature is not None
             or any(
                 value is not None
                 for value in (
@@ -106,6 +122,8 @@ class B14StreamEvent:
             "route": self.route.to_public_dict(),
             "done": self.done,
         }
+        if self.signature is not None:
+            payload["signature"] = self.signature
         if self.tool_call is not None:
             payload["tool_call"] = self.tool_call.to_public_dict()
         return payload
@@ -269,6 +287,16 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
     usage = _parse_usage(payload)
     delta_content: str | None = None
     finish_reason: str | None = None
+    # #4727: an opaque provider token beside the text, relayed unchanged. A
+    # provider that never issues one keeps producing the exact frame it did
+    # before and this stays None.
+    signature = payload.get("signature")
+    if signature is not None and (
+        not isinstance(signature, str)
+        or not signature.strip()
+        or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+    ):
+        raise _malformed("Business 14 returned an invalid stream signature.")
     if choices:
         choice = choices[0]
         if not isinstance(choice, Mapping):
@@ -301,6 +329,7 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
         finish_reason=finish_reason,
         usage=usage,
         route=route,
+        signature=signature,
     )
 
 

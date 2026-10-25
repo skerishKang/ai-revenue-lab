@@ -189,8 +189,8 @@ def validate_tool_choice(raw: Any, declared: list[dict[str, Any]]) -> Any:
     return {"type": "function", "function": {"name": name}}
 
 
-def _call_signature(call: dict[str, Any], index: int) -> str | None:
-    """The opaque continuation token a provider attached to one call.
+def _attached_signature(entry: dict[str, Any], index: int) -> str | None:
+    """The opaque continuation token attached to one call or one assistant turn.
 
     B14's canonical field is ``signature``. Google's OpenAI-compatible wire
     returns the same value at ``extra_content.google.thought_signature``, so a
@@ -198,9 +198,9 @@ def _call_signature(call: dict[str, Any], index: int) -> str | None:
     never parsed; only its shape is bounded here.
     """
 
-    signature = call.get("signature")
+    signature = entry.get("signature")
     if signature is None:
-        extra = call.get("extra_content")
+        extra = entry.get("extra_content")
         google = extra.get("google") if isinstance(extra, dict) else None
         if isinstance(google, dict):
             signature = google.get("thought_signature")
@@ -212,7 +212,7 @@ def _call_signature(call: dict[str, Any], index: int) -> str | None:
         or len(signature) > MAX_TOOL_SIGNATURE_CHARS
     ):
         raise InvalidToolDeclaration(
-            f"messages[{index}] tool call signature must be a bounded string"
+            f"messages[{index}] signature must be a bounded string"
         )
     return signature
 
@@ -270,7 +270,7 @@ def validate_tool_calls(raw: Any, index: int) -> list[dict[str, Any]]:
             raise InvalidToolDeclaration(
                 f"messages[{index}].tool_calls[{call_index}] arguments are too large"
             )
-        signature = _call_signature(call, index)
+        signature = _attached_signature(call, index)
         entry = {
             "id": call_id,
             "type": "function",
@@ -283,6 +283,69 @@ def validate_tool_calls(raw: Any, index: int) -> list[dict[str, Any]]:
             entry["signature"] = signature
         validated.append(entry)
     return validated
+
+
+#: The one outcome value this gateway needs: the executor finished and its text
+#: is a real result. The outcome vocabulary itself is Core's (contracts.RunStatus),
+#: which the caller's ToolEvent is validated against; B14 does not keep a second
+#: enum, it only refuses to hand the model a non-completion as if it were one.
+TOOL_COMPLETED_STATUS = "completed"
+_EXECUTION_FIELDS = frozenset(
+    {"tool_id", "status", "duration_ms", "error_class", "error_code"}
+)
+
+
+def _safe_code(value: Any, name: str) -> str | None:
+    """A bounded technical code: an executor stage code, never free prose."""
+
+    if not isinstance(value, str) or not value.strip():
+        raise InvalidToolDeclaration(f"execution.{name} must be a safe identifier")
+    text = value.strip()
+    if not _is_safe_identifier(text, _TOOL_NAME_CHARS, _TOOL_NAME_MAX):
+        raise InvalidToolDeclaration(f"execution.{name} must be a safe identifier")
+    return text
+
+
+def _validate_execution(raw: Any, index: int) -> dict[str, Any]:
+    """Validate the executor's outcome block carried by a tool result.
+
+    Shape is checked here because the field arrives over the network; the status
+    vocabulary stays with the executor that owns it. A non-completion must name
+    its cause, so a refusal, a failure and a cancellation remain three facts.
+    """
+
+    if not isinstance(raw, dict):
+        raise InvalidToolDeclaration(
+            f"messages[{index}].execution must be a JSON object"
+        )
+    extra = set(raw) - _EXECUTION_FIELDS
+    if extra:
+        raise InvalidToolDeclaration(
+            f"messages[{index}].execution unexpected fields: "
+            f"{', '.join(sorted(extra))}"
+        )
+    event: dict[str, Any] = {"status": _safe_code(raw.get("status"), "status")}
+    for name in ("tool_id", "error_class", "error_code"):
+        value = raw.get(name)
+        if value is None:
+            continue
+        event[name] = _safe_code(value, name)
+    duration = raw.get("duration_ms")
+    if duration is not None and (
+        isinstance(duration, bool) or not isinstance(duration, int) or duration < 0
+    ):
+        raise InvalidToolDeclaration(
+            f"messages[{index}].execution.duration_ms must be a non-negative integer"
+        )
+    if duration is not None:
+        event["duration_ms"] = duration
+    if event["status"] != TOOL_COMPLETED_STATUS and (
+        "error_code" not in event and "error_class" not in event
+    ):
+        raise InvalidToolDeclaration(
+            f"messages[{index}].execution must name its error_code or error_class"
+        )
+    return event
 
 
 def validate_messages(raw: Any) -> list[dict[str, Any]]:
@@ -309,7 +372,9 @@ def validate_messages(raw: Any) -> list[dict[str, Any]]:
             )
 
         if role == "tool":
-            extra = set(message) - {"role", "content", "tool_call_id", "name"}
+            extra = set(message) - {
+                "role", "content", "tool_call_id", "name", "execution",
+            }
             if extra:
                 raise InvalidToolDeclaration(
                     f"messages[{index}] unexpected fields: "
@@ -322,8 +387,22 @@ def validate_messages(raw: Any) -> list[dict[str, Any]]:
                 raise InvalidToolDeclaration(
                     f"messages[{index}].tool_call_id must be a safe identifier"
                 )
+            # #4727: the executor's outcome travels beside its text.
+            execution = message.get("execution")
+            if execution is not None:
+                execution = _validate_execution(execution, index)
             content = message.get("content")
-            if not isinstance(content, str) or not content.strip():
+            if not isinstance(content, str):
+                raise InvalidToolDeclaration(
+                    f"messages[{index}] content must be a string"
+                )
+            # A completed run owes the model its text. A result that reports its
+            # own failure may carry none, so an executor is not pushed into
+            # inventing prose to satisfy a shape.
+            if not content.strip() and (
+                execution is None
+                or execution["status"] == TOOL_COMPLETED_STATUS
+            ):
                 raise InvalidToolDeclaration(
                     f"messages[{index}] content must be a non-empty string"
                 )
@@ -335,17 +414,24 @@ def validate_messages(raw: Any) -> list[dict[str, Any]]:
             name = message.get("name")
             if isinstance(name, str) and name.strip():
                 tool_message["name"] = name.strip()
+            if execution is not None:
+                tool_message["execution"] = execution
             validated.append(tool_message)
             continue
 
         if role == "assistant":
-            extra = set(message) - {"role", "content", "tool_calls"}
+            extra = set(message) - {"role", "content", "tool_calls", "signature",
+                                    "extra_content"}
             if extra:
                 raise InvalidToolDeclaration(
                     f"messages[{index}] unexpected fields: "
                     f"{', '.join(sorted(extra))}"
                 )
             content = message.get("content")
+            # #4727: the token a provider attached to this turn's own answer
+            # text. It travels with the text it signed, so a turn without answer
+            # text cannot carry one.
+            turn_signature = _attached_signature(message, index)
             tool_calls = (
                 validate_tool_calls(message.get("tool_calls"), index)
                 if "tool_calls" in message
@@ -355,6 +441,10 @@ def validate_messages(raw: Any) -> list[dict[str, Any]]:
                 if not tool_calls:
                     raise InvalidToolDeclaration(
                         f"messages[{index}] must carry content or tool calls"
+                    )
+                if turn_signature is not None:
+                    raise InvalidToolDeclaration(
+                        f"messages[{index}] signature needs the answer text it belongs to"
                     )
                 validated.append(
                     {
@@ -371,6 +461,8 @@ def validate_messages(raw: Any) -> list[dict[str, Any]]:
             turn: dict[str, Any] = {"role": "assistant", "content": content.strip()}
             if tool_calls:
                 turn["tool_calls"] = tool_calls
+            if turn_signature is not None:
+                turn["signature"] = turn_signature
             validated.append(turn)
             continue
 

@@ -730,3 +730,53 @@ def test_streamed_tool_call_public_arguments_remain_json_serializable():
     public = json.loads(json.dumps(event.to_public_dict()))
     assert public["tool_call"]["arguments"] == arguments
     assert public["tool_call"]["index"] == 1
+
+
+def _client_for(raw: bytes):
+    return B14StreamingClient(
+        B14ExecutionConfig(BASE_URL),
+        transport=httpx.MockTransport(lambda req: httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([raw]),
+        )),
+    )
+
+
+def test_a_signed_text_chunk_reaches_the_consumer_with_its_token():
+    """#4727: the turn's own answer text can carry a continuation token too."""
+    signed = chunk_payload(content="확인")
+    signed["signature"] = "sig_turn_xyz"
+    raw = (
+        sse(signed)
+        + sse(chunk_payload(content="하겠습니다"))
+        + sse(chunk_payload(finish_reason="stop"))
+        + b"data: [DONE]\n\n"
+    )
+
+    events = collect(_client_for(raw), request())
+
+    assert events[0].signature == "sig_turn_xyz"
+    assert events[0].to_public_dict()["signature"] == "sig_turn_xyz"
+    # An unsigned chunk keeps the exact event and projection it always had.
+    assert events[1].signature is None
+    assert "signature" not in events[1].to_public_dict()
+    # The turn's merge rule is the last token it actually saw, not the last frame.
+    assert [e.signature for e in events if e.signature is not None] == ["sig_turn_xyz"]
+
+
+def test_a_malformed_text_token_is_refused():
+    for signature in (123, "", "x" * 65_537):
+        payload = chunk_payload(content="확인")
+        payload["signature"] = signature
+
+        with pytest.raises(B14ExecutionError) as exc:
+            collect(_client_for(sse(payload)), request())
+
+        assert exc.value.code == "malformed_upstream"
+
+
+def test_a_completion_event_cannot_carry_a_token():
+    from padiem_ai_core.b14_streaming import B14StreamEvent
+
+    with pytest.raises(ValueError):
+        B14StreamEvent(done=True, finish_reason="stop", signature="sig_turn_xyz")

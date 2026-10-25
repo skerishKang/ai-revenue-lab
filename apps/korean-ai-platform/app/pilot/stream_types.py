@@ -79,12 +79,26 @@ class StreamEvent:
     usage: StreamUsage | None = None
     done: bool = False
     tool_call: StreamToolCall | None = None
+    # The provider's opaque continuation token for THIS event's own text part.
+    # A call carries its token on the call itself; a signed answer text carries
+    # it here, so a native follow-up can return each token with the part it
+    # belonged to. Nothing in B14 interprets it.
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("event signature must be a bounded string")
         if self.usage is not None and not isinstance(self.usage, StreamUsage):
             raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):
@@ -95,6 +109,7 @@ class StreamEvent:
             self.delta_content is not None
             or self.usage is not None
             or self.tool_call is not None
+            or self.signature is not None
         ):
             raise ValueError("done event must not contain delta, tool call, or usage")
 
