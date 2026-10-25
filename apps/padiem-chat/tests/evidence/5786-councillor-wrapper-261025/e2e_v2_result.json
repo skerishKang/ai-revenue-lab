@@ -1,0 +1,109 @@
+{
+  "desktop_1920_no_horizontal_overflow": true,
+  "desktop_1920_scroll_width": 1920,
+  "desktop_1920_hero_font": "116px",
+  "desktop_1920_content_width": 1180,
+  "desktop_1920_hero_visible_height": 940,
+  "hero_video": {
+    "visible": true,
+    "width": 1280,
+    "height": 720,
+    "readyState": 4,
+    "paused": false,
+    "currentTime": 2.27,
+    "sources": [
+      "https://media.padiem.net/councillor/miraen/hero/hero-2025-v1.mp4"
+    ]
+  },
+  "feature_video_source": {
+    "visible": true,
+    "width": 1280,
+    "height": 720,
+    "readyState": 4,
+    "paused": true,
+    "currentTime": 0,
+    "sources": [
+      "https://media.padiem.net/councillor/miraen/videos/introduction-2025.mp4"
+    ]
+  },
+  "hero_name": "임미란",
+  "hero_eyebrow": "전남광주통합특별시의회 · 남구 제1선거구",
+  "hero_facts": [
+    "전남광주통합특별시의회의원",
+    "남구 제1선거구",
+    "보건복지위원회 위원",
+    "더불어민주당"
+  ],
+  "hero_credit_line": "첫 화면 영상·포스터: 의원실 제공 자료",
+  "confirmed_media_has_no_placeholder_wording": true,
+  "no_diagnostics_in_body": true,
+  "no_controversy_words_in_body": true,
+  "current_office_stated": true,
+  "two_primary_ctas": [
+    "의정활동 보기",
+    "소개 영상 보기"
+  ],
+  "sections": [
+    "sectionProfile",
+    "sectionActivity",
+    "sectionMedia",
+    "sectionNotes",
+    "sectionSns"
+  ],
+  "admin_block_absent_from_main": true,
+  "external_links_https": [
+    "http://127.0.0.1:8099/",
+    "http://data.nec.go.kr/resource/Cnddt_100157517520260603",
+    "http://127.0.0.1:8099/"
+  ],
+  "blank_links_noreferrer": true,
+  "profile_rows": [
+    "현직",
+    "상임위원회",
+    "특별위원회",
+    "당선",
+    "소속 정당",
+    "출생",
+    "학력",
+    "주요 경력",
+    "의원실"
+  ],
+  "timeline_items": 5,
+  "media_tiles": 2,
+  "media_links": 7,
+  "hero_facts_above_fold": true,
+  "feature_labelled_2025": true,
+  "page_errors": [],
+  "desktop_1440_no_horizontal_overflow": true,
+  "desktop_1440_scroll_width": 1440,
+  "desktop_1440_hero_font": "116px",
+  "desktop_1440_content_width": 1180,
+  "desktop_1440_hero_visible_height": 900,
+  "tablet_820_no_horizontal_overflow": true,
+  "tablet_820_scroll_width": 820,
+  "tablet_820_hero_font": "86.1px",
+  "tablet_820_content_width": 754,
+  "tablet_820_hero_visible_height": 940,
+  "mobile_390_no_horizontal_overflow": true,
+  "mobile_390_scroll_width": 390,
+  "mobile_390_hero_font": "66.3px",
+  "mobile_390_content_width": 350,
+  "mobile_390_hero_visible_height": 776,
+  "signedin_admin_open": true,
+  "signedin_gate_closed": true,
+  "signedin_tool_hrefs": [
+    "../#padiem-util/speech",
+    "../#padiem-util/sns",
+    "../#padiem-util/meeting"
+  ],
+  "signedin_errors": [],
+  "motion_off_attribute": "off",
+  "motion_off_video_hidden": true,
+  "motion_off_sections_visible": 5,
+  "motion_off_errors": [],
+  "deeplink_state": "util",
+  "deeplink_tab": "sns",
+  "deeplink_panel": true,
+  "deeplink_errors": [],
+  "NOT_VERIFIED": {}
+}

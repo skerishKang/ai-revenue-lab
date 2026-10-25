@@ -3,9 +3,9 @@
  *
  * 이 파일이 하는 일은 두 개뿐입니다.
  *   1) ./brands/<id>.json 의 공개 브랜딩 설정을 이 문서의 기존 노드에 그립니다.
- *   2) GET /api/auth/status 서버 응답으로 관리자 진입 링크의 표시 여부만 결정.
- * 생성·저장·다운로드·로그인·모델 경로는 하나도 구현하지 않습니다. 전부 기존
- * PADIEM Chat(/index.html, /api/chat, /api/projects, /auth/*)이 소유합니다.
+ *   2) GET /api/auth/status 서버 응답으로 하단 관리 경로의 열림 여부만 결정합니다.
+ * 생성·저장·다운로드·로그인·모델 경로는 구현하지 않습니다. 전부 기존 PADIEM Chat이
+ * 소유합니다(/api/chat, /api/projects, /auth/*, util-menu.js).
  */
 (() => {
   "use strict";
@@ -14,28 +14,33 @@
   const DEFAULT_BRAND = "miraen";
   const STATUS_ENDPOINT = "../api/auth/status";
   const CHAT_ROOT = "../";
-  // 의원3종은 기존 util 화면의 소유입니다. 프래그먼트는 그 화면으로 가는
-  // 목적지 표식이고, 실제로 화면을 여는 쪽은 util-menu.js 입니다.
+  // 미디어는 R2 공개 도메인만 받습니다. brands/*.json 은 사람이 편집하는 자료이므로
+  // 임의 URL을 그대로 <video>/<img> 에 넣지 않습니다.
+  const MEDIA_HOSTS = Object.freeze(["media.padiem.net"]);
+  // 의원3종은 기존 util 화면의 소유입니다. 프래그먼트는 목적지 표식이고,
+  // 실제로 화면을 여는 쪽은 util-menu.js 입니다.
   const TOOLS = Object.freeze([
-    Object.freeze({ tool: "speech", href: CHAT_ROOT + "#padiem-util/speech", title: "축사·인사말", note: "기존 축사 작성 화면에서 생성·편집·저장·다운로드를 그대로 사용합니다." }),
-    Object.freeze({ tool: "sns", href: CHAT_ROOT + "#padiem-util/sns", title: "SNS 홍보", note: "기존 블로그·Facebook·Instagram 작성 화면과 사진 기능을 그대로 사용합니다." }),
-    Object.freeze({ tool: "meeting", href: CHAT_ROOT + "#padiem-util/meeting", title: "회의정리·활동집", note: "기존 회의정리 작성·저장·아카이브 화면을 그대로 사용합니다." }),
+    Object.freeze({ tool: "speech", href: CHAT_ROOT + "#padiem-util/speech", title: "축사·인사말" }),
+    Object.freeze({ tool: "sns", href: CHAT_ROOT + "#padiem-util/sns", title: "SNS 홍보" }),
+    Object.freeze({ tool: "meeting", href: CHAT_ROOT + "#padiem-util/meeting", title: "회의정리·활동집" }),
   ]);
+  const PLACEHOLDER_NOTE = "이 화면은 시제품입니다. 대표 영상과 사진은 확보되는 대로 이 자리에 표시됩니다.";
 
   const refs = {};
   let brand = null;
 
   function id(name) { return document.getElementById(name); }
+
   function collectRefs() {
     [
       "brandMark", "brandName", "stageBadge", "motionToggle", "adminTopLink",
-      "cineHero", "cineFilm", "cinePoster", "cineVideo", "heroEyebrow", "heroName",
-      "heroLead", "heroMediaNote", "heroCue", "profileFacts", "profileBio",
-      "activitySource", "activityFeed", "mediaSource", "mediaCards", "notesFeed",
-      "snsSource", "snsChips", "adminStatus", "adminGate", "adminGateBody",
-      "adminSignIn", "adminTools", "adminNote", "toolCards",
-      "footerPrototype", "footerSource",
-    ].forEach((k) => { refs[k] = id(k); });
+      "cineHero", "cinePoster", "cineVideo", "heroEyebrow", "heroName", "heroLead",
+      "heroFacts", "heroMediaNote", "heroCue", "profileFacts", "profileBio",
+      "activitySource", "activityFeed", "featureVideo", "featureKind", "featureTitle",
+      "featureNote", "mediaTiles", "mediaLinks", "mediaSource", "notesFeed", "snsSource", "snsChips",
+      "adminStatus", "adminGate", "adminGateBody", "adminSignIn", "adminTools",
+      "adminNote", "toolCards", "footerPrototype", "footerSource",
+    ].forEach((key) => { refs[key] = id(key); });
   }
 
   function text(node, value) {
@@ -43,8 +48,7 @@
     node.textContent = value === null || value === undefined ? "" : String(value);
   }
 
-  // 설정 파일은 사람이 편집하는 자료지만, 링크는 프로토콜을 확인합니다.
-  // 스크립트 실행이나 데이터 삽입을 유발하는 주소는 href 로 만들지 않습니다.
+  // 스크립트 실행이나 데이터 삽입을 유발하는 주소는 링크로 만들지 않습니다.
   function safeHref(raw) {
     const value = String(raw || "").trim();
     if (!value) return null;
@@ -54,14 +58,47 @@
     return parsed.href;
   }
 
-  function setLink(node, raw) {
+  function link(node, raw) {
     const href = safeHref(raw);
     if (!node) return;
     if (href) node.setAttribute("href", href);
     else node.removeAttribute("href");
   }
 
-  // ── motion ───────────────────────────────────────────────────────────
+  // 동일 출처 상대 경로, 또는 허용된 R2 호스트의 https 주소만 미디어로 받습니다.
+  function mediaUrl(raw) {
+    const value = String(raw || "").trim();
+    if (!value) return null;
+    if (/^(?:\.?\/)[A-Za-z0-9._/-]+$/.test(value)) return value;
+    let parsed = null;
+    try { parsed = new URL(value); } catch (_) { return null; }
+    if (parsed.protocol !== "https:") return null;
+    return MEDIA_HOSTS.indexOf(parsed.hostname) === -1 ? null : parsed.href;
+  }
+
+  function attachMedia(node, rawSources) {
+    if (!node) return false;
+    node.removeAttribute("data-has-source");
+    node.replaceChildren();
+    const sources = Array.isArray(rawSources) ? rawSources : [rawSources];
+    let attached = false;
+    sources.forEach((raw) => {
+      const src = mediaUrl(raw);
+      if (!src) return;
+      if (node.tagName === "VIDEO") {
+        const source = document.createElement("source");
+        source.setAttribute("src", src);
+        node.appendChild(source);
+      } else {
+        node.setAttribute("src", src);
+      }
+      attached = true;
+    });
+    if (attached) node.setAttribute("data-has-source", "1");
+    return attached;
+  }
+
+  // ── motion ──────────────────────────────────────────────────────────
   // 표현 설정은 URL 상태만 사용합니다. theme/locale과 같은 근거로 브라우저
   // 저장소에는 어떤 값도 남기지 않습니다.
   function motionParam() {
@@ -89,6 +126,10 @@
     } catch (_) { /* replaceState 미지원 브라우저는 이번 화면 세션에서만 적용 */ }
   }
 
+  function motionOff() {
+    return document.documentElement.getAttribute("data-cine-motion") === "off";
+  }
+
   function applyMotion(mode) {
     document.documentElement.setAttribute("data-cine-motion", mode);
     if (refs.motionToggle) {
@@ -97,14 +138,14 @@
       text(refs.motionToggle, off ? "움직임 켜기" : "움직임 줄이기");
     }
     if (mode === "off") pauseHeroVideo();
-    else void playHeroVideo();
+    else playHeroVideo();
   }
 
   function wireMotion() {
     applyMotion(readMotionPreference());
     if (refs.motionToggle) {
       refs.motionToggle.addEventListener("click", () => {
-        const next = document.documentElement.getAttribute("data-cine-motion") === "off" ? "on" : "off";
+        const next = motionOff() ? "on" : "off";
         writeMotionPreference(next);
         applyMotion(next);
       });
@@ -117,46 +158,24 @@
     }
   }
 
-  // ── scroll reveal ────────────────────────────────────────────────────
-  function wireScroll() {
-    if (refs.heroCue) {
-      refs.heroCue.addEventListener("click", () => {
-        const target = id("sectionProfile");
-        if (target) target.scrollIntoView({
-          behavior: document.documentElement.getAttribute("data-cine-motion") === "off" ? "auto" : "smooth",
-          block: "start",
-        });
-      });
-    }
-    const sections = Array.prototype.slice.call(document.querySelectorAll(".cine-section"));
-    if (!("IntersectionObserver" in window)
-      || document.documentElement.getAttribute("data-cine-motion") === "off") {
-      sections.forEach((s) => s.classList.add("is-in"));
-      return;
-    }
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
-    sections.forEach((s) => observer.observe(s));
-  }
-
   // ── hero media ───────────────────────────────────────────────────────
   function pauseHeroVideo() {
-    if (!refs.cineVideo) return;
-    refs.cineVideo.hidden = true;
-    try { refs.cineVideo.pause(); } catch (_) {}
-  }
-
-  // autoplay 거부는 정상 경로입니다. 포스터(또는 CSS 필름 레이어)로 넘어갑니다.
-  function playHeroVideo() {
     const video = refs.cineVideo;
     if (!video) return;
-    if (document.documentElement.getAttribute("data-cine-motion") === "off") return;
-    if (!hasUsableVideoSource()) { showHeroFallback(); return; }
+    video.hidden = true;
+    try { video.pause(); } catch (_) {}
+  }
+
+  function heroHasSource() {
+    const video = refs.cineVideo;
+    return !!(video && video.getAttribute("data-has-source") === "1");
+  }
+
+  // autoplay 거부는 정상 경로입니다. 포스터로, 포스터도 없으면 CSS 필름으로 갑니다.
+  function playHeroVideo() {
+    const video = refs.cineVideo;
+    if (!video || motionOff()) return;
+    if (!heroHasSource()) { showHeroFallback(); return; }
     video.hidden = false;
     const attempt = video.play();
     if (attempt && typeof attempt.catch === "function") {
@@ -164,161 +183,211 @@
     }
   }
 
-  function hasUsableVideoSource() {
-    const video = refs.cineVideo;
-    return !!(video && video.querySelector("source") && video.getAttribute("data-has-source") === "1");
-  }
-
   function showHeroFallback() {
     pauseHeroVideo();
-    if (refs.cinePoster && refs.cinePoster.getAttribute("data-has-src") === "1") {
-      refs.cinePoster.hidden = false;
-      return;
-    }
+    const poster = refs.cinePoster;
+    if (poster && poster.getAttribute("data-has-source") === "1") poster.hidden = false;
   }
 
   function paintHero() {
     const hero = (brand && brand.hero) || {};
-    text(refs.heroEyebrow, hero.eyebrow || brand && brand.kicker || "");
-    text(refs.heroName, brand && brand.name ? brand.name : "");
+    text(refs.heroEyebrow, hero.eyebrow || (brand && brand.kicker) || "");
+    text(refs.heroName, (brand && brand.name) || "");
     text(refs.heroLead, hero.lead || (brand && brand.lead) || "");
 
-    const mediaKind = String(hero.mediaKind || "PLACEHOLDER").toUpperCase();
-    const video = refs.cineVideo;
-    if (video) {
-      video.removeAttribute("data-has-source");
-      video.replaceChildren();
-      video.addEventListener("error", showHeroFallback);
-      // 시네마틱 원본은 동일 출처 정적 파일만 허용합니다(CSP media 기본 'self').
-      (Array.isArray(hero.videoSources) ? hero.videoSources : []).forEach((src) => {
-        const value = String(src || "").trim();
-        if (!/^\.\?\/[A-Za-z0-9._/-]+$|^\/[A-Za-z0-9._/-]+$/.test(value)) return;
-        const node = document.createElement("source");
-        node.setAttribute("src", value);
-        video.appendChild(node);
-      });
-      if (video.querySelector("source")) video.setAttribute("data-has-source", "1");
-    }
-    if (refs.cinePoster) {
-      const poster = String(hero.poster || "").trim();
-      if (/^\.\?\/[A-Za-z0-9._/-]+$|^\/[A-Za-z0-9._/-]+$/.test(poster)) {
-        refs.cinePoster.setAttribute("src", poster);
-        refs.cinePoster.setAttribute("alt", hero.posterAlt || "");
-        refs.cinePoster.setAttribute("data-has-src", "1");
-        refs.cinePoster.hidden = true;
+    const poster = refs.cinePoster;
+    if (poster) {
+      poster.hidden = true;
+      poster.removeAttribute("data-has-source");
+      if (attachMedia(poster, hero.poster)) {
+        poster.setAttribute("alt", hero.posterAlt || "");
       } else {
-        refs.cinePoster.removeAttribute("data-has-src");
-        refs.cinePoster.hidden = true;
+        poster.removeAttribute("src");
       }
     }
-    text(refs.heroMediaNote, mediaKind === "CONFIRMED"
-      ? (hero.credit || "")
-      : "시제품 화면입니다. 대표 영상과 사진은 확보되는 대로 이 자리에 표시됩니다.");
+    if (refs.cineVideo) {
+      refs.cineVideo.hidden = true;
+      attachMedia(refs.cineVideo, hero.videoSources);
+      refs.cineVideo.addEventListener("error", showHeroFallback);
+    }
+
+    if (refs.heroFacts) {
+      refs.heroFacts.replaceChildren();
+      (Array.isArray(hero.facts) ? hero.facts : []).forEach((fact) => {
+        const wrap = document.createElement("div");
+        wrap.className = "cine-hero-fact";
+        const dt = document.createElement("dt");
+        const dd = document.createElement("dd");
+        dt.textContent = String((fact && fact.label) || "");
+        dd.textContent = String((fact && fact.value) || "");
+        wrap.append(dt, dd);
+        refs.heroFacts.appendChild(wrap);
+      });
+    }
+
+    const mediaKind = String(hero.mediaKind || "PLACEHOLDER").toUpperCase();
+    text(refs.heroMediaNote, mediaKind === "CONFIRMED" ? (hero.credit || "") : PLACEHOLDER_NOTE);
+    playHeroVideo();
+  }
+
+  // ── feature (소개 영상) ──────────────────────────────────────────────
+  function paintFeature() {
+    const feature = brand.feature || {};
+    const node = refs.featureVideo;
+    if (!node) return;
+    node.hidden = !attachMedia(node, feature.sources);
+    if (node.hidden) node.removeAttribute("src");
+    text(refs.featureKind, feature.kind || "");
+    text(refs.featureTitle, feature.title || "");
+    text(refs.featureNote, feature.note || "");
   }
 
   // ── sections ─────────────────────────────────────────────────────────
-  function emptyTo(node, message) {
+  function emptyTo(node, message, itemTag) {
     if (!node) return;
-    const li = document.createElement("li");
-    li.className = "cine-empty";
-    li.textContent = message;
-    node.appendChild(li);
+    const item = document.createElement(itemTag || "li");
+    item.className = "cine-empty";
+    item.textContent = message;
+    node.appendChild(item);
   }
 
   function paintProfile() {
-    if (refs.profileFacts) {
-      refs.profileFacts.replaceChildren();
+    const facts = refs.profileFacts;
+    if (facts) {
+      facts.replaceChildren();
       (Array.isArray(brand.profile) ? brand.profile : []).forEach((fact) => {
         const wrap = document.createElement("div");
         wrap.className = "cine-fact";
         const dt = document.createElement("dt");
         const dd = document.createElement("dd");
-        dt.textContent = fact && fact.label ? String(fact.label) : "";
-        dd.textContent = fact && fact.value ? String(fact.value) : "";
+        dt.textContent = String((fact && fact.label) || "");
+        dd.textContent = String((fact && fact.value) || "");
         wrap.append(dt, dd);
-        refs.profileFacts.appendChild(wrap);
+        facts.appendChild(wrap);
       });
-      if (!refs.profileFacts.children.length) {
-        const li = document.createElement("div");
-        li.className = "cine-empty";
-        li.textContent = "확인된 프로필 자료가 없습니다.";
-        refs.profileFacts.appendChild(li);
-      }
+      if (!facts.children.length) emptyTo(facts, "확인된 프로필 자료가 없습니다.", "div");
     }
-    text(refs.profileBio, brand.bio || "");
+    const bio = refs.profileBio;
+    if (bio) {
+      bio.replaceChildren();
+      const paragraphs = String(brand.bio || "").split("\n\n").filter(Boolean);
+      paragraphs.forEach((line) => {
+        const p = document.createElement("p");
+        p.textContent = line;
+        bio.appendChild(p);
+      });
+      if (!paragraphs.length) emptyTo(bio, "소개 자료가 없습니다.", "p");
+    }
   }
 
   function paintActivity() {
-    text(refs.activitySource, brand.activity && brand.activity.source ? brand.activity.source : "");
+    text(refs.activitySource, (brand.activity && brand.activity.source) || "");
     const feed = refs.activityFeed;
     if (!feed) return;
     feed.replaceChildren();
     const items = (brand.activity && Array.isArray(brand.activity.items)) ? brand.activity.items : [];
     items.forEach((item) => {
       const li = document.createElement("li");
-      li.className = "cine-feed-item";
-      const meta = document.createElement("p");
-      meta.className = "cine-feed-meta";
-      meta.textContent = [item.date, item.tag].filter(Boolean).map(String).join(" · ");
-      const titleNode = document.createElement(item.url ? "a" : "span");
-      titleNode.className = "cine-feed-link";
-      titleNode.textContent = String(item.title || "");
-      if (item.url) {
-        const href = safeHref(item.url);
-        if (href) {
-          titleNode.setAttribute("href", href);
-          titleNode.setAttribute("target", "_blank");
-          titleNode.setAttribute("rel", "noopener noreferrer");
-        }
+      li.className = "cine-timeline-item";
+      const date = document.createElement("p");
+      date.className = "cine-timeline-date";
+      date.textContent = String(item.date || "");
+      const body = document.createElement("div");
+      if (item.tag) {
+        const tag = document.createElement("p");
+        tag.className = "cine-timeline-tag";
+        tag.textContent = String(item.tag);
+        body.appendChild(tag);
       }
-      li.append(meta, titleNode);
+      const href = safeHref(item.url);
+      const withLink = Boolean(item.url && href);
+      const title = document.createElement(withLink ? "a" : "span");
+      title.className = "cine-timeline-link" + (withLink ? "" : " is-plain");
+      title.textContent = String(item.title || "");
+      if (withLink) {
+        title.setAttribute("href", href);
+        title.setAttribute("target", "_blank");
+        title.setAttribute("rel", "noopener noreferrer");
+      }
+      body.appendChild(title);
       if (item.body) {
-        const p = document.createElement("p");
-        p.className = "cine-feed-body";
-        p.textContent = String(item.body);
-        li.appendChild(p);
+        const detail = document.createElement("p");
+        detail.className = "cine-timeline-body";
+        detail.textContent = String(item.body);
+        body.appendChild(detail);
       }
+      li.append(date, body);
       feed.appendChild(li);
     });
     if (!items.length) emptyTo(feed, "공개된 최근 소식이 아직 연결되지 않았습니다.");
   }
 
   function paintMedia() {
-    text(refs.mediaSource, brand.media && brand.media.source ? brand.media.source : "");
-    const cards = refs.mediaCards;
-    if (!cards) return;
-    cards.replaceChildren();
-    const items = (brand.media && Array.isArray(brand.media.items)) ? brand.media.items : [];
-    items.forEach((item) => {
-      const li = document.createElement("li");
-      li.className = "cine-card";
-      const kind = document.createElement("p");
-      kind.className = "cine-card-kind";
-      kind.textContent = String(item.kind || "LINK");
-      const titleNode = document.createElement("p");
-      titleNode.className = "cine-card-title";
-      const href = safeHref(item.url);
-      if (href && item.url) {
-        const a = document.createElement("a");
-        a.setAttribute("href", href);
-        a.setAttribute("target", "_blank");
-        a.setAttribute("rel", "noopener noreferrer");
-        a.textContent = String(item.title || "");
-        titleNode.appendChild(a);
-      } else {
-        titleNode.classList.add("cine-card-unlinked");
-        titleNode.textContent = String(item.title || "");
-      }
-      li.append(kind, titleNode);
-      (Array.isArray(item.notes) ? item.notes : []).forEach((note) => {
-        const p = document.createElement("p");
-        p.className = "cine-card-note";
-        p.textContent = String(note);
-        li.appendChild(p);
+    text(refs.mediaSource, (brand.media && brand.media.source) || "");
+    const media = brand.media || {};
+    const tiles = refs.mediaTiles;
+    if (tiles) {
+      tiles.replaceChildren();
+      (Array.isArray(media.tiles) ? media.tiles : []).forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "cine-tile";
+        const kind = document.createElement("p");
+        kind.className = "cine-tile-kind";
+        kind.textContent = String(item.kind || "LINK");
+        const title = document.createElement("p");
+        title.className = "cine-tile-title";
+        const href = safeHref(item.url);
+        if (item.url && href) {
+          const a = document.createElement("a");
+          a.setAttribute("href", href);
+          a.setAttribute("target", "_blank");
+          a.setAttribute("rel", "noopener noreferrer");
+          a.textContent = String(item.title || "");
+          title.appendChild(a);
+        } else {
+          title.classList.add("is-unlinked");
+          title.textContent = String(item.title || "");
+        }
+        li.append(kind, title);
+        (Array.isArray(item.notes) ? item.notes : []).forEach((note) => {
+          const p = document.createElement("p");
+          p.className = "cine-tile-note";
+          p.textContent = String(note);
+          li.appendChild(p);
+        });
+        tiles.appendChild(li);
       });
-      cards.appendChild(li);
-    });
-    if (!items.length) emptyTo(cards, "링크 가능한 공식 자료가 없습니다.");
+      if (!tiles.children.length) emptyTo(tiles, "링크 가능한 공식 자료가 없습니다.");
+    }
+    // 잔카드를 늘리지 않도록 나머지 공식 기록은 한 개의 목록으로 묶어 그립니다.
+    const links = refs.mediaLinks;
+    if (links) {
+      links.replaceChildren();
+      (Array.isArray(media.links) ? media.links : []).forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "cine-link-row";
+        const kind = document.createElement("span");
+        kind.className = "cine-link-kind";
+        kind.textContent = String(item.kind || "");
+        const a = document.createElement("a");
+        a.className = "cine-link-title";
+        a.textContent = String(item.title || "");
+        const href = safeHref(item.url);
+        if (href) {
+          a.setAttribute("href", href);
+          a.setAttribute("target", "_blank");
+          a.setAttribute("rel", "noopener noreferrer");
+        } else {
+          a.classList.add("is-unlinked");
+        }
+        const arrow = document.createElement("span");
+        arrow.className = "cine-link-arrow";
+        arrow.setAttribute("aria-hidden", "true");
+        arrow.textContent = "↗";
+        li.append(kind, a, arrow);
+        links.appendChild(li);
+      });
+    }
   }
 
   function paintNotes() {
@@ -328,24 +397,24 @@
     const items = Array.isArray(brand.notes) ? brand.notes : [];
     items.forEach((item) => {
       const li = document.createElement("li");
-      li.className = "cine-feed-item";
-      const meta = document.createElement("p");
-      meta.className = "cine-feed-meta";
-      meta.textContent = String(item.date || "");
-      const titleNode = document.createElement("span");
-      titleNode.className = "cine-feed-link";
-      titleNode.textContent = String(item.title || "");
+      li.className = "cine-note";
+      const date = document.createElement("p");
+      date.className = "cine-note-date";
+      date.textContent = String(item.date || "");
+      const title = document.createElement("p");
+      title.className = "cine-note-title";
+      title.textContent = String(item.title || "");
       const body = document.createElement("p");
-      body.className = "cine-feed-body";
+      body.className = "cine-note-body";
       body.textContent = String(item.body || "");
-      li.append(meta, titleNode, body);
+      li.append(date, title, body);
       feed.appendChild(li);
     });
-    if (!items.length) emptyTo(feed, "공개 글·공지가 없습니다.");
+    if (!items.length) emptyTo(feed, "알려드릴 사항이 없습니다.");
   }
 
   function paintSns() {
-    text(refs.snsSource, brand.sns && brand.sns.source ? brand.sns.source : "");
+    text(refs.snsSource, (brand.sns && brand.sns.source) || "");
     const chips = refs.snsChips;
     if (!chips) return;
     chips.replaceChildren();
@@ -353,25 +422,24 @@
     items.forEach((item) => {
       const li = document.createElement("li");
       const href = safeHref(item.url);
-      const label = document.createElement(item.confirmed && href ? "a" : "span");
-      label.className = "cine-chip";
-      if (item.confirmed && href) {
-        label.setAttribute("href", href);
-        label.setAttribute("target", "_blank");
-        label.setAttribute("rel", "noopener noreferrer");
-      } else {
-        label.style.opacity = ".62";
+      const withLink = Boolean(item.confirmed && href);
+      const chip = document.createElement(withLink ? "a" : "span");
+      chip.className = "cine-chip" + (withLink ? "" : " is-unverified");
+      if (withLink) {
+        chip.setAttribute("href", href);
+        chip.setAttribute("target", "_blank");
+        chip.setAttribute("rel", "noopener noreferrer");
       }
       const name = document.createElement("span");
       name.textContent = String(item.label || "");
-      label.appendChild(name);
+      chip.appendChild(name);
       if (!item.confirmed) {
         const flag = document.createElement("span");
         flag.className = "cine-chip-flag";
         flag.textContent = "운영 확인 필요";
-        label.appendChild(flag);
+        chip.appendChild(flag);
       }
-      li.appendChild(label);
+      li.appendChild(chip);
       chips.appendChild(li);
     });
     if (!items.length) emptyTo(chips, "확인된 공식 채널이 없습니다.");
@@ -379,50 +447,70 @@
 
   function paintChrome() {
     text(refs.brandName, brand.pageTitle || (brand.name ? brand.name + " 의원" : "Padiem"));
-    text(refs.brandMark, (brand.mark || (brand.name || "P").slice(0, 1)));
+    text(refs.brandMark, brand.mark || ((brand.name || "P").slice(0, 1)));
     document.title = refs.brandName.textContent || "의원 시네마틱 블로그";
     text(refs.stageBadge, brand.stage || "시제품");
     text(refs.footerPrototype, brand.prototypeNotice || "");
     text(refs.footerSource, brand.sourceNotice || "");
-    setLink(refs.adminTopLink, CHAT_ROOT);
-    setLink(refs.adminSignIn, CHAT_ROOT);
+    link(refs.adminTopLink, CHAT_ROOT);
+    link(refs.adminSignIn, CHAT_ROOT);
   }
 
-  // ── admin surface (fail-closed) ──────────────────────────────────────
+  // ── scroll ──────────────────────────────────────────────────────────
+  function wireScroll() {
+    const topbar = document.querySelector(".councillor-topbar");
+    const onScroll = () => {
+      if (topbar) topbar.classList.toggle("is-anchored", window.scrollY > 24);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    if (refs.heroCue) {
+      refs.heroCue.addEventListener("click", () => {
+        const target = id("sectionProfile");
+        if (target) target.scrollIntoView({ behavior: motionOff() ? "auto" : "smooth", block: "start" });
+      });
+    }
+    const sections = Array.prototype.slice.call(document.querySelectorAll(".cine-section"));
+    if (!("IntersectionObserver" in window) || motionOff()) {
+      sections.forEach((section) => section.classList.add("is-in"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.06 });
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  // ── 관리 경로 (fail-closed) ──────────────────────────────────────────
   function paintAdminSignedOut(reason) {
     if (refs.adminGate) refs.adminGate.hidden = false;
     if (refs.adminTools) refs.adminTools.hidden = true;
     text(refs.adminGateBody, reason === "unavailable"
       ? "로그인 상태를 확인하지 못했습니다. PADIEM에서 로그인한 뒤 다시 시도해 주세요."
-      : "축사·인사말, SNS 홍보, 회의정리·활동집은 로그인 후 이용하실 수 있습니다.");
-    text(refs.adminStatus, "확인된 세션: 없음");
+      : "의정3종은 PADIEM 로그인 후 이용하실 수 있습니다.");
+    text(refs.adminStatus, "관리자");
   }
 
   function paintAdminSignedIn(name) {
     if (refs.adminGate) refs.adminGate.hidden = true;
     if (refs.adminTools) refs.adminTools.hidden = false;
-    text(refs.adminStatus, "확인된 세션: " + (name || "로그인됨"));
-    text(refs.adminNote, "아래 도구는 기존 PADIEM 화면에서 그대로 동작합니다.");
-    const cards = refs.toolCards;
-    if (!cards) return;
-    cards.replaceChildren();
+    text(refs.adminStatus, "관리자 · " + (name || "로그인됨"));
+    text(refs.adminNote, "의정3종은 기존 PADIEM 화면에서 그대로 동작합니다.");
+    const list = refs.toolCards;
+    if (!list) return;
+    list.replaceChildren();
     TOOLS.forEach((tool) => {
       const li = document.createElement("li");
-      li.className = "cine-card";
-      const kind = document.createElement("p");
-      kind.className = "cine-card-kind";
-      kind.textContent = "PADIEM 의정3종";
-      const titleNode = document.createElement("p");
-      titleNode.className = "cine-card-title";
       const a = document.createElement("a");
       a.setAttribute("href", tool.href);
       a.textContent = tool.title;
-      titleNode.appendChild(a);
-      const note = document.createElement("p");
-      note.className = "cine-card-note";
-      note.textContent = tool.note;
-      li.append(kind, titleNode, note);
-      cards.appendChild(li);
+      li.appendChild(a);
+      list.appendChild(li);
     });
   }
 
@@ -481,6 +569,7 @@
     }
     paintChrome();
     paintHero();
+    paintFeature();
     paintProfile();
     paintActivity();
     paintMedia();
