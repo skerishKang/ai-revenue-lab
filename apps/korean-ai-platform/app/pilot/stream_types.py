@@ -33,12 +33,18 @@ class StreamUsage:
 
 @dataclass(frozen=True, slots=True)
 class StreamToolCall:
-    """One complete function call, never an executable partial argument chunk."""
+    """One complete function call, never an executable partial argument chunk.
+
+    ``signature`` is the provider's opaque continuation token for this call
+    (a Gemini thought signature today). It is relayed verbatim and must be
+    returned on a native follow-up; nothing here interprets it.
+    """
 
     id: str
     name: str
     arguments: str
     index: int
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         if isinstance(self.index, bool) or not isinstance(self.index, int) or self.index < 0:
@@ -47,6 +53,15 @@ class StreamToolCall:
             raise ValueError("tool call fields must be non-empty strings")
         if not isinstance(json.loads(self.arguments), dict):
             raise ValueError("tool call arguments must encode an object")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("tool call signature must be a bounded string")
 
 
 @dataclass(frozen=True, slots=True)

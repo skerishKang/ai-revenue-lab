@@ -45,12 +45,15 @@ class B14StreamToolCall(ToolCall):
             raise ValueError("tool call index must be a non-negative integer")
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "id": self.id,
             "name": self.name,
             "arguments": _tool_json_value(self.arguments),
             "index": self.index,
         }
+        if self.signature is not None:
+            payload["signature"] = self.signature
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -218,6 +221,7 @@ def _parse_tool_frame(frame: _SSEFrame) -> B14StreamEvent:
                 name=payload.get("name"),
                 arguments=arguments,
                 index=payload.get("index"),
+                signature=payload.get("signature"),
             )
         )
     except (ValueError, TypeError, RecursionError) as exc:

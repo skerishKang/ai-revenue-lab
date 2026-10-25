@@ -245,10 +245,15 @@ def _encode_event(
 ) -> bytes:
     if event.tool_call is not None:
         call = event.tool_call
-        return b"event: tool_call\n" + _encode_data_frame({
+        payload = {
             "id": call.id, "name": call.name,
             "arguments": call.arguments, "index": call.index,
-        })
+        }
+        # #4727: an opaque provider continuation token is relayed only when
+        # the provider issued one; a call without it keeps its exact shape.
+        if call.signature is not None:
+            payload["signature"] = call.signature
+        return b"event: tool_call\n" + _encode_data_frame(payload)
     if event.done:
         if event.finish_reason is not None:
             return b"event: done\n" + _encode_data_frame({

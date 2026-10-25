@@ -37,6 +37,10 @@ MAX_TOOL_NAME_CHARS: int = 64
 MAX_TOOL_DESCRIPTION_CHARS: int = 2_000
 MAX_TOOL_ARGUMENT_CHARS: int = 65_536
 MAX_TOOL_RESULT_CHARS: int = 65_536
+# #4727: an opaque provider continuation token (a Gemini thought signature in
+# practice). It is carried, never interpreted, and must travel back unchanged
+# on a native follow-up. The bound matches the call it continues.
+MAX_TOOL_SIGNATURE_CHARS: int = 65_536
 MAX_TOOL_CALLS: int = 16
 MAX_TOOL_RESULTS: int = 16
 
@@ -163,6 +167,7 @@ class ToolCall:
     name: str
     arguments: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     type: str = "function"
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "id", _safe_tool_call_id(self.id))
@@ -172,11 +177,17 @@ class ToolCall:
         object.__setattr__(self, "arguments", _freeze(self.arguments))
         if self.type != "function":
             raise ToolChannelError("tool call type must be 'function'")
+        if self.signature is not None and (
+            not isinstance(self.signature, str)
+            or not self.signature.strip()
+            or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+        ):
+            raise ToolChannelError("tool call signature must be a bounded string")
 
     def to_provider_payload(self) -> dict[str, Any]:
         """The OpenAI-compatible assistant tool call entry."""
 
-        return {
+        payload = {
             "id": self.id,
             "type": self.type,
             "function": {
@@ -184,14 +195,20 @@ class ToolCall:
                 "arguments": json.dumps(dict(self.arguments), ensure_ascii=False),
             },
         }
+        if self.signature is not None:
+            payload["signature"] = self.signature
+        return payload
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "id": self.id,
             "name": self.name,
             "type": self.type,
             "arguments": dict(self.arguments),
         }
+        if self.signature is not None:
+            payload["signature"] = self.signature
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -426,7 +443,8 @@ def parse_tool_calls(raw: Any) -> tuple[ToolCall, ...]:
         if not isinstance(name, str) or not name.strip():
             raise ToolChannelError(f"tool_calls[{index}] must carry a function name")
         arguments = _parse_arguments(function.get("arguments"), tool_name=name)
-        call = ToolCall(id=call_id, name=name, arguments=arguments)
+        signature = item.get("signature")
+        call = ToolCall(id=call_id, name=name, arguments=arguments, signature=signature)
         if call.id in seen:
             raise ToolChannelError(f"tool_calls[{index}] duplicates a tool call id")
         seen.add(call.id)

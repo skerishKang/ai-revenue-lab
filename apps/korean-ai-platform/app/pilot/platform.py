@@ -338,6 +338,77 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
     return bytes(buf)
 
 
+def _openai_compatible_messages(
+    messages: list[dict[str, Any]], platform_provider_id: str,
+) -> list[dict[str, Any]]:
+    """Project B14's opaque tool-call signature onto an OpenAI-compatible wire.
+
+    B14's canonical field is ``signature`` (#4727). Google's compatible
+    endpoint expects the same value at ``extra_content.google.thought_signature``;
+    every other provider never saw this field and receives the exact message it
+    received before it existed. A call without a signature keeps its shape.
+    """
+
+    projected: list[dict[str, Any]] = []
+    for message in messages:
+        calls = message.get("tool_calls") if isinstance(message, dict) else None
+        if not isinstance(calls, list) or not any(
+            isinstance(call, dict) and "signature" in call for call in calls
+        ):
+            projected.append(message)
+            continue
+        rewritten: list[Any] = []
+        for call in calls:
+            if not isinstance(call, dict) or "signature" not in call:
+                rewritten.append(call)
+                continue
+            clean = {key: value for key, value in call.items() if key != "signature"}
+            signature = call["signature"]
+            if platform_provider_id == "google" and isinstance(signature, str) and signature:
+                extra = clean.get("extra_content")
+                extra = dict(extra) if isinstance(extra, dict) else {}
+                google = extra.get("google")
+                google = dict(google) if isinstance(google, dict) else {}
+                google["thought_signature"] = signature
+                extra["google"] = google
+                clean["extra_content"] = extra
+            rewritten.append(clean)
+        projected.append({**message, "tool_calls": rewritten})
+    return projected
+
+
+def _canonicalize_google_compat_signatures(response_data: dict[str, Any]) -> None:
+    """Move a Google compatible response's signature onto B14's own field."""
+
+    from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+    choices = response_data.get("choices")
+    if not isinstance(choices, list):
+        return
+    for choice in choices:
+        message = choice.get("message") if isinstance(choice, dict) else None
+        calls = message.get("tool_calls") if isinstance(message, dict) else None
+        if not isinstance(calls, list):
+            continue
+        for call in calls:
+            extra = call.get("extra_content") if isinstance(call, dict) else None
+            google = extra.get("google") if isinstance(extra, dict) else None
+            if not isinstance(google, dict) or "thought_signature" not in google:
+                continue
+            signature = google.pop("thought_signature")
+            if (
+                not isinstance(signature, str)
+                or not signature.strip()
+                or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise MalformedUpstreamResponse()
+            call["signature"] = signature
+            if not google:
+                extra.pop("google", None)
+            if not extra:
+                call.pop("extra_content", None)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -399,7 +470,7 @@ async def call_platform_chat_completions(
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
@@ -485,6 +556,10 @@ async def call_platform_chat_completions(
     # A small output budget may exhaust on reasoning alone; never call it success.
     # #5536: a declared tool makes a tool call a valid answer of its own.
     require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+    # #4727: a Google compatible call's thought signature is relayed under
+    # B14's canonical contract field so a consumer can return it unchanged.
+    if platform_provider_id == "google":
+        _canonicalize_google_compat_signatures(response_data)
     choices = response_data["choices"]
 
     usage = response_data.get("usage")
@@ -609,7 +684,7 @@ async def stream_platform_chat_completions(
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
         "stream": True,
     }
     if temperature is not None:

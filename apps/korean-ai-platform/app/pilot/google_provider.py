@@ -119,23 +119,114 @@ def require_stream_tool_support(model_id: str, provider_id: str | None = None) -
 
 
 def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, model_parameters):
-    """Translate the already validated B14 declaration, without adding defaults."""
-    from .errors import StreamNotSupported
-    from .tool_channel import validate_tools, validate_tool_choice
+    """Translate the already validated B14 declaration, without adding defaults.
+
+    The same translation carries a follow-up turn (#4727): an assistant call
+    becomes a ``functionCall`` part and each result becomes a
+    ``functionResponse`` part that answers it by id. A call's opaque signature
+    travels back as ``thoughtSignature`` on the call it belongs to; Gemini 3
+    refuses a replay that drops it. Nothing is executed here.
+    """
+    import json
+    from .tool_channel import (
+        InvalidToolDeclaration,
+        validate_messages,
+        validate_tools,
+        validate_tool_choice,
+    )
 
     declared = validate_tools(tools)
+    declared_names = {tool["function"]["name"] for tool in declared}
     choice = validate_tool_choice(tool_choice, declared)
+    turns = validate_messages(messages)
+
     contents, system_parts = [], []
-    for message in messages:
-        role, text = message.get("role"), message.get("content")
-        # Slice 3-A exposes first-turn calls only; do not lose tool history or
-        # Gemini thought signatures by pretending a text projection is a replay.
-        if role not in {"system", "user", "assistant"} or not isinstance(text, str) or "tool_calls" in message:
-            raise StreamNotSupported()
+    #: The open assistant call turn and its answers, keyed by call id.
+    pending_calls: dict[str, str] | None = None
+    pending_results: dict[str, dict] = {}
+
+    def close_call_turn() -> None:
+        nonlocal pending_calls, pending_results
+        if pending_calls is None:
+            return
+        missing = [call_id for call_id in pending_calls if call_id not in pending_results]
+        if missing:
+            raise InvalidToolDeclaration(
+                "every assistant tool call must be answered before the next turn"
+            )
+        contents.append({
+            "role": "user",
+            "parts": [pending_results[call_id] for call_id in pending_calls],
+        })
+        pending_calls, pending_results = None, {}
+
+    for message in turns:
+        role = message["role"]
+        if role == "tool":
+            call_id = message["tool_call_id"]
+            if pending_calls is None or call_id not in pending_calls:
+                raise InvalidToolDeclaration(
+                    "a tool result must answer a call in the immediately preceding assistant turn"
+                )
+            if call_id in pending_results:
+                raise InvalidToolDeclaration("a tool call was answered more than once")
+            call_name = pending_calls[call_id]
+            result_name = message.get("name")
+            if result_name is not None and result_name != call_name:
+                raise InvalidToolDeclaration(
+                    "a tool result name does not match the call it answers"
+                )
+            pending_results[call_id] = {"functionResponse": {
+                "id": call_id,
+                "name": call_name,
+                # The result is the executor's text, preserved verbatim. A
+                # provider requires an object here, so it travels as one field.
+                "response": {"result": message["content"]},
+            }}
+            continue
+
+        close_call_turn()
         if role == "system":
-            system_parts.append({"text": text})
-        else:
-            contents.append({"role": "model" if role == "assistant" else "user", "parts": [{"text": text}]})
+            system_parts.append({"text": message["content"]})
+            continue
+        if role == "assistant":
+            parts = []
+            if message.get("content") is not None:
+                parts.append({"text": message["content"]})
+            calls: dict[str, str] = {}
+            for call in message.get("tool_calls") or ():
+                function = call["function"]
+                name = function["name"]
+                if name not in declared_names:
+                    raise InvalidToolDeclaration(
+                        "a historical tool call names a tool this request did not declare"
+                    )
+                try:
+                    arguments = json.loads(function["arguments"])
+                except (json.JSONDecodeError, ValueError) as exc:
+                    raise InvalidToolDeclaration(
+                        "a historical tool call's arguments must encode a JSON object"
+                    ) from exc
+                if not isinstance(arguments, dict):
+                    raise InvalidToolDeclaration(
+                        "a historical tool call's arguments must encode a JSON object"
+                    )
+                call_id = call["id"]
+                if call_id in calls:
+                    raise InvalidToolDeclaration("a tool call id appears twice in one turn")
+                part = {"functionCall": {"id": call_id, "name": name, "args": arguments}}
+                if call.get("signature") is not None:
+                    part["thoughtSignature"] = call["signature"]
+                parts.append(part)
+                calls[call_id] = name
+            if parts:
+                contents.append({"role": "model", "parts": parts})
+            pending_calls = calls or None
+            continue
+
+        contents.append({"role": "user", "parts": [{"text": message["content"]}]})
+    close_call_turn()
+
     functions = []
     for tool in declared:
         function = tool["function"]
@@ -181,7 +272,12 @@ class _GoogleToolStream:
         import json
         from .errors import MalformedUpstreamResponse
         from .stream_types import StreamEvent, StreamToolCall, _usage_from_payload
-        from .tool_channel import InvalidToolDeclaration, MAX_TOOL_CALLS, validate_tool_calls
+        from .tool_channel import (
+            InvalidToolDeclaration,
+            MAX_TOOL_CALLS,
+            MAX_TOOL_SIGNATURE_CHARS,
+            validate_tool_calls,
+        )
 
         try:
             data = "\n".join(
@@ -219,6 +315,13 @@ class _GoogleToolStream:
                         name, args = call.get("name"), call.get("args", {})
                         if name not in self.names or not isinstance(args, dict):
                             raise ValueError("invalid function call")
+                        signature = part.get("thoughtSignature")
+                        if signature is not None and (
+                            not isinstance(signature, str)
+                            or not signature.strip()
+                            or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+                        ):
+                            raise ValueError("invalid thought signature")
                         index = len(self.ids)
                         call_id = call.get("id", f"{self.call_prefix}_{index}")
                         arguments = json.dumps(args, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
@@ -228,7 +331,9 @@ class _GoogleToolStream:
                         if call_id in self.ids or index >= MAX_TOOL_CALLS:
                             raise ValueError("duplicate or excess call")
                         self.ids.add(call_id)
-                        events.append(StreamEvent(**metadata, tool_call=StreamToolCall(call_id, name, arguments, index)))
+                        events.append(StreamEvent(**metadata, tool_call=StreamToolCall(
+                            call_id, name, arguments, index, signature=signature,
+                        )))
                         self.saw_output = True
                     elif "text" in part:
                         text = part["text"]

@@ -44,6 +44,10 @@ MAX_TOOL_CALLS = 16
 # an oversized call at the edge instead of relaying a payload its consumer
 # would reject after the credential was already spent.
 MAX_TOOL_ARGUMENT_CHARS = 65_536
+# #4727: a provider-opaque continuation token (Gemini thought signature). It is
+# relayed verbatim and never interpreted; the bound keeps a native follow-up
+# inside the same payload envelope as the call it continues.
+MAX_TOOL_SIGNATURE_CHARS = 65_536
 
 _TOOL_CHOICE_KEYWORDS = frozenset({"auto", "none", "required"})
 
@@ -185,6 +189,34 @@ def validate_tool_choice(raw: Any, declared: list[dict[str, Any]]) -> Any:
     return {"type": "function", "function": {"name": name}}
 
 
+def _call_signature(call: dict[str, Any], index: int) -> str | None:
+    """The opaque continuation token a provider attached to one call.
+
+    B14's canonical field is ``signature``. Google's OpenAI-compatible wire
+    returns the same value at ``extra_content.google.thought_signature``, so a
+    caller echoing that message verbatim is accepted as well. The value is
+    never parsed; only its shape is bounded here.
+    """
+
+    signature = call.get("signature")
+    if signature is None:
+        extra = call.get("extra_content")
+        google = extra.get("google") if isinstance(extra, dict) else None
+        if isinstance(google, dict):
+            signature = google.get("thought_signature")
+    if signature is None:
+        return None
+    if (
+        not isinstance(signature, str)
+        or not signature.strip()
+        or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+    ):
+        raise InvalidToolDeclaration(
+            f"messages[{index}] tool call signature must be a bounded string"
+        )
+    return signature
+
+
 def validate_tool_calls(raw: Any, index: int) -> list[dict[str, Any]]:
     """Validate the tool calls carried by an assistant turn."""
 
@@ -238,16 +270,18 @@ def validate_tool_calls(raw: Any, index: int) -> list[dict[str, Any]]:
             raise InvalidToolDeclaration(
                 f"messages[{index}].tool_calls[{call_index}] arguments are too large"
             )
-        validated.append(
-            {
-                "id": call_id,
-                "type": "function",
-                "function": {
-                    "name": name,
-                    "arguments": arguments if arguments is not None else "{}",
-                },
-            }
-        )
+        signature = _call_signature(call, index)
+        entry = {
+            "id": call_id,
+            "type": "function",
+            "function": {
+                "name": name,
+                "arguments": arguments if arguments is not None else "{}",
+            },
+        }
+        if signature is not None:
+            entry["signature"] = signature
+        validated.append(entry)
     return validated
 
 

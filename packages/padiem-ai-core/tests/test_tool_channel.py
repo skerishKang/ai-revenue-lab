@@ -256,6 +256,61 @@ def test_a_tool_call_is_parsed_into_a_structured_call() -> None:
     assert calls[0].arguments == {"css": "p{}", "html": "<p>hi</p>"}
 
 
+def test_an_opaque_call_signature_survives_the_contract_round_trip() -> None:
+    calls = parse_tool_calls(
+        [
+            {
+                "id": "call_1",
+                "type": "function",
+                "signature": "sig_native_abc123",
+                "function": {
+                    "name": "generateSandboxedUi",
+                    "arguments": json.dumps({"html": "<p>hi</p>"}),
+                },
+            }
+        ]
+    )
+
+    assert calls[0].signature == "sig_native_abc123"
+    # A native follow-up must receive the token unchanged, and the public
+    # projection must not hide it from the caller that replays the call.
+    assert tool_call_assistant_message(calls)["tool_calls"][0]["signature"] == "sig_native_abc123"
+    assert calls[0].to_public_dict()["signature"] == "sig_native_abc123"
+
+
+def test_a_call_without_a_signature_keeps_its_exact_provider_shape() -> None:
+    calls = parse_tool_calls(
+        [
+            {
+                "id": "call_1",
+                "type": "function",
+                "function": {"name": "generateSandboxedUi", "arguments": "{}"},
+            }
+        ]
+    )
+
+    assert calls[0].signature is None
+    assert "signature" not in tool_call_assistant_message(calls)["tool_calls"][0]
+    assert "signature" not in calls[0].to_public_dict()
+
+
+def test_a_malformed_call_signature_is_refused() -> None:
+    from padiem_ai_core.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+    for signature in (123, "", "x" * (MAX_TOOL_SIGNATURE_CHARS + 1)):
+        with pytest.raises(ValueError):
+            parse_tool_calls(
+                [
+                    {
+                        "id": "call_1",
+                        "type": "function",
+                        "signature": signature,
+                        "function": {"name": "generateSandboxedUi", "arguments": "{}"},
+                    }
+                ]
+            )
+
+
 def test_a_tool_call_with_broken_arguments_is_refused() -> None:
     with pytest.raises(ValueError):
         parse_tool_calls(
