@@ -18,8 +18,8 @@ import {
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
 import { resolveUserId } from '../income-pipeline/auth.js';
-import { getUserRecords, saveUserRecord, deleteUserRecord } from '../income-pipeline/store.js';
-import { validateUserIncomeRecord } from '../income-pipeline/domain.js';
+import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
+import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
 
 import type { PublicOpportunity, PublicOpportunityLoader } from '../public-supply/domain.js';
@@ -231,7 +231,7 @@ export function createConsumerHttpHandler(
         if (action === 'save') {
           const recordId = formData.get('id')?.toString() ?? crypto.randomUUID();
           const now = new Date().toISOString();
-          const record: UserIncomeRecord = {
+          let record: UserIncomeRecord = {
             id: recordId,
             userId,
             opportunityId: formData.get('opportunityId')?.toString() || null,
@@ -261,7 +261,27 @@ export function createConsumerHttpHandler(
               headers: { 'content-type': 'application/json; charset=utf-8' },
             });
           }
-          saveUserRecord(record);
+          const repo = getRepository();
+          // Guard: if updating, verify ownership
+          const existingRecords = await repo.getByUser(userId);
+          const existingRecord = existingRecords.find((r) => r.id === recordId);
+          if (existingRecord && existingRecord.userId !== userId) {
+            return responseForMethod(request, JSON.stringify({ error: 'forbidden' }), {
+              status: 403,
+              headers: { 'content-type': 'application/json; charset=utf-8' },
+            });
+          }
+          // Validate state transition on update
+          if (existingRecord && !isValidIncomePipelineTransition(existingRecord.status, record.status)) {
+            return responseForMethod(request, JSON.stringify({ error: 'invalid_transition' }), {
+              status: 400,
+              headers: { 'content-type': 'application/json; charset=utf-8' },
+            });
+          }
+          if (existingRecord) {
+            record = { ...record, createdAt: existingRecord.createdAt };
+          }
+          await repo.save(record);
           return new Response(null, {
             status: 303,
             headers: { location: '/pipeline', ...Object.fromEntries(withSecurityHeaders(new Headers()).entries()) },
@@ -270,7 +290,16 @@ export function createConsumerHttpHandler(
         if (action === 'delete') {
           const recordId = formData.get('recordId')?.toString();
           if (recordId) {
-            deleteUserRecord(userId, recordId);
+            const repo = getRepository();
+            const existingRecords = await repo.getByUser(userId);
+            const existingRecord = existingRecords.find((r) => r.id === recordId);
+            if (existingRecord && existingRecord.userId !== userId) {
+              return responseForMethod(request, JSON.stringify({ error: 'forbidden' }), {
+                status: 403,
+                headers: { 'content-type': 'application/json; charset=utf-8' },
+              });
+            }
+            await repo.delete(userId, recordId);
           }
           return new Response(null, {
             status: 303,
@@ -283,7 +312,8 @@ export function createConsumerHttpHandler(
       // GET: render dashboard
       let records: readonly UserIncomeRecord[] = [];
       if (userId) {
-        records = getUserRecords(userId);
+        const repo = getRepository();
+        records = await repo.getByUser(userId);
       }
       const filterStatus = url.searchParams.get('status') as IncomePipelineStatus | null;
       const filterVendor = url.searchParams.get('vendor');
