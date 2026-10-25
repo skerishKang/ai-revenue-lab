@@ -135,6 +135,8 @@ def test_migration_068_widens_the_check_and_keeps_the_rows(tmp_path) -> None:
     )
     db.commit()
     _apply(db, "068_project_files_extracted_media.sql")
+    indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'project_files'")}
+    assert {"idx_project_files_owner_project", "idx_project_files_project_updated"} <= indexes
 
     row = db.execute("SELECT COUNT(*) FROM project_files").fetchone()
     assert row[0] == 1, "the rebuild must carry every existing row"
