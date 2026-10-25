@@ -378,3 +378,30 @@ def test_plain_step_error_keeps_the_generic_engine_code() -> None:
 
 async def _raise_plain_step_error(**_):
     raise PCQueryStepError("a detail outside the closed set", detail="not_in_the_set")
+
+
+@pytest.mark.parametrize("outcome,status", [
+    ("success", "ok"), ("http_error", "403"), ("exception", "error"), ("cancelled", "cancelled"),
+])
+@pytest.mark.asyncio
+async def test_model_step_logs_bounded_completion_status_without_private_text(capsys, outcome, status):
+    from padiem_ai_core.b14_execution import B14ExecutionError
+    error = {
+        "success": None,
+        "http_error": B14ExecutionError("upstream_auth_error", SENTINEL, upstream_status_code=403),
+        "exception": RuntimeError(SENTINEL),
+        "cancelled": asyncio.CancelledError(SENTINEL),
+    }[outcome]
+    model = _FakeB14(answer=json.dumps({"action": "complete", "answer": SENTINEL}), raises=error)
+    driver = build_live_pc_query_driver(b14_client=model, model_id="synthetic")
+    if outcome == "success":
+        await driver.next_step(_Context(), None)
+    else:
+        expected = asyncio.CancelledError if outcome == "cancelled" else PCQueryStepError
+        with pytest.raises(expected):
+            await driver.next_step(_Context(), None)
+    assert model.calls == 1
+    lines = capsys.readouterr().out.splitlines()
+    assert lines == ["pc_step_select source=model", "pc_step_model_call stage=start",
+                     "pc_step_model_call stage=done status=" + status]
+    assert SENTINEL not in "\n".join(lines)
