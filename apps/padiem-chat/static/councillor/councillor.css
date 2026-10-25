@@ -623,4 +623,8 @@ html[data-cine-motion="off"] .cine-poster:not([hidden]) { display: block; }
   .cine-tiles { grid-template-columns: minmax(0, 1fr); }
   .cine-link-row { grid-template-columns: 72px minmax(0, 1fr) 20px; gap: 10px; }
   .councillor-badge { display: none; }
+  /* 버튼 3개가 자리를 잡아 브랜드명이 잘리는 것을 막는다. */
+  .councillor-ghost { padding: 7px 11px; font-size: 11px; }
+  .councillor-topbar { padding: 12px 14px; gap: 8px; }
+  .councillor-topbar-actions { gap: 6px; }
 }
