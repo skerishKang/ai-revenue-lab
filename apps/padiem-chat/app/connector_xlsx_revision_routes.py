@@ -43,8 +43,8 @@ from .connector_txt_approval_material import (
 )
 from .connector_xlsx_revision_approval_material import (
     PREVIEW_WINDOW, XlsxRevisionMaterialError, derived_result_path,
-    mint_xlsx_revision_envelope, normalize_revision_edits, normalize_revision_path,
-    preview_digest,
+    installed_executable_profile, mint_xlsx_revision_envelope,
+    normalize_revision_edits, normalize_revision_path, preview_digest,
 )
 from .control_plane_broker_pairing_client import IdentityBridgeError
 from .request_telemetry import emit_stage_event
@@ -287,6 +287,7 @@ async def preview_revision(request: Request) -> JSONResponse:
     try:
         path, sheet, edits = _intent(wire)
         derived = derived_result_path(path)
+        installed_executable_profile(scope["executable_path"])
     except XlsxRevisionMaterialError:
         return _error(400, "revision_intent_refused")
 

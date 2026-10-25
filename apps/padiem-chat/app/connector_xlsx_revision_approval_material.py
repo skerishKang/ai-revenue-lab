@@ -111,6 +111,17 @@ def _drive_is_letter(drive: str) -> bool:
     return bool(re.fullmatch(r"[A-Za-z]:", drive or ""))
 
 
+def installed_executable_profile(executable_path: Any) -> str:
+    """Public form of the executable check, so a preview refuses early too.
+
+    The mint enforces this anyway; checking it at preview time means an owner is
+    told before a reference exists, rather than approving something that can never
+    be queued.
+    """
+
+    return _installed_executable(executable_path)
+
+
 def normalize_revision_edits(sheet_name: Any, edits: Any) -> tuple[str, list[dict[str, Any]]]:
     """Validate the proposed edits with the Resident's own contract.
 
