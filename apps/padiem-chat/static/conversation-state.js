@@ -1,28 +1,28 @@
 (() => {
   "use strict";
 
-  // Chat/Claw separation: Chat(B62) and Claw(B54) share one conversation panel, but they
-  // never share one conversation. Each product owns its own turns, its own
-  // conversation id and its own skill, so a Claw request can never carry the
-  // Chat conversation id and a Chat request can never carry the Claw one.
+  // #2505 owner decision (2026-10-21): Chat and Claw are two screens of ONE AI
+  // product, so they share ONE conversation. A thread started on either screen
+  // keeps its turns and its conversation id when the other screen is opened, so
+  // the same stored conversation is continued instead of splitting in two.
   //
-  // The plain API keeps operating on the active product (the product whose
-  // request is in flight, otherwise the product the panel currently shows),
-  // and any caller may also name the product explicitly. Nothing here reads
-  // the DOM, the network or a model: it is the browser-side turn store only.
+  // The server has always stored both lanes in the single `b62-chat` product
+  // scope, so this store is the browser side of that same record — no second
+  // thread was ever persisted, only a second browser slot.
+  //
+  // What stays per turn is the LANE, not the thread: the product named at submit
+  // time still decides which route answers, which model roster applies and which
+  // tools are available. Nothing here reads the DOM, the network or a model: it
+  // is the browser-side turn store only.
   const PRODUCT_IDS = Object.freeze(["chat", "claw"]);
-  const slots = new Map();
+  const conversation = { messages: [], conversationId: null, skill: "auto" };
   let activeProduct = "chat";
 
   function known(product) {
     return PRODUCT_IDS.includes(product) ? product : null;
   }
-  function slot(product) {
-    const id = known(product) || activeProduct;
-    if (!slots.has(id)) slots.set(id, { messages: [], conversationId: null, skill: "auto" });
-    return slots.get(id);
-  }
 
+  // The active product is the lane the next submit belongs to, not a thread.
   function setProduct(product) {
     const id = known(product);
     if (id) activeProduct = id;
@@ -32,51 +32,47 @@
     return activeProduct;
   }
 
-  // One product's own reset. The other product's conversation is untouched.
-  function resetProduct(product) {
-    const target = slot(product);
-    target.messages = [];
-    target.conversationId = null;
-    target.skill = "auto";
+  // One conversation, so every reset clears the same thread. The product
+  // argument is still accepted: a caller that resets "its" side clears the one
+  // conversation both screens show.
+  function resetProduct() {
+    conversation.messages = [];
+    conversation.conversationId = null;
+    conversation.skill = "auto";
   }
-  // A new conversation for the active product. The other product keeps its
-  // own conversation and is restored when the user returns to it.
   function reset() {
-    resetProduct(activeProduct);
+    resetProduct();
   }
-  // Every product starts empty again.
   function resetAll() {
-    PRODUCT_IDS.forEach((id) => resetProduct(id));
+    resetProduct();
   }
 
-  function appendMessage(message, product) {
-    const target = slot(product);
-    target.messages = target.messages.concat([message]);
+  function appendMessage(message) {
+    conversation.messages = conversation.messages.concat([message]);
   }
 
-  function outboundWithUser(content, product) {
-    return slot(product).messages.concat([{ role: "user", content }]);
+  function outboundWithUser(content) {
+    return conversation.messages.concat([{ role: "user", content }]);
   }
 
-  function commitAssistant(outboundMessages, content, product) {
-    const target = slot(product);
-    target.messages = outboundMessages.concat([{ role: "assistant", content }]);
+  function commitAssistant(outboundMessages, content) {
+    conversation.messages = outboundMessages.concat([{ role: "assistant", content }]);
   }
 
-  function getConversationId(product) {
-    return slot(product).conversationId;
+  function getConversationId() {
+    return conversation.conversationId;
   }
 
-  function setConversationId(value, product) {
-    slot(product).conversationId = value;
+  function setConversationId(value) {
+    conversation.conversationId = value;
   }
 
-  function getSkill(product) {
-    return slot(product).skill;
+  function getSkill() {
+    return conversation.skill;
   }
 
-  function setSkill(value, product) {
-    slot(product).skill = value;
+  function setSkill(value) {
+    conversation.skill = value;
   }
 
   window.PadiemChatConversationState = Object.freeze({

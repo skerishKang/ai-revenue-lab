@@ -56,11 +56,11 @@ def _harness() -> str:
     # the routed functions, so this harness keeps the browser's scope chain.
     map_start = SOURCE.index("  const CLAW_BOUNDED_REFUSAL_COPY")
     map_end = SOURCE.index("\n  function buildRetryBox(", map_start)
-    # Chat/Claw separation: the routed functions now consult the product-scoped turn store,
-    # so its constants and the product switch helpers travel with them.
+    # #2505: the routed functions consult the shared turn store, so its constants
+    # and the product switch helper travel with them.
     product_start = SOURCE.index('  const PRODUCT_CHAT = "chat";')
     product_end = SOURCE.index("  const MESSAGE_LIFECYCLE =", product_start)
-    switch_start = SOURCE.index("  function parkProductTurns() {")
+    switch_start = SOURCE.index("  function switchConversationProduct(nextProduct) {")
     switch_end = SOURCE.index(
         "  // The first user turn extends the original landing panel.", switch_start
     )
