@@ -986,3 +986,115 @@ async def test_deferred_write_failure_is_logged_without_exception_text(caplog):
     await drain()
     assert "b14_ledger_skipped request_id=b14req_writefault reason=RuntimeError" in caplog.text
     assert "PRIVATE_LEDGER_PAYLOAD" not in caplog.text
+
+@pytest.mark.asyncio
+async def test_stream_enqueue_after_worker_reset_is_scheduled_on_ctx(monkeypatch):
+    """Mirror SDK asgi.py:274-282: app task inherits context before fetch returns."""
+    import ast
+    import asyncio
+    import sys
+    from pathlib import Path
+    from types import ModuleType
+    from urllib.parse import urlparse
+
+    from starlette.responses import StreamingResponse
+    from app import stack_telemetry
+    from app.pilot import deferred_writes as deferred
+    from app.pilot import private_runtime_registry
+    from app.pilot import stream_gateway as sg
+    from app.pilot.call_ledger_store import _CALL_COLUMNS
+
+    # This test owns its Worker lifecycle, outside the file's direct-call queue.
+    outer_token = deferred._CURRENT.set(None)
+    pending, body_tasks, queues, body_contexts = [], [], [], []
+    release_body = asyncio.Event()
+    binding = FakeD1()
+    record = _call(streaming=True)
+    real_queue = deferred._Queue
+
+    def track_queue(*args, **kwargs):
+        queue = real_queue(*args, **kwargs)
+        queues.append(queue)
+        return queue
+
+    monkeypatch.setattr(deferred, "_Queue", track_queue)
+
+    async def body():
+        yield b"first"
+        await release_body.wait()
+        # Parent fetch has drained and reset by the time this body resumes.
+        body_contexts.append(deferred._CURRENT.get())
+        sg._enqueue_ledger(record)
+        yield b"last"
+
+    native_response = SimpleNamespace(headers={})
+
+    async def asgi_fetch(app, request, env):
+        response = StreamingResponse(body())
+        first_chunk = asyncio.get_running_loop().create_future()
+
+        async def run_app():
+            async for chunk in response.body_iterator:
+                if not first_chunk.done():
+                    first_chunk.set_result(native_response)
+
+        # workers-runtime-sdk 1.6.3 asgi.process_request runs run_app in a
+        # create_task before awaiting its response Future; do the same here.
+        body_tasks.append(asyncio.create_task(run_app()))
+        return await first_chunk
+
+    async def registry(env):
+        return None
+
+    asgi = ModuleType("asgi")
+    asgi.fetch = asgi_fetch
+    ffi = ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: value
+    monkeypatch.setitem(sys.modules, "asgi", asgi)
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+    monkeypatch.setattr(private_runtime_registry, "ensure_private_registry", registry)
+    # Only ledger waitUntil calls count toward (a); telemetry is unrelated I/O.
+    monkeypatch.setattr(stack_telemetry, "finish_trace", lambda *args: stack_telemetry.reset_trace(args[1]))
+    worker_src = Path(__file__).resolve().parents[1] / "worker.py"
+    tree = ast.parse(worker_src.read_text(encoding="utf-8"))
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Default")
+    namespace = {
+        "WorkerEntrypoint": object, "Any": object, "urlparse": urlparse,
+        "_ENV_KEYS": (), "_apply_env_once": lambda env: None,
+        "_apply_security_headers": lambda response: response, "app": object(),
+    }
+    exec(compile(ast.Module(body=[cls], type_ignores=[]), str(worker_src), "exec"), namespace)
+    ctx = SimpleNamespace(waitUntil=pending.append)
+    worker = namespace["Default"]()
+    worker.env = SimpleNamespace(B14_CALL_LEDGER_D1=binding)
+    worker.ctx = ctx
+    try:
+        response = await worker.fetch(SimpleNamespace(
+            url="https://unit.invalid/api/pilot/v1/chat/completions/stream-preview",
+            method="POST", headers={}, js_object=object(),
+        ))
+        assert response is native_response
+        assert deferred._CURRENT.get() is None  # fetch finally/reset completed
+        assert len(queues) == 1 and queues[0].drained and queues[0].ctx is ctx
+        assert pending == [] and binding.calls == []
+        assert not body_tasks[0].done()
+
+        release_body.set()
+        await body_tasks[0]
+        assert body_contexts == [queues[0]]  # inherited queue, never an orphan
+        assert len(queues) == 1             # no new _Queue after parent reset
+        assert deferred._CURRENT.get() is None
+        assert len(pending) == 1            # precisely this late write
+        assert binding.calls == []         # still no inline D1 write
+        await pending.pop()                # real sg.record_call -> real D1 store
+        parent = next(call for call in binding.calls if "INSERT OR IGNORE INTO b14_model_call " in call[1])
+        saved = dict(zip(_CALL_COLUMNS, parent[2]))
+        assert saved["log_id"] == record.log_id
+        assert saved["streaming"] == 1
+    finally:
+        release_body.set()
+        for task in body_tasks:
+            await task
+        while pending:
+            await pending.pop()
+        deferred._CURRENT.reset(outer_token)
