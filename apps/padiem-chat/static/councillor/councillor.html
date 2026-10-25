@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko" data-theme="padiem-glass">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="robots" content="noindex" />
+  <title>의원 시네마틱 블로그</title>
+  <link rel="icon" href="data:," />
+  <!--
+    #5786 의원 공개 블로그 래퍼.
+
+    * PADIEM Chat과 같은 정적 마운트에서 서빙되는 공개 문서입니다. 서버가
+      강제하는 비공개 라우트가 아니며, 이 문서 자체에 비공개 자료가 없습니다.
+    * 관리자 영역은 GET /api/auth/status 의 서버 응답으로만 열립니다
+      (fail-closed). 실패·미로그인 상태에서는 로그인 안내만 표시됩니다.
+    * 의원3종 화면은 복제하지 않습니다. 링크는 기존 Chat 문서의
+      #padiem-util 프래그먼트 라우트이고, 실제 화면과 생성·저장 기능은
+      util-menu.js 와 기존 /api 계약이 그대로 소유합니다.
+    * hero.mediaKind 가 PLACEHOLDER 이면 영상·사진을 의원 실자료로 표시하지
+      않고 시제품 안내를 남깁니다.
+  -->
+  <script src="../theme-init.js"></script>
+  <link rel="stylesheet" href="../padiem-cinematic-chat.css" />
+  <link rel="stylesheet" href="../padiem-glass.css" data-padiem-glass-theme="true" />
+  <link rel="stylesheet" href="../padiem-glass-portrait.css" data-padiem-glass-portrait="true" />
+  <link rel="stylesheet" href="../padiem-themes.css" />
+  <link rel="stylesheet" href="./councillor.css" />
+</head>
+<body class="councillor-body">
+  <a class="councillor-skip" href="#councillorMain">본문으로 건너뛰기</a>
+
+  <header class="councillor-topbar">
+    <div class="councillor-brand">
+      <span class="councillor-brand-mark" id="brandMark" aria-hidden="true">P</span>
+      <span class="councillor-brand-name" id="brandName">Padiem</span>
+    </div>
+    <div class="councillor-topbar-actions">
+      <span class="councillor-badge" id="stageBadge">시제품</span>
+      <button class="councillor-ghost" id="motionToggle" type="button" aria-pressed="false">움직임 줄이기</button>
+      <a class="councillor-ghost" id="adminTopLink" href="../">관리자</a>
+    </div>
+  </header>
+
+  <main id="councillorMain">
+    <section class="cine-hero" id="cineHero" aria-labelledby="heroName">
+      <div class="cine-media" aria-hidden="true">
+        <div class="cine-film" id="cineFilm"></div>
+        <img class="cine-poster" id="cinePoster" alt="" hidden />
+        <video class="cine-video" id="cineVideo" muted loop playsinline preload="none" hidden></video>
+        <div class="cine-grain"></div>
+      </div>
+      <div class="cine-veil"></div>
+      <div class="cine-copy">
+        <p class="cine-eyebrow" id="heroEyebrow"></p>
+        <h1 class="cine-name" id="heroName"></h1>
+        <p class="cine-lead" id="heroLead"></p>
+        <div class="cine-actions">
+          <a class="cine-primary" href="#sectionProfile">의원 소개</a>
+          <a class="cine-secondary" href="#sectionActivity">의정활동 소식</a>
+        </div>
+      </div>
+      <p class="cine-media-note" id="heroMediaNote" role="note"></p>
+      <button class="cine-cue" id="heroCue" type="button" aria-label="다음 섹션으로 이동">▾</button>
+    </section>
+
+    <section class="cine-section" id="sectionProfile" aria-labelledby="profileTitle">
+      <h2 class="cine-title" id="profileTitle">의원 소개</h2>
+      <div class="cine-profile">
+        <dl class="cine-facts" id="profileFacts"></dl>
+        <p class="cine-bio" id="profileBio"></p>
+      </div>
+    </section>
+
+    <section class="cine-section" id="sectionActivity" aria-labelledby="activityTitle">
+      <h2 class="cine-title" id="activityTitle">의정활동 소식</h2>
+      <p class="cine-source" id="activitySource"></p>
+      <ul class="cine-feed" id="activityFeed"></ul>
+    </section>
+
+    <section class="cine-section" id="sectionMedia" aria-labelledby="mediaTitle">
+      <h2 class="cine-title" id="mediaTitle">행사 사진·영상</h2>
+      <p class="cine-source" id="mediaSource"></p>
+      <ul class="cine-cards" id="mediaCards"></ul>
+    </section>
+
+    <section class="cine-section" id="sectionNotes" aria-labelledby="notesTitle">
+      <h2 class="cine-title" id="notesTitle">공개 글·공지</h2>
+      <ul class="cine-feed" id="notesFeed"></ul>
+    </section>
+
+    <section class="cine-section" id="sectionSns" aria-labelledby="snsTitle">
+      <h2 class="cine-title" id="snsTitle">공식 채널</h2>
+      <p class="cine-source" id="snsSource"></p>
+      <ul class="cine-chips" id="snsChips"></ul>
+    </section>
+
+    <section class="cine-section cine-admin" id="sectionAdmin" aria-labelledby="adminTitle">
+      <h2 class="cine-title" id="adminTitle">관리자</h2>
+      <p class="cine-admin-status" id="adminStatus" role="status" aria-live="polite"></p>
+      <div class="cine-admin-gate" id="adminGate" hidden>
+        <p class="cine-admin-gate-body" id="adminGateBody"></p>
+        <a class="cine-primary" id="adminSignIn" href="../">PADIEM에서 로그인</a>
+      </div>
+      <div class="cine-admin-tools" id="adminTools" hidden>
+        <p class="cine-admin-note" id="adminNote"></p>
+        <ul class="cine-cards" id="toolCards"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="councillor-footer">
+    <p class="councillor-footer-line" id="footerPrototype"></p>
+    <p class="councillor-footer-line" id="footerSource"></p>
+  </footer>
+
+  <script src="./councillor.js" defer></script>
+</body>
+</html>

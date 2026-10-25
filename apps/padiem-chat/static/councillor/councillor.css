@@ -1,0 +1,392 @@
+/*
+ * #5786 의원 시네마틱 블로그 래퍼.
+ * 색·타이포·반투명 서페이스는 PADIEM Chat 테마 스택이 이미 정의한 커스텀
+ * 프로퍼티를 그대로 읽습니다(padiem-foundation.css / padiem-glass.css).
+ * 값 재선언 없이 var() 폴백만 사용하므로 원본 테마가 바뀌면 이 화면도 함께
+ * 바뀝니다. 여기에는 레이아웃과 시네마틱 레이어만 정의합니다.
+ */
+
+.councillor-body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text, #f7f7f6);
+  font-family: var(--font-body, "SUIT Variable", system-ui, sans-serif);
+  background: transparent;
+}
+
+.councillor-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 20;
+  padding: 10px 16px;
+  border-radius: var(--radius-md, 16px);
+  background: var(--panel, #fff);
+  color: var(--text, #17202a);
+}
+.councillor-skip:focus { left: 12px; top: 12px; }
+
+/* ── topbar ───────────────────────────────────────────────────────────── */
+.councillor-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px clamp(16px, 4vw, 40px);
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, .14));
+  background: var(--glass, rgba(10, 12, 18, .52));
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+.councillor-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.councillor-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .42));
+  border-radius: 10px;
+  background: var(--accent-soft, rgba(136, 201, 255, .055));
+  color: var(--accent, #88c9ff);
+  font-family: var(--font-display, "SUITE Variable", system-ui, sans-serif);
+  font-weight: 700;
+}
+.councillor-brand-name {
+  overflow: hidden;
+  font-family: var(--font-display, "SUITE Variable", system-ui, sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.councillor-topbar-actions { display: flex; align-items: center; gap: 8px; }
+.councillor-badge {
+  padding: 4px 9px;
+  border: 1px solid var(--gold, #efc984);
+  border-radius: 999px;
+  color: var(--gold, #efc984);
+  font-family: var(--font-label, Manrope, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.councillor-ghost {
+  padding: 7px 12px;
+  border: 1px solid var(--line, rgba(255, 255, 255, .14));
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted, rgba(255, 255, 255, .68));
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.councillor-ghost:hover { color: var(--text, #fff); border-color: var(--accent, #88c9ff); }
+.councillor-ghost[aria-pressed="true"] { color: var(--accent, #88c9ff); border-color: var(--accent, #88c9ff); }
+
+/* ── cinematic hero ───────────────────────────────────────────────────── */
+.cine-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-height: min(86vh, 720px);
+  padding: clamp(24px, 6vw, 64px);
+  overflow: hidden;
+  isolation: isolate;
+  scroll-margin-top: 64px;
+}
+.cine-media { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.cine-film {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(120% 90% at 78% 8%, rgba(239, 201, 132, .22), transparent 58%),
+    radial-gradient(90% 70% at 12% 96%, rgba(136, 201, 255, .18), transparent 62%),
+    linear-gradient(158deg, #05070c 8%, #0d1420 46%, #161d2b 72%, #05070c 100%);
+}
+/* 한 번씩 지나는 빛줄기: 시네마틱 무드를 주되 GPU 부하가 낮은 transform 1축만 사용. */
+.cine-film::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -35%;
+  width: 42%;
+  height: 160%;
+  transform: rotate(14deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .07), transparent);
+  animation: cine-sweep 13s ease-in-out infinite;
+}
+@keyframes cine-sweep {
+  0%, 62% { transform: rotate(14deg) translateX(-40%); opacity: 0; }
+  70% { opacity: 1; }
+  100% { transform: rotate(14deg) translateX(320%); opacity: 0; }
+}
+.cine-poster,
+.cine-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cine-grain {
+  position: absolute;
+  inset: 0;
+  opacity: .12;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cine-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(4, 6, 10, .88) 0%, rgba(4, 6, 10, .58) 44%, rgba(4, 6, 10, .18) 78%),
+    linear-gradient(0deg, rgba(4, 6, 10, .9) 0%, transparent 46%);
+}
+/* 히어로는 자체 다크 스크림 위입니다. 라이트 glass 테마의 --text(#17202a)를
+ * 그대로 쓰면 대비가 무너지므로, 원본 테마가 다크 서페이스에 쓰는 토큰
+ * (--sidebar-text / --accent-contrast, padiem-glass.css)을 그대로 사용합니다. */
+.cine-copy { position: relative; max-width: 42rem; width: 100%; }
+.cine-eyebrow {
+  margin: 0 0 10px;
+  color: var(--gold, #efc984);
+  font-family: var(--font-label, Manrope, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.cine-name {
+  margin: 0 0 12px;
+  color: var(--sidebar-text, #f7f9fb);
+  font-family: var(--font-display, "SUITE Variable", system-ui, sans-serif);
+  font-size: clamp(38px, 8.4vw, 82px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -.03em;
+}
+.cine-lead {
+  margin: 0 0 22px;
+  max-width: 34rem;
+  color: rgba(247, 249, 251, .76);
+  color: color-mix(in srgb, var(--sidebar-text, #f7f9fb) 76%, transparent);
+  font-size: clamp(15px, 2.2vw, 18px);
+  line-height: 1.65;
+}
+.cine-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.cine-primary,
+.cine-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.cine-primary {
+  border: 1px solid var(--accent, #79bce7);
+  background: var(--accent, #79bce7);
+  color: var(--accent-contrast, #17202a);
+}
+.cine-secondary {
+  border: 1px solid rgba(247, 249, 251, .38);
+  border: 1px solid color-mix(in srgb, var(--sidebar-text, #f7f9fb) 38%, transparent);
+  background: rgba(247, 249, 251, .08);
+  color: var(--sidebar-text, #f7f9fb);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.cine-primary:hover, .cine-secondary:hover { filter: brightness(1.08); }
+.cine-media-note {
+  max-width: 42rem;
+  margin: 22px 0 0;
+  color: rgba(247, 249, 251, .66);
+  color: color-mix(in srgb, var(--sidebar-text, #f7f9fb) 66%, transparent);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.cine-cue {
+  position: absolute;
+  right: clamp(20px, 5vw, 48px);
+  bottom: 22px;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(247, 249, 251, .38);
+  border: 1px solid color-mix(in srgb, var(--sidebar-text, #f7f9fb) 38%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sidebar-text, #f7f9fb);
+  font-size: 16px;
+  cursor: pointer;
+  animation: cue-bob 2.4s ease-in-out infinite;
+}
+@keyframes cue-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+/* ── sections ─────────────────────────────────────────────────────────── */
+.cine-section {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(38px, 7vw, 76px) clamp(16px, 5vw, 40px);
+  border-bottom: 1px solid var(--line, rgba(255, 255, 255, .08));
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.cine-section.is-in { opacity: 1; transform: none; }
+.cine-section:first-of-type { border-top: 0; }
+.cine-title {
+  margin: 0 0 8px;
+  font-family: var(--font-display, "SUITE Variable", system-ui, sans-serif);
+  font-size: clamp(22px, 3.4vw, 30px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.cine-source { margin: 0 0 20px; color: var(--muted, rgba(255, 255, 255, .58)); font-size: 12px; line-height: 1.6; }
+
+.cine-profile { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); }
+.cine-facts {
+  display: grid;
+  gap: 10px 18px;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .18));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(255, 255, 255, .05)));
+}
+.cine-fact { display: grid; gap: 2px; }
+.cine-fact dt { color: var(--muted, rgba(255, 255, 255, .58)); font-size: 11px; letter-spacing: .06em; }
+.cine-fact dd { margin: 0; font-size: 14px; line-height: 1.55; }
+.cine-bio {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .18));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(255, 255, 255, .05)));
+  font-size: 14px;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.cine-feed { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.cine-feed-item {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .18));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(255, 255, 255, .05)));
+}
+.cine-feed-meta { display: flex; gap: 8px; align-items: center; color: var(--muted, rgba(255, 255, 255, .56)); font-family: var(--font-label, Manrope, sans-serif); font-size: 11px; letter-spacing: .04em; }
+.cine-feed-link { color: var(--text, #fff); font-size: 14px; font-weight: 600; text-decoration: none; }
+.cine-feed-link:hover { color: var(--accent, #88c9ff); text-decoration: underline; }
+.cine-feed-body { margin: 0; color: var(--muted, rgba(255, 255, 255, .74)); font-size: 13px; line-height: 1.6; }
+
+.cine-cards { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.cine-card {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .18));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(255, 255, 255, .05)));
+  box-shadow: var(--shadow, none);
+}
+.cine-card-kind { color: var(--gold, #efc984); font-family: var(--font-label, Manrope, sans-serif); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.cine-card-title { color: var(--text, #fff); font-size: 14px; font-weight: 700; line-height: 1.45; }
+.cine-card-title a { color: inherit; text-decoration: none; }
+.cine-card-title a:hover { color: var(--accent, #88c9ff); text-decoration: underline; }
+.cine-card-note { margin: 0; color: var(--muted, rgba(255, 255, 255, .62)); font-size: 12px; line-height: 1.55; }
+.cine-card-unlinked { color: var(--muted, rgba(255, 255, 255, .62)); }
+
+.cine-chips { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.cine-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--line, rgba(255, 255, 255, .24));
+  border-radius: 999px;
+  background: var(--glass, rgba(255, 255, 255, .05));
+  color: var(--text, #fff);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cine-chip:hover { border-color: var(--accent, #88c9ff); color: var(--accent, #88c9ff); }
+.cine-chip-flag { color: var(--muted, rgba(255, 255, 255, .54)); font-size: 11px; font-weight: 500; }
+
+/* ── admin ────────────────────────────────────────────────────────────── */
+.cine-admin { border-bottom: 0; }
+.cine-admin-status { margin: 0 0 14px; color: var(--muted, rgba(255, 255, 255, .58)); font-size: 12px; line-height: 1.6; }
+.cine-admin-gate,
+.cine-admin-tools {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, .18));
+  border-radius: var(--radius-md, 16px);
+  background: var(--glass-card-surface, var(--card-bg, rgba(255, 255, 255, .05)));
+}
+/* 위 display 이 UA의 [hidden] 을 이기므로 격리 규칙을 명시합니다.
+ * 관리자 패널은 세션 확인 실패·게스트 상태에서-layout-까지 사라져야 합니다. */
+.cine-admin-gate[hidden],
+.cine-admin-tools[hidden] { display: none; }
+.cine-admin-gate-body { margin: 0; color: var(--muted, rgba(255, 255, 255, .74)); font-size: 13px; line-height: 1.65; }
+.cine-admin-note { margin: 0; color: var(--muted, rgba(255, 255, 255, .62)); font-size: 12px; line-height: 1.6; }
+.cine-admin .cine-primary { justify-self: start; }
+
+.councillor-footer {
+  display: grid;
+  gap: 8px;
+  padding: 30px clamp(16px, 5vw, 40px) 48px;
+  color: var(--muted, rgba(255, 255, 255, .56));
+  font-size: 12px;
+  line-height: 1.65;
+}
+.councillor-footer-line { margin: 0; }
+
+.cine-empty { color: var(--muted, rgba(255, 255, 255, .56)); font-size: 13px; }
+.cine-error {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--danger, #ff9d9d);
+  border-radius: var(--radius-md, 16px);
+  color: var(--danger, #ff9d9d);
+  font-size: 13px;
+}
+
+/* ── 움직임 최소화 ────────────────────────────────────────────────────── */
+html[data-cine-motion="off"] .cine-film::after,
+html[data-cine-motion="off"] .cine-cue { animation: none; }
+html[data-cine-motion="off"] .cine-section { opacity: 1; transform: none; transition: none; }
+html[data-cine-motion="off"] .cine-video { display: none; }
+html[data-cine-motion="off"] .cine-poster:not([hidden]),
+html[data-cine-motion="off"] .cine-film { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .cine-film::after, .cine-cue { animation: none; }
+  .cine-section { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── 모바일 ───────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .cine-hero { min-height: 74vh; padding: 22px 18px 34px; }
+  .cine-lead { max-width: none; }
+  .cine-media-note { margin-top: 16px; }
+  .cine-cue { display: none; }
+  .cine-actions { width: 100%; }
+  .cine-primary, .cine-secondary { flex: 1 1 auto; }
+  .councillor-topbar { padding: 10px 14px; }
+  .councillor-badge { display: none; }
+  .cine-cards { grid-template-columns: minmax(0, 1fr); }
+}
