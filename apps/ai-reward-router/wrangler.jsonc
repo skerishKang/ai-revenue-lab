@@ -4,6 +4,13 @@
   "compatibility_date": "2026-08-30",
   "workers_dev": true,
   "preview_urls": true,
+  // Issue #987: the mutation-origin binding for cookie-authenticated pipeline
+  // POSTs (#3476 policy). This is the reviewed deployment origin and MUST be
+  // the real serving host — an unconfigured or wrong value denies
+  // cookie-carrying POSTs (fail closed), never bypasses the guard.
+  "vars": {
+    "PADIEM_B64_PUBLIC_BASE_URL": "https://chat.padiem.net"
+  },
   // Issue #987: canonical-session liveness relay. Binding target and call
   // pattern reuse the only existing second-product session bridge in this
   // repository (reference/business-66-padiem-quote-v1/_worker.js): the cookie
