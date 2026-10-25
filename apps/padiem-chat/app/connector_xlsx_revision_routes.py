@@ -88,9 +88,10 @@ class RevisionPreviewStore:
     def record(self, *, owner_id: str, run_id: str, device_id: str, root_ref: str,
                path_relative: str, sheet_name: str, edits: list[dict[str, Any]],
                preview: dict[str, Any]) -> str:
-        ref = f"xlsxrevpreview-{abs(hash((owner_id, run_id, preview_digest(
+        digest = preview_digest(
             owner_id=owner_id, run_id=run_id, device_id=device_id, root_ref=root_ref,
-            path_relative=path_relative, sheet_name=sheet_name, edits=edits))))}"
+            path_relative=path_relative, sheet_name=sheet_name, edits=edits)
+        ref = f"xlsxrevpreview-{abs(hash((owner_id, run_id, digest)))}"
         entry = {
             "owner_id": owner_id, "run_id": run_id, "device_id": device_id,
             "root_ref": root_ref, "path_relative": path_relative,
