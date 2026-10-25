@@ -221,22 +221,18 @@ def test_wrapper_builds_no_second_ai_login_or_store() -> None:
     assert _code_only(adapter_js()).count("fetch(") == 0, "the adapter must stay network-free"
 
 
-def test_admin_surface_is_fail_closed() -> None:
+def test_public_util_navigation_keeps_auth_on_server() -> None:
     js = wrapper_js()
     html = read(WRAP / "councillor.html")
-    # The panels start hidden in the document, so a signed-out visitor never
-    # sees the admin surface even before the status read resolves.
-    assert re.search(r'id="adminTools"[^>]*\shidden', html), "admin tools must ship hidden"
-    assert re.search(r'id="adminGate"[^>]*\shidden', html), "admin gate must ship hidden"
-    start = js[js.index("async function start()"):]
-    # the painted path closes the admin surface before the session read runs,
-    # so the tools can only ever appear after an authenticated response.
-    assert start.rindex('paintAdminSignedOut("guest")') < start.rindex("void readSession()")
-    assert "data.authenticated === true" in js
-    assert 'paintAdminSignedOut("unavailable")' in js, "a failed status read must stay closed"
+    assert re.search(r'id="adminTools"[^>]*\\shidden', html)
+    assert 'paintUtilLinks(null)' in js
+    assert 'paintUtilLinks(user.name || user.display_name || user.email || null)' in js
+    assert 'if (refs.adminTools) refs.adminTools.hidden = false' in js
+    assert 'if (refs.adminGate) refs.adminGate.hidden = true' in js
+    assert 'data.authenticated === true' in js
+    assert 'paintAdminSignedOut' not in js
+    assert 'const TOOLS = Object.freeze([' in js
     css = read(WRAP / "councillor.css")
-    # display:grid on the panel beats the UA [hidden] rule; without this line a
-    # signed-out visitor keeps the admin panel in layout (observed in S4).
     assert ".cine-admin-tools[hidden]" in css and ".cine-admin-gate[hidden]" in css
 
 
