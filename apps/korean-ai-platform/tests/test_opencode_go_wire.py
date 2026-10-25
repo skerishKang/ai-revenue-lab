@@ -367,3 +367,113 @@ def test_go_gateway_logs_context_and_keeps_client_error_bytes_unchanged(
     for private in [b"vendor_message", b"vendor_status", b"session_header_kind",
                     b"invalid subscription", b"synthetic-go-credential"]:
         assert private not in observed_bytes
+
+
+@pytest.mark.asyncio
+async def test_go_shape_refusal_names_the_check_in_the_log_only(monkeypatch, caplog):
+    """A 2xx envelope B14 refuses still answers 502 with unchanged public bytes.
+
+    The provider gave no HTTP status to key on, so the log has to say which
+    envelope check failed and show a masked prefix of what actually arrived.
+    Nothing in this is allowed to reach the client.
+    """
+    import logging
+    from app.pilot import gateway, platform
+    from app.pilot.b14_runtime_config import runtime_config
+
+    monkeypatch.setattr(go, "_authorization_gate", lambda *_: None)
+    secret = "synthetic-shape-credential-ABCDEFGHIJKLMNOP"
+    session = SESSION
+
+    async def auth(h, wire):
+        return {**h, "Authorization": f"Bearer {secret}"}
+    monkeypatch.setattr(go, "_authenticated_headers", auth)
+    echo = ',"detail":"Bearer ' + secret + ' sk-shapeprivate123 ' + session + '"'
+
+    def transport_for(text):
+        return httpx.MockTransport(lambda request: httpx.Response(200, text=text))
+
+    cases = [
+        ("cat-jam-free", '{"model":"cat-jam-free"' + echo + "}", "choices_missing"),
+        ("muse-spark-1.3-contributor",
+         '{"model":"muse-spark-1.3-contributor","status":"in_progress"' + echo + "}",
+         "responses_status_incomplete"),
+        ("claude-haiku-5-5",
+         '{"model":"claude-haiku-5-5","type":"message","role":"user"' + echo + "}",
+         "messages_type_or_role"),
+        ("cat-jam-free", "truncated midway " + secret, "response_not_json"),
+    ]
+    public_baseline = MalformedUpstreamResponse().to_dict()
+    last = None
+    for upstream_model, text, reason in cases:
+        with pytest.raises(MalformedUpstreamResponse) as caught:
+            await go.call_go_model(
+                model_id="opencode-go/" + upstream_model, upstream_model=upstream_model,
+                messages=TURNS, session_id=session, max_tokens=32,
+                transport=transport_for(text),
+            )
+        error = caught.value
+        last = error
+        assert error.to_dict() == public_baseline
+        assert error.status_code == 502
+        diagnostic = error._go_vendor_diagnostic
+        assert diagnostic["reason"] == reason
+        assert diagnostic["vendor_status"] == 200
+        assert diagnostic["provider_id"] == "opencode-go"
+        assert diagnostic["upstream_model"] == upstream_model
+        assert diagnostic["session_header_kind"] == "conversation"
+        assert len(diagnostic["vendor_message"]) <= 200
+        assert "[REDACTED]" in diagnostic["vendor_message"]
+        for private in [secret, "sk-shapeprivate123", session]:
+            assert private not in diagnostic["vendor_message"]
+
+    caplog.clear()
+    logger = logging.getLogger("go-shape-test")
+    with caplog.at_level(logging.WARNING):
+        assert go.log_go_vendor_error(
+            logger, last, request_id="fixed-request",
+            request_path="/api/pilot/v1/chat/completions", attempt=1, fallback=False,
+        )
+    line = next(r.message for r in caplog.records if r.message.startswith("alpha_error "))
+    for part in ["code=malformed_upstream_response", "status=502", "attempt=1",
+                 "provider_id=opencode-go", "reason=response_not_json",
+                 "upstream_model=cat-jam-free", "fallback=primary",
+                 "vendor_status=200", "session_header_kind=conversation",
+                 "vendor_path=/inference/go/openai/v1/chat/completions"]:
+        assert part in line
+    for private in [secret, "sk-shapeprivate123", session]:
+        assert private not in line
+
+    # Through the real gateway the client bytes must equal the pre-change replay.
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_11", secret)
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    transport = transport_for('{"model":"muse-spark-1.3-contributor",'
+                              '"status":"in_progress"' + echo + "}")
+
+    async def call(**kwargs):
+        return await go.call_go_model(
+            **{k: kwargs[k] for k in ["model_id", "upstream_model", "messages",
+                                      "max_tokens", "temperature"]},
+            session_id=None, transport=transport,
+        )
+    monkeypatch.setattr(platform, "call_platform_chat_completions", call)
+    request_body = {"model": "opencode-go/muse-spark-1.3-contributor",
+                    "messages": [{"role": "user", "content": "synthetic question"}]}
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        observed = await gateway._handle_alpha_chat("b14_shape_fixed", request_body)
+    assert observed.status_code == 502
+    lines = [r.message for r in caplog.records if r.message.startswith("alpha_error ")]
+    assert len(lines) == 1
+    assert "reason=responses_status_incomplete" in lines[0]
+    assert "vendor_status=200" in lines[0]
+    assert "session_header_kind=minted" in lines[0]
+    for private in [b"vendor_message", b"vendor_status", b"session_header_kind",
+                    b"vendor_path", b"reason=", secret.encode(),
+                    b"synthetic question"]:
+        assert private not in observed.body
+    monkeypatch.setattr(go, "_attach_go_shape_diagnostic", lambda error, **kwargs: None)
+    reference = await gateway._handle_alpha_chat("b14_shape_fixed", request_body)
+    assert reference.status_code == observed.status_code
+    assert reference.body == observed.body
