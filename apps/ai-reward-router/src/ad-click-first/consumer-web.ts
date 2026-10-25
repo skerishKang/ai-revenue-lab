@@ -127,7 +127,7 @@ function renderPublicOpportunityCard(card: PublicOpportunityCard): string | null
       <span>사용자 가치 ${card.userValueScore}/10</span>
     </div>
     ${card.tierNote ? `<p class="tier-note" title="${escapeHtml(card.tierNote)}">${escapeHtml(card.tierNote)}</p>` : ''}
-    <a class="reward-cta" href="${href}" target="_blank" rel="noopener noreferrer nofollow">공식 페이지에서 신청하기<span aria-hidden="true"> ↗</span></a>
+    <a class="reward-cta" href="${href}" target="_blank" rel="noopener noreferrer nofollow">${escapeHtml(card.ctaLabel)}<span aria-hidden="true"> ↗</span></a>
     <a class="detail-link" href="/detail?id=${escapeHtml(card.id)}">자세히 보기<span aria-hidden="true"> →</span></a>
   </article>`;
 }
@@ -181,7 +181,7 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
         <span>확인 · ${formatVerifiedAtKst(card.verifiedAt)}</span>
       </div>
       <div class="detail-actions">
-        ${applyHref ? `<a class="reward-cta detail-cta" href="${applyHref}" target="_blank" rel="noopener noreferrer nofollow">공식 제공처에서 신청하기<span aria-hidden="true"> ↗</span></a>` : ''}
+        ${applyHref ? `<a class="reward-cta detail-cta" href="${applyHref}" target="_blank" rel="noopener noreferrer nofollow">${escapeHtml(card.ctaLabel)}<span aria-hidden="true"> ↗</span></a>` : ''}
         <a class="ghost-btn" href="/browse">다른 기회 둘러보기</a>
       </div>
     </div>
@@ -340,7 +340,7 @@ function renderShell(
     .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
     .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
-    .tier-note { margin: 10px 0 0; color: var(--faint); font-size: 12px; line-height: 1.5; }
+    .tier-note { margin: 12px 0 18px; color: var(--faint); font-size: 12px; line-height: 1.5; }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
     .reward-card h3 { margin: 13px 0 10px; font-size: 16px; line-height: 1.4; letter-spacing: -.015em; font-weight: 650; overflow-wrap: anywhere; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 8px; }
@@ -622,7 +622,7 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
     if (hasImmediate) {
       sections.push(`<section id="today-public-immediate" aria-labelledby="today-public-immediate-title">
       <div class="section-head">
-        <h2 id="today-public-immediate-title">지금 바로 참여 시작</h2>
+        <h2 id="today-public-immediate-title">참가자 등록 가능</h2>
         <span>${(viewModel.publicImmediateCards ?? []).length}개 확인됨</span>
       </div>
       <p class="public-note">선발 없이 참여를 시작할 수 있는 공개 기회입니다. 설문·프로젝트 가용성은 기간에 따라 달라질 수 있습니다. PADIEM 수익은 0이며 각 업체에서 직접 참여합니다.</p>

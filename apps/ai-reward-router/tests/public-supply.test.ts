@@ -146,12 +146,12 @@ test('Prolific card distinguishes participation eligibility from live study inve
   const card = vm.publicCards[0];
   assert.ok(card, 'Prolific card exists');
   assert.equal(card.vendor, 'Prolific');
-  assert.equal(card.tierLabel, '지금 바로 참여 시작');
+  assert.equal(card.tierLabel, '참가자 등록 가능');
   assert.match(card.tierNote ?? '', /설문은 기간에 따라 공개됩니다/);
   assert.match(card.tierNote ?? '', /현재 가용 설문 수 미확인/);
   const html = renderAdClickFirstBrowseWeb(vm);
   assert.doesNotMatch(html, /바로 참여 가능/);
-  assert.match(html, /지금 바로 참여 시작/);
+  assert.match(html, /참가자 등록 가능/);
   assert.match(html, /설문은 기간에 따라 공개됩니다/);
   const detailVm = buildAdClickFirstOpportunityDetail([], 'pub-prolific-participate', { publicOpportunities: VERIFIED_PUBLIC_OPPORTUNITIES });
   const detailHtml = renderAdClickFirstOpportunityDetailWeb(detailVm);
@@ -171,6 +171,8 @@ test('DataAnnotation card and detail surface unconfirmed Korea residency eligibi
   const detailHtml = renderAdClickFirstOpportunityDetailWeb(detailVm);
   assert.match(detailHtml, /한국 거주 자격 미확인/);
   assert.doesNotMatch(detailHtml, /한국 참여 확인/);
+  const count = (detailHtml.match(/한국 거주 자격 미확인/g) || []).length;
+  assert.equal(count, 1);
 });
 
 test('reward display never doubles the unknown-amount wording', () => {
@@ -191,7 +193,7 @@ test('today hero covers application-based opportunities, not only instant reward
   assert.match(html, /오늘의 기회/);
   assert.match(html, /신청·심사가 필요한 프로젝트는 별도 구분됩니다/);
   assert.doesNotMatch(html, /지금 바로 할 수 있는 적립/);
-  assert.match(html, /지금 바로 참여 시작/);
+  assert.match(html, /참가자 등록 가능/);
   assert.match(html, /신청·심사 후 참여/);
 });
 
@@ -234,7 +236,7 @@ test('public-supply handler serves verified opportunities on browse, today, and 
 
   const today = await handler(new Request('https://b64.example/today'));
   const todayHtml = await today.text();
-  assert.match(todayHtml, /지금 바로 참여 시작/);
+  assert.match(todayHtml, /참가자 등록 가능/);
   assert.match(todayHtml, /신청·심사 후 참여/);
 
   const detail = await handler(new Request('https://b64.example/detail?id=pub-telus-korea-ai-community'));
