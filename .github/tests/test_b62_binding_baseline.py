@@ -167,3 +167,80 @@ def test_the_cli_reports_a_bounded_verdict_without_naming_a_binding(tmp_path, ca
     assert "UNAPPROVED" not in err
     for name in expected:
         assert name not in err
+
+
+B14_WORKER = "ai-revenue-korean-ai-platform"
+B14_WRANGLER = ROOT / "apps/korean-ai-platform/wrangler.toml"
+LEDGER_BINDING = "B14_CALL_LEDGER_D1"
+
+
+def _b14_declared_bindings() -> dict[str, str]:
+    """Derive the binding set the committed B14 config declares."""
+
+    import tomllib
+
+    with B14_WRANGLER.open("rb") as handle:
+        config = tomllib.load(handle)
+    declared: dict[str, str] = {}
+    for row in config.get("d1_databases", []):
+        declared[row["binding"]] = "d1"
+    for row in config.get("secrets_store_secrets", []):
+        declared[row["binding"]] = "secrets_store_secret"
+    for row in config.get("services", []):
+        declared[row["binding"]] = "service"
+    for row in config.get("vars", {}).items():
+        declared[row[0]] = "plain_text"
+    assets = config.get("assets")
+    if isinstance(assets, dict) and assets.get("binding"):
+        declared[assets["binding"]] = "assets"
+    return declared
+
+
+def test_the_b14_baseline_is_the_declared_binding_set():
+    """#4318: the B14 baseline states the config, so it cannot rot quietly."""
+
+    expected = _b14_declared_bindings()
+    assert expected.get(LEDGER_BINDING) == "d1", "the ledger D1 must be declared"
+    assert mod.load_baseline(B14_WORKER) == expected
+
+
+def test_the_b14_baseline_names_the_serving_version_it_was_read_from():
+    payload = json.loads(mod.baseline_path(B14_WORKER).read_text(encoding="utf-8"))
+    assert payload["source_served_version"] == "4e8257c3-5b68-4df6-9cc8-229155d87d9e"
+    assert payload["reviewed_utc"] == "2026-10-25"
+
+
+def test_losing_the_ledger_binding_fails_the_b14_gate():
+    """The drift this guard exists to catch: a binding present in config that is
+    not served, or served with another kind."""
+
+    live = sorted(mod.load_baseline(B14_WORKER).items())
+
+    dropped = [(name, kind) for name, kind in live if name != LEDGER_BINDING]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(B14_WORKER, _payload(dropped))
+
+    retyped = [(LEDGER_BINDING, "plain_text") if name == LEDGER_BINDING else (name, kind)
+               for name, kind in live]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(B14_WORKER, _payload(retyped))
+
+
+def test_an_extra_unreviewed_b14_binding_fails_closed():
+    live = sorted(mod.load_baseline(B14_WORKER).items()) + [("SOME_NEW_THING", "d1")]
+    with pytest.raises(mod.BindingBaselineError, match="BINDING_SET_DRIFT"):
+        mod.assert_matches_baseline(B14_WORKER, _payload(live))
+
+
+def test_the_b14_version_payload_shape_is_accepted():
+    """The post-deploy check reads a version payload (resources.bindings), not
+    the mutable settings shape."""
+
+    entries = sorted(mod.load_baseline(B14_WORKER).items())
+    payload = {
+        "success": True,
+        "result": {"resources": {"bindings": [
+            {"name": name, "type": kind} for name, kind in entries
+        ]}},
+    }
+    assert mod.assert_matches_baseline(B14_WORKER, payload) == len(entries)

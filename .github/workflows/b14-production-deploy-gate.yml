@@ -70,6 +70,32 @@ jobs:
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
 
+      # #4318: the reviewed B14 binding set is a baseline, not a memory. A
+      # binding dropped or re-typed by any later reviewed change now fails this
+      # gate before any mutation, the same way the Engine and Chat release paths
+      # already fail. Names and types only: the shared comparer never prints a
+      # value, a database id or a secret, and it reports only bounded counts.
+      - name: Premutation binding baseline (GET-only, no mutation)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = '9be14bb7b8974e65d0afba647ab16932'
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/settings" \
+            -o /tmp/b14-baseline-settings.json
+          python3 .github/scripts/b62_binding_baseline.py \
+            --worker ai-revenue-korean-ai-platform --payload /tmp/b14-baseline-settings.json
+          echo 'B14_BINDING_BASELINE_PREMUTATION=PASS'
+          echo 'B14_BINDING_BASELINE_VALUES_EMITTED=0'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
@@ -313,6 +339,21 @@ jobs:
 
           print('B14_OWNER_JSON_CATALOG_PARITY=PASS')
           PY
+
+          # #4318: the version that is now serving 100% must carry exactly the
+          # reviewed binding set. The pre-deploy check proved the mutable
+          # settings; this one proves the immutable served version, so a binding
+          # that exists in config but is absent from what is serving cannot pass.
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/versions/${VERSION_ID}" \
+            -o /tmp/b14-served-version-bindings.json
+          python3 "${{ github.workspace }}/.github/scripts/b62_binding_baseline.py" \
+            --worker ai-revenue-korean-ai-platform \
+            --payload /tmp/b14-served-version-bindings.json
+          echo 'B14_BINDING_BASELINE_POSTDEPLOY=PASS'
+          echo 'B14_BINDING_BASELINE_VALUES_EMITTED=0'
 
           echo 'B14_PRODUCTION_DEPLOY_SMOKE=PASS'
 

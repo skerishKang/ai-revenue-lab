@@ -1715,3 +1715,58 @@ def test_post_deploy_matches_owner_json_registry_without_legacy_model_marker() -
     assert "B14_OWNER_JSON_CATALOG_PARITY=PASS" in text
     assert "B14_KILO_CATALOG_MARKER" not in text
     assert "mid.startswith('kilo/')" not in text
+
+
+def _deploy_steps() -> list[dict]:
+    return _workflow()["jobs"]["deploy-production-b14"]["steps"]
+
+
+def _step_index(name_part: str) -> int:
+    names = [step.get("name", "") for step in _deploy_steps()]
+    hits = [i for i, name in enumerate(names) if name_part in name]
+    assert hits, f"no step matching {name_part!r} in {names}"
+    return hits[0]
+
+
+def test_the_binding_baseline_is_checked_before_any_mutation() -> None:
+    """#4318: a reviewed B14 binding set is enforced, not remembered."""
+
+    steps = _deploy_steps()
+    baseline = _step_index("Premutation binding baseline")
+    deploy = _step_index("Deploy B14 via canonical pipeline")
+    assert baseline < deploy, "the baseline check must gate the mutation"
+    run = steps[baseline]["run"]
+    assert "--worker ai-revenue-korean-ai-platform" in run
+    assert "b62_binding_baseline.py" in run
+    assert "/workers/scripts/ai-revenue-korean-ai-platform/settings" in run
+    assert "PRODUCTION_MUTATION=0" in run
+
+
+def test_both_baseline_steps_are_get_only_and_print_no_values() -> None:
+    text = _workflow_text()
+    for step in _deploy_steps():
+        name = step.get("name", "")
+        if "binding baseline" not in name.lower():
+            continue
+        run = step["run"]
+        assert "curl -fsS" in run, name
+        for write in (" -X ", "--data", "-d ", "-o /dev/null"):
+            assert write not in run, f"{name} must not send: {write}"
+        assert "BINDING_BASELINE_VALUES_EMITTED=0" in run, name
+    assert text.count("b62_binding_baseline.py") == 2, "pre-mutation and post-deploy"
+    assert "cat /tmp/b14-baseline-settings.json" not in text
+    assert "cat /tmp/b14-served-version-bindings.json" not in text
+
+
+def test_the_served_version_binding_set_is_verified_after_deploy() -> None:
+    """Settings parity is not enough: the immutable version now serving 100%
+    must carry the reviewed bindings itself."""
+
+    steps = _deploy_steps()
+    post = [step for step in steps if "Post-deploy verification" in step.get("name", "")]
+    assert post
+    run = post[0]["run"]
+    assert "/versions/${VERSION_ID}" in run
+    assert "b14-served-version-bindings.json" in run
+    assert "b62_binding_baseline.py" in run
+    assert "B14_BINDING_BASELINE_POSTDEPLOY=PASS" in run
