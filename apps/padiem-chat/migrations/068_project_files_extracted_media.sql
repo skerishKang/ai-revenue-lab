@@ -40,3 +40,6 @@ ALTER TABLE project_files_rebuilt_068 RENAME TO project_files;
 
 CREATE INDEX IF NOT EXISTS idx_project_files_owner_project
     ON project_files(user_id, project_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_project_files_project_updated
+    ON project_files(project_id, updated_at DESC);
