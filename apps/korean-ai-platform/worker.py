@@ -128,8 +128,10 @@ class Default(WorkerEntrypoint):
         # str(), which would turn a database binding into a string and destroy
         # it, and it would widen the secret allowlist for a non-secret binding.
         from app.pilot.call_ledger_store import bind_ledger_env, reset_ledger_env
+        from app.pilot.deferred_writes import bind, drain, reset
 
         ledger_token = bind_ledger_env(self.env)
+        writes_token = bind()
         try:
             # Optional protected registry: exact digest/immutable R2 object,
             # installed before ASGI touches any model catalog or fallback.
@@ -151,9 +153,13 @@ class Default(WorkerEntrypoint):
             return response
         finally:
             reset_request_env(token)
-            reset_ledger_env(ledger_token)
-            if observed:
-                finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
+            try:
+                await drain(getattr(self, "ctx", None))
+            finally:
+                reset(writes_token)
+                reset_ledger_env(ledger_token)
+                if observed:
+                    finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 
 
 # ---------------------------------------------------------------------------

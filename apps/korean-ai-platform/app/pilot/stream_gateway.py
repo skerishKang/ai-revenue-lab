@@ -31,6 +31,7 @@ from app.pilot.call_ledger import (
     utc_now_iso,
 )
 from app.pilot.call_ledger_store import record_call
+from app.pilot.deferred_writes import enqueue, skipped
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import (
     InvalidRequest,
@@ -327,6 +328,17 @@ async def _close_iterator(iterator: AsyncIterator[StreamEvent]) -> None:
         await close()
 
 
+def _enqueue_ledger(record) -> None:
+    async def write() -> None:
+        status = await record_call(record)
+        logger.info(
+            "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
+            record.request_id, record.log_id, record.outcome, record.attempt_count, status,
+        )
+
+    enqueue(write, request_id=record.request_id)
+
+
 async def _write_terminal_ledger(
     ledger: LedgerDraft | None, request_id: str, *, error_code: str,
     elapsed_ms: int | None,
@@ -345,13 +357,9 @@ async def _write_terminal_ledger(
         record = ledger.finish(
             outcome=OUTCOME_ERROR, error_code=error_code, elapsed_ms=elapsed_ms,
         )
-        status = await record_call(record)
-        logger.info(
-            "b14_ledger request_id=%s log_id=%s outcome=error attempts=%d status=%s",
-            request_id, record.log_id, record.attempt_count, status,
-        )
-    except Exception:
-        logger.error("b14_ledger_finalize_error request_id=%s attempt=0", request_id)
+        _enqueue_ledger(record)
+    except Exception as ledger_exc:
+        skipped(request_id, ledger_exc)
 
 
 async def _finalize_stream_ledger(
@@ -401,11 +409,7 @@ async def _finalize_stream_ledger(
         actual_response_model=response_model, route_mode=decision.route_mode,
         fallback_used=fallback_used,
     )
-    status = await record_call(record)
-    logger.info(
-        "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
-        ledger.request_id, record.log_id, outcome, record.attempt_count, status,
-    )
+    _enqueue_ledger(record)
 
 
 async def _stream_body(
@@ -506,13 +510,8 @@ async def _stream_body(
                     attempt_started=attempt_started, ttft_ms=ttft_ms,
                     fallback_used=fallback_used,
                 )
-            except Exception:
-                # The stream already answered (or already failed). A ledger fault
-                # is logged as a status and never changes what the caller sees.
-                logger.error(
-                    "b14_ledger_finalize_error request_id=%s attempt=%d",
-                    request_id, attempt_count,
-                )
+            except Exception as ledger_exc:
+                skipped(request_id, ledger_exc)
 
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
@@ -566,13 +565,17 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
         # #5318: the streaming lane is the only place TTFT can be measured, and
         # it is also where a pre-token fallback can hide a failed provider. The
         # draft stays open across candidates so both survive into one record.
-        ledger = LedgerDraft(
-            log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
-            protocol=_protocol_for(decision.platform_provider_id,
-                                   decision.selected_upstream_model),
-            streaming=True, requested_model_id=body["model"],
-            started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
-        )
+        ledger = None
+        try:
+            ledger = LedgerDraft(
+                log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
+                protocol=_protocol_for(decision.platform_provider_id,
+                                       decision.selected_upstream_model),
+                streaming=True, requested_model_id=body["model"],
+                started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
+            )
+        except Exception as ledger_exc:
+            skipped(request_id, ledger_exc)
 
         for attempt_index, candidate in enumerate(attempt_candidates):
             remaining = [
@@ -615,13 +618,18 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 try:
                     require_stream_tool_wire(selected_model, platform_provider_id)
                 except PilotError as exc:
-                    ledger.record_attempt(
-                        provider=provider, model_id=selected_model,
-                        upstream_model=upstream_model,
-                        route_id=attempt_candidate["route_id"], outcome="error",
-                        error_code=exc.code, dispatched=False,
-                        protocol=_protocol_for(platform_provider_id, upstream_model),
-                    )
+                    if ledger is not None:
+                        try:
+                            ledger.record_attempt(
+                                provider=provider, model_id=selected_model,
+                                upstream_model=upstream_model,
+                                route_id=attempt_candidate["route_id"], outcome="error",
+                                error_code=exc.code, dispatched=False,
+                                protocol=_protocol_for(platform_provider_id, upstream_model),
+                            )
+                        except Exception as ledger_exc:
+                            ledger = None
+                            skipped(request_id, ledger_exc)
                     raise
 
             iterator = stream_platform_chat_completions(
@@ -666,21 +674,26 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 # #5318: the attempt that just failed is the fact a fallback
                 # would otherwise erase. It is written whether or not this
                 # failure is retried on the next candidate.
-                ledger.record_attempt(
-                    provider=provider, model_id=selected_model,
-                    upstream_model=upstream_model,
-                    route_id=attempt_candidate["route_id"], outcome="error",
-                    error_code=exc.code,
-                    elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
-                    usage=next((_usage_dict(event.usage)
-                                for event in reversed(initial_events)
-                                if event.usage is not None), None),
-                    finish_reason=next((event.finish_reason
+                if ledger is not None:
+                    try:
+                        ledger.record_attempt(
+                            provider=provider, model_id=selected_model,
+                            upstream_model=upstream_model,
+                            route_id=attempt_candidate["route_id"], outcome="error",
+                            error_code=exc.code,
+                            elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                            usage=next((_usage_dict(event.usage)
                                         for event in reversed(initial_events)
-                                        if event.finish_reason), None),
-                    dispatched=dispatched,
-                    protocol=_protocol_for(platform_provider_id, upstream_model),
-                )
+                                        if event.usage is not None), None),
+                            finish_reason=next((event.finish_reason
+                                                for event in reversed(initial_events)
+                                                if event.finish_reason), None),
+                            dispatched=dispatched,
+                            protocol=_protocol_for(platform_provider_id, upstream_model),
+                        )
+                    except Exception as ledger_exc:
+                        ledger = None
+                        skipped(request_id, ledger_exc)
                 await _close_iterator(iterator)
                 if (
                     attempt_index + 1 < len(attempt_candidates)

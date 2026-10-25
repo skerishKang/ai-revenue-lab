@@ -265,3 +265,53 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
         encoding="utf-8"
     )
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("has_ctx", [True, False], ids=["waitUntil", "local_inline_after_response"])
+async def test_worker_drains_ledger_after_asgi_response_and_resets_request_scope(monkeypatch, has_ctx):
+    import ast
+    import sys
+    from types import ModuleType
+    from urllib.parse import urlparse
+    from app.pilot import deferred_writes as deferred
+    from app.pilot import private_runtime_registry
+
+    order, pending = [], []
+    expected = SimpleNamespace(headers={})
+
+    async def write():
+        order.append("write")
+    async def fetch(app, request, env):
+        deferred.enqueue(write, request_id="b14req_worker")
+        order.append("response_constructed")
+        return expected
+    async def registry(env):
+        return None
+
+    asgi = ModuleType("asgi")
+    asgi.fetch = fetch
+    ffi = ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: value
+    monkeypatch.setitem(sys.modules, "asgi", asgi)
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+    monkeypatch.setattr(private_runtime_registry, "ensure_private_registry", registry)
+    tree = ast.parse(WORKER_SRC.read_text(encoding="utf-8"))
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Default")
+    ns = {
+        "WorkerEntrypoint": object, "Any": object, "urlparse": urlparse,
+        "_ENV_KEYS": (), "_apply_env_once": lambda env: None,
+        "_apply_security_headers": lambda response: response, "app": object(),
+    }
+    exec(compile(ast.Module(body=[cls], type_ignores=[]), str(WORKER_SRC), "exec"), ns)
+    worker = ns["Default"]()
+    worker.env = SimpleNamespace()
+    if has_ctx:
+        worker.ctx = SimpleNamespace(waitUntil=pending.append)
+    result = await worker.fetch(SimpleNamespace(url="https://unit.invalid/health", js_object=object()))
+    assert result is expected
+    if has_ctx:
+        assert order == ["response_constructed"]
+        assert len(pending) == 1
+        await pending[0]
+    assert order == ["response_constructed", "write"]
+    assert deferred._CURRENT.get() is None

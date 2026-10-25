@@ -34,6 +34,7 @@ from app.pilot.call_ledger import (
     utc_now_iso,
 )
 from app.pilot.call_ledger_store import CallLedgerStore
+from app.pilot.deferred_writes import bind as bind_deferred, drain, reset as reset_deferred
 
 LIST_PATH = "/api/pilot/v1/admin/model-calls"
 DETAIL_PATH = "/api/pilot/v1/admin/model-calls/{log_id}"
@@ -322,6 +323,7 @@ async def test_a_real_call_appends_one_parent_with_the_answered_model(live_lane,
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
         origin_headers={"x-padiem-product": "engine", "x-request-id": "corr-12345678"},
     )
+    await drain()
 
     assert response.status_code == 200
     assert len(written) == 1
@@ -364,6 +366,7 @@ async def test_a_retry_keeps_the_failed_attempt_visible(live_lane, monkeypatch):
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}],
          "business14": {"max_retries": 1}},
     )
+    await drain()
 
     assert response.status_code == 200
     record = written[0]
@@ -396,6 +399,7 @@ async def test_a_failed_call_still_leaves_a_record_with_its_error(live_lane, mon
         "b14req_ledger03",
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
+    await drain()
 
     assert response.status_code in (401, 502)
     record = written[0]
@@ -425,6 +429,7 @@ async def test_a_mock_answer_writes_no_execution_record(live_lane, monkeypatch):
         "b14req_ledger04",
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
+    await drain()
 
     assert response.status_code == 200
     # A simulated answer is not consumption; recording it would teach the
@@ -581,6 +586,7 @@ async def test_a_simulated_answer_writes_no_row_even_if_the_config_says_live(
         "b14req_ledger05",
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
+    await drain()
 
     assert response.status_code == 200
     assert written == []
@@ -609,6 +615,7 @@ async def test_a_real_call_writes_a_row_even_if_the_config_still_says_mock(
         "b14req_ledger06",
         {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
     )
+    await drain()
 
     assert response.status_code == 200
     # The adapter dispatched for real (its own env said live), so dropping this
@@ -664,6 +671,7 @@ async def test_the_stream_lane_records_ttft_and_the_usage_the_provider_reported(
         assert response.status_code == 200, response.text
         body = response.text
 
+    await drain()
     assert "답" in body
     assert len(written) == 1
     record = written[0]
@@ -729,6 +737,7 @@ async def test_an_aborted_stream_still_leaves_its_record(monkeypatch):
                   "messages": [{"role": "user", "content": "한 마디만"}]},
         ).text
 
+    await drain()
     assert "event: error" in body
     assert len(written) == 1
     record = written[0]
@@ -738,3 +747,242 @@ async def test_an_aborted_stream_still_leaves_its_record(monkeypatch):
     assert record.attempts[0].outcome == "error"
     assert record.attempts[0].error_code == "upstream_server_error"
     assert record.ttft_ms is not None
+
+# #5318: bind one queue per test, matching the Worker request lifecycle.
+@pytest.fixture(autouse=True)
+def deferred_write_scope():
+    token = bind_deferred()
+    try:
+        yield
+    finally:
+        reset_deferred(token)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("stage", ["draft", "attempt", "finish"])
+@pytest.mark.parametrize("outcome", ["success", "error"])
+async def test_ledger_construction_fault_preserves_status_and_exact_body(
+    live_lane, monkeypatch, caplog, stage, outcome,
+):
+    from app.pilot.errors import UpstreamAuthFailed
+
+    written = []
+
+    async def answer(**kwargs):
+        if outcome == "error":
+            raise UpstreamAuthFailed()
+        return _ok()
+
+    async def capture(record):
+        written.append(record)
+        return "written"
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", answer)
+    monkeypatch.setattr(gw, "record_call", capture)
+    monkeypatch.setattr(gw.time, "perf_counter", lambda: 100.0)
+    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]}
+    baseline = await gw._handle_alpha_chat("b14req_failopen", body)
+    await drain()
+    written.clear()
+
+    def broken(*args, **kwargs):
+        raise ValueError("PRIVATE_LEDGER_PAYLOAD")
+
+    if stage == "draft":
+        monkeypatch.setattr(gw, "LedgerDraft", broken)
+    else:
+        monkeypatch.setattr(LedgerDraft, "record_attempt" if stage == "attempt" else "finish", broken)
+    response = await gw._handle_alpha_chat("b14req_failopen", body)
+    assert response.status_code == baseline.status_code
+    assert response.body == baseline.body
+    if outcome == "success":
+        assert response.status_code == 200
+    await drain()
+    assert written == []
+    assert "b14_ledger_skipped request_id=b14req_failopen reason=ValueError" in caplog.text
+    assert "PRIVATE_LEDGER_PAYLOAD" not in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_slow_record_call_starts_only_after_answer_and_explicit_drain(
+    live_lane, monkeypatch,
+):
+    import asyncio
+
+    started, finished = asyncio.Event(), asyncio.Event()
+
+    async def answer(**kwargs):
+        return _ok()
+
+    async def slow(record):
+        started.set()
+        await asyncio.sleep(0.05)
+        finished.set()
+        return "written"
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", answer)
+    monkeypatch.setattr(gw, "record_call", slow)
+    response = await gw._handle_alpha_chat(
+        "b14req_deferred", {"model": MODEL_ID, "messages": [{"role": "user", "content": "ok"}]},
+    )
+    assert response.status_code == 200
+    assert not started.is_set()
+    pending = asyncio.create_task(drain())
+    await started.wait()
+    assert not finished.is_set()
+    assert not pending.done()
+    await pending
+    assert finished.is_set()
+    await drain()  # A second drain never writes the same record twice.
+
+
+@pytest.mark.asyncio
+async def test_background_timeout_cancels_write_without_exposing_payload(monkeypatch, caplog):
+    import asyncio
+    from app.pilot import deferred_writes as deferred
+
+    cancelled = asyncio.Event()
+
+    async def slow():
+        try:
+            await asyncio.sleep(60)
+        finally:
+            cancelled.set()
+
+    monkeypatch.setattr(deferred, "WRITE_TIMEOUT_SECONDS", 0.01)
+    deferred.enqueue(slow, request_id="b14req_timeout")
+    await drain()
+    assert cancelled.is_set()
+    assert "b14_ledger_skipped request_id=b14req_timeout reason=TimeoutError" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_waituntil_keeps_request_d1_context_after_worker_resets_it(monkeypatch):
+    import sys
+    from types import ModuleType
+    from app.pilot import deferred_writes as deferred
+    from app.pilot.call_ledger_store import bind_ledger_env, record_call, reset_ledger_env
+
+    ffi = ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: value
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+    pending = []
+    binding = FakeD1()
+    token = bind_ledger_env(SimpleNamespace(B14_CALL_LEDGER_D1=binding))
+    try:
+        deferred.enqueue(lambda: record_call(_call()), request_id="b14req_env")
+        await drain(SimpleNamespace(waitUntil=pending.append))
+    finally:
+        reset_ledger_env(token)
+    assert binding.calls == []
+    assert len(pending) == 1
+    await pending.pop()
+    assert "b14_model_call " in binding.calls[0][1]
+    # A streaming task may enqueue after the Worker's initial drain.
+    deferred.enqueue(lambda: record_call(_call(), env=SimpleNamespace(B14_CALL_LEDGER_D1=binding)),
+                     request_id="b14req_late")
+    assert len(pending) == 1
+    await pending.pop()
+
+
+@pytest.mark.asyncio
+async def test_local_asgi_drains_only_after_final_response_body():
+    from app.pilot import deferred_writes as deferred
+
+    order = []
+    async def write():
+        order.append("write")
+    async def local_app(scope, receive, send):
+        deferred.enqueue(write, request_id="b14req_local")
+        await send({"type": "http.response.start", "status": 200})
+        await send({"type": "http.response.body", "body": b"answer", "more_body": False})
+    async def send(message):
+        order.append(message["type"])
+    # Simulate a local ASGI request without the Worker's enclosing queue.
+    token = deferred._CURRENT.set(None)
+    try:
+        await deferred.DeferredWritesMiddleware(local_app)({"type": "http"}, None, send)
+        assert deferred._CURRENT.get() is None
+    finally:
+        deferred._CURRENT.reset(token)
+    assert order == ["http.response.start", "http.response.body", "write"]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("stage", ["draft", "attempt", "finish"])
+@pytest.mark.parametrize("outcome", ["success", "error"])
+async def test_stream_ledger_fault_preserves_exact_response(monkeypatch, caplog, stage, outcome):
+    import httpx
+    from app.pilot import stream_gateway as sg
+    from app.pilot.b14_runtime_config import runtime_config
+
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    monkeypatch.setattr(sg, "_request_id", lambda: "b14req_streamguard")
+    frames = [
+        {"id": "up_1", "model": "gemini-3.1-flash-lite",
+         "choices": [{"index": 0, "delta": {"content": "answer"}, "finish_reason": None}]},
+        {"id": "up_1", "model": "gemini-3.1-flash-lite",
+         "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]},
+    ]
+    data = b"".join(("data: " + json.dumps(frame) + "\n\n").encode() for frame in frames)
+    app = create_app()
+    app.state.stream_transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200 if outcome == "success" else 401,
+            content=data + b"data: [DONE]\n\n" if outcome == "success" else b'{"error":"denied"}',
+            headers={"Content-Type": "text/event-stream" if outcome == "success" else "application/json"},
+        )
+    )
+    body = {"model": "google/gemini-3.1-flash-lite", "stream": True,
+            "messages": [{"role": "user", "content": "ok"}]}
+    with TestClient(app) as client:
+        baseline = client.post("/api/pilot/v1/chat/completions/stream-preview", json=body)
+        await drain()
+        def broken(*args, **kwargs):
+            raise ValueError("PRIVATE_LEDGER_PAYLOAD")
+        if stage == "draft":
+            monkeypatch.setattr(sg, "LedgerDraft", broken)
+        else:
+            monkeypatch.setattr(LedgerDraft, "record_attempt" if stage == "attempt" else "finish", broken)
+        response = client.post("/api/pilot/v1/chat/completions/stream-preview", json=body)
+        await drain()
+    assert response.status_code == baseline.status_code
+    assert response.content == baseline.content
+    assert "PRIVATE_LEDGER_PAYLOAD" not in caplog.text
+    assert "b14_ledger_skipped" in caplog.text
+
+@pytest.mark.asyncio
+async def test_deferred_queues_are_isolated_between_concurrent_requests():
+    import asyncio
+    from app.pilot import deferred_writes as deferred
+
+    written = []
+    ready = [asyncio.Event(), asyncio.Event()]
+
+    async def request(index):
+        token = deferred.bind()
+        try:
+            async def write():
+                written.append(index)
+            deferred.enqueue(write, request_id=f"b14req_concurrent_{index}")
+            ready[index].set()
+            await ready[1 - index].wait()
+            await drain()
+            await drain()
+        finally:
+            deferred.reset(token)
+    await asyncio.gather(request(0), request(1))
+    assert sorted(written) == [0, 1]
+
+
+@pytest.mark.asyncio
+async def test_deferred_write_failure_is_logged_without_exception_text(caplog):
+    from app.pilot import deferred_writes as deferred
+
+    async def broken():
+        raise RuntimeError("PRIVATE_LEDGER_PAYLOAD")
+    deferred.enqueue(broken, request_id="b14req_writefault")
+    await drain()
+    assert "b14_ledger_skipped request_id=b14req_writefault reason=RuntimeError" in caplog.text
+    assert "PRIVATE_LEDGER_PAYLOAD" not in caplog.text
