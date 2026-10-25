@@ -4,6 +4,10 @@ from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
+from padiem_ai_core.document_normalization import (
+    DocumentNormalizationError,
+    validate_ooxml_member_name,
+)
 
 from app.ooxml_stdlib import (
     MAX_ARCHIVE_BYTES,
@@ -105,11 +109,28 @@ def test_encrypted_entry_is_rejected_before_read() -> None:
         extract_docx_text(payload)
 
 
-@pytest.mark.parametrize("unsafe_name", ["../evil.xml", "/absolute.xml", "C:/drive.xml", "a\\b.xml"])
+@pytest.mark.parametrize("unsafe_name", ["../evil.xml", "/absolute.xml", "C:/drive.xml"])
 def test_unsafe_archive_member_paths_are_rejected(unsafe_name: str) -> None:
     payload = _zip_bytes({unsafe_name: b"x", "word/document.xml": _docx_xml(DOCX_TEXT)})
     with pytest.raises(OOXMLExtractionError, match="unsafe OOXML archive member path"):
         extract_docx_text(payload)
+
+
+def test_backslash_member_name_is_rejected_by_the_shared_predicate() -> None:
+    """A backslash member name must fail the single path-safety predicate.
+
+    This is asserted on the predicate rather than on an archive because CPython
+    normalises ``os.sep`` to "/" inside ``ZipInfo.__init__`` on both the write
+    and the read path, so on Windows the gate can never observe a member named
+    "a\\b.xml" -- the archive reader has already turned it into the safe
+    "a/b.xml". The predicate is the layer that actually decides, and the
+    product applies it to every member it walks or writes.
+    """
+
+    with pytest.raises(DocumentNormalizationError, match="unsafe member path"):
+        validate_ooxml_member_name("a" + chr(92) + "b.xml")
+    # Sanity: the forward-slash spelling of the same tree stays allowed.
+    assert validate_ooxml_member_name("a/b.xml") == "a/b.xml"
 
 
 def test_entry_count_and_zip_bomb_bounds_fail_closed() -> None:

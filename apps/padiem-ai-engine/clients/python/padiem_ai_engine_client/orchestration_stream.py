@@ -26,7 +26,7 @@ _ERROR_CODE_RE = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
 def _bounded_engine_error_code(error: object) -> str | None:
     """The Engine's own bounded stage code from one ``ok:false`` error body.
 
-    The message and every other field stay unread at this transport boundary.
+    Other error fields are never projected into the client exception.
     """
     if isinstance(error, Mapping):
         code = error.get("code")
@@ -40,6 +40,15 @@ class EngineNdjsonContractError(ValueError):
         super().__init__(code)
         self.code = code
         self.engine_code = engine_code
+        self.record_kind = "unknown"
+
+
+class EngineStreamError(ValueError):
+    """A valid terminal Engine failure, distinct from malformed NDJSON."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 def _side_record(record: dict[str, Any]) -> dict[str, Any] | None:
@@ -89,6 +98,7 @@ async def decode_orchestration_ndjson(
     buffered = bytearray()
     count = 0
     terminal = False
+    record_kind = "unknown"
     terminal_result: dict[str, Any] | None = None
     # Canonical Engine serializer emits keys in this fixed order. Only this
     # trusted result prefix can opt into the larger *single-record* budget.
@@ -105,6 +115,7 @@ async def decode_orchestration_ndjson(
             for start in range(0, len(chunk), MAX_NDJSON_LINE_BYTES):
                 buffered.extend(chunk[start:start + MAX_NDJSON_LINE_BYTES])
                 while True:
+                    record_kind = "unknown"
                     newline = buffered.find(b"\n")
                     max_line = (
                         MAX_NDJSON_TERMINAL_LINE_BYTES
@@ -127,15 +138,18 @@ async def decode_orchestration_ndjson(
                         raise EngineNdjsonContractError("invalid_stream_json") from exc
                     if not isinstance(record, dict):
                         raise EngineNdjsonContractError("invalid_stream_record")
+                    kinds = set(record) & {"error", "event", "text_delta", "heartbeat", "pc_progress", "orchestration"}
+                    if len(kinds) == 1:
+                        record_kind = next(iter(kinds))
                     if record.get("ok") is False:
-                        # #5015: keep the Engine's own bounded error stage
-                        # code so a tool/admission cause survives this
-                        # fail-closed boundary instead of collapsing into one
-                        # generic contract reason. Never read the message.
-                        raise EngineNdjsonContractError(
-                            "engine_stream_error",
-                            engine_code=_bounded_engine_error_code(record.get("error")),
-                        )
+                        error = record.get("error")
+                        code = _bounded_engine_error_code(error)
+                        if (set(record) != {"ok", "error"} or code is None
+                                or not isinstance(error.get("message"), str) or not error["message"]):
+                            raise EngineNdjsonContractError("invalid_stream_record")
+                        # Preserve only the canonical public Engine code/message;
+                        # no retry, metadata, provider body or success is projected.
+                        raise EngineStreamError(code, error["message"])
                     if record.get("ok") is not True:
                         raise EngineNdjsonContractError("invalid_stream_record")
                     side = _side_record(record)
@@ -162,6 +176,9 @@ async def decode_orchestration_ndjson(
         if buffered or not terminal or terminal_result is None:
             raise EngineNdjsonContractError("truncated_stream")
         yield {"orchestration": terminal_result}
+    except EngineNdjsonContractError as exc:
+        exc.record_kind = record_kind
+        raise
     finally:
         close = getattr(chunks, "aclose", None)
         if callable(close):
