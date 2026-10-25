@@ -26,6 +26,7 @@ export const PRODUCT_IDENTITY = Object.freeze({
 
 export * from './ad-click-first/index.js';
 export * from './public-supply/index.js';
+export * from './income-pipeline/index.js';
 export * from './p1-survey/index.js';
 export * from './p2-microtask/index.js';
 export * from './p3-short-gig/index.js';

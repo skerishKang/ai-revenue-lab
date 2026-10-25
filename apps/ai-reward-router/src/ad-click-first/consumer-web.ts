@@ -60,11 +60,12 @@ function formatVerifiedAtKst(value: string): string {
   return `${yyyy}.${mm}.${dd} ${hh}:${mi} KST 확인`;
 }
 
-function renderPrimaryNav(activeId: 'HOME' | 'TODAY' | 'BROWSE' | null): string {
-  const items: ReadonlyArray<{ id: 'HOME' | 'TODAY' | 'BROWSE'; href: string; label: string }> = Object.freeze([
+function renderPrimaryNav(activeId: 'HOME' | 'TODAY' | 'BROWSE' | 'PIPELINE' | null): string {
+  const items: ReadonlyArray<{ id: 'HOME' | 'TODAY' | 'BROWSE' | 'PIPELINE'; href: string; label: string }> = Object.freeze([
     Object.freeze({ id: 'HOME', href: '/', label: '홈' }),
-    Object.freeze({ id: 'TODAY', href: '/today', label: '오늘 바로 적립' }),
+    Object.freeze({ id: 'TODAY', href: '/today', label: '오늘의 기회' }),
     Object.freeze({ id: 'BROWSE', href: '/browse', label: '수익 기회' }),
+    Object.freeze({ id: 'PIPELINE', href: '/pipeline', label: '내 수익 관리' }),
   ]);
   return items
     .map((item) => `<a class="nav-item${item.id === activeId ? ' nav-item--active' : ''}" href="${item.href}"${item.id === activeId ? ' aria-current="page"' : ''}>${item.label}</a>`)

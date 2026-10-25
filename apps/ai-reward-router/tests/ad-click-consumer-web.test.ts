@@ -25,7 +25,7 @@ const liveAd: AdClickConsumerCandidate = {
 test('zero-supply P0 renders an honest consumer state with one navigation lane', () => {
   const html = renderAdClickFirstConsumerWeb(buildAdClickFirstConsumerHome([]));
   assert.match(html, /data-consumer-mode="AD_CLICK_FIRST"/);
-  assert.match(html, /바로 적립/);
+  assert.match(html, /홈/);
   assert.match(html, /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
   assert.match(html, /아직 확인된 적립이 없습니다/);
   assert.match(html, /검증된 공급자가 연결되면/);
