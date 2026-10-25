@@ -186,3 +186,51 @@ No overall "collision = 0" claim may be made from the FastAPI audit alone.
 until a REAL chat session is carried through B64 end-to-end (login-verified
 read AND a revoked-session denial both observed live). `D1_LIVE_VERIFIED=NO`
 until the migration is applied and a live record round-trip is observed.
+
+## Auth decision: Plan A confirmed — Plan B (chat-verifies-identity) is NOT implementable without changing the chat product (2026-10-26)
+
+Measured from the current chat source:
+
+- `apps/padiem-chat/app/history.py` — `UserProfile.public_dict()` returns
+  `{"email", "name", "picture"}` ONLY; the user id (`usr_…` uid) is not part
+  of any public payload.
+- `apps/padiem-chat/app/auth_routes.py` — `/api/auth/status` projects exactly
+  that dict as `user`, plus `authenticated` / `session_state` /
+  `member_grade`.
+
+Consequence for **Plan B** (B64 asks chat, through `PADIEM_CHAT_SERVICE`, to
+verify the session and trusts the server-verified identity): the relay can
+prove THAT a canonical session is live, but it cannot produce WHICH user it
+belongs to. The income pipeline keys every record by `userId`, so Plan B
+cannot satisfy user isolation without adding a new uid-revealing endpoint to
+the chat product — a B62 authority change that is out of scope for this task
+and would itself need a security review.
+
+Therefore **Plan A stands** (already implemented and tested since #5820):
+B64 verifies the signed `padiem_session` cookie locally with the shared
+session secret (`PADIEM_SESSION_SECRET`, same value as chat's
+`PADIEM_CHAT_SESSION_SECRET` — verify-only: B64 contains no token-minting
+code) and blocks revoked sessions through the existing
+`PADIEM_CHAT_SERVICE → /api/auth/status` liveness relay. The only remaining
+operational step is registering that one secret on the B64 worker via the
+approved secret store — no code change.
+
+## Zone routing audit boundary (2026-10-26)
+
+- The local wrangler OAuth session exposes scopes
+  `user / offline_access / account / workers / workers_kv` — **no zone-read
+  scope**, and pulling stored tokens out to call the REST API directly is
+  prohibited by the credential-operations policy. So the existing
+  `chat.padiem.net` route table (including any `chat.padiem.net/*`
+  wildcard) remains `UNKNOWN` from this environment and must be read by
+  CENTRAL through an authorized path; the route-by-route checklist above is
+  the verification record.
+- Cloudflare Workers routes support same-host sub-path patterns
+  (`chat.padiem.net/pipeline*` etc.) as first-class route patterns, so
+  sub-path serving for B64 is configuration, not a code change. The most
+  specific matching route wins inside a zone — this is exactly what the
+  checklist verifies per path.
+- Client-side collision audit: the chat React app
+  (`apps/padiem-chat-react`) renders a single view and uses NONE of B64's
+  consumer paths as client routes — no client-side navigation conflict with
+  `/pipeline`, `/today`, `/browse`, `/detail`, `/earn`, `/income`.
