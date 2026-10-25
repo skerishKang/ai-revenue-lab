@@ -318,6 +318,83 @@ PC workcopy the object of that same pause/decision flow, so the #5835 lane's
 trusted plan source can be satisfied by a decision the owner actually gave,
 instead of the TXT lane's server-transcribed read.
 
+## The revision approval envelope the PC admits (2026-10-26, 작업 A + #5573 integration contract)
+
+`kagent/local_agent_command_material.py` now admits a second closed format on the
+existing `p01_approval_payload` slot, beside the two read-only TXT ones:
+
+```
+claw-xlsx-revision-approval.v1
+  format / evidence_ref / command_id / request_id / local_policy_ref / expires_at
+  source_approval  = {approval_pause, approval_decision, exact_tool_arguments}   # READ,  content_bytes 0
+  result_approval  = {approval_pause, approval_decision, exact_tool_arguments}   # WRITE, content_sha256 names the result
+  revision         = {sheet_name, edits[1..64], result_path_relative}
+```
+
+Rules the validator enforces, and why each one is load-bearing:
+
+- The write half names its own tool (`local.filesystem.write`), requirement and
+  scope (`filesystem.write`), authority
+  (`claw_connector_xlsx_revision_request_v1`) and policy
+  (`padiem_xlsx_selected_root_revision_policy_v1`). The read constants are not
+  reused: a read approval cannot describe a write.
+- **Two distinct decisions are required.** `P01LocalPermissionWindowsFileAuthorizationPort.authorize`
+  consumes one `decision_id` per file access
+  (`windows_local_filesystem.py:493-497`), so one pause covering both halves is
+  refused at the shape layer rather than half-executing later.
+- The approved result is bound by digest *before* it exists:
+  `result_approval.exact_tool_arguments.content_sha256` must equal what the
+  editor produces from the declared edits, and `revision.result_path_relative`
+  must equal the approved WRITE path. A mismatch is caught by the existing
+  stager guard (`"revision result bytes differ from the approved WRITE"`), so the
+  PC never writes bytes the owner did not approve.
+- Edits stay literal: `^[A-Z]{1,3}[1-9][0-9]{0,6}$` cells, no duplicates, values
+  limited to bounded strings or integers, a leading `=` refused, floats and
+  booleans refused. Paths stay relative to the selected root — no drive letter,
+  no leading backslash, no `..`, `.xlsx` only.
+- The envelope carries no credential, no absolute path, no capability grant. It
+  is *attested input* for the existing authority, exactly like the TXT receipt.
+- Unrecognized approval material is now refused outright instead of being
+  silently ignored (`"unsupported command approval receipt format"`), matching
+  what the control-plane validator already does, so a command cannot execute with
+  a receipt no validator admits.
+
+What this contract still needs before the lane can run in production, stated as
+the exact remaining seam rather than a general TODO:
+
+1. **Producer.** Nothing mints this format yet. The mint belongs on the Chat side
+   beside `connector_txt_approval_material.py`, and the control plane must admit
+   the new format in `local_agent_broker_material_store.py:252-295` (currently
+   two formats only). Consent must come from the *existing* owner WRITE approval
+   flow (`/quote-edit/request` → `/quote-edit/decision`, migration 034
+   `claw_web_xlsx_quote_write_pauses`), not from a server-invented pause: the
+   TXT lane's transcript model is defensible for reads only because it cannot
+   describe a write.
+2. **Consumer.** `verified_p01_xlsx_revision_plan_source.py` — build both
+   `LocalFileRequest`s from the envelope, recompute
+   `file_request_fingerprint` and `tool_invocation_digest`, bind
+   `command_id`/`request_id`/`run_id`/`device_id`/`root_ref` to the admitted
+   command, check expiry against the lane clock, and hand
+   `TrustedP01XlsxRevisionPlan` to the bridge that already exists. Its
+   `module:attribute` factory is then the value of
+   `PADIEM_AGENT_XLSX_REVISION_PLAN_SOURCE`, and `installed_runtime.py` gains a
+   reviewed pin.
+3. **Delivery of the payload.** The plan source signature receives
+   `(binding, command, receipt)`; the approval payload lives in resolved command
+   material (`local_agent_control_plane_channel.py:110` →
+   `ResolvedLocalCommandMaterial.approval_receipt`). The lane needs that resolved
+   material handed to it — either the host passes it at execution time, or the
+   source re-reads it through the existing authenticated `/material` device
+   route (`ControlPlaneHttpsOperation.MATERIAL`, already in the closed allowlist).
+   Both keep one authority; neither adds a route.
+
+Tests: `tests/test_4434_xlsx_revision_receipt_contract.py` (16) pins admitted and
+refused shapes with real workbook bytes and the real fingerprint function,
+including the shared-decision refusal, the under-declared edit refusal
+(`IndependentZipXlsxRevisionVerifier` returns `False`), and the fact that the
+shape layer admits bounded refs while correlation stays the plan source's job.
+Existing TXT material tests are unchanged (69 passed across the five suites).
+
 ## Still not enabled, and who owns it
 
 | Item | State | Owner |
