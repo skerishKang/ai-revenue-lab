@@ -1,0 +1,24 @@
+{
+  "worker": "b64-ai-reward-router",
+  "reviewed_utc": "2026-10-26",
+  "source_served_version": "PENDING_FIRST_INTEGRATION_DEPLOY (the live worker is still the 2026-10-23 P0 shell; this baseline records the REVIEWED target binding set of the integrated code and must be re-read from the live worker at first deploy)",
+  "decision_record": "PADIEM_SESSION_SECRET registration is a section-8 D3 change \u2014 owner decision and this baseline PR travel together (issue #987, PR #5853)",
+  "bindings": [
+    {
+      "name": "B64_INCOME_DB",
+      "type": "d1"
+    },
+    {
+      "name": "PADIEM_B64_PUBLIC_BASE_URL",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SERVICE",
+      "type": "service"
+    },
+    {
+      "name": "PADIEM_SESSION_SECRET",
+      "type": "secret_text"
+    }
+  ]
+}

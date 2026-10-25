@@ -1,0 +1,182 @@
+name: B64 Cloudflare Zone Route Read-only Probe
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b64-cloudflare-zone-route-readonly-probe.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b64-cloudflare-zone-route-readonly-probe.yml"
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type B64_READ_ZONE_ROUTES to run the read-only probe'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b64-cloudflare-zone-route-readonly-probe
+  cancel-in-progress: false
+
+env:
+  ZONE_NAME: padiem.net
+  # Issue #987: the host whose route table decides how the host-only
+  # padiem_session cookie reaches the B64 worker. Read-only probe — no
+  # mutation of any route, domain or worker.
+  PUBLIC_HOSTNAME: chat.padiem.net
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate immutable GET-only probe contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/b64-cloudflare-zone-route-readonly-probe.yml')
+          text = path.read_text(encoding='utf-8')
+          forbidden = [
+              '-X ' + 'POST',
+              '-X ' + 'PUT',
+              '-X ' + 'PATCH',
+              '-X ' + 'DELETE',
+              'wrangler ' + 'deploy',
+              'secret ' + 'put',
+          ]
+          for token in forbidden:
+              if token in text:
+                  raise SystemExit(f'Forbidden mutation token present: {token}')
+          required = [
+              '/workers/domains',
+              '/workers/routes',
+              'PRODUCTION_MUTATION=0',
+              'DIRECT_ZONE_ROUTE_READ=PASS',
+              'DIRECT_ZONE_ROUTE_HTTP_STATUS=',
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f'Missing required read-only token: {token}')
+          print('GET_ONLY_SOURCE_CONTRACT=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+      - name: Require exact current main on push
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Require dispatch confirmation on manual runs
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          test "${{ github.event.inputs.confirmation }}" = "B64_READ_ZONE_ROUTES"
+          echo 'DISPATCH_CONFIRMATION=PASS'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Derive padiem.net zone id and read the chat.padiem.net route table
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains.json"
+          code="$(curl -sS -o "${domains}" -w '%{http_code}' "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" || true)"
+          echo "WORKER_DOMAINS_HTTP_STATUS=${code}"
+          if [ "${code}" != "200" ]; then
+            jq -c '{success,errors:[.errors[]? | {code,message}]}' "${domains}" 2>/dev/null || true
+            echo 'DIRECT_ZONE_ROUTE_READ=BLOCKED_TOKEN_SCOPE'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+
+          zone_ids="$(jq -r --arg zone "${ZONE_NAME}" '
+            [.result[]
+             | select((.zone_name? == $zone) or (.hostname? == $zone) or (.hostname? | endswith("." + $zone)))
+             | .zone_id?
+             | select(type == "string" and length > 0)]
+            | unique[]?' "${domains}")"
+          zone_count="$(printf '%s\n' "${zone_ids}" | sed '/^$/d' | wc -l | tr -d ' ')"
+          echo "ZONE_CANDIDATES=${zone_count}"
+          test "${zone_count}" -eq 1
+          zone_id="$(printf '%s\n' "${zone_ids}" | sed '/^$/d' | head -n1)"
+          test -n "${zone_id}"
+          echo "PADIEM_ZONE_ID_DERIVED_FROM_WORKER_DOMAIN=YES"
+          echo "ZONE_ID=${zone_id}" >> "${GITHUB_ENV}"
+
+          routes="${RUNNER_TEMP}/routes.json"
+          code="$(curl -sS -o "${routes}" -w '%{http_code}' "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" || true)"
+          echo "DIRECT_ZONE_ROUTE_HTTP_STATUS=${code}"
+          if [ "${code}" != "200" ]; then
+            jq -c '{success,errors:[.errors[]? | {code,message}]}' "${routes}" 2>/dev/null || true
+            echo 'DIRECT_ZONE_ROUTE_READ=BLOCKED_TOKEN_SCOPE'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+          echo 'DIRECT_ZONE_ROUTE_READ=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Report the chat.padiem.net route table for the #987 checklist
+        shell: bash
+        env:
+          PUBLIC_HOSTNAME: chat.padiem.net
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/routes.json" "${PUBLIC_HOSTNAME}" <<'PY'
+          import json
+          import sys
+          routes_path, host = sys.argv[1:]
+          data = json.load(open(routes_path, encoding='utf-8'))
+          rows = data.get('result', [])
+          print(f'ZONE_ROUTE_TOTAL={len(rows)}')
+          host_routes = [r for r in rows if host in str(r.get('pattern', ''))]
+          wildcards = [r for r in rows if '*' in str(r.get('pattern', ''))]
+          print(f'CHAT_HOST_ROUTE_COUNT={len(host_routes)}')
+          for r in sorted(host_routes, key=lambda x: str(x.get('pattern', ''))):
+              # Route patterns and their worker/script assignment are operational
+              # configuration, not secrets; this listing IS the #987 audit record.
+              print(f"ROUTE pattern={r.get('pattern')} script={r.get('script')}")
+          has_wildcard = any(str(r.get('pattern', '')) in (f'{host}/*', f'{host}/*') or str(r.get('pattern', '')) == f'{host}/*' for r in host_routes)
+          wildcard_any = any('*' in str(r.get('pattern', '')) for r in host_routes)
+          print(f'CHAT_HOST_WILDCARD_PRESENT={"YES" if wildcard_any else "NO"}')
+          b64_paths = ['/earn', '/today', '/browse', '/detail', '/pipeline', '/income']
+          for p in b64_paths:
+              owners = [r for r in rows if str(r.get('pattern', '')).startswith(f'{host}{p}')]
+              owners_txt = ', '.join(f"{r.get('pattern')}->{r.get('script')}" for r in owners) if owners else 'UNASSIGNED'
+              print(f'B64_PATH {p}: {owners_txt}')
+          if any('b64-ai-reward-router' == str(r.get('script')) for r in host_routes):
+              print('B64_ROUTE_ALREADY_PRESENT=YES — re-check before any duplicate route add')
+          PY
+          echo 'ZONE_ROUTE_AUDIT_RECORDED=PASS (record the output on #987 as DASHBOARD_ROUTE_COLLISION evidence)'
