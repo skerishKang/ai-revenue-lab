@@ -17,7 +17,7 @@ import {
   buildIncomePipelineViewModel,
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
-import { resolveUserId } from '../income-pipeline/auth.js';
+import { defaultAuthResolver, type AuthResolver, type AuthResult } from '../income-pipeline/auth.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
@@ -31,6 +31,7 @@ export type ConsumerCandidateLoader = (
 
 export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
+  readonly resolveAuth?: AuthResolver;
   /**
    * Optional public-supply lane: manually curated, publicly verified opportunities.
    * The public lane never grants provider authority; it only links users to
@@ -211,7 +212,8 @@ export function createConsumerHttpHandler(
     }
 
     if (url.pathname === '/pipeline' || url.pathname === '/income') {
-      const auth = resolveUserId(request);
+      const resolveAuth = dependencies.resolveAuth ?? defaultAuthResolver;
+      const auth = resolveAuth(request);
       const userId = auth.authenticated ? auth.userId : null;
 
       // Handle POST for CRUD operations
