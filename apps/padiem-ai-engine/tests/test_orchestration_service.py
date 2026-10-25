@@ -1731,12 +1731,15 @@ async def test_pc_invalid_arguments_are_observed_logged_and_terminal(capsys, sco
     ("refused", "pc_query_denied"),
     ("request_exception", "pc_query_unavailable"),
     ("handler_exception", "pc_query_internal_error"),
+    ("plan_exception", "terminal"),
 ])
+@pytest.mark.parametrize("argument_form", ["none", "missing", "empty_string", "empty_object"])
 @pytest.mark.asyncio
 async def test_pc_drives_dispatch_or_observation_settles_real_stream(
-    monkeypatch, capsys, case, expected_stage,
+    monkeypatch, capsys, case, expected_stage, argument_form,
 ):
-    """Real drive binding/Core/driver/NDJSON decoder, no provider or PC calls."""
+    """Inject raw argument shapes at the Engine boundary; Core stays strict."""
+    from types import SimpleNamespace
     from padiem_ai_core import StreamingExecutionRuntime
     from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
     import app.claw_pc_query_step_driver as driver
@@ -1797,6 +1800,21 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
         def stream_auto(self, request):
             return self.stream(request)
 
+    class NativeBoundary:
+        async def stream(self, request):
+            # The production Core stream only exposes parsed mappings. Inject
+            # raw shapes here to exercise Engine's defensive boundary without
+            # weakening ToolCall or the provider/SSE decoder contract.
+            runtime = StreamingExecutionRuntime(app_id="padiem-chat", b14_stream_client=Native())
+            async for event in runtime.stream(request):
+                if event.tool_call is None:
+                    yield event
+                else:
+                    call = {"id": event.tool_call.id, "name": event.tool_call.name}
+                    if argument_form != "missing":
+                        call["arguments"] = {"none": None, "empty_string": "", "empty_object": {}}[argument_form]
+                    yield SimpleNamespace(tool_call=SimpleNamespace(**call), delta_content=None, done=False)
+
     pc = PC()
     followups = _ScriptedModel([json.dumps({"action": "complete", "answer": "drive observation received"})])
     binding = driver.build_chat_pc_query_tool_binding(
@@ -1812,16 +1830,32 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
     monkeypatch.setattr(asyncio, "sleep", no_sleep)
     service = OrchestrationEngineService(
         runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
-        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app, b14_stream_client=Native()),
+        pc_streaming_runtime_factory=lambda app: NativeBoundary(),
         pc_tools_capability=capable, tool_binding_resolver=lambda _: binding,
         pc_query_step_driver_factory=factory,
     )
+    if case == "plan_exception":
+        original = service._orchestrate_request_from_payload
+        def fail_child(payload):
+            if payload.get("declared_plan") == "query_drives":
+                raise KeyError("SENSITIVE_PLAN_ARGUMENT")
+            return original(payload)
+        monkeypatch.setattr(service, "_orchestrate_request_from_payload", fail_child)
     payload = _pc_turn_payload()
     payload["pc_tools"]["allowed_scopes"] = ["query_drives"]
     prepared = await service.prepare_stream(
         method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
         body=json.dumps(payload).encode(), pc_progress=True)
     chunks = [line.encode() async for line in service.iter_ndjson(prepared)]
+    if expected_stage == "terminal":
+        lines = [json.loads(chunk) for chunk in chunks]
+        assert lines[-1]["error"]["code"] == "pc_tool_turn_failed"
+        assert not pc.rows and not followups.prompts
+        assert "SENSITIVE_" not in str(chunks)
+        output = capsys.readouterr().out
+        assert "pc_tool_turn mode=exception stage=pc_tool_turn_failed reason=KeyError" in output
+        assert "pc_tool_invoke" not in output
+        return
     async def source():
         for chunk in chunks: yield chunk
     lines = [item async for item in decode_orchestration_ndjson(source())]
@@ -1843,6 +1877,7 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
         assert any(item.get("pc_progress", {}).get("stage") == "refused" for item in lines)
     output = capsys.readouterr().out
     assert "SENSITIVE_" not in output and "Get-PSDrive" not in output
+    assert "pc_tool_invoke tool=claw.pc.query_drives args_present=True" in output
     if case != "handler_exception":
         assert "pc_query_chat_call mode=dispatch stage=request" in output
     if case in {"normal", "refused"}:
