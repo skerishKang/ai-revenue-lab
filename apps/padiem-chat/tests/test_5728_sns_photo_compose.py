@@ -22,8 +22,7 @@ CHAT_ROOT = Path(__file__).resolve().parents[1]
 UTIL_MENU = CHAT_ROOT / "static" / "util-menu.js"
 HARNESS = CHAT_ROOT / "tests" / "_5728_harness.js"
 
-HARNESS_SOURCE = r"""
-const fs = require("node:fs");
+HARNESS_SOURCE = r"""const fs = require("node:fs");
 const vm = require("node:vm");
 
 const utilMenuPath = process.argv[2];
@@ -49,7 +48,6 @@ class N {
     this.files = [];
     this._listeners = {};
   }
-  // classList stays in sync with className assignments (el() sets className).
   set className(v) {
     this._cls = String(v || "");
     this._classSet = new Set(this._cls.split(/\s+/).filter(Boolean));
@@ -61,7 +59,7 @@ class N {
       add: (...c) => { self.className = (self._cls + " " + c.join(" ")).trim(); },
       remove: (...c) => { const drop = new Set(c); self.className = self._cls.split(/\s+/).filter((x) => x && !drop.has(x)).join(" "); },
       contains: (c) => (self._classSet || new Set()).has(c),
-      toggle: (c, forced) => { const has = (self._classSet || new Set()).has(c); const want = forced === undefined ? !has : forced; if (want) self.className = (self._cls + " " + c).trim(); else self.classList.remove(c); },
+      toggle: (c, forced) => { const has = (self._classSet || new Set()).has(c); const want = forced === undefined ? !has : forced; if (want) self.className = (self._cls + " " + c.join(" ")).trim(); else self.classList.remove(c); },
     };
   }
   setAttribute(k, v) { this.attrs[k] = String(v); if (k === "class") this._cls = String(v); }
@@ -73,8 +71,6 @@ class N {
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
   async dispatch(type, event) {
-    // Standard bubbling: the product relies on delegated listeners (the
-    // photo list handles clicks fired by its inner buttons).
     const evt = event || { preventDefault() {} };
     let node = this;
     while (node) {
@@ -166,62 +162,13 @@ class FakeFileReader {
   }
 }
 
-const root = new N("html");
-const byId = {};
-function mk(tag, id, cls) {
-  const node = new N(tag);
-  if (id) { node.id = id; byId[id] = node; }
-  if (cls) node.className = cls;
-  return node;
-}
-
-const shell = mk("div", null, "app-shell");
-shell.dataset.state = "chat";
-root.appendChild(shell);
-const main = mk("main", "mainPanel", "main-panel");
-shell.appendChild(main);
-
-const utilView = mk("section", "utilView", "util-view");
-utilView.hidden = true;
-main.appendChild(utilView);
-const navBtn = mk("button", "utilNavButton", "side-item");
-navBtn.setAttribute("aria-current", "false");
-shell.appendChild(navBtn);
-
-[["speech", "축사·인사말"], ["sns", "SNS 홍보"], ["meeting", "회의정리·책 제작"], ["pdfmd", "PDF → Markdown"]].forEach(([key, label], i) => {
-  const tab = mk("button", null, "util-tab" + (i === 0 ? " active" : ""));
-  tab.dataset.util = key;
-  tab.textContent = label;
-  utilView.appendChild(tab);
-});
-const speechForm = mk("form", "utilSpeechForm", "util-form");
-utilView.appendChild(speechForm);
-const speechResult = mk("div", "utilSpeechResult");
-speechResult.hidden = true;
-utilView.appendChild(speechResult);
-const speechOutput = mk("textarea", "utilSpeechOutput");
-speechResult.appendChild(speechOutput);
-const speechActions = mk("div", null, "util-actions");
-speechResult.appendChild(speechActions);
-mk("button", "utilSpeechCopy");
-mk("button", "utilSpeechDownload");
-const speechFormActions = mk("div", null, "util-form-actions");
-speechForm.appendChild(speechFormActions);
-speechFormActions.appendChild(mk("button", "utilSpeechSave", "util-save"));
-const speechPanel = mk("div", "utilSpeechPanel", "util-panel");
-const snsPanel = mk("div", "utilSnsPanel", "util-panel");
-snsPanel.hidden = true;
-const meetingPanel = mk("div", "utilMeetingPanel", "util-panel");
-meetingPanel.hidden = true;
-const pdfmdPanel = mk("div", "utilPdfmdPanel", "util-panel");
-pdfmdPanel.hidden = true;
-utilView.append(speechPanel, snsPanel, meetingPanel, pdfmdPanel);
-mk("div", "utilMeetingOutput");
-
+// Shared fake backend: survives across sessions like the real project store.
 const chatRequests = [];
 const storedFiles = [];
-function json(data) { return { ok: true, status: 200, json: async () => data }; }
 const requestsLog = [];
+function json(data) { return { ok: true, status: 200, json: async () => data }; }
+const CURRENT = { alerts: [] };
+
 async function fetch(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
@@ -232,7 +179,6 @@ async function fetch(url, opts) {
     chatRequests.push(body);
     return json({ answer: "첫 문단입니다.\n\n둘째 문단입니다.\n\n마지막 문단입니다." });
   }
-  // #5728 storage: binary image upload / stored-original read / delete.
   if (method === "POST" && path === "/api/projects/p1/files" && opts.headers && String(opts.headers["Content-Type"] || "").indexOf("octet-stream") >= 0) {
     const fname = decodeURIComponent(opts.headers["X-Padiem-Filename"] || "");
     const ftype = opts.headers["X-Padiem-Media-Type"] || "";
@@ -251,16 +197,22 @@ async function fetch(url, opts) {
       blob: async () => ({ arrayBuffer: () => ({ __syncBytes: bytes }) }),
     };
   }
-  const deleteMatch = /^\/api\/projects\/p1\/files\/(file_\d+)$/.exec(path);
+  const deleteMatch = /^\/api\/projects\/p1\/files\/([\w-]+)$/.exec(path);
   if (method === "DELETE" && deleteMatch) {
     const idx = storedFiles.findIndex((f) => f.id === deleteMatch[1]);
     if (idx >= 0) storedFiles.splice(idx, 1);
     return { ok: true, status: 204, json: async () => ({}) };
   }
+  const detailMatch = /^\/api\/projects\/p1\/files\/([\w-]+)$/.exec(path);
+  if (method === "GET" && detailMatch) {
+    const rec = storedFiles.find((f) => f.id === detailMatch[1]);
+    if (!rec) return { ok: false, status: 404, json: async () => ({}) };
+    return json({ file: { id: rec.id, name: rec.name, media_type: rec.media_type, content_chars: rec.content_chars || 0, content: rec.content || "" } });
+  }
   if (method === "GET" && path === "/api/projects") return json({ projects: [{ id: "p1", name: "유틸 작업" }] });
   if (method === "POST" && path === "/api/projects") return json({ project: { id: "p1", name: "유틸 작업" } });
   if (method === "POST" && path === "/api/projects/p1/files" && body) {
-    const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content_chars: body.text.length };
+    const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
     storedFiles.push(file);
     return json({ file });
   }
@@ -270,44 +222,101 @@ async function fetch(url, opts) {
   return { ok: false, status: 404, json: async () => ({}) };
 }
 
-const alerts = [];
-const ctx = {
-  document: {
-    readyState: "complete",
-    body: mk("body", null),
-    documentElement: root,
-    // Harness-built nodes resolve from the registry first; script-built
-    // nodes (ids assigned at runtime) resolve from the live tree.
-    getElementById: (id) => byId[id] || root._descendants().find((n) => n.id === id) || null,
-    querySelector: (sel) => root.findAll(sel)[0] || null,
-    querySelectorAll: (sel) => root.findAll(sel),
-    createElement: (tag) => new N(tag),
-    addEventListener() {},
-  },
-  window: {},
-  navigator: {},
-  fetch: fetch,
-  alert: (message) => alerts.push(String(message)),
-  console: console,
-  setTimeout: () => 0,
-  Blob: function Blob() {},
-  URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
-  FormData: FakeFormData,
-  FileReader: FakeFileReader,
-};
+// One util-menu.js execution against a fresh fake DOM. Two sessions share
+// the backend above, so the second one is the re-entry of the same account.
+function spawnSession(tag) {
+  const root = new N("html");
+  const byId = {};
+  function mk(tag, id, cls) {
+    const node = new N(tag);
+    if (id) { node.id = id; byId[id] = node; }
+    if (cls) node.className = cls;
+    return node;
+  }
 
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js" });
+  const shell = mk("div", null, "app-shell");
+  shell.dataset.state = "chat";
+  root.appendChild(shell);
+  const main = mk("main", "mainPanel", "main-panel");
+  shell.appendChild(main);
+
+  const utilView = mk("section", "utilView", "util-view");
+  utilView.hidden = true;
+  main.appendChild(utilView);
+  const navBtn = mk("button", "utilNavButton", "side-item");
+  navBtn.setAttribute("aria-current", "false");
+  shell.appendChild(navBtn);
+
+  [["speech", "축사·인사말"], ["sns", "SNS 홍보"], ["meeting", "회의정리·책 제작"], ["pdfmd", "PDF → Markdown"]].forEach(([key, label], i) => {
+    const tab = mk("button", null, "util-tab" + (i === 0 ? " active" : ""));
+    tab.dataset.util = key;
+    tab.textContent = label;
+    utilView.appendChild(tab);
+  });
+  const speechForm = mk("form", "utilSpeechForm", "util-form");
+  utilView.appendChild(speechForm);
+  const speechResult = mk("div", "utilSpeechResult");
+  speechResult.hidden = true;
+  utilView.appendChild(speechResult);
+  const speechOutput = mk("textarea", "utilSpeechOutput");
+  speechResult.appendChild(speechOutput);
+  const speechActions = mk("div", null, "util-actions");
+  speechResult.appendChild(speechActions);
+  mk("button", "utilSpeechCopy");
+  mk("button", "utilSpeechDownload");
+  const speechFormActions = mk("div", null, "util-form-actions");
+  speechForm.appendChild(speechFormActions);
+  speechFormActions.appendChild(mk("button", "utilSpeechSave", "util-save"));
+  const speechPanel = mk("div", "utilSpeechPanel", "util-panel");
+  const snsPanel = mk("div", "utilSnsPanel", "util-panel");
+  snsPanel.hidden = true;
+  const meetingPanel = mk("div", "utilMeetingPanel", "util-panel");
+  meetingPanel.hidden = true;
+  const pdfmdPanel = mk("div", "utilPdfmdPanel", "util-panel");
+  pdfmdPanel.hidden = true;
+  utilView.append(speechPanel, snsPanel, meetingPanel, pdfmdPanel);
+  mk("div", "utilMeetingOutput");
+
+  const alerts = [];
+  CURRENT.alerts = alerts;
+  const ctx = {
+    document: {
+      readyState: "complete",
+      body: mk("body", null),
+      documentElement: root,
+      getElementById: (id) => byId[id] || root._descendants().find((n) => n.id === id) || null,
+      querySelector: (sel) => root.findAll(sel)[0] || null,
+      querySelectorAll: (sel) => root.findAll(sel),
+      createElement: (tag) => new N(tag),
+      addEventListener() {},
+    },
+    window: {},
+    navigator: {},
+    fetch: fetch,
+    alert: (message) => alerts.push(String(message)),
+    console: console,
+    setTimeout: () => 0,
+    Blob: function Blob() {},
+    URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
+    FormData: FakeFormData,
+    FileReader: FakeFileReader,
+  };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js [" + tag + "]" });
+  return { tag, root, utilView, navBtn, alerts };
+}
 
 function fail(label, extra) {
-  console.log(JSON.stringify({ ok: false, fail: label, extra: extra || null, alerts, chatRequests }));
+  console.log(JSON.stringify({ ok: false, fail: label, extra: extra || null, alerts: CURRENT.alerts, chatRequests }));
   process.exit(1);
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
-  await navBtn.dispatch("click");
-  const snsTab = utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
+  const A = spawnSession("A");
+  const root = A.root;
+  await A.navBtn.dispatch("click");
+  const snsTab = A.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
   await snsTab.dispatch("click");
 
   // 1) URL field replaced by a multi photo picker.
@@ -320,7 +329,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   // 2) add two photos -> thumbnails render with reorder/remove controls.
   input.files = [{ name: "a.png", type: "image/png" }, { name: "b.png", type: "image/png" }];
   await input.dispatch("change");
-  await sleep(0);
+  await sleep(30);
   let items = root.findAll(".util-photo-item");
   if (items.length !== 2) fail("TWO_PHOTOS_NOT_LISTED", { count: items.length });
   const names = () => items.map((li) => li.querySelector(".util-photo-name").textContent);
@@ -345,9 +354,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const snsForm = root._descendants().find((n) => n.id === "utilSnsForm");
   snsForm.querySelector('[name=event]').value = "항구 축제";
   snsForm.querySelector('[name=content]').value = "하루 행사 내용";
-  // re-add a second photo so interleave has two entries.
   input.files = [{ name: "c.png", type: "image/png" }];
   await input.dispatch("change");
+  await sleep(30);
   await snsForm.dispatch("submit");
   await sleep(0);
   if (!chatRequests.length) fail("GEN_DID_NOT_CALL_MODEL");
@@ -380,7 +389,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const note = preview.children[preview.children.length - 1].textContent;
   if (note.indexOf("자동 게시") < 0) fail("PREVIEW_NOTE_MISSING_NO_PUBLISH_DISCLAIMER");
 
-  // 9) #5728 storage sync: additions became binary uploads, removal issued a
+  // 9) storage sync: additions became binary uploads, removal issued a
   // server DELETE that actually dropped the stored original.
   const binaryUploads = storedFiles.filter((f) => f.binary);
   if (binaryUploads.length !== 2) fail("PHOTOS_NOT_UPLOADED", { stored: storedFiles.length });
@@ -390,9 +399,56 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (storedNames.indexOf("b.png") >= 0) fail("STORED_ORIGINAL_NOT_DROPPED");
   if (storedNames.length !== 2) fail("UPLOAD_COUNT_WRONG", { storedNames: storedNames });
 
-  console.log(JSON.stringify({ ok: true, photos: root.findAll(".util-photo-item").length, promptHead: prompt.slice(0, 60), blogSeq: seq.slice(0, 6), storedBinary: storedFiles.filter((f) => f.binary).length, alerts }));
+  // 10) persistence: the composition changes rewrote the roster file.
+  // Back on blog so the insertion-position control exists, set 맨 앞, then
+  // let the serialized roster chain settle.
+  const blogTabA = snsForm.querySelectorAll(".util-sns-tab").find((t) => t.dataset.platform === "blog");
+  await blogTabA.dispatch("click");
+  items = root.findAll(".util-photo-item");
+  const posSelect = items[0].querySelector(".util-photo-pos-select");
+  if (!posSelect) fail("BLOG_POSITION_SELECT_MISSING");
+  posSelect.value = "0";
+  await posSelect.dispatch("change");
+  await sleep(50);
+  const rosterRec = storedFiles.find((f) => f.name === "SNS 사진 구성.json");
+  if (!rosterRec) fail("ROSTER_NOT_WRITTEN", { stored: storedFiles.map((f) => f.name) });
+  let roster = null;
+  try { roster = JSON.parse(rosterRec.content); } catch (_) { fail("ROSTER_NOT_JSON"); }
+  if (!Array.isArray(roster.photos) || roster.photos.length !== 2) fail("ROSTER_COUNT_WRONG");
+  if (roster.photos[0].name !== "a.png" || roster.photos[1].name !== "c.png") fail("ROSTER_ORDER_WRONG", { roster: roster.photos });
+  if (roster.photos[0].position !== "0") fail("ROSTER_POSITION_NOT_KEPT", { roster: roster.photos });
+
+  // 11) session B: re-entry restores the composition at build time — no
+  // interaction — in the roster's order with its positions.
+  const B = spawnSession("B");
+  await B.navBtn.dispatch("click");
+  const snsTabB = B.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
+  await snsTabB.dispatch("click");
+  await sleep(50);
+  const restored = B.root.findAll(".util-photo-item");
+  if (restored.length !== 2) fail("RESTORE_COUNT_WRONG", { count: restored.length });
+  const restoredNames = restored.map((li) => li.querySelector(".util-photo-name").textContent);
+  if (JSON.stringify(restoredNames) !== JSON.stringify(["a.png", "c.png"])) fail("RESTORE_ORDER_WRONG", { names: restoredNames });
+  const restoredSelect = restored[0].querySelector(".util-photo-pos-select");
+  if (!restoredSelect || restoredSelect.value !== "0") fail("RESTORE_POSITION_WRONG");
+  const restoredCount = B.root._descendants().find((n) => n.id === "utilSnsPhotoCount");
+  if (!restoredCount || restoredCount.textContent !== "2장") fail("RESTORE_COUNT_LABEL_WRONG");
+
+  console.log(JSON.stringify({
+    ok: true,
+    photos: root.findAll(".util-photo-item").length,
+    restored: restoredNames,
+    restoredPosition: restoredSelect ? restoredSelect.value : null,
+    rosterOrder: roster.photos.map((p) => p.name + ":" + p.position),
+    promptHead: prompt.slice(0, 60),
+    blogSeq: seq.slice(0, 6),
+    storedBinary: storedFiles.filter((f) => f.binary).length,
+    alertsA: A.alerts, alertsB: B.alerts,
+  }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });
 """
+
+
 
 
 def test_the_photo_composition_contract() -> None:
@@ -406,6 +462,11 @@ def test_the_photo_composition_contract() -> None:
     except Exception:
         pytest.fail(f"harness produced no verdict: {result.stdout}\n{result.stderr}")
     assert payload.get("ok") is True, payload
+    # The two-session persistence verdicts: the roster carried order and the
+    # blog insertion position, and session B restored both at build time.
+    assert payload.get("restored") == ["a.png", "c.png"], payload
+    assert payload.get("restoredPosition") == "0", payload
+    assert payload.get("rosterOrder") == ["a.png:0", "c.png:auto"], payload
 
 
 def test_the_url_field_is_gone_from_the_source() -> None:
