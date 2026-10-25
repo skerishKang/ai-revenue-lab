@@ -318,6 +318,10 @@ _DENIED_BY_POLICY = {"status": "policy_blocked", "error_class": "policy_blocked"
 _EXECUTOR_ERROR = {"status": "failed", "error_code": "pc_query_unavailable",
                    "duration_ms": 12}
 _CANCELLED = {"status": "failed", "error_code": "cancelled"}
+#: A run that ran out of time is its own fact: not a refusal, not a crash, and
+#: not the same sentence the model should hear for either.
+_TIMED_OUT = {"status": "timeout", "error_class": "provider_timeout",
+              "error_code": "stream_timeout", "duration_ms": 30_000}
 
 
 def _followup(execution=None, *, content="hello"):
@@ -353,6 +357,7 @@ def test_a_completed_run_is_still_the_plain_result_it_was() -> None:
     (_DENIED_BY_POLICY, "unauthorized"),
     (_EXECUTOR_ERROR, "failed"),
     (_CANCELLED, "cancelled"),
+    (_TIMED_OUT, "out of time"),
 ])
 def test_a_non_completion_is_never_shaped_like_a_result(execution, label) -> None:
     assert label
@@ -367,13 +372,31 @@ def test_a_non_completion_is_never_shaped_like_a_result(execution, label) -> Non
     assert response["detail"] == "hello"
 
 
-def test_the_five_outcomes_are_five_different_answers() -> None:
+def test_the_six_outcomes_are_six_different_answers() -> None:
     responses = [_response_of(_body(_followup(each))) for each in (
         {"status": "completed"}, _DENIED, _DENIED_BY_POLICY, _EXECUTOR_ERROR,
-        _CANCELLED,
+        _CANCELLED, _TIMED_OUT,
     )]
 
-    assert len({json.dumps(item, sort_keys=True) for item in responses}) == 5
+    assert len({json.dumps(item, sort_keys=True) for item in responses}) == 6
+
+
+def test_a_timeout_reaches_the_model_as_a_timeout_and_not_as_a_failure() -> None:
+    """The two look alike in prose and differ in fact.
+
+    A model told "the tool failed" may retry the same call; a model told the run
+    ran out of time has the cause its own timeout budget needs. The status and
+    the named class are what the executor decided, so they travel verbatim.
+    """
+    timed_out = _response_of(_body(_followup(_TIMED_OUT, content="")))
+    crashed = _response_of(_body(_followup(_EXECUTOR_ERROR, content="")))
+
+    assert timed_out == {
+        "status": "timeout", "error_class": "provider_timeout",
+        "error_code": "stream_timeout",
+    }
+    assert crashed["status"] == "failed"
+    assert timed_out["status"] != crashed["status"]
 
 
 def test_a_refusal_needs_no_invented_prose() -> None:

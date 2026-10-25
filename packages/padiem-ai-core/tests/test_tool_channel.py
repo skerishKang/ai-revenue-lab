@@ -633,19 +633,27 @@ def test_a_refused_or_failed_run_travels_as_what_it_was(event, expected) -> None
     assert message["execution"]["error_code"] == event.error_code
 
 
-def test_four_non_completions_are_four_different_facts() -> None:
+def test_five_non_completions_are_five_different_facts() -> None:
     events = [
         _event(RunStatus.REJECTED, error_code="approval_denied"),
         _event(RunStatus.POLICY_BLOCKED, error_class=ErrorClass.POLICY_BLOCKED),
         _event(RunStatus.FAILED, error_code="pc_query_unavailable"),
         _event(RunStatus.FAILED, error_code="cancelled"),
+        _event(RunStatus.TIMEOUT, error_class=ErrorClass.PROVIDER_TIMEOUT,
+               error_code="stream_timeout"),
     ]
 
     projections = [
         json.dumps(_result(event).to_message()["execution"], sort_keys=True)
         for event in events
     ]
-    assert len(set(projections)) == 4
+    assert len(set(projections)) == 5
+    # A timed-out run keeps the status the executor recorded, so the model is not
+    # told it failed when the budget ran out.
+    assert _result(events[-1]).to_message()["execution"] == {
+        "tool_id": "pc_files", "status": "timeout",
+        "error_class": "provider_timeout", "error_code": "stream_timeout",
+    }
 
 
 def test_a_refusal_does_not_have_to_invent_prose() -> None:
