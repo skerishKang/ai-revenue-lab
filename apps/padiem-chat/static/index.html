@@ -1294,6 +1294,10 @@
   <script src="./claw-composer-connection-status.js"></script>
   <script src="./util-menu.js" defer></script>
 <script src="./util-pdfmd.js" defer></script>
+  <!-- #5786 의원 공개 블로그 래퍼의 진입 어댑터. util-menu.js 이후 defer 순서로
+       실행되어 #padiem-util[/tool] 프래그먼트를 위 유틸 버튼 클릭과 같은 형태로
+       해석합니다. 화면·생성·저장 기능은 util-menu.js 가 그대로 소유합니다. -->
+  <script src="./councillor/util-entry-adapter.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>
