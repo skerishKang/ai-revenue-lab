@@ -123,6 +123,13 @@ class Default(WorkerEntrypoint):
         if env_overrides:
             _apply_env_once(env_overrides)
         token = bind_request_env(env_overrides)
+        # #5318: the call-ledger D1 handle travels as a request-scoped object,
+        # never through the env bridge above. That bridge coerces values with
+        # str(), which would turn a database binding into a string and destroy
+        # it, and it would widen the secret allowlist for a non-secret binding.
+        from app.pilot.call_ledger_store import bind_ledger_env, reset_ledger_env
+
+        ledger_token = bind_ledger_env(self.env)
         try:
             # Optional protected registry: exact digest/immutable R2 object,
             # installed before ASGI touches any model catalog or fallback.
@@ -144,6 +151,7 @@ class Default(WorkerEntrypoint):
             return response
         finally:
             reset_request_env(token)
+            reset_ledger_env(ledger_token)
             if observed:
                 finish_trace(state, trace_token, response, getattr(self, "ctx", None), self.env)
 

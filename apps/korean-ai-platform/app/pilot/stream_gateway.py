@@ -12,6 +12,7 @@ from collections.abc import AsyncIterator
 from dataclasses import replace
 import json
 import logging
+import time
 import uuid
 from typing import Any
 
@@ -20,6 +21,16 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Router
 
+from app.pilot.call_ledger import (
+    LedgerDraft,
+    OUTCOME_ABORTED,
+    OUTCOME_ERROR,
+    OUTCOME_SUCCESS,
+    new_log_id,
+    origin_from_headers,
+    utc_now_iso,
+)
+from app.pilot.call_ledger_store import record_call
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import (
     InvalidRequest,
@@ -28,7 +39,11 @@ from app.pilot.errors import (
     StreamNotSupported,
     UnsupportedModel,
 )
-from app.pilot.gateway import _platform_caller_denial, _validate_body
+from app.pilot.gateway import (
+    _platform_caller_denial,
+    _protocol_for,
+    _validate_body,
+)
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.stream_types import (
     StreamEvent,
@@ -312,6 +327,87 @@ async def _close_iterator(iterator: AsyncIterator[StreamEvent]) -> None:
         await close()
 
 
+async def _write_terminal_ledger(
+    ledger: LedgerDraft | None, request_id: str, *, error_code: str,
+    elapsed_ms: int | None,
+) -> None:
+    """Append a failure record for a request that never produced a stream.
+
+    A request refused before its first event still consumed gateway work and
+    may have made real provider attempts. Recording only the streamed cases
+    would leave every pre-token failure invisible.
+    """
+    from app.pilot.platform import _provider_mode
+
+    if ledger is None or _provider_mode() == "mock" or not ledger.attempts:
+        return
+    try:
+        record = ledger.finish(
+            outcome=OUTCOME_ERROR, error_code=error_code, elapsed_ms=elapsed_ms,
+        )
+        status = await record_call(record)
+        logger.info(
+            "b14_ledger request_id=%s log_id=%s outcome=error attempts=%d status=%s",
+            request_id, record.log_id, record.attempt_count, status,
+        )
+    except Exception:
+        logger.error("b14_ledger_finalize_error request_id=%s attempt=0", request_id)
+
+
+async def _finalize_stream_ledger(
+    ledger: LedgerDraft, candidate: dict[str, str], decision: rcore.RouteDecision,
+    *, outcome: str, error_code: str | None, usage: dict[str, Any] | None,
+    finish_reason: str | None, response_model: str | None,
+    attempt_started: float | None, ttft_ms: int | None, fallback_used: bool,
+) -> None:
+    """Close one streamed attempt and append its ledger row.
+
+    This runs in the generator's ``finally`` so a client that disconnects
+    mid-stream still leaves a row. A stream that produced output and was then
+    cancelled consumed model tokens; dropping the record would understate
+    usage and hide the abort from the operator.
+    """
+    elapsed = (
+        int((time.perf_counter() - attempt_started) * 1000)
+        if attempt_started is not None else None
+    )
+    protocol = _protocol_for(
+        candidate.get("platform_provider_id"), candidate.get("upstream_model")
+    )
+    ledger.record_attempt(
+        provider=candidate.get("provider"), model_id=candidate.get("model_id"),
+        upstream_model=candidate.get("upstream_model"), route_id=candidate.get("route_id"),
+        outcome=outcome, error_code=error_code, elapsed_ms=elapsed, usage=usage,
+        finish_reason=finish_reason, actual_response_model=response_model,
+        protocol=protocol,
+    )
+    # The gate is the mode the platform adapter dispatched with, not the config
+    # singleton read on its own: an explicit B14_PROVIDER_MODE wins at runtime,
+    # so trusting the singleton alone could drop the record of a call that
+    # really ran, or store a simulated answer as consumption.
+    from app.pilot.platform import _provider_mode
+
+    if _provider_mode() == "mock":
+        return
+    ledger.protocol = protocol
+    ledger.ttft_ms = ttft_ms
+    record = ledger.finish(
+        outcome=outcome, error_code=error_code, finish_reason=finish_reason,
+        elapsed_ms=elapsed, usage=usage,
+        selected_model_id=candidate.get("model_id"),
+        selected_provider=candidate.get("provider"),
+        selected_upstream_model=candidate.get("upstream_model"),
+        selected_route_id=candidate.get("route_id"),
+        actual_response_model=response_model, route_mode=decision.route_mode,
+        fallback_used=fallback_used,
+    )
+    status = await record_call(record)
+    logger.info(
+        "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
+        ledger.request_id, record.log_id, outcome, record.attempt_count, status,
+    )
+
+
 async def _stream_body(
     iterator: AsyncIterator[StreamEvent],
     initial_events: list[StreamEvent],
@@ -320,25 +416,58 @@ async def _stream_body(
     decision: rcore.RouteDecision,
     attempt_count: int,
     fallback_used: bool,
+    ledger: LedgerDraft | None = None,
+    candidate: dict[str, str] | None = None,
+    attempt_started: float | None = None,
 ) -> AsyncIterator[bytes]:
     """Emit the primed events; after the first visible event, never switch routes."""
+    # #5318: the stream lane is where TTFT is observable at all. First visible
+    # output means the first non-blank token or the first completed tool call,
+    # not the first frame the transport happened to send.
+    outcome = OUTCOME_ABORTED
+    error_code: str | None = None
+    reported_usage: dict[str, Any] | None = None
+    finish_reason: str | None = None
+    response_model: str | None = None
+    ttft_ms: int | None = ledger.ttft_ms if ledger is not None else None
+
+    def _observe(event: StreamEvent) -> None:
+        nonlocal ttft_ms, response_model, reported_usage, finish_reason
+        if event.model:
+            response_model = event.model
+        if event.usage is not None:
+            reported_usage = _usage_dict(event.usage)
+        if event.finish_reason:
+            finish_reason = event.finish_reason
+        if ttft_ms is None and attempt_started is not None and (
+            (isinstance(event.delta_content, str) and bool(event.delta_content.strip()))
+            or event.tool_call is not None
+        ):
+            ttft_ms = int((time.perf_counter() - attempt_started) * 1000)
+
     try:
         for event in initial_events:
+            _observe(event)
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
                 attempt_count=attempt_count, fallback_used=fallback_used,
             )
             if event.done:
+                outcome = OUTCOME_SUCCESS
                 return
 
         async for event in iterator:
+            _observe(event)
             yield _encode_event(
                 event, request_id=request_id, decision=decision,
                 attempt_count=attempt_count, fallback_used=fallback_used,
             )
             if event.done:
+                outcome = OUTCOME_SUCCESS
                 return
     except PilotError as exc:
+        outcome = OUTCOME_ERROR
+        error_code = exc.code
         logger.warning(
             "stream_preview_post_start_error request_id=%s code=%s attempt=%d",
             request_id,
@@ -350,6 +479,8 @@ async def _stream_body(
             attempt_count=attempt_count, fallback_used=fallback_used,
         )
     except Exception:
+        outcome = OUTCOME_ERROR
+        error_code = "internal_error"
         logger.error(
             "stream_preview_post_start_internal_error request_id=%s attempt=%d",
             request_id,
@@ -366,6 +497,22 @@ async def _stream_body(
         )
     finally:
         await _close_iterator(iterator)
+        if ledger is not None and candidate is not None:
+            try:
+                await _finalize_stream_ledger(
+                    ledger, candidate, decision, outcome=outcome,
+                    error_code=error_code, usage=reported_usage,
+                    finish_reason=finish_reason, response_model=response_model,
+                    attempt_started=attempt_started, ttft_ms=ttft_ms,
+                    fallback_used=fallback_used,
+                )
+            except Exception:
+                # The stream already answered (or already failed). A ledger fault
+                # is logged as a status and never changes what the caller sees.
+                logger.error(
+                    "b14_ledger_finalize_error request_id=%s attempt=%d",
+                    request_id, attempt_count,
+                )
 
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
@@ -377,7 +524,9 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     canonical admission checks and keeps arbitrary external fallback disabled.
     """
     request_id = _request_id()
+    handler_started = time.perf_counter()
     iterator: AsyncIterator[StreamEvent] | None = None
+    ledger: LedgerDraft | None = None
 
     try:
         # The preview lane spends platform-owned Provider credentials. Refuse an
@@ -414,6 +563,16 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             None,
             *fallback_candidates,
         ]
+        # #5318: the streaming lane is the only place TTFT can be measured, and
+        # it is also where a pre-token fallback can hide a failed provider. The
+        # draft stays open across candidates so both survive into one record.
+        ledger = LedgerDraft(
+            log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
+            protocol=_protocol_for(decision.platform_provider_id,
+                                   decision.selected_upstream_model),
+            streaming=True, requested_model_id=body["model"],
+            started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
+        )
 
         for attempt_index, candidate in enumerate(attempt_candidates):
             remaining = [
@@ -437,11 +596,33 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
             if not platform_provider_id:
                 raise InvalidRequest("platform_secret route missing provider binding.")
 
+            attempt_candidate = {
+                "model_id": selected_model,
+                "upstream_model": upstream_model,
+                "provider": provider,
+                "route_id": attempt_decision.selected_route_id,
+                "platform_provider_id": platform_provider_id,
+            }
+            dispatched = False
+            attempt_started = time.perf_counter()
+
             if body.get("tools"):
                 # #4727: a fallback candidate is a different provider wire, so
                 # the adapter check runs again for the model that will answer.
+                # A candidate refused here never reached a provider, and the
+                # ledger keeps that distinction.
                 from .tool_channel import require_stream_tool_wire
-                require_stream_tool_wire(selected_model, platform_provider_id)
+                try:
+                    require_stream_tool_wire(selected_model, platform_provider_id)
+                except PilotError as exc:
+                    ledger.record_attempt(
+                        provider=provider, model_id=selected_model,
+                        upstream_model=upstream_model,
+                        route_id=attempt_candidate["route_id"], outcome="error",
+                        error_code=exc.code, dispatched=False,
+                        protocol=_protocol_for(platform_provider_id, upstream_model),
+                    )
+                    raise
 
             iterator = stream_platform_chat_completions(
                 model_id=selected_model,
@@ -463,6 +644,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 # Buffer only pre-visible events. A recoverable provider failure
                 # before the first nonblank token may try the next owner-tier
                 # candidate. Once a visible token is selected, this route is final.
+                dispatched = True
                 while True:
                     try:
                         event = await anext(iterator)
@@ -480,6 +662,24 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     logger, exc, request_id=request_id,
                     request_path=request.url.path, attempt=attempt_index + 1,
                     fallback=attempt_index > 0,
+                )
+                # #5318: the attempt that just failed is the fact a fallback
+                # would otherwise erase. It is written whether or not this
+                # failure is retried on the next candidate.
+                ledger.record_attempt(
+                    provider=provider, model_id=selected_model,
+                    upstream_model=upstream_model,
+                    route_id=attempt_candidate["route_id"], outcome="error",
+                    error_code=exc.code,
+                    elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                    usage=next((_usage_dict(event.usage)
+                                for event in reversed(initial_events)
+                                if event.usage is not None), None),
+                    finish_reason=next((event.finish_reason
+                                        for event in reversed(initial_events)
+                                        if event.finish_reason), None),
+                    dispatched=dispatched,
+                    protocol=_protocol_for(platform_provider_id, upstream_model),
                 )
                 await _close_iterator(iterator)
                 if (
@@ -503,6 +703,9 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                     decision=attempt_decision,
                     attempt_count=attempt_index + 1,
                     fallback_used=attempt_index > 0,
+                    ledger=ledger,
+                    candidate=attempt_candidate,
+                    attempt_started=attempt_started,
                 ),
                 status_code=200,
                 media_type="text/event-stream",
@@ -517,6 +720,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     except PilotError as exc:
         if iterator is not None:
             await _close_iterator(iterator)
+        await _write_terminal_ledger(
+            ledger, request_id, error_code=exc.code,
+            elapsed_ms=int((time.perf_counter() - handler_started) * 1000),
+        )
         logger.warning(
             "stream_preview_pre_start_error request_id=%s code=%s status=%d credential_reason=%s",
             request_id,
@@ -528,6 +735,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     except Exception:
         if iterator is not None:
             await _close_iterator(iterator)
+        await _write_terminal_ledger(
+            ledger, request_id, error_code="internal_error",
+            elapsed_ms=int((time.perf_counter() - handler_started) * 1000),
+        )
         logger.error(
             "stream_preview_pre_start_internal_error request_id=%s",
             request_id,

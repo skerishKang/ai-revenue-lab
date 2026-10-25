@@ -612,3 +612,84 @@ async def test_stream_approval_resume_keeps_the_original_user_turn_receipt():
     assert resumed.stream_run_id == run_id and resumed.conversation_id == "chat_saved"
     assert client.resume_request["session_id"] == run_id
     assert resumed.answer == "완료된 답변"
+
+
+@pytest.mark.parametrize("wire_record,expected_code,expected_copy,expected_cause", [
+    ({"ok": False, "error": {"code": "upstream_auth_error",
+       "message": "Model execution failed.", "metadata": {"secret": "PRIVATE_DO_NOT_LEAK"}}},
+     "upstream_auth_error", "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.", None),
+    ({"ok": True, "pc_progress": {"stage": "PRIVATE_DO_NOT_LEAK"}},
+     "invalid_engine_stream", "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.",
+     {"exception_class": "EngineNdjsonContractError", "record_kind": "pc_progress"}),
+])
+async def test_real_engine_error_and_malformed_fixture_cross_client_bridge_and_sse(
+    wire_record, expected_code, expected_copy, expected_cause,
+):
+    import json
+    from padiem_ai_engine_client import EngineStreamTransportResponse, PadiemAiEngineClient
+    from app.claw_live_events import chat_pc_orchestration_sse
+    calls, closed, completions = [], [], []
+    class Transport:
+        async def request(self, **kwargs):
+            raise AssertionError("must not fall back to JSON")
+        async def stream_request(self, **kwargs):
+            calls.append(kwargs)
+            async def chunks():
+                try:
+                    data = (json.dumps(wire_record) + "\n").encode()
+                    yield data[:7]
+                    yield data[7:]
+                    raise AssertionError("terminal error must stop reading")
+                finally:
+                    closed.append(True)
+            return EngineStreamTransportResponse(
+                status=200, chunks=chunks(), headers={"content-type": "application/x-ndjson"})
+    client = PadiemAiEngineClient(
+        transport=Transport(), app_id="padiem-chat", caller_id="padiem-chat", credential="x" * 64)
+    bridge = B62EngineOrchestrationBridge(client=client, store=FakeStore())
+    stream = bridge.start_stream(
+        user_id="usr_1", subject_id="sub_1", session_id="chat_pcq_" + "a" * 32,
+        messages=[{"role": "user", "content": "question"}], skill=get_task_mode("auto"),
+        model_id="route/pinned", user_text="question", conversation_id=None,
+        pc_tools={"device_id": "node/meshdomain1/pc-1", "allowed_scopes": ["files_list"]})
+    async def complete(result):
+        completions.append(result)
+    response = chat_pc_orchestration_sse(
+        stream, pc_run_id="chat_pcq_" + "a" * 32, on_completed=complete)
+    text = b"".join([part async for part in response.body_iterator]).decode()
+    errors = [json.loads(line[6:])["error"] for line in text.splitlines() if line.startswith("data: ")]
+    assert len(errors) == 1
+    assert errors[0]["code"] == expected_code
+    assert errors[0]["message"] == expected_copy  # keep authored product copy
+    assert errors[0].get("cause") == expected_cause
+    assert "PRIVATE_DO_NOT_LEAK" not in text
+    assert "event: done" not in text and "event: delta" not in text
+    assert calls and len(calls) == 1 and closed == [True] and completions == []
+
+
+async def test_pc_relay_generic_failure_names_class_and_record_kind_without_payload():
+    import json
+    text, completions = await _pc_sse([{"pc_progress": {"path": "PRIVATE_DO_NOT_LEAK"}}])
+    error = next(json.loads(line[6:])["error"] for line in text.splitlines() if line.startswith("data: "))
+    assert error["code"] == "invalid_engine_stream"
+    assert error["cause"] == {"exception_class": "ValueError", "record_kind": "pc_progress"}
+    assert "PRIVATE_DO_NOT_LEAK" not in text and completions == []
+    assert "event: done" not in text
+
+
+async def test_iterator_failure_does_not_blame_previous_valid_record():
+    import json
+    from app.claw_live_events import chat_pc_orchestration_sse
+    async def stream():
+        yield {"text_delta": {"delta": "hello"}}
+        raise RuntimeError("PRIVATE_DO_NOT_LEAK")
+    async def complete(result):
+        raise AssertionError("must not commit a failure")
+    response = chat_pc_orchestration_sse(
+        stream(), pc_run_id="chat_pcq_" + "a" * 32, on_completed=complete)
+    text = b"".join([part async for part in response.body_iterator]).decode()
+    error = next(json.loads(line[6:])["error"] for line in text.splitlines()
+                 if line.startswith("data: ") and "error" in json.loads(line[6:]))
+    assert error["code"] == "invalid_engine_stream"
+    assert error["cause"] == {"exception_class": "RuntimeError", "record_kind": "unknown"}
+    assert "PRIVATE_DO_NOT_LEAK" not in text and "event: done" not in text

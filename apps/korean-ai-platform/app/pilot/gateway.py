@@ -34,6 +34,13 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.call_ledger import (
+    LedgerDraft,
+    new_log_id,
+    origin_from_headers,
+    utc_now_iso,
+)
+from app.pilot.call_ledger_store import record_call
 from app.pilot.tool_channel import (
     model_supports_tools,
     require_tool_capability,
@@ -769,7 +776,39 @@ def _build_b14_live_metadata(
     }
 
 
-async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
+def _first_finish_reason(response_data: dict[str, Any]) -> str | None:
+    """The stop reason the provider reported, or None when it reported none.
+
+    A missing reason stays missing in the ledger. Substituting ``stop`` would
+    turn an absent provider field into a claim about how the answer ended.
+    """
+    choices = response_data.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return None
+    first = choices[0]
+    reason = first.get("finish_reason") if isinstance(first, dict) else None
+    return reason if isinstance(reason, str) and reason.strip() else None
+
+
+def _protocol_for(platform_provider_id: str | None, upstream_model: str | None) -> str:
+    """Which wire family this physical call actually used.
+
+    The ledger records a protocol per attempt because a fallback chain can walk
+    two providers that speak different transports. Anything the gateway cannot
+    name is stored as ``unknown`` rather than assumed to be chat completions.
+    """
+    if platform_provider_id == "opencode-go" and upstream_model:
+        from .opencode_go_wire import _WIRE
+
+        return _WIRE.get(upstream_model, "unknown")
+    if platform_provider_id == "google":
+        return "chat/completions"
+    return "chat/completions" if platform_provider_id else "unknown"
+
+
+async def _handle_alpha_chat(
+    request_id: str, body: dict, origin_headers: Any = None
+) -> JSONResponse:
     """Handle a chat completions request in Alpha (platform catalog) mode.
 
     - Detects mock vs live mode from B14_PROVIDER_MODE
@@ -837,6 +876,36 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     response_data: dict[str, Any] | None = None
     success_candidate: dict[str, str] | None = None
     attempt_evidence: list[dict[str, Any]] = []
+    # #5318: the ledger accumulates each physical attempt while the walk is
+    # still in progress. A fallback that answered is only provable if the
+    # attempt that failed was written down when it failed. Mock mode performs
+    # no provider call, so it produces no execution record at all.
+    ledger = LedgerDraft(
+        log_id=new_log_id(), request_id=request_id,
+        endpoint="/api/pilot/v1/chat/completions",
+        protocol=_protocol_for(decision.platform_provider_id, candidate.upstream_model),
+        streaming=False, requested_model_id=model_id, started_at=utc_now_iso(),
+        origin=origin_from_headers(origin_headers),
+    )
+
+    async def _write_ledger(record) -> None:
+        """Append one execution record without letting storage touch the answer.
+
+        The gate is the mode the platform adapter actually dispatched with, not
+        the config singleton read on its own: ``platform._provider_mode()`` lets
+        an explicit ``B14_PROVIDER_MODE`` win at runtime, so the two can
+        disagree. Trusting the singleton would either write a row for an answer
+        no provider produced, or drop the row of a call that really ran.
+        """
+        from .platform import _provider_mode
+
+        if _provider_mode() == "mock":
+            return
+        status = await record_call(record)
+        logger.info(
+            "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
+            request_id, record.log_id, record.outcome, record.attempt_count, status,
+        )
 
     candidates: list[dict[str, str]] = [
         {
@@ -930,6 +999,15 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "retry_index": 0,
                 "actual_response_model": None,
             })
+            ledger.record_attempt(
+                provider=current["provider"], model_id=current["model_id"],
+                upstream_model=current["upstream_model"], route_id=current["route_id"],
+                outcome="error", error_code="tools_not_supported", dispatched=False,
+                protocol=_protocol_for(
+                    current.get("platform_provider_id") or decision.platform_provider_id,
+                    current["upstream_model"],
+                ),
+            )
             last_error = ToolsNotSupported(current["model_id"])
             if idx < len(candidates) - 1:
                 advance_to_next_candidate = True
@@ -943,6 +1021,11 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 break
 
             attempt_count += 1
+            # #5318: the physical attempt boundary is where B14 measures its
+            # own duration. Measuring it here rather than inside the adapter
+            # covers the asyncio timeout too, where the adapter's coroutine is
+            # cancelled and never reports a duration.
+            attempt_started = time.perf_counter()
             # The first physical model attempt (manual OR auto) has no
             # arbitrary 45s wall cap. Later attempts retain retry budget.
             attempt_timeout = None if attempt_count == 1 else remaining
@@ -984,6 +1067,22 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                     "retry_index": retry_index,
                     "actual_response_model": None,
                 })
+                # #5318: an internal fault is still a physical attempt the
+                # candidate made. It is recorded, not silently dropped, so the
+                # dashboard never shows a clean single-attempt request that
+                # actually burned an unexpected failure first.
+                ledger.record_attempt(
+                    provider=current["provider"], model_id=current["model_id"],
+                    upstream_model=current["upstream_model"],
+                    route_id=current["route_id"], outcome="error",
+                    error_code="internal_error", retry_index=retry_index,
+                    elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                    protocol=_protocol_for(
+                        current.get("platform_provider_id")
+                        or decision.platform_provider_id,
+                        current["upstream_model"],
+                    ),
+                )
                 last_error = PilotError(
                     code="internal_error",
                     message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
@@ -1004,6 +1103,21 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                     "retry_index": retry_index,
                     "actual_response_model": actual_model,
                 })
+                ledger.record_attempt(
+                    provider=current["provider"], model_id=current["model_id"],
+                    upstream_model=current["upstream_model"], route_id=current["route_id"],
+                    outcome="success", retry_index=retry_index,
+                    elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                    usage=response_data.get("usage"),
+                    actual_response_model=actual_model,
+                    finish_reason=_first_finish_reason(response_data),
+                    provider_request_id=response_data.get("id")
+                    if isinstance(response_data.get("id"), str) else None,
+                    protocol=_protocol_for(
+                        current.get("platform_provider_id") or decision.platform_provider_id,
+                        current["upstream_model"],
+                    ),
+                )
                 success_candidate = current
                 succeeded = True
                 error = None
@@ -1024,6 +1138,16 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "retry_index": retry_index,
                 "actual_response_model": None,
             })
+            ledger.record_attempt(
+                provider=current["provider"], model_id=current["model_id"],
+                upstream_model=current["upstream_model"], route_id=current["route_id"],
+                outcome="error", error_code=error.code, retry_index=retry_index,
+                elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                protocol=_protocol_for(
+                    current.get("platform_provider_id") or decision.platform_provider_id,
+                    current["upstream_model"],
+                ),
+            )
 
             # Same-route bounded retry for explicit manual routes (#1982).
             # The candidate list is the whole budget, so a same-route retry
@@ -1084,6 +1208,20 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                     last_error.status_code,
                     attempt_count,
                 )
+            await _write_ledger(ledger.finish(
+                outcome="error", http_status=last_error.status_code,
+                error_code=last_error.code, elapsed_ms=latency_ms,
+                # Nothing answered, so no response model is claimed. The
+                # attempted selection is still recorded: it is what B14 chose
+                # and dispatched, and the attempt rows keep each provider.
+                selected_model_id=candidates[0]["model_id"],
+                selected_provider=candidates[0]["provider"],
+                selected_upstream_model=candidates[0]["upstream_model"],
+                selected_route_id=candidates[0]["route_id"],
+                route_mode=decision.route_mode,
+                fallback_used=fallback_used,
+                fallback_depth=len(candidates) - 1 if fallback_used else 0,
+            ))
             return JSONResponse(
                 status_code=last_error.status_code,
                 content={
@@ -1164,6 +1302,26 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     for internal_key in [k for k in response_data if k.startswith("_")]:
         del response_data[internal_key]
 
+    # #5318: the answer is already assembled, so the ledger write cannot delay
+    # or replace it. The parent row records what ACTUALLY answered: the fallback
+    # target, its wire family, and the usage the provider reported for it.
+    ledger.protocol = _protocol_for(
+        success_candidate.get("platform_provider_id") or decision.platform_provider_id,
+        success_candidate["upstream_model"],
+    )
+    await _write_ledger(ledger.finish(
+        outcome="success", http_status=200,
+        finish_reason=_first_finish_reason(response_data), elapsed_ms=latency_ms,
+        usage=response_data.get("usage"),
+        selected_model_id=success_candidate["model_id"],
+        selected_provider=success_candidate["provider"],
+        selected_upstream_model=success_candidate["upstream_model"],
+        selected_route_id=success_candidate["route_id"],
+        actual_response_model=actual_response_model,
+        route_mode=decision.route_mode, fallback_used=fallback_used,
+        fallback_depth=len(candidates) - 1 if fallback_used else 0,
+    ))
+
     logger.info(
         "alpha_success request_id=%s model=%s provider=%s mode=%s attempt=%d latency_ms=%d",
         request_id,
@@ -1228,7 +1386,7 @@ async def pilot_chat_completions(
             denial = await _platform_caller_denial(request, request_id)
             if denial is not None:
                 return denial
-            return await _handle_alpha_chat(request_id, body)
+            return await _handle_alpha_chat(request_id, body, origin_headers=request.headers)
 
         # BYOK mode (legacy flow — unchanged)
         api_key = _validate_provider_key(x_business14_provider_key)

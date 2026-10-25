@@ -438,8 +438,9 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         }"""
     )
 
-    # Chat and Claw now share the first-use canvas. After a conversation has
-    # started, Claw's existing workbench remains a bounded independent surface.
+    # Chat and Claw now share the first-use canvas. #2505 made them share the
+    # conversation too, so the general view shows the one thread instead of a
+    # parked empty workbench.
     main_panel = await _box(page, ".main-panel")
     for surface, box in (("conversation", claw_conversation), ("composer", claw_composer)):
         if box["x"] < main_panel["x"] - 1 or _right(box) > _right(main_panel) + 1:
@@ -460,8 +461,23 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
             name=f"{name} active Claw centered conversation/composer",
             tolerance=2,
         )
-        if claw_composer["width"] > claw_conversation["width"] + 1:
-            raise AssertionError(f"{name} active Claw composer exceeds workbench")
+        # #2505: once a thread exists the general view renders the shared
+        # Chat/Claw conversation, so the fixed composer and the flow column are
+        # two boxes on ONE lane instead of a bounded Claw workbench containing
+        # its own composer. The composer is `100vw`-based and the column is
+        # `100%`-based, so their widths differ by the breakpoint gutter rounding
+        # while the centres stay identical. Measured in the mock runtime as
+        # composer width minus column width:
+        #   1920/1280/960  -28   (desktop inner gutter)
+        #   768            +2    (100vw-28 composer against a 100%-30 column)
+        #   390            -2
+        # Centres match exactly at every width. The guard still fails on the
+        # real defect it was written for: a composer that breaks out of the
+        # column it shares (the old 1168px workbench composer in an 840px lane).
+        # Narrower than the column is the desktop inner gutter, not a defect.
+        lane_drift = round(claw_composer["width"] - claw_conversation["width"], 2)
+        if lane_drift > 2:
+            raise AssertionError(f"{name} composer leaves the shared conversation lane: {lane_drift}")
     # The conversation must clear the real topbar rather than a hardcoded 62px.
     # Measured (mock runtime): the topbar is 61px at 390, 66px at 768 and 78px at
     # >=960, and the Claw conversation starts exactly at the topbar bottom on the

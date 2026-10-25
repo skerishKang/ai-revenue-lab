@@ -12,7 +12,7 @@ from padiem_ai_engine_client import (
     EngineStreamTransportResponse, PadiemAiEngineClient, PadiemAiEngineClientError,
 )
 from padiem_ai_engine_client.orchestration_stream import (
-    EngineNdjsonContractError, decode_orchestration_ndjson,
+    EngineNdjsonContractError, EngineStreamError, decode_orchestration_ndjson,
     MAX_NDJSON_TERMINAL_LINE_BYTES, MAX_NDJSON_LINE_BYTES,
 )
 from app.service_binding_response import ServiceBindingResponseTooLarge
@@ -47,7 +47,7 @@ def test_ndjson_chunk_split_and_real_terminal():
     (b"", "truncated_stream"),
     (wire("event"), "truncated_stream"),
     (wire("orchestration"), "invalid_stream_terminal"),
-    (wire("event") + b'{"ok":false,"error":{"code":"provider_fail"}}\n', "engine_stream_error"),
+    (wire("event") + b'{"ok":false,"error":{"code":"provider_fail"}}\n', "invalid_stream_record"),
     (wire("event") + b'{"ok":true,"other":3}\n', "invalid_stream_record"),
     (wire("event") + b'{"ok":true,"orchestration":{}', "truncated_stream"),
     (wire("event") + wire("orchestration") + b'EXTRA', "trailing_data_after_result"),
@@ -61,24 +61,35 @@ def test_rejects_unsafe_or_incomplete_stream(data, reason):
     assert err.value.code == reason
 
 
-def test_engine_error_line_preserves_only_the_bounded_stage_code():
-    # #5015: the Engine error line names a closed tool/admission stage. Only
-    # the identifier-shaped code may cross the fail-closed boundary; the
-    # message and every other field stay unread.
-    data = wire("event") + (
-        b'{"ok":false,"error":{"code":"pc_query_admission_required",'
-        b'"message":"Owner text","metadata":{"secret":"x"}}}\n'
-    )
+def test_engine_error_line_preserves_public_code_and_message_and_closes():
+    closed = []
+    async def source():
+        try:
+            yield b'{"ok":false,"error":{"code":"upstream_auth_error","message":"Model execution failed.","metadata":{"secret":"PRIVATE_DO_NOT_LEAK"}}}\n'
+            raise AssertionError("must stop after the terminal Engine failure")
+        finally:
+            closed.append(True)
+    with pytest.raises(EngineStreamError) as err:
+        consume(source())
+    assert err.value.code == "upstream_auth_error"
+    assert str(err.value) == "Model execution failed."
+    assert "PRIVATE_DO_NOT_LEAK" not in repr(err.value)
+    assert closed == [True]
+
+
+@pytest.mark.parametrize("error", [
+    {"code": "Owner text; drop table", "message": "PRIVATE_DO_NOT_LEAK"},
+    {"code": "upstream_auth_error"},
+    {"code": "upstream_auth_error", "message": 123},
+    {"code": "upstream_auth_error", "message": ""},
+])
+def test_malformed_engine_error_is_a_contract_failure(error):
+    data = (json.dumps({"ok": False, "error": error}) + "\n").encode()
     with pytest.raises(EngineNdjsonContractError) as err:
         consume(chunks_of(data))
-    assert err.value.code == "engine_stream_error"
-    assert err.value.engine_code == "pc_query_admission_required"
-
-    hostile = wire("event") + b'{"ok":false,"error":{"code":"Owner text; drop table"}}\n'
-    with pytest.raises(EngineNdjsonContractError) as err:
-        consume(chunks_of(hostile))
-    assert err.value.code == "engine_stream_error"
-    assert err.value.engine_code is None
+    assert err.value.code == "invalid_stream_record"
+    assert err.value.record_kind == "error"
+    assert "PRIVATE_DO_NOT_LEAK" not in str(err.value)
 
 
 class FakeTransport:
@@ -304,4 +315,28 @@ def test_engine_stream_model_request_400kb_allowed_but_6mb_plus_refused():
                 headers={}, body=b"X" * (6_000_000 + 1),
             )
         assert len(binding.calls) == 1
+    asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("body,expected_code,expected_message", [
+    (b'{"ok":false,"error":{"code":"upstream_auth_error","message":"Model execution failed.","metadata":{"secret":"PRIVATE_DO_NOT_LEAK"}}}\n',
+     "upstream_auth_error", "Model execution failed."),
+    (b'{"ok":true,"pc_progress":{"stage":"PRIVATE_DO_NOT_LEAK"}}\n',
+     "invalid_engine_stream", "Engine streaming contract failed"),
+])
+def test_stream_client_distinguishes_engine_failure_from_contract_failure(body, expected_code, expected_message):
+    async def exercise():
+        transport = FakeTransport(body=body)
+        client = PadiemAiEngineClient(
+            transport=transport, app_id="padiem-chat", caller_id="padiem-chat",
+            credential="x" * 64,
+        )
+        with pytest.raises(PadiemAiEngineClientError) as err:
+            _ = [row async for row in client.stream_orchestration({"agent": {}, "messages": []})]
+        assert len(transport.calls) == 1  # failure must not cause a retry
+        assert err.value.code == expected_code
+        assert str(err.value) == expected_message
+        assert "PRIVATE_DO_NOT_LEAK" not in str(err.value)
+        if expected_code == "invalid_engine_stream":
+            assert err.value.metadata == {"reason": "invalid_stream_record", "record_kind": "pc_progress"}
     asyncio.run(exercise())

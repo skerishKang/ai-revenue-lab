@@ -172,18 +172,14 @@
   const projectFileStatus = document.getElementById("projectFileStatus");
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
-  // Chat/Claw separation: Chat(B62) and Claw(B54) share one conversation panel, but never one
-  // conversation. Each product owns its own rendered turns, its own
-  // conversation id and its own skill. A product switch parks the current
-  // product's turns in memory and restores the other product's turns, and a
-  // product's conversation id is never sent on the other product's request.
-  // Nothing is deleted: the server-owned conversation records stay untouched.
+  // #2505: Chat(B62) and Claw(B54) are two screens of one product and share one
+  // conversation: one rendered transcript, one conversation id, one skill. A
+  // product switch only changes the lane the NEXT submit belongs to, so a
+  // thread started on one screen continues on the other. Nothing is moved or
+  // deleted here: the server-owned conversation record stays untouched.
   const PRODUCT_CHAT = "chat";
   const PRODUCT_CLAW = "claw";
-  const productViews = {
-    chat: { nodes: [], continuousThread: false },
-    claw: { nodes: [], continuousThread: false },
-  };
+
   let conversationProduct = PRODUCT_CHAT;
   // The Claw artifact index belongs to one Claw conversation only. The owner
   // conversation id it was last requested for is remembered so a product
@@ -372,35 +368,15 @@
     if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  // Chat/Claw separation: park the turns the panel currently shows for the active product.
-  // The nodes stay in memory with their listeners, so the other product's
-  // conversation is restored exactly as it was.
-  function parkProductTurns() {
-    const view = productViews[conversationProduct];
-    view.nodes = Array.from(messageList.children);
-    const panel = messageList.closest(".conversation");
-    view.continuousThread = panel?.dataset.continuousThread === "true";
-  }
-  function restoreProductTurns(product) {
-    const view = productViews[product];
-    messageList.replaceChildren();
-    for (const node of view.nodes) messageList.appendChild(node);
-    const panel = messageList.closest(".conversation");
-    if (panel) {
-      if (view.continuousThread) panel.dataset.continuousThread = "true";
-      else delete panel.dataset.continuousThread;
-    }
-  }
-  // Show the other product's conversation in the shared panel. The parked
-  // product keeps its turns, its conversation id and its saved record; only
-  // the visible panel changes.
+  // #2505: Chat and Claw show the SAME conversation. Opening the other screen
+  // changes the lane the next submit belongs to, and keeps the transcript, the
+  // conversation id and the stored record exactly as they are — so a thread
+  // started on one screen continues on the other.
   function switchConversationProduct(nextProduct) {
     const target = nextProduct === PRODUCT_CLAW ? PRODUCT_CLAW : PRODUCT_CHAT;
     if (conversationProduct === target) return;
-    parkProductTurns();
     conversationState.setProduct?.(target);
     conversationProduct = target;
-    restoreProductTurns(target);
     const hasTurns = messageList.children.length > 0;
     messageList.hidden = !hasTurns;
     emptyState.hidden = hasTurns;
@@ -420,8 +396,8 @@
   // threads still open directly on messages instead of replaying the hero.
   function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
     const conversationPanel = messageList.closest(".conversation");
-    // Chat/Claw separation: a Chat send shows the Chat conversation. The switch happens
-    // before the landing rule is read, so the rule sees the right product.
+    // #2505: a Chat send moves to the Chat lane. The switch happens before the
+    // landing rule is read, and it keeps the shared conversation.
     if (!preserveClaw) switchConversationProduct(PRODUCT_CHAT);
     const startingOnLanding = !restoreSaved
       && !emptyState.hidden
@@ -714,8 +690,8 @@
     }
     retry.addEventListener("click", async () => {
       article.remove();
-      // Chat/Claw separation: the retry replays the product's own request, never the other
-      // product's conversation id.
+      // #2505: the retry replays the request on the product that made it, with
+      // the one shared conversation id.
       conversationState.setProduct?.(retryContext.product || conversationProduct);
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
@@ -1192,9 +1168,9 @@
       activeRequestArticle = null;
     }
     inFlight = false;
-    // Chat/Claw separation: a new conversation resets the visible product only. The other
-    // product's conversation stays exactly as it was and is restored when
-    // the user returns to it. Server-owned records are never deleted here.
+    // #2505: a new conversation always starts a new one, on either screen: the
+    // single shared conversation is cleared. Server-owned records are never
+    // deleted here.
     conversationState.setProduct?.(conversationProduct);
     conversationState.reset();
     if (!preserveProject) {
@@ -1205,8 +1181,6 @@
     messageList.replaceChildren();
     messageList.hidden = true;
     delete messageList.closest(".conversation")?.dataset.continuousThread;
-    productViews[conversationProduct].nodes = [];
-    productViews[conversationProduct].continuousThread = false;
     clawArtifactShownFor = "";
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
@@ -1224,12 +1198,11 @@
     closeSidebar();
     input.focus();
   }
-  // Chat/Claw separation: the sidebar Chat entry returns to the Chat conversation while the
-  // user is in the Claw workspace, so the Chat conversation is restored
-  // instead of being lost. Inside the Chat state the same entry still starts
-  // a brand-new Chat conversation. Every other caller resets the view
-  // directly, because a sign-out, a project change or a delete must clear
-  // the conversation no matter which product is on screen.
+  // #2505: the sidebar Chat entry returns to the Chat lane while the user is in
+  // the Claw workspace. Inside the Chat state the same entry starts a new
+  // conversation. Every other caller resets the view directly, because a
+  // sign-out, a project change or a delete must clear the conversation no
+  // matter which product is on screen.
   function resetConversation(preserveProject = true) {
     if (conversationProduct === PRODUCT_CLAW && shell.dataset.state === "claw") {
       switchConversationProduct(PRODUCT_CHAT);
@@ -2454,12 +2427,11 @@
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
       if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
       clearAttachment();
-      // Chat/Claw separation: the saved thread is loaded into the product that owns it. The
-      // other product's conversation is parked, never deleted, and its
-      // conversation id is never reused for this thread.
+      // #2505: the saved thread is the ONE conversation, so it is loaded into
+      // the shared store. A thread that has Claw turns still opens on the Claw
+      // screen (its last lane), and the other screen shows the same record.
       const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
       const targetProduct = isVerifiedClawThread ? PRODUCT_CLAW : PRODUCT_CHAT;
-      parkProductTurns();
       messageList.replaceChildren();
       messageList.hidden = true;
       conversationState.resetProduct?.(targetProduct);
@@ -2480,8 +2452,6 @@
         if (item.role === "assistant") renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
-      // The rendered turns belong to the product that owns this thread.
-      productViews[targetProduct].nodes = Array.from(messageList.children);
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
@@ -5060,8 +5030,8 @@
     // explicitly enters it via openClawManual.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
-    // Chat/Claw separation: Claw shows the Claw conversation. The Chat turns are parked and
-    // restored when the user returns to Chat.
+    // #2505: entering Claw selects the Claw lane and keeps the same conversation,
+    // so the thread continues instead of restarting.
     switchConversationProduct(PRODUCT_CLAW);
     clawWorkspace.dataset.view = "general";
     // The shared Chat first-use hero also introduces Claw when the
