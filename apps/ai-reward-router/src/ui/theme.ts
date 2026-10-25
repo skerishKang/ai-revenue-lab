@@ -177,9 +177,15 @@ export const THEME_CSS_VARIABLES = `
       --ghost-hover-bg: rgba(255,255,255,.04);
     }`;
 
-/** Top-bar theme-toggle styles shared by both renderers. */
+/** Top-bar theme-toggle styles shared by both renderers. The control keeps a
+ * 44×44px hit area (iOS HIG / Material minimum touch target) at every width,
+ * with a clearly visible keyboard focus ring. */
 export const THEME_CSS_TOGGLE = `
-    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-left: 8px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface); color: var(--muted); transition: color .16s ease, background .16s ease, border-color .16s ease; }
+    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 8px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface); color: var(--muted); transition: color .16s ease, background .16s ease, border-color .16s ease; }
     .theme-toggle:hover { color: var(--text); border-color: var(--accent-border); background: var(--surface-strong); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .theme-toggle__icon { display: inline-flex; width: 17px; height: 17px; }
-    .theme-toggle__icon svg { width: 100%; height: 100%; }`;
+    .theme-toggle__icon svg { width: 100%; height: 100%; }
+    @media (max-width: 480px) {
+      .theme-toggle { width: 44px; height: 44px; margin-left: 4px; }
+    }`;
