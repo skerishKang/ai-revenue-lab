@@ -699,3 +699,15 @@ def test_a_google_route_without_the_capability_is_refused_by_the_capability() ->
 def test_the_tool_capable_google_route_still_streams_through_its_own_wire() -> None:
     # The Go route must not displace the lane that already served tools.
     require_stream_tool_wire("google/gemini-3.1-flash-lite", "google")
+
+
+def test_gemini_35_declares_tools_and_passes_the_google_capability_gates() -> None:
+    from app.pilot.model_registry_file import read_registry
+    from app.pilot.tool_channel import model_supports_tools, require_tool_capability
+
+    model_id = "google/gemini-3.5-flash-lite"
+    row = next(row for row in read_registry()["models"] if row["id"] == model_id)
+    assert row["capabilities"] == ["chat", "coding", "image", "tools"]
+    assert model_supports_tools(model_id) is True
+    require_tool_capability(model_id)
+    require_stream_tool_wire(model_id, "google")

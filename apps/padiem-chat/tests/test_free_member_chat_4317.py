@@ -70,11 +70,13 @@ async def test_anonymous_free_needs_no_paid_upgrade_and_stays_bounded() -> None:
     assert resolve_tier_policy(payload["messages"], "free").model_id == FREE_B14_MODEL_ID
 
 
-def test_no_browser_model_override_and_plus_hold_independent() -> None:
+def test_free_selection_stays_independent_of_the_google_paid_primary() -> None:
     free = resolve_tier_policy([{"role": "user", "content": "hello"}], "free")
     assert free.model_id == FREE_B14_MODEL_ID
     assert free.profile == "free"
-    assert not model_policy_is_executable("google/gemini-3.5-flash-lite")
+    assert model_policy_is_executable("google/gemini-3.5-flash-lite")
+    # A paid executable route never replaces Free's requested grade or model.
+    assert free.model_id != "google/gemini-3.5-flash-lite"
 
 @pytest.mark.asyncio
 async def test_signed_in_free_dispatches_exact_model_through_existing_b14_client() -> None:

@@ -1,7 +1,7 @@
 """#5009: B66 CGI grade -> model map, single truth for the three B66 lanes.
 
-Free stays Beam Free; Plus/Pro/Max use Muse Spark; a centrally verified
-Google admin is offered the administrator option on the same Muse model.
+Grade models follow the shared executable product-tier declarations.
+The test-phase Google decision (2026-10-25) therefore reaches every B66 lane.
 Labels are B66 product names. The raw B14 catalog is untouched.
 
 The browser never chooses the model freely: each lane matches the requested
@@ -12,17 +12,19 @@ from __future__ import annotations
 from starlette.requests import Request
 
 from padiem_control_plane.product_tier_routes import (
-    FREE_PRIMARY_B14_MODEL_ID,
-    MUSE_B14_MODEL_ID,
+    ProductTierLabel,
+    active_route_for,
 )
 
 B66_GRADES = ("free", "plus", "pro", "max")
 
 B66_GRADE_MODEL_IDS = {
-    "free": FREE_PRIMARY_B14_MODEL_ID,
-    "plus": MUSE_B14_MODEL_ID,
-    "pro": MUSE_B14_MODEL_ID,
-    "max": MUSE_B14_MODEL_ID,
+    tier: route.model_id
+    for tier, label in (
+        ("free", ProductTierLabel.FREE), ("plus", ProductTierLabel.PLUS),
+        ("pro", ProductTierLabel.PRO), ("max", ProductTierLabel.MAX),
+    )
+    if (route := active_route_for(label)) is not None and route.model_id
 }
 
 B66_GRADE_NAMES = {
