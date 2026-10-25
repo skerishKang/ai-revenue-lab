@@ -60,19 +60,20 @@ EDIT = ReviewedCellRevision(
 
 
 def _revised_workbook() -> tuple[bytes, bytes]:
-    from openpyxl import Workbook
-    from io import BytesIO
+    """Real bytes the Python path may legitimately edit, edited by the real editor.
 
-    book = Workbook()
-    sheet = book.active
-    sheet.title = "Quote"
-    sheet["A1"] = "기존 항목"
-    sheet["B2"] = 88_000_000
-    sheet["C2"] = "text kept"
-    buffer = BytesIO()
-    book.save(buffer)
-    book.close()
-    source = buffer.getvalue()
+    The workbook comes from the Resident suite's own fixture so the two sides
+    stage and read exactly the same artifact. An openpyxl-authored book is
+    fidelity-sensitive and belongs to the Office route, which the classifier, not
+    this test, decides.
+    """
+    kagent_tests = (Path(__file__).resolve().parents[2]
+                    / "korean-ai-code-agent" / "tests")
+    if str(kagent_tests) not in sys.path:
+        sys.path.insert(0, str(kagent_tests))
+    from test_4434_local_xlsx_workcopy_roundtrip import eligible_workbook_bytes
+
+    source = eligible_workbook_bytes()
     revised = PythonXlsxValueCopyEditor().revise_xlsx_copy(source, (EDIT,))
     assert IndependentZipXlsxRevisionVerifier().verify_only_reviewed_edits(
         source, revised, (EDIT,)) is True
