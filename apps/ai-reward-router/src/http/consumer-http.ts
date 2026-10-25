@@ -25,6 +25,19 @@ import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '.
 
 import type { PublicOpportunity, PublicOpportunityLoader } from '../public-supply/domain.js';
 import { loadVerifiedPublicOpportunities } from '../public-supply/verified-public-opportunities.js';
+import {
+  isThemeToggleRequest,
+  readThemeFromCookie,
+  themeCookieHeaderValue,
+  themeToggleHref,
+  toggleTheme,
+  type B64Theme,
+} from '../ui/theme.js';
+
+interface ConsumerThemeInfo {
+  readonly theme: B64Theme;
+  readonly themeToggleHref: string;
+}
 
 export type ConsumerCandidateLoader = (
   request: Request,
@@ -147,6 +160,14 @@ function storageUnavailableResponse(request: Request): Response {
   return jsonErrorResponse(request, 503, 'storage_unavailable');
 }
 
+/** Redirect target for a theme toggle: same route without the theme parameter. */
+function themeRedirectTarget(url: URL): string {
+  const params = new URLSearchParams(url.searchParams);
+  params.delete('theme');
+  const query = params.toString();
+  return query ? `${url.pathname}?${query}` : url.pathname;
+}
+
 /**
  * Creates the deployable B64 consumer HTTP boundary.
  *
@@ -184,6 +205,30 @@ export function createConsumerHttpHandler(
       return notFound(request);
     }
 
+    // Theme handling (issue #5822): the consumer surface runs under
+    // script-src 'none', so the sun/moon toggle is a plain same-origin link.
+    // A toggle link flips the persisted `b64_theme` cookie server-side and
+    // returns to the same route (filters intact) with a 303; every render
+    // then uses the stored theme, Light being the first-visit default.
+    const cookieHeader = request.headers.get('cookie');
+    const theme = readThemeFromCookie(cookieHeader);
+    if (isThemeToggleRequest(url)) {
+      if (request.method === 'POST') {
+        return methodNotAllowed(request);
+      }
+      return new Response(null, {
+        status: 303,
+        headers: withSecurityHeaders({
+          location: themeRedirectTarget(url),
+          'set-cookie': themeCookieHeaderValue(toggleTheme(theme)),
+        }),
+      });
+    }
+    const themeInfo: ConsumerThemeInfo = {
+      theme,
+      themeToggleHref: themeToggleHref(url.pathname, url.searchParams),
+    };
+
     let candidates: readonly AdClickConsumerCandidate[];
     try {
       candidates = await dependencies.loadCandidates(request);
@@ -205,7 +250,7 @@ export function createConsumerHttpHandler(
 
     if (url.pathname === '/today') {
       const todayViewModel = buildAdClickFirstTodayRoute(candidates, { publicOpportunities });
-      const html = renderAdClickFirstTodayRouteWeb(todayViewModel);
+      const html = renderAdClickFirstTodayRouteWeb(todayViewModel, themeInfo);
       return responseForMethod(request, html, {
         status: 200,
         headers: { 'content-type': 'text/html; charset=utf-8' },
@@ -221,7 +266,7 @@ export function createConsumerHttpHandler(
       const maxSeconds = maxRaw && Number.isFinite(Number(maxRaw)) && Number(maxRaw) > 0 ? Number(maxRaw) : null;
       const browseOptions: BuildAdClickFirstBrowseOptions = { category, query, maxSeconds, publicOpportunities };
       const browseViewModel = buildAdClickFirstBrowse(candidates, browseOptions);
-      const html = renderAdClickFirstBrowseWeb(browseViewModel);
+      const html = renderAdClickFirstBrowseWeb(browseViewModel, themeInfo);
       return responseForMethod(request, html, {
         status: 200,
         headers: { 'content-type': 'text/html; charset=utf-8' },
@@ -235,12 +280,12 @@ export function createConsumerHttpHandler(
       }
       const detailViewModel = buildAdClickFirstOpportunityDetail(candidates, id, { publicOpportunities });
       if (!detailViewModel.found) {
-        return responseForMethod(request, renderAdClickFirstOpportunityDetailWeb(detailViewModel), {
+        return responseForMethod(request, renderAdClickFirstOpportunityDetailWeb(detailViewModel, themeInfo), {
           status: 404,
           headers: { 'content-type': 'text/html; charset=utf-8' },
         });
       }
-      const html = renderAdClickFirstOpportunityDetailWeb(detailViewModel);
+      const html = renderAdClickFirstOpportunityDetailWeb(detailViewModel, themeInfo);
       return responseForMethod(request, html, {
         status: 200,
         headers: { 'content-type': 'text/html; charset=utf-8' },
@@ -405,7 +450,7 @@ export function createConsumerHttpHandler(
         filters: { status: filterStatus, vendor: filterVendor },
         availableOpportunities: publicOpportunities,
       });
-      const html = renderIncomePipelineWeb(pipelineViewModel);
+      const html = renderIncomePipelineWeb(pipelineViewModel, themeInfo);
       return responseForMethod(request, html, {
         status: 200,
         headers: { 'content-type': 'text/html; charset=utf-8' },
@@ -413,7 +458,7 @@ export function createConsumerHttpHandler(
     }
 
     const homeViewModel = buildAdClickFirstConsumerHome(candidates);
-    const html = renderAdClickFirstConsumerWeb(homeViewModel);
+    const html = renderAdClickFirstConsumerWeb(homeViewModel, themeInfo);
     return responseForMethod(request, html, {
       status: 200,
       headers: { 'content-type': 'text/html; charset=utf-8' },

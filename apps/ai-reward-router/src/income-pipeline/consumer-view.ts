@@ -2,6 +2,19 @@ import type { UserIncomeRecord, UserIncomeSummary, IncomePipelineStatus } from '
 import { INCOME_PIPELINE_STATUS_LABELS, INCOME_PIPELINE_STATUSES, formatCurrencyAmount, formatIncomeDate, filterUserIncomeRecords, sortUserIncomeRecords, buildUserIncomeSummary } from './domain.js';
 import type { PublicOpportunity } from '../public-supply/domain.js';
 import { toPublicOpportunityCard, isPublicOpportunityDisplayable } from '../public-supply/domain.js';
+import {
+  THEME_CSS_TOGGLE,
+  THEME_CSS_VARIABLES,
+  renderThemeToggleButton,
+  type B64Theme,
+} from '../ui/theme.js';
+
+export interface IncomePipelineRenderTheme {
+  /** Active theme; defaults to Light (first visit). */
+  readonly theme?: B64Theme;
+  /** Toggle-link target for this route (path + query with theme=toggle). */
+  readonly themeToggleHref?: string;
+}
 
 export interface IncomePipelineFilterState {
   readonly status: import('./domain.js').IncomePipelineStatus | null;
@@ -181,39 +194,32 @@ function renderAvailableOpportunities(opportunities: readonly PublicOpportunity[
   </section>`;
 }
 
-function renderShell(title: string, navItems: string, content: string): string {
+function renderShell(title: string, navItems: string, content: string, themeInfo: IncomePipelineRenderTheme = {}): string {
+  const theme = themeInfo.theme ?? 'light';
+  const toggleHref = themeInfo.themeToggleHref ?? '/pipeline?theme=toggle';
+  const toggleButton = renderThemeToggleButton(theme, toggleHref);
   return `<!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="${theme}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="color-scheme" content="${theme}" />
   <title>내 수익 관리 | PADIEM AI Reward Router</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #06080d; --bg-soft: #0b0f16;
-      --surface: rgba(255,255,255,.055); --surface-strong: rgba(255,255,255,.105);
-      --line: rgba(255,255,255,.14); --line-soft: rgba(255,255,255,.09);
-      --text: #f4f6fb; --muted: rgba(255,255,255,.68); --faint: rgba(255,255,255,.45);
-      --accent: #88c9ff; --accent-strong: #5fb3ff; --accent-dim: rgba(136,201,255,.14);
-      --gold: #efc984; --radius-card: 16px; --radius-btn: 10px;
-      --pad: clamp(16px, 4vw, 64px);
-      font-family: "SUIT Variable", "SUIT", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
-      font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
-    }
+${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; background: radial-gradient(1100px 480px at 50% -120px, rgba(136,201,255,.075), transparent 62%) var(--bg); color: var(--text); }
+    body { margin: 0; min-width: 320px; background: var(--bg-glow) var(--bg); color: var(--text); }
     a { color: inherit; text-decoration: none; }
     .shell { width: min(100%, 1200px); margin: 0 auto; padding: 0 var(--pad) 72px; }
-    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 calc(var(--pad) * -1); padding: 10px var(--pad) 8px; background: rgba(6,8,13,.78); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line-soft); }
+    .topbar { position: sticky; top: 0; z-index: 10; margin: 0 calc(var(--pad) * -1); padding: 10px var(--pad) 8px; background: var(--topbar-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line-soft); }
     .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; }
     .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: .16em; }
-    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: drop-shadow(0 0 12px rgba(136,201,255,.25)); }
+    .brand-mark { width: 26px; height: 26px; flex: 0 0 auto; filter: var(--brand-glow); }
     .brand-wordmark { line-height: 1; }
     .brand-divider { width: 1px; height: 14px; background: var(--line); flex: 0 0 auto; }
     .brand-product { font-size: 12px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
     .trust-note { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; }
+${THEME_CSS_TOGGLE}
     .primary-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; width: 100%; order: 3; padding: 8px 0 2px; }
     .primary-nav::-webkit-scrollbar { display: none; }
     .nav-item { flex: 0 0 auto; padding: 7px 13px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); border: 1px solid transparent; transition: color .16s ease, background .16s ease, border-color .16s ease; }
@@ -226,32 +232,32 @@ function renderShell(title: string, navItems: string, content: string): string {
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 14px; flex-wrap: wrap; }
     .section-head h2 { margin: 0; font-size: 19px; letter-spacing: -.025em; font-weight: 650; }
     .section-head > span { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
-    .empty-state { display: grid; justify-items: center; padding: 44px 24px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); text-align: center; }
-    .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid rgba(136,201,255,.22); color: var(--accent); }
+    .empty-state { display: grid; justify-items: center; padding: 44px 24px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--card-bg); text-align: center; }
+    .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
     .empty-state__mark-svg { width: 28px; height: 28px; }
     .empty-state h3 { margin: 16px 0 8px; font-size: 17px; letter-spacing: -.02em; font-weight: 650; }
     .empty-state p { margin: 0; max-width: 380px; color: var(--muted); font-size: 14px; line-height: 1.6; }
     .filter-bar { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: end; padding: 12px 0 2px; }
     .filter-bar label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; min-width: 0; }
     .filter-bar input, .filter-bar select { width: 100%; min-height: 44px; padding: 9px 12px; border-radius: var(--radius-btn); border: 1px solid var(--line-soft); background: var(--surface); color: var(--text); font-size: 14px; min-width: 0; }
-    .filter-bar button { grid-column: 1 / -1; min-height: 46px; padding: 0 22px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: #06080d; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .filter-bar button { grid-column: 1 / -1; min-height: 46px; padding: 0 22px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 700; cursor: pointer; }
     .summary-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
     .summary-card { padding: 16px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--surface); }
     .summary-label { display: block; font-size: 11px; color: var(--faint); font-weight: 600; letter-spacing: .04em; margin-bottom: 6px; }
     .summary-value { font-size: 20px; font-weight: 700; letter-spacing: -.02em; color: var(--gold); }
     .summary-value--expected { font-size: 14px; }
     .summary-value--actual { font-size: 14px; color: var(--accent); }
-    .pipeline-card { padding: 18px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045)); margin-bottom: 12px; }
+    .pipeline-card { padding: 18px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--card-bg); margin-bottom: 12px; }
     .pipeline-card__topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .pipeline-card h3 { margin: 10px 0 4px; font-size: 16px; line-height: 1.4; font-weight: 650; overflow-wrap: anywhere; }
     .pipeline-vendor { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
     .status-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
     .status-chip--saved { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
-    .status-chip--applied { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(136,201,255,.25); }
-    .status-chip--in_review, .status-chip--accepted, .status-chip--in_progress { background: rgba(239,201,132,.14); color: var(--gold); border: 1px solid rgba(239,201,132,.32); }
-    .status-chip--completed { background: rgba(136,201,255,.14); color: var(--accent); border: 1px solid rgba(136,201,255,.25); }
-    .status-chip--paid { background: rgba(100,220,130,.14); color: #64dc82; border: 1px solid rgba(100,220,130,.32); }
-    .status-chip--rejected, .status-chip--expired, .status-chip--cancelled { background: rgba(255,100,100,.14); color: #ff6464; border: 1px solid rgba(255,100,100,.32); }
+    .status-chip--applied { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .status-chip--in_review, .status-chip--accepted, .status-chip--in_progress { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
+    .status-chip--completed { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .status-chip--paid { background: var(--success-dim); color: var(--success); border: 1px solid var(--success-border); }
+    .status-chip--rejected, .status-chip--expired, .status-chip--cancelled { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger-border); }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
     .pipeline-amounts { display: flex; gap: 16px; margin: 10px 0; }
     .pipeline-amount { display: flex; flex-direction: column; gap: 2px; }
@@ -263,7 +269,7 @@ function renderShell(title: string, navItems: string, content: string): string {
     .save-form { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--surface); }
     .save-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
     .save-form input, .save-form select, .save-form textarea { width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--line-soft); background: var(--bg-soft); color: var(--text); font-size: 14px; font-family: inherit; }
-    .save-form button { min-height: 44px; padding: 0 22px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: #06080d; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .save-form button { min-height: 44px; padding: 0 22px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 700; cursor: pointer; }
     .save-form button:hover { background: var(--accent-strong); }
     .detail-link { font-size: 13px; color: var(--accent); font-weight: 600; }
     .detail-link:hover { text-decoration: underline; }
@@ -298,6 +304,7 @@ function renderShell(title: string, navItems: string, content: string): string {
           <span class="brand-product">AI Reward Router</span>
         </a>
         <span class="trust-note">내 수익 관리</span>
+        ${toggleButton}
         <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
       </div>
     </header>
@@ -348,12 +355,12 @@ export function buildIncomePipelineViewModel(input: {
   });
 }
 
-export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel): string {
+export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel, themeInfo: IncomePipelineRenderTheme = {}): string {
   const navItems = renderPrimaryNav('PIPELINE');
 
   if (viewModel.emptyState === 'NO_USER') {
     const content = renderEmptyState('로그인이 필요합니다. PADIEM 계정으로 로그인 후 이용해 주세요.');
-    return renderShell('내 수익 관리', navItems, content);
+    return renderShell('내 수익 관리', navItems, content, themeInfo);
   }
 
   const summaryHtml = viewModel.summary ? renderSummary(viewModel.summary) : '';
@@ -403,5 +410,5 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel): str
     ${saveFormHtml}
     ${availableHtml}`;
 
-  return renderShell('내 수익 관리', navItems, content);
+  return renderShell('내 수익 관리', navItems, content, themeInfo);
 }
