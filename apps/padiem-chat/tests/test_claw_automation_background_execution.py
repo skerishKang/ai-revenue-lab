@@ -44,7 +44,7 @@ from kagent.claw_automation_trigger import (
     ClawAutomationTrigger,
     ClawAutomationTriggerBoundary,
 )
-from kagent.claw_memory import ClawAlert, ClawFollowupTask
+from kagent.claw_memory import ClawAlert, ClawAlertSeverity, ClawFollowupTask
 from kagent.contracts import ClawRunStatus
 from kagent.p01_adapter import ClawOrchestrationOutcome, P01AdapterError
 from kagent.runs import ClawRun
@@ -915,7 +915,11 @@ async def test_p01_failure_terminalizes_only_through_existing_bridge():
     stored = harness.store.get_run(expected, WORKSPACE)
     assert stored.status is ClawScheduledRunStatus.FAILED
     assert stored.error_message == terminal_bridge_module._FAILED_MESSAGE
-    assert harness.task_alert.writes == 0
+    # #5034 option 1: the failed row is terminalized only through the existing
+    # bridge, and that same bridge records exactly one status Alert. No second
+    # terminal or notification authority is reached.
+    assert harness.task_alert.writes == 1
+    assert harness.task_alert.add_alert_calls == 1
     assert [call["status"] for call in harness.history.record_calls] == ["failed"]
 
 
@@ -936,15 +940,25 @@ async def test_projection_authority_failure_propagates_instead_of_becoming_dispa
     assert harness.task_alert.writes == 0
 
 
-async def test_failed_run_produces_no_task_alert_creation():
+async def test_failed_run_records_no_task_and_exactly_one_status_alert():
+    """#5034 option 1: a failed run is a result, but never an output-derived Task.
+
+    The output boundary still creates nothing from a TASK_PROPOSAL rule whose run
+    failed; the separate status boundary records exactly one Alert.
+    """
+
     harness = Harness(adapter=RaisingAdapter())
     harness.store.save_rule(make_rule(output_type=ClawAutomationOutputType.TASK_PROPOSAL))
 
     await harness.compose(make_trigger())
 
     assert harness.task_alert.add_task_calls == 0
-    assert harness.task_alert.add_alert_calls == 0
-    assert harness.task_alert.writes == 0
+    assert harness.task_alert.add_alert_calls == 1
+    assert harness.task_alert.writes == 1
+    alert = next(iter(harness.task_alert.alerts.values()))
+    assert alert.severity is ClawAlertSeverity.WARN
+    # The P01 dispatch is not re-run by the notification boundary.
+    assert [run.run_id for run in harness.adapter.calls] == [run_id_for()]
 
 
 async def test_cancellation_propagates_and_creates_no_task_alert():

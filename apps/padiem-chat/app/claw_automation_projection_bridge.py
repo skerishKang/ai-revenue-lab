@@ -13,7 +13,18 @@ automation rule's explicit :class:`ClawAutomationOutputType` and a COMPLETED run
     TASK_PROPOSAL + COMPLETED -> exactly one ClawFollowupTask
     ALERT + COMPLETED         -> exactly one ClawAlert
     REPORT / DRAFT            -> no Task/Alert
-    FAILED / CANCELLED / PENDING / RUNNING -> no Task/Alert (no implicit alert)
+    FAILED / CANCELLED / PENDING / RUNNING -> no output-derived Task or Alert
+
+CENTRAL decision 2026-10-25 (#5034, option 1) adds a second, separate boundary
+that does not change any row above::
+
+    FAILED + terminal   -> exactly one status Alert (no output-derived record)
+    CANCELLED + terminal-> exactly one status Alert (no output-derived record)
+    COMPLETED / PENDING / RUNNING -> no status Alert
+
+A status Alert is derived from the run's own status and the owner's rule handle
+only. It never reads ``run.output``, an error string or a provider payload, so a
+failed run that happens to carry an output still leaks nothing into the inbox.
 
 Identity is deterministic (no random ids): the record id is a SHA-256 digest of
 ``(workspace_id, run_id, kind)``. A duplicate projection therefore never creates
@@ -54,6 +65,10 @@ from .claw_automation_owner_resolution import ResolvedAutomationOwner
 
 _TASK_PREFIX = "automation_task:"
 _ALERT_PREFIX = "automation_alert:"
+
+# The Claw alert title contract bounds a title at 256 characters; the status
+# wording plus the owner's own rule handle always fits well inside it.
+MAX_STATUS_ALERT_TITLE_CHARS = 256
 
 
 class AutomationProjectionError(RuntimeError):
@@ -306,9 +321,90 @@ async def _project_alert(
     return AutomationTaskAlertProjectionResult("alert", alert_id, True)
 
 
+# #5034 (CENTRAL decision 2026-10-25, option 1): a terminal FAILED/CANCELLED run
+# is a result the owner has to be able to see, even though it produces no
+# deliverable. The wording is derived from the run's own status; nothing here
+# reads run.output, an error string or a provider payload.
+_STATUS_ALERT_TITLE = {
+    ClawScheduledRunStatus.FAILED: "자동화 실패",
+    ClawScheduledRunStatus.CANCELLED: "자동화 취소",
+}
+
+
+async def project_terminal_run_status_alert(
+    *,
+    owner: ResolvedAutomationOwner,
+    rule: ClawAutomationRule,
+    run: ClawScheduledRun,
+    store: ClawTaskAlertProjectionStore,
+) -> AutomationTaskAlertProjectionResult:
+    """Project one FAILED/CANCELLED terminal run into exactly one status alert.
+
+    This is the execution-status boundary, kept separate from the output-derived
+    boundary above: a completed run's explicit output type stays the only way a
+    Task or an output Alert is created, and a failed run that happens to carry an
+    output still contributes nothing of that output to this record. COMPLETED,
+    PENDING and RUNNING create nothing here.
+
+    Deduplication is the existing deterministic ``(workspace_id, run_id, kind)``
+    identity, under its own ``status`` kind so it can never collide with the
+    output alert of the same run. A re-projection of the same run reads, refuses
+    to overwrite a foreign identity, and creates no second record — which is also
+    what stops a second Web Push for the same terminal event.
+    """
+
+    resolved = _require_owner(owner)
+    _require_workspace_consistency(owner=resolved, rule=rule, run=run)
+
+    wording = _STATUS_ALERT_TITLE.get(run.status)
+    if wording is None:
+        return AutomationTaskAlertProjectionResult(None, None, False)
+
+    # The rule identifier is the owner's own safe handle for this automation and
+    # is already the reference a task projection stores. The run's error text is
+    # deliberately not part of it.
+    title = f"{wording}: {rule.rule_id}"[:MAX_STATUS_ALERT_TITLE_CHARS]
+    alert_id = _deterministic_id(resolved.workspace_id, run.run_id, "status")
+    visible_to_members = (resolved.member_id,)
+    severity = (
+        ClawAlertSeverity.WARN
+        if run.status is ClawScheduledRunStatus.FAILED
+        else ClawAlertSeverity.INFO
+    )
+
+    existing = await store.get_alert(
+        alert_id, workspace_id=resolved.workspace_id, member_id=resolved.member_id
+    )
+    if existing is not None:
+        _require_alert_identity(
+            existing,
+            workspace_id=resolved.workspace_id,
+            kind=ClawAlertKind.AUTOMATION,
+            severity=severity,
+            title=title,
+            visible_to_members=visible_to_members,
+        )
+        return AutomationTaskAlertProjectionResult("alert", alert_id, False)
+
+    await store.add_alert(
+        ClawAlert(
+            alert_id=alert_id,
+            workspace_id=resolved.workspace_id,
+            kind=ClawAlertKind.AUTOMATION,
+            severity=severity,
+            title=title,
+            created_at=run.completed_at or run.started_at,
+            status=ClawAlertStatus.ACTIVE,
+            visible_to_members=visible_to_members,
+        )
+    )
+    return AutomationTaskAlertProjectionResult("alert", alert_id, True)
+
+
 __all__ = [
     "AutomationProjectionError",
     "AutomationTaskAlertProjectionResult",
     "ClawTaskAlertProjectionStore",
     "project_scheduled_run_output",
+    "project_terminal_run_status_alert",
 ]
