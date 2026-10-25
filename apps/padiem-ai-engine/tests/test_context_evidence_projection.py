@@ -123,10 +123,11 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # the magic, encryption and page gates plus the strict reader for merge, split,
 # markdown and preview. Only this source pin moves; the other hashes are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "bfd0369ae52d8173fe247f6c2e6d451989ac006109ea9a33daf4235728554213",
+    # Re-pinned for #5734 (2026-10-26): the OOXML archive gate now refuses a    # decompression bomb by inflation ratio instead of refusing a document for    # its size or member count. Both files changed on that commit; the guard this    # canary exists to catch is untouched.
+    CORE_PACKAGE / "document_normalization.py": "8c147c85728bbb9da40d0974e53e84e0e91155317d0a9dab9acf5ad5169042e6",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "8ca8a31abe59db7ef38ea81a1c288df273237746b90dd0a1480abc9b929947e2",
+    CORE_TESTS / "test_document_normalization.py": "19b54680866e6bcd40b5749e1f2938e4ef659b6cb47906f0f61d0124c2561be5",
 }
 
 REF = "doc_s3doc0000000000b"

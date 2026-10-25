@@ -638,11 +638,6 @@ def _assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> by
             "hwpx_assemble_model",
             "HWPX package assembly requires a non-empty tuple of members.",
         )
-    if len(members) > MAX_OOXML_ENTRIES:
-        raise DocumentNormalizationError(
-            "hwpx_assemble_member_count",
-            "HWPX package assembly exceeds the archive entry budget.",
-        )
     names: list[str] = []
     for member in members:
         if not isinstance(member, tuple) or len(member) != 2:

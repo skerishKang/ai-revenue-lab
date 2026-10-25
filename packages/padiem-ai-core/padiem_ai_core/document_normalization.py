@@ -38,13 +38,32 @@ MAX_PDF_PAGES = 80
 MAX_PDF_PAGE_TEXT_CHARS = 16_000
 PDF_NATIVE_TEXT_PRESENT = "native_text_present"
 PDF_NATIVE_TEXT_ABSENT = "no_native_text_ocr_may_be_required"
+#: #5573: the OOXML bounds below were absolute capacity limits, and a normal
+#: large workbook or deck tripped them: a single worksheet part passes 1MiB, and
+#: a real 100MB document passes 8MiB uncompressed. Capacity is the owner's to
+#: spend, so the refusal is gone. What stays describes a decompression bomb
+#: rather than a big document: the ratio between the bytes handed over and the
+#: bytes they claim to expand into. Real content sits in the low tens; the
+#: classic bomb sits in the tens of thousands, so the guard is nowhere near a
+#: size limit a legitimate file has to work to stay under.
+MAX_OOXML_TOTAL_INFLATION_RATIO = 1_000
+#: Retained for import compatibility and no longer enforced: an OOXML member
+#: count is bounded by the archive's own byte total, not by a PADIEM number.
 MAX_OOXML_ENTRIES = 256
 MAX_OOXML_MEMBER_NAME_CHARS = 255
+#: Retained for import compatibility and no longer enforced. The inflate work is
+#: bounded per member by the declared size the ratio check just admitted.
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
 MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
 MAX_XLSX_SHEETS = 20
+#: Retained as the default a caller gets when it asks for a table without
+#: saying how big; it no longer caps what a caller may ask for, and a workbook
+#: is never refused for exceeding it.
 MAX_XLSX_ROWS = 500
 MAX_XLSX_COLUMNS = 50
+#: Retained for import compatibility and no longer enforced: counting the cells
+#: a document contains and then refusing the document is a capacity limit, not
+#: integrity.
 MAX_XLSX_NONEMPTY_CELLS = 5_000
 
 TEXT_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
@@ -262,7 +281,8 @@ def validate_ooxml_member_name(name: object) -> str:
     return name
 
 
-def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: int) -> bytes:
+def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *,
+                         max_bytes: int | None = None) -> bytes:
     """Read one archive member with the inflate work bounded by the member bound.
 
     ``ZipFile.read``/``ZipExtFile.read()`` inflate the *entire* deflate stream
@@ -276,7 +296,10 @@ def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: 
     """
 
     info = member if isinstance(member, ZipInfo) else archive.getinfo(member)
-    limit = min(info.file_size, max_bytes)
+    # The declared size is the bound by default: :func:`validate_ooxml_archive`
+    # has already judged how far that declaration may inflate. An explicit
+    # ``max_bytes`` stays available for a caller with its own narrower budget.
+    limit = info.file_size if max_bytes is None else min(info.file_size, max_bytes)
     with archive.open(info) as handle:
         data = handle.read(limit + 1)
     if len(data) > limit:
@@ -316,42 +339,41 @@ def _bounded_ooxml_repackage(payload: bytes) -> bytes:
                 member.compress_type = ZIP_STORED
                 target.writestr(
                     member,
-                    _read_member_bounded(
-                        source, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    ),
+                    _read_member_bounded(source, info),
                 )
     return output.getvalue()
 
 
 def validate_ooxml_archive(payload: bytes) -> None:
-    # #4379: the archive byte total is not a PADIEM total. The entry count,
-    # the per-entry and the total uncompressed bounds below stay: they are
-    # the decompression-bomb protection, not a caller's data total.
+    # #5573: nothing here may refuse a document for being large. What stays is
+    # the structural judgement — member paths, encryption, and how far the
+    # declared sizes inflate relative to the bytes that carry them — because a
+    # decompression bomb is an integrity fact, not a capacity preference.
     if not isinstance(payload, (bytes, bytearray)) or not payload:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
     try:
         with ZipFile(BytesIO(bytes(payload))) as archive:
             infos = archive.infolist()
-            if len(infos) > MAX_OOXML_ENTRIES:
-                raise DocumentNormalizationError("ooxml_entry_count", "OOXML archive contains too many entries.")
             total = 0
+            compressed_total = 0
             for info in infos:
                 if not _safe_ooxml_member(info.filename):
                     raise DocumentNormalizationError("ooxml_unsafe_path", "OOXML archive contains an unsafe member path.")
                 if info.flag_bits & 0x1:
                     raise DocumentNormalizationError("ooxml_encrypted", "Encrypted OOXML entries are not supported.")
-                if info.file_size > MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES:
-                    raise DocumentNormalizationError("ooxml_entry_size", "OOXML archive entry exceeds the size limit.")
                 total += info.file_size
-                if total > MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES:
-                    raise DocumentNormalizationError("ooxml_total_size", "OOXML archive exceeds the total uncompressed size limit.")
                 lowered = info.filename.lower()
                 if lowered.endswith(".xml") or lowered.endswith(".rels"):
-                    xml = _read_member_bounded(
-                        archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    xml = _read_member_bounded(archive, info)
                     if b"<!doctype" in xml.lower():
                         raise DocumentNormalizationError("ooxml_dtd_rejected", "DTDs are not supported in OOXML documents.")
+            # The judgement is one number against another the caller already
+            # handed over: bytes in, bytes out. A stored member costs nothing to
+            # inflate, so it passes at any size, while a member that turns a few
+            # kilobytes into megabytes is the shape this exists to refuse.
+            if total > len(payload) * MAX_OOXML_TOTAL_INFLATION_RATIO:
+                raise DocumentNormalizationError(
+                    "ooxml_total_inflation", "OOXML archive inflates far beyond its stored bytes.")
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
@@ -406,9 +428,7 @@ def _extract_docx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
         with ZipFile(BytesIO(payload)) as archive:
             try:
                 root = _parse_xml(
-                    _read_member_bounded(
-                        archive, "word/document.xml", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    _read_member_bounded(archive, "word/document.xml")
                 )
             except KeyError as exc:
                 raise DocumentNormalizationError("docx_missing_part", "DOCX is missing word/document.xml.") from exc
@@ -489,9 +509,7 @@ def _extract_pptx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
                 if slide_number >= 10**9:
                     slide_number = position
                 root = _parse_xml(
-                    _read_member_bounded(
-                        archive, slide_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    _read_member_bounded(archive, slide_name)
                 )
                 pieces = [node.text or "" for node in root.iter() if _local_name(node) == "t"]
                 slide = "\n".join(piece for piece in pieces if piece).strip()
@@ -924,7 +942,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             names = archive.namelist()
             if "mimetype" in names:
                 declared = _read_member_bounded(
-                    archive, "mimetype", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    archive, "mimetype"
                 ).decode("utf-8", "replace").strip()
                 if declared != "application/hwp+zip":
                     raise DocumentNormalizationError(
@@ -935,9 +953,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             if not located:
                 raise DocumentNormalizationError("hwpx_missing_part", "HWPX is missing Contents/section<N>.xml parts.")
             for index, section_name in sorted(located):
-                part = _read_member_bounded(
-                    archive, section_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                )
+                part = _read_member_bounded(archive, section_name)
                 root = _parse_xml(part)
                 facts = _ordered_section_block_facts(index=index, root=root, part=part)
                 fact_sections.append(facts)
@@ -1022,9 +1038,7 @@ def read_hwpx_package_members(payload: bytes) -> tuple[HwpxPackageMember, ...]:
                 members.append(
                     HwpxPackageMember(
                         name=info.filename,
-                        payload=_read_member_bounded(
-                            archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                        ),
+                        payload=_read_member_bounded(archive, info),
                     )
                 )
     except DocumentNormalizationError:
