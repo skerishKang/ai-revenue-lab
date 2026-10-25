@@ -87,7 +87,10 @@ def main():
         sql = "".join(scripts[1:] if label == "003" else scripts[2:])
         write(path, sql)
     elif mode == "check-apply":
-        rows(json.loads(path.read_text(encoding="utf-8")), 1)
+        response = json.loads(path.read_text(encoding="utf-8"))
+        blocks = response.get("result") if isinstance(response, dict) and response.get("success") is True else None
+        if not isinstance(blocks, list) or not blocks or any(not isinstance(v, dict) or v.get("success") is not True for v in blocks):
+            raise ValueError("D1 multi-statement migration failed")
         print("B62_PROJECT_FILES_APPLY_RESPONSE=PASS")
     else:
         raise ValueError("unknown operation")
