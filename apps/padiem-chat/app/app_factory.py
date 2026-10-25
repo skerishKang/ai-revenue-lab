@@ -141,6 +141,8 @@ from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
     OFFICE_PDF_PREVIEW_PATH, claw_office_pdf_preview,
+    OFFICE_XLSX_DOWNLOAD_PATH, claw_office_xlsx_download,
+    OFFICE_OUTPUTS_QUERY_PATH, claw_office_outputs_query,
 )
 from .claw_web_xlsx_source_routes import (
     WEB_SOURCES_PATH, WEB_SOURCE_DOWNLOAD_PATH,
@@ -821,6 +823,8 @@ def create_app(
         Route(CLAW_OFFICE_CANDIDATES_PATH, claw_office_candidates, methods=["GET"]),
         Route(CLAW_OFFICE_SELECT_PATH, claw_office_select_candidate, methods=["POST"]),
         Route(OFFICE_PDF_PREVIEW_PATH, claw_office_pdf_preview, methods=["GET"]),
+        Route(OFFICE_XLSX_DOWNLOAD_PATH, claw_office_xlsx_download, methods=["GET"]),
+        Route(OFFICE_OUTPUTS_QUERY_PATH, claw_office_outputs_query, methods=["GET"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
