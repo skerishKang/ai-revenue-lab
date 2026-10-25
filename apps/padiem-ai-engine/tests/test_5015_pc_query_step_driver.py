@@ -604,6 +604,7 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
     assert caught.value.code == "invalid_tool_arguments"
 
 
+@pytest.mark.parametrize("status", [422, 503])
 @pytest.mark.parametrize("upstream_code,expected_stage", (
     ("oracle_mesh_file_path_invalid", "pc_files_path_invalid"),
     ("oracle_mesh_file_call_invalid", "pc_files_call_invalid"),
@@ -612,7 +613,7 @@ def test_files_target_alias_cannot_authorize_a_different_pc_plan():
     ("PRIVATE_DOWNSTREAM_ERROR_FROM_UNTRUSTED_SOURCE", "pc_files_denied"),
 ))
 def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
-    upstream_code, expected_stage, capsys,
+    upstream_code, expected_stage, capsys, status,
 ):
     """No command replay, error-message disclosure or generic tool_failed."""
     import json
@@ -620,7 +621,6 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     from padiem_ai_core.tool_runtime import ToolHandlerError
 
     class DeniedResponse:
-        status = 422
 
         async def text(self):
             return json.dumps({
@@ -637,7 +637,9 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
 
         async def fetch(self, js_object):
             self.calls += 1
-            return DeniedResponse()
+            response = DeniedResponse()
+            response.status = status
+            return response
 
     service = DeniedService()
     with pytest.raises(ToolHandlerError) as caught:
@@ -655,9 +657,42 @@ def test_signed_pc_files_callback_retains_only_reviewed_failure_stage(
     assert service.calls == 1
     log = capsys.readouterr().out
     assert "stage=" + expected_stage in log
+    expected_code = upstream_code if not upstream_code.startswith("PRIVATE_") else "unavailable"
+    assert f"status={status} code={expected_code}" in log
     assert "PRIVATE_" not in log
     assert "sample.txt" not in log
 
+
+
+@pytest.mark.parametrize("kind", ["drive", "files"])
+@pytest.mark.parametrize("code", ["oracle_mesh_run_unavailable", "private value\nSECRET", {"secret": "SECRET"}, None])
+def test_pc_callbacks_log_only_bounded_refusal_code(kind, code, capsys):
+    import json
+    from kagent.pc_query_adapter import signed_chat_call
+    from app.claw_pc_query_step_driver import _signed_files_call
+    from padiem_ai_core.tool_runtime import ToolHandlerError
+
+    class Response:
+        status = 503
+        async def text(self):
+            return json.dumps({"ok": "SECRET", "error": {"code": code, "message": "SECRET"}})
+
+    class Service:
+        async def fetch(self, request):
+            return Response()
+
+    kwargs = dict(service=Service(), secret="s" * 32,
+                  request_factory=lambda *a, **kw: SimpleNamespace(js_object=None), mode="dispatch")
+    with pytest.raises(ToolHandlerError):
+        if kind == "drive":
+            asyncio.run(signed_chat_call(**kwargs, subject_id="subject", run_id="run"))
+        else:
+            asyncio.run(_signed_files_call(**kwargs, owner=("subject", "run", CHAT_APP_ID, None),
+                                          payload={"op": "list", "path": ".", "tool_call_ref": "call"}))
+    log = capsys.readouterr().out
+    expected = code if code == "oracle_mesh_run_unavailable" else "unavailable"
+    assert f"status=503 code={expected}" in log
+    assert "SECRET" not in log and "private value" not in log
 
 
 def test_external_drive_plan_is_admitted_once_without_a_model_plan():

@@ -38,6 +38,7 @@ from dataclasses import dataclass
 import hashlib
 import hmac
 import json
+import re
 import time
 from typing import Any, Awaitable, Callable, Mapping
 
@@ -141,6 +142,18 @@ def selected_device_id(arguments: Any) -> str | None:
     return value
 
 
+def pc_response_error_code(data: Any) -> str:
+    """Only the signed PC API's bounded code namespace, never error text."""
+    error = data.get("error") if isinstance(data, dict) else None
+    code = error.get("code") if isinstance(error, dict) else None
+    if isinstance(code, str) and len(code) <= 80 and (
+        code == "canonical_session_required"
+        or re.fullmatch(r"(?:oracle_mesh|claw_engine|pc_scope)_[a-z0-9_]+", code)
+    ):
+        return code
+    return "unavailable"
+
+
 async def signed_chat_call(
     *,
     service,
@@ -177,7 +190,10 @@ async def signed_chat_call(
     except Exception as exc:
         print(f"pc_query_chat_call mode={mode} stage=transport_error reason={type(exc).__name__}", flush=True)
         raise ToolHandlerError("pc_query_unavailable", "PC query outcome unavailable; do not replay") from exc
-    print(f"pc_query_chat_call mode={mode} status={status} ok={data.get('ok') if isinstance(data, dict) else None}", flush=True)
+    code_log = f" code={pc_response_error_code(data)}" if status != 200 else ""
+    ok = data.get("ok") if isinstance(data, dict) else None
+    log_ok = ok if isinstance(ok, bool) else None
+    print(f"pc_query_chat_call mode={mode} status={status}{code_log} ok={log_ok}", flush=True)
     if status != 200 or not isinstance(data, dict) or data.get("ok") is not True:
         raise ToolHandlerError("pc_query_denied", "PC query was denied or failed; no fallback execution")
     return data

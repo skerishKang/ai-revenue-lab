@@ -34,6 +34,7 @@ from padiem_ai_core.tool_registry import ToolRegistrySnapshot
 from padiem_ai_core.tool_resource_policy import ToolResourcePolicy
 
 from kagent.pc_query_adapter import (
+    pc_response_error_code,
     CHAT_APP_ID,
     CHAT_ENGINE_PC_DRIVE_URL,
     CHAT_PC_QUERY_AGENT_ID,
@@ -204,8 +205,10 @@ async def _signed_files_call(*, service, request_factory, secret, owner, payload
     # Log only a closed, reviewed stage identifier; never raw downstream
     # error text, model-selected path, customer filename, session or secret.
     print(
-        "pc_files_chat_call mode=%s status=%s ok=%s stage=%s" % (
-            mode, status, ok, stage if status != 200 or ok is not True else "ok",
+        "pc_files_chat_call mode=%s status=%s%s ok=%s stage=%s" % (
+            mode, status, (" code=" + pc_response_error_code(data)) if status != 200 else "",
+            ok if isinstance(ok, bool) else None,
+            stage if status != 200 or ok is not True else "ok",
         ),
         flush=True,
     )
