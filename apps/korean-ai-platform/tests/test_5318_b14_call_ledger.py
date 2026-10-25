@@ -496,7 +496,7 @@ def test_list_applies_filters_as_bound_parameters(store_client):
     select = binding.calls[0]
     assert "product = ?" in select[1] and "started_at >= ?" in select[1]
     assert "chat" in select[2] and "2026-10-01T00:00:00Z" in select[2]
-    assert select[2][-1] == 7
+    assert select[2][-2] == 7 and select[2][-1] == 0
 
 
 def test_an_unknown_query_parameter_is_refused_before_any_scan(store_client):
