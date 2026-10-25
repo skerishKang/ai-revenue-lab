@@ -1,0 +1,233 @@
+{
+  "base": "d58d0bdc211f0a301d7caafce3d81fcec7dfa27e",
+  "head": "3689198d632cbf58410bdfe6c61f0b0dc646ecd8",
+  "css_blob": "815d29b2581fa4272349b17803d25b4c3b5cfc4c",
+  "note": "Product CSS bytes match the head blob; measurements taken pre-publication. Before uses unchanged base CSS via a browser route for interaction-polish.css. Original _capture/assertions unchanged. Same Linux Chromium; Korean fallback glyphs differ from CI. 2400px test-only spacer makes the post-QA general conversation scrollable for the additional 1000px wheel check.",
+  "results": [
+    {
+      "case": "before",
+      "sha": "d58d0bdc211f0a301d7caafce3d81fcec7dfa27e",
+      "server": "http://127.0.0.1:8765",
+      "server_command": [
+        "/workspace/scratch/0442e548bf08/audit-a/apps/padiem-chat/.venv/bin/python",
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8765"
+      ],
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "script": ".github/scripts/b62_chat_gutter_visual_qa.py",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "chromium": "140.0.7339.16",
+      "conversation_y": -139,
+      "topbar_bottom": 65,
+      "expected_y_min": 64,
+      "target_status": "FAIL",
+      "target_measurements": {
+        "x": 15,
+        "y": -139,
+        "width": 738,
+        "height": 1163.17
+      },
+      "scroll_y": 201,
+      "screenshot": "/workspace/scratch/0442e548bf08/mobile-evidence/final/before/before-d58d0bdc-768x1024.png",
+      "capture_status": "FAIL",
+      "exception_class": "AssertionError",
+      "message": "before Claw conversation overlaps topbar: y=-139.0 topbar_bottom=65.0",
+      "tracked_status_after": "M apps/padiem-chat/static/interaction-polish.css"
+    },
+    {
+      "case": "after-390",
+      "sha": "d58d0bdc211f0a301d7caafce3d81fcec7dfa27e",
+      "server": "http://127.0.0.1:8765",
+      "server_command": [
+        "/workspace/scratch/0442e548bf08/audit-a/apps/padiem-chat/.venv/bin/python",
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8765"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "script": ".github/scripts/b62_chat_gutter_visual_qa.py",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "chromium": "140.0.7339.16",
+      "conversation_y": 62,
+      "topbar_bottom": 62,
+      "expected_y_min": 61,
+      "target_status": "PASS",
+      "target_measurements": {
+        "x": 13,
+        "y": 62,
+        "width": 364,
+        "height": 782
+      },
+      "scroll_y": 0,
+      "screenshot": "/workspace/scratch/0442e548bf08/mobile-evidence/final/after-390/after-390-d58d0bdc-390x844.png",
+      "capture_status": "PASS",
+      "geometry": {
+        "conversationY": 62,
+        "topbarBottom": 62,
+        "topbarTop": 0,
+        "documentScroll": 0,
+        "clientHeight": 780,
+        "scrollHeight": 1187,
+        "overflow": "auto"
+      },
+      "scroll": {
+        "top": 0,
+        "conversationScroll": 1000,
+        "documentScroll": 0
+      },
+      "menu_visible_and_clicked": true,
+      "tracked_status_after": "M apps/padiem-chat/static/interaction-polish.css"
+    },
+    {
+      "case": "after-768",
+      "sha": "d58d0bdc211f0a301d7caafce3d81fcec7dfa27e",
+      "server": "http://127.0.0.1:8765",
+      "server_command": [
+        "/workspace/scratch/0442e548bf08/audit-a/apps/padiem-chat/.venv/bin/python",
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8765"
+      ],
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "script": ".github/scripts/b62_chat_gutter_visual_qa.py",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "chromium": "140.0.7339.16",
+      "conversation_y": 65,
+      "topbar_bottom": 65,
+      "expected_y_min": 64,
+      "target_status": "PASS",
+      "target_measurements": {
+        "x": 15,
+        "y": 65,
+        "width": 738,
+        "height": 959
+      },
+      "scroll_y": 0,
+      "screenshot": "/workspace/scratch/0442e548bf08/mobile-evidence/final/after-768/after-768-d58d0bdc-768x1024.png",
+      "capture_status": "PASS",
+      "geometry": {
+        "conversationY": 65,
+        "topbarBottom": 65,
+        "topbarTop": 0,
+        "documentScroll": 0,
+        "clientHeight": 957,
+        "scrollHeight": 1161,
+        "overflow": "auto"
+      },
+      "scroll": {
+        "top": 0,
+        "conversationScroll": 1000,
+        "documentScroll": 0
+      },
+      "menu_visible_and_clicked": true,
+      "tracked_status_after": "M apps/padiem-chat/static/interaction-polish.css"
+    },
+    {
+      "case": "after-1440",
+      "sha": "d58d0bdc211f0a301d7caafce3d81fcec7dfa27e",
+      "server": "http://127.0.0.1:8765",
+      "server_command": [
+        "/workspace/scratch/0442e548bf08/audit-a/apps/padiem-chat/.venv/bin/python",
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8765"
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "script": ".github/scripts/b62_chat_gutter_visual_qa.py",
+      "script_blob": "fde0895633358ff95dcc8d71b39ba0fac1f4a404",
+      "script_sha256": "a36e2e632ed9a52099b1af13088d2b40541b51a1a637f74f247c75581a76e036",
+      "python": "3.12.14",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "playwright": "1.55.0",
+      "environment": {
+        "PADIEM_CHAT_RUNTIME_MODE": "mock",
+        "PADIEM_CHAT_LIVE_ENABLED": "false",
+        "PADIEM_CHAT_WEB_PROVIDER": "off"
+      },
+      "assertion_executions": 1,
+      "chromium": "140.0.7339.16",
+      "conversation_y": 94,
+      "topbar_bottom": 78,
+      "expected_y_min": 77,
+      "target_status": "PASS",
+      "target_measurements": {
+        "x": 309.59,
+        "y": 94,
+        "width": 621.59,
+        "height": 790
+      },
+      "scroll_y": 0,
+      "screenshot": "/workspace/scratch/0442e548bf08/mobile-evidence/final/after-1440/after-1440-d58d0bdc-1440x900.png",
+      "capture_status": "PASS",
+      "geometry": {
+        "conversationY": 94,
+        "topbarBottom": 78,
+        "topbarTop": 0,
+        "documentScroll": 0,
+        "clientHeight": 788,
+        "scrollHeight": 1222,
+        "overflow": "auto"
+      },
+      "tracked_status_after": "M apps/padiem-chat/static/interaction-polish.css"
+    }
+  ]
+}
