@@ -172,6 +172,29 @@ def test_the_voice_waveform_and_the_send_arrow_share_one_slot() -> None:
     assert 'button.id = MIC_BUTTON_ID;' in _read("voice-composer.js")
 
 
+def test_the_faces_move_by_attribute_not_by_an_invisible_property() -> None:
+    """The slot's two faces are <svg>, which has no `hidden` IDL property.
+
+    `arrow.hidden = true` on an SVGElement writes a plain JS expando: it is
+    readable back in the same script, it satisfies a test that reads the same
+    property, and it changes nothing the browser draws. That is how an empty
+    signed-in composer kept showing the send arrow while every check passed.
+    The content attribute the stylesheet keys on is what has to move, and the
+    outside-click guard has to treat the icon inside the button as the slot.
+    """
+    menu = _read("voice-ui-menu.js")
+    assert "arrow.hidden = voice;" not in menu
+    assert "waveIcon.hidden = !voice;" not in menu
+    assert '.hidden =' not in menu.split("function setFaceHidden")[1][:400]
+    assert 'face.setAttribute("hidden", "");' in menu
+    assert "face.removeAttribute(\"hidden\");" in menu
+    assert "setFaceHidden(arrow, voice);" in menu
+    assert "setFaceHidden(waveIcon, !voice);" in menu
+    # A real click targets the icon, so containment decides, not identity.
+    assert "send.contains(event.target)" in menu
+    assert "event.target !== send" not in menu
+
+
 def test_the_slot_switches_on_the_input_state() -> None:
     menu = _read("voice-ui-menu.js")
     # Whitespace alone is an empty composer.
@@ -358,6 +381,14 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
     The page is a harness, not the product shell: the voice picker needs an
     account whose voice identity the server accepted, and a guest session
     must not be shown a control that cannot work.
+
+    What is asserted is what the user SEES. The two faces are <svg>, and an SVG
+    element has no `hidden` IDL property, so reading `el.hidden` proves nothing:
+    it is a plain JS expando that never moves the attribute the CSS keys on. The
+    product's first version wrote exactly that, shipped green in this suite, and
+    every signed-in composer kept showing the send arrow (#5561). The content
+    attribute and its computed display are therefore the contract here, with the
+    product stylesheet loaded so `display` means something.
     """
     page = browser.new_page(viewport={"width": 390, "height": 844})
     errors: list[str] = []
@@ -367,7 +398,7 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
           <div class="app-shell" data-state="chat">
             <form id="composerForm">
               <div class="composer-actions">
-                <button id="sendButton" type="submit">
+                <button class="send-button" id="sendButton" type="submit">
                   <svg class="send-arrow-icon" aria-hidden="true"></svg>
                   <svg class="send-waveform-icon" aria-hidden="true" hidden></svg>
                 </button>
@@ -378,6 +409,8 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
           </div>
         </body></html>"""
     )
+    page.add_style_tag(path=str(STATIC / "voice-composer.css"))
+    page.add_style_tag(path=str(STATIC / "voice-ui.css"))
     page.add_script_tag(path=str(STATIC / "voice-live-turn-controller.js"))
     page.evaluate(
         """() => {
@@ -394,13 +427,22 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
         return page.evaluate(
             """() => {
               const send = document.getElementById('sendButton');
-              const arrow = send.querySelector('.send-arrow-icon');
-              const wave = send.querySelector('.send-waveform-icon');
+              const one = (sel) => {
+                const el = send.querySelector(sel);
+                if (!el) return null;
+                const cs = getComputedStyle(el);
+                const r = el.getBoundingClientRect();
+                return {
+                  attr: el.hasAttribute('hidden'),
+                  display: cs.display,
+                  shown: r.width > 0 && cs.display !== 'none',
+                };
+              };
               const r = send.getBoundingClientRect();
               return {
                 action: send.dataset.primaryAction || null,
-                arrowHidden: arrow ? arrow.hidden : null,
-                waveHidden: wave ? wave.hidden : null,
+                arrow: one('.send-arrow-icon'),
+                wave: one('.send-waveform-icon'),
                 width: Math.round(r.width),
                 height: Math.round(r.height),
                 left: Math.round(r.left),
@@ -413,24 +455,35 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
     empty = slot()
     assert empty["waveButton"] is False, empty
     assert empty["action"] == "voice", empty
-    assert empty["arrowHidden"] is True, empty
-    assert empty["waveHidden"] is False, empty
+    # The waveform is the drawn face and the arrow is not.
+    assert empty["wave"] == {"attr": False, "display": "block", "shown": True}, empty
+    assert empty["arrow"] == {"attr": True, "display": "none", "shown": False}, empty
     assert empty["height"] >= 44, empty
     assert empty["width"] >= 44, empty
 
-    # The waveform face opens the M2/M3/M4 picker and does not submit.
-    page.evaluate("""() => document.getElementById('sendButton').click()""")
+    # A real pointer gesture lands on the visible icon inside the button, not on
+    # the button element. That click opens the M2/M3/M4 picker and submits nothing.
+    page.click(".send-waveform-icon")
     page.wait_for_timeout(150)
     opened = page.evaluate(
-        """() => ({
-          menuOpen: Boolean(document.getElementById('voiceModeMenu'))
-            && document.getElementById('voiceModeMenu').hidden === false,
-          expanded: document.getElementById('sendButton').getAttribute('aria-expanded'),
-          sent: window.__sent === true,
-        })"""
+        """() => {
+          const menu = document.getElementById('voiceModeMenu');
+          const cs = getComputedStyle(menu);
+          const r = menu.getBoundingClientRect();
+          return {
+            menuShown: r.width > 0 && cs.display !== 'none',
+            menuAttrHidden: menu.hasAttribute('hidden'),
+            expanded: document.getElementById('sendButton').getAttribute('aria-expanded'),
+            modes: Array.from(menu.querySelectorAll('[data-mode]'))
+              .map((item) => item.getAttribute('data-mode')),
+            sent: window.__sent === true,
+          };
+        }"""
     )
-    assert opened["menuOpen"] is True, opened
+    assert opened["menuShown"] is True, opened
+    assert opened["menuAttrHidden"] is False, opened
     assert opened["expanded"] == "true", opened
+    assert opened["modes"] == ["text", "tts", "call"], opened
     assert opened["sent"] is False, opened
 
     page.evaluate("""() => document.getElementById('sendButton').click()""")
@@ -447,8 +500,8 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
     page.wait_for_timeout(150)
     typed = slot()
     assert typed["action"] == "send", typed
-    assert typed["arrowHidden"] is False, typed
-    assert typed["waveHidden"] is True, typed
+    assert typed["arrow"] == {"attr": False, "display": "block", "shown": True}, typed
+    assert typed["wave"] == {"attr": True, "display": "none", "shown": False}, typed
     # The slot itself did not move.
     assert typed["left"] == empty["left"], (empty, typed)
     assert typed["width"] == empty["width"], (empty, typed)
@@ -465,7 +518,8 @@ def test_the_empty_composer_shows_the_waveform_and_the_typed_one_the_arrow(brows
     page.wait_for_timeout(150)
     blank = slot()
     assert blank["action"] == "voice", blank
-    assert blank["waveHidden"] is False, blank
+    assert blank["wave"]["shown"] is True, blank
+    assert blank["arrow"]["shown"] is False, blank
     assert not errors, errors
     page.close()
 
@@ -481,7 +535,7 @@ def test_a_guest_session_is_not_shown_a_voice_control_that_cannot_work(browser):
           <div class="app-shell" data-state="chat">
             <form id="composerForm">
               <div class="composer-actions">
-                <button id="sendButton" type="submit">
+                <button class="send-button" id="sendButton" type="submit">
                   <svg class="send-arrow-icon" aria-hidden="true"></svg>
                   <svg class="send-waveform-icon" aria-hidden="true" hidden></svg>
                 </button>
@@ -492,6 +546,8 @@ def test_a_guest_session_is_not_shown_a_voice_control_that_cannot_work(browser):
           </div>
         </body></html>"""
     )
+    page.add_style_tag(path=str(STATIC / "voice-composer.css"))
+    page.add_style_tag(path=str(STATIC / "voice-ui.css"))
     page.add_script_tag(path=str(STATIC / "voice-live-turn-controller.js"))
     page.evaluate(
         """() => {
@@ -506,16 +562,25 @@ def test_a_guest_session_is_not_shown_a_voice_control_that_cannot_work(browser):
     state = page.evaluate(
         """() => {
           const send = document.getElementById('sendButton');
-          const wave = send.querySelector('.send-waveform-icon');
+          const one = (sel) => {
+            const el = send.querySelector(sel);
+            const cs = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            return {attr: el.hasAttribute('hidden'), display: cs.display,
+                    shown: r.width > 0 && cs.display !== 'none'};
+          };
           return {
             action: send.dataset.primaryAction || null,
-            waveHidden: wave ? wave.hidden : null,
+            arrow: one('.send-arrow-icon'),
+            wave: one('.send-waveform-icon'),
             voiceAction: Boolean(window.PadiemVoiceMenu.isVoicePrimaryAction()),
           };
         }"""
     )
+    # An unusable voice channel is not offered as a face the user could click.
     assert state["action"] == "send", state
-    assert state["waveHidden"] is True, state
+    assert state["wave"] == {"attr": True, "display": "none", "shown": False}, state
+    assert state["arrow"] == {"attr": False, "display": "block", "shown": True}, state
     assert state["voiceAction"] is False, state
     assert not errors, errors
     page.close()

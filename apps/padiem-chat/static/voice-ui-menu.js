@@ -175,12 +175,23 @@
 
   // One slot, two faces: the waveform while the composer is empty, the arrow
   // once there is something to send. The slot itself never moves.
+  //
+  // The faces are <svg>, and an SVG element has no `hidden` IDL property —
+  // assigning one writes a plain JS expando and never touches the content
+  // attribute the CSS keys on. The attribute is what actually moves a face.
+  function setFaceHidden(face, isHidden) {
+    if (!face) return;
+    if (isHidden) face.setAttribute("hidden", "");
+    else face.removeAttribute("hidden");
+  }
+
   function syncPrimaryAction() {
     const voice = isVoicePrimaryAction();
     const arrow = send.querySelector(".send-arrow-icon");
     const waveIcon = send.querySelector(".send-waveform-icon");
-    if (arrow) arrow.hidden = voice;
-    if (waveIcon) waveIcon.hidden = !voice;
+    // The face the slot is NOT showing is the one that carries the attribute.
+    setFaceHidden(arrow, voice);
+    setFaceHidden(waveIcon, !voice);
     send.dataset.primaryAction = voice ? "voice" : "send";
     if (voice) {
       send.setAttribute("aria-haspopup", "menu");
@@ -320,7 +331,12 @@
   }
 
   win.addEventListener("click", function (event) {
-    if (menuOpen && menu && !menu.contains(event.target) && event.target !== send) closeMenu();
+    if (!menuOpen || !menu) return;
+    // A real click on the slot lands on the icon inside the button, not on the
+    // button element itself. Comparing identity here closed the picker in the
+    // same gesture that opened it, so the whole surface is the exclusion.
+    if (menu.contains(event.target) || send.contains(event.target)) return;
+    closeMenu();
   });
   win.addEventListener("keydown", function (event) {
     if (menuOpen && event.key === "Escape") closeMenu();
