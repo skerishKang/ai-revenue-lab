@@ -10,22 +10,26 @@ import os
 from playwright.sync_api import sync_playwright
 
 BASE=os.environ.get("B62_QA_BASE_URL","http://127.0.0.1:8765").rstrip("/")+"/"
-# Measured on the shared-origin build (height 900, after #5561 unified the
-# first-screen inset). The brand line and the hero row:
-#   1440 -> 0.00   900 -> 7.67   390 -> 1.66
-# The composer band: 0 / 8 / 8. The card row: 0 / 7.67 / 76.98, and that last
-# number is a genuine content difference -- Claw's phone first screen is its own
-# 2x2 connection grid, so it is reported, not pinned.
-# The ceilings keep each shared row from drifting while the remaining layout-model
-# difference (grid in Claw against block plus an inline first line in Chat) is
-# unified next; the desktop row stays exact.
-TOP_TOLERANCE={1440:{'eyebrow':2,'heading':2,'grid':2,'composer':2},
-               900:{'eyebrow':8,'heading':8,'grid':8,'composer':8},
-               390:{'eyebrow':2,'heading':2,'composer':8}}
+# Measured on the shared-origin build after #5561 unified the first-screen inset
+# and the layout-model slice unified the hero container. The brand line, the
+# hero line and the card row now start on the same row in Chat and Claw at every
+# viewport: 1920x1080, 1440x900, 900x900, 820x1180 and 390x844 all measured 0.00
+# (the row used to differ by 31.09 at desktop width, 7.67 on the narrow desktop
+# and 100.33 on the tablet). The remaining reported difference is the composer
+# band, 8px on the three narrow layouts: Claw's composer form resolves 8px
+# taller than Chat's at the same children and the same lane padding, so it is
+# measured and allowed rather than pinned, and it is a separate defect from the
+# shared first-screen row. The ceilings below keep every shared row exact on the
+# first screen and keep the composer band from drifting past that measurement.
+TOP_TOLERANCE={1920:{'eyebrow':2,'heading':2,'grid':2,'composer':2},
+               1440:{'eyebrow':2,'heading':2,'grid':2,'composer':2},
+               900:{'eyebrow':2,'heading':2,'grid':2,'composer':8},
+               820:{'eyebrow':2,'heading':2,'grid':2,'composer':8},
+               390:{'eyebrow':2,'heading':2,'grid':2,'composer':8}}
 with sync_playwright() as p:
  b=p.chromium.launch(headless=True)
- for width in (1440,900,390):
-  page=b.new_page(viewport={"width":width,"height":900})
+ for width,height in ((1920,1080),(1440,900),(900,900),(820,1180),(390,844)):
+  page=b.new_page(viewport={"width":width,"height":height})
   page.goto(BASE,wait_until="domcontentloaded",timeout=20000)
   page.wait_for_timeout(450)
   def metrics():
@@ -52,13 +56,19 @@ with sync_playwright() as p:
         const card=t.closest('.claw-home-card');if(!card||!t.getClientRects().length)return false;
         const cr=card.getBoundingClientRect(),tr=t.getBoundingClientRect();
         return cr.bottom-tr.bottom<26 && cr.right-tr.right<26}).length,
-      title:document.querySelector('#emptyState h1').innerText}
+      title:document.querySelector('#emptyState h1').innerText,
+      scroll:Math.round(document.documentElement.scrollWidth-window.innerWidth),
+      variant:document.querySelector('.app-shell').dataset.layoutVariant}
    }""")
   chat=metrics()
   if width<=920:page.locator("#mobileMenu").click()
   page.locator("#clawNavButton").click()
   page.wait_for_timeout(300)
   claw=metrics()
+  # Both surfaces are on the same page contract, and the band opens no
+  # horizontal scroll at any of the five viewports.
+  assert chat["variant"]=="conversation" and claw["variant"]=="conversation",(width,chat["variant"],claw["variant"])
+  assert chat["scroll"]<=1 and claw["scroll"]<=1,(width,chat["scroll"],claw["scroll"])
   for key in ("heading","grid","composer"):
    assert chat[key] is not None and claw[key] is not None,(width,key,chat,claw)
    for i in (0,1):
@@ -84,9 +94,10 @@ with sync_playwright() as p:
   assert claw["statusTopRight"]==3,(width,"status-placement",claw)
   assert claw["toggleBottomRight"]==3,(width,"toggle-placement",claw)
   assert "\uD074\uB85C" in claw["title"],(width,claw["title"])
-  print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}=PASS "
+  print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}x{height}=PASS "
         f"eyebrowTopDelta={round(abs(chat['eyebrow'][2]-claw['eyebrow'][2]),2)} "
         f"headingTopDelta={round(abs(chat['heading'][2]-claw['heading'][2]),2)} "
+        f"gridTopDelta={round(abs(chat['grid'][2]-claw['grid'][2]),2)} "
         f"composerTopDelta={round(abs(chat['composer'][2]-claw['composer'][2]),2)}",flush=True)
   page.close()
  b.close()
