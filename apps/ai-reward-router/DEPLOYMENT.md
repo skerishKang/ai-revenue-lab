@@ -71,10 +71,16 @@ Required server-owned bindings on this Worker (all fail closed when absent):
 
 | Binding | Meaning | When missing |
 |---|---|---|
-| `PADIEM_SESSION_SECRET` (secret) | Same value as the chat product's `PADIEM_CHAT_SESSION_SECRET`; lets this Worker verify the session cookie with the B62 authority algorithm | No request is authenticated (pipeline stays anonymous) |
-| `PADIEM_CHAT_SERVICE` (service) | REQUIRED for the income path. Binding to the deployed chat product worker, declared like the existing reference bridge (`reference/business-66-padiem-quote-v1/_worker.js`). Forwards the session cookie to chat's revocation-aware `GET /api/auth/status` so logged-out/revoked canonical sessions are blocked | Cookie-authenticated access is DENIED (fail closed). The deployed B64 path never falls back to signature-only verification; that helper exists only for isolated tests |
+| `CONTROL_PLANE_IDENTITY` (service) | REQUIRED for the income path. Binding to the shared Control Plane identity authority (`padiem-control-plane-identity`, already bound by padiem-chat / padiem-ai-engine / padiem-voice-stt). Resolves the cookie's canonical session id server-side (`resolve_auth_session` → `resolve_product_user_for_subject`) so the verified `usr_…` user id comes from the authority — no signing secret held, no client claim trusted, revoked/expired sessions blocked | Cookie-authenticated access is DENIED (fail closed) |
 | `PADIEM_B64_PUBLIC_BASE_URL` (var) | Exact reviewed public origin of this deployment, e.g. `https://chat.padiem.net`; required by the cookie-authenticated mutation same-origin guard (#3476 policy) | Cookie-carrying POSTs are denied 503 `origin_guard_unavailable` |
 | `B64_INCOME_DB` (D1) | Cloudflare D1 database `padiem-b64` for user income records | Pipeline storage answers 503 `storage_unavailable`; the non-durable in-memory prototype is never used as a production fallback |
+| `PADIEM_CHAT_SERVICE` (service) | Retained relay binding to the chat product worker (declared; currently unused by the deployed auth path after the authority switch) | No effect on the deployed auth path |
+| `PADIEM_SESSION_SECRET` (secret) | NOT bound — deliberately removed. B64 verifies identity through the authority, never with the signing key (the offline verifier exists only in isolated tests) | n/a — the deployed path must not depend on it |
+
+`PADIEM_SESSION_SECRET_SOURCE` / the activation gate workflow (#5853) remain
+as a FALLBACK path only: they are not needed while the authority binding is
+the deployed authentication path, and dispatching them adds a signing-key
+copy that the authority-based path avoids.
 
 The repository contract (`UserIncomeRepository`) has no global "delete everything"
 operation by design: every production statement is scoped to one `user_id`, and

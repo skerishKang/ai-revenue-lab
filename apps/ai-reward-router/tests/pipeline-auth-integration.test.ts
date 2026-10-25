@@ -8,7 +8,7 @@ import {
 import { D1UserIncomeRepository, UnboundUserIncomeRepository, type D1DatabaseLike } from '../src/income-pipeline/d1-user-income-repository.js';
 import type { UserIncomeRepository } from '../src/income-pipeline/store.js';
 import { createSqliteD1Binding } from './d1-binding-helper.js';
-import { mintFixtureTokenSet } from './helpers/padiem-test-tokens.js';
+import { mintFixtureTokenSet, signTestSessionToken } from './helpers/padiem-test-tokens.js';
 /**
  * Session tokens are minted at RUNTIME, never committed: signed HMAC blobs
  * are credential-like material and secret scanners flag them. The verifier
@@ -19,11 +19,19 @@ const FIXTURE_SECRET = 'b64-fixture-session-secret-0123456789abcdef';
 const ISSUED_AT = 3999999999;
 const MAX_AGE = 604800;
 const FIXTURES = await mintFixtureTokenSet(FIXTURE_SECRET, ISSUED_AT, MAX_AGE);
-const USER_A_TOKEN = FIXTURES.validToken;
-const USER_B_TOKEN = FIXTURES.validTokenWithSid;
-const EXPIRED_TOKEN = FIXTURES.expiredToken;
+void FIXTURES;
 const USER_A = 'usr_fixture_user_0001';
 const USER_B = 'usr_fixture_user_0002';
+// Real chat sessions carry the canonical sid claim — journey tokens include it.
+const USER_A_TOKEN = await signTestSessionToken(
+  { v: 1, uid: USER_A, exp: 4000604799, sid: 'sess_integration0000001' },
+  FIXTURE_SECRET,
+);
+const USER_B_TOKEN = await signTestSessionToken(
+  { v: 1, uid: USER_B, exp: 4000604799, sid: 'sess_integration0000002' },
+  FIXTURE_SECRET,
+);
+const EXPIRED_TOKEN = FIXTURES.expiredToken;
 
 const EXPECTED_ORIGIN = 'https://chat.padiem.net';
 
@@ -316,25 +324,53 @@ test('a mid-request D1 error surfaces as 503, never as a false 303 success', asy
   assert.match(await read.text(), /Before failure/);
 });
 
-test('deployment worker wires the real bindings end to end', async () => {
+test('deployment worker wires the authority bindings end to end', async () => {
   const worker = (await import('../src/worker.js')).default;
   const { binding } = createSqliteD1Binding();
-  const liveChatService = {
-    async fetch(input: Request) {
-      assert.equal(new URL(input.url).pathname, '/api/auth/status');
-      return new Response(JSON.stringify({ ready: true, authenticated: true, session_state: 'signed_in' }), { status: 200 });
+
+  // Fake Control Plane identity authority answering like the real RPCs.
+  const liveAuthority = {
+    async resolve_auth_session(payload: { session_id: string }) {
+      return {
+        ok: true,
+        session: {
+          session_id: payload.session_id,
+          product_id: 'b62',
+          subject: { subject_type: 'user', subject_id: 'sub_livecanonicalsubject01' },
+          issued_at: '2026-10-25T10:00:00.000Z',
+          expires_at: '2096-09-02T10:00:00.000Z',
+          state: 'active',
+          revision: 1,
+        },
+      };
+    },
+    async resolve_product_user_for_subject(payload: { product_id: string; canonical_subject_id: string }) {
+      return { ok: true, product_user_id: USER_A };
     },
   };
-  const revokedChatService = {
-    async fetch() {
-      return new Response(JSON.stringify({ ready: true, authenticated: false, session_state: 'expired' }), { status: 200 });
+  const revokedAuthority = {
+    async resolve_auth_session(payload: { session_id: string }) {
+      return {
+        ok: true,
+        session: {
+          session_id: payload.session_id,
+          product_id: 'b62',
+          subject: { subject_type: 'user', subject_id: 'sub_livecanonicalsubject01' },
+          issued_at: '2026-10-25T10:00:00.000Z',
+          expires_at: '2096-09-02T10:00:00.000Z',
+          state: 'revoked',
+          revision: 2,
+        },
+      };
+    },
+    async resolve_product_user_for_subject() {
+      return { ok: false, error: { code: 'canonical_auth_session_not_active', message: 'revoked' } };
     },
   };
   const env = {
-    PADIEM_SESSION_SECRET: FIXTURE_SECRET,
+    CONTROL_PLANE_IDENTITY: liveAuthority,
     PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
     B64_INCOME_DB: binding,
-    PADIEM_CHAT_SERVICE: liveChatService,
   };
   const save = await worker.fetch(
     saveRequest(USER_A_TOKEN, 'action=save&title=Worker+env+wiring&vendor=Prolific&status=SAVED'),
@@ -349,53 +385,50 @@ test('deployment worker wires the real bindings end to end', async () => {
 
   const revoked = await worker.fetch(
     saveRequest(USER_A_TOKEN, 'action=save&title=Revoked&vendor=V&status=SAVED'),
-    { ...env, PADIEM_CHAT_SERVICE: revokedChatService },
+    { ...env, CONTROL_PLANE_IDENTITY: revokedAuthority },
   );
-  assert.equal(revoked.status, 401, 'the wired worker blocks a session the chat authority says is gone');
+  assert.equal(revoked.status, 401, 'the wired worker blocks a session the authority says is revoked');
 
   const unbound = await worker.fetch(
     saveRequest(USER_A_TOKEN, 'action=save&title=No+DB&vendor=V&status=SAVED'),
     {
-      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
+      CONTROL_PLANE_IDENTITY: liveAuthority,
       PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
-      PADIEM_CHAT_SERVICE: liveChatService,
     },
   );
   assert.equal(unbound.status, 503);
   assert.equal(((await unbound.json()) as { error: string }).error, 'storage_unavailable');
 
-  const noSecret = await worker.fetch(
+  const noAuthority = await worker.fetch(
     new Request(`${EXPECTED_ORIGIN}/pipeline`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      body: 'action=save&title=No+secret&vendor=V&status=SAVED',
+      body: 'action=save&title=No+authority&vendor=V&status=SAVED',
     }),
-    { B64_INCOME_DB: binding, PADIEM_CHAT_SERVICE: liveChatService },
+    { B64_INCOME_DB: binding },
   );
-  assert.equal(noSecret.status, 401, 'without the session secret no request is authenticated');
+  assert.equal(noAuthority.status, 401, 'without the identity authority no request is authenticated');
 });
 
-test("CENTRAL gap: a missing Chat binding blocks even a validly-signed session (no offline fallback on the deployed path)", async () => {
+test('a missing Control Plane binding blocks even a well-formed session cookie (no offline fallback on the deployed path)', async () => {
   const worker = (await import('../src/worker.js')).default;
   const { binding } = createSqliteD1Binding();
-  // Perfectly signed, unexpired cookie for a session whose canonical liveness
-  // CANNOT be confirmed because PADIEM_CHAT_SERVICE is not configured: the
-  // deployed path must deny it instead of trusting the signature alone.
+  // Well-formed cookie whose canonical session CANNOT be resolved because
+  // CONTROL_PLANE_IDENTITY is not configured: the deployed path must deny it
+  // instead of trusting anything in the cookie.
   const save = await worker.fetch(
-    saveRequest(USER_A_TOKEN, 'action=save&title=No+chat+binding&vendor=V&status=SAVED'),
+    saveRequest(USER_A_TOKEN, 'action=save&title=No+authority+binding&vendor=V&status=SAVED'),
     {
-      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
       PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
       B64_INCOME_DB: binding,
-      // PADIEM_CHAT_SERVICE deliberately absent
+      // CONTROL_PLANE_IDENTITY deliberately absent
     },
   );
-  assert.equal(save.status, 401, 'missing liveness dependency must block authentication');
+  assert.equal(save.status, 401, 'missing authority dependency must block authentication');
 
   const read = await worker.fetch(
     new Request(`${EXPECTED_ORIGIN}/pipeline`, { headers: { cookie: `padiem_session=${USER_A_TOKEN}` } }),
     {
-      PADIEM_SESSION_SECRET: FIXTURE_SECRET,
       PADIEM_B64_PUBLIC_BASE_URL: EXPECTED_ORIGIN,
       B64_INCOME_DB: binding,
     },
@@ -403,8 +436,4 @@ test("CENTRAL gap: a missing Chat binding blocks even a validly-signed session (
   assert.equal(read.status, 200);
   const html = await read.text();
   assert.doesNotMatch(html, /usr_fixture_user_0001/, 'the unauthenticated session must see no records');
-
-  const probe = (await import('../src/income-pipeline/padiem-session-auth.js'))
-    .createUnconfiguredLivenessProbe('PADIEM_CHAT_SERVICE');
-  await assert.rejects(() => probe('padiem_session=whatever'), /not configured/);
 });

@@ -68,8 +68,12 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
   assert.equal(binding.migrations_dir, 'migrations/d1');
 
   const chatService = config.services?.find((svc) => svc.binding === 'PADIEM_CHAT_SERVICE');
-  assert.ok(chatService, 'wrangler.jsonc must declare the PADIEM_CHAT_SERVICE liveness relay binding');
+  assert.ok(chatService, 'wrangler.jsonc must declare the PADIEM_CHAT_SERVICE relay binding');
   assert.equal(chatService.service, 'padiem-chat');
+
+  const identityAuthority = config.services?.find((svc) => svc.binding === 'CONTROL_PLANE_IDENTITY');
+  assert.ok(identityAuthority, 'wrangler.jsonc must declare the CONTROL_PLANE_IDENTITY authority binding');
+  assert.equal(identityAuthority.service, 'padiem-control-plane-identity');
 
   const vars = config.vars as Record<string, string> | undefined;
   assert.equal(
@@ -87,9 +91,9 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
   const workerUrl = new URL('../../src/worker.ts', import.meta.url);
   const workerSource = fs.readFileSync(workerUrl, 'utf8');
   assert.ok(workerSource.includes('B64_INCOME_DB'), 'worker.ts must read the B64_INCOME_DB binding');
-  assert.ok(workerSource.includes('PADIEM_SESSION_SECRET'), 'worker.ts must read the PADIEM_SESSION_SECRET secret');
+  assert.ok(workerSource.includes('CONTROL_PLANE_IDENTITY'), 'worker.ts must read the identity authority binding');
   assert.ok(workerSource.includes('PADIEM_B64_PUBLIC_BASE_URL'), 'worker.ts must read the reviewed public origin');
-  assert.ok(workerSource.includes('PADIEM_CHAT_SERVICE'), 'worker.ts must read the liveness relay binding');
+  assert.ok(!workerSource.includes('PADIEM_SESSION_SECRET'), 'the deployed path must not depend on the session signing secret');
 
   const storeUrl = new URL('../../src/income-pipeline/store.ts', import.meta.url);
   const storeSource = fs.readFileSync(storeUrl, 'utf8');
