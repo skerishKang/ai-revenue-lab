@@ -22,6 +22,7 @@ These tests pin three things:
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -305,3 +306,190 @@ def test_the_orchestration_snapshot_contract_is_unchanged() -> None:
 
     assert snapshot.user_id == PRODUCT_USER
     assert snapshot.engine_request["subject_id"] == CANONICAL_SUBJECT
+
+# #5573 / #5765: exercise the production-selected subclass through the real SDK.
+class _StreamTransport:
+    def __init__(self) -> None:
+        self.calls: list[dict] = []
+        self.closed = False
+
+    async def request(self, **kwargs):
+        raise AssertionError("stream must not fall back to buffered orchestration")
+
+    async def stream_request(self, **kwargs):
+        from padiem_ai_engine_client import EngineStreamTransportResponse
+
+        self.calls.append(kwargs)
+        event = {
+            "event_id": "evt_1", "run_id": "run_1", "trace_id": "trace_1",
+            "app_id": "padiem-chat", "kind": "run_started", "sequence": 1,
+        }
+        completed = {**event, "event_id": "evt_2", "kind": "run_completed", "sequence": 2}
+
+        async def chunks():
+            try:
+                for kind, value in (
+                    ("event", event),
+                    ("event", completed),
+                    ("orchestration", {
+                        "events": [event, completed],
+                        "execution": {"answer": "OK"},
+                        "approval_pause": None,
+                    }),
+                ):
+                    yield (json.dumps({"ok": True, kind: value}) + "\n").encode()
+            finally:
+                self.closed = True
+
+        return EngineStreamTransportResponse(
+            status=200, chunks=chunks(), headers={"content-type": "application/x-ndjson"},
+        )
+
+
+def _selected_stream_bridge(monkeypatch, *, with_resolver: bool):
+    resolver = _Resolver() if with_resolver else None
+    bridge = build_orchestration_bridge(
+        _env(), settings=LIVE, db_binding=object(), request_factory=_request_factory,
+        canonical_subject_resolver=resolver,
+    )
+    assert bridge is not None
+    assert isinstance(bridge, CanonicalSubjectB62EngineOrchestrationBridge) is with_resolver
+    transport = _StreamTransport()
+    monkeypatch.setattr(bridge._client, "_transport", transport)
+    return bridge, transport, resolver
+
+
+_STREAM_SELECTIONS = [
+    pytest.param(True, id="identity_authority_and_shadow_store_supply_resolver_selects_canonical"),
+    pytest.param(False, id="no_canonical_subject_resolver_selects_legacy"),
+]
+_PC_TOOLS = {"device_id": "dev_" + "a" * 32, "allowed_scopes": ["files_list"]}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("with_resolver", _STREAM_SELECTIONS)
+@pytest.mark.parametrize("pc_tools", [None, _PC_TOOLS], ids=["ordinary_turn", "pc_tools"])
+async def test_resolver_setting_selects_bridge_and_stream_passes_first_record(
+    monkeypatch, with_resolver, pc_tools,
+) -> None:
+    bridge, transport, resolver = _selected_stream_bridge(
+        monkeypatch, with_resolver=with_resolver,
+    )
+    subject = CANONICAL_SUBJECT if with_resolver else PRODUCT_USER
+    stream = bridge.start_stream(
+        user_id=PRODUCT_USER, messages=[{"role": "user", "content": "Hello"}],
+        skill=get_task_mode("auto"), model_id="b14/model", user_text="Hello",
+        conversation_id=None, pc_tools=pc_tools, subject_id=subject, session_id="session_1",
+    )
+    try:
+        first = await anext(stream)
+        assert first["event"]["kind"] == "run_started"
+        tail = [record async for record in stream]
+        assert tail[-1]["result"].answer == "OK"
+    finally:
+        await stream.aclose()
+    assert len(transport.calls) == 1
+    payload = json.loads(transport.calls[0]["body"])
+    assert payload["subject_id"] == subject
+    if pc_tools is None:
+        assert "pc_tools" not in payload
+    else:
+        assert payload["pc_tools"] == pc_tools
+    assert transport.closed
+    if resolver is not None:
+        assert resolver.calls == [PRODUCT_USER]
+        assert bridge._current_engine_subject.get() is None
+
+
+@pytest.mark.parametrize("with_resolver", _STREAM_SELECTIONS)
+def test_resolver_setting_selected_builder_pc_tools_none_preserves_request_bytes(
+    monkeypatch, with_resolver,
+) -> None:
+    from app import orchestration_bridge as bridge_module
+
+    monkeypatch.setattr(bridge_module.uuid, "uuid4", lambda: SimpleNamespace(hex="a" * 32))
+    bridge, _transport, _resolver = _selected_stream_bridge(
+        monkeypatch, with_resolver=with_resolver,
+    )
+    subject = CANONICAL_SUBJECT if with_resolver else PRODUCT_USER
+    kwargs = dict(
+        user_id=subject, messages=[{"role": "user", "content": "Hello"}],
+        skill=get_task_mode("auto"), model_id="b14/model",
+        conversation_id=None, subject_id=subject, session_id="session_1",
+    )
+    # The legacy builder is the existing wire contract; omission and explicit
+    # None must match its full serialized bytes, including field ordering.
+    baseline = B62EngineOrchestrationBridge.build_engine_request(**kwargs)
+    token = bridge._current_engine_subject.set(subject) if with_resolver else None
+    try:
+        omitted = bridge.build_engine_request(**kwargs)
+        explicit_none = bridge.build_engine_request(**kwargs, pc_tools=None)
+    finally:
+        if with_resolver:
+            bridge._current_engine_subject.reset(token)
+    encoded = [
+        json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()
+        for value in (baseline, omitted, explicit_none)
+    ]
+    assert encoded[0] == encoded[1] == encoded[2]
+    assert "pc_tools" not in explicit_none
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failure", ["resolver_unavailable", "subject_mismatch"])
+async def test_supplied_resolver_selects_canonical_stream_and_fails_closed_before_engine(
+    monkeypatch, failure,
+) -> None:
+    from app.orchestration_bridge import B62OrchestrationError
+
+    bridge, transport, resolver = _selected_stream_bridge(monkeypatch, with_resolver=True)
+    if failure == "resolver_unavailable":
+        async def unavailable(**kwargs):
+            raise RuntimeError("identity authority unavailable")
+        monkeypatch.setattr(resolver, "resolve_subject_id", unavailable)
+    stream = bridge.start_stream(
+        user_id=PRODUCT_USER, messages=[], skill=get_task_mode("auto"),
+        model_id="b14/model", user_text="Hello", conversation_id=None, pc_tools=None,
+        subject_id="subject:other" if failure == "subject_mismatch" else CANONICAL_SUBJECT,
+        session_id="session_1",
+    )
+    try:
+        with pytest.raises(B62OrchestrationError) as raised:
+            await anext(stream)
+    finally:
+        await stream.aclose()
+    assert raised.value.code == (
+        "canonical_subject_mismatch" if failure == "subject_mismatch"
+        else "control_plane_session_unavailable"
+    )
+    assert transport.calls == []
+    assert bridge._current_engine_subject.get() is None
+
+
+@pytest.mark.asyncio
+async def test_supplied_resolver_selects_canonical_stream_and_early_close_clears_subject(
+    monkeypatch,
+) -> None:
+    bridge, _transport, _resolver = _selected_stream_bridge(monkeypatch, with_resolver=True)
+    # Isolate this wrapper's ownership of the inherited iterator. SDK decoder
+    # finalization is a separate boundary, covered by its existing contracts.
+    closed = []
+
+    async def source(request, *, pc_progress):
+        try:
+            yield {"event": {"kind": "run_started"}}
+        finally:
+            closed.append(True)
+
+    monkeypatch.setattr(bridge._client, "stream_orchestration", source)
+    stream = bridge.start_stream(
+        user_id=PRODUCT_USER, messages=[], skill=get_task_mode("auto"),
+        model_id="b14/model", user_text="Hello", conversation_id=None, pc_tools=None,
+        subject_id=CANONICAL_SUBJECT, session_id="session_1",
+    )
+    try:
+        assert "event" in await anext(stream)
+    finally:
+        await stream.aclose()
+    assert closed == [True]
+    assert bridge._current_engine_subject.get() is None
