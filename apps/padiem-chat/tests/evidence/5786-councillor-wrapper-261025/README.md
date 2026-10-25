@@ -1,24 +1,43 @@
 # #5786 councillor blog wrapper — browser evidence
 
-Captured 2026-10-25 against a locally served Chat instance built from `main`
-(`PADIEM_CHAT_RUNTIME_MODE=mock`, `uvicorn app.main:app --port 8099`) in
-Chromium through Playwright.
+Captured 2026-10-25 in Chromium (Playwright). `before-*` came from the live
+site at the #5803 build; `after-*` / numbered files come from a locally served
+build of this branch (`PADIEM_CHAT_RUNTIME_MODE=mock`, `uvicorn --port 8099`).
+
+## Desktop face crop (the reason for this pass)
+
+| file | box | aspect | source height cropped |
+| --- | --- | --- | --- |
+| `00-before-1920-production.png` | 1920×940 | 2.043 | 93px of 720 (47px off the top) |
+| `01-light-1920.png` | 1920×1080 | 1.778 | 0px |
+| `02-light-1440.png` | 1440×810 | 1.778 | 0px |
+
+The source is 16:9, so any wider box forced `object-fit: cover` to eat the
+frame. Pinning the hero to `min(100svh, 56.25vw)` at ≥1000px makes the box and
+the source the same shape, and nothing is cropped. Below 1000px the mobile
+composition the owner approved is untouched (`03-light-820`, `04-light-390`).
+`before_measure.json`, `after-light_measure.json` and `after-dark_measure.json`
+carry the numbers per viewport.
+
+## Theme
 
 | file | what it shows |
 | --- | --- |
-| `01-hero-1920.png` | public hero with the R2 background video playing, at 1920 |
-| `02-hero-1440.png` | same hero at 1440: name, current office, two CTAs and the fact strip all inside the first screen |
-| `03-hero-820.png` | tablet |
-| `04-hero-390.png` | mobile: single column, no horizontal scroll |
-| `05-media-section-1440.png` | 2025 introduction interview (labelled as 2025 footage) plus the official-record link list |
-| `06-profile-activity-1440.png` | profile from the assembly registry and the activity timeline |
-| `07-signedin-footer-admin.png` | the management path in the footer, only after an authenticated status read |
-| `08-padiem-util-sns-unchanged.png` | `#padiem-util/sns` opening the **existing** util screen, unmodified |
-| `e2e_result.json` | measured keys from the S4 run |
-| `e2e_v2_result.json` | measured keys from the redesign run (video paint/play, four viewports, admin path) |
+| `01`–`04` | default Light at 1920 / 1440 / 820 / 390 |
+| `05`, `06` | the same page in Dark (topbar toggle) |
+| `07-light-profile.png` | light body: white canvas, hairline rules, SUIT/SUITE type |
+| `08-light-media-band.png` | the one dark band the owner allowed, with the 2025 interview labelled as 2025 footage |
 
-Session state is stubbed only for `GET /api/auth/status`, to exercise both
-branches of the management gate. No credential, cookie or private project data
-appears in these files. The hero and interview media are the councillor's
-office-supplied files served from `media.padiem.net`; they are referenced by
-URL and are **not** committed here.
+Toggling does not reload: scroll position and the playing hero video survive the
+switch, and the choice lives in `?theme=` rather than browser storage.
+
+## Unchanged contracts
+
+`e2e_result.json` / `e2e_v2_result.json` are the earlier S4 and #5803 runs, kept
+because they record the util-screen deep link (`#padiem-util/*` opening the
+existing PADIEM screens) and the guest/signed-in boundary that this pass did not
+change.
+
+No credential, cookie or private project data appears in these files. Hero and
+interview media are the councillor's office-supplied files served from
+`media.padiem.net`; they are referenced by URL and are not committed here.
