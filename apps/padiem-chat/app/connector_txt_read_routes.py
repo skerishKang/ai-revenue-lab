@@ -127,6 +127,19 @@ class BrokerTxtReadSource:
             command=command, material=material,
         )
 
+    async def enqueue_xlsx_revision_command(
+        self, *, command: dict[str, Any], material: dict[str, Any],
+    ) -> dict[str, Any]:
+        """#4434: queue one owner-approved XLSX revision over the same authority.
+
+        Same Broker, same atomic enqueue, same correlation checks. The revision
+        lane borrows this device-resolution surface rather than standing up a
+        second one, so a device, a consent and a binding have exactly one owner.
+        """
+        return await self._broker_client.enqueue_xlsx_revision_command(
+            command=command, material=material,
+        )
+
 
 def build_connector_txt_read_source(env: Any) -> BrokerTxtReadSource | None:
     """Trusted Worker composition only; missing/invalid binding is unconfigured."""
