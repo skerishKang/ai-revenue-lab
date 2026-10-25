@@ -227,10 +227,12 @@ def _pc_refusal(stage):
             "hint": "PC 작업이 거부되었거나 실패했습니다. 등록된 폴더 기준 상대경로만 허용됩니다. 실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."}
 
 
-def _pc_observing_handler(handler, *, unexpected_stage="pc_files_internal_error"):
+def _pc_observing_handler(handler, *, tool_id, unexpected_stage="pc_files_internal_error"):
     async def observed(arguments):
         token = _PC_CALL_PROGRESS.set(None)
         try:
+            print("pc_tool_invoke tool=%s args_present=%s" % (
+                tool_id, arguments is not None), flush=True)
             return await handler(arguments)
         except ToolHandlerError as exc:
             print("pc_files_chat_call mode=refusal stage=%s" % exc.code, flush=True)
@@ -604,13 +606,13 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     runtime.register(pc_drives_tool_spec(), _pc_observing_handler(
         _make_query_drives_handler(service=service, request_factory=request_factory,
                                   secret=secret, endpoint_url=endpoint_url),
-        unexpected_stage="pc_query_internal_error"))
+        tool_id=PC_DRIVES_TOOL_ID, unexpected_stage="pc_query_internal_error"))
     runtime.register(pc_list_files_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_LIST_FILES_TOOL_ID, op="list", service=service,
-        request_factory=request_factory, secret=secret)))
+        request_factory=request_factory, secret=secret), tool_id=PC_LIST_FILES_TOOL_ID))
     runtime.register(pc_read_file_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_READ_FILE_TOOL_ID, op="read", service=service,
-        request_factory=request_factory, secret=secret)))
+        request_factory=request_factory, secret=secret), tool_id=PC_READ_FILE_TOOL_ID))
     return EngineToolBinding(app_id=app_id, tool_runtime=runtime,
         registry=ToolRegistrySnapshot.from_entries(contract.registry_entries),
         authorities={agent_id: TrustedToolAuthority(canonical_agent_id=agent_id,

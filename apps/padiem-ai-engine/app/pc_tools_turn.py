@@ -14,7 +14,7 @@ import json
 import uuid
 
 from padiem_ai_core.agent_execution_bridge import AgentPlanExecutor
-from padiem_ai_core.execution_runtime import ExecutionResult
+from padiem_ai_core.execution_runtime import ExecutionResult, ExecutionRuntimeError
 from padiem_ai_core.orchestration import OrchestrationError
 from padiem_ai_core.contracts import RunStatus
 from padiem_ai_core.tool_channel import ToolDefinition
@@ -121,6 +121,17 @@ class PcToolsTurnRuntime:
         self.context = parse_pc_tools(payload)
 
     async def run(self, request):
+        try:
+            return await self._run(request)
+        except (OrchestrationError, ExecutionRuntimeError):
+            raise
+        except Exception as exc:
+            # Preserve cancellation; iter_ndjson owns the safe terminal record.
+            print("pc_tool_turn mode=exception stage=pc_tool_turn_failed reason=%s" %
+                  type(exc).__name__, flush=True)
+            raise OrchestrationError("pc_tool_turn_failed", "PC tool turn failed safely.") from exc
+
+    async def _run(self, request):
         service = self.service
         model_id = request.agent.model_policy.get("model")
         if (
@@ -160,9 +171,19 @@ class PcToolsTurnRuntime:
         call = calls[0]
         if call.name not in tool_names(self.context):
             raise OrchestrationError("pc_tool_scope_denied", "The requested PC scope was not offered.")
-        args = dict(call.arguments)
+        raw_args = getattr(call, "arguments", None)
+        # Only the no-argument tool accepts absent/empty arguments. Never turn
+        # other malformed values into a device grant or a file path.
+        if call.name == "query_drives" and (
+            raw_args is None or (isinstance(raw_args, str) and not raw_args.strip())
+        ):
+            args = {}
+        elif isinstance(raw_args, Mapping):
+            args = dict(raw_args)
+        else:
+            args = None
         expected = set() if call.name == "query_drives" else {"path"}
-        if set(args) != expected or (
+        if args is None or set(args) != expected or (
             expected and (not isinstance(args["path"], str) or not args["path"].strip()
                           or len(args["path"]) > 2048 or any(ord(c) < 32 for c in args["path"]))
         ):

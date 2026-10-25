@@ -524,6 +524,10 @@ class StructuredPCQueryStepDriver:
         if decision.get("action") == "tool":
             tool_id = decision.get("tool_id")
             arguments = decision.get("arguments")
+            if tool_id == PC_DRIVES_TOOL_ID and (
+                arguments is None or (isinstance(arguments, str) and not arguments.strip())
+            ):
+                arguments = {}
             if not isinstance(tool_id, str):
                 raise PCQueryStepError("model tool selection is invalid or unauthorized", detail="tool_selection_invalid")
             if (

@@ -693,3 +693,30 @@ def test_external_drive_plan_is_admitted_once_without_a_model_plan():
     assert len(recorded) == 1 and len(observed) == 2
     assert all(c["requested"] == c["admitted"] == "query_drives" for c in observed)
     assert all(c["ops"] == ["drives"] for c in observed)
+
+
+@pytest.mark.parametrize("argument_form", ["none", "missing", "empty_string", "empty_object"])
+def test_live_drive_step_normalizes_argumentless_decisions_and_keeps_plan_target(argument_form):
+    import json
+    from app.claw_pc_query_step_driver import build_live_pc_query_driver, _plan_step_arguments
+
+    decision = {"action": "tool", "tool_id": PC_DRIVES_TOOL_ID}
+    raw = {"none": None, "missing": None, "empty_string": "", "empty_object": {}}[argument_form]
+    if argument_form != "missing":
+        decision["arguments"] = raw
+
+    class Model:
+        async def execute(self, request):
+            return SimpleNamespace(answer=json.dumps(decision))
+
+    plan = {} if argument_form == "missing" else {"query_drives": raw}
+    assert _plan_step_arguments(plan, "query_drives") == {}
+    assert _plan_step_arguments({"query_drives": {"device_id": "office-pc"}}, "query_drives") == {"device_id": "office-pc"}
+    driver = build_live_pc_query_driver(
+        b14_client=Model(), model_id="test/route", model_policy={},
+        task_type=None, optimize_for=None,
+        tool_arguments={"query_drives": {"device_id": "office-pc"}})
+    context = AgentStepContext.with_results(run_id="run_arguments", step_index=1, input_text="drive inventory", results=())
+    result = asyncio.run(driver.next_step(context, object()))
+    assert result.invocation == ToolInvocation(
+        tool_id=PC_DRIVES_TOOL_ID, arguments={"device_id": "office-pc"})
