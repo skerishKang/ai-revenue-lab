@@ -537,8 +537,18 @@ def test_the_device_context_call_never_claims_a_pc_step_is_running(monkeypatch):
     state = _state(monkeypatch)
     status, body = _dispatch(state, _context_payload())
     assert status == 200, body
+    assert set(body) == {"ok", "device", "tools", "run_id", "roots"}
     assert state.history_store.status_writes == []
     assert state.history_store.run_rows[RUN]["status"] == "pending"
+
+
+def test_context_roots_contains_the_server_verified_approved_root(monkeypatch):
+    state = _state(monkeypatch)
+    status, body = _dispatch(state, _context_payload())
+    assert status == 200, body
+    assert body["roots"] == [ROOT]
+    assert body["roots"][0] == ROOT
+    assert state.history_store.rows == {}
 
 
 def test_a_status_poll_of_a_running_step_projects_running_too(monkeypatch):
