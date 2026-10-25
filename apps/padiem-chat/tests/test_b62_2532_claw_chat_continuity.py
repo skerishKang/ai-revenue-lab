@@ -118,11 +118,18 @@ def test_glass_kicker_uses_chat_eyebrow_ink() -> None:
 
 
 def test_page_eyebrow_shares_the_hero_vertical_origin() -> None:
-    """The brand line must land on the Chat/Claw row at any viewport height."""
+    """The brand line must land on the Chat/Claw row at any viewport height.
+
+    #5561: this used to restate the hero's inset as its own `clamp(52px, 7.4vh,
+    88px)` copy. A copy tracks one height only, and it was one of five places
+    that declared the same origin; the row now reads the shared token, so one
+    edit moves Chat, Claw and every page together.
+    """
     frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
     decl = frame.split("use the Chat/Claw eyebrow origin", 1)[1].split("!important", 1)[0]
     padding = [line for line in decl.splitlines() if line.strip().startswith("padding:")][0]
-    assert "calc(clamp(52px, 7.4vh, 88px) - 7px)" in padding
+    assert "calc(var(--padiem-first-screen-inset) - 7px)" in padding
+    assert "clamp(52px, 7.4vh, 88px)" not in padding, "a copied inset drifts from the hero"
     assert "78px" not in padding, "a fixed inset cannot track the height-relative hero inset"
     locale = (STATIC / "locale.js").read_text(encoding="utf-8")
     assert locale.count('"connectors-kicker": "Padiem Connectors"') == 2
