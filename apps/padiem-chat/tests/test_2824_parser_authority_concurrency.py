@@ -247,7 +247,7 @@ def test_the_installed_authority_holds_no_request_or_account_state() -> None:
         "_request_factory",
     )
 
-    from padiem_ai_core import document_parser_boundary
+    import padiem_ai_core.document_parser_boundary as document_parser_boundary
 
     source = Path(document_parser_boundary.__file__).read_text(encoding="utf-8")
     writers = [

@@ -204,6 +204,8 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "request_telemetry_enabled",
             # #4643: transport availability only, never plan/key or customer data.
             "voice_stt_available",
+            # #2824: parser-authority readiness only, never a binding name or path.
+            "binary_document_attachment_ready",
         }
         assert set(payload.keys()) == allowed_keys
         assert payload["voice_stt_available"] is False
