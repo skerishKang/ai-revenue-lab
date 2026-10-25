@@ -1888,12 +1888,17 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
         assert "reason=KeyError" in output
 
 
-@pytest.mark.parametrize("argument_form", ["missing", "none", "empty_object"])
-@pytest.mark.parametrize("step_failure", [False, True])
-@pytest.mark.parametrize("decision_source", ["native", "model_step"])
+@pytest.mark.parametrize("decision_source,step_failure,argument_form,target_case", [
+    (source, failure, form, target)
+    for source in ("native", "model_step")
+    for failure in (False, True)
+    for form in ("missing", "none", "empty_object")
+    for target in ("standard", "canonical", "schema_rejected")
+    if target != "schema_rejected" or (source == "model_step" and not failure)
+])
 @pytest.mark.asyncio
 async def test_drives_decision_invokes_real_handler_and_finishes(
-    monkeypatch, capsys, argument_form, decision_source, step_failure,
+    monkeypatch, capsys, argument_form, decision_source, step_failure, target_case,
 ):
     """Real PC turn/Core/step driver; only model answers and Chat are fakes.
 
@@ -1911,6 +1916,19 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
         _Request, _Response, _ScriptedModel, SIGNING_SECRET,
     )
 
+    device_id = "office-pc" if target_case == "standard" else "Ab3Cd4Ef5Gh6+Ij7@meshdomain1"
+    if target_case == "schema_rejected" and not step_failure:
+        # Restore the formerly hardcoded pattern at the real ToolSpec boundary.
+        from dataclasses import replace
+        from kagent import pc_query_adapter as adapter
+        original_spec = adapter.pc_drives_tool_spec
+        def old_spec():
+            spec = original_spec()
+            schema = dict(spec.input_schema)
+            schema["properties"] = {"device_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]{1,128}$"}}
+            return replace(spec, input_schema=schema)
+        monkeypatch.setattr(adapter, "pc_drives_tool_spec", old_spec)
+        monkeypatch.setattr(driver, "pc_drives_tool_spec", old_spec)
     calls, failures, decisions = [], [], []
     if step_failure:
         def fail_decision(_):
@@ -1924,7 +1942,7 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
             mode = body["mode"]
             if mode == "context":
                 return _Response({"ok": True, "device": {
-                    "device_id": "office-pc", "roots": ["C:\\\\"]},
+                    "device_id": device_id, "roots": ["C:\\\\"]},
                     "tools": ["query_drives"]})
             assert request.url == driver.CHAT_ENGINE_PC_DRIVE_URL
             if mode == "dispatch":
@@ -1999,11 +2017,12 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
     monkeypatch.setattr(service, "_attach_pc_query_step_driver", observe_attach)
     payload = _pc_turn_payload()
     payload["pc_tools"]["allowed_scopes"] = ["query_drives"]
+    payload["pc_tools"]["device_id"] = device_id
     if decision_source == "model_step":
         payload.pop("pc_tools")
         payload.update(agent_plan={"agent_id": "agent:padiem:chat-pc-query@1", "steps": [
             {"step_id": "query_drives", "tool_id": "claw.pc.query_drives", "objective": "Query drives"}]},
-            declared_plan="query_drives", tool_arguments={"query_drives": {"device_id": "office-pc"}})
+            declared_plan="query_drives", tool_arguments={"query_drives": {"device_id": device_id}})
     prepared = await service.prepare_stream(
         method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
         body=json.dumps(payload).encode(), pc_progress=True)
@@ -2012,6 +2031,30 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
     records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
     diagnostic = "\n".join(failures) or repr(records)
     output = capsys.readouterr().out
+    if target_case == "schema_rejected" and not step_failure:
+        assert "pc_core_invoke stage=input_schema_rejected tool=claw.pc.query_drives" in output, (output, records)
+        assert not [c for c in calls if c["mode"] == "dispatch"], records
+        assert "error" in records[-1], records
+        assert '"status": "completed"' not in json.dumps(records[-1]), records
+        assert device_id not in output
+        return
+    if not step_failure:
+        stages = [("invocation", "enter"), ("invocation", "done"),
+                  ("decision", "enter"), ("decision", "done"),
+                  ("run_active", "enter"), ("run_guard", "enter"),
+                  ("run_guard", "done"), ("run_active", "done"),
+                  ("tool_runtime_wait_for", "enter"), ("runtime_checks", "enter"),
+                  ("permissions_passed", "done"), ("schema_passed", "done"),
+                  ("handler_wait_for", "enter"), ("handler_wait_for", "done"),
+                  ("tool_runtime_wait_for", "done")]
+        positions = [output.index(f"pc_core_invoke stage={stage} tool=claw.pc.query_drives state={state}")
+                     for stage, state in stages]
+        assert positions == sorted(positions), output
+        assert "state=enter guard_injected=false" in output
+        assert "stage=handler_wait_for tool=claw.pc.query_drives state=enter timeout=300.0" in output
+        outer = next(line for line in output.splitlines() if "stage=tool_runtime_wait_for" in line and "state=enter" in line)
+        assert " timeout=" in outer
+        assert device_id not in output
     if decision_source == "native":
         expected_initial = {"action": "tool", "tool_id": "claw.pc.query_drives", "arguments": {}}
         assert attachments == initial_decisions == [expected_initial]
@@ -2035,6 +2078,7 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
     assert calls[0]["mode"] == "context", diagnostic
     assert [c["mode"] for c in calls if c["mode"] != "context"] == [
         "dispatch", "command_status", "result"], diagnostic
+    assert next(c for c in calls if c["mode"] == "dispatch")["device_id"] == device_id
     assert decisions[0]["tool_id"] == "claw.pc.query_drives", diagnostic
     assert "orchestration" in records[-1], diagnostic
     assert records[-1]["orchestration"]["execution"]["answer"] == "drive C", diagnostic

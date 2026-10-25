@@ -33,6 +33,7 @@ import time
 from typing import Protocol
 import uuid
 
+from ._pc_core_invoke import pc_core_log, pc_core_stage
 from .agent_approval import ApprovalPause, approval_pause_from_tool_error
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_profile_adapter import CompiledAgentProfile, effective_max_steps
@@ -512,20 +513,22 @@ class BoundedAgentRuntime:
             return False
         return self._elapsed(started) >= float(total_cap)
 
-    async def _ensure_run_active(self) -> None:
+    async def _ensure_run_active(self, *, diagnostic_tool_id: str | None = None) -> None:
         """Fail closed before model/tool dispatch when durable lease is revoked.
 
         Trusted hosts inject an owner/fingerprint-scoped ledger guard. This
         does not signal a running external Tool or replace Tool idempotency.
         """
-        if self._run_guard is None:
-            return
-        try:
-            active = self._run_guard()
-            if inspect.isawaitable(active):
-                active = await active
-        except Exception:
-            active = False
+        with pc_core_stage("run_guard", diagnostic_tool_id,
+                           guard_injected=self._run_guard is not None):
+            if self._run_guard is None:
+                return
+            try:
+                active = self._run_guard()
+                if inspect.isawaitable(active):
+                    active = await active
+            except Exception:
+                active = False
         if active is not True:
             raise AgentRuntimeError("agent_run_fenced", "Agent run is no longer active.")
 
@@ -729,6 +732,8 @@ class BoundedAgentRuntime:
 
             invocation = decision.invocation
             assert isinstance(invocation, ToolInvocation)
+            pc_core_log("decision", invocation.tool_id, "enter")
+            pc_core_log("decision", invocation.tool_id, "done")
 
             if budget.max_tool_calls is not None and tool_calls >= budget.max_tool_calls:
                 # #4379: a tool-call count is no longer a PADIEM ceiling. A
@@ -752,16 +757,18 @@ class BoundedAgentRuntime:
                     tool_events=tool_events,
                 )
 
-            await self._ensure_run_active()
+            with pc_core_stage("run_active", invocation.tool_id):
+                await self._ensure_run_active(diagnostic_tool_id=invocation.tool_id)
             try:
-                tool_result = await asyncio.wait_for(
-                    self._tool_runtime.execute(
-                        invocation,
-                        request.compiled_profile.runtime_profile,
-                        request.authorization,
-                    ),
-                    timeout=remaining,
-                )
+                with pc_core_stage("tool_runtime_wait_for", invocation.tool_id, timeout=remaining):
+                    tool_result = await asyncio.wait_for(
+                        self._tool_runtime.execute(
+                            invocation,
+                            request.compiled_profile.runtime_profile,
+                            request.authorization,
+                        ),
+                        timeout=remaining,
+                    )
             except asyncio.TimeoutError:
                 return self._terminal(
                     run_id=run_id,
@@ -773,6 +780,8 @@ class BoundedAgentRuntime:
             except asyncio.CancelledError:
                 raise
             except ToolRuntimeError as exc:
+                if exc.code == "invalid_tool_arguments":
+                    pc_core_log("input_schema_rejected", invocation.tool_id, "done")
                 if exc.event is not None:
                     tool_events.append(exc.event)
 
