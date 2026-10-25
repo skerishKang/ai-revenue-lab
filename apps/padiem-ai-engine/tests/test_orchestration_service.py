@@ -1573,3 +1573,154 @@ async def test_pc_tools_general_turn_replay_never_repeats_the_first_model_call()
     conflict=await service.orchestrate_payload(changed)
     assert conflict.status_code==409
     assert len(model.requests)==1
+
+
+@pytest.mark.parametrize("case,scope,args,expected_stage", [
+    ("normalized", "files_list", {"path": "c:/VERIFIED/padiem-test"}, None),
+    ("context", "files_list", {"path": "padiem-test"}, "pc_files_unconfigured"),
+    ("outside", "files_list", {"path": "C:/other/private.txt"}, "pc_files_path_invalid"),
+    ("missing_roots", "files_list", {"path": "C:/verified/padiem-test"}, "pc_files_path_invalid"),
+    ("dispatch", "files_list", {"path": "padiem-test"}, "pc_files_dispatch_unavailable"),
+    ("execution", "files_list", {"path": "padiem-test"}, "pc_files_execution_failed"),
+    ("read", "files", {"path": "padiem-test/file.txt"}, "pc_files_execution_failed"),
+    ("drives", "query_drives", {}, "pc_query_denied"),
+])
+@pytest.mark.asyncio
+async def test_pc_path_normalization_and_refusals_settle_the_real_stream(
+    monkeypatch, capsys, case, scope, args, expected_stage,
+):
+    """Real handler/Core/driver/NDJSON/client, with no provider or PC calls."""
+    from padiem_ai_core import StreamingExecutionRuntime
+    from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+    from tests.test_5574_pc_read_boundary_end_to_end import (
+        _FakePcEndpoint, _Request, _Response, _ScriptedModel, SIGNING_SECRET,
+        build_chat_pc_query_tool_binding, build_live_pc_query_driver,
+    )
+    from padiem_ai_engine_client.orchestration_stream import decode_orchestration_ndjson
+
+    class PC(_FakePcEndpoint):
+        async def fetch(self, request):
+            body = json.loads(request.body)
+            mode = body["mode"]
+            if mode == "context":
+                if case == "context":
+                    response = _Response({"ok": False, "error": {"code": "oracle_mesh_unconfigured"}})
+                    response.status = 503
+                    return response
+                response = await super().fetch(request)
+                data = json.loads(await response.text())
+                if case != "missing_roots":
+                    data["roots"] = ["C:\\verified\\"]
+                return _Response(data)
+            if mode == "dispatch" and case in {"dispatch", "drives"}:
+                self.legs.append(body)
+                response = _Response({"ok": False, "error": {"code": "oracle_mesh_dispatch_unavailable"}})
+                response.status = 422
+                return response
+            response = await super().fetch(request)
+            if mode == "command_status" and case in {"execution", "read"}:
+                data = json.loads(await response.text())
+                data["dispatch"]["state"] = "failed"
+                return _Response(data)
+            return response
+
+    class Native:
+        async def stream(self, request):
+            route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
+            yield B14StreamEvent(tool_call=B14StreamToolCall(id="call_pc_1", name=scope, arguments=args), route=route)
+            yield B14StreamEvent(done=True, finish_reason="tool_calls", route=route)
+        def stream_auto(self, request):
+            return self.stream(request)
+
+    pc = PC()
+    followups = _ScriptedModel([json.dumps({"action": "complete", "answer": "verified observation received"})])
+    binding = build_chat_pc_query_tool_binding(service=pc, request_factory=_Request, secret=SIGNING_SECRET)
+    def factory(model_id, model_policy, task_type, optimize_for, tool_arguments=None, initial_decision=None):
+        return build_live_pc_query_driver(
+            b14_client=followups, model_id=model_id, model_policy=model_policy,
+            task_type=task_type, optimize_for=optimize_for, service=pc,
+            request_factory=_Request, secret=SIGNING_SECRET,
+            tool_arguments=tool_arguments, initial_decision=initial_decision,
+        )
+    async def capable(_): return True
+    async def no_sleep(_): return None
+    monkeypatch.setattr(asyncio, "sleep", no_sleep)
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app, b14_stream_client=Native()),
+        pc_tools_capability=capable, tool_binding_resolver=lambda _: binding,
+        pc_query_step_driver_factory=factory,
+    )
+    payload = _pc_turn_payload()
+    payload["pc_tools"]["allowed_scopes"] = [scope]
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(payload).encode(), pc_progress=True,
+    )
+    chunks = [line.encode() async for line in service.iter_ndjson(prepared)]
+    async def source():
+        for chunk in chunks: yield chunk
+    lines = [item async for item in decode_orchestration_ndjson(source())]
+    assert "orchestration" in lines[-1], chunks
+    assert lines[-1]["orchestration"]["execution"]["answer"] == "verified observation received"
+    assert len(followups.prompts) == 1
+    if expected_stage is None:
+        assert pc.ops == ["list"]
+        assert pc.dispatches[0]["path"] == "padiem-test"
+    else:
+        assert expected_stage in followups.prompts[0]
+        assert '\\"ok\\": false' in followups.prompts[0] or '"ok": false' in followups.prompts[0]
+        assert any(item.get("pc_progress", {}).get("stage") == "refused" for item in lines)
+        if case in {"outside", "missing_roots", "context"}: assert not pc.dispatches
+    output = capsys.readouterr().out
+    assert "private.txt" not in output and "VERIFIED" not in output
+
+
+@pytest.mark.parametrize("scope,args", [
+    ("query_drives", {"path": "C:/private.txt"}),
+    ("files_list", {}),
+    ("files", {"path": ""}),
+    ("files_list", {"path": "x\ny"}),
+])
+@pytest.mark.parametrize("fatal", [False, True])
+@pytest.mark.asyncio
+async def test_pc_invalid_arguments_are_observed_logged_and_terminal(capsys, scope, args, fatal):
+    from padiem_ai_core import StreamingExecutionRuntime
+    from padiem_ai_core.b14_streaming import B14StreamEvent, B14StreamToolCall
+    from padiem_ai_engine_client.orchestration_stream import decode_orchestration_ndjson
+    class Native:
+        async def stream(self, request):
+            route = B14RouteMetadata(selected_provider="test", selected_model="test/route")
+            yield B14StreamEvent(tool_call=B14StreamToolCall(id="call_1", name=scope, arguments=args), route=route)
+            yield B14StreamEvent(done=True, finish_reason="tool_calls", route=route)
+        def stream_auto(self, request): return self.stream(request)
+    class Answer(MockEngineRuntime):
+        async def run(self, request):
+            assert not request.tools and request.tool_choice is None
+            observation = request.messages[-1]["content"]
+            assert '"ok": false' in observation and "pc_file_arguments_invalid" in observation
+            assert "private.txt" not in observation
+            if fatal: raise RuntimeError("private fatal sentinel")
+            return await super().run(request)
+    async def capable(_): return True
+    service = OrchestrationEngineService(
+        runtime_factory=lambda _: Answer("arguments refused"), b14_service_bound=True,
+        pc_streaming_runtime_factory=lambda app: StreamingExecutionRuntime(app_id=app, b14_stream_client=Native()),
+        pc_tools_capability=capable,
+    )
+    prepared = await service.prepare_stream(
+        method="POST", path=ORCHESTRATION_STREAM_PATH, content_type="application/json",
+        body=json.dumps(_pc_turn_payload()).encode(), pc_progress=True,
+    )
+    chunks = [line.encode() async for line in service.iter_ndjson(prepared)]
+    async def source():
+        for chunk in chunks: yield chunk
+    if fatal:
+        lines = [json.loads(chunk) for chunk in chunks]
+        assert "error" in lines[-1]
+    else:
+        lines = [item async for item in decode_orchestration_ndjson(source())]
+        assert lines[-1]["orchestration"]["execution"]["answer"] == "arguments refused"
+    assert any(item.get("pc_progress", {}).get("stage") == "refused" for item in lines)
+    assert "private fatal sentinel" not in str(chunks)
+    assert "pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid" in capsys.readouterr().out

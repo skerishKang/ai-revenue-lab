@@ -288,3 +288,22 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
     assert step.invocation.arguments == {
         "path": "meshcentral-padiem-trial.txt"
     }
+
+
+@pytest.mark.parametrize("path,roots,expected", [
+    ("C:/APP/data/sub", ["c:\\app\\data\\"], "sub"),
+    ("C:/app/data/", ["C:/app/data"], "."),
+    ("C:/app/data/sub/file.txt", ["C:/app", "C:/app/data/"], "sub/file.txt"),
+    ("C:/app/database/x", ["C:/app/data"], "C:/app/database/x"),
+    ("C:/other/x", ["C:/app/data"], "C:/other/x"),
+    ("C:/app/data/../outside", ["C:/app/data"], "../outside"),
+    ("relative/sub", ["C:/app/data"], "relative/sub"),
+    ("C:/app/data/sub", None, "C:/app/data/sub"),
+    ("C:/app/data/sub", [None, 4, ""], "C:/app/data/sub"),
+    ("//server/share/root/sub", ["\\\\server\\share\\root"], "sub"),
+])
+def test_verified_root_normalization_preserves_relative_path_guard(path, roots, expected):
+    normalized = driver._pc_path_against_verified_roots(path, {"roots": roots})
+    assert normalized == expected
+    if expected.startswith(("C:", "../")):
+        assert driver._pc_list_folder_prefix(normalized) is None

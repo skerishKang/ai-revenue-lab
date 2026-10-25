@@ -78,7 +78,7 @@ def _side_record(record: dict[str, Any]) -> dict[str, Any] | None:
             raise EngineNdjsonContractError("invalid_stream_record")
     if key == "pc_progress" and (
         data["kind"] not in {"command", "read"} or
-        data["stage"] not in {"accepted", "picked_up", "executing", "result"}
+        data["stage"] not in {"accepted", "picked_up", "executing", "result", "refused"}
     ):
         raise EngineNdjsonContractError("invalid_stream_record")
     return {key: dict(data)}

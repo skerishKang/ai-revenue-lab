@@ -57,6 +57,7 @@ from kagent.pc_query_adapter import (
     StructuredPCQueryStepDriver,
     build_pc_query_product_contract,
     make_query_drives_handler,
+    pc_drives_tool_spec,
     pc_list_files_tool_spec,
     pc_read_file_tool_spec,
     plan_step_arguments,
@@ -76,6 +77,7 @@ PC_FILES_READ_MAX_BYTES = 1_000_000
 
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
+_PC_CALL_PROGRESS: ContextVar[Any] = ContextVar("pc_call_progress", default=None)
 
 
 def _pc_progress_emitter(owner, dispatch_id, kind):
@@ -214,6 +216,55 @@ async def _signed_files_call(*, service, request_factory, secret, owner, payload
     return data
 
 
+
+def _pc_refusal(stage):
+    """Closed diagnostic data only: no exception message, path or output."""
+    owner = _PC_QUERY_OWNER.get()
+    if isinstance(owner, tuple) and len(owner) == 4:
+        emit = _PC_CALL_PROGRESS.get() or _pc_progress_emitter(owner, "not_dispatched", "command")
+        emit("refused")
+    return {"ok": False, "stage": stage,
+            "hint": "PC 작업이 거부되었거나 실패했습니다. 등록된 폴더 기준 상대경로만 허용됩니다. 실행 결과를 추정하거나 같은 작업을 재전송하지 마세요."}
+
+
+def _pc_observing_handler(handler):
+    async def observed(arguments):
+        token = _PC_CALL_PROGRESS.set(None)
+        try:
+            return await handler(arguments)
+        except ToolHandlerError as exc:
+            print("pc_files_chat_call mode=refusal stage=%s" % exc.code, flush=True)
+            return _pc_refusal(exc.code)
+        finally:
+            _PC_CALL_PROGRESS.reset(token)
+    return observed
+
+
+def _pc_path_against_verified_roots(path, context):
+    """Only signed context roots can strip an absolute prefix; no OS guessing.
+
+    Optional context.roots is a list of absolute path strings. Older Chat
+    contexts omit it; those paths retain the existing fail-closed behavior.
+    This changes a path representation, never a scope or target selection.
+    """
+    text = path.strip().replace("\\", "/")
+    roots = context.get("roots") if isinstance(context, Mapping) else None
+    if not isinstance(roots, list):
+        return path
+    for root in sorted((r for r in roots if isinstance(r, str)), key=len, reverse=True):
+        base = root.strip().replace("\\", "/").rstrip("/")
+        if not base or any(ord(ch) < 32 for ch in base):
+            continue
+        if not (base.startswith("/") or (len(base) >= 2 and base[1] == ":")):
+            continue
+        folded, prefix = text.casefold(), base.casefold()
+        if folded.rstrip("/") == prefix:
+            return "."
+        if folded.startswith(prefix + "/"):
+            return text[len(base) + 1:]
+    return path
+
+
 def _validate_pc_file_arguments(arguments):
     if not isinstance(arguments, Mapping) or set(arguments) != {"path"}:
         raise ToolHandlerError(
@@ -301,7 +352,21 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             raise ToolHandlerError(
                 "pc_files_admission_required", "Verified owner run is required",
             )
-        path = _validate_pc_file_arguments(arguments)
+        try:
+            path = _validate_pc_file_arguments(arguments)
+        except ToolHandlerError:
+            print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
+            raise
+        text = path.strip().replace("\\", "/")
+        if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
+            ctx = await _signed_files_call(
+                service=service, request_factory=request_factory, secret=secret,
+                owner=owner, mode="context", payload={},
+            )
+            path = _pc_path_against_verified_roots(path, ctx)
+        if _pc_list_folder_prefix(path) is None:
+            print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
+            raise ToolHandlerError("pc_files_path_invalid", "A registered relative path is required")
         expected_kind = "read" if op == "read" else "command"
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, path)
         dispatched = await _signed_files_call(
@@ -326,6 +391,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 "PC file dispatch identifier unavailable",
             )
         emit_progress = _pc_progress_emitter(owner, dispatch_id, expected_kind)
+        _PC_CALL_PROGRESS.set(emit_progress)
         emit_progress("accepted")
         import asyncio
 
@@ -529,16 +595,15 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     """
     contract = build_pc_query_product_contract(app_id=app_id, agent_id=agent_id)
     runtime = runtime or ToolRuntime()
-    register_pc_query_drives_tool(
-        runtime=runtime, service=service, request_factory=request_factory,
-        secret=secret, endpoint_url=endpoint_url,
-    )
-    runtime.register(pc_list_files_tool_spec(), _make_pc_file_handler(
+    runtime.register(pc_drives_tool_spec(), _pc_observing_handler(
+        _make_query_drives_handler(service=service, request_factory=request_factory,
+                                  secret=secret, endpoint_url=endpoint_url)))
+    runtime.register(pc_list_files_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_LIST_FILES_TOOL_ID, op="list", service=service,
-        request_factory=request_factory, secret=secret))
-    runtime.register(pc_read_file_tool_spec(), _make_pc_file_handler(
+        request_factory=request_factory, secret=secret)))
+    runtime.register(pc_read_file_tool_spec(), _pc_observing_handler(_make_pc_file_handler(
         tool_id=PC_READ_FILE_TOOL_ID, op="read", service=service,
-        request_factory=request_factory, secret=secret))
+        request_factory=request_factory, secret=secret)))
     return EngineToolBinding(app_id=app_id, tool_runtime=runtime,
         registry=ToolRegistrySnapshot.from_entries(contract.registry_entries),
         authorities={agent_id: TrustedToolAuthority(canonical_agent_id=agent_id,
@@ -622,7 +687,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                                secret=None, tool_arguments=None, initial_decision=None):
     static_arguments = _plan_step_arguments(tool_arguments, "query_drives")
     allowed_tool_ids = _scope_allowed_tool_ids(tool_arguments)
-    context_cache: dict[str, str] = {}
+    context_cache: dict[str, Any] = {}
     first_decisions = [dict(initial_decision)] if initial_decision is not None else []
 
     async def record_scope():
@@ -630,8 +695,11 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         if owner is not None and service is not None and request_factory is not None:
             # Persist the fixed declaration before any tool, including a
             # refused first decision. This is metadata, never another B14 call.
-            await _signed_files_call(service=service, request_factory=request_factory,
-                secret=secret, owner=owner, mode="context", payload={})
+            try:
+                await _signed_files_call(service=service, request_factory=request_factory,
+                    secret=secret, owner=owner, mode="context", payload={})
+            except ToolHandlerError as exc:
+                context_cache["refusal"] = _pc_refusal(exc.code)
 
     async def _pc_context_text() -> str:
         cached = context_cache.get("text")
@@ -659,6 +727,10 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         return text
 
     async def select_step(*, context, compiled_profile, observations):
+        refusal = context_cache.pop("refusal", None)
+        if refusal is not None:
+            first_decisions.clear()
+            observations = tuple(observations) + (refusal,)
         if first_decisions:
             return first_decisions.pop()
         from padiem_ai_core.b14_execution import B14RoutingOptions
