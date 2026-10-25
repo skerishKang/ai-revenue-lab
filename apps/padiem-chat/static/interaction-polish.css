@@ -225,16 +225,26 @@
    by Chat and Claw; no JS routing/side-effect behavior changes. */
 @media (max-width: 920px) {
   .app-shell .main-panel {
-    padding-top: 62px;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
   }
+  /* Keep the header in flow: its real height reserves the conversation edge.
+     Only the conversation scrolls, so the menu stays at viewport top. */
   .app-shell .main-panel > .topbar {
-    position: fixed !important;
-    inset: 0 0 auto 0 !important;
+    position: sticky !important;
+    flex-shrink: 0;
+    inset: auto !important;
     top: 0 !important;
     min-height: 62px;
     box-sizing: border-box;
     width: 100%;
     z-index: 100 !important;
+  }
+  .app-shell .main-panel .conversation {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
   }
   .app-shell .main-panel > .topbar #mobileMenu {
     display: inline-grid !important;
