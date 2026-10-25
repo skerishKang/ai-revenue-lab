@@ -3746,26 +3746,14 @@ async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
             or payload.get("command") != CHAT_PC_DRIVE_COMMAND
         ))):
         return _error(400, "claw_engine_desktop_invalid_body")
-    identity = getattr(request.app.state, "control_plane_identity_authority", None)
-    if (not callable(getattr(identity, "resolve_product_user_for_subject", None))
-        or not callable(getattr(identity, "resolve_current_auth_session", None))):
-        return _error(503, "claw_engine_identity_unavailable")
-    try:
-        uid = await identity.resolve_product_user_for_subject(
-            product_id="b62",
-            canonical_subject_id=payload["subject_id"],
-        )
-        session = await identity.resolve_current_auth_session(
-            product_id="b62", product_user_id=uid,
-        )
-    except Exception:
-        return _error(401, "canonical_session_required")
-    from datetime import datetime, timezone
-    if (session is None or session.subject.subject_id != payload["subject_id"]
-        or session.product_id != "b62"
-        or not session.is_active(now=datetime.now(timezone.utc))
-        or not session.tenant_id):
-        return _error(401, "canonical_session_required")
+    # Reuse the file lane's product/connector identity boundary: verify the
+    # B62 caller, then resolve the shared B54 connector session independently.
+    # A B62 session identifies the Chat turn; it is not connector authority.
+    uid, session, owner_error = await _engine_pc_files_owner(
+        request, product="chat", subject_id=payload["subject_id"],
+    )
+    if owner_error is not None:
+        return owner_error
     history_store = getattr(request.app.state, "history_store", None)
     if history_store is None:
         return _error(503, "oracle_mesh_unconfigured")

@@ -1729,6 +1729,7 @@ async def test_pc_invalid_arguments_are_observed_logged_and_terminal(capsys, sco
 @pytest.mark.parametrize("case,expected_stage", [
     ("normal", None),
     ("refused", "pc_query_denied"),
+    ("refused_503", "pc_query_denied"),
     ("request_exception", "pc_query_unavailable"),
     ("handler_exception", "pc_query_internal_error"),
     ("plan_exception", "terminal"),
@@ -1761,9 +1762,12 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
             assert request.url == driver.CHAT_ENGINE_PC_DRIVE_URL
             if body["mode"] == "dispatch":
                 assert body["command"] == driver.PC_DRIVE_COMMAND
-                if case == "refused":
-                    response = _Response({"ok": False, "error": {"code": "denied"}})
-                    response.status = 403
+                if case in {"refused", "refused_503"}:
+                    response = _Response({"ok": False, "error": {
+                        "code": "oracle_mesh_device_directory_unavailable",
+                        "message": "SENSITIVE_RESPONSE_BODY",
+                    }})
+                    response.status = 503 if case == "refused_503" else 403
                     return response
                 self.rows.append(body)
                 return _Response({"ok": True, "dispatch": {
@@ -1878,6 +1882,11 @@ async def test_pc_drives_dispatch_or_observation_settles_real_stream(
     output = capsys.readouterr().out
     assert "SENSITIVE_" not in output and "Get-PSDrive" not in output
     assert "pc_tool_invoke tool=claw.pc.query_drives args_present=True" in output
+    if case == "refused_503":
+        assert "status=503 code=oracle_mesh_device_directory_unavailable" in output
+        assert "pc_step_model_call stage=start" in output
+        assert "pc_step_model_call stage=done status=ok" in output
+        assert output.index("mode=refusal") < output.index("pc_step_model_call stage=start")
     if case != "handler_exception":
         assert "pc_query_chat_call mode=dispatch stage=request" in output
     if case in {"normal", "refused"}:
