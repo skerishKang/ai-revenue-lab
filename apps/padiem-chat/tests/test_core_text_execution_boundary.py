@@ -175,3 +175,14 @@ def test_tool_call_projection_copies_the_validated_core_call():
         id="call_1", name="files_list", arguments={"depth": 1}, index=2,
     )
     assert b14_module._project_tool_call(None) is None
+
+
+def test_tool_call_projection_preserves_the_opaque_provider_signature():
+    call = B14StreamToolCall(
+        id="call_1", name="files_list", arguments={"depth": 1}, index=2,
+        signature="sig_native_abc123",
+    )
+    projected = b14_module._project_tool_call(call)
+    assert projected.signature == "sig_native_abc123"
+    # The signature is relay-only data and carries no product authority.
+    assert projected.name == "files_list" and projected.arguments == {"depth": 1}

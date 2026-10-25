@@ -62,6 +62,11 @@ OUTCOME_SUCCESS = "success"
 OUTCOME_ERROR = "error"
 OUTCOME_ABORTED = "aborted"
 
+#: The wire families a B14 attempt can name. The set is closed and matched by
+#: the storage CHECK constraint, so a new family needs a migration, not a label:
+#: ``native`` is the provider's own request shape (Google's
+#: ``models/{model}:streamGenerateContent`` tool wire today) as opposed to any
+#: OpenAI-compatible ``chat/completions`` endpoint.
 _PROTOCOLS = frozenset({"responses", "messages", "chat/completions", "native", "unknown"})
 _PRODUCTS = frozenset({"chat", "claw", "b66", "engine", "api", "unknown"})
 

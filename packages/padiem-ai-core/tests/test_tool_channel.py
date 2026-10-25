@@ -21,7 +21,7 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionResult,
     B14RouteMetadata,
 )
-from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus
+from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, ToolEvent
 from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionResult,
@@ -30,6 +30,7 @@ from padiem_ai_core.execution_runtime import (
 )
 from padiem_ai_core.tool_channel import (
     ToolCall,
+    ToolChannelError,
     ToolDefinition,
     ToolResult,
     normalize_tool_choice,
@@ -256,6 +257,61 @@ def test_a_tool_call_is_parsed_into_a_structured_call() -> None:
     assert calls[0].arguments == {"css": "p{}", "html": "<p>hi</p>"}
 
 
+def test_an_opaque_call_signature_survives_the_contract_round_trip() -> None:
+    calls = parse_tool_calls(
+        [
+            {
+                "id": "call_1",
+                "type": "function",
+                "signature": "sig_native_abc123",
+                "function": {
+                    "name": "generateSandboxedUi",
+                    "arguments": json.dumps({"html": "<p>hi</p>"}),
+                },
+            }
+        ]
+    )
+
+    assert calls[0].signature == "sig_native_abc123"
+    # A native follow-up must receive the token unchanged, and the public
+    # projection must not hide it from the caller that replays the call.
+    assert tool_call_assistant_message(calls)["tool_calls"][0]["signature"] == "sig_native_abc123"
+    assert calls[0].to_public_dict()["signature"] == "sig_native_abc123"
+
+
+def test_a_call_without_a_signature_keeps_its_exact_provider_shape() -> None:
+    calls = parse_tool_calls(
+        [
+            {
+                "id": "call_1",
+                "type": "function",
+                "function": {"name": "generateSandboxedUi", "arguments": "{}"},
+            }
+        ]
+    )
+
+    assert calls[0].signature is None
+    assert "signature" not in tool_call_assistant_message(calls)["tool_calls"][0]
+    assert "signature" not in calls[0].to_public_dict()
+
+
+def test_a_malformed_call_signature_is_refused() -> None:
+    from padiem_ai_core.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+    for signature in (123, "", "x" * (MAX_TOOL_SIGNATURE_CHARS + 1)):
+        with pytest.raises(ValueError):
+            parse_tool_calls(
+                [
+                    {
+                        "id": "call_1",
+                        "type": "function",
+                        "signature": signature,
+                        "function": {"name": "generateSandboxedUi", "arguments": "{}"},
+                    }
+                ]
+            )
+
+
 def test_a_tool_call_with_broken_arguments_is_refused() -> None:
     with pytest.raises(ValueError):
         parse_tool_calls(
@@ -473,3 +529,180 @@ def test_an_upstream_tool_call_malformation_is_reported_as_upstream_failure() ->
 
     assert info.value.code == "malformed_upstream"
     assert info.value.metadata.error_class is ErrorClass.PROVIDER_BAD_RESPONSE
+
+
+# ---------------------------------------------------------------------------
+# #4727: the token a provider attached to a turn, and the outcome an executor
+# actually reported. Both travel unchanged; neither is invented here.
+# ---------------------------------------------------------------------------
+
+
+def test_an_assistant_turn_carries_the_token_of_its_own_answer_text() -> None:
+    calls = parse_tool_calls([
+        {"id": "call_1", "function": {"name": "pc_files", "arguments": "{}"},
+         "signature": "sig_call"},
+    ])
+
+    message = tool_call_assistant_message(calls, signature="sig_turn")
+
+    assert message["signature"] == "sig_turn"
+    assert message["tool_calls"][0]["signature"] == "sig_call"
+    # Without a turn token the message keeps its exact pre-#4727 shape.
+    assert "signature" not in tool_call_assistant_message(calls)
+
+
+def test_a_replayed_turn_token_survives_the_request_contract() -> None:
+    request = B14ChatRequest(
+        model="google/gemini-3.1-flash-lite",
+        messages=[
+            {"role": "user", "content": "파일 내용을 알려줘"},
+            {"role": "assistant", "content": "읽어 보겠습니다.",
+             "signature": "sig_turn", "tool_calls": [{
+                 "id": "call_1", "type": "function",
+                 "function": {"name": "pc_files",
+                              "arguments": json.dumps({"path": "a.txt"})},
+                 "signature": "sig_call",
+             }]},
+            {"role": "tool", "tool_call_id": "call_1", "name": "pc_files",
+             "content": "hello"},
+        ],
+    )
+
+    turn = request.to_payload()["messages"][1]
+    assert turn["signature"] == "sig_turn"
+    assert turn["tool_calls"][0]["signature"] == "sig_call"
+
+
+def test_a_turn_token_needs_the_answer_text_it_belongs_to() -> None:
+    for content in (None, ""):
+        with pytest.raises(ValueError):
+            B14ChatRequest(
+                model="google/gemini-3.1-flash-lite",
+                messages=[
+                    {"role": "user", "content": "파일"},
+                    {"role": "assistant", "content": content,
+                     "signature": "sig_turn",
+                     "tool_calls": [{
+                         "id": "call_1", "type": "function",
+                         "function": {"name": "pc_files", "arguments": "{}"},
+                     }]},
+                ],
+            )
+
+
+def _event(status: RunStatus, *, error_class=None, error_code=None) -> ToolEvent:
+    return ToolEvent(tool_id="pc_files", status=status, error_class=error_class,
+                     error_code=error_code)
+
+
+def _result(event: ToolEvent, *, content: str = "hello") -> ToolResult:
+    return ToolResult.from_execution(
+        tool_call_id="call_1", name="pc_files", content=content, event=event,
+    )
+
+
+def test_a_completed_run_stays_the_message_it_always_was() -> None:
+    result = _result(_event(RunStatus.COMPLETED))
+
+    assert result.completed is True
+    # The outcome block is what separates a failure; a completion needs none, so
+    # the ordinary round trip keeps its exact pre-#4727 message.
+    assert result.to_message() == {
+        "role": "tool", "tool_call_id": "call_1", "name": "pc_files",
+        "content": "hello",
+    }
+    # The executor still keeps its own record of the run.
+    assert result.to_public_dict()["execution"]["status"] == "completed"
+
+
+@pytest.mark.parametrize("event,expected", [
+    (_event(RunStatus.REJECTED, error_code="approval_denied"), "rejected"),
+    (_event(RunStatus.POLICY_BLOCKED, error_class=ErrorClass.POLICY_BLOCKED,
+            error_code="tool_auth_scope_missing"), "policy_blocked"),
+    (_event(RunStatus.FAILED, error_class=ErrorClass.TOOL_RUNTIME_ERROR,
+            error_code="pc_query_unavailable"), "failed"),
+    (_event(RunStatus.FAILED, error_code="cancelled"), "failed"),
+])
+def test_a_refused_or_failed_run_travels_as_what_it_was(event, expected) -> None:
+    assert event.status.value == expected
+    result = _result(event)
+
+    assert result.completed is False
+    message = result.to_message()
+    assert message["execution"]["status"] == expected
+    assert message["execution"]["error_code"] == event.error_code
+
+
+def test_five_non_completions_are_five_different_facts() -> None:
+    events = [
+        _event(RunStatus.REJECTED, error_code="approval_denied"),
+        _event(RunStatus.POLICY_BLOCKED, error_class=ErrorClass.POLICY_BLOCKED),
+        _event(RunStatus.FAILED, error_code="pc_query_unavailable"),
+        _event(RunStatus.FAILED, error_code="cancelled"),
+        _event(RunStatus.TIMEOUT, error_class=ErrorClass.PROVIDER_TIMEOUT,
+               error_code="stream_timeout"),
+    ]
+
+    projections = [
+        json.dumps(_result(event).to_message()["execution"], sort_keys=True)
+        for event in events
+    ]
+    assert len(set(projections)) == 5
+    # A timed-out run keeps the status the executor recorded, so the model is not
+    # told it failed when the budget ran out.
+    assert _result(events[-1]).to_message()["execution"] == {
+        "tool_id": "pc_files", "status": "timeout",
+        "error_class": "provider_timeout", "error_code": "stream_timeout",
+    }
+
+
+def test_a_refusal_does_not_have_to_invent_prose() -> None:
+    result = _result(
+        _event(RunStatus.REJECTED, error_code="approval_denied"), content="",
+    )
+
+    assert result.to_message()["content"] == ""
+    assert result.to_message()["execution"]["status"] == "rejected"
+
+
+def test_a_completion_still_owes_the_model_its_text() -> None:
+    with pytest.raises(ValueError):
+        _result(_event(RunStatus.COMPLETED), content="")
+    with pytest.raises(ValueError):
+        ToolResult(tool_call_id="call_1", name="pc_files", content="")
+
+
+def test_a_non_completion_must_name_its_cause() -> None:
+    with pytest.raises(ToolChannelError):
+        _result(_event(RunStatus.FAILED))
+
+
+def test_the_outcome_vocabulary_is_the_executors_own() -> None:
+    for bogus in ({"status": "banana"}, {"status": 1}, {"status": None}):
+        with pytest.raises(ToolChannelError):
+            ToolResult(tool_call_id="call_1", name="pc_files", content="x",
+                       execution=bogus)
+    with pytest.raises(ToolChannelError):
+        ToolResult(tool_call_id="call_1", name="pc_files", content="x",
+                   execution={"status": "failed", "error_code": "x",
+                              "http_status": 500})
+
+
+def test_a_result_message_replayed_through_the_request_contract_keeps_its_fact() -> None:
+    result = _result(_event(RunStatus.FAILED, error_code="cancelled"))
+
+    request = B14ChatRequest(
+        model="google/gemini-3.1-flash-lite",
+        messages=[
+            {"role": "user", "content": "파일"},
+            {"role": "assistant", "content": None, "tool_calls": [{
+                "id": "call_1", "type": "function",
+                "function": {"name": "pc_files", "arguments": "{}"},
+            }]},
+            result.to_message(),
+        ],
+    )
+
+    carried = request.to_payload()["messages"][2]
+    assert carried["execution"]["error_code"] == "cancelled"
+    assert carried["execution"]["status"] == "failed"
