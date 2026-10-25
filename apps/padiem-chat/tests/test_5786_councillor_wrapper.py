@@ -224,7 +224,7 @@ def test_wrapper_builds_no_second_ai_login_or_store() -> None:
 def test_public_util_navigation_keeps_auth_on_server() -> None:
     js = wrapper_js()
     html = read(WRAP / "councillor.html")
-    assert re.search(r'id="adminTools"[^>]*\\shidden', html)
+    assert re.search(r'id="adminTools"[^>]*\shidden', html)
     assert 'paintUtilLinks(null)' in js
     assert 'paintUtilLinks(user.name || user.display_name || user.email || null)' in js
     assert 'if (refs.adminTools) refs.adminTools.hidden = false' in js
