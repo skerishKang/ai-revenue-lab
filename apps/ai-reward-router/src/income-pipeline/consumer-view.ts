@@ -153,6 +153,11 @@ function renderRecordCard(record: UserIncomeRecord): string {
     <div class="pipeline-actions">
       ${detailHref ? `<a class="detail-link" href="${detailHref}">기회 상세 보기 →</a>` : ''}
       ${record.sourceUrl ? `<a class="detail-link" href="${escapeHtml(record.sourceUrl)}" target="_blank" rel="noopener noreferrer nofollow">공식 페이지 ↗</a>` : ''}
+      <form method="POST" action="/pipeline" style="display:inline">
+        <input type="hidden" name="action" value="delete" />
+        <input type="hidden" name="recordId" value="${escapeHtml(record.id)}" />
+        <button type="submit" class="detail-link" style="background:none;border:none;cursor:pointer;padding:0">삭제</button>
+      </form>
     </div>
   </article>`;
 }
@@ -254,7 +259,12 @@ function renderShell(title: string, navItems: string, content: string): string {
     .pipeline-amount strong { font-size: 14px; color: var(--gold); font-weight: 700; }
     .pipeline-dates { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0; color: var(--faint); font-size: 11.5px; }
     .pipeline-note { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-    .pipeline-actions { display: flex; gap: 12px; margin-top: 10px; }
+    .pipeline-actions { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+    .save-form { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--surface); }
+    .save-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+    .save-form input, .save-form select, .save-form textarea { width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--line-soft); background: var(--bg-soft); color: var(--text); font-size: 14px; font-family: inherit; }
+    .save-form button { min-height: 44px; padding: 0 22px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: #06080d; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .save-form button:hover { background: var(--accent-strong); }
     .detail-link { font-size: 13px; color: var(--accent); font-weight: 600; }
     .detail-link:hover { text-decoration: underline; }
     .pipeline-available { margin-top: 24px; }
@@ -355,6 +365,31 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel): str
 
   const availableHtml = renderAvailableOpportunities(viewModel.availableOpportunities);
 
+  const saveFormHtml = viewModel.userId ? `
+    <section class="pipeline-save" aria-labelledby="save-title">
+      <div class="section-head">
+        <h2 id="save-title">기회 저장</h2>
+      </div>
+      <form method="POST" action="/pipeline" class="save-form">
+        <input type="hidden" name="action" value="save" />
+        <label>제목 <input type="text" name="title" required placeholder="기회 제목" /></label>
+        <label>업체 <input type="text" name="vendor" required placeholder="업체명" /></label>
+        <label>상태 <select name="status">
+          ${INCOME_PIPELINE_STATUSES.map((s) => `<option value="${s}">${INCOME_PIPELINE_STATUS_LABELS[s]}</option>`).join('')}
+        </select></label>
+        <label>예상 금액 <input type="number" name="expectedAmount" min="0" step="any" placeholder="예상 수익" /></label>
+        <label>통화 <select name="expectedCurrency">
+          <option value="">미확인</option>
+          <option value="KRW">KRW</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+        </select></label>
+        <label>메모 <textarea name="note" rows="2" placeholder="메모"></textarea></label>
+        <button type="submit">저장</button>
+      </form>
+    </section>` : '';
+
   const content = `
     ${summaryHtml}
     ${filterHtml}
@@ -365,6 +400,7 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel): str
       </div>
       ${recordsHtml}
     </section>
+    ${saveFormHtml}
     ${availableHtml}`;
 
   return renderShell('내 수익 관리', navItems, content);
