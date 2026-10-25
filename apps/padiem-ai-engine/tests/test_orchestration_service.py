@@ -2099,3 +2099,30 @@ async def test_pc_stream_consumer_cancellation_propagates_and_cleans_runner():
         await consumer
     await stream.aclose()
     assert task.cancelled()
+
+
+@pytest.mark.parametrize("pc_progress", [False, True])
+@pytest.mark.asyncio
+async def test_pc_turn_classification_keeps_heartbeat_opt_in(monkeypatch, pc_progress):
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    import app.orchestration_service as module
+    first = OrchestrationEvent(
+        event_id="evt_opt_in", run_id="run_opt_in", trace_id="tr_opt_in", app_id="padiem-chat",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1, timestamp_iso="2026-10-25T00:00:00Z")
+    finish, timeouts = asyncio.Event(), []
+    original_wait = asyncio.wait
+    async def observe_wait(tasks, **options):
+        timeouts.append(options.get("timeout"))
+        finish.set()
+        return await original_wait(tasks, **options)
+    async def run():
+        await finish.wait()
+        raise KeyError("synthetic_failure")
+    monkeypatch.setattr(asyncio, "wait", observe_wait)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(run()),
+        app_id="padiem-chat", pc_progress=pc_progress, pc_turn=True)
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS if pc_progress else None]
+    assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run"

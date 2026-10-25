@@ -1914,7 +1914,7 @@ class OrchestrationEngineService:
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
-                    timeout=PC_STREAM_HEARTBEAT_SECONDS if pc_turn else None,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
                 )
                 if not done:
                     event_task.cancel()
