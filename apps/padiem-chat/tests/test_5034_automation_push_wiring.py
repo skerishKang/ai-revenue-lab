@@ -27,6 +27,7 @@ from typing import Any
 
 import pytest
 
+from app.claw_automation_background_execution import _project_terminal_run
 from app.claw_automation_push_notification import (
     INBOX_ALERTS_PATH,
     INBOX_TASKS_PATH,
@@ -329,3 +330,93 @@ async def test_minimal_lock_screen_payload() -> None:
     assert len(call["body"]) <= 200
     assert call["url"].startswith("/claw")
     assert "endpoint" not in call["body"]
+
+
+# --------------------------------------------------------------------------
+# the failure result reaches the same seam exactly once
+# --------------------------------------------------------------------------
+
+
+def _owner_subscription(owner) -> PushSubscription:
+    return PushSubscription(
+        subscription_id="push_" + "a" * 32,
+        workspace_id=owner.workspace_id,
+        member_id=owner.member_id,
+        endpoint="https://fcm.googleapis.com/wp/device-1",
+        p256dh="p256dh-key",
+        auth="auth-secret",
+        scope=SCOPE,
+        created_at="2026-10-23T00:00:00Z",
+        updated_at="2026-10-23T00:00:00Z",
+    )
+
+
+def _failed_terminal_pair():
+    """The background lane's own rule/run fixtures: a real execution intent."""
+
+    from kagent.claw_automation import ClawScheduledRunStatus
+    from test_claw_automation_background_execution import (
+        OWNER_USER,
+        SUBJECT,
+        make_rule,
+        scheduled_run,
+    )
+
+    from app.claw_automation_owner_resolution import ResolvedAutomationOwner
+
+    rule = make_rule()
+    row = scheduled_run(rule=rule, status=ClawScheduledRunStatus.FAILED)
+    owner = ResolvedAutomationOwner(
+        workspace_id=rule.workspace_id,
+        owner_ref=rule.owner_ref or "owner:opaque:0001",
+        product_user_id=OWNER_USER,
+        member_id="member_0001",
+        canonical_subject_id=SUBJECT,
+    )
+    return rule, row, owner
+
+
+async def _project_failed_terminal(store, sender, alerts, *, owner, rule, row):
+    from test_claw_automation_background_execution import RecordingHistoryStore
+
+    await _project_terminal_run(
+        rule=rule,
+        scheduled_run=row,
+        owner=owner,
+        history_store=RecordingHistoryStore(),
+        task_alert_store=alerts,
+        push_store=store,
+        push_sender=sender,
+        push_scope=SCOPE,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_failed_run_reaches_the_push_seam_once() -> None:
+    """#5034 option 1: the failure wording is only reachable through the record.
+
+    Before the status boundary existed, a FAILED row projected nothing, so
+    ``created`` stayed False and the notification was skipped as a duplicate.
+    """
+
+    from test_claw_automation_background_execution import RecordingTaskAlertStore
+
+    rule, row, owner = _failed_terminal_pair()
+    alerts = RecordingTaskAlertStore()
+    store = _RecordingStore([_owner_subscription(owner)])
+    sender = _RecordingSender()
+
+    await _project_failed_terminal(store, sender, alerts, owner=owner, rule=rule, row=row)
+
+    assert alerts.add_alert_calls == 1
+    assert len(sender.calls) == 1
+    assert sender.calls[0]["title"] == "자동화 실패"
+    assert sender.calls[0]["url"].startswith("/claw")
+
+    # A re-projection of the same terminal row is not a new event.
+    second = _RecordingSender()
+    await _project_failed_terminal(
+        _RecordingStore([_owner_subscription(owner)]), second, alerts,
+        owner=owner, rule=rule, row=row,
+    )
+    assert second.calls == []
