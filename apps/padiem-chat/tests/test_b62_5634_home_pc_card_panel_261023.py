@@ -285,10 +285,19 @@ def test_the_device_id_is_a_detail_value_not_a_row_header():
 
 
 def test_the_first_screen_split_is_one_to_two():
+    """The 1 : 2 first-screen split is one shared origin, not one per product.
+
+    #5561: this contract used to require two constants -- 747px for Chat and
+    836px for Claw, because the Claw hero block measures 89px more. Dividing a
+    per-product number by three moved the shared row, so the Claw brand line sat
+    ~30px below the Chat one on the same screen. One token now holds the
+    expression; a taller product block changes the space under the hero only.
+    """
     assert "@media (min-width: 641px)" in FIRST_USE_CSS
-    assert "calc((100dvh - 747px) / 3)" in FIRST_USE_CSS
-    assert "calc((100dvh - 836px) / 3)" in FIRST_USE_CSS
-    assert "padding-top: max(12px" in FIRST_USE_CSS
+    assert "var(--padiem-first-screen-inset" in FIRST_USE_CSS
+    assert "calc((100dvh - 836px) / 3)" not in FIRST_USE_CSS
+    frame = (STATIC / "shared-six-panel-frame.css").read_text(encoding="utf-8")
+    assert "max(12px, calc((100dvh - 747px) / 3))" in frame
     # The composer keeps its own first-use treatment.
     assert '.app-shell[data-state="home"] .composer' in FIRST_USE_CSS
 

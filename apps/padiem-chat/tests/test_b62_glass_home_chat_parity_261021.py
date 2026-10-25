@@ -123,14 +123,80 @@ def test_the_chat_composer_carries_the_first_screen_surface() -> None:
 
 def test_the_chat_panel_is_not_restyled_by_the_brand_sheet() -> None:
     """The frame belongs to the owner lock, not to a chat-state override."""
+    # #5561: this rule used to hold a third !important inset for the same element
+    # (clamp(24px, 4vh, 44px), against the frame's 88px and the first screen's own
+    # value), so one box had three answers and the landing and a new Chat started
+    # the same empty screen 85px apart. The rule is gone, not re-tuned: the brand
+    # sheet has no vertical origin for the shared panel.
     css = BRAND.read_text(encoding="utf-8")
-    block = _block(
-        css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {'
-    )
-    for forbidden in ("background:", "box-shadow:", "border-color:"):
-        assert forbidden not in block, forbidden
-    # The chat keeps its own top inset, which is content layout, not the frame.
-    assert "padding-top" in block
+    assert ('body .app-shell[data-state="chat"] .conversation {') not in css
+
+
+# ---------------------------------------------------------------------------
+# #5561: one first-screen origin, read from one token by every Glass surface
+# ---------------------------------------------------------------------------
+
+# The files that own the shipped first-screen layout. A product or a mode adding
+# its own copy of the origin is what drifted the Claw brand line ~30px below the
+# Chat one, invisibly: nothing compared the two products' Y coordinates.
+ORIGIN_CONTRACT_FILES = (
+    "padiem-first-use.css", "shared-six-panel-frame.css",
+    "padiem-glass-brand-polish.css", "padiem-glass-portrait.css",
+)
+ORIGIN_TOKEN = "--padiem-first-screen-inset"
+
+
+def test_the_first_screen_origin_is_declared_once() -> None:
+    """One token holds the row the brand line and the hero start on."""
+    frame = FRAME.read_text(encoding="utf-8")
+    assert frame.count(f"{ORIGIN_TOKEN}:") == 1, "the token has two definitions"
+    assert "max(12px, calc((100dvh - 747px) / 3))" in frame
+    # The Claw hero block is 89px taller than Chat's (565px against 476px). The
+    # old second constant let that content difference move the shared origin,
+    # which is what the owner saw. The second expression is gone from both files.
+    second_constant = "100dvh - 836px"
+    assert second_constant not in frame
+    assert second_constant not in FIRST_USE.read_text(encoding="utf-8")
+    assert ORIGIN_TOKEN in FIRST_USE.read_text(encoding="utf-8")
+
+
+def test_no_glass_surface_carries_its_own_copy_of_the_origin() -> None:
+    """Every first-screen inset on the shared panel reads the token.
+
+    The scan walks innermost declaration blocks, so a duplicate hiding inside a
+    media query -- which is where the phone and tablet copies lived -- is caught
+    the same way as a top-level one.
+    """
+    offenders = []
+    declaration = re.compile(r"(?:^|;)\s*padding-top\s*:")
+    for name in ORIGIN_CONTRACT_FILES:
+        # Comments are stripped and the property is matched as a declaration, so
+        # a note about the inset or a scroll-padding-top does not read as one.
+        css = re.sub(r"/\*.*?\*/", "", (STATIC / name).read_text(encoding="utf-8"),
+                     flags=re.S)
+        for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            if not declaration.search(body):
+                continue
+            # Only a rule that insets the shared panel itself owns the origin. A
+            # rule reaching past it -- the continuous thread's message list, for
+            # instance -- styles another element and stays that owner's business.
+            tails = [part.split()[-1] for part in selector.split(",") if part.split()]
+            if not any(tail.startswith(".conversation") for tail in tails):
+                continue
+            if f"var({ORIGIN_TOKEN}" in body:
+                continue
+            offenders.append((name, " ".join(selector.split())[:120],
+                              " ".join(body.split())[:80]))
+    assert offenders == [], offenders
+
+
+def test_every_page_view_reads_the_same_origin_token() -> None:
+    """The five workflow pages already say they use the Chat/Claw eyebrow row."""
+    css = FRAME.read_text(encoding="utf-8")
+    shared = css.split(".calendar-view, .connectors-view, .library-view", 1)[1][:400]
+    assert f"var({ORIGIN_TOKEN})" in shared
+    # The copied expression is what made the other pages drift with the hero.
+    assert "clamp(52px, 7.4vh, 88px)" not in shared
 
 
 def test_the_chat_state_reads_the_first_screen_surface_tokens() -> None:
