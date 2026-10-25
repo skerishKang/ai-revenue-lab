@@ -162,6 +162,18 @@ def test_admin_surface_is_fail_closed() -> None:
     assert ".cine-admin-tools[hidden]" in css and ".cine-admin-gate[hidden]" in css
 
 
+def test_public_copy_stays_visitor_facing() -> None:
+    """Owner direction 2026-10-25: the prototype notice stays, the build
+    diagnostics do not. Missing media, CSP, HTTP statuses and file names belong
+    to this issue, not to a page a constituent reads."""
+    rendered = _code_only(wrapper_js()) + json.dumps(brand(), ensure_ascii=False)
+    for diagnostic in ("미확보", "frame-src", "mp4", "m3u8", "brands/miraen.json",
+                       "404", "502", "CSP ", "API 이슈"):
+        assert diagnostic not in rendered, f"visitor copy still says: {diagnostic}"
+    assert "시제품" in rendered
+    assert "공식 웹사이트가 아닙니다" in brand()["prototypeNotice"]
+
+
 def test_wrapper_links_only_to_the_existing_app_and_public_official_pages() -> None:
     js = wrapper_js()
     assert 'const CHAT_ROOT = "../"' in js
@@ -172,8 +184,11 @@ def test_wrapper_links_only_to_the_existing_app_and_public_official_pages() -> N
     urls += [c.get("url", "") for c in data["sns"]["channels"]]
     urls += [i.get("url", "") for i in data["activity"]["items"] if i.get("url")]
     assert urls, "brand must carry the researched sources"
+    # 선례: 중앙선관위 공개 데이터는 443을 제공하지 않는다(2026-10-25 관측).
+    # 공식 당선 근거 링크만 예외로, 호스트와 리소스 경로까지 못 박는다.
+    OFFICIAL_HTTP_ALLOWLIST = ("http://data.nec.go.kr/resource/Cnddt_",)
     for url in urls:
-        assert url.startswith("https://"), url
+        assert url.startswith("https://") or url.startswith(OFFICIAL_HTTP_ALLOWLIST), url
     # nothing is re-hosted from the assembly or the press: only page links.
     for url in urls:
         assert "/attach/" not in url, url

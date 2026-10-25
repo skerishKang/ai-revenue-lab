@@ -213,7 +213,7 @@
     }
     text(refs.heroMediaNote, mediaKind === "CONFIRMED"
       ? (hero.credit || "")
-      : "시제품 화면 · 실제 의원 영상·사진 미확보. 이 배경은 임시 자료이며 의원 자료로 표시하지 않습니다.");
+      : "시제품 화면입니다. 대표 영상과 사진은 확보되는 대로 이 자리에 표시됩니다.");
   }
 
   // ── sections ─────────────────────────────────────────────────────────
@@ -393,8 +393,8 @@
     if (refs.adminGate) refs.adminGate.hidden = false;
     if (refs.adminTools) refs.adminTools.hidden = true;
     text(refs.adminGateBody, reason === "unavailable"
-      ? "세션 상태를 확인할 수 없습니다. PADIEM Chat에서 로그인한 뒤 다시 열어 주십시오."
-      : "의정3종 작성 화면은 로그인 세션에서만 열립니다. 공개 방문자에게는 관리자 메뉴가 표시되지 않습니다.");
+      ? "로그인 상태를 확인하지 못했습니다. PADIEM에서 로그인한 뒤 다시 시도해 주세요."
+      : "축사·인사말, SNS 홍보, 회의정리·활동집은 로그인 후 이용하실 수 있습니다.");
     text(refs.adminStatus, "확인된 세션: 없음");
   }
 
@@ -402,7 +402,7 @@
     if (refs.adminGate) refs.adminGate.hidden = true;
     if (refs.adminTools) refs.adminTools.hidden = false;
     text(refs.adminStatus, "확인된 세션: " + (name || "로그인됨"));
-    text(refs.adminNote, "아래 진입로는 기존 PADIEM 화면을 그대로 엽니다. 이 블로그는 화면을 복제하지 않습니다.");
+    text(refs.adminNote, "아래 도구는 기존 PADIEM 화면에서 그대로 동작합니다.");
     const cards = refs.toolCards;
     if (!cards) return;
     cards.replaceChildren();
@@ -458,12 +458,14 @@
   }
 
   function fail(message) {
+    // 방문자에게는 안내만, 진단 값은 개발자 콘솔로 보냅니다(이슈에서 관리).
     const main = id("councillorMain");
     if (!main) return;
     const p = document.createElement("p");
     p.className = "cine-error";
-    p.textContent = "블로그 자료를 불러오지 못했습니다. " + message;
+    p.textContent = "표시할 자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
     main.prepend(p);
+    if (window.console && window.console.error) window.console.error("[5786]", message);
   }
 
   async function start() {
