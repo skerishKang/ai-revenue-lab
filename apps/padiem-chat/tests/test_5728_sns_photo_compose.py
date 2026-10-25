@@ -212,6 +212,13 @@ async function fetch(url, opts) {
   if (method === "GET" && path === "/api/projects") return json({ projects: [{ id: "p1", name: "유틸 작업" }] });
   if (method === "POST" && path === "/api/projects") return json({ project: { id: "p1", name: "유틸 작업" } });
   if (method === "POST" && path === "/api/projects/p1/files" && body) {
+    // Mirror the server's document validation: a file whose media type
+    // contradicts its extension is refused (the live 422 the roster hit
+    // when it was saved text/plain under a .json name).
+    const ext = String(body.name || "").split(".").pop().toLowerCase();
+    if (ext === "json" && body.media_type !== "application/json") {
+      return { ok: false, status: 422, json: async () => ({ error: { code: "invalid_document", message: "문서 확장자와 파일 형식이 일치하지 않습니다." } }) };
+    }
     const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
     storedFiles.push(file);
     return json({ file });
@@ -412,6 +419,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await sleep(50);
   const rosterRec = storedFiles.find((f) => f.name === "SNS 사진 구성.json");
   if (!rosterRec) fail("ROSTER_NOT_WRITTEN", { stored: storedFiles.map((f) => f.name) });
+  if (rosterRec.media_type !== "application/json") fail("ROSTER_MEDIA_TYPE_WRONG", { media_type: rosterRec.media_type });
   let roster = null;
   try { roster = JSON.parse(rosterRec.content); } catch (_) { fail("ROSTER_NOT_JSON"); }
   if (!Array.isArray(roster.photos) || roster.photos.length !== 2) fail("ROSTER_COUNT_WRONG");
@@ -447,6 +455,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });
 """
+
 
 
 

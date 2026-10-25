@@ -42,12 +42,14 @@
     return data && data.project ? data.project.id : null;
   }
 
-  async function saveProjectFile(pid, name, text) {
+  async function saveProjectFile(pid, name, text, mediaType) {
     const res = await fetch("/api/projects/" + pid + "/files", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name, media_type: "text/plain", text: text }),
+      // The server refuses a file whose media type contradicts its
+      // extension; callers that store .json payloads must say so.
+      body: JSON.stringify({ name: name, media_type: mediaType || "text/plain", text: text }),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -470,7 +472,7 @@
           const existing = await listProjectFiles(pid);
           const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
           if (previous) await deleteProjectFile(pid, previous.id);
-          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster));
+          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster), "application/json");
         }).catch(() => { /* the composition keeps working; the roster stays last-known */ });
         return rosterWriteChain;
       }
