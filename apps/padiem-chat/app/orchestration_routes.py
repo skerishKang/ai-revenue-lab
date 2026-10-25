@@ -25,7 +25,7 @@ from .model_policy import (
 )
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .public_chat import public_chat_result
-from .request_contract import BrowserRequestError, _validate_payload
+from .request_contract import BrowserRequestError, _validate_payload_async
 from .usage_gate import UsageGate
 
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
@@ -174,7 +174,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
-        messages, skill, tool_request, attachments, conversation_id, project_id, custom = _validate_payload(raw)
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw)
         if tool_request is not None or attachments or project_id is not None or custom is not None:
             return _error(
                 "orchestration_not_applicable",

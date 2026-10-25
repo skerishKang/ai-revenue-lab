@@ -17,6 +17,11 @@ from urllib.parse import urlparse
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.isolated_parser_composition import (
+    compose_worker_isolated_parser_authority_async,
+    reset_worker_isolated_parser_async_composition,
+)
+from app.document_parser_transport import CloudflareDocumentParserServiceTransport
 from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -106,6 +111,7 @@ from app.worker_config import (
     B14_SERVICE_PROOF_SECRET_BINDING_NAME,
     B66_PDF_RENDERER_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
+    DOCUMENT_PARSER_SERVICE_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     MAIL_API_KEY_BINDING_NAMES,
@@ -943,6 +949,28 @@ class Default(WorkerEntrypoint):
                 # Worker bindings only; absent until #2259/#2246 activation, in
                 # which case WorkspaceDocumentStore stays None (fail closed).
                 r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
+                # #2824: the private isolated Parser Authority. Chat forwards
+                # the bounded Core envelope over this fixed binding; the parser
+                # Worker runs the reviewed extraction. Composition happens
+                # before create_app so the async attachment path resolves the
+                # authority on its first request. Absent binding => the async
+                # slot is cleared and binary parsing fails closed.
+                document_parser_binding = binding_value(
+                    self.env, DOCUMENT_PARSER_SERVICE_BINDING_NAME
+                )
+                document_parser_transport = (
+                    CloudflareDocumentParserServiceTransport(
+                        document_parser_binding, Request,
+                    )
+                    if document_parser_binding is not None
+                    else None
+                )
+                if document_parser_transport is not None:
+                    compose_worker_isolated_parser_authority_async(
+                        transport=document_parser_transport
+                    )
+                else:
+                    reset_worker_isolated_parser_async_composition()
 
                 history_store = D1HistoryStore(db_binding, full_context_bucket=r2_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
@@ -1200,6 +1228,10 @@ class Default(WorkerEntrypoint):
                         self.env, "PADIEM_PUSH_VAPID_SUBJECT"
                     ),
                     claw_push_transport=build_push_transport(),
+                )
+                _worker_app.state.document_parser_transport = document_parser_transport
+                _worker_app.state.document_parser_service_bound = (
+                    document_parser_transport is not None
                 )
                 _worker_app.state.b66_membership_enforced = (
                     binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"

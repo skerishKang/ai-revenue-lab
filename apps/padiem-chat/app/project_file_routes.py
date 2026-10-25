@@ -10,7 +10,10 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body, open_bounded_spooled_request
 from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
-from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority, production_worker_runtime
+from padiem_ai_core.document_parser_boundary import (
+    parse_binary_document_via_authority_async,
+    production_worker_runtime,
+)
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
 from .project_files import (
@@ -203,7 +206,7 @@ async def project_files_collection(request: Request) -> JSONResponse:
                     # Local Core PDF parsing can use the seekable spool directly.
                     # The Worker isolated-parser wire contract still requires bytes.
                     source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
-                    parsed = parse_binary_document_via_authority(
+                    parsed = await parse_binary_document_via_authority_async(
                         name=name, media_type=media_type, payload=source,
                     )
                     created = await store.create_file(

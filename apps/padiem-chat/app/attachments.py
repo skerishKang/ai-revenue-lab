@@ -5,7 +5,11 @@ import binascii
 from dataclasses import dataclass, field
 from typing import Any
 
-from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
+from .binary_documents import (
+    BinaryDocumentValidationError,
+    parse_binary_document_item,
+    parse_binary_document_item_async,
+)
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
 # #4379: an attached image carries no PADIEM byte total. The platform
@@ -111,21 +115,61 @@ def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
 
 
 def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, ...]:
-    if raw is None:
+    item = _single_attachment_item(raw)
+    if item is None:
         return ()
-    if not isinstance(raw, list):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
-    if len(raw) == 0:
-        return ()
-    if len(raw) > 1:
-        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
-
-    item = raw[0]
-    if not isinstance(item, dict):
-        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
     item_type = item.get("type")
     if item_type == "image":
         return (_parse_image(item),)
     if item_type == "document":
         return (_parse_document(item),)
     raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+
+
+async def parse_attachments_async(
+    raw: Any,
+) -> tuple[ImageAttachment | DocumentAttachment, ...]:
+    """Worker request path: the same grammar with the async binary authority.
+
+    Text and image attachments keep their existing synchronous validation.
+    Binary documents go through the trusted async parser authority instead of
+    blocking the Worker isolate on a synchronous service call.
+    """
+
+    item = _single_attachment_item(raw)
+    if item is None:
+        return ()
+    item_type = item.get("type")
+    if item_type == "image":
+        return (_parse_image(item),)
+    if item_type == "document":
+        has_text = "text" in item
+        has_base64 = "base64" in item
+        has_raw = "raw_bytes" in item
+        if sum((has_text, has_base64, has_raw)) != 1:
+            raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
+        if has_text:
+            try:
+                return (parse_document_item(item),)
+            except DocumentValidationError as exc:
+                raise AttachmentValidationError(str(exc)) from exc
+        try:
+            return (await parse_binary_document_item_async(item),)
+        except BinaryDocumentValidationError as exc:
+            raise AttachmentValidationError(str(exc)) from exc
+    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
+
+
+def _single_attachment_item(raw: Any) -> dict[str, Any] | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, list):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    if len(raw) == 0:
+        return None
+    if len(raw) > 1:
+        raise AttachmentValidationError("현재는 파일을 한 번에 하나만 첨부할 수 있습니다.")
+    item = raw[0]
+    if not isinstance(item, dict):
+        raise AttachmentValidationError("첨부 파일 형식이 올바르지 않습니다.")
+    return item
