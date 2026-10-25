@@ -235,6 +235,37 @@ async def test_alert_completed_creates_one_active_automation_alert() -> None:
     assert len(store.tasks) == 0
 
 
+async def test_alert_projection_carries_the_run_and_rule_references() -> None:
+    store = _MemoryStore()
+    rule = _rule(output_type=ClawAutomationOutputType.ALERT)
+    run = _run(rule=rule, status=ClawScheduledRunStatus.COMPLETED, output=_output(output_type=ClawAutomationOutputType.ALERT))
+
+    result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+
+    # #5034: the click target is derived server-side from the run that produced
+    # the alert, in run-then-rule order, exactly like the task projection.
+    alert = store.alerts[result.record_id]
+    assert alert.linked_refs == (RUN_ID, RULE_ID)
+
+
+async def test_alert_projection_refuses_a_row_written_for_another_run() -> None:
+    store = _MemoryStore()
+    rule = _rule(output_type=ClawAutomationOutputType.ALERT)
+    run = _run(rule=rule, status=ClawScheduledRunStatus.COMPLETED, output=_output(output_type=ClawAutomationOutputType.ALERT))
+    alert_id = _deterministic_id(WS, RUN_ID, "alert")
+    store.alerts[alert_id] = ClawAlert(
+        alert_id=alert_id, workspace_id=WS, kind=ClawAlertKind.AUTOMATION,
+        severity=ClawAlertSeverity.INFO, title=run.output.title, created_at=NOW,
+        visible_to_members=(MEMBER,), linked_refs=("run-other", RULE_ID),
+    )
+
+    # A row whose reference points somewhere else is a foreign identity: it is
+    # refused instead of being silently repointed at this run.
+    with pytest.raises(AutomationProjectionError):
+        await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)
+    assert store.alerts[alert_id].linked_refs == ("run-other", RULE_ID)
+
+
 async def test_same_run_second_projection_creates_no_second_alert() -> None:
     store = _MemoryStore()
     rule = _rule(output_type=ClawAutomationOutputType.ALERT)
@@ -260,6 +291,7 @@ async def test_existing_dismissed_alert_remains_dismissed() -> None:
         alert_id=alert_id, workspace_id=WS, kind=ClawAlertKind.AUTOMATION,
         severity=ClawAlertSeverity.INFO, title=output.title, created_at=NOW,
         status=ClawAlertStatus.DISMISSED, visible_to_members=(MEMBER,),
+        linked_refs=(RUN_ID, RULE_ID),
     )
 
     result = await project_scheduled_run_output(owner=_owner(), rule=rule, run=run, store=store)

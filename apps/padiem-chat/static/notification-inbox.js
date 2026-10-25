@@ -28,6 +28,7 @@
   const ALERT_DISMISSED = "dismissed";
   const TASK_OPEN = "open";
   const CONVERSATION_REF = /^chat_[a-f0-9]{32}$/;
+  const RUN_REF = /^sched_run_[a-f0-9]{64}$/;
   const MAX_BADGE = 99;
   const AUTH_EVENTS = ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"];
 
@@ -385,6 +386,28 @@
     return candidates.find((ref) => typeof ref === "string" && CONVERSATION_REF.test(ref)) || "";
   }
 
+  // #5034: an automation alert names the run that produced it. The reference is
+  // the server-derived occurrence id, never a browser value, and it is accepted
+  // only in that exact grammar. Navigation reuses the existing calendar link-back
+  // event, so no second run-opening authority is introduced.
+  function firstRunRef(item) {
+    const candidates = [];
+    if (Array.isArray(item.linked_refs)) candidates.push(...item.linked_refs);
+    if (typeof item.source_id === "string") candidates.push(item.source_id);
+    return candidates.find((ref) => typeof ref === "string" && RUN_REF.test(ref)) || "";
+  }
+
+  function openRunRef(runId) {
+    try {
+      window.dispatchEvent(new CustomEvent("padiem:calendar-open-link", {
+        detail: { kind: "run", targetId: runId },
+      }));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   function openResult(kind, item) {
     if (!item) return;
     const id = kind === "alerts" ? item.alert_id : item.task_id;
@@ -402,6 +425,12 @@
         closePanel();
         return;
       }
+    }
+
+    const runRef = firstRunRef(item);
+    if (runRef && openRunRef(runRef)) {
+      closePanel();
+      return;
     }
 
     if (typeof window.PadiemInboxOpener?.open === "function") {

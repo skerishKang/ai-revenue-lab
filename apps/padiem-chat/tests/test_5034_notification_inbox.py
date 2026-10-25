@@ -84,6 +84,7 @@ _CASES = (
     "MARK_READ_FAILURE_IS_TRUTHFUL",
     "RESULT_NAV_INBOX",
     "RESULT_NAV_CONVERSATION",
+    "RESULT_NAV_RUN",
     "AUTH_LOSS_CLEARS",
     "LOCALE_EN",
 )
@@ -150,6 +151,7 @@ const MODULE_SOURCE = fs.readFileSync(process.argv[2], "utf8");
 const KO_EMPTY_ALERTS = "최근 알림이 없습니다.";
 const KO_ERROR = "목록을 불러오지 못했습니다. 다시 시도해 주세요.";
 const CONVERSATION_ID = "chat_" + "0".repeat(32);
+const RUN_REF_ID = "sched_run_" + "c".repeat(64);
 const ALERTS_URL = "/api/claw/inbox/alerts?limit=20";
 const TASKS_URL = "/api/claw/inbox/tasks?limit=20";
 
@@ -190,6 +192,13 @@ const MARK_READ_FAIL_SCRIPT = {
 const CONVERSATION_REF_SCRIPT = {
   [ALERTS_URL]: fixture([
     { alert_id: "alert_a", title: "대화 결과 알림", severity: "info", status: "active", created_at: "2026-10-24T01:00:00+00:00", linked_refs: [CONVERSATION_ID] },
+  ]),
+  [TASKS_URL]: { status: 200, json: { ok: true, kind: "tasks", limit: 20, items: [] } },
+};
+
+const RUN_REF_SCRIPT = {
+  [ALERTS_URL]: fixture([
+    { alert_id: "alert_run", title: "예약 작업 완료", severity: "info", status: "active", created_at: "2026-10-24T01:00:00+00:00", linked_refs: [RUN_REF_ID, "rule-1"] },
   ]),
   [TASKS_URL]: { status: 200, json: { ok: true, kind: "tasks", limit: 20, items: [] } },
 };
@@ -411,6 +420,10 @@ function run(spec) {
   window.PadiemChatConversationOpener = {
     open: (id) => { seamCalls.push({ handle: "conversation", id }); return true; },
   };
+  window.addEventListener("padiem:calendar-open-link", (event) => {
+    const detail = event && event.detail ? event.detail : {};
+    seamCalls.push({ handle: "linkback", kind: detail.kind, id: detail.targetId });
+  });
   const recorder = makeFetch(spec.scripted);
   const document = makeDocument(bell, badge, loginButton);
   const sandbox = {
@@ -598,6 +611,23 @@ async function main() {
   }
 
   {
+    const ctx = run({ signedIn: true, scripted: RUN_REF_SCRIPT });
+    await flush();
+    ctx.bell.click();
+    await flush();
+    clickAlertAction(ctx, 0);
+    await flush();
+    const seen = read(ctx);
+    const linkback = seen.seamCalls.find((call) => call.handle === "linkback");
+    const inbox = seen.seamCalls.find((call) => call.handle === "inbox");
+    results.push({
+      name: "RESULT_NAV_RUN",
+      ok: Boolean(linkback) && linkback.kind === "run" && linkback.id === RUN_REF_ID && !inbox && seen.panelHidden === true,
+      detail: seen,
+    });
+  }
+
+  {
     const ctx = run({ signedIn: true, scripted: ALERTS_TWO_ACTIVE_ONE_DISMISSED });
     await flush();
     ctx.bell.click();
@@ -713,6 +743,35 @@ def test_app_shell_exposes_only_a_read_only_inbox_seam() -> None:
     assert "!authState.authenticated" in body
     assert app.count("window.PadiemInboxOpener = Object.freeze(") == 1
     assert "fetch(" not in body, "the seam must not issue a request"
+
+
+def test_cold_start_push_link_reuses_the_existing_run_target_once() -> None:
+    """A push click can arrive before any view exists, so the URL carries it.
+
+    The reference must be consumed only for a proven owner, exactly once, and it
+    must open the run target the calendar link-back already owns instead of a
+    second navigation authority.
+    """
+    app = _read(APP_JS)
+    block = re.search(
+        r"let pendingNotificationRunId = \"\";(.*?)openClawRunTarget\(notificationRunId\);",
+        app,
+        re.DOTALL,
+    )
+    assert block, "the Web Push cold-start link is missing"
+    body = block.group(1)
+    assert 'part.startsWith("run_id=")' in body
+    assert 'part !== "notify=run"' in body
+    assert "NOTIFICATION_RUN_REF.test(runPart.slice(\"run_id=\".length))" in body
+    assert "if (authenticated && pendingNotificationRunId)" in app
+    assert "pendingNotificationRunId = \"\"" in body
+    assert "window.history.replaceState" in body
+    assert app.count("openClawRunTarget(notificationRunId)") == 1
+    assert "window.PadiemNotification" not in app, "no second opener authority is allowed"
+    assert "navigator.serviceWorker" not in app, "push registration stays in its own module"
+    # app.js runs inside curated VM harnesses that do not define it; a top-level
+    # use once took down 61 browser tests at load time.
+    assert "URLSearchParams" not in app, "the app shell must not depend on URLSearchParams"
 
 
 def test_module_touches_only_the_existing_inbox_contract() -> None:

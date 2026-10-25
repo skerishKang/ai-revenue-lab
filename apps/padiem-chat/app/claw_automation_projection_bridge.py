@@ -154,6 +154,7 @@ def _require_alert_identity(
     severity: ClawAlertSeverity,
     title: str,
     visible_to_members: tuple[str, ...],
+    linked_refs: tuple[str, ...],
 ) -> None:
     if (
         alert.workspace_id != workspace_id
@@ -161,6 +162,9 @@ def _require_alert_identity(
         or alert.severity is not severity
         or alert.title not in (title, redact_secrets(title))
         or tuple(alert.visible_to_members) != tuple(visible_to_members)
+        # A stored reference that differs from this projection means the row was
+        # written for another run. Refuse rather than repoint an existing alert.
+        or tuple(alert.linked_refs) != tuple(linked_refs)
     ):
         raise AutomationProjectionError(
             "existing alert identity does not match the projection; refusing to overwrite"
@@ -280,6 +284,7 @@ async def _project_alert(
             severity=ClawAlertSeverity.INFO,
             title=title,
             visible_to_members=visible_to_members,
+            linked_refs=(run.run_id, rule.rule_id),
         )
         return AutomationTaskAlertProjectionResult("alert", alert_id, False)
 
@@ -292,6 +297,10 @@ async def _project_alert(
         created_at=run.completed_at,
         status=ClawAlertStatus.ACTIVE,
         visible_to_members=visible_to_members,
+        # #5034: the same two logical references a task projection carries. The
+        # click target is derived from these on the server, never from a browser
+        # value, and they name the run that produced this alert.
+        linked_refs=(run.run_id, rule.rule_id),
     )
     await store.add_alert(alert)
     return AutomationTaskAlertProjectionResult("alert", alert_id, True)

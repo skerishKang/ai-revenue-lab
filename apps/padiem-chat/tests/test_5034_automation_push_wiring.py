@@ -151,6 +151,54 @@ async def test_task_output_links_to_the_task_inbox() -> None:
 
 
 @pytest.mark.asyncio
+async def test_the_push_links_to_the_run_that_produced_the_result() -> None:
+    store = _RecordingStore([_subscription()])
+    sender = _RecordingSender()
+    run_id = "sched_run_" + "b" * 64
+
+    await notify_terminal_run(
+        push_store=store,
+        push_sender=sender,
+        workspace_id=WORKSPACE,
+        member_id=MEMBER,
+        scope=SCOPE,
+        created_kind="alert",
+        created=True,
+        run_status="COMPLETED",
+        run_id=run_id,
+    )
+
+    # #5034: the lock-screen notification opens the original run, not an
+    # undifferentiated list. The reference is the only thing the URL carries.
+    assert sender.calls[0]["url"] == f"/claw?notify=run&run_id={run_id}"
+    assert "title" not in sender.calls[0]["url"]
+
+
+@pytest.mark.asyncio
+async def test_a_reference_outside_the_run_grammar_falls_back_to_the_inbox() -> None:
+    store = _RecordingStore([_subscription()])
+    sender = _RecordingSender()
+
+    for forged in (
+        "../../other", "run/../x", "", None,
+        "sched_run_" + "b" * 130, "run id with spaces",
+    ):
+        await notify_terminal_run(
+            push_store=store,
+            push_sender=sender,
+            workspace_id=WORKSPACE,
+            member_id=MEMBER,
+            scope=SCOPE,
+            created_kind="alert",
+            created=True,
+            run_status="COMPLETED",
+            run_id=forged,
+        )
+
+    assert [call["url"] for call in sender.calls] == [INBOX_ALERTS_PATH] * 6
+
+
+@pytest.mark.asyncio
 async def test_failed_run_uses_failure_wording() -> None:
     store = _RecordingStore([_subscription()])
     sender = _RecordingSender()

@@ -1388,10 +1388,43 @@
   // The other projections read the same rule so they cannot drift apart.
   window.PadiemSessionPresentation = resolveSessionPresentation;
 
+  // #5034: a Web Push click can be a cold start, so the run reference arrives in
+  // the URL before any view exists. The query carries only the server-derived
+  // occurrence id — no title, no document, no secret. It is consumed once, only
+  // after the session proves this owner, and it opens the SAME run target the
+  // calendar link-back already owns instead of a second navigation authority.
+  const NOTIFICATION_RUN_REF = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+  let pendingNotificationRunId = "";
+  {
+    // Parsed with the plain-split shape the connector return already uses: this
+    // file is also loaded inside curated VM harnesses that do not define the
+    // query-string helper, and a percent-escaped reference fails the grammar
+    // above rather than being decoded into a target.
+    const notificationParts = String((window.location && window.location.search) || "")
+      .replace(/^\?/, "").split("&");
+    const runPart = notificationParts.find((part) => part.startsWith("run_id=")) || "";
+    if (notificationParts.indexOf("notify=run") >= 0
+        && NOTIFICATION_RUN_REF.test(runPart.slice("run_id=".length))) {
+      pendingNotificationRunId = runPart.slice("run_id=".length);
+    }
+  }
+
   function applyAuthState(data) {
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    if (authenticated && pendingNotificationRunId) {
+      const notificationRunId = pendingNotificationRunId;
+      pendingNotificationRunId = "";
+      const remaining = String((window.location && window.location.search) || "")
+        .replace(/^\?/, "").split("&").filter(Boolean)
+        .filter((part) => part !== "notify=run" && !part.startsWith("run_id="));
+      window.history.replaceState(
+        null, "",
+        window.location.pathname + (remaining.length ? `?${remaining.join("&")}` : "") + (window.location.hash || ""),
+      );
+      openClawRunTarget(notificationRunId);
+    }
     // A completed or concurrent sign-in invalidates any pending Android handoff.
     if (authenticated && androidHandoff) clearAndroidHandoff();
     // #4488: a decision that began in a previous session generation must never
