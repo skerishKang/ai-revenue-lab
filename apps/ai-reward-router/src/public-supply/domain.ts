@@ -35,6 +35,8 @@ export interface PublicOpportunity {
   readonly verifiedAt: string;
   readonly status: PublicOpportunityStatus;
   readonly todayTier: PublicTodayTier;
+  /** Extra truthful nuance shown next to the tier label (e.g. rolling availability). */
+  readonly tierNote: string | null;
   /**
    * Deterministic user-value score (0-10), computed from verified attributes only:
    * base 4 + reward confirmed (+2) + IMMEDIATE tier (+2) + Korea confirmed (+2).
@@ -56,11 +58,14 @@ export interface PublicOpportunityCard {
   readonly titleKo: string;
   readonly rewardLabel: string;
   readonly rewardBasisLabel: string;
+  readonly rewardNote: string;
   readonly rewardConfirmed: boolean;
   readonly country: string;
   readonly koreaStatus: KoreaStatus;
+  readonly koreaLabel: string;
   readonly todayTier: PublicTodayTier;
   readonly tierLabel: string;
+  readonly tierNote: string | null;
   readonly userValueScore: number;
   readonly applyUrl: string;
   readonly verifiedAt: string;
@@ -88,13 +93,25 @@ const REWARD_BASIS_LABELS: Readonly<Record<PublicRewardBasis, string>> = Object.
   PER_TASK: '건당',
   PER_ASSET: '승인 에셋당',
   FIXED: '정액',
-  UNCONFIRMED: '금액 미확인',
+  UNCONFIRMED: '미확인',
 });
 
 const TIER_LABELS: Readonly<Record<PublicTodayTier, string>> = Object.freeze({
-  IMMEDIATE: '바로 참여 가능',
+  IMMEDIATE: '지금 바로 참여 시작',
   SCREENING_REQUIRED: '신청·심사 후 참여',
 });
+
+/** Single-line reward display without doubled "미확인" wording. */
+export function publicRewardNote(reward: PublicReward): string {
+  if (reward.confirmed) return REWARD_BASIS_LABELS[reward.basis];
+  if (reward.basis === 'UNCONFIRMED') return '미확인';
+  return `${REWARD_BASIS_LABELS[reward.basis]} · 미확인`;
+}
+
+/** Korea eligibility is only claimed when officially confirmed. */
+export function koreaEligibilityLabel(status: KoreaStatus): string {
+  return status === 'CONFIRMED' ? '한국 참여 확인' : '한국 거주 자격 미확인';
+}
 
 export function computeUserValueScore(input: {
   rewardConfirmed: boolean;
@@ -142,11 +159,14 @@ export function toPublicOpportunityCard(opportunity: PublicOpportunity): PublicO
     titleKo: opportunity.titleKo,
     rewardLabel: reward.displayValue,
     rewardBasisLabel: REWARD_BASIS_LABELS[reward.basis],
+    rewardNote: publicRewardNote(reward),
     rewardConfirmed: reward.confirmed,
     country: opportunity.country,
     koreaStatus: opportunity.koreaStatus,
+    koreaLabel: koreaEligibilityLabel(opportunity.koreaStatus),
     todayTier: opportunity.todayTier,
     tierLabel: TIER_LABELS[opportunity.todayTier],
+    tierNote: opportunity.tierNote,
     userValueScore: opportunity.userValueScore,
     applyUrl: opportunity.applyUrl,
     verifiedAt: opportunity.verifiedAt,

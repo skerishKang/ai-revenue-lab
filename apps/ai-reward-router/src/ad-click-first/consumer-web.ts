@@ -6,6 +6,7 @@ import type {
 } from './consumer-home.js';
 import type { AdClickConsumerCard } from './consumer-card.js';
 import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
+import { koreaEligibilityLabel, publicRewardNote } from '../public-supply/domain.js';
 
 const ACTION_LABELS: Readonly<Record<AdClickConsumerCard['actionKind'], string>> = Object.freeze({
   AD_VIEW: '광고 보기',
@@ -107,7 +108,6 @@ function renderCard(card: AdClickConsumerCard): string | null {
 function renderPublicOpportunityCard(card: PublicOpportunityCard): string | null {
   const href = safeOutboundHref(card.applyUrl);
   if (!href) return null;
-  const rewardNote = card.rewardConfirmed ? card.rewardBasisLabel : `${card.rewardBasisLabel} · 미확인`;
   return `<article class="reward-card public-card" data-card-id="${escapeHtml(card.id)}">
     <div class="reward-card__topline">
       <span class="action-chip action-chip--public">공개 기회</span>
@@ -116,14 +116,17 @@ function renderPublicOpportunityCard(card: PublicOpportunityCard): string | null
     <h3 title="${escapeHtml(card.titleKo)}">${escapeHtml(card.titleKo)}</h3>
     <div class="reward-card__reward">
       <strong>${escapeHtml(card.rewardLabel)}</strong>
-      <span>${escapeHtml(rewardNote)}</span>
+      <span>${escapeHtml(card.rewardNote)}</span>
     </div>
     <p class="condition" title="${escapeHtml(card.country)}">${escapeHtml(card.vendor)} · ${escapeHtml(card.country)}</p>
     <div class="reward-card__meta" aria-label="참여 정보">
       <span class="tier-chip${card.todayTier === 'IMMEDIATE' ? ' tier-chip--immediate' : ' tier-chip--screening'}">${escapeHtml(card.tierLabel)}</span>
       <span aria-hidden="true" class="meta-dot">·</span>
+      <span>${escapeHtml(card.koreaLabel)}</span>
+      <span aria-hidden="true" class="meta-dot">·</span>
       <span>사용자 가치 ${card.userValueScore}/10</span>
     </div>
+    ${card.tierNote ? `<p class="tier-note" title="${escapeHtml(card.tierNote)}">${escapeHtml(card.tierNote)}</p>` : ''}
     <a class="reward-cta" href="${href}" target="_blank" rel="noopener noreferrer nofollow">공식 페이지에서 신청하기<span aria-hidden="true"> ↗</span></a>
     <a class="detail-link" href="/detail?id=${escapeHtml(card.id)}">자세히 보기<span aria-hidden="true"> →</span></a>
   </article>`;
@@ -135,9 +138,9 @@ function renderPublicCardGrid(cards: readonly PublicOpportunityCard[]): string {
 
 function renderPublicDetail(detail: PublicOpportunityDetail): string {
   const { card } = detail;
-  const rewardNote = card.rewardConfirmed ? card.rewardBasisLabel : `${card.rewardBasisLabel} · 미확인`;
   const applyHref = safeOutboundHref(card.applyUrl);
   const sourceHref = safeOutboundHref(detail.sourceUrl);
+  const stageValue = card.tierNote ? `${card.tierLabel} — ${card.tierNote}` : card.tierLabel;
   return `<a class="back-link" href="/browse">← 수익 기회 목록</a>
   <section id="public-opportunity-detail" aria-labelledby="detail-title">
     <div class="detail-card">
@@ -145,7 +148,7 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
       <h2 id="detail-title">${escapeHtml(card.titleKo)}</h2>
       <div class="detail-reward">
         <strong>${escapeHtml(card.rewardLabel)}</strong>
-        <span>${escapeHtml(rewardNote)}</span>
+        <span>${escapeHtml(card.rewardNote)}</span>
       </div>
       <div class="detail-facts">
         <div class="detail-fact">
@@ -162,11 +165,11 @@ function renderPublicDetail(detail: PublicOpportunityDetail): string {
         </div>
         <div class="detail-fact">
           <span class="detail-fact__label">국가·지역</span>
-          <span class="detail-fact__value">${escapeHtml(card.country)}${card.koreaStatus === 'CONFIRMED' ? ' · 한국 참여 확인' : ' · 한국 지원 미확인'}</span>
+          <span class="detail-fact__value">${escapeHtml(card.country)} · ${escapeHtml(card.koreaLabel)}</span>
         </div>
         <div class="detail-fact">
           <span class="detail-fact__label">참여 단계</span>
-          <span class="detail-fact__value">${escapeHtml(card.tierLabel)}</span>
+          <span class="detail-fact__value">${escapeHtml(stageValue)}</span>
         </div>
         <div class="detail-fact">
           <span class="detail-fact__label">PADIEM 수익</span>
@@ -337,6 +340,7 @@ function renderShell(
     .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
     .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
+    .tier-note { margin: 10px 0 0; color: var(--faint); font-size: 12px; line-height: 1.5; }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
     .reward-card h3 { margin: 13px 0 10px; font-size: 16px; line-height: 1.4; letter-spacing: -.015em; font-weight: 650; overflow-wrap: anywhere; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 8px; }
@@ -618,10 +622,10 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
     if (hasImmediate) {
       sections.push(`<section id="today-public-immediate" aria-labelledby="today-public-immediate-title">
       <div class="section-head">
-        <h2 id="today-public-immediate-title">지금 바로 시작 가능</h2>
+        <h2 id="today-public-immediate-title">지금 바로 참여 시작</h2>
         <span>${(viewModel.publicImmediateCards ?? []).length}개 확인됨</span>
       </div>
-      <p class="public-note">선발·심사 없이 참여 가능한 공개 기회입니다. PADIEM 수익은 0이며 각 업체에서 직접 참여합니다.</p>
+      <p class="public-note">선발 없이 참여를 시작할 수 있는 공개 기회입니다. 설문·프로젝트 가용성은 기간에 따라 달라질 수 있습니다. PADIEM 수익은 0이며 각 업체에서 직접 참여합니다.</p>
       <div class="reward-grid" data-public-card-count="${(viewModel.publicImmediateCards ?? []).length}">${renderPublicCardGrid(viewModel.publicImmediateCards ?? [])}</div>
     </section>`);
     }
@@ -643,8 +647,8 @@ export function renderAdClickFirstTodayRouteWeb(viewModel: AdClickFirstTodayRout
   const hero = `
       <section class="hero" aria-labelledby="hero-title">
         <p class="eyebrow">오늘 추천 우선순위로</p>
-        <h1 id="hero-title">지금 바로 할 수 있는 적립</h1>
-        <p>짧고 안전하게 끝나는 적립만 먼저 보여드릴게요.</p>
+        <h1 id="hero-title">오늘의 기회</h1>
+        <p>확인된 광고·클릭 적립과 공개 참여 기회를 함께 보여드립니다. 신청·심사가 필요한 프로젝트는 별도 구분됩니다.</p>
       </section>`;
 
   return renderShell({ mode: viewModel.mode, issueNumber: null }, navItems, hero, content);

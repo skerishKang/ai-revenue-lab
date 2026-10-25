@@ -19,8 +19,8 @@ import {
 const VERIFIED_AT = '2026-10-25T00:50:00.000Z';
 
 const record = (
-  input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole'> &
-    Partial<Pick<PublicOpportunity, 'userValueScore'>>,
+  input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole' | 'tierNote'> &
+    Partial<Pick<PublicOpportunity, 'userValueScore' | 'tierNote'>>,
 ): PublicOpportunity => {
   const score =
     input.userValueScore ??
@@ -29,7 +29,7 @@ const record = (
       todayTier: input.todayTier,
       koreaConfirmed: input.koreaStatus === 'CONFIRMED',
     });
-  return Object.freeze({ ...input, userValueScore: score, monetizationRole: 'NONE' as const });
+  return Object.freeze({ ...input, tierNote: input.tierNote ?? null, userValueScore: score, monetizationRole: 'NONE' as const });
 };
 
 export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Object.freeze([
@@ -45,7 +45,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       koreaStatus: 'CONFIRMED',
       participationMethod: 'Prolific 개인 계정 가입 후 계정 검증, 이후 발표된 연구에 직접 참여',
       reward: Object.freeze({
-        displayValue: '연구별 상이 (보상액 미확인)',
+        displayValue: '연구별 상이',
         currency: null,
         basis: 'UNCONFIRMED' as const,
         confirmed: false,
@@ -57,6 +57,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       verifiedAt: VERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'IMMEDIATE' as const,
+      tierNote: '설문은 기간에 따라 공개됩니다 · 현재 가용 설문 수 미확인',
     }),
   ),
   Object.freeze(
@@ -97,7 +98,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       koreaStatus: 'CONFIRMED',
       participationMethod: 'OneForma 무료 프로필 가입 → 프로젝트 지원 → 매칭 후 착수',
       reward: Object.freeze({
-        displayValue: '시간당 지급 (금액 미확인)',
+        displayValue: '시간당 지급',
         currency: null,
         basis: 'HOURLY' as const,
         confirmed: false,
@@ -123,7 +124,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       koreaStatus: 'CONFIRMED',
       participationMethod: 'OneForma 무료 프로필 가입 → 프로젝트 지원 → 매칭 후 착수',
       reward: Object.freeze({
-        displayValue: '승인 에셋당 지급 (금액 미확인)',
+        displayValue: '승인 에셋당 지급',
         currency: null,
         basis: 'PER_ASSET' as const,
         confirmed: false,
@@ -145,7 +146,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       category: 'MICROTASK',
       titleKo: 'DataAnnotation Korean Specialist (AI 학습 언어 스페셜리스트)',
       titleEn: 'Korean Specialist (Languages) — Up to $40/hr',
-      country: '글로벌 (한국어 스페셜리스트 직군, 거주 요건 미확인)',
+      country: '글로벌 (한국어 직군 · 한국 거주 자격 미확인)',
       koreaStatus: 'UNCONFIRMED',
       participationMethod: 'DataAnnotation 지원 → 자격 평가 통과 후 프로젝트 배정 (원격, 과제 기반 프리랜서)',
       reward: Object.freeze({
@@ -175,7 +176,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       koreaStatus: 'CONFIRMED',
       participationMethod: 'TELUS 채용 포털에서 한국 대상 직무 지원 (공개 1건, AI Community 카테고리)',
       reward: Object.freeze({
-        displayValue: '미확인 (공고 조건 기준)',
+        displayValue: '미확인',
         currency: null,
         basis: 'UNCONFIRMED' as const,
         confirmed: false,
