@@ -240,6 +240,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --quiet pyyaml
           python -m pytest .github/tests/test_b62_repo_binding_authority.py -q
           echo "B62_WEB_SECRETS_STORE_SOURCE_GUARD=PASS"
           echo "PRODUCTION_MUTATION=0"

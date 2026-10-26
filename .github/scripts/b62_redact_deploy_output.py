@@ -12,7 +12,7 @@ def redact(line, variables):
     if any(name in line for name in variables):
         return "B62_DEPLOY_VARIABLE_DISPLAY=OMITTED\n"
     forms = {form for value in variables.values() if isinstance(value, str) and value
-             for form in (value, json.dumps(value)[1:-1]) if form}
+             for form in (value, json.dumps(value)[1:-1], *value.splitlines()) if form}
     for value in sorted(forms, key=len, reverse=True):
         line = line.replace(value, "[REDACTED]")
     return line

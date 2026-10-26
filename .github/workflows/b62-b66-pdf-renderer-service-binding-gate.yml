@@ -134,9 +134,10 @@ jobs:
           assert 'B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"' in worker_config
           assert 'name = "padiem-b66-pdf-renderer"' in pdf_config
 
-          # The chat worker must not pre-declare the P01 binding in wrangler;
-          # it is added only through this gate's settings patch.
-          assert "B66_PDF_RENDERER_SERVICE" not in chat_config
+          # The repository now declares the already-live binding target.
+          import tomllib
+          matches = [b for b in tomllib.loads(chat_config)["services"] if b["binding"] == "B66_PDF_RENDERER_SERVICE"]
+          assert matches == [{"binding": "B66_PDF_RENDERER_SERVICE", "service": "padiem-b66-pdf-renderer"}]
 
           trigger_paths = gate.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
           mutation_runtime = gate.split("\n  activate-b66-pdf-renderer-binding:", 1)[1]
