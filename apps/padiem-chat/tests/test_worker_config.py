@@ -42,7 +42,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
     assert settings.daum_rest_api_key is None
-    assert settings.web_timeout_seconds == 15.0
+    assert settings.web_timeout_seconds == 30.0
     assert settings.auth_mode == "off"
     assert settings.public_base_url is None
     assert settings.google_client_id is None

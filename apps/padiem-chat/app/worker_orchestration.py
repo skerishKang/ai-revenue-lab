@@ -33,7 +33,7 @@ from .service_binding_response import (
 from .worker_config import binding_value, p01_engine_config_from_worker_bindings
 
 ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
-_MAX_ENGINE_RESPONSE_BYTES = 1_048_576  # small non-model Engine contracts
+_MAX_ENGINE_RESPONSE_BYTES = 10 * 1024 * 1024  # small non-model Engine contracts
 _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
 # Match the Engine's *existing* 6MB model execute ingress safety envelope.
 # The legacy 256KiB was falsely smaller than Claw's guarded 5.5MB context.

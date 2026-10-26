@@ -68,6 +68,11 @@ def test_no_application_byte_total_remains_on_the_released_d1_surfaces() -> None
         "claw_artifact_preview_routes.py",
     ):
         text = (APP / name).read_text(encoding="utf-8")
+        # #5573 keeps generic D1 metadata free of byte ceilings. The separately
+        # authorized WEB XLSX input limit is now 10MiB and is not that surface.
+        if name == "workspace_storage.py":
+            text = "\n".join(line for line in text.splitlines()
+                             if not line.startswith("MAX_WEB_XLSX_BYTES = "))
         assert "10 * 1024 * 1024" not in text, name
         assert "10485760" not in text, name
         assert "SINGLE_FILE_MAX_BYTES" not in text, name

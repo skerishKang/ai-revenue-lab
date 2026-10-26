@@ -36,7 +36,7 @@ from .byok_endpoint import (
 )
 from .request_contract import CustomModelSelection
 
-MAX_CUSTOM_RESPONSE_BYTES = 1_000_000
+MAX_CUSTOM_RESPONSE_BYTES = 10 * 1024 * 1024
 MAX_CUSTOM_MODEL_LIST = 500
 MAX_CUSTOM_ANSWER_CHARS = 200_000
 CUSTOM_SESSION_HEADER = "padiem-chat-custom/1.0"

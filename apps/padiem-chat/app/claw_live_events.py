@@ -21,7 +21,6 @@ from padiem_ai_core.orchestration_events import OrchestrationEvent
 from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
-MAX_RELAY_EVENTS = 128
 _ALLOWED_FIELDS = (
     "event_id", "run_id", "trace_id", "app_id",
     "kind", "sequence", "timestamp_iso",
@@ -99,7 +98,6 @@ def live_claw_sse(
 
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
-        seen = 0
         last_sequence = 0
         stream_identity: tuple[str, str, str] | None = None
         seen_event_ids: set[str] = set()
@@ -107,10 +105,7 @@ def live_claw_sse(
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
 
         async def report(event: OrchestrationEvent) -> None:
-            nonlocal seen, last_sequence, stream_identity, verified_terminal
-            seen += 1
-            if seen > MAX_RELAY_EVENTS:
-                raise ValueError("P01 stream event budget exceeded")
+            nonlocal last_sequence, stream_identity, verified_terminal
             projected = _event_projection(event)
             sequence = projected["sequence"]
             if (

@@ -52,9 +52,8 @@ def test_ndjson_chunk_split_and_real_terminal():
     (wire("event") + b'{"ok":true,"orchestration":{}', "truncated_stream"),
     (wire("event") + wire("orchestration") + b'EXTRA', "trailing_data_after_result"),
     (b"A" * 65537, "line_too_large"),
-    (wire("event") * 129, "too_many_events"),
     (wire("event") + wire("orchestration") + wire("event"), "trailing_data_after_result"),
-], ids=["empty", "missing_terminal", "result_without_event", "engine_error", "bad_record", "truncated_line", "extra_bytes", "oversized_line", "too_many_events", "event_after_result"])
+], ids=["empty", "missing_terminal", "result_without_event", "engine_error", "bad_record", "truncated_line", "extra_bytes", "oversized_line", "event_after_result"])
 def test_rejects_unsafe_or_incomplete_stream(data, reason):
     with pytest.raises(EngineNdjsonContractError) as err:
         consume(chunks_of(data))
@@ -340,3 +339,9 @@ def test_stream_client_distinguishes_engine_failure_from_contract_failure(body, 
         if expected_code == "invalid_engine_stream":
             assert err.value.metadata == {"reason": "invalid_stream_record", "record_kind": "pc_progress"}
     asyncio.run(exercise())
+
+
+def test_ndjson_more_than_128_events_reaches_one_terminal_record():
+    records = consume(chunks_of(wire("event") * 257 + wire("orchestration")))
+    assert len(records) == 258
+    assert "orchestration" in records[-1]
