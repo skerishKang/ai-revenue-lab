@@ -137,7 +137,7 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # parser, process, network, filesystem, OCR, provider or Production authority
 # was added.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "053efc8048dedebdbfccdcdf5e1f469a8f08a97e11c6755baddc0e607e0fe9bd",
+    CORE_PACKAGE / "document_normalization.py": "c3ee6522331d835aca40e7cf4057a5f7dbd26f2ddf97b4a0e10c57868f5597fa",
     CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
     CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
     CORE_TESTS / "test_document_normalization.py": "9b1e314125aa11f2696c233c3bd51265ff1878c13d2c892a9079d7d7b2e89269",
