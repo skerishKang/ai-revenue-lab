@@ -124,9 +124,14 @@ def test_a_presence_without_name_support_keeps_the_old_envelope():
     ]}
 
 
-def test_the_beat_accepts_the_new_key_and_still_refuses_a_malformed_one():
+def test_a_configured_name_travels_only_when_it_carries_a_tag():
+    tagged = "PADIEM pd-4decc834"
+
     def provider():
-        return [{"device_id": "pc@mesh+1", "connected": True, "agent_name": "ok name"}]
+        return [
+            {"device_id": "pc@mesh+1", "connected": True, "agent_name": tagged},
+            {"device_id": "pc@mesh+2", "connected": True, "agent_name": "DESKTOP-7Q41B2X"},
+        ]
 
     seen = []
     executor = OracleMeshExecutor(
@@ -135,7 +140,10 @@ def test_the_beat_accepts_the_new_key_and_still_refuses_a_malformed_one():
         transport=lambda path, payload: (seen.append(payload) or (200, {"ok": True, "dispatch": None})),
     )
     executor.run_once()
-    assert seen[0]["presence"][0]["agent_name"] == "ok name"
+    rows = seen[0]["presence"]
+    assert rows[0]["agent_name"] == tagged
+    # The untagged row keeps its presence and loses its name.
+    assert rows[1] == {"device_id": "pc@mesh+2", "connected": True}
 
     def broken():
         return [{"device_id": "pc@mesh+1", "connected": True, "agent_name": "bad\tname"}]
@@ -152,3 +160,110 @@ def test_the_beat_accepts_the_new_key_and_still_refuses_a_malformed_one():
     # reason the queue stalls.
     assert len(refused) == 1
     assert "agent_name" not in str(refused[0])
+
+
+# -- PR-4c: the enumeration offers tag-carrying nodes, and only once ---------
+
+def test_only_a_name_with_exactly_one_tag_token_becomes_a_candidate():
+    rows = _presence().pairing_candidates()
+    assert [(row["device_id"], row["connected"]) for row in rows] == [("pc@mesh+1", True)]
+    assert rows[0]["agent_name"] == "PADIEM pd-4decc834 beta-notebook"
+    # pc@mesh+2 is connected but untagged, pc@mesh+3 has no name at all, and an
+    # offline node is not a pairing candidate.
+    assert "DESKTOP-7Q41B2X" not in str(rows)
+
+
+def test_two_tags_or_a_lookalike_are_not_a_pairing():
+    from kagent.local_agent_oracle_mesh_executor import _pairing_tag_of
+    assert _pairing_tag_of("pd-4decc834") == "pd-4decc834"
+    assert _pairing_tag_of("pd-4decc834 pd-00000000") is None
+    assert _pairing_tag_of("xpd-4decc8345") is None
+    assert _pairing_tag_of("pd-4decc83") is None
+    assert _pairing_tag_of(None) is None
+
+
+class _Tagged:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def __call__(self):
+        return [dict(row) for row in self.rows]
+
+
+def _beat(pairing_rows, configured_rows, *, accepted=True):
+    seen = []
+
+    def transport(path, payload):
+        seen.append(payload)
+        return (200, {"ok": True, "dispatch": None}) if accepted else (503, {"ok": False})
+
+    executor = OracleMeshExecutor(
+        chat_origin="https://chat.example.test", channel_secret=SECRET,
+        read_port=_StubPort(), presence_provider=lambda: list(configured_rows),
+        pairing_provider=_Tagged(pairing_rows), transport=transport,
+    )
+    executor.poll_once()
+    return seen[0], executor
+
+
+def test_tags_take_the_budget_first_and_untagged_names_are_never_sent():
+    candidate = {"device_id": "pc@mesh+9", "connected": True,
+                 "agent_name": "PADIEM pd-7a3f9c21"}
+    plain = {"device_id": "pc@mesh+1", "connected": True}
+    untagged = {"device_id": "pc@mesh+2", "connected": True,
+                "agent_name": "DESKTOP-7Q41B2X"}
+    duplicate = {"device_id": "pc@mesh+9", "connected": True}
+    payload, _ = _beat([candidate], [plain, untagged, duplicate])
+    rows = payload["presence"]
+    # The tag leads the beat, presence fills the rest, and one node is never
+    # reported twice just because two sources named it.
+    assert [row["device_id"] for row in rows] == ["pc@mesh+9", "pc@mesh+1", "pc@mesh+2"]
+    assert rows[0]["agent_name"] == "PADIEM pd-7a3f9c21"
+    # The untagged name stays on this host: it is somebody's computer name, not
+    # evidence, and the receipt it would feed is keyed by the id anyway.
+    assert "DESKTOP-7Q41B2X" not in str(rows)
+
+
+def test_seven_ordinary_beats_still_leave_room_for_the_tag_and_the_cap_holds():
+    candidate = {"device_id": "pc@mesh+9", "connected": True,
+                 "agent_name": "PADIEM pd-7a3f9c21"}
+    ordinary = [{"device_id": f"pc@mesh+{index}", "connected": True} for index in range(1, 8)]
+    payload, _ = _beat([candidate], ordinary)
+    rows = payload["presence"]
+    assert len(rows) == 8 and rows[0]["device_id"] == "pc@mesh+9"
+
+
+def test_a_reported_tag_is_not_offered_again_and_a_lost_beat_is():
+    candidate = {"device_id": "pc@mesh+9", "connected": True,
+                 "agent_name": "PADIEM pd-7a3f9c21"}
+    plain = {"device_id": "pc@mesh+1", "connected": True}
+    payload, executor = _beat([candidate], [plain])
+    assert payload["presence"][0]["device_id"] == "pc@mesh+9"
+    assert executor._reported_pairing_tags == {"pd-7a3f9c21"}
+
+    second_call = []
+    executor._transport = lambda path, payload: (
+        second_call.append(payload) or (200, {"ok": True, "dispatch": None}))
+    executor.poll_once()
+    # Same tag, same process: the pairing already reached the server, so the
+    # second beat carries only ordinary presence.
+    assert [row["device_id"] for row in second_call[0]["presence"]] == ["pc@mesh+1"]
+
+
+def test_a_refused_poll_leaves_the_tag_unreported_so_a_later_poll_can_carry_it():
+    candidate = {"device_id": "pc@mesh+9", "connected": True,
+                 "agent_name": "PADIEM pd-7a3f9c21"}
+    plain = {"device_id": "pc@mesh+1", "connected": True}
+
+    def transport(path, payload):
+        return 503, {"ok": False}
+
+    executor = OracleMeshExecutor(
+        chat_origin="https://chat.example.test", channel_secret=SECRET,
+        read_port=_StubPort(), presence_provider=lambda: [plain],
+        pairing_provider=_Tagged([candidate]), transport=transport,
+    )
+    with pytest.raises(Exception):
+        executor.poll_once()
+    # Nothing was acknowledged, so nothing is remembered as reported.
+    assert executor._reported_pairing_tags == set()
