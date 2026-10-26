@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import ssl
 import sys
 import time
@@ -30,6 +31,18 @@ RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: #5553: bound shared with the Chat poll route's presence envelope.
 MAX_PRESENCE_ENTRIES = 8
+#: #5573: the install tag an agent name may carry. The token rule is the same one
+#: the server applies, so a lookalike inside a longer run is never a pairing.
+_PAIRING_TAG_RE = re.compile(
+    r"(?<![0-9A-Za-z])pd-[0-9a-f]{8}(?![0-9A-Za-z])", re.IGNORECASE,
+)
+
+
+def _pairing_tag_of(agent_name: Any) -> str | None:
+    if not isinstance(agent_name, str):
+        return None
+    found = [match.group(0).lower() for match in _PAIRING_TAG_RE.finditer(agent_name)]
+    return found[0] if len(found) == 1 else None
 #: Cloudflare's Browser Integrity Check blocks the default Python-urllib
 #: signature (error 1010) at the edge, before the channel secret is ever
 #: evaluated. This executor is a first-party product client, so it identifies
@@ -155,6 +168,7 @@ class OracleMeshExecutor:
         pending_dir: Optional[str] = None,
         claim_gate: Optional[Callable[[], bool]] = None,
         presence_provider: Optional[Callable[[], Any]] = None,
+        pairing_provider: Optional[Callable[[], Any]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -203,6 +217,15 @@ class OracleMeshExecutor:
         if presence_provider is not None and not callable(presence_provider):
             raise ContractError("the presence provider must be callable")
         self._presence_provider = presence_provider
+        # #5573: the pairing observation is a second, separate source of the SAME
+        # authenticated beat. Tags are remembered only in this process: a claim
+        # already completed must not be re-offered on every poll, and a restart
+        # costs nothing because the server refuses a used tag on its own.
+        if pairing_provider is not None and not callable(pairing_provider):
+            raise ContractError("the pairing provider must be callable")
+        self._pairing_provider = pairing_provider
+        self._reported_pairing_tags: set[str] = set()
+        self._carried_pairing_tags: list[str] = []
 
     # ---- channel -------------------------------------------------------
     def _https_post(
@@ -283,55 +306,109 @@ class OracleMeshExecutor:
         omits the field entirely so the poll proceeds exactly as before.
         """
         provider = self._presence_provider
-        if provider is None:
+        pairing_provider = self._pairing_provider
+        if provider is None and pairing_provider is None:
             return None
         try:
-            rows = provider()
+            carried: list[str] = []
+            tagged: list[dict[str, Any]] = []
+            if pairing_provider is not None:
+                pairing_rows = pairing_provider()
+                if pairing_rows is None:
+                    pairing_rows = ()
+                elif not isinstance(pairing_rows, (list, tuple)):
+                    return None
+                for row in pairing_rows:
+                    entry = self._presence_entry(row)
+                    if entry is None:
+                        return None
+                    tag = _pairing_tag_of(entry.get("agent_name"))
+                    # Only a name carrying exactly one tag is a pairing candidate,
+                    # and an untagged name is never sent: it is private text about
+                    # somebody's machine, not evidence this server can use.
+                    if tag is None or tag in self._reported_pairing_tags:
+                        continue
+                    entry["pairing_tag"] = tag
+                    tagged.append(entry)
+            rows = () if provider is None else provider()
             if not isinstance(rows, (list, tuple)):
                 return None
-            if not rows or len(rows) > MAX_PRESENCE_ENTRIES:
-                return None
-            entries: list[dict[str, Any]] = []
+            configured: list[dict[str, Any]] = []
             for row in rows:
-                if type(row) is not dict or not {"device_id", "connected"} <= set(row) or (
-                    set(row) - {"device_id", "connected", "agent_name"}
-                ):
+                entry = self._presence_entry(row)
+                if entry is None:
                     return None
-                device_id = row["device_id"]
-                connected = row["connected"]
-                if (
-                    not isinstance(device_id, str)
-                    or not device_id
-                    or len(device_id) > 256
-                    or any(ord(ch) < 33 or ord(ch) > 126 for ch in device_id)
-                ):
-                    return None
-                if type(connected) is not bool:
-                    return None
-                row_out = {"device_id": device_id, "connected": connected}
-                agent_name = row.get("agent_name")
-                if agent_name is not None:
-                    if (
-                        not isinstance(agent_name, str)
-                        or not 1 <= len(agent_name) <= 256
-                        # Names are prose: a space is allowed, a control
-                        # character or a non-ASCII byte is not.
-                        or any(ord(ch) < 32 or ord(ch) > 126 for ch in agent_name)
-                    ):
-                        raise ContractError("the presence agent name is unusable")
-                    row_out["agent_name"] = agent_name
-                entries.append(row_out)
+                # A name travels only when it carries a pairing tag. Otherwise it
+                # is private text about somebody's machine that the server has no
+                # use for, and the same node is already reported by id.
+                if "agent_name" in entry and _pairing_tag_of(entry["agent_name"]) is None:
+                    entry.pop("agent_name")
+                configured.append(entry)
+            # Tags are the point of this beat, so they take the budget first and
+            # ordinary presence fills what is left. Anything that does not fit is
+            # simply not carried, and its tag stays unreported until a later poll.
+            carried_ids = {entry["device_id"] for entry in tagged}
+            entries = (tagged + [
+                entry for entry in configured if entry["device_id"] not in carried_ids
+            ])[:MAX_PRESENCE_ENTRIES]
+            self._carried_pairing_tags = [
+                entry.pop("pairing_tag") for entry in entries if "pairing_tag" in entry
+            ]
+            if not entries:
+                return None
         except Exception:
             # The beat is evidence, not work: a failed probe must never turn
             # into a channel refusal that stalls the queue.
             return None
         return {"presence": entries}
 
+    def _presence_entry(self, row: Any) -> Optional[dict[str, Any]]:
+        """One beat entry, or ``None`` when the row is not a well-formed beat.
+
+        The shape is closed and the values are bounded, so neither source - the
+        ordinary probe nor the pairing enumeration - can widen what travels.
+        """
+        if type(row) is not dict or not {"device_id", "connected"} <= set(row) or (
+            set(row) - {"device_id", "connected", "agent_name"}
+        ):
+            return None
+        device_id = row["device_id"]
+        if (
+            not isinstance(device_id, str)
+            or not device_id
+            or len(device_id) > 256
+            or any(ord(ch) < 33 or ord(ch) > 126 for ch in device_id)
+        ):
+            return None
+        connected = row["connected"]
+        if type(connected) is not bool:
+            return None
+        entry: dict[str, Any] = {"device_id": device_id, "connected": connected}
+        agent_name = row.get("agent_name")
+        if agent_name is not None:
+            if (
+                not isinstance(agent_name, str)
+                or not 1 <= len(agent_name) <= 256
+                # Names are prose: a space is allowed, a control character or a
+                # non-ASCII byte is not.
+                or any(ord(ch) < 32 or ord(ch) > 126 for ch in agent_name)
+            ):
+                return None
+            entry["agent_name"] = agent_name
+        return entry
+
     def poll_once(self) -> Optional[OracleMeshDispatch]:
         """Claim the oldest dispatch, or None when the queue is empty."""
-        status, data = self._post(POLL_PATH, self._poll_payload())
+        payload = self._poll_payload()
+        status, data = self._post(POLL_PATH, payload)
         if status != 200 or data.get("ok") is not True:
             raise OracleMeshChannelRefused("chat channel refused the poll")
+        if self._carried_pairing_tags and isinstance(payload, dict) and payload.get("presence"):
+            # Reported only once the server took the beat: a poll that was
+            # refused or lost leaves the tag unreported so a later poll offers
+            # it again, rather than silently dropping a pairing until restart.
+            self._reported_pairing_tags.update(self._carried_pairing_tags)
+        self._carried_pairing_tags = []
         dispatch = data.get("dispatch")
         if dispatch is None:
             return None
@@ -1246,6 +1323,7 @@ def make_oracle_mesh_executor(
     timeout_seconds: int = 30,
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
+    pairing_provider: Optional[Callable[[], Any]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1326,6 +1404,7 @@ def make_oracle_mesh_executor(
         pending_dir=work_dir,
         claim_gate=claim_gate,
         presence_provider=presence_provider,
+        pairing_provider=pairing_provider,
     )
 
 
@@ -1396,6 +1475,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # #5553: observe presence only for the device this deployment names.
         # An unnamed target omits the field instead of guessing a device.
         presence_provider = None
+        pairing_provider = None
         raw_devices = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
         presence_device_ids = list(dict.fromkeys(part.strip() for part in raw_devices.split(","))) if raw_devices else []
         if (len(presence_device_ids) > MAX_PRESENCE_ENTRIES
@@ -1410,6 +1490,13 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 login_user=need("ORACLE_MESH_LOGIN_USER"),
                 password_provider=password_provider,
             )
+
+            def pairing_provider():
+                # #5573: one enumeration, tag-carrying nodes only. An untagged
+                # name is never sent, and no bound is applied to the candidates -
+                # the beat budget that limits what travels, decided below.
+                listing = getattr(presence, "pairing_candidates", None)
+                return listing() if callable(listing) else []
 
             def presence_provider():
                 entries = []
@@ -1444,6 +1531,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             mesh_url=mesh_url,
             work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
             presence_provider=presence_provider,
+            pairing_provider=pairing_provider,
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
     except (ContractError, ValueError) as exc:

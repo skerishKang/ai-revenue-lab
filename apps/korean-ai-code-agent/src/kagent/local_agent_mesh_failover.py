@@ -527,6 +527,30 @@ class MeshCentralDevicePresence:
                 connected.add(node_id)
         return frozenset(connected)
 
+    def pairing_candidates(self) -> list[dict[str, Any]]:
+        """Connected devices whose name carries a pairing tag, from ONE parse.
+
+        #5573 PR-4c: this is how a PC that cannot name its own node identity
+        reaches its owner. The enumeration already happens; only names holding
+        exactly one `pd-` tag token are returned, and each candidate carries the
+        id the Mesh lane can address plus the name that proves the pairing.
+        """
+        rows = self._parse_listdevices(self._run_listdevices())
+        found: list[dict[str, Any]] = []
+        for row in rows:
+            node_id = row.get("id")
+            name = row.get("name")
+            if not isinstance(node_id, str) or not node_id:
+                continue
+            if not isinstance(name, str) or not name.strip():
+                continue
+            if int(row.get("conn", 0) or 0) != 1:
+                # A candidate that is not connected cannot be claimed yet, and a
+                # stale row would waste the beat's budget.
+                continue
+            found.append({"device_id": node_id, "connected": True, "agent_name": name.strip()[:256]})
+        return found
+
     def name_of(self, device_id: str) -> str | None:
         """The name the local server reports for one device, or ``None``.
 
