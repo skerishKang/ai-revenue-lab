@@ -94,9 +94,9 @@ mobile-first
 + e-commerce familiarity
 ```
 
-Saudi contact-lens studies provide additional evidence that cosmetic usage is meaningful. A 1,708-user Saudi study reported:
+Saudi contact-lens studies provide additional evidence that cosmetic usage is meaningful. A Saudi study enrolled 1,708 contact-lens users and analyzed 1,079; among the analyzed users:
 
-- 86.4% of participants were women;
+- 86.4% were women;
 - 36.1% used lenses for cosmetic purposes;
 - 35.1% used them for both medical and cosmetic purposes.
 
@@ -145,7 +145,7 @@ This is important not because B68 should copy eyewa, but because it proves the r
 
 Commercial providers already support contact-lens try-on:
 
-- **Banuba TINT** lists contact lenses among supported try-on categories and, as of 2026, publishes plans beginning at USD 49/month for 1,000 virtual try-ons.
+- **Banuba TINT** lists contact lenses among supported try-on categories and, as of 2026-10-27, publishes plans beginning at USD 99/month for 1,000 virtual try-ons.
 - **Perfect Corp** offers an eye-color/contact-lens try-on API capable of processing customer photos and lens reference/style assets.
 
 Therefore B68 does not need to prove that virtual try-on is technically possible.

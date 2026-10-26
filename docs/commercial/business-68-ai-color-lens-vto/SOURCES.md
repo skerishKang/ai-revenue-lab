@@ -2,7 +2,7 @@
 
 Business: **B68 — AI Color Lens Discovery + Virtual Try-On**
 Master issue: **#3342**
-Retrieved / refreshed: **2026-10-01**
+Retrieved / refreshed: **2026-10-01**; pricing and links rechecked **2026-10-27**
 
 This register separates authoritative/regulatory evidence from commercial vendor claims and directional market-research estimates.
 
@@ -91,9 +91,10 @@ https://pmc.ncbi.nlm.nih.gov/articles/PMC10825379/
 Type: peer-reviewed / PMC-indexed research
 
 Sample:
-- 1,708 contact-lens users;
+- enrolled: 1,708 contact-lens users;
+- analyzed: 1,079;
 - 86.4% female;
-- 65.7% aged 21–40.
+- 65.7% aged 21–40 (analyzed respondents).
 
 Purpose:
 - cosmetic only: 36.1%;
@@ -152,11 +153,11 @@ https://www.banuba.com/blog/banuba-tint-virtual-try-on-pricing-guide
 
 Primary vendor source.
 
-Current 2026 public pricing observed:
+Current 2026 public pricing observed on 2026-10-27:
 
-- Basic: USD 49/month, 1,000 try-ons;
-- Pro: USD 99/month, 3,500 try-ons;
-- Smart: USD 349/month, 15,000 try-ons;
+- Basic: USD 99/month, 1,000 try-ons;
+- Pro: USD 299/month, 3,500 try-ons;
+- Smart: USD 799/month, 15,000 try-ons;
 - Enterprise: custom.
 
 Contact lenses are listed among supported try-on categories.
@@ -178,8 +179,7 @@ Vendor-reported conversion/engagement claims require independent validation. Pri
 Current product page:
 https://yce.perfectcorp.com/ai-api/contents/eye-color-editor
 
-Related lens VTO page observed:
-https://yce-stage.perfectcorp.com/ko/ai-api/products/ai-eye-color-lens-virtual-try-on-api
+The same production page documents the contact-lens try-on use case.
 
 Primary vendor source.
 
