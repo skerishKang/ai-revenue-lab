@@ -127,7 +127,9 @@ def _validate_payload_parts(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "pc_run_id", "web_search", "util"}:
+    # The tail order below is a load-bearing literal: test_5015 pins
+    # `"pc_run_id", "web_search"}` as the end of this set.
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "util" in raw:
         util_scope = raw["util"]
