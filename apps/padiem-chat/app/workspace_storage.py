@@ -15,7 +15,7 @@ from padiem_ai_core.document_normalization import DocumentNormalizationError, va
 GENERATED_DOCUMENT_RETENTION_DAYS = 30
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-MAX_WEB_XLSX_BYTES = 10 * 1024 * 1024
+MAX_WEB_XLSX_BYTES = 1_048_576
 WEB_XLSX_RETENTION = timedelta(days=1)
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
