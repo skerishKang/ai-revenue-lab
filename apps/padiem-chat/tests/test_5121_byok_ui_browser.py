@@ -277,12 +277,14 @@ def _open_harness(browser, base_url: str, *, viewport: dict, auth_mode: str = "s
     return page, state, context
 
 
-def _open_picker(page) -> None:
+def _open_picker(page, *, advanced=True) -> None:
     page.locator(".model-pill").click()
     expect(page.locator(".mode-presentation-panel")).to_be_visible()
     page.wait_for_function(
         "() => getComputedStyle(document.querySelector('.mode-custom-section')).borderTopWidth === '1px'"
     )
+    if advanced:
+        page.locator("#modeCustomAdvanced").evaluate("el => { el.open = true; }")
 
 
 def _assert_panel_inside_viewport(page, width: int, height: int) -> None:
@@ -569,5 +571,45 @@ def test_expired_session_shows_the_login_state_without_opening_the_key_form(
         expect(guest_note).to_contain_text("로그인이 만료되었습니다")
         expect(page.locator(".mode-custom-credential")).to_be_hidden()
         assert state["credential_gets"] == 0
+    finally:
+        context.close()
+
+
+def test_paste_key_detect_register_selects_model_without_exposing_key(browser, static_server):
+    page, state, context = _open_harness(browser, static_server, viewport={"width": 1280, "height": 900})
+    counts = {"detect": 0, "register": 0}
+    console = []
+    page.on("console", lambda message: console.append(message.text))
+    def auto_route(route):
+        path = urlsplit(route.request.url).path
+        body = json.loads(route.request.post_data or "{}")
+        assert bool(body.get("key") == FAKE_KEY)
+        result = {"provider": MANUAL_PROVIDER, "endpoint": CUSTOM_ENDPOINT,
+                  "models": MANUAL_MODELS, "verified": True, "reason": "공급자 연결을 확인했습니다."}
+        if path.endswith("register"):
+            counts["register"] += 1
+            state["credentials"][MANUAL_PROVIDER] = {"last4": FAKE_KEY[-4:], "endpoint": CUSTOM_ENDPOINT}
+            result.update(ok=True, selection={"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]})
+        else:
+            counts["detect"] += 1
+        route.fulfill(status=200, json=result)
+    page.route("**/api/byok/*", auto_route)
+    try:
+        _open_picker(page, advanced=False)
+        assert page.locator("#modeCustomAdvanced").evaluate("el => el.open") is False
+        key = page.locator("#modeAutoByokKey")
+        expect(key).to_be_visible()
+        key.fill(FAKE_KEY)
+        key.dispatch_event("paste")
+        expect(page.locator("#modeAutoByokResult")).to_contain_text("검증 ✓")
+        expect(page.locator("#modeAutoByokResult")).to_contain_text(MANUAL_MODELS[0])
+        _assert_no_key_leak(page, FAKE_KEY)
+        page.locator("#modeAutoByokRegister").click()
+        expect(page.locator(".mode-custom-message")).to_contain_text("바로 대화")
+        assert key.input_value() == ""
+        assert page.evaluate("window.PadiemCustomSelection.get()") == {"provider": MANUAL_PROVIDER, "model": MANUAL_MODELS[0]}
+        assert counts == {"detect": 1, "register": 1}
+        assert not bool(FAKE_KEY in "\n".join(console))
+        _assert_no_key_leak(page, FAKE_KEY)
     finally:
         context.close()

@@ -91,7 +91,7 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
         '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
         in CAPABILITIES
     )
-    assert 'method: "POST"' not in CAPABILITIES
+    assert '"/api/byok/register" : "/api/byok/detect"' in CAPABILITIES
     assert 'method: "PATCH"' not in CAPABILITIES
     assert "customTestState = \"testing\";" in CAPABILITIES
     assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
@@ -385,3 +385,16 @@ def test_custom_error_code_reaches_the_existing_error_ui() -> None:
     assert failure["error"]["code"] == "custom_credential_required"
     assert "API 키" in failure["error"]["message"]
     assert [call["url"] for call in failure["calls"]] == ["/api/chat/stream"]
+
+
+def test_byok_auto_registration_keeps_manual_advanced_and_never_renders_key():
+    section = _custom_section()
+    assert 'autoKeyInput.type = "password"' in section
+    assert 'customAdvanced = document.createElement("details")' in section
+    assert 'customAdvanced.open = true' not in section
+    assert 'autoKeyInput.addEventListener("input", invalidate)' in section
+    auto = CAPABILITIES.split('async function autoByok', 1)[1].split('async function saveCustomKey', 1)[0]
+    assert 'autoCard.textContent' in auto and 'innerHTML' not in auto
+    assert 'autoKeyInput.value = ""' in auto
+    assert 'customSelection = { provider: customProviderId, model: customModelValue }' in auto
+    assert 'localStorage' not in auto and 'sessionStorage' not in auto
