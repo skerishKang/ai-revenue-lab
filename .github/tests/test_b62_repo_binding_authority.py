@@ -20,17 +20,23 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
     expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
-    # CF_VERSION_METADATA went live with the 95c9a36d deploy, so it is no longer
-    # an addition. What remains is exactly one reviewed, declared-but-unserved
-    # variable: #5919 adds PC_AGENT_INSTALL_URL to [vars] with an empty value,
-    # which the pairing handoff reads as "not ready" until deploy injects the
-    # real https installer URL. The reviewed inventory is the set production is
-    # answering with today, so a declared new variable must appear here as this
-    # single named addition - never as an unexplained drift, and never as a
-    # silent removal of something that is serving traffic.
+    # Two reviewed entries are declared and not yet served, and the reviewed
+    # inventory is what production is answering with today:
+    #   - #5919 declares PC_AGENT_INSTALL_URL in [vars] with an empty value, which
+    #     the pairing handoff reads as "not ready" until a deploy injects the real
+    #     https installer URL.
+    #   - this change declares the #5881 file-lane ticket secret, whose value the
+    #     OWNER stores first and the next exact-main deploy attaches.
+    # Each one is named here as a pending addition - never unexplained drift, and
+    # never a silent removal of something serving traffic. Both return to an empty
+    # diff as their deploys land.
     assert binding_diff(index(rows), expected) == {
-        'added': [{'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'}],
-        'removed': [], 'changed': []}
+        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
+                   'type': 'secrets_store_secret'},
+                  {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'}],
+        'removed': [],
+        'changed': [],
+    }
     assert '<synthetic-private-value>' not in capsys.readouterr().out
 
 
