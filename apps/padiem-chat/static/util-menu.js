@@ -246,6 +246,12 @@
       if (utilTaglineEl) utilTaglineEl.textContent = tab.dataset.tagline || "AI 홍보·기록 비서";
       if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
       if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
+      // #5731: re-entering the speech tool must show the past speeches the
+      // account already stored — the list can't only exist after a save.
+      if (key === "speech" && !panels.speech.dataset.speechListLoaded) {
+        panels.speech.dataset.speechListLoaded = "1";
+        refreshSpeechList();
+      }
       if (key === "pdfmd" && !panels.pdfmd.dataset.loaded) {
         panels.pdfmd.dataset.loaded = "1";
         if (typeof window.initPdfMdUtility === "function") window.initPdfMdUtility(panels.pdfmd);
@@ -362,6 +368,25 @@
           }
         });
         li.appendChild(btn);
+        // #5731: a stored speech can be picked as the style reference — the
+        // same owner/project file the list already reads fills the style
+        // sample textarea, so the next generation carries it as the sample.
+        const useAsRef = document.createElement("button");
+        useAsRef.type = "button";
+        useAsRef.className = "util-speech-use-ref";
+        useAsRef.dataset.fileId = f.id;
+        useAsRef.textContent = "참고로 선택";
+        useAsRef.addEventListener("click", async () => {
+          const styleField = document.querySelector('#utilSpeechForm [name=style]');
+          if (!styleField) { alert("참고 원고 필드를 찾을 수 없습니다."); return; }
+          const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
+          if (!res.ok) { alert("참고 원고를 불러오지 못했습니다."); return; }
+          const data = await res.json().catch(() => null);
+          const content = data && data.file && (data.file.content || data.file.text);
+          if (typeof content !== "string" || !content.trim()) { alert("참고 원고의 본문을 읽을 수 없습니다."); return; }
+          styleField.value = content;
+        });
+        li.appendChild(useAsRef);
         ul.appendChild(li);
       });
       savedList.appendChild(ul);
