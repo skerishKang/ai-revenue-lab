@@ -154,14 +154,22 @@ def test_one_workflow_with_the_four_dispatch_inputs_and_no_deploy() -> None:
 def test_exact_main_live_binding_and_readonly_precede_any_mutation() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     for marker in (
+        "PREMUTATION_REF_IS_MAIN=PASS",
+        "PREMUTATION_HEAD_MATCHES_TARGET=PASS",
         'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"',
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
+        "PREMUTATION_EXACT_MAIN_SHA=PASS",
         "PADIEM_CHAT_DB",
         "::add-mask::",
         "D1_BINDING_FINGERPRINT",
         "SOURCE_SHA_PINNED=PASS",
     ):
         assert marker in text, marker
+    # The first dispatch stopped at this guard, so its form is pinned: a
+    # porcelain check of the migration directory, never a commit-to-worktree
+    # diff that needs objects a --depth=1 checkout does not carry.
+    assert 'git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}"' in text
+    assert "git diff --quiet" not in text
     # The read-only half must not be able to write, and the mutation must live
     # only in the apply half. Compared on job sections, not the file's prose.
     readonly_section = text[text.index("  readonly:") : text.index("  apply:")]
@@ -487,6 +495,37 @@ def test_the_read_only_surface_selects_metadata_and_counts_only(tmp_path, capsys
     )
     assert plan["baseline_first_run"] is True
     assert "PRODUCTION_MUTATION=0" in capsys.readouterr().out
+
+
+def test_a_wrangler_response_is_parsed_around_its_banner(tmp_path) -> None:
+    """The first Production readonly run died here, so the parse is pinned.
+
+    `wrangler d1 execute --json` writes its banner and closing log lines into the
+    same stdout as the JSON document, so the response file is not bare JSON.
+    """
+
+    schema = replayed_schema()
+    payload = json.dumps(snapshot_payload(schema, ledger_present=False), ensure_ascii=False)
+    bannered = (
+        "\u26c5\ufe0f wrangler 4.130.0\n\n"
+        "⛅️ wrangler: Routing ... executed 18 statements\n" + payload + "\n"
+        "🪵  Logs were written to \"/home/runner/.config/.wrangler/logs/wrangler-x.log\"\n"
+    )
+    path = tmp_path / "snapshot.json"
+    path.write_text(bannered, encoding="utf-8")
+    tables, _columns, _other, ledger_present = gate.snapshot_rows(gate.read_json(path))
+    assert "users" in tables and ledger_present is False
+
+    plain = tmp_path / "plain.json"
+    plain.write_text(payload, encoding="utf-8")
+    assert gate.snapshot_rows(gate.read_json(plain)) == (
+        tables, _columns, _other, ledger_present,
+    )
+
+    noise = tmp_path / "noise.json"
+    noise.write_text("wrangler failed: unauthorized\n", encoding="utf-8")
+    with pytest.raises(gate.GateError, match="RESPONSE_NOT_JSON"):
+        gate.read_json(noise)
 
 
 def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> None:
