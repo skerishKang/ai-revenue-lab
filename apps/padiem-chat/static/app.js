@@ -2967,8 +2967,11 @@
           const message = clawGeneralRequest
             ? clawFailure.message
             : data && data.error && typeof data.error.message === "string"
-              ? data.error.message : uiT("stream-continue-failed");
-          if (!paragraph) throw chatTransport.errorFor(data, message);
+              && data.error.message.trim()
+              ? data.error.message : chatTransport.streamErrorMessage(data);
+          if (clawGeneralRequest && !paragraph) throw chatTransport.errorFor(data, message);
+          // An explicit refusal is terminal even before the first token.
+          // Handle it here so the outer catch never starts pending-result GETs.
           terminalError = true;
           const terminalFailure = chatTransport.errorFor(data, message);
           renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(terminalFailure), clawFailure, terminalFailure.code);
@@ -3192,7 +3195,7 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId) {
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,

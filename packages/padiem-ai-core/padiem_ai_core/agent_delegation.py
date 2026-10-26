@@ -106,7 +106,7 @@ class AgentDelegationRequest:
     capabilities: tuple[str, ...] = ()
     max_steps: int | None = None
     max_tool_calls: int | None = None
-    max_wall_seconds: int = 900  # explicit parent inheritance still rejects budget widening
+    max_wall_seconds: int = 1800  # explicit parent inheritance still rejects budget widening
     depth: int = 1
 
     def __post_init__(self) -> None:

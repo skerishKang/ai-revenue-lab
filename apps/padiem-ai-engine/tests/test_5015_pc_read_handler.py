@@ -1,9 +1,9 @@
 """#5015: the Engine PC read handler consumes the kind=read lane truthfully.
 
 The list call stays a kind=command result. The read call must expect kind=read,
-return the exact verified body, refuse more than 1 MB defensively, and surface
-a failed read's marker (or a bounded execution failure) without completing the
-run.
+return the exact verified body, refuse more than PC_FILES_READ_MAX_BYTES
+defensively, and surface a failed read's marker (or a bounded execution failure)
+without completing the run.
 """
 
 from __future__ import annotations
@@ -118,6 +118,17 @@ def test_read_dispatch_expects_kind_read_and_returns_the_exact_body(monkeypatch)
     assert result["execution_confirmed"] is True
 
 
+@pytest.mark.parametrize("size", [1_000_001, PC_FILES_READ_MAX_BYTES])
+def test_owner_read_tier_accepts_large_verified_content_without_truncation(monkeypatch, size):
+    content = "x" * size
+    modes = _install(monkeypatch, result=_result_row(output=content))
+    result = asyncio.run(_handler("read", PC_READ_FILE_TOOL_ID)({"path": "notes.txt"}))
+    assert result["content"] == content
+    assert result["content_bytes"] == size
+    assert result["result_sha256"] == hashlib.sha256(content.encode()).hexdigest()
+    assert modes.count("dispatch") == 1
+
+
 def test_a_read_dispatched_as_command_is_a_correlation_mismatch(monkeypatch):
     _install(monkeypatch, dispatch_kind="command")
     with pytest.raises(ToolHandlerError) as caught:
@@ -136,7 +147,7 @@ def test_a_read_result_dispatched_as_command_is_a_correlation_mismatch(monkeypat
     assert caught.value.code == "pc_files_result_mismatch"
 
 
-def test_read_output_over_one_mb_is_refused_without_an_answer(monkeypatch):
+def test_read_output_over_the_owner_read_bound_is_refused_without_an_answer(monkeypatch):
     oversized = "x" * (PC_FILES_READ_MAX_BYTES + 1)
     _install(monkeypatch, result=_result_row(output=oversized))
     with pytest.raises(ToolHandlerError) as caught:

@@ -80,15 +80,50 @@ def _toml_string(value: str) -> str:
     return json.dumps(value)
 
 
-def parse_live_bindings(settings_payload: object) -> dict[str, object]:
-    if not isinstance(settings_payload, dict) or settings_payload.get("success") is not True:
+def live_binding_entries(payload: object) -> list[dict]:
+    """Return the binding entries of either Cloudflare plane.
+
+    ``GET /settings`` describes the newest *uploaded* version. A deploy that served a
+    version and then refused it at its own post-deploy audit leaves that plane
+    carrying the refused upload's additions, so a generated production config that
+    copied bindings from here would inherit a residue no traffic ever ran. The served
+    version is the authority, and ``GET /versions/{id}`` carries exactly what is
+    answering requests.
+
+    Both shapes are read with the same rules the reviewed baseline and the binding
+    state guard already use, and a version payload is only accepted once its own
+    identity is present.
+    """
+
+    if not isinstance(payload, dict) or payload.get("success") is not True:
         raise ProductionConfigError("settings payload is not a successful Cloudflare API response")
-    result = settings_payload.get("result")
+    result = payload.get("result")
     if not isinstance(result, dict):
         raise ProductionConfigError("settings payload has no result object")
-    bindings = result.get("bindings")
+    if "bindings" in result:
+        bindings = result["bindings"]
+    else:
+        identity = result.get("id")
+        resources = result.get("resources")
+        if not isinstance(identity, str) or not identity or not isinstance(resources, dict):
+            raise ProductionConfigError("version payload identity or resources missing")
+        bindings = resources.get("bindings")
+    if isinstance(bindings, dict):
+        entries = []
+        for key, value in bindings.items():
+            if not isinstance(key, str) or not key or not isinstance(value, dict):
+                raise ProductionConfigError("malformed keyed version binding")
+            if "name" in value and value["name"] != key:
+                raise ProductionConfigError("version binding key/name disagreement")
+            entries.append({**value, "name": key})
+        bindings = entries
     if not isinstance(bindings, list) or not bindings:
         raise ProductionConfigError("settings payload has no bindings array")
+    return bindings
+
+
+def parse_live_bindings(settings_payload: object) -> dict[str, object]:
+    bindings = live_binding_entries(settings_payload)
 
     names: list[str] = []
     assets: list[dict] = []
@@ -784,7 +819,8 @@ def verify_mutation_zero(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--settings", required=True, type=Path)
+    parser.add_argument("--settings", required=True, type=Path,
+                        help="live Worker payload: the served version detail, or GET /settings")
     parser.add_argument("--repo-config", required=True, type=Path)
     parser.add_argument("--public-base-url", required=True)
     parser.add_argument("--output", required=True, type=Path)

@@ -104,6 +104,33 @@ async def test_engine_independent_d1_scope_proves_exact_original_metadata():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("size,accepted", [
+    (1024 * 1024 + 1, True),
+    (10 * 1024 * 1024, True),
+    (10 * 1024 * 1024 + 1, False),
+])
+async def test_owner_xlsx_size_tier_preserves_the_independent_scope_check(size, accepted):
+    # Exercise the Engine consumer of a trusted join row. Chat migration 029
+    # still caps stored selections at 1MiB until slice 3/3; this is deliberately
+    # not evidence that today's producer/schema admits a larger upload.
+    class SizeStatement(Statement):
+        async def first(self):
+            row = await super().first()
+            if row is not None:
+                row.update(size_bytes=size, stored_size=size)
+            return row
+
+    class SizeD1(D1):
+        def prepare(self, sql):
+            return SizeStatement(self.db, sql)
+
+    db = database()
+    scope = await D1WebXlsxTrustedScopeResolver(SizeD1(db))(SEL)
+    assert (scope is not None) is accepted
+    db.close()
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("mutation", [
     "UPDATE claw_web_xlsx_selections SET user_id='foreign' WHERE selection_ref='" + SEL + "'",
     "UPDATE claw_web_xlsx_selections SET source_sha256='" + "f"*64 + "'",

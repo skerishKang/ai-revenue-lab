@@ -13,7 +13,7 @@ from typing import Any
 
 # Bound the one completed structured result in Worker memory; never cap
 # the total number of bytes in an otherwise valid incremental event stream.
-MAX_NDJSON_TERMINAL_LINE_BYTES = 8 * 1024 * 1024
+MAX_NDJSON_TERMINAL_LINE_BYTES = 32 * 1024 * 1024
 MAX_NDJSON_LINE_BYTES = 65_536
 MAX_NDJSON_EVENT_COUNT = 128
 
@@ -91,7 +91,7 @@ async def decode_orchestration_ndjson(
 
     Each intermediate event remains bounded at 64KiB and count <=128. The
     canonical Engine terminal result is a single JSON object, thus it gets
-    a finite 8MiB per-record memory budget (not a cumulative model output
+    a finite 32MiB per-record memory budget (not a cumulative model output
     ceiling). A run that yields many valid event lines must not fail because
     their aggregate raw byte count crosses the old 1MiB pilot limit.
     """

@@ -251,12 +251,13 @@ class _PresenceStore:
         self.rows = dict(rows or {})
         self.upserts = []
 
-    async def upsert(self, *, device_id, connected, received_at, credential_generation):
+    async def upsert(self, *, device_id, connected, received_at, credential_generation, source="broker"):
         record = {
             "device_id": device_id,
             "connected": connected,
             "received_at": received_at,
             "credential_generation": credential_generation,
+            "source": source,
         }
         self.upserts.append(record)
         self.rows[device_id] = record

@@ -7,11 +7,17 @@ Security headers are applied to every response, including static assets.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 from workers import Response, WorkerEntrypoint
+
+# Restore INFO operations logs even when the Worker runtime already has a
+# handler. Preserve those handlers and leave sampling to Workers settings.
+logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 from app.main import app
 

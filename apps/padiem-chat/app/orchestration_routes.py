@@ -320,6 +320,11 @@ async def api_orchestration(request: Request) -> JSONResponse:
         )
         async def scope_notice():
             return await pc_scope_notice_for_run(request, run_id=pc_run_id)
+        async def fail_stream():
+            # A terminal Engine/contract error is evidence of failure; a browser
+            # disconnect is not. The existing owner-scoped guard preserves a
+            # verified completion and creates no row for an ordinary text turn.
+            await store.update_claw_run_status(uid, pc_run_id, "failed")
         async def complete_stream(result):
             fields = {"conversation_id": saved_id}
             try:
@@ -338,7 +343,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 evidence=grounded_evidence, tool={"id": "web_search", "title": "웹 검색"})
         return chat_pc_orchestration_sse(
             stream, pc_run_id=pc_run_id, on_completed=complete_stream,
-            on_scope=scope_notice, done_fields=completion_fields,
+            on_scope=scope_notice, done_fields=completion_fields, on_failed=fail_stream,
         )
 
     try:

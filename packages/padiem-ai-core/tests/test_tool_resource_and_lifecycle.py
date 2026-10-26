@@ -64,6 +64,17 @@ def test_default_policy_carries_no_padiem_size_ceiling() -> None:
     assert effective.narrowed is False
 
 
+def test_default_policy_does_not_reintroduce_a_tool_deadline() -> None:
+    effective = resolve_tool_resources(spec(timeout=None))
+    assert effective.timeout_seconds is None
+    assert effective.narrowed is False
+    assert effective.to_public_dict()["timeout_seconds"] is None
+    # Explicit server narrowing remains effective and cannot widen a spec.
+    assert resolve_tool_resources(
+        spec(timeout=None), ToolResourcePolicy(max_timeout_seconds=30)
+    ).timeout_seconds == 30
+
+
 def test_invalid_server_policy_fails_closed() -> None:
     with pytest.raises(ToolResourcePolicyError):
         ToolResourcePolicy(max_argument_bytes=0)

@@ -1356,8 +1356,8 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
       ORACLE_MESH_WORK_DIR          optional scratch directory
       ORACLE_MESH_POLL_SECONDS      optional idle interval, default 5
-      MESH_FAILOVER_DEVICE_ID       optional target device; when set, the
-                                    poll carries that device's presence beat
+      MESH_FAILOVER_DEVICE_ID       optional comma-separated devices (max 8);
+                                    poll carries one beat per device
     Secrets are read from files at call time; they never appear on argv.
     """
     import os
@@ -1380,8 +1380,12 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # #5553: observe presence only for the device this deployment names.
         # An unnamed target omits the field instead of guessing a device.
         presence_provider = None
-        presence_device_id = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
-        if presence_device_id:
+        raw_devices = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
+        presence_device_ids = list(dict.fromkeys(part.strip() for part in raw_devices.split(","))) if raw_devices else []
+        if (len(presence_device_ids) > MAX_PRESENCE_ENTRIES
+                or any(not device for device in presence_device_ids)):
+            raise ContractError("MESH_FAILOVER_DEVICE_ID requires 1 to 8 non-empty device ids")
+        if presence_device_ids:
             from .local_agent_mesh_failover import MeshCentralDevicePresence
 
             presence = MeshCentralDevicePresence(
@@ -1397,6 +1401,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                         "device_id": presence_device_id,
                         "connected": presence.is_connected(presence_device_id),
                     }
+                    for presence_device_id in presence_device_ids
                 ]
 
         executor = make_oracle_mesh_executor(

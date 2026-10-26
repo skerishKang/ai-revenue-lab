@@ -81,6 +81,13 @@ async def test_context_is_accepted_and_trace_propagates(result):
     assert runtime.requests[0].trace_id == "trace_123"
 
 
+def test_engine_context_without_a_deadline_does_not_inject_900_seconds():
+    from app.execution_context_wire import parse_execution_context
+
+    assert parse_execution_context({"trace_id": "trace_no_deadline"}).timeout_seconds is None
+    assert parse_execution_context({"trace_id": "trace_explicit", "timeout_seconds": 17}).timeout_seconds == 17
+
+
 @pytest.mark.asyncio
 async def test_idempotency_key_fails_closed_without_adapter(result):
     runtime = FakeRuntime(result)

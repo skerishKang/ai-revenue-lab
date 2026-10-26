@@ -142,7 +142,7 @@ def quote_write_spec() -> ToolSpec:
             "source_sha256", "workcopy_document_id", "workcopy_sha256",
             "edit_sha256", "pdf_exported",
         ]},
-        timeout_seconds=5.0, user_visible=False,
+        timeout_seconds=None, user_visible=False,
     )
 
 

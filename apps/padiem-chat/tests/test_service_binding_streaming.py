@@ -782,7 +782,7 @@ def test_completed_bridge_does_not_reject_healthy_two_mib_response():
     from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
     completed_type = _load_worker_completed_type()
     expected = b"z" * (2 * 1024 * 1024)
-    assert MAX_B14_RESPONSE_BYTES < len(expected) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert 1_048_576 < len(expected) < MAX_CONFIGURED_B14_RESPONSE_BYTES
     reader = FakeReader([expected[:300_000], expected[300_000:]])
     status, payload = asyncio.run(completed_type(FakeBinding(
         FakeResponse(200, FakeBody(reader), content_type="application/json"),

@@ -91,7 +91,7 @@ class D1WebQuoteWriteScopeResolver:
                 or row.get("copy_deleted") is not None
                 or row.get("original_key") != orig_key or row.get("copy_key") != copy_key
                 or type(row.get("size_bytes")) is not int
-                or not 0 < row["size_bytes"] <= 1_048_576
+                or not 0 < row["size_bytes"] <= 10 * 1_048_576
                 or row.get("original_size") != row["size_bytes"]
                 or row.get("copy_size") != row["size_bytes"]):
             return None

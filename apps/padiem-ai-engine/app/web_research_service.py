@@ -42,7 +42,7 @@ from app.service import (
 )
 
 RESEARCH_PATH = "/internal/v1/research"
-MAX_RESEARCH_REQUEST_BODY_BYTES = 128 * 1024
+MAX_RESEARCH_REQUEST_BODY_BYTES = 1024 * 1024
 
 _OPERATIONS = frozenset(
     {"search", "fetch", "deep_research", "search_evidence", "search_judgement"}

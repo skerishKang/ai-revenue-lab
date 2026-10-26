@@ -14,7 +14,7 @@ from app.pilot.errors import UpstreamTimeout
 def test_only_modelscope_and_previously_approved_kira_have_30s_connect():
     timeout = plat.build_provider_http_timeout()
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        600.0, 600.0, 20.0, 10.0
+        600.0, 600.0, 120.0, 60.0
     )
     # The prior per-Provider exceptions were superseded by one shared limit.
 
@@ -59,7 +59,7 @@ async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
                     pass
             else:
                 await plat.call_platform_chat_completions(**args)
-    assert timeouts == [(expected, 600.0, 20.0, 10.0)]
+    assert timeouts == [(expected, 600.0, 120.0, 60.0)]
     assert len(requests) == 1
     assert (f"b14_safe_timeout provider={provider} phase=connect "
             f"mode={'stream' if stream else 'completed'}") in caplog.text

@@ -533,3 +533,26 @@ async def test_stream_user_turn_store_failure_preserves_only_the_existing_redact
     assert error["cause"].startswith("RuntimeError: database locked")
     assert "synthetic-private-token" not in response.text
     assert bridge.requests == [] and store.staged == []
+
+
+async def test_orchestration_terminal_error_marks_its_owner_pc_run_failed(monkeypatch):
+    from app.orchestration_bridge import B62OrchestrationError
+    app, bridge, store = _wire(monkeypatch)
+    settled = []
+    async def update(user_id, run_id, status):
+        settled.append((user_id, run_id, status))
+        return True
+    async def failed_stream(**fields):
+        raise B62OrchestrationError("upstream_auth_error", "safe error", status_code=403)
+        yield
+    store.update_claw_run_status = update
+    bridge.start_stream = failed_stream
+    async with _client(app) as client:
+        response = await client.post("/api/orchestration", json={
+            "messages": [{"role": "user", "content": PLAIN_TEXT}],
+            "tier": "free", "pc_run_id": PC_RUN,
+        })
+    assert response.status_code == 200
+    assert "event: error" in response.text
+    assert settled == [(OWNER, PC_RUN, "failed")]
+    assert not store.answers
