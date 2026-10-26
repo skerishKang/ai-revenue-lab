@@ -387,6 +387,11 @@ def _assert_3748_b62_production_argv_source(src: str) -> None:
     assert "cloudflare_served_version_lineage.py" in src
     assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION" in src
     assert "P01_ENGINE_WORKER: padiem-ai-engine" in src
+    # The rollback mode reads the same two resolved ids, but through its own argv
+    # name and exactly once: it may never grow into a second canonical lineage call.
+    assert src.count("python3 .github/scripts/b62_rollback_recorded_version_guard.py") == 1
+    assert '- ".github/scripts/b62_rollback_recorded_version_guard.py"' in src
+    assert src.count('--newest-upload-version="${latest}"') == 1
 
 
 def _run_3748_b62_production_lineage(*argv: str):
