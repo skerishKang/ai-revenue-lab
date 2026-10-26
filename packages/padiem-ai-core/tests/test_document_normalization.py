@@ -29,6 +29,7 @@ from padiem_ai_core.document_normalization import (
     MAX_TEXT_DOCUMENT_BYTES,
     MAX_OOXML_ENTRIES,
     MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
+    MAX_OOXML_TOTAL_INFLATION_RATIO,
     MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES,
     MAX_PDF_PAGES,
     BINARY_DOCUMENT_MEDIA,
@@ -696,7 +697,7 @@ def test_ooxml_backslash_member_guard_is_actually_executed() -> None:
 
 
 def test_a_normal_large_or_many_member_archive_is_no_longer_refused_for_size() -> None:
-    """#5573: entry count and member bytes are capacity, not integrity.
+    """#5573: entry count and the archive-wide total are capacity, not integrity.
 
     A workbook with many parts, and a part far bigger than the old 1MiB bound,
     are ordinary documents. The shape that must still be refused is a
@@ -707,7 +708,9 @@ def test_a_normal_large_or_many_member_archive_is_no_longer_refused_for_size() -
     many = {f"safe/{index}.xml": b"<a/>" for index in range(MAX_OOXML_ENTRIES * 4)}
     validate_ooxml_archive(_zip_bytes(many))
 
-    big = _zip_bytes({"big.bin": b"abcdefgh" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES)})
+    # 8MiB of repeating text is an ordinary big part: past the old 1MiB bound,
+    # inside the memory ceiling, and at a ratio the guard does not mind.
+    big = _zip_bytes({"big.bin": b"abcdefgh" * (1024 * 1024)})
     validate_ooxml_archive(big)
 
     # 4MiB of one repeated byte stores to a few kilobytes: that is the
@@ -716,6 +719,45 @@ def test_a_normal_large_or_many_member_archive_is_no_longer_refused_for_size() -
     with pytest.raises(DocumentNormalizationError) as inflated:
         validate_ooxml_archive(bomb)
     assert inflated.value.code == "ooxml_total_inflation"
+
+
+def test_a_high_ratio_member_under_the_buffer_bound_is_read() -> None:
+    """A ratio near, but under, the guard is a big part — not a refusal.
+
+    The rule separates two questions: how far the bytes amplify (the ratio) and
+    how much one part may make the process hold (32MiB, because a Pyodide Worker
+    isolate owns 128MB). This archive answers the first with ~685x and the second
+    with 8MiB, so both limits are satisfied and nothing is refused.
+    """
+
+    payload = _zip_bytes({"probe.bin": b"abcdefgh" * (1024 * 1024)})
+    with ZipFile(BytesIO(payload)) as archive:
+        declared = archive.getinfo("probe.bin").file_size
+    assert declared == 8 * 1024 * 1024
+    assert declared < MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    assert declared <= len(payload) * MAX_OOXML_TOTAL_INFLATION_RATIO
+    validate_ooxml_archive(payload)
+
+
+def test_one_member_may_not_ask_for_more_than_the_process_can_hold() -> None:
+    """#5876: the per-member inflate ceiling is enforced again, as a memory bound.
+
+    The gate pre-reads every `.xml`/`.rels` member while it walks, so a part that
+    declares more than 32MiB of inflated bytes is refused before the ratio ever
+    speaks — a document may be long, but one part may not demand more RAM than the
+    Worker owns. One byte under the bound is an ordinary document.
+    """
+
+    bound = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    over = (b"abcdefgh" * (bound // 8)) + b"a"
+    assert len(over) == bound + 1
+    with pytest.raises(DocumentNormalizationError) as refused:
+        validate_ooxml_archive(_zip_bytes({"word/document.xml": over}))
+    assert refused.value.code == "ooxml_entry_size"
+
+    at = b"abcdefgh" * (bound // 8)
+    assert len(at) == bound
+    validate_ooxml_archive(_zip_bytes({"word/document.xml": at}))
 
 
 def test_xlsx_extracts_values_and_archive_dtd_is_rejected_before_openpyxl() -> None:

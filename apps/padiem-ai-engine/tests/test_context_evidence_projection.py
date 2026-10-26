@@ -127,16 +127,20 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # instead of by size or member count, the XLSX table reader dropped its
 # 500/50/5,000 ceilings, the PDF reader stopped refusing a page count and a
 # per-page text length, and a text document no longer carries a 96 KiB or
-# 40,000-character total. All four pinned files moved: two Core sources and
-# their two fixtures. The guards these canaries exist to catch -- the archive
-# path, encryption, DTD and inflation gates, the NUL and control-character
-# rules, and locator provenance -- are untouched, and no parser, process,
-# network, filesystem, OCR, provider or Production authority was added.
+# 40,000-character total. Then #5876 put one absolute number back for a
+# different reason: a single archive member may not claim more than 32MiB of
+# inflated bytes, because a Pyodide Worker isolate owns 128MB -- a memory
+# allocation, not a size preference. All four pinned files moved: two Core
+# sources and their two fixtures. The guards these canaries exist to catch -- the
+# archive path, encryption, DTD and inflation gates, the NUL and
+# control-character rules, and locator provenance -- are untouched, and no
+# parser, process, network, filesystem, OCR, provider or Production authority
+# was added.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "812d40e18cad00d5cb7b4f64a837091c453ec10e90691dde2e5bdc9c8bfe3a7f",
+    CORE_PACKAGE / "document_normalization.py": "053efc8048dedebdbfccdcdf5e1f469a8f08a97e11c6755baddc0e607e0fe9bd",
     CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
     CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
-    CORE_TESTS / "test_document_normalization.py": "8f175c3f896c5169b12959049bad13328de80e6e5337f32788b9818c85f47a8c",
+    CORE_TESTS / "test_document_normalization.py": "9b1e314125aa11f2696c233c3bd51265ff1878c13d2c892a9079d7d7b2e89269",
 }
 
 REF = "doc_s3doc0000000000b"

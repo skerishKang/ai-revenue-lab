@@ -19,7 +19,6 @@ import padiem_ai_core.document_normalization as document_normalization
 import padiem_ai_core.hwpx_package_mutation as hwpx_package_mutation
 from padiem_ai_core.document_normalization import (
     MAX_OOXML_ENTRIES,
-    MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
     DocumentNormalizationError,
     extract_hwpx_text,
     parse_hwpx_sections,
@@ -330,13 +329,15 @@ class TestMutationGateRefusal:
         payload = _archive(
             [
                 ("mimetype", _MIMETYPE),
-                ("big.bin", b"\x00" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)),
+                ("big.bin", b"\x00" * (4 * 1024 * 1024)),
                 ("Contents/section1.xml", _section_xml(_para("A"))),
             ]
         )
         # #5573: a member bigger than the old 1MiB bound is capacity, not
-        # integrity, and a stored member costs nothing to inflate. The paragraph
-        # is rewritten and every other member survives byte for byte.
+        # integrity, and a stored member costs nothing to inflate. #5876 keeps one
+        # absolute limit in the way — a single member may not claim more than the
+        # process can hold — and 4MiB is well inside it. The paragraph is rewritten
+        # and every other member survives byte for byte.
         revised = mutate_hwpx_package_preserving_members(
             payload, (HwpxParagraphMutation(0, 0, "Z"),))
         assert revised != payload

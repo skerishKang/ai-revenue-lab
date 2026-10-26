@@ -11,10 +11,12 @@ from padiem_ai_core.document_normalization import (
     validate_ooxml_archive as _core_validate_ooxml_archive,
 )
 
-# Aliases of Core's retired capacity constants (#5734 stage 2). Core no longer
-# refuses an archive for its size, member count or uncompressed total, so nothing
-# here enforces them; the names stay because the reader's own tests build archives
-# at these magnitudes to prove a large package is read rather than rejected.
+# Aliases of Core's OOXML gate constants. `MAX_ENTRY_UNCOMPRESSED_BYTES` is the
+# one the gate still enforces: no single member may inflate past it, because the
+# Worker isolate owns 128MB (#5876). The archive total and the member count are
+# retained names Core no longer enforces — a member count is bounded by the
+# archive's own bytes — and they stay because this reader's tests build packages
+# at those magnitudes to prove a large document is read rather than rejected.
 MAX_ARCHIVE_BYTES = MAX_BINARY_DOCUMENT_BYTES
 MAX_ENTRIES = MAX_OOXML_ENTRIES
 MAX_ENTRY_UNCOMPRESSED_BYTES = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
