@@ -7,6 +7,7 @@ ordinary httpx transport and therefore stays platform-neutral.
 from __future__ import annotations
 
 import sys
+from functools import partial
 from typing import Any, Callable
 from urllib.parse import urlsplit
 
@@ -164,6 +165,22 @@ def _default_https_client() -> httpx.AsyncClient:
     return httpx.AsyncClient(timeout=None, follow_redirects=False)
 
 
+def _worker_https_client(origin: str) -> httpx.AsyncClient:
+    """A fetch-backed client for the B14 upstream while this Worker runs.
+
+    `CloudflareB14UpstreamTransport` pins the scheme, port, exact host and method,
+    and carries a POST body of any size — the public-web bound belongs to the
+    third-party lanes, not to this one.
+    """
+    from app.cloudflare_external_transport import CloudflareB14UpstreamTransport
+
+    return httpx.AsyncClient(
+        transport=CloudflareB14UpstreamTransport(origin=origin),
+        timeout=None,
+        follow_redirects=False,
+    )
+
+
 def b14_upstream_from_bindings(env: Any) -> B14Upstream:
     """Read the #5784 switch from this deployment's own bindings.
 
@@ -236,13 +253,15 @@ def build_b14_transport(
             proof_secret=proof_secret,
         )
     if https_client_factory is None:
+        # On a Worker there is no socket to open, so the upstream rides the same
+        # JavaScript fetch the external lanes already use. That transport carries a
+        # whole model request instead of truncating it: #4379 removed any
+        # Engine-side ceiling on a model request body, and a Service Binding path
+        # that sent it full cannot be replaced by one that cuts it off.
         if _workers_runtime_active():
-            # A Worker has no socket to open, and the existing fetch-backed
-            # transport bounds a POST body far below a model request. Reaching a
-            # COM2 B14 from a Worker needs a reviewed large-body fetch transport
-            # first, so this refuses instead of quietly truncating the request.
-            raise ValueError("b14_upstream_https_requires_a_worker_fetch_transport")
-        https_client_factory = _default_https_client
+            https_client_factory = partial(_worker_https_client, resolved.origin)
+        else:
+            https_client_factory = _default_https_client
     return B14HttpsTransport(
         origin=resolved.origin,
         allowed_paths=_ALLOWED_B14_PATHS,
