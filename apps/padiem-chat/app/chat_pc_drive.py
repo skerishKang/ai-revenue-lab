@@ -485,7 +485,7 @@ async def resolve_chat_pc_stream_context(
         # require the same approved root that the signed file API resolves.
         from .oracle_mesh_read_return_routes import _engine_pc_files_target
         target, error = await _engine_pc_files_target(
-            request, session=session, selected_device_id=device_id,
+            request, session=session, selected_device_id=device_id, user_id=uid,
         )
         scopes = ["query_drives"]
         if error is None and target is not None:

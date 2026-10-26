@@ -34,6 +34,7 @@ from app.pc_device_pairing_store import (
     D1PcPairingStore,
     PcPairingError,
     derive_install_tag,
+    normalize_root_label,
     normalize_root_path,
 )
 
@@ -525,3 +526,64 @@ def test_an_unexplained_store_fault_is_still_a_refusal_and_not_a_500() -> None:
     status, code, body = run(journey())
     assert status == 503 and code == "pc_pairing_unavailable"
     assert "driver fault" not in body
+
+
+# -- each approved folder carries the name the owner gave it ----------------
+
+def test_one_folder_is_named_by_itself_and_two_cannot_share_a_name() -> None:
+    async def journey():
+        pairing_store = store()
+        issued = await pairing_store.issue_code(user_id=OWNER, issued_at=_now())
+        link = await pairing_store.redeem_code(
+            code=issued["code"], mesh_node_id=NODE, label=None, now=_now(), verified=True,
+        )
+        first = await pairing_store.approve_root(
+            user_id=OWNER, link_id=link["link_id"], path="C:/Users/me/견적", now=_now(),
+        )
+        refused = None
+        try:
+            await pairing_store.approve_root(
+                user_id=OWNER, link_id=link["link_id"], path="C:/Users/other/견적",
+                now=_now(),
+            )
+        except PcPairingError as exc:
+            refused = str(exc)
+        renamed = await pairing_store.approve_root(
+            user_id=OWNER, link_id=link["link_id"], path="C:/Users/other/견적",
+            label="본사 견적", now=_now(),
+        )
+        return first["label"], refused, renamed["label"], [
+            root["path"] for root in (await pairing_store.link_for(
+                user_id=OWNER, mesh_node_id=NODE,
+            ))["roots"]
+        ]
+
+    default_label, refused, given, paths = run(journey())
+    # The folder's own name is the label the model gets, so an owner who never
+    # named a folder still gets a usable one.
+    assert default_label == "견적"
+    assert refused == "root label exists"
+    assert given == "본사 견적"
+    assert paths == ["C:/Users/me/견적", "C:/Users/other/견적"]
+
+
+def test_a_root_label_that_cannot_survive_being_named_back_is_refused() -> None:
+    for rejected in ("견적/2026", "a\\b", "..", ".", "  ", "x" * 65, "견\t적"):
+        assert normalize_root_label(rejected) is None, rejected
+    assert normalize_root_label("  견적  ") == "견적"
+    assert normalize_root_label("본사 견적") == "본사 견적"
+
+    async def journey():
+        pairing_store = store()
+        issued = await pairing_store.issue_code(user_id=OWNER, issued_at=_now())
+        link = await pairing_store.redeem_code(
+            code=issued["code"], mesh_node_id=NODE, label=None, now=_now(), verified=True,
+        )
+        with pytest.raises(PcPairingError) as refused:
+            await pairing_store.approve_root(
+                user_id=OWNER, link_id=link["link_id"], path="C:/Users/me/a",
+                label="a/b", now=_now(),
+            )
+        return str(refused.value)
+
+    assert run(journey()) == "root label invalid"

@@ -25,6 +25,7 @@ from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .pc_device_pairing_store import (
     PcPairingError,
+    normalize_root_label,
     normalize_root_path,
 )
 
@@ -58,6 +59,7 @@ _MESSAGES = {
     "pc_pairing_node_invalid": "PC 식별 형식이 올바르지 않습니다.",
     "pc_pairing_root_invalid": "승인할 폴더 경로를 사용할 수 없습니다.",
     "pc_pairing_root_not_found": "승인된 폴더를 찾을 수 없습니다.",
+    "pc_pairing_root_label_taken": "같은 PC 연결에 이미 같은 이름의 폴더가 있습니다. 다른 이름으로 지정해 주세요.",
     "pc_pairing_root_limit": "이 PC 연결에 승인할 수 있는 폴더 한계에 도달했습니다.",
     "pc_pairing_link_not_found": "연결을 찾을 수 없습니다.",
     "pc_pairing_link_not_active": "이 PC 연결은 아직 사용 대기 중이거나 해제되었습니다.",
@@ -74,6 +76,8 @@ _REASONS = {
     "mesh node identity invalid": "pc_pairing_node_invalid",
     "root path invalid": "pc_pairing_root_invalid",
     "root reference invalid": "pc_pairing_root_invalid",
+    "root label invalid": "pc_pairing_root_invalid",
+    "root label exists": "pc_pairing_root_label_taken",
     "too many approved roots": "pc_pairing_root_limit",
     "link roots too large": "pc_pairing_root_limit",
     "link roots unreadable": "pc_pairing_unavailable",
@@ -108,7 +112,7 @@ def _refused(exc: PcPairingError) -> JSONResponse:
         status = 401
     elif code in {"pc_pairing_link_not_found", "pc_pairing_root_not_found"}:
         status = 404
-    elif code == "pc_pairing_link_not_active":
+    elif code in {"pc_pairing_link_not_active", "pc_pairing_root_label_taken"}:
         status = 409
     elif code == "pc_pairing_unavailable":
         status = 503
@@ -285,14 +289,17 @@ async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or set(body) != {"path"}:
+    if body is None or not set(body) <= {"path", "label"} or "path" not in body:
         return _error(400, "pc_pairing_body_invalid")
     path = normalize_root_path(body.get("path"))
     if path is None:
         return _error(400, "pc_pairing_root_invalid")
+    label = body.get("label")
+    if label is not None and normalize_root_label(label) is None:
+        return _error(400, "pc_pairing_root_invalid")
     root, refused = await _await_store(
         store.approve_root, user_id=user_id,
-        link_id=request.path_params.get("link_id"), path=path, now=_now(),
+        link_id=request.path_params.get("link_id"), path=path, now=_now(), label=label,
     )
     if refused is not None:
         return refused
