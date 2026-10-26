@@ -158,7 +158,8 @@ class UpstreamServerError(PilotError):
 
 
 class MalformedUpstreamResponse(PilotError):
-    def __init__(self) -> None:
+    def __init__(self, reason: str = "unspecified") -> None:
+        self.reason = reason
         super().__init__(
             code="malformed_upstream_response",
             message="Provider 응답 형식이 올바르지 않습니다.",

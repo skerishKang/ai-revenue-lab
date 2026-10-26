@@ -335,7 +335,7 @@ def test_a_malformed_thought_signature_is_not_relayed(monkeypatch) -> None:
     ])
     response = _client(httpx.MockTransport(
         lambda request: httpx.Response(200, stream=stream),
-    )).post(STREAM_URL, json=_payload(tools=[PC_TOOL]))
+    )).post(STREAM_URL, json=_payload(tools=[PC_TOOL], business14={"product_tier": "plus"}))
 
     # The malformed part is the first output, so the stream never starts. The
     # caller gets a handled 502, never a fabricated call with no signature.

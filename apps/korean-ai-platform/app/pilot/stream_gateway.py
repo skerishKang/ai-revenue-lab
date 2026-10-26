@@ -733,7 +733,7 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 await _close_iterator(iterator)
                 if (
                     attempt_index + 1 < len(attempt_candidates)
-                    and rcore.is_error_fallback_allowed(exc.code)
+                    and rcore.is_error_fallback_allowed(exc.code, reason=getattr(exc, "reason", None))
                 ):
                     logger.warning(
                         "stream_preview_pre_start_fallback request_id=%s attempt=%d code=%s",

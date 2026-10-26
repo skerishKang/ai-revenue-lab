@@ -282,10 +282,16 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
     return body
 
 
+class _GoogleMalformedShape(ValueError):
+    def __init__(self, reason):
+        self.reason = reason
+
+
 class _GoogleToolStream:
     """Decode complete native SSE frames; no tool execution or classification."""
 
-    def __init__(self, names):
+    def __init__(self, names, model_id="unknown"):
+        self.model_id = model_id
         import uuid
         self.names = names
         self.call_prefix = "call_" + uuid.uuid4().hex
@@ -295,7 +301,7 @@ class _GoogleToolStream:
 
     def decode(self, frame):
         import json
-        from .errors import MalformedUpstreamResponse
+        from .malformed_diagnostics import malformed
         from .stream_types import StreamEvent, StreamToolCall, _usage_from_payload
         from .tool_channel import (
             InvalidToolDeclaration,
@@ -315,9 +321,10 @@ class _GoogleToolStream:
                 or not signature.strip()
                 or len(signature) > MAX_TOOL_SIGNATURE_CHARS
             ):
-                raise ValueError("invalid thought signature")
+                raise _GoogleMalformedShape("invalid_signature")
             return signature
 
+        payload = None
         try:
             data = "\n".join(
                 line[5:].lstrip(" ") for line in frame.decode("utf-8").splitlines()
@@ -327,33 +334,33 @@ class _GoogleToolStream:
                 return []
             payload = json.loads(data)
             if not isinstance(payload, dict) or "error" in payload:
-                raise ValueError("invalid native response")
+                raise _GoogleMalformedShape("payload_not_object_or_error")
             candidates = payload.get("candidates", [])
             if not isinstance(candidates, list) or len(candidates) > 1:
-                raise ValueError("invalid candidate count")
+                raise _GoogleMalformedShape("candidate_count")
             events = []
             metadata = {"response_id": payload.get("responseId"), "model": payload.get("modelVersion")}
             if candidates:
                 candidate = candidates[0]
                 if not isinstance(candidate, dict) or candidate.get("index", 0) != 0:
-                    raise ValueError("invalid candidate")
+                    raise _GoogleMalformedShape("invalid_candidate")
                 parts = candidate.get("content", {}).get("parts", [])
                 if not isinstance(parts, list):
-                    raise ValueError("invalid parts")
+                    raise _GoogleMalformedShape("invalid_parts")
                 for part in parts:
                     if not isinstance(part, dict):
-                        raise ValueError("invalid part")
+                        raise _GoogleMalformedShape("invalid_part")
                     if part.get("thought") is True:
                         continue
                     if "functionCall" in part:
                         if self.finish_reason is not None:
-                            raise ValueError("call after finish")
+                            raise _GoogleMalformedShape("call_after_finish")
                         call = part["functionCall"]
                         if not isinstance(call, dict) or set(call) - {"id", "name", "args"}:
-                            raise ValueError("invalid or partial call")
+                            raise _GoogleMalformedShape("invalid_call")
                         name, args = call.get("name"), call.get("args", {})
                         if name not in self.names or not isinstance(args, dict):
-                            raise ValueError("invalid function call")
+                            raise _GoogleMalformedShape("invalid_function_call")
                         signature = part_signature(part)
                         index = len(self.ids)
                         call_id = call.get("id", f"{self.call_prefix}_{index}")
@@ -362,7 +369,7 @@ class _GoogleToolStream:
                             "name": name, "arguments": arguments,
                         }}], 0)
                         if call_id in self.ids or index >= MAX_TOOL_CALLS:
-                            raise ValueError("duplicate or excess call")
+                            raise _GoogleMalformedShape("duplicate_or_excess_call")
                         self.ids.add(call_id)
                         events.append(StreamEvent(**metadata, tool_call=StreamToolCall(
                             call_id, name, arguments, index, signature=signature,
@@ -371,7 +378,7 @@ class _GoogleToolStream:
                     elif "text" in part:
                         text = part["text"]
                         if not isinstance(text, str) or self.finish_reason is not None:
-                            raise ValueError("invalid text")
+                            raise _GoogleMalformedShape("invalid_text")
                         # A signed answer part relays its own token. A thinking
                         # part is deliberately not relayed above, so its token
                         # has no part to travel with; the turn's merge rule is
@@ -384,14 +391,14 @@ class _GoogleToolStream:
                 finish = candidate.get("finishReason")
                 if finish is not None:
                     if not isinstance(finish, str) or not finish or self.finish_reason is not None:
-                        raise ValueError("invalid finish")
+                        raise _GoogleMalformedShape("invalid_finish")
                     if self.ids and finish != "STOP":
-                        raise ValueError("incomplete tool response")
+                        raise _GoogleMalformedShape("incomplete_tool_response")
                     self.finish_reason = {"STOP": "tool_calls" if self.ids else "stop", "MAX_TOKENS": "length"}.get(finish, finish)
             usage = payload.get("usageMetadata")
             if usage is not None:
                 if not isinstance(usage, dict):
-                    raise ValueError("invalid usage")
+                    raise _GoogleMalformedShape("usage_not_object")
                 # The native wire reports the three counts and, for a thinking
                 # model, the thinking tokens beside them. Dropping that fourth
                 # number would leave a row whose total is larger than the parts
@@ -403,10 +410,14 @@ class _GoogleToolStream:
                     "completion_tokens_details": {
                         "reasoning_tokens": usage.get("thoughtsTokenCount"),
                     },
-                })))
+                }, provider="google", model=self.model_id, path="native_stream", payload=payload)))
             return events
         except (ValueError, TypeError, AttributeError, KeyError, InvalidToolDeclaration) as exc:
-            raise MalformedUpstreamResponse() from exc
+            reason = (exc.reason if isinstance(exc, _GoogleMalformedShape) else
+                      "utf8_decode" if isinstance(exc, UnicodeDecodeError) else
+                      "json_decode" if isinstance(exc, json.JSONDecodeError) else "invalid_native_shape")
+            raise malformed(reason, payload, provider="google", model=self.model_id,
+                            path="native_stream") from None
 
 
 async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, tools,
@@ -421,7 +432,7 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
     import httpx
     from . import platform as plat
     from .catalog import get_catalog_by_id
-    from .errors import InvalidRequest, MalformedUpstreamResponse, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
+    from .errors import InvalidRequest, UpstreamResponseTooLarge, UpstreamServerError, UpstreamTimeout
     from .model_native_parameters import UnsupportedModelParameter, validate_native_parameters
     from .stream_types import StreamEvent, _pop_sse_frames
     from .upstream_answer_contract import UpstreamEmptyAnswer
@@ -446,7 +457,7 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
         permitted_names = set()
     elif isinstance(tool_choice, dict):
         permitted_names = {tool_choice["function"]["name"]}
-    decoder = _GoogleToolStream(permitted_names)
+    decoder = _GoogleToolStream(permitted_names, model_id)
     kwargs = {"timeout": plat.build_provider_http_timeout(model_id)}
     if transport is not None:
         kwargs["transport"] = transport
@@ -456,7 +467,7 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
             async with client.stream("POST", url, headers=headers, json=body, follow_redirects=False) as response:
                 if not 200 <= response.status_code < 300:
                     error = await plat._read_bounded_body(response)
-                    plat._raise_upstream_error(response.status_code, GOOGLE_PROVIDER_ID, error.decode("utf-8", "replace"))
+                    plat._raise_upstream_error(response.status_code, GOOGLE_PROVIDER_ID, error.decode("utf-8", "replace"), model_id=model_id)
                 async for chunk in plat._iter_sse_bounded_slices(response):
                     frames, buffer = _pop_sse_frames(buffer + chunk)
                     if len(buffer) > plat.MAX_RESPONSE_BYTES:
@@ -475,7 +486,8 @@ async def stream_google_tool_calls(*, model_id, upstream_model, spec, messages, 
     except httpx.RequestError as exc:
         raise UpstreamServerError() from exc
     if decoder.finish_reason is None:
-        raise MalformedUpstreamResponse()
+        from .malformed_diagnostics import malformed
+        raise malformed("missing_finish", provider="google", model=model_id, path="native_stream")
     if not decoder.saw_output:
         raise UpstreamEmptyAnswer(decoder.finish_reason, streamed=True)
     yield StreamEvent(done=True, finish_reason=decoder.finish_reason)
