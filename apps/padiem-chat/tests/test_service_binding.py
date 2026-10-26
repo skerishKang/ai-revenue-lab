@@ -197,8 +197,16 @@ def test_worker_wires_service_binding_and_browser_cannot_choose_target():
     main = (root / "app/main.py").read_text(encoding="utf-8")
 
     assert "binding_value(self.env, B14_SERVICE_BINDING_NAME)" in worker
-    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
+    # #5784 PR-2: the Worker now hands the two binding transports to one composer
+    # instead of building them inline, so what is pinned here is that the exact
+    # binding transport types still reach that composer.
+    assert "service_transport, stream_transport = _compose_b14_transports(" in worker
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
+    # #5899 guard pin, ported: the fail-closed flag is composed only from
+    # server-side settings, so neither the browser nor a request value can widen it.
     assert 'require_service_binding=settings.runtime_mode == "b14"' in worker
+    assert "require_service_binding=request" not in worker
     assert 'B14_SERVICE' not in main
     assert '"B14_SERVICE"' not in main
 
