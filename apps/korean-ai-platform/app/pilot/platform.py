@@ -62,14 +62,15 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_comp
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
 # Resource guards, never provider/model generation-token limits.
-# Error bodies and individual SSE frames remain tightly bounded at 1MiB.
-MAX_RESPONSE_BYTES = 1024 * 1024
+# Error bodies and individual SSE frames are bounded at 10MiB: what one frame may
+# carry, not what a model may generate (#5734 stage 2).
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024
 # A completed JSON response must be materialized as one dict for existing
-# callers. Use the existing conservative 8MiB maximum as a separate raw-body
-# memory budget (1/16 of the Workers 128MiB isolate), not a 1MiB output cutoff.
+# callers. 32MiB is the buffering window for a response body this platform holds
+# whole in memory (1/4 of the Workers 128MiB isolate), not an output cutoff.
 # Parsed JSON / response serialization can amplify memory; prefer SSE for
 # genuinely unbounded free-form model text.
-MAX_COMPLETED_RESPONSE_BYTES = 8 * 1024 * 1024
+MAX_COMPLETED_RESPONSE_BYTES = 32 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
 # All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
