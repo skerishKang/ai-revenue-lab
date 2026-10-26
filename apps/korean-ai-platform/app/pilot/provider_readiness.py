@@ -11,7 +11,7 @@ import os
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Router
+from starlette.routing import Route, Router
 
 # Importing platform registers the approved platform-owned Provider specs.
 from app.pilot import platform as _platform_registration  # noqa: F401
@@ -23,7 +23,6 @@ from app.pilot.platform_secrets import (
     list_platform_providers,
 )
 
-router = Router()
 
 _PROVIDER_MODES = frozenset({"mock", "live"})
 
@@ -60,7 +59,6 @@ def _enabled_models_for_provider(provider_id: str) -> list[str]:
     )
 
 
-@router.route("/provider-readiness", methods=["GET"])
 async def provider_readiness(request: Request) -> JSONResponse:
     """Return non-secret platform Provider readiness facts only.
 
@@ -105,3 +103,10 @@ async def provider_readiness(request: Request) -> JSONResponse:
             "providers": providers,
         }
     )
+
+
+router = Router(
+    routes=[
+        Route("/provider-readiness", provider_readiness, methods=["GET"]),
+    ]
+)

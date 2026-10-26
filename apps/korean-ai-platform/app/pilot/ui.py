@@ -5,7 +5,7 @@ Supports multi-provider registry and legacy single-provider fallback.
 
 from __future__ import annotations
 
-from starlette.routing import Router
+from starlette.routing import Route, Router
 from starlette.requests import Request
 from app.factory import render_template
 from app.pilot.config import pilot_settings
@@ -30,9 +30,6 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 import time
 import uuid
 
-router = Router()
-
-
 def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
@@ -49,7 +46,6 @@ def _validate_chat_request_ui(req: PilotChatRequest) -> None:
         raise InvalidRequest("model 필드는 필수입니다.")
 
 
-@router.route("/pilot", methods=["GET"])
 async def pilot_page(request: Request):
     state = resolve_configuration()
     registry = get_registry()
@@ -95,7 +91,6 @@ async def pilot_page(request: Request):
     )
 
 
-@router.route("/pilot", methods=["POST"])
 async def pilot_page_post(
     request: Request,
 ):
@@ -224,3 +219,11 @@ async def pilot_page_post(
             "error": error,
         },
     )
+
+
+router = Router(
+    routes=[
+        Route("/pilot", pilot_page, methods=["GET"]),
+        Route("/pilot", pilot_page_post, methods=["POST"]),
+    ]
+)
