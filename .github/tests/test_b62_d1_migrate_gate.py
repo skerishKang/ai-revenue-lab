@@ -154,14 +154,22 @@ def test_one_workflow_with_the_four_dispatch_inputs_and_no_deploy() -> None:
 def test_exact_main_live_binding_and_readonly_precede_any_mutation() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     for marker in (
+        "PREMUTATION_REF_IS_MAIN=PASS",
+        "PREMUTATION_HEAD_MATCHES_TARGET=PASS",
         'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"',
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
+        "PREMUTATION_EXACT_MAIN_SHA=PASS",
         "PADIEM_CHAT_DB",
         "::add-mask::",
         "D1_BINDING_FINGERPRINT",
         "SOURCE_SHA_PINNED=PASS",
     ):
         assert marker in text, marker
+    # The first dispatch stopped at this guard, so its form is pinned: a
+    # porcelain check of the migration directory, never a commit-to-worktree
+    # diff that needs objects a --depth=1 checkout does not carry.
+    assert 'git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}"' in text
+    assert "git diff --quiet" not in text
     # The read-only half must not be able to write, and the mutation must live
     # only in the apply half. Compared on job sections, not the file's prose.
     readonly_section = text[text.index("  readonly:") : text.index("  apply:")]

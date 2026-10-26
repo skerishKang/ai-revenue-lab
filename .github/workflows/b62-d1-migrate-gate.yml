@@ -147,14 +147,16 @@ jobs:
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
+          echo 'PREMUTATION_REF_IS_MAIN=PASS'
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_HEAD_MATCHES_TARGET=PASS'
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          # Byte-for-byte, and no extra file the gate would happily execute.
-          git diff --quiet "$(git rev-parse origin/main)" -- "${MIGRATIONS_DIR}"
-          test "$(find "${MIGRATIONS_DIR}" -maxdepth 1 -name '*.sql' | wc -l)" \
-            = "$(git ls-tree -r --name-only origin/main -- "${MIGRATIONS_DIR}" | wc -l)"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          # Nothing in the migration directory may differ from, or sit beside,
+          # what this exact commit carries: git status sees both, and unlike a
+          # commit-to-worktree diff it is valid in the shallow checkout here.
+          test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'B62_D1_SOURCE_SHA_PINNED=PASS'
 
       - uses: actions/setup-python@v5
@@ -282,7 +284,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          git diff --quiet "$(git rev-parse origin/main)" -- "${MIGRATIONS_DIR}"
+          test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'B62_D1_SOURCE_SHA_PINNED=PASS'
 
