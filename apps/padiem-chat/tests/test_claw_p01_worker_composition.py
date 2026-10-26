@@ -475,7 +475,7 @@ def test_engine_service_transport_cancels_oversized_stream_before_full_buffering
 
 def test_engine_completed_orchestration_healthy_long_json_from_single_binding_post():
     payload = b'{"ok":true,"orchestration":{"answer":"' + b"A" * 1_300_000 + b'"}}'
-    assert _MAX_ENGINE_RESPONSE_BYTES < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+    assert 1_048_576 < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
     response = _BoundedEngineResponse([payload[:300_000], payload[300_000:]])
     transport = CloudflareEngineServiceTransport(
         _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,

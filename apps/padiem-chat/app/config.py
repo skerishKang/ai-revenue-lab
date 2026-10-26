@@ -93,7 +93,7 @@ class Settings:
     firecrawl_api_key: str | None = field(default=None, repr=False)
     daum_rest_api_key: str | None = field(default=None, repr=False)
     tinyfish_api_key: str | None = field(default=None, repr=False)
-    web_timeout_seconds: float = 15.0
+    web_timeout_seconds: float = 30.0
     auth_mode: str = "off"
     public_base_url: str | None = None
     google_client_id: str | None = field(default=None, repr=False)
@@ -128,7 +128,7 @@ class Settings:
         firecrawl_api_key: object = None,
         daum_rest_api_key: object = None,
         tinyfish_api_key: object = None,
-        web_timeout_seconds: object = 15.0,
+        web_timeout_seconds: object = 30.0,
         auth_mode: object = "off",
         public_base_url: object = None,
         google_client_id: object = None,
@@ -204,8 +204,8 @@ class Settings:
             web_timeout = float(web_timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= web_timeout <= 30:
-            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 30")
+        if not 1 <= web_timeout <= 60:
+            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 60")
 
         auth = str(auth_mode or "off").strip().lower()
         if auth not in {"off", "google", "password", "hybrid"}:
@@ -341,7 +341,7 @@ class Settings:
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
             tinyfish_api_key=os.getenv("TINYFISH_API_KEY"),
-            web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
+            web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "30"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),

@@ -97,12 +97,12 @@ ORACLE_MESH_CHANNEL_SECRET_ENV = "ORACLE_MESH_CHANNEL_SECRET"
 ORACLE_MESH_CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: How long one dispatch stays claimable/submittable.
 _DISPATCH_TTL = timedelta(seconds=600)
-#: #4139 wire envelope for one body on this connector, in both directions: the
-#: same 6 MB the Claw request route already accepts for one user message
-#: (``claw_general_routes.MAX_CLAW_GENERAL_BODY_BYTES``). The former 8 KiB and
-#: 768 B trial caps could not carry a normal document or a Windows-bounded path.
-_MAX_RESULT_BODY_BYTES = 6_000_000
-_MAX_BODY_BYTES = _MAX_RESULT_BODY_BYTES
+#: #4139 result wire envelope on this connector.
+#: The result JSON buffers PC file content; use the Owner's 32MiB memory
+#: exception so a 20MB read is not rejected at the old 6MB channel envelope.
+#: Other request bodies and verified non-PC-read contents keep 6MB.
+_MAX_RESULT_BODY_BYTES = 32 * 1024 * 1024
+_MAX_BODY_BYTES = 6_000_000
 #: One stored conversation message. Reuses the existing product bound
 #: (``history.MAX_HISTORY_MESSAGE_CHARS``); a larger output is split across
 #: several messages, never truncated.
@@ -129,7 +129,7 @@ _PRESENCE_ENTRY_KEYS = frozenset({"device_id", "connected"})
 _MAX_PRESENCE_ENTRIES = 8
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
-_MAX_FILE_TEXT_BYTES = _MAX_RESULT_BODY_BYTES
+_MAX_FILE_TEXT_BYTES = 6_000_000
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -1495,7 +1495,7 @@ def _deployment_target_for(
 def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int:
     """Server-computed read bound for one dispatch row.
 
-    #5015: the Chat PC-files read is a 1 MB call; every other read consumer
+    #5015: the Chat PC-files read is a 20 MB call; every other read consumer
     keeps the shared 6 MB envelope. The decision is made here from the row the
     server staged (its stable per-call reference), never from the model, the
     executor or any request value.
@@ -1703,7 +1703,7 @@ def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
 
 
 def _verified_desktop_blob(
-    wire: dict[str, Any], max_bytes: int = _MAX_RESULT_BODY_BYTES,
+    wire: dict[str, Any], max_bytes: int = _MAX_FILE_TEXT_BYTES,
     raw: bytes | None = None,
 ) -> bytes | bytearray | None:
     """Revalidate a desktop screenshot blob, or ``b""`` when absent.
@@ -1867,7 +1867,7 @@ def _verified_read_result_text(
 ) -> str | None:
     """Verify a read body against its lane's server-computed bound.
 
-    The PC-files read lane is limited to 1 MB; other read consumers keep the
+    The PC-files read lane is limited to 20 MB; other read consumers keep the
     shared 6 MB envelope. This is the result-store enforcement, independent of
     the executor's own bound.
     """
@@ -2299,7 +2299,7 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # console that never answered stays "확인되지 않음". A large output is
         # split across messages, so this branch never rejects a verified result.
         verified_output = _verified_result_text(
-            dispatch, wire, max_bytes=_MAX_RESULT_BODY_BYTES,
+            dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES,
         )
         command_text = dispatch.get("command_text")
         if (
@@ -2942,7 +2942,7 @@ async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResp
 PC_FILES_MAX_PATH_CHARS = 2048
 PC_FILES_LIST_DEFAULT_LIMIT = 200
 PC_FILES_LIST_MAX_LIMIT = 500
-PC_FILES_READ_MAX_BYTES = 1_000_000
+PC_FILES_READ_MAX_BYTES = 20_000_000
 PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: Stable per-call reference suffix the Engine uses for read_file. The poll
 #: route reads it from the dispatch row (never from a caller) to decide the

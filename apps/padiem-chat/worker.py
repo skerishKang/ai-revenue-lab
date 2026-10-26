@@ -351,7 +351,7 @@ class CloudflareB14ServiceTransport:
         status = int(response.status)
         try:
             body = await read_bounded_service_binding_body(
-                response, max_bytes=131072,
+                response, max_bytes=1024 * 1024,
             )
         except (ServiceBindingResponseTooLarge, ServiceBindingResponseError):
             raise RuntimeError("bounded B14 model authority read unavailable") from None

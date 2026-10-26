@@ -302,7 +302,7 @@ def test_a_large_korean_output_fits_the_envelope_the_wire_actually_carries(
     }
     wire_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     assert len(wire_bytes) < routes._MAX_RESULT_BODY_BYTES
-    assert len(json.dumps(payload).encode("utf-8")) > routes._MAX_RESULT_BODY_BYTES
+    assert len(json.dumps(payload).encode("utf-8")) > routes._MAX_FILE_TEXT_BYTES
 
     response = asyncio.run(routes.oracle_mesh_read_result(
         Utf8Request(payload, state, secret=SECRET)

@@ -1,7 +1,7 @@
 """#5015: Chat PC read_file stages the existing kind=read download lane.
 
 The list tool stays on the PowerShell command lane. The read tool must stage a
-kind=read dispatch, carry the server-computed 1 MB bound to the executor, and
+kind=read dispatch, carry the server-computed 20 MB bound to the executor, and
 return the verified raw body through the existing result store/route. No live
 Mesh, Identity or Broker is involved.
 """
@@ -306,7 +306,7 @@ def _poll(state, *, secret=CHANNEL_SECRET):
     return response.status_code, json.loads(response.body)
 
 
-def test_poll_sends_one_mb_for_the_chat_read_and_six_mb_for_other_reads(
+def test_poll_sends_twenty_mb_for_the_chat_read_and_six_mb_for_other_reads(
     monkeypatch,
 ):
     history = _History()
@@ -317,7 +317,7 @@ def test_poll_sends_one_mb_for_the_chat_read_and_six_mb_for_other_reads(
     assert status == 200, body
     assert body["dispatch"]["kind"] == "read"
     assert body["dispatch"]["max_bytes"] == routes.PC_FILES_READ_MAX_BYTES
-    assert body["dispatch"]["max_bytes"] == 1_000_000
+    assert body["dispatch"]["max_bytes"] == 20_000_000
 
     # A browser/other read consumer has no PC-files marker and keeps 6 MB.
     other = _pending_read_row(tool_request_ref="oracle_mesh_tool_" + "e" * 24)
@@ -332,7 +332,7 @@ def test_poll_sends_one_mb_for_the_chat_read_and_six_mb_for_other_reads(
 
 def test_the_server_root_decides_the_bound_not_the_caller_reference():
     row = _pending_read_row(tool_request_ref="opaque-call-ref")
-    assert routes._oracle_mesh_poll_max_bytes(row) == 1_000_000
+    assert routes._oracle_mesh_poll_max_bytes(row) == 20_000_000
 
     row.pop("root_ref")
     assert routes._oracle_mesh_poll_max_bytes(row) == 6_000_000
@@ -420,7 +420,7 @@ def test_command_result_mode_keeps_its_done_only_contract(monkeypatch):
     assert status == 409
     assert body["error"]["code"] == "oracle_mesh_result_not_ready"
 
-def test_read_result_store_bound_is_one_mb_for_pc_files_and_six_mb_otherwise():
+def test_read_result_store_bound_is_twenty_mb_for_pc_files_and_six_mb_otherwise():
     oversized = "x" * (routes.PC_FILES_READ_MAX_BYTES + 1)
     raw = oversized.encode("utf-8")
     wire = {
@@ -433,7 +433,16 @@ def test_read_result_store_bound_is_one_mb_for_pc_files_and_six_mb_otherwise():
     ) is None
     assert routes._verified_read_result_text(
         {"root_ref": "other-read-lane"}, wire,
-    ) == oversized
+    ) is None
+    accepted = "x" * 6_000_001
+    wire.update(content_utf8=accepted, content_bytes=len(accepted),
+                content_sha256=hashlib.sha256(accepted.encode()).hexdigest())
+    assert routes._verified_read_result_text(
+        {"root_ref": routes._PC_FILES_READ_ROOT_REF}, wire,
+    ) == accepted
+    assert routes._verified_read_result_text(
+        {"root_ref": "other-read-lane"}, wire,
+    ) is None
 
 
 def _scope_claim(plan="files_list"):
@@ -663,3 +672,27 @@ def test_signed_stream_context_promotes_only_a_pending_owned_turn(monkeypatch, p
         assert denied.status_code == 403, json.loads(denied.body)
         assert json.loads(denied.body)["error"]["code"] == "pc_scope_denied"
         assert history.rows == {}
+
+
+def test_twenty_mb_pc_result_crosses_the_channel_body_parser():
+    from starlette.requests import Request
+    raw = b"a" * 20_000_000
+    wire = {"dispatch_id": "dsp-read", "nonce": "n" * 32,
+            "termination": "exited", "exit_code": 0,
+            "content_utf8": raw.decode(), "content_bytes": len(raw),
+            "content_sha256": hashlib.sha256(raw).hexdigest()}
+    encoded = json.dumps(wire).encode()
+
+    async def receive():
+        return {"type": "http.request", "body": encoded, "more_body": False}
+
+    request = Request({"type": "http", "method": "POST", "path": "/",
+                       "headers": [(b"content-type", b"application/json"),
+                                   (b"content-length", str(len(encoded)).encode())]}, receive)
+    parsed, blob = asyncio.run(routes._read_result_body(request))
+    assert blob is None
+    assert routes._verified_read_result_text(
+        {"root_ref": routes._PC_FILES_READ_ROOT_REF}, parsed,
+    ) == raw.decode()
+    assert routes._verified_read_result_text({"root_ref": "other"}, parsed) is None
+    assert routes._verified_result_text({}, parsed, max_bytes=routes._MAX_FILE_TEXT_BYTES) is None

@@ -17,7 +17,7 @@ from starlette.responses import JSONResponse, Response
 from .b66_quote_history_routes import _owner_and_workspace, _reject_client_owner, _NO_STORE
 from .history import _title_from_user_text
 
-MAX_STATE_BYTES = 131072
+MAX_STATE_BYTES = 1024 * 1024
 MAX_TRANSCRIPT_MESSAGES = 80
 # #4379: the guided transcript keeps the full message text. The symbol is
 # retained for import compatibility and is no longer enforced.

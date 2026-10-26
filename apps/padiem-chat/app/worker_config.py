@@ -292,7 +292,7 @@ def settings_from_worker_bindings(
             if resolved_web_keys is None
             else resolved_web_keys.get("TINYFISH_API_KEY")
         ),
-        web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
+        web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "30",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
         google_client_id=binding_value(env, "PADIEM_CHAT_GOOGLE_CLIENT_ID"),
