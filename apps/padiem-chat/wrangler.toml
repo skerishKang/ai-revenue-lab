@@ -165,6 +165,13 @@ ORACLE_MESH_EXECUTION_MODE = "off"
 # the value itself is injected at deploy time, never committed.
 PC_AGENT_INSTALL_URL = ""
 
+# #5881 COM2 file lane origin. An empty value means not configured: the file-lane
+# client then answers every upload and read ticket with "파일 서버가 아직 연결되지
+# 않았습니다" instead of pointing attachments at a host that is not serving them.
+# Only an https origin is accepted, and the value is injected at deploy time, never
+# committed - it pairs with the PADIEM_CHAT_FILE_LANE_TICKET_SECRET binding.
+PADIEM_CHAT_FILE_LANE_ORIGIN = ""
+
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
