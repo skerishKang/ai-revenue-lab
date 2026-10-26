@@ -40,6 +40,10 @@
     "type": "browser"
   },
   {
+    "name": "CF_VERSION_METADATA",
+    "type": "version_metadata"
+  },
+  {
     "name": "CLAW_ENGINE_DESKTOP_SECRET",
     "store_id": "f0b09ca04a7b43248154c773704a5616",
     "type": "secrets_store_secret",
