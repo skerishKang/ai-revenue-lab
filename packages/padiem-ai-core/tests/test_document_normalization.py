@@ -26,6 +26,7 @@ from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     read_hwpx_package_members,
     MAX_DOCUMENT_CHARS,
+    MAX_TEXT_DOCUMENT_BYTES,
     MAX_OOXML_ENTRIES,
     MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
     MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES,
@@ -48,6 +49,7 @@ from padiem_ai_core.document_normalization import (
     validate_ooxml_archive,
 )
 import padiem_ai_core.document_normalization as document_normalization
+from padiem_ai_core.document_semantics import LocatorKind
 from padiem_ai_core.hwpx_package_serializer import (
     HwpxPackageSection,
     deserialize_hwpx_package,
@@ -259,7 +261,7 @@ def test_text_identity_fails_closed(name: str, media_type: str, code: str) -> No
     assert exc.value.code == code
 
 
-def test_text_rejects_nul_controls_and_character_overflow_without_echo() -> None:
+def test_text_rejects_nul_and_control_characters_without_echo() -> None:
     secret = "PRIVATE-DOCUMENT-SECRET"
     with pytest.raises(DocumentNormalizationError) as nul:
         normalize_text_document(name="x.txt", media_type="text/plain", text=secret + "\x00")
@@ -270,9 +272,42 @@ def test_text_rejects_nul_controls_and_character_overflow_without_echo() -> None
         normalize_text_document(name="x.txt", media_type="text/plain", text="safe\x01\x02\x03\x04")
     assert controls.value.code == "excessive_control_characters"
 
-    with pytest.raises(DocumentNormalizationError) as large:
-        normalize_text_document(name="x.txt", media_type="text/plain", text="x" * (MAX_DOCUMENT_CHARS + 1))
-    assert large.value.code == "text_too_long"
+
+def test_a_long_text_document_is_read_not_refused() -> None:
+    """#5734 stage 2: length is not a safety property.
+
+    The 40,000-character and 96 KiB refusals were product-side copies of limits
+    nobody imposed. What a text document still has to prove is its type, its
+    encoding, the absence of NUL and a sane share of control characters.
+    """
+    long_body = "\n".join(f"line {index:06d} of the long document" for index in range(60_000))
+    assert len(long_body) > 4 * MAX_DOCUMENT_CHARS
+    document = normalize_text_document(name="long.txt", media_type="text/plain", text=long_body)
+    assert document.text_chars == len(long_body)
+    assert document.byte_size > MAX_TEXT_DOCUMENT_BYTES
+    assert document.segment_count == 1
+    assert document.segments[0].text == long_body
+
+
+def test_a_document_with_more_pages_than_the_old_segment_clamp_keeps_them_all() -> None:
+    """512 located segments used to be dropped, then refused; neither happens.
+
+    The reader once discarded every page locator above the bounded count and the
+    document object refused a count over it. A 600-page PDF now carries 600
+    page-located segments.
+    """
+    payload = _multi_page_text_pdf(*[f"row {index:04d} of the ledger" for index in range(600)])
+    document = extract_binary_document(name="many.pdf", media_type=PDF_MIME, payload=payload)
+    assert document.segment_count == 600
+    assert {segment.locator.kind for segment in document.segments} == {LocatorKind.PAGE}
+    assert document.segments[-1].locator.value == "600"
+
+
+def test_a_dense_document_is_read_past_the_old_per_page_and_total_bounds() -> None:
+    payload = _multi_page_text_pdf(*[f"page {index:02d} " + ("detail " * 3_000) for index in range(20)])
+    document = extract_binary_document(name="dense.pdf", media_type=PDF_MIME, payload=payload)
+    assert document.text_chars > 10 * MAX_DOCUMENT_CHARS
+    assert document.segment_count == 20
 
 
 def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -> None:

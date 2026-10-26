@@ -122,24 +122,21 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # Production authority, changes no declared-metadata bound or decision, and keeps
 # the magic, encryption and page gates plus the strict reader for merge, split,
 # markdown and preview. Only this source pin moves; the other hashes are unchanged.
+# Re-pinned for #5734 stage 2: Core stopped refusing a document for its own
+# length. The OOXML archive gate judges a decompression bomb by inflation ratio
+# instead of by size or member count, the XLSX table reader dropped its
+# 500/50/5,000 ceilings, the PDF reader stopped refusing a page count and a
+# per-page text length, and a text document no longer carries a 96 KiB or
+# 40,000-character total. All four pinned files moved: two Core sources and
+# their two fixtures. The guards these canaries exist to catch -- the archive
+# path, encryption, DTD and inflation gates, the NUL and control-character
+# rules, and locator provenance -- are untouched, and no parser, process,
+# network, filesystem, OCR, provider or Production authority was added.
 PINNED_SHA256 = {
-    # Re-pinned for #5734 stage 2 (2026-10-26): the PDF reader stopped refusing a
-# document for its page count and a page for its text length. Earlier in the same
-# issue the OOXML gate began refusing a bomb by inflation ratio instead of
-# refusing a document for its size, and the XLSX table reader dropped its
-# 500/50/5,000 ceilings. All of those touched these two files; the guards these
-# canaries exist to catch — path, encryption, DTD, inflation, provenance — are
-# untouched.
-# Superseded note: the OOXML archive gate began
-# refusing a bomb by inflation ratio instead of refusing a document for its
-# size, then the XLSX table reader dropped its 500/50/5,000 ceilings. Both
-# files changed on those commits; the guards these canaries exist to catch —
-# path, encryption, DTD, inflation — are untouched.
-# Original note for the first re-pin: the OOXML archive gate now refuses a    # decompression bomb by inflation ratio instead of refusing a document for    # its size or member count. Both files changed on that commit; the guard this    # canary exists to catch is untouched.
-    CORE_PACKAGE / "document_normalization.py": "a7d32317ec9514d3751c1d3ac474de2bfe3eb6dfd6804646b3214ed7128cc62a",
-    CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
-    CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "226c0e210cb302c354340fb388e6baa2d4b8db62aa240e07434a395d674a7bef",
+    CORE_PACKAGE / "document_normalization.py": "d5c75b56a66da1734aa6da69f5bc50f77b2f4e9f880a40da7272a5148d48d32e",
+    CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
+    CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
+    CORE_TESTS / "test_document_normalization.py": "8f175c3f896c5169b12959049bad13328de80e6e5337f32788b9818c85f47a8c",
 }
 
 REF = "doc_s3doc0000000000b"

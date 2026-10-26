@@ -243,7 +243,7 @@ def test_canonical_document_has_no_equatable_identity_field() -> None:
     assert att_style not in json.dumps(document.to_public_dict())
 
 
-# K/H. bounded segments + public projection safety
+# K/H. segment shape + public projection safety
 def test_public_projection_excludes_body_and_segments() -> None:
     document = text_document(f"{MARKER} secret content")
     public = document.to_public_dict()
@@ -253,27 +253,27 @@ def test_public_projection_excludes_body_and_segments() -> None:
     assert document.text_chars == len(document.text)
 
 
-def test_segment_bounds_are_enforced() -> None:
-    with pytest.raises(DocumentNormalizationError) as too_long:
-        DocumentSegment(text="x" * (MAX_SEGMENT_TEXT_CHARS + 1))
-    assert too_long.value.code == "segment_text_limit"
+def test_segment_shape_is_enforced_and_segment_length_is_not() -> None:
+    # #5734 stage 2: how long a segment is, and how many of them a document has,
+    # are the document's length. Both numbers used to be refusals. The shape of a
+    # segment — non-empty text, a real integer order, one locator per segment,
+    # no two segments sharing an order — is what stayed.
+    DocumentSegment(text="x" * (MAX_SEGMENT_TEXT_CHARS + 1))
+    DocumentSegment(text="x" * (4 * MAX_SEGMENT_TEXT_CHARS))
 
-    with pytest.raises(DocumentNormalizationError) as over_budget:
-        NormalizedDocument(
-            name="big.txt",
-            media_type="text/plain",
-            text="small",
-            segments=(
-                DocumentSegment(text="a" * 20_000, order=0),
-                DocumentSegment(text="b" * 20_001, order=1),
-            ),
-        )
-    assert over_budget.value.code == "document_segment_budget"
+    roomy = NormalizedDocument(
+        name="big.txt",
+        media_type="text/plain",
+        text="small",
+        segments=(
+            DocumentSegment(text="a" * 20_000, order=0),
+            DocumentSegment(text="b" * 20_001, order=1),
+        ),
+    )
+    assert roomy.segment_count == 2
 
-    many = tuple(DocumentSegment(text="ok", order=index) for index in range(MAX_DOCUMENT_SEGMENTS + 1))
-    with pytest.raises(DocumentNormalizationError) as over_count:
-        NormalizedDocument(name="many.txt", media_type="text/plain", text="body", segments=many)
-    assert over_count.value.code == "document_segment_limit"
+    many = tuple(DocumentSegment(text="ok", order=index) for index in range(MAX_DOCUMENT_SEGMENTS + 250))
+    assert NormalizedDocument(name="many.txt", media_type="text/plain", text="body", segments=many).segment_count == len(many)
 
     with pytest.raises(DocumentNormalizationError):
         DocumentSegment(text="")

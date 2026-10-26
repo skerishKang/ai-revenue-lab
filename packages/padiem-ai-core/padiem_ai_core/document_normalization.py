@@ -10,7 +10,6 @@ from zipfile import ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from .document_semantics import (
     DOCUMENT_CONTENT_TRUST_CLASS,
-    MAX_DOCUMENT_SEGMENTS,
     MAX_SEGMENT_TEXT_CHARS,
     DocumentKind,
     DocumentLocator,
@@ -24,7 +23,17 @@ from .document_semantics import (
 )
 
 MAX_DOCUMENT_NAME_CHARS = 120
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). A
+#: document's character count is its length, not a safety property: what a text
+#: document has to satisfy is its type, its encoding, and the absence of NUL and
+#: an overwhelming share of control characters. Both numbers still size the
+#: isolated-parser transport ceiling, which is an allocation on a wire rather
+#: than a verdict about a document.
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). The
+#: 96 KiB total was a product-side copy of a limit nobody imposed: the request
+#: transport and the provider context window are the real ceilings, and both are
+#: reported by their own layer rather than guessed here.
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 # #4379: a binary document carries no PADIEM byte total. The symbol is
 # retained for import compatibility and is no longer enforced.
@@ -134,16 +143,6 @@ class NormalizedDocument:
                 "invalid_document_segments",
                 "Document segments must contain DocumentSegment values.",
             )
-        if len(self.segments) > MAX_DOCUMENT_SEGMENTS:
-            raise DocumentNormalizationError(
-                "document_segment_limit",
-                "Document segments exceed the bounded count.",
-            )
-        if sum(item.char_count for item in self.segments) > MAX_DOCUMENT_CHARS:
-            raise DocumentNormalizationError(
-                "document_segment_budget",
-                "Document segments exceed the bounded character budget.",
-            )
         orders = tuple(item.order for item in self.segments)
         if len(set(orders)) != len(orders):
             raise DocumentNormalizationError(
@@ -226,8 +225,6 @@ def normalize_document_text(value: Any) -> str:
     text = value.removeprefix("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
     if not text.strip():
         raise DocumentNormalizationError("empty_document", "Document text is empty.")
-    if len(text) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("text_too_long", "Document text exceeds the character limit.")
     if "\x00" in text:
         raise DocumentNormalizationError("binary_text_rejected", "NUL bytes are not allowed in text documents.")
     bad_controls = sum(1 for ch in text if ord(ch) < 32 and ch not in {"\n", "\t"})
@@ -249,12 +246,9 @@ def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> Normali
     )
 
 
-def _append_bounded(parts: list[str], value: str) -> None:
-    if not value:
-        return
-    parts.append(value)
-    if sum(len(part) for part in parts) + max(0, len(parts) - 1) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("extracted_text_too_long", "Extracted document text exceeds the character limit.")
+def _append_part(parts: list[str], value: str) -> None:
+    if value:
+        parts.append(value)
 
 
 def _safe_ooxml_member(name: str) -> bool:
@@ -455,14 +449,14 @@ def _extract_docx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
             if tag == "p":
                 value = _docx_paragraph_text(child)
                 if value:
-                    _append_bounded(parts, value)
+                    _append_part(parts, value)
                     segments.append(DocumentSegment(text=value, order=len(segments)))
             elif tag == "tbl":
                 table_index += 1
                 for row_index, row_value in enumerate(_docx_table_rows(child), start=1):
                     if not row_value:
                         continue
-                    _append_bounded(parts, row_value)
+                    _append_part(parts, row_value)
                     segments.append(
                         DocumentSegment(
                             text=row_value,
@@ -522,7 +516,7 @@ def _extract_pptx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
                 slide = "\n".join(piece for piece in pieces if piece).strip()
                 if not slide:
                     continue
-                _append_bounded(parts, slide)
+                _append_part(parts, slide)
                 segments.append(
                     DocumentSegment(
                         text=slide,
@@ -996,10 +990,10 @@ def extract_hwpx_text(payload: bytes) -> str:
         for paragraph in parsed.paragraphs:
             if paragraph.holds_nested_paragraph:
                 continue
-            _append_bounded(paragraphs, paragraph.text)
+            _append_part(paragraphs, paragraph.text)
         section = "\n".join(paragraphs).strip()
         if section:
-            _append_bounded(sections, section)
+            _append_part(sections, section)
     text = "\n".join(sections).strip()
     if not text:
         raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
@@ -1290,7 +1284,7 @@ def _extract_pdf_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...
             extracted = (page.extract_text() or "").strip()
             if not extracted:
                 continue
-            _append_bounded(parts, extracted)
+            _append_part(parts, extracted)
             segments.append(
                 DocumentSegment(
                     text=extracted,
@@ -1371,12 +1365,12 @@ def _extract_xlsx_text(payload: bytes) -> str:
                     formula = formula_cell.value
                     if isinstance(formula, str) and formula.startswith("="):
                         shown = value or "(no cached value)"
-                        _append_bounded(
+                        _append_part(
                             parts,
                             f"[{value_sheet.title}!{value_cell.coordinate}] {formula} => {shown}",
                         )
                     elif value:
-                        _append_bounded(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
+                        _append_part(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("xlsx_empty", "XLSX contains no readable values.")
@@ -1573,11 +1567,6 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         raise DocumentNormalizationError("unsupported_binary_media_type", "Unsupported binary document media type.")
 
     normalized = normalize_document_text(text)
-    # A pathological document can exceed the bounded segment count even under
-    # the character budget. Keep the flat text and let the single-segment
-    # fallback carry it instead of rejecting an otherwise readable document.
-    if len(segments) > MAX_DOCUMENT_SEGMENTS:
-        segments = ()
     return NormalizedDocument(
         name=safe_name,
         media_type=safe_media,
