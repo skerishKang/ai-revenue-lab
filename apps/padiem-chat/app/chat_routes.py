@@ -107,6 +107,39 @@ def _public_sse(event: str, payload: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
 
 
+# #5573 no-deadline 설계 §7: a proxy between the browser and this Worker drops a
+# response that has written nothing for a while, and the reader sees a dead turn.
+# An SSE comment line is ignored by the EventSource grammar and by this app's own
+# parser, so it keeps the connection open without becoming UI content. It is not a
+# deadline: the shielded read below is never cancelled by a keepalive, so a turn
+# that needs an hour still gets an hour.
+SSE_KEEPALIVE = b": keepalive\n\n"
+SSE_KEEPALIVE_SECONDS = 15.0
+_KEEPALIVE_SENTINEL = object()
+
+
+async def _stream_with_keepalive(stream, *, interval: float = SSE_KEEPALIVE_SECONDS):
+    """Yield upstream events, and the sentinel whenever one gap reaches ``interval``."""
+
+    iterator = stream.__aiter__()
+    pending: asyncio.Future | None = None
+    while True:
+        if pending is None:
+            pending = asyncio.ensure_future(iterator.__anext__())
+        try:
+            item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
+        except asyncio.TimeoutError:
+            yield _KEEPALIVE_SENTINEL
+            continue
+        except StopAsyncIteration:
+            return
+        except asyncio.CancelledError:
+            pending.cancel()
+            raise
+        pending = None
+        yield item
+
+
 def _stream_json_error(exc: ChatRuntimeError) -> JSONResponse:
     return JSONResponse(
         {"error": {"code": exc.code, "message": exc.user_message}},
@@ -688,7 +721,11 @@ async def api_chat_stream(request: Request):
         answer_parts = [first_delta]
         try:
             yield _public_sse("delta", {"delta": first_delta})
-            async for event in stream:
+            async for item in _stream_with_keepalive(stream):
+                if item is _KEEPALIVE_SENTINEL:
+                    yield SSE_KEEPALIVE
+                    continue
+                event = item
                 if event.delta_content:
                     answer_parts.append(event.delta_content)
                     yield _public_sse("delta", {"delta": event.delta_content})

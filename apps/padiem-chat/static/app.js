@@ -2570,6 +2570,7 @@
   });
 
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
+    window.PadiemChatLifecycle?.startTurnClock?.(article);
     const data = await chatTransport.requestCompleted(payload, signal);
     renderAnswer(article, data);
     // Chat/Claw separation: the completion belongs to the product that submitted it, even
@@ -2831,6 +2832,9 @@
   }
 
   async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    // #5573 §7: the elapsed clock starts with the request, not with the first
+    // frame. It reports only how long the turn has been in flight.
+    window.PadiemChatLifecycle?.startTurnClock?.(article);
     // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
     // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
     // existing /api/chat/stream transport call byte-for-byte.
