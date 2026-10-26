@@ -232,6 +232,9 @@
     }),
   });
 
+  let autoKeyInput = null, autoEndpointInput = null, autoCard = null;
+  let autoDetectButton = null, autoRegisterButton = null, customAdvanced = null;
+  let autoDetection = null, autoSequence = 0;
   let customSelection = null;
   let customProviders = [];
   let customCredentials = [];
@@ -749,6 +752,12 @@
   }
 
   function clearCustomState() {
+    autoSequence += 1;
+    autoDetection = null;
+    if (autoKeyInput) autoKeyInput.value = "";
+    if (autoEndpointInput) { autoEndpointInput.value = ""; autoEndpointInput.hidden = true; }
+    if (autoCard) { autoCard.textContent = ""; autoCard.hidden = true; }
+    if (autoRegisterButton) autoRegisterButton.disabled = true;
     customProviders = [];
     customCredentials = [];
     customLoadState = "idle";
@@ -840,6 +849,10 @@
     const credential = customCredential();
     const provider = customProvider();
     const busy = customMutation !== null;
+    if (autoKeyInput) autoKeyInput.disabled = busy || !auth.authenticated;
+    if (autoEndpointInput) autoEndpointInput.disabled = busy || !auth.authenticated;
+    if (autoDetectButton) autoDetectButton.disabled = busy || !auth.authenticated;
+    if (autoRegisterButton) autoRegisterButton.disabled = busy || !autoDetection || !autoDetection.verified;
 
     syncProviderOptions();
     syncModelOptions(provider);
@@ -951,9 +964,8 @@
     }
     if (customFocusPending && !controlsDisabled && modePanel && !modePanel.hidden) {
       customFocusPending = false;
-      const target = customModelInput && !customModelInput.hidden && !model
-        ? customModelInput
-        : customInput;
+      const target = customAdvanced && !customAdvanced.open ? autoKeyInput
+        : customModelInput && !customModelInput.hidden && !model ? customModelInput : customInput;
       window.setTimeout(() => {
         try { target.focus(); } catch (_) { /* focus is an enhancement */ }
       }, 0);
@@ -1238,6 +1250,72 @@
     }
   }
 
+  async function autoByok(register = false) {
+    if (customMutation || !auth.authenticated || !autoKeyInput) return;
+    const key = autoKeyInput.value.trim();
+    if (key.length < 16 || key.length > 512 || /[^\x21-\x7e]/.test(key)) {
+      setCustomMessage(customCopy().keyLength, "error");
+      return;
+    }
+    if (register && (!autoDetection || !autoDetection.verified)) return;
+    const payload = { key };
+    const endpoint = autoEndpointInput.value.trim();
+    if (endpoint) payload.base_url = endpoint;
+    if (register) {
+      payload.provider = autoDetection.provider;
+      payload.model = autoDetection.models[0];
+    }
+    const ticket = ++autoSequence;
+    customMutation = register ? "auto-register" : "detect";
+    setCustomMessage(register ? "등록 중…" : "공급자 확인 중…", "info");
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(register ? "/api/byok/register" : "/api/byok/detect", {
+        method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        credentials: "same-origin", cache: "no-store", body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => null);
+      if (ticket !== autoSequence) return;
+      if (!response.ok || !data) {
+        autoDetection = null;
+        autoCard.hidden = true;
+        setCustomMessage(data && data.reason || errorMessage(data) || "등록을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+        return;
+      }
+      if (register && data.ok === true && data.selection) {
+        autoKeyInput.value = "";
+        autoDetection = null;
+        customMutation = null;
+        await refreshCustomStatus();
+        if (ticket !== autoSequence) return;
+        customProviderId = data.selection.provider;
+        customModelValue = data.selection.model;
+        customModelOptions = Array.isArray(data.models) ? data.models : [];
+        if (customModelInput) customModelInput.value = customModelValue;
+        customSelection = { provider: customProviderId, model: customModelValue };
+        syncModeCopy();
+        setCustomMessage("등록했습니다. 이 모델로 바로 대화할 수 있습니다.", "ok");
+        return;
+      }
+      autoDetection = data.verified === true && Array.isArray(data.models) && data.models.length ? data : null;
+      autoCard.hidden = false;
+      // Only the server's public projection is rendered. Never the key or a
+      // vendor error body, and never HTML from an upstream response.
+      autoCard.textContent = [data.provider || "공급자 선택 필요", data.endpoint || "",
+        Array.isArray(data.models) ? data.models[0] || "" : "", data.verified ? "검증 ✓" : "미검증"].filter(Boolean).join(" · ");
+      autoEndpointInput.hidden = data.provider !== null;
+      setCustomMessage(data.reason || "고급 입력을 이용해 주세요.", data.verified ? "ok" : "error");
+    } catch (_) {
+      if (ticket === autoSequence) {
+        autoDetection = null;
+        autoCard.hidden = true;
+        setCustomMessage("연결을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+      }
+    } finally {
+      if (ticket === autoSequence) { customMutation = null; syncCustomSection(); }
+    }
+  }
+
   async function saveCustomKey() {
     if (customMutation || !customInput) return;
     const provider = customProvider();
@@ -1506,8 +1584,63 @@
     customRetryButton.textContent = copy.retry;
     customRetryButton.addEventListener("click", () => void refreshCustomStatus());
 
-    form.append(
-      status,
+    const autoLabel = document.createElement("label");
+    autoLabel.htmlFor = "modeAutoByokKey";
+    autoLabel.className = "mode-custom-key-label";
+    autoLabel.textContent = "키 붙여넣기";
+    autoKeyInput = document.createElement("input");
+    autoKeyInput.id = "modeAutoByokKey";
+    autoKeyInput.type = "password";
+    autoKeyInput.className = "mode-custom-key-input";
+    autoKeyInput.autocomplete = "new-password";
+    autoKeyInput.maxLength = 512;
+    autoKeyInput.placeholder = "API 키만 붙여넣으세요";
+    autoKeyInput.setAttribute("spellcheck", "false");
+    const invalidate = () => {
+      autoSequence += 1; autoDetection = null;
+      autoCard.textContent = ""; autoCard.hidden = true;
+      autoRegisterButton.disabled = true;
+    };
+    autoKeyInput.addEventListener("input", invalidate);
+    autoKeyInput.addEventListener("paste", () => {
+      window.setTimeout(() => void autoByok(), 0);
+    });
+    autoKeyInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") { event.preventDefault(); void autoByok(); }
+    });
+    autoEndpointInput = document.createElement("input");
+    autoEndpointInput.type = "url";
+    autoEndpointInput.id = "modeAutoByokEndpoint";
+    autoEndpointInput.className = "mode-custom-key-input";
+    autoEndpointInput.placeholder = "공개 HTTPS API 기본 주소 (/v1 등 경로 포함)";
+    autoEndpointInput.setAttribute("aria-label", "API 주소");
+    autoEndpointInput.hidden = true;
+    autoEndpointInput.addEventListener("input", invalidate);
+    autoCard = document.createElement("p");
+    autoCard.id = "modeAutoByokResult";
+    autoCard.style.overflowWrap = "anywhere";
+    autoCard.setAttribute("role", "status");
+    autoCard.hidden = true;
+    const autoActions = document.createElement("div");
+    autoActions.className = "mode-custom-actions";
+    autoDetectButton = document.createElement("button");
+    autoDetectButton.type = "button"; autoDetectButton.textContent = "자동 확인";
+    autoDetectButton.className = "mode-custom-action";
+    autoDetectButton.id = "modeAutoByokDetect";
+    autoDetectButton.addEventListener("click", () => void autoByok());
+    autoRegisterButton = document.createElement("button");
+    autoRegisterButton.type = "button"; autoRegisterButton.textContent = "등록";
+    autoRegisterButton.className = "mode-custom-action";
+    autoRegisterButton.id = "modeAutoByokRegister";
+    autoRegisterButton.disabled = true;
+    autoRegisterButton.addEventListener("click", () => void autoByok(true));
+    autoActions.append(autoDetectButton, autoRegisterButton);
+    customAdvanced = document.createElement("details");
+    customAdvanced.id = "modeCustomAdvanced";
+    const advancedTitle = document.createElement("summary");
+    advancedTitle.textContent = "고급 · 공급자/모델/주소 직접 입력";
+    customAdvanced.append(advancedTitle);
+    customAdvanced.append(
       customProviderLabelEl,
       customProviderSelect,
       customModelLabelEl,
@@ -1522,9 +1655,9 @@
       customInput,
       actions,
       hint,
-      customMessageEl,
-      customRetryButton,
     );
+    form.append(status, autoLabel, autoKeyInput, autoEndpointInput, autoActions,
+      autoCard, customAdvanced, customMessageEl, customRetryButton);
 
     customGuestNote = document.createElement("p");
     customGuestNote.className = "mode-custom-guest-note";

@@ -205,8 +205,7 @@ def test_the_merged_gate_wires_both_sources_to_the_served_version():
     )
 
     assert 'config_settings="${RUNNER_TEMP}/b62-version-before.json"' in workflow
-    assert 'before_comparison="${RUNNER_TEMP}/b62-version-before.json"' in workflow
-    assert 'from b62_cloudflare_production_deploy_config import live_binding_entries' in workflow
+    assert '--verify-served "${RUNNER_TEMP}/b62-version-after.json"' in workflow
     assert "b62_rollback_recorded_version_guard.py" in workflow
     assert "B62_ROLLBACK_ACTIVE_BINDING_PRESERVED=PASS" in workflow
     assert "B62_ROLLBACK_SERVED_BINDING_BASELINE=PASS" in workflow

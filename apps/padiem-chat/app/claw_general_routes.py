@@ -28,6 +28,8 @@ owns.
 
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import asyncio
 import inspect
 import json
@@ -1334,7 +1336,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # provider call.
     try:
         document_context, image_attachments = await parse_claw_turn_attachments_async(
-            data.get("attachments")
+            data.get("attachments"), file_resolver=file_resolver(request)
         )
     except AttachmentValidationError as exc:
         return _error(422, "invalid_attachment", str(exc))

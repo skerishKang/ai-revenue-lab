@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'apps/padiem-file-lane/**'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-ai-core/padiem_ai_core/pdf_markdown.py'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_semantics.py'
       - '.github/workflows/validate-padiem-file-lane.yml'
   workflow_dispatch:
 permissions:

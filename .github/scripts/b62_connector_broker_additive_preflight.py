@@ -32,9 +32,7 @@ from b62_cloudflare_production_deploy_config import (
     CONNECTOR_BROKER_TARGET,
     CONNECTOR_EXPLICIT_VARS,
     CONNECTOR_IDENTITY_TARGET,
-    build_production_config,
     parse_live_bindings,
-    verify_mutation_zero,
 )
 
 VERSION = "padiem.connector-broker-additive-preservation.readonly.v1"
@@ -229,93 +227,22 @@ def verify_broker_source_rpc_contract(
             raise ProductionConfigError("Canonical private Broker RPC forwarding is not proven")
 
 
-def candidate_preservation(
-    live_settings: object, repo_config: Path = REPO_CONFIG,
-) -> dict[str, object]:
-    """Compare base and one-addition outputs, fail closed on unsupported data.
-
-    Assumes existing B62 production generator is the only source of the
-    release config. Never use the source mock wrangler.toml as live authority.
-    """
+def candidate_preservation(live_settings: object, repo_config: Path = REPO_CONFIG) -> dict[str, object]:
+    """Read-only repository plan; no hidden additive deployment switch remains."""
+    from b62_cloudflare_production_deploy_config import production_plan
+    from b62_repo_binding_authority import binding_diff, index
     verify_broker_source_rpc_contract()
     verify_identity_source_rpc_contract()
     live = parse_live_bindings(live_settings)
-    baseline = build_production_config(
-        live, repo_config, PUBLIC_ORIGIN,
-    )
-    proposed = build_production_config(
-        live, repo_config, PUBLIC_ORIGIN,
-        attach_connector_broker_service=True,
-    )
-    verify_mutation_zero(baseline, live)
-    verify_mutation_zero(proposed, live, allow_connector_broker=True)
-    old = tomllib.loads(baseline)
-    new = tomllib.loads(proposed)
-    prior_services = old.get("services", [])
-    candidate_services = new.get("services", [])
-    if type(prior_services) is not list or type(candidate_services) is not list:
-        raise ProductionConfigError("Generated service declarations invalid")
-    new_copy = dict(new)
-    new_copy["services"] = prior_services
-    # #4719 LOCAL1: the candidate may additionally carry exactly the
-    # allowlisted Connector vars; nothing else may differ.
-    old_vars = old.get("vars", {})
-    new_vars = new_copy.get("vars", {})
-    if not isinstance(old_vars, dict) or not isinstance(new_vars, dict):
-        raise ProductionConfigError("Generated vars declarations invalid")
-    normalized_vars = dict(new_vars)
-    for key, expected in CONNECTOR_EXPLICIT_VARS.items():
-        if key in old_vars:
-            if old_vars[key] != expected:
-                raise ProductionConfigError("Connector var drift on live value")
-            if normalized_vars.get(key) != expected:
-                raise ProductionConfigError("Generated candidate changed Connector var value")
-        else:
-            if normalized_vars.get(key) != expected:
-                raise ProductionConfigError("Generated candidate changed non-Broker config")
-            del normalized_vars[key]
-    new_copy["vars"] = normalized_vars
-    if new_copy != old:
-        raise ProductionConfigError("Generated candidate changed non-Broker config")
-    expected = {
-        "binding": CONNECTOR_BROKER_BINDING,
-        "service": CONNECTOR_BROKER_TARGET,
-    }
-    # Retry after a rolled-back upload: the live inventory may already carry
-    # the exactly identical Broker binding. The generator reuses it verbatim
-    # instead of duplicating; anything else still fails closed.
-    reused = False
-    if candidate_services == prior_services:
-        matches = [item for item in prior_services
-                   if item.get("binding") == CONNECTOR_BROKER_BINDING]
-        if (len(matches) != 1 or matches[0].get("service") != CONNECTOR_BROKER_TARGET
-                or matches[0].get("entrypoint")
-                or matches[0].get("environment") not in (None, "production")):
-            raise ProductionConfigError("Generated candidate changed other services")
-        reused = True
-    elif candidate_services != prior_services + [expected]:
-        raise ProductionConfigError("Generated candidate changed other services")
-    binding_types = {
-        kind: len(live[kind])
-        for kind in ("assets", "services", "d1", "r2", "vars", "secret_names",
-                     "secrets_store")
-    }
-    # The Cloudflare Worker platform preserves existing secret_text bindings
-    # separately. Secret contents cannot be read back or fully proven here.
+    expected, _ = production_plan(live, tomllib.loads(repo_config.read_text()))
+    diff = binding_diff(index(live["entries"]), expected)
     return {
-        "status": "ADDITIVE_CANDIDATE_STRUCTURAL_PASS",
-        "preserved_existing_bindings_count": sum(binding_types.values()) +
-            int(live["version_metadata"] is not None) +
-            int(live["browser"] is not None),
-        "preserved_existing_binding_types_count": binding_types,
-        "additional_service_bindings_count": 0 if reused else 1,
-        "broker_binding_reused": reused,
-        "target_worker": CONNECTOR_BROKER_TARGET,
+        "status": "REPOSITORY_BINDING_PLAN_STRUCTURAL_PASS",
+        "binding_diff": diff,
         "broker_private_rpc_source_contract_proven": True,
         "identity_consent_rpc_source_contract_proven": True,
         "deployed_rpc_revision_proven": False,
         "existing_secret_values_read": False,
-        "secret_survival_requires_deployment_readback": True,
         "deploy_authorized": False,
         "public_gateway_authorized": False,
         "production_mutation": 0,

@@ -42,7 +42,7 @@ def test_deploy_gate_only_wraps_readonly_get_and_preserves_mutation_controls():
     assert text.count("bash .github/scripts/b62_cloudflare_504_readonly_get.sh") >= 10
     assert 'CONFIRM' in text or 'DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN' in text
     assert 'B62_PRODUCTION_CODE_DEPLOY=SUCCESS' in text
-    assert 'FULL_SECRET_SET_EQUALITY=PASS' in text
+    assert 'BINDINGS_MATCH_REPOSITORY_PLAN=PASS' in text
     assert 'Auto-rollback to recorded version on any failed step' in text
     assert 'set -euo pipefail' in HELPER.read_text(encoding="utf-8")
 

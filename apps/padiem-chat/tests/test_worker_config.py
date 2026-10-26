@@ -236,7 +236,11 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
-    assert "database_id" not in wrangler
+    import tomllib
+    from uuid import UUID
+    databases = tomllib.loads(wrangler)["d1_databases"]
+    assert databases[0]["binding"] == "PADIEM_CHAT_DB"
+    assert UUID(databases[0]["database_id"]).int > 0
     assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
     assert "await resolve_web_secrets_store_keys(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker

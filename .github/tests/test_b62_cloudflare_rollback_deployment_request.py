@@ -93,7 +93,7 @@ def test_legacy_fail_closed_and_secret_guards_are_unchanged():
     assert "ROLLBACK_POST_ATTEMPTED=NO" in text
     assert "ROLLBACK_POST_ATTEMPTED=YES" in text
     assert "ROLLBACK_EFFECT=EXECUTED" in text
-    assert "FULL_SECRET_SET_EQUALITY=PASS" in text
+    assert "BINDINGS_MATCH_REPOSITORY_PLAN=PASS" in text
     assert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in text
     assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in text
     assert "B62_PRODUCTION_SMOKE=PASS" in text

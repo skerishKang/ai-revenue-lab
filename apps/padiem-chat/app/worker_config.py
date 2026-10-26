@@ -279,6 +279,7 @@ def settings_from_worker_bindings(
     )
     return Settings.from_values(
         runtime_mode=runtime_mode,
+        file_lane_origin=binding_value(env, "PADIEM_CHAT_FILE_LANE_ORIGIN"),
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         b14_upstream_mode=binding_value(env, "B14_UPSTREAM_MODE"),
         b14_upstream_url=binding_value(env, "B14_UPSTREAM_URL"),

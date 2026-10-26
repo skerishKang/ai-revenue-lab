@@ -16,7 +16,7 @@ def _load_module():
     return module
 
 
-def _repo_config(tmp_path: Path) -> Path:
+def _repo_config(tmp_path: Path, jurisdiction=None) -> Path:
     path = tmp_path / "wrangler.toml"
     path.write_text(
         'name = "padiem-chat"\n'
@@ -28,6 +28,9 @@ def _repo_config(tmp_path: Path) -> Path:
         'binding = "ASSETS"\n',
         encoding="utf-8",
     )
+    with path.open("a") as f:
+        f.write('\n[[services]]\nbinding="B14_SERVICE"\nservice="ai-revenue-korean-ai-platform"\n[[services]]\nbinding="IDENTITY_AUTHORITY_SERVICE"\nservice="padiem-control-plane-identity"\n[[d1_databases]]\nbinding="PADIEM_CHAT_DB"\ndatabase_id="702bb62b-36f5-41a0-973f-c4f663ee01e6"\n[[r2_buckets]]\nbinding = "PADIEM_WORKSPACE_FILES"\nbucket_name = "padiem-workspace-files"\n')
+        if jurisdiction: f.write('jurisdiction = "'+jurisdiction+'"\n')
     return path
 
 
@@ -92,7 +95,7 @@ def test_r2_jurisdiction_is_preserved_when_present(tmp_path):
     )
     config = module.build_production_config(
         live,
-        _repo_config(tmp_path),
+        _repo_config(tmp_path, jurisdiction="eu"),
         "https://padiem-chat.charliekant.workers.dev",
     )
     assert 'jurisdiction = "eu"' in config

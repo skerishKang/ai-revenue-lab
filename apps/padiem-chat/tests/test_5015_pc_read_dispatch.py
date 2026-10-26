@@ -551,12 +551,17 @@ def test_the_device_context_call_never_claims_a_pc_step_is_running(monkeypatch):
     assert state.history_store.run_rows[RUN]["status"] == "pending"
 
 
-def test_context_roots_contains_the_server_verified_approved_root(monkeypatch):
+def test_context_roots_are_the_owner_names_and_never_a_real_path(monkeypatch):
+    """(A): the model is given the label of each approved folder, nothing else.
+
+    The real Windows path stays server-side: it is what guards the dispatch, and
+    showing it would hand the model a path it is not allowed to choose.
+    """
     state = _state(monkeypatch)
     status, body = _dispatch(state, _context_payload())
     assert status == 200, body
-    assert body["roots"] == [ROOT]
-    assert body["roots"][0] == ROOT
+    assert body["roots"] == [{"label": ROOT.rsplit("/", 1)[-1]}]
+    assert ROOT not in json.dumps(body, ensure_ascii=False)
     assert state.history_store.rows == {}
 
 

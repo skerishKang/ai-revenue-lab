@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import json
 import re
 from typing import Any
@@ -174,7 +176,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
-        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw)
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if tool_request is not None or attachments or project_id is not None or custom is not None:
             return _error(
                 "orchestration_not_applicable",

@@ -137,12 +137,19 @@ def test_service_binding_target_is_fixed_in_repository_config():
             "service": "padiem-voice-stt",
         },
         {
-            # #2824: the private Parser Authority Worker. No public route, and the
-            # Chat Worker reaches it only through this fixed service binding.
-            "binding": "DOCUMENT_PARSER_SERVICE",
-            "service": "padiem-document-parser",
+            "binding": "B66_PDF_RENDERER_SERVICE",
+            "service": "padiem-b66-pdf-renderer",
+        },
+        {
+            "binding": "GOOGLE_OAUTH_STATE_SERVICE",
+            "service": "padiem-google-oauth-state",
+        },
+        {
+            "binding": "P01_ENGINE_SERVICE",
+            "service": "padiem-ai-engine",
         },
     ]
+    assert "DOCUMENT_PARSER_SERVICE" not in {item["binding"] for item in config["services"]}
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
 

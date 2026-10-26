@@ -1,0 +1,313 @@
+[
+  {
+    "name": "ASSETS",
+    "type": "assets"
+  },
+  {
+    "name": "B14_SERVICE",
+    "service": "ai-revenue-korean-ai-platform",
+    "type": "service"
+  },
+  {
+    "name": "B66_ADMIN_GOOGLE_EMAIL",
+    "type": "secret_text"
+  },
+  {
+    "name": "B66_ALERT_EMAIL_FROM",
+    "type": "secret_text"
+  },
+  {
+    "name": "B66_ALERT_EMAIL_TO",
+    "type": "secret_text"
+  },
+  {
+    "name": "B66_ALERT_RESEND_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "B66_ALERT_RESEND_API_KEY"
+  },
+  {
+    "name": "B66_MEMBERSHIP_ENFORCED",
+    "type": "secret_text"
+  },
+  {
+    "name": "B66_PDF_RENDERER_SERVICE",
+    "service": "padiem-b66-pdf-renderer",
+    "type": "service"
+  },
+  {
+    "name": "BROWSER",
+    "type": "browser"
+  },
+  {
+    "name": "CLAW_ENGINE_DESKTOP_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "CLAW_ENGINE_DESKTOP_SECRET"
+  },
+  {
+    "name": "GOOGLE_OAUTH_STATE_SERVICE",
+    "service": "padiem-google-oauth-state",
+    "type": "service"
+  },
+  {
+    "name": "IDENTITY_AUTHORITY_SERVICE",
+    "service": "padiem-control-plane-identity",
+    "type": "service"
+  },
+  {
+    "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+    "service": "padiem-local-agent-broker-state",
+    "type": "service"
+  },
+  {
+    "name": "ORACLE_MESH_CHANNEL_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "ORACLE_MESH_CHANNEL_SECRET"
+  },
+  {
+    "name": "ORACLE_MESH_EXECUTION_MODE",
+    "type": "plain_text"
+  },
+  {
+    "name": "ORACLE_MESH_OWNERSHIP_MAP",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "ORACLE_MESH_OWNERSHIP_MAP"
+  },
+  {
+    "name": "P01_ENGINE_CALLER_ID",
+    "type": "plain_text"
+  },
+  {
+    "name": "P01_ENGINE_CREDENTIAL",
+    "type": "secret_text"
+  },
+  {
+    "name": "P01_ENGINE_SERVICE",
+    "service": "padiem-ai-engine",
+    "type": "service"
+  },
+  {
+    "name": "PADIEM_B14_SERVICE_PROOF_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_B14_SERVICE_PROOF_SECRET"
+  },
+  {
+    "name": "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_AUTH_MODE",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_B14_BASE_URL",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_B66_QUOTE_BASE_URL",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_CUSTOM_KEY_SECRET",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CHAT_DAUM_REST_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_KAKAO_API_KEY"
+  },
+  {
+    "id": "702bb62b-36f5-41a0-973f-c4f663ee01e6",
+    "name": "PADIEM_CHAT_DB",
+    "type": "d1"
+  },
+  {
+    "name": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_GOOGLE_CLIENT_ID",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CHAT_LIVE_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_ORCHESTRATION_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_PUBLIC_BASE_URL",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_QUOTA_SALT",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CHAT_RUNTIME_MODE",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_SESSION_SECRET",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_CHAT_TEST_GUARD_DIGEST",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_TIMEOUT_SECONDS",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_USER_BURST_LIMIT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CHAT_USER_DAILY_LIMIT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CLAW_P01_LIVE_SSE_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_CONNECTOR_PRODUCTION_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_EXLAB_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_EXLAB_API_KEY"
+  },
+  {
+    "name": "PADIEM_GITHUB_APP_CLIENT_SECRET",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_GITHUB_APP_CLIENT_SECRET"
+  },
+  {
+    "name": "PADIEM_GRAFANA_OTLP_ENDPOINT",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN"
+  },
+  {
+    "name": "PADIEM_GRAFANA_OTLP_USERNAME",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_KIRAAI_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_KIRAAI_API_KEY"
+  },
+  {
+    "name": "PADIEM_PUSH_VAPID_PRIVATE_KEY",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_PUSH_VAPID_PUBLIC_KEY",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_PUSH_VAPID_SUBJECT",
+    "type": "secret_text"
+  },
+  {
+    "name": "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_WEB_XLSX_P01_TOOL_DISPATCH_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED",
+    "type": "plain_text"
+  },
+  {
+    "name": "PADIEM_WORKSPACE_FILES",
+    "bucket_name": "padiem-workspace-files",
+    "type": "r2_bucket"
+  },
+  {
+    "name": "TINYFISH_API_KEY",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "type": "secrets_store_secret",
+    "secret_name": "PADIEM_TINY_FISH_API_KEY"
+  },
+  {
+    "name": "VOICE_STT_SERVICE",
+    "service": "padiem-voice-stt",
+    "type": "service"
+  }
+]
