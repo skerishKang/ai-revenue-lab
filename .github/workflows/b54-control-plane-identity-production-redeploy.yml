@@ -5,9 +5,10 @@ name: B54 Control Plane Identity Production Redeploy
 # deployed. This control redeploys that one private Worker from an exact current
 # main SHA under explicit authorization.
 #
-# It is a SOURCE REDEPLOY control only. It is NOT a B62 Service Binding
-# activation gate (that is b62-control-plane-identity-binding-gate.yml) and it is
-# NOT a first-time private worker activation (that is
+# It is a SOURCE REDEPLOY control only. Worker Service Bindings are declared in
+# apps/padiem-chat/wrangler.toml, which is the binding authority (#5898), so this
+# control neither attaches nor detaches one. It is also NOT a first-time private
+# worker activation (that is
 # b54-google-oauth-private-workers-production-activation.yml).
 
 on:
