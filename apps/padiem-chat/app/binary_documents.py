@@ -6,11 +6,6 @@ from typing import Any
 
 from padiem_ai_core.document_normalization import (
     BINARY_DOCUMENT_MEDIA,
-    MAX_PDF_PAGES,
-    MAX_XLSX_COLUMNS,
-    MAX_XLSX_NONEMPTY_CELLS,
-    MAX_XLSX_ROWS,
-    MAX_XLSX_SHEETS,
     DocumentNormalizationError,
     validate_document_identity,
 )
@@ -56,11 +51,9 @@ _BINARY_ERROR_MESSAGES = {
 }
 _OOXML_CODES = {
     "ooxml_archive_size",
-    "ooxml_entry_count",
     "ooxml_unsafe_path",
     "ooxml_encrypted",
     "ooxml_entry_size",
-    "ooxml_total_size",
     "ooxml_dtd_rejected",
     "ooxml_malformed",
     "ooxml_invalid_xml",
