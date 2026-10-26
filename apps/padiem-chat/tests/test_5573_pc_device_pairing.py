@@ -378,7 +378,7 @@ def test_claim_requires_the_closed_body_and_a_canonical_node_identity() -> None:
             transport=httpx.ASGITransport(app=app), base_url=ORIGIN,
         ) as anonymous:
             bare = await anonymous.post(
-                PC_PAIRING_CLAIM_PATH, json={"code": "ABCDEF234567", "mesh_node_id": "mesh-pc-01"},
+                PC_PAIRING_CLAIM_PATH, json={"code": "ABCDEF234567", "mesh_node_id": "foo/bar"},
             )
             extra = await anonymous.post(
                 PC_PAIRING_CLAIM_PATH,
@@ -387,10 +387,10 @@ def test_claim_requires_the_closed_body_and_a_canonical_node_identity() -> None:
             return bare.status_code, bare.json()["error"]["code"], extra.status_code
 
     bare_status, bare_code, extra_status = run(journey())
-    # A bare device id is a different identity than the composed Mesh node, and
-    # the composed form is what the Mesh lane can address: refuse the bare one.
-    # The shape is judged before the code is looked up, so a malformed identity
-    # never tells a caller anything about whether a code exists.
+    # An identity neither canonical form describes is refused before the code is
+    # looked up, so a malformed one tells a caller nothing about whether a code
+    # exists. Both real forms are accepted: `node/<domain>/<node>` and the
+    # `id@domain` spelling meshctrl reports (Owner decision on #5573).
     assert bare_status == 400 and bare_code == "pc_pairing_node_invalid"
     # A request may never name the account it is pairing into.
     assert extra_status == 400

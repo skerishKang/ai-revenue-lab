@@ -8,9 +8,9 @@ narrow on purpose:
   code exists only in the response that hands it to the browser and the install
   link built from it. A code is single use and short lived.
 * A link is `(user_id, mesh_node_id)` — many accounts to many PCs (R1). The
-  node identity is always the composed MeshCentral form, validated by the same
-  Core grammar the dispatch and presence lanes already use, so a link can never
-  name a device the Mesh lane cannot address.
+  identity is validated by the same Core grammar the dispatch and presence
+  lanes already use, in either canonical form, so a link can never name a
+  device the Mesh lane cannot address.
 * Folder approval belongs to the link, not the account and not the PC (R1, R5).
   Revoking one link cannot widen or narrow another account's roots on the same
   machine.
@@ -30,7 +30,7 @@ import re
 import secrets
 from typing import Any, Protocol
 
-from padiem_ai_core.pc_device_identity import is_pc_mesh_node_id
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .history import _row_to_dict, _rows_from_result
 
@@ -54,6 +54,13 @@ MAX_LINK_LABEL_CHARS = 128
 _USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,255}$")
 _LINK_ID_RE = re.compile(r"^pclink_[0-9a-f]{32}$")
 _CODE_ID_RE = re.compile(r"^pcpair_[0-9a-f]{32}$")
+#: The derived install tag: `pd-` plus the eight hex characters this module
+#: produces. MeshCentral agent names are operator-editable text, so the tag is
+#: found inside them rather than assumed to be them.
+_AGENT_TAG_RE = re.compile(
+    r"(?<![0-9A-Za-z])" + re.escape(PAIRING_TAG_PREFIX) + r"[0-9a-f]{8}(?![0-9A-Za-z])",
+    re.IGNORECASE,
+)
 _STATE_ACTIVE = "active"
 _STATE_PENDING_VERIFICATION = "pending_verification"
 _STATE_REVOKED = "revoked"
@@ -86,6 +93,7 @@ class PcPairingStore(Protocol):
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]: ...
 
+
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
     async def revoke_root(
@@ -104,7 +112,15 @@ def _user_id(value: Any) -> str:
 
 
 def _mesh_node_id(value: Any) -> str:
-    if not is_pc_mesh_node_id(value):
+    """One PC identity the Mesh lane can actually address.
+
+    Both canonical forms are accepted, by the Owner's decision on #5573: the
+    composed ``node/<domain>/<node>`` and the ``id@domain`` spelling that
+    ``meshctrl listdevices`` reports and the deployment ownership map already
+    uses as ``node_ref``. Rejecting the second would have made a link name a
+    device the file lane can reach but this table could not hold.
+    """
+    if not is_pc_device_id(value):
         raise PcPairingError("mesh node identity invalid")
     return value
 
@@ -238,6 +254,20 @@ def derive_install_tag(code: str) -> str:
     """
     digest = hashlib.sha256(("padiem-pc-pair-tag|" + code).encode("utf-8")).hexdigest()
     return PAIRING_TAG_PREFIX + digest[:PAIRING_TAG_CHARS]
+
+
+def tag_from_agent_name(value: Any) -> str | None:
+    """The one pairing tag inside an observed agent name, or ``None``.
+
+    Exactly one match is required: a name carrying two tags, or a lookalike that
+    is not the derived shape, is not a claim and is not guessed at.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= 256:
+        return None
+    found = [match.group(0).lower() for match in _AGENT_TAG_RE.finditer(value)]
+    if len(found) != 1:
+        return None
+    return found[0]
 
 
 def _hash(secret: str) -> str:
@@ -405,6 +435,20 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
+        return await self._claim_link(
+            owner=owner, node=node, label=label, code_id=row["code_id"],
+            moment=moment, verified=verified,
+        )
+
+    async def _claim_link(
+        self, *, owner: str, node: str, label: Any, code_id: str, moment: str,
+        verified: bool,
+    ) -> dict[str, Any]:
+        """Create or refresh the (owner, node) link for one consumed code.
+
+        Shared by the browser-side claim and the server-side tag completion, so
+        the two cannot drift into two different link shapes.
+        """
         existing = await self._first(
             "SELECT * FROM pc_device_links WHERE user_id=? AND mesh_node_id=?", owner, node,
         )
@@ -416,7 +460,7 @@ class D1PcPairingStore:
                 await self._run(
                     "UPDATE pc_device_links SET state=?, label=?, roots_json='[]', "
                     "pairing_code_id=?, updated_at=?, revoked_at=NULL WHERE link_id=?",
-                    state, _label(label), row["code_id"], moment, existing["link_id"],
+                    state, _label(label), code_id, moment, existing["link_id"],
                 )
             elif existing.get("state") == _STATE_PENDING_VERIFICATION and verified is True:
                 # A second code that only confirms the same pair promotes it; a
@@ -434,12 +478,76 @@ class D1PcPairingStore:
                 "(link_id, user_id, mesh_node_id, label, state, roots_json, "
                 " pairing_code_id, created_at, updated_at, revoked_at) "
                 "VALUES (?, ?, ?, ?, ?, '[]', ?, ?, ?, NULL)",
-                link_id, owner, node, _label(label), state, row["code_id"], moment, moment,
+                link_id, owner, node, _label(label), state, code_id, moment, moment,
             )
             stored = await self._read_link(owner, link_id)
         if stored is None:
             raise PcPairingError("pairing link not stored")
         return stored
+
+    async def complete_claim_from_observation(
+        self, *, agent_name: Any, mesh_node_id: Any, now: datetime,
+    ) -> dict[str, Any] | None:
+        """Finish a pairing from what the server side already sees on the Mesh.
+
+        A beta PC cannot name its own composed node identity: that identity is
+        what `meshctrl listdevices` reports on the executor host, not what the
+        machine knows about itself. So the install wrapper stamps the derived
+        tag into the agent's name, the existing presence beat carries that name
+        here, and the tag — which only ever existed inside one unexpired
+        one-time code — decides the owner. Nothing is asked of the PC beyond the
+        code it was handed.
+
+        Returns ``None`` when the name carries no pairing tag: ordinary devices
+        keep reporting presence untouched. A name that does carry one is a
+        claim attempt, and a failed attempt is refused rather than ignored,
+        because silently dropping it would leave an owner staring at a card that
+        never resolves. The agent name itself is never stored — the link already
+        holds the node identity, and a Mesh device name can be renamed by its
+        owner at any time.
+        """
+        tag = tag_from_agent_name(agent_name)
+        if tag is None:
+            return None
+        node = _mesh_node_id(mesh_node_id)
+        moment = _stamp(now)
+        row = await self._first(
+            "SELECT code_id, user_id, state, expires_at FROM pc_pairing_codes "
+            "WHERE tag_sha256=?",
+            _hash(tag),
+        )
+        if not isinstance(row, dict) or not row.get("code_id"):
+            raise PcPairingError("pairing tag unknown")
+        owner = _user_id(row.get("user_id"))
+        if row.get("state") != "pending":
+            # The tag is exactly as single-use as the code it came from.
+            raise PcPairingError("pairing code used")
+        if str(row.get("expires_at") or "") <= moment:
+            await self._run(
+                "UPDATE pc_pairing_codes SET state='cancelled' "
+                "WHERE code_id=? AND state='pending'",
+                row["code_id"],
+            )
+            raise PcPairingError("pairing code expired")
+        await self._run(
+            "UPDATE pc_pairing_codes SET state='claimed', mesh_node_id=?, claimed_at=? "
+            "WHERE code_id=? AND state='pending'",
+            node, moment, row["code_id"],
+        )
+        consumed = await self._first(
+            "SELECT state, mesh_node_id FROM pc_pairing_codes WHERE code_id=?",
+            row["code_id"],
+        )
+        if (
+            not isinstance(consumed, dict)
+            or consumed.get("state") != "claimed"
+            or consumed.get("mesh_node_id") != node
+        ):
+            raise PcPairingError("pairing code used")
+        return await self._claim_link(
+            owner=owner, node=node, label=None, code_id=row["code_id"],
+            moment=moment, verified=True,
+        )
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
         """Every active link this account owns, with its granted folders.
@@ -466,13 +574,13 @@ class D1PcPairingStore:
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.
 
-        A presence beat is keyed by the server's composed node identity, so an
-        entry is accepted only when an active link names exactly that node. The
+        A presence beat is keyed by the identity the server named, so an entry
+        is accepted only when an active link names exactly that node. The
         accounts behind a shared PC are returned as a set: one account resolves
         a Broker credential generation, several do not, and the receipt is still
         recorded as Mesh-only (#5553 requirement 6).
         """
-        if not is_pc_mesh_node_id(device_id):
+        if not is_pc_device_id(device_id):
             return None
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id FROM pc_device_links "
@@ -652,6 +760,7 @@ __all__ = [
     "PcPairingStore",
     "default_root_label",
     "derive_install_tag",
+    "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",
     "root_ref_for",

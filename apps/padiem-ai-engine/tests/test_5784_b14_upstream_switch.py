@@ -73,18 +73,20 @@ def test_switch_is_read_from_bindings_only(monkeypatch) -> None:
     assert flipped.uses_https and flipped.origin == TUNNEL_ORIGIN
 
 
-def test_https_on_workers_refuses_instead_of_truncating_the_request(monkeypatch) -> None:
-    # The existing fetch-backed transport bounds a POST body far below a model
-    # request, so an Engine still on Workers must not reach a COM2 B14 by
-    # silently using it.
-    monkeypatch.setitem(sys.modules, "js", object())
-    with pytest.raises(ValueError, match="b14_upstream_https_requires_a_worker_fetch_transport"):
-        build_b14_transport(
-            binding=object(),
-            request_factory=lambda *a, **k: None,
-            proof_secret=None,
-            upstream=upstream_module.B14Upstream(mode="https", origin=TUNNEL_ORIGIN),
-        )
+def test_https_on_workers_composes_the_fetch_backed_upstream(monkeypatch) -> None:
+    # A Worker has no socket to open, so the upstream rides JavaScript fetch. The
+    # bound that lane used to inherit from the public-web path is lifted for B14
+    # only, and both halves are pinned in
+    # ``test_5784_engine_b14_https_body_headroom.py``.
+    module = SimpleNamespace(fetch=None, AbortSignal=None)
+    monkeypatch.setitem(sys.modules, "js", module)
+    transport = build_b14_transport(
+        binding=object(),
+        request_factory=lambda *a, **k: None,
+        proof_secret=None,
+        upstream=upstream_module.B14Upstream(mode="https", origin=TUNNEL_ORIGIN),
+    )
+    assert isinstance(transport, B14HttpsTransport)
 
 
 def test_a_half_flipped_switch_refuses_to_start() -> None:

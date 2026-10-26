@@ -293,7 +293,9 @@ class OracleMeshExecutor:
                 return None
             entries: list[dict[str, Any]] = []
             for row in rows:
-                if type(row) is not dict or set(row) != {"device_id", "connected"}:
+                if type(row) is not dict or not {"device_id", "connected"} <= set(row) or (
+                    set(row) - {"device_id", "connected", "agent_name"}
+                ):
                     return None
                 device_id = row["device_id"]
                 connected = row["connected"]
@@ -306,7 +308,19 @@ class OracleMeshExecutor:
                     return None
                 if type(connected) is not bool:
                     return None
-                entries.append({"device_id": device_id, "connected": connected})
+                row_out = {"device_id": device_id, "connected": connected}
+                agent_name = row.get("agent_name")
+                if agent_name is not None:
+                    if (
+                        not isinstance(agent_name, str)
+                        or not 1 <= len(agent_name) <= 256
+                        # Names are prose: a space is allowed, a control
+                        # character or a non-ASCII byte is not.
+                        or any(ord(ch) < 32 or ord(ch) > 126 for ch in agent_name)
+                    ):
+                        raise ContractError("the presence agent name is unusable")
+                    row_out["agent_name"] = agent_name
+                entries.append(row_out)
         except Exception:
             # The beat is evidence, not work: a failed probe must never turn
             # into a channel refusal that stalls the queue.
@@ -1398,13 +1412,26 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             )
 
             def presence_provider():
-                return [
-                    {
+                entries = []
+                for presence_device_id in presence_device_ids:
+                    entry = {
                         "device_id": presence_device_id,
                         "connected": presence.is_connected(presence_device_id),
                     }
-                    for presence_device_id in presence_device_ids
-                ]
+                    # #5573: the agent name rides along so the server can finish
+                    # a pairing claim from the tag it stamped. Nothing is kept
+                    # here, and a name this deployment cannot read changes
+                    # nothing about the presence beat itself.
+                    lookup = getattr(presence, "name_of", None)
+                    if callable(lookup):
+                        try:
+                            observed_name = lookup(presence_device_id)
+                        except Exception:
+                            observed_name = None
+                        if isinstance(observed_name, str) and observed_name.strip():
+                            entry["agent_name"] = observed_name.strip()[:256]
+                    entries.append(entry)
+                return entries
 
         executor = make_oracle_mesh_executor(
             chat_origin=need("ORACLE_MESH_CHAT_ORIGIN"),

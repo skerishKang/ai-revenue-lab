@@ -63,7 +63,7 @@ B14_UPSTREAM_MODE=https + B14_UPSTREAM_URL=https://b14.padiem.net
 
 - 확인 순서: B14 단독 health → B14 증명 필요 라인이 401/503이 아니라 응답 → Chat·Engine 각각 `binding`으로 한 번, `https`로 한 번 → 동일 모델·동일 스트리밍 계약 확인.
 - 전환은 재배포 행위이므로 코드 배포 게이트 절차를 따른다. 이 runbook은 전환을 승인하지 않는다.
-- 확인된 제약: **Engine이 Workers에 남아 있는 동안 `https` 모드는 의도적으로 시작을 거부**한다(`b14_upstream_https_requires_a_worker_fetch_transport`). 이 상품의 외부 fetch 경로는 POST 바디를 8,192B로 묶어 모델 요청을 잘라 보낼 위험이 있다. Chat은 같은 상한이 없어 Worker에서 https 전환 가능하다.
+- 확인된 동작: **Engine도 Workers에 남아 있는 동안 `https` 레인을 시작한다**(#5902). 전용 전송체 `CloudflareB14UpstreamTransport`가 Worker fetch를 타고 `MAX_POST_BODY_BYTES = None`으로 모델 요청을 끝까지 실어 보내고, 제3자 엔드포인트를 향하는 일반 외부 fetch 경로의 8,192B POST 상한은 그대로다. 기존의 시작 거부(`b14_upstream_https_requires_a_worker_fetch_transport`)는 폐기됐다.
 
 ## Step 5 — 복귀 — 게이트
 
