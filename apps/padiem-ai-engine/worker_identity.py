@@ -110,6 +110,11 @@ from app.document_context_service import (
     DocumentContextEngineService,
 )
 from app.document_reference import DOCUMENT_STORE_BINDING_NAME
+from app.file_lane_text_port import (
+    FILE_LANE_ORIGIN_ENV,
+    FileLaneTextPort,
+    file_lane_worker_transport,
+)
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.authority_diagnostic import (
@@ -311,6 +316,26 @@ def _document_authorities_for_env(
     except (TypeError, ValueError):
         return None, None
     return store, resolver
+
+
+def _file_lane_text_port_for_env(env: Any) -> FileLaneTextPort | None:
+    """Compose the COM2 file-lane text reader from ``FILE_LANE_ORIGIN`` (#5881).
+
+    The origin is a deployment-owned plain Worker var, never a request field,
+    and it must be a bare HTTPS origin. An absent or malformed value yields
+    ``None``: document admission keeps the inline path and refuses a reference
+    request fail closed. Engine holds no file-lane signing secret; Chat's
+    ticket travels through the request unchanged.
+    """
+    origin = legacy_worker._env_text(env, FILE_LANE_ORIGIN_ENV)
+    if origin is None:
+        return None
+    try:
+        return FileLaneTextPort(
+            origin=origin, transport=file_lane_worker_transport(origin)
+        )
+    except (TypeError, ValueError):
+        return None
 
 
 def _evidence_storage_for_env(env: Any) -> CloudflareD1EvidenceStoragePort | None:
@@ -989,6 +1014,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
     document_byte_store, document_resolver = _document_authorities_for_env(env)
+    file_lane_text_port = _file_lane_text_port_for_env(env)
     evidence_storage = _evidence_storage_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
@@ -1037,6 +1063,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             document_admission=DocumentAdmissionEngineService(
                 document_byte_store=document_byte_store,
                 scope_authority=scope_authority,
+                file_lane_text_port=file_lane_text_port,
             ),
             # E7 tool execution/continuation: the resolver factory below composes
             # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
@@ -1306,6 +1333,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         document_admission=DocumentAdmissionEngineService(
             document_byte_store=document_byte_store,
             scope_authority=scope_authority,
+            file_lane_text_port=file_lane_text_port,
         ),
         # E7 tool execution/continuation: the resolver factory below composes
         # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,

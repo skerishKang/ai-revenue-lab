@@ -149,6 +149,20 @@ using its existing deployment path and preserving unrelated bindings. Adding
 these names in a dashboard is not by itself proof that the running version
 loaded them. No Parser Service attach/binding is required for the COM2 path.
 
+### Engine reads the same lane (stage 3, #5881)
+
+Stage 3 moves the text read behind the Engine document path, so the Engine
+Worker carries one additional plain var and no new Secret:
+
+- `FILE_LANE_ORIGIN`: the same approved HTTPS root origin, with no
+  path/query/userinfo. Unset leaves document admission on its existing inline
+  path and a `file_id` reference fails closed 503 `file_lane_unavailable`.
+
+The Engine holds no ticket secret: Chat signs the read ticket and the Engine
+forwards the three `X-Padiem-File-*` values unchanged. Setting this name does
+not by itself deploy anything; the Engine release stays under the Owner's
+release instruction.
+
 ## 5. Confirm the basic path
 
 In the Owner's authenticated Chat session, confirm file-lane capability is ready
