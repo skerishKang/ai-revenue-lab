@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="robots" content="noindex" />
+  <title>PADIEM 의원3종</title>
+  <link rel="icon" href="data:," />
+  <!--
+    PADIEM 의원3종 독립 진입점.
+
+    * Chat/Claw 화면과 별도 진입점이며, 임미란 의원 홈페이지(별도 래퍼)와도
+      다른 사용자 진입이다.
+    * 이 앱은 자체 AI 엔진·라우터·인증·저장을 두지 않는다. 생성은 기존
+      PADIEM 공용 계약(POST /api/chat, B14 라우터)을, 저장은 기존 프로젝트
+      파일 계약(/api/projects/{pid}/files)을, 로그인 상태 확인은 기존 세션
+      쿠키 계약(GET /api/auth/status)을 그대로 사용한다.
+    * 비로그인 상태에서는 생성 도구를 열지 않고 PADIEM Chat 로그인 안내만
+      보인다(fail-closed, councillor.js 계약과 동일).
+  -->
+  <link rel="stylesheet" href="./static/council-app.css" />
+</head>
+<body class="council-body">
+  <a class="council-skip" href="#councilMain">본문 바로가기</a>
+  <header class="council-topbar">
+    <div class="council-brand">
+      <span class="council-brand-mark" aria-hidden="true">P</span>
+      <span class="council-brand-name">PADIEM 의원3종</span>
+    </div>
+    <div class="council-topbar-actions">
+      <span class="council-badge" id="councilAuthBadge">확인 중…</span>
+    </div>
+  </header>
+  <main id="councilMain">
+    <p class="council-kicker">PADIEM COUNCIL APPS</p>
+    <h1 class="council-title">의원실 업무 도구 3종</h1>
+    <p class="council-lead">
+      축사·인사말 작성, SNS 홍보 콘텐츠 작성, 회의정리·활동집을 하나의 진입점에서
+      사용합니다. 각 기능은 독립 모듈로 제공되며, 생성·저장은 기존 PADIEM 계약을
+      그대로 사용합니다.
+    </p>
+    <p class="council-signin-note" id="councilSigninNote" hidden>
+      먼저 <a id="councilSigninLink" href="../">PADIEM Chat</a>에 로그인한 뒤
+      이 화면으로 돌아오면 도구를 사용할 수 있습니다.
+    </p>
+    <nav class="council-menu" aria-label="의원3종 기능 선택">
+      <section class="council-card" id="council-speech" data-tool="speech" aria-labelledby="councilSpeechTitle">
+        <h2 id="councilSpeechTitle">축사·인사말</h2>
+        <p>행사 정보를 입력하면 축사·인사말 초안을 준비합니다.</p>
+        <div class="council-card-body" id="councilSpeechBody"></div>
+      </section>
+      <section class="council-card" id="council-sns" data-tool="sns" aria-labelledby="councilSnsTitle">
+        <h2 id="councilSnsTitle">SNS 홍보</h2>
+        <p>행사 소식을 블로그·페이스북·인스타그램 게시글 초안으로 준비합니다.</p>
+        <div class="council-card-body" id="councilSnsBody"></div>
+      </section>
+      <section class="council-card" id="council-meeting" data-tool="meeting" aria-labelledby="councilMeetingTitle">
+        <h2 id="councilMeetingTitle">회의정리·활동집</h2>
+        <p>회의 내용을 요약·기록으로 남기고, 선택한 기록으로 활동집 초안을 만듭니다.</p>
+        <div class="council-card-body" id="councilMeetingBody"></div>
+      </section>
+    </nav>
+  </main>
+  <script src="./static/council-app.js" defer></script>
+</body>
+</html>
