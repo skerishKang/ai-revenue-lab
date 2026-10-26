@@ -32,8 +32,8 @@ MAX_DOCUMENT_NAME_CHARS = 120
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 #: Retained for import compatibility and no longer enforced (#5734 stage 2). The
 #: 96 KiB total was a product-side copy of a limit nobody imposed: the request
-#: transport and the provider context window are the real ceilings, and both are
-#: reported by their own layer rather than guessed here.
+#: transport and the model's own context window are the real ceilings, and each
+#: is reported by the layer that owns it rather than guessed here.
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 # #4379: a binary document carries no PADIEM byte total. The symbol is
 # retained for import compatibility and is no longer enforced.

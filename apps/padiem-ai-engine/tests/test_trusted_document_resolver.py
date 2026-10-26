@@ -114,7 +114,7 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # rules, and locator provenance -- are untouched, and no parser, process,
 # network, filesystem, OCR, provider or Production authority was added.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "d5c75b56a66da1734aa6da69f5bc50f77b2f4e9f880a40da7272a5148d48d32e",
+    CORE_PACKAGE / "document_normalization.py": "812d40e18cad00d5cb7b4f64a837091c453ec10e90691dde2e5bdc9c8bfe3a7f",
     CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
     CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
     CORE_TESTS / "test_document_normalization.py": "8f175c3f896c5169b12959049bad13328de80e6e5337f32788b9818c85f47a8c",
