@@ -13,17 +13,24 @@ from b62_repo_binding_authority import binding_diff, inventory, index, verify_ex
 from b62_cloudflare_production_deploy_config import parse_live_bindings, production_plan, build_production_config
 
 
-def test_actual_declared_vs_served_inventory_matches_now_that_metadata_is_served(capsys):
+def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(capsys):
     rows = json.loads((ROOT/'.github/tests/fixtures/b62_served_binding_inventory_20261026.json').read_text())
     for row in rows:
         if row['type'] == 'plain_text': row['text'] = '<synthetic-private-value>'
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
     expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
-    # CF_VERSION_METADATA went live with the 95c9a36d deploy, so the reviewed
-    # served inventory and the repository declaration are now the same set: a
-    # steady state with nothing added, removed or changed.
-    assert binding_diff(index(rows), expected) == {'added': [], 'removed': [], 'changed': []}
+    # CF_VERSION_METADATA went live with the 95c9a36d deploy, so it is no longer
+    # an addition. What remains is exactly one reviewed, declared-but-unserved
+    # variable: #5919 adds PC_AGENT_INSTALL_URL to [vars] with an empty value,
+    # which the pairing handoff reads as "not ready" until deploy injects the
+    # real https installer URL. The reviewed inventory is the set production is
+    # answering with today, so a declared new variable must appear here as this
+    # single named addition - never as an unexplained drift, and never as a
+    # silent removal of something that is serving traffic.
+    assert binding_diff(index(rows), expected) == {
+        'added': [{'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'}],
+        'removed': [], 'changed': []}
     assert '<synthetic-private-value>' not in capsys.readouterr().out
 
 

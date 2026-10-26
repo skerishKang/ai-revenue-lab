@@ -159,6 +159,12 @@ PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
 # run on the management host over the Secrets Store ownership map above.
 ORACLE_MESH_EXECUTION_MODE = "off"
 
+# #5573 PC pairing: the ONE Windows agent installer the pairing flow hands out.
+# An empty value means not configured, and the handoff route then answers 503
+# "준비 중" instead of inventing a link anywhere. Only an https URL is accepted;
+# the value itself is injected at deploy time, never committed.
+PC_AGENT_INSTALL_URL = ""
+
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
