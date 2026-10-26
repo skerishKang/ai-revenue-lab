@@ -76,7 +76,7 @@ def test_the_browser_module_only_touches_the_existing_endpoints() -> None:
         assert any(url == allowed or url.startswith(allowed) for allowed in ALLOWED_ENDPOINTS), url
 
 
-def test_the_browser_module_keeps_the_util_payload_and_never_the_calendar_fields() -> None:
+def test_the_browser_module_keeps_the_util_payload_and_declares_the_util_scope() -> None:
     """The call surface stays the shipped util contract, in code — not comments."""
     source = COUNCIL_JS.read_text(encoding="utf-8")
     code_only = "\n".join(
@@ -85,6 +85,12 @@ def test_the_browser_module_keeps_the_util_payload_and_never_the_calendar_fields
     )
     assert 'mode: "auto"' in code_only
     assert "PadiemTierSelection" in code_only
+    # The #5916 execution-boundary contract: the module declares which
+    # utility it is, or the shared calendar branch can hijack a meeting
+    # text containing 확인/추가/일정.
+    assert 'payload.util = util' in code_only
+    for scope in ('"speech"', '"sns"', '"meeting"'):
+        assert scope in code_only, scope
     for marker in FORBIDDEN_MARKERS:
         assert marker not in code_only, marker
 

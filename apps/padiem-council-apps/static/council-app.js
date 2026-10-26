@@ -3,12 +3,17 @@
  *
  * Shared contract layer + three product modules (speech / sns / meeting).
  * The shared layer re-states the SAME shipped contracts as the original
- * util-menu.js (apps/padiem-chat/static/util-menu.js lines 12-140):
+ * util-menu.js (apps/padiem-chat/static/util-menu.js, after PR #5916):
  *
- *   - generation:  POST /api/chat {messages:[{role:"user",content}], mode:"auto", tier}
- *     tier from window.PadiemTierSelection when it returns one of
+ *   - generation:  POST /api/chat {messages:[{role:"user",content}],
+ *     mode:"auto", tier, util:"speech"|"sns"|"meeting"}. The util scope is
+ *     the #5916 routing label that keeps a declared utility out of the
+ *     shared native-calendar branch (a meeting text containing
+ *     확인/추가/일정 must reach the model, not the calendar clarify);
+ *     unknown scopes are refused server-side before any model call. tier
+ *     comes from window.PadiemTierSelection when it returns one of
  *     free/plus/pro/max/admin, otherwise "free". No timezone, no
- *     calendar_turn_id — the util payload shape stays exactly as shipped.
+ *     calendar_turn_id.
  *   - storage:     /api/projects, /api/projects/{pid}/files (text/plain JSON
  *     writes; details read back via data.file.content)
  *   - session:     cookie credentials on every call ("include"), signed-in
@@ -19,21 +24,34 @@
  * path, and no second authority, store or model lane is introduced. The
  * three tools never reference each other, so each can ship as its own
  * product later; the entry page merely hosts all three.
+ *
+ * SNS photo storage: the #5728 composition contract (LOCAL 1) already
+ * lives on main (PR #5924). This module deliberately does NOT copy it —
+ * text drafts only. Connecting the stored-photo composition through an
+ * adapter is separate follow-up work; the seam is this module's sns
+ * builder plus the README boundary note.
  */
 (() => {
   "use strict";
 
   // ── shared contract layer (same shape as util-menu.js 12-140) ────────────
 
-  async function apiChat(prompt) {
+  async function apiChat(prompt, util) {
     // Same rule as util-menu.js apiChat / app.js selectedProductTier().
+    // The util scope (PR #5916 contract) is the request's routing label:
+    // it keeps a declared utility out of the shared native-calendar branch
+    // (including try_native_calendar_chat's own second classification) and
+    // the server refuses unknown scopes before any model call. It grants no
+    // identity, tier, entitlement or tool scope and is not an auth input.
     const selected = window.PadiemTierSelection?.get?.();
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
+    const payload = { messages: [{ role: "user", content: prompt }], mode: "auto", tier };
+    if (util) payload.util = util;
     const res = await fetch("/api/chat", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }], mode: "auto", tier }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
@@ -261,7 +279,7 @@
         e.preventDefault();
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(buildSpeechPrompt(form)); }
+        try { output.value = await apiChat(buildSpeechPrompt(form), "speech"); }
         catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
       });
       copyBtn.addEventListener("click", async () => {
@@ -289,8 +307,9 @@
 
   // ── sns module (prompt template ported verbatim from util-menu.js) ───────
   // Text composition only in this base app. The stored-photo composition
-  // contract (#5728, LOCAL 1 / PR #5768) is deliberately NOT touched here;
-  // see README.md for the adapter seam where it connects after that merges.
+  // contract (#5728, LOCAL 1, already merged to main via PR #5924) is
+  // deliberately NOT copied here; connecting it through an adapter is
+  // separate follow-up work — see the README boundary note.
 
   function buildSnsPrompt(form, platform) {
     const d = new FormData(form);
@@ -408,7 +427,7 @@
         e.preventDefault();
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(buildSnsPrompt(form, platform)); }
+        try { output.value = await apiChat(buildSnsPrompt(form, platform), "sns"); }
         catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
       });
       copyB.addEventListener("click", async () => {
@@ -528,7 +547,7 @@
         e.preventDefault();
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(buildMeetingPrompt(form)); }
+        try { output.value = await apiChat(buildMeetingPrompt(form), "meeting"); }
         catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
       });
       copyB.addEventListener("click", async () => {
@@ -630,7 +649,7 @@
               contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
             bookOutput.value = "생성 중...";
-            bookOutput.value = await apiChat(buildBookPrompt(contents));
+            bookOutput.value = await apiChat(buildBookPrompt(contents), "meeting");
           } catch (e) {
             bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
           }

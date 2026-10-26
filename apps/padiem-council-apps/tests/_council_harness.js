@@ -6,7 +6,7 @@
 // second API. The assertions live in the Python test modules.
 //
 // Usage: node _council_harness.js <council-app.js path> <scenario> [builder] [json]
-//   scenario = generate | errors | prompt
+//   scenario = generate | errors | calendar_words | prompt
 const fs = require("node:fs");
 const vm = require("node:vm");
 
@@ -351,6 +351,39 @@ const SCENARIOS = {
     }
     chatResponseOverride = null;
     return { outputs, pageErrors };
+  },
+  async calendar_words() {
+    // The #5655 residual case: a meeting text whose user content contains
+    // 확인/추가/일정 used to be hijacked by the shared native-calendar
+    // classifier when no util scope travelled with the request. With the
+    // #5916 declaration the request must reach the model lane and return a
+    // generation, never a calendar clarification. The fake backend records
+    // the payloads; if the client failed to declare its scope the server
+    // could legally answer with a clarify question — the Python assertions
+    // fail on both the util field and the output in that case.
+    const session = spawnSession();
+    await session.ctx.window.PadiemCouncilApps.init();
+    await sleep(10);
+    const form = find(session, "councilMeetingForm");
+    const userTexts = [
+      "안건 세 개 확인했습니다.",
+      "예산안 추가 논의.",
+      "운영위원회 일정 확인 후 추가 안건 등록",
+    ];
+    const cases = [];
+    for (const userText of userTexts) {
+      form.querySelector("[name=title]").value = "주간 회의";
+      form.querySelector("[name=content]").value = userText;
+      const before = chatPayloads.length;
+      await form.dispatch("submit");
+      await sleep(20);
+      cases.push({
+        userText,
+        prompt: chatPayloads[before],
+        output: find(session, "councilMeetingOutput").value,
+      });
+    }
+    return { cases, pageErrors };
   },
   async prompt() {
     const builder = String(process.argv[4] || "");

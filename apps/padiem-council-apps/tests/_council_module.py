@@ -63,7 +63,7 @@ def load_council_module() -> _Builders:
     return _Builders()
 
 
-SCENARIOS = ("generate", "errors")
+SCENARIOS = ("generate", "errors", "calendar_words")
 
 
 @lru_cache(maxsize=len(SCENARIOS))

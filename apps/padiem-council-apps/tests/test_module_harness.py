@@ -31,7 +31,35 @@ def test_every_tool_generates_through_the_one_model_lane() -> None:
         assert prompt["tier"] == "free"
         assert [m["role"] for m in prompt["messages"]] == ["user"]
         assert prompt["messages"][0]["content"].strip()
-        assert set(prompt) == {"messages", "mode", "tier"}
+        assert set(prompt) == {"messages", "mode", "tier", "util"}
+
+
+def test_every_tool_declares_which_utility_it_is() -> None:
+    """The #5916 execution boundary: a declared scope skips the calendar branch."""
+    observed = run("generate")
+    assert observed["speech"]["prompt"]["util"] == "speech"
+    assert observed["sns"]["prompt"]["util"] == "sns"
+    assert observed["meeting"]["prompt"]["util"] == "meeting"
+    # The book draft is a meeting-lane generation too (same scope on main).
+    assert observed["book"]["prompt"]["util"] == "meeting"
+
+
+def test_a_meeting_text_with_calendar_vocabulary_still_reaches_the_model() -> None:
+    """회의 원문에 확인/추가/일정이 있어도 캘린더 오분류가 아닌 생성 결과를 돌려준다."""
+    observed = run("calendar_words")
+    calendar_answers = (
+        "시간대(예: Asia/Seoul)",
+        "날짜·시간을 알려주세요",
+        "시작 시간을 알려주세요",
+        "회의의 일정 범위",
+    )
+    for row in observed["cases"]:
+        assert row["prompt"]["util"] == "meeting", row
+        assert row["prompt"]["mode"] == "auto" and row["prompt"]["tier"] == "free"
+        for phrase in calendar_answers:
+            assert phrase not in row["output"], (row["userText"], phrase)
+        assert row["output"].startswith("생성된 초안 본문입니다."), row
+    assert not observed["pageErrors"], observed["pageErrors"]
 
 
 def test_generation_reaches_each_editor() -> None:
