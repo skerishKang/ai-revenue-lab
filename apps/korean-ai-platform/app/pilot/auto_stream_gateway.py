@@ -19,7 +19,7 @@ from typing import Any
 import httpx
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
-from starlette.routing import Router
+from starlette.routing import Route, Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.catalog import get_catalog_by_id
@@ -37,7 +37,6 @@ from app.pilot.stream_error_contract import (
 
 logger = logging.getLogger("korean-ai-platform.pilot.auto-stream-preview")
 
-router = Router()
 
 _AUTO_STREAM_PREVIEW_PATH = "/v1/chat/completions/auto-stream-preview"
 
@@ -315,7 +314,6 @@ async def _stream_body(
         await _close_iterator(iterator)
 
 
-@router.route(_AUTO_STREAM_PREVIEW_PATH, methods=["POST"])
 async def pilot_auto_stream_preview(request: Request):
     """Preview Router-owned b14/auto execution as staged SSE."""
     gateway_request_id = _gateway_request_id()
@@ -423,3 +421,10 @@ async def pilot_auto_stream_preview(request: Request):
                 }
             },
         )
+
+
+router = Router(
+    routes=[
+        Route(_AUTO_STREAM_PREVIEW_PATH, pilot_auto_stream_preview, methods=["POST"]),
+    ]
+)

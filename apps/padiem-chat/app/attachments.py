@@ -127,7 +127,7 @@ def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, .
 
 
 async def parse_attachments_async(
-    raw: Any,
+    raw: Any, *, file_resolver=None,
 ) -> tuple[ImageAttachment | DocumentAttachment, ...]:
     """Worker request path: the same grammar with the async binary authority.
 
@@ -140,6 +140,10 @@ async def parse_attachments_async(
     if item is None:
         return ()
     item_type = item.get("type")
+    if item_type == "file":
+        if file_resolver is None:
+            raise AttachmentValidationError("파일 참조를 현재 읽을 수 없습니다.")
+        return (await file_resolver(item),)
     if item_type == "image":
         return (_parse_image(item),)
     if item_type == "document":

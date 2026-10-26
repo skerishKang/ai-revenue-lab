@@ -169,7 +169,16 @@ def test_auth_status_controls_account_session_visibility_while_health_controls_c
 
 def test_capability_projection_only_mutates_the_custom_credential_surface() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
-    assert 'method: "POST"' not in source
+    # #5824 permits only the two owner-authenticated BYOK verification/save
+    # POSTs. Capability, managed model, tier and deployment mutations stay out.
+    auto_source = source.split("async function autoByok(", 1)[1].split(
+        "async function saveCustomKey()", 1
+    )[0]
+    assert auto_source.count('method: "POST"') == 1
+    assert 'register ? "/api/byok/register" : "/api/byok/detect"' in auto_source
+    assert 'credentials: "same-origin"' in auto_source
+    assert 'body: JSON.stringify(payload)' in auto_source
+    assert 'method: "POST"' not in source.replace(auto_source, "")
     assert 'method: "PATCH"' not in source
     # #5121 requires deleting the customer's own PADIEM Custom credential and
     # nothing else: exactly one DELETE, scoped to the custom credential route,

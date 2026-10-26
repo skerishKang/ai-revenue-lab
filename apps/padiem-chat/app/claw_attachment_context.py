@@ -66,11 +66,11 @@ def parse_claw_turn_attachments(
 
 
 async def parse_claw_turn_attachments_async(
-    raw: Any,
+    raw: Any, *, file_resolver=None,
 ) -> tuple[str | None, tuple[ImageAttachment, ...]]:
     """Worker request path for the Claw turn attachment contract."""
 
-    return _project_attachments(await parse_attachments_async(raw))
+    return _project_attachments(await parse_attachments_async(raw, file_resolver=file_resolver))
 
 
 __all__ = [

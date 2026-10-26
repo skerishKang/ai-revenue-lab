@@ -759,6 +759,8 @@
     if (attachmentButton) window.PadiemSharedTooltip?.label?.(attachmentButton, capabilityCopy.fileButtonTitle);
   }
 
+  window.addEventListener("padiem:file-lane-capability", () => syncAttachmentCapabilityCopy(getCurrent()));
+
   function syncBinaryAttachmentSupport() {
     if (typeof fetch !== "function") return;
     fetch("/health", { headers: { "Accept": "application/json" }, cache: "no-store" })

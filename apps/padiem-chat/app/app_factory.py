@@ -279,6 +279,7 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
 from .byok_client import CustomProviderClient
 from .byok_credentials import D1CustomProviderCredentialStore
 from .byok_routes import (
+    byok_detect, byok_register,
     custom_credential_delete,
     custom_credential_save,
     custom_credential_status,
@@ -310,6 +311,19 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
+from .pc_device_pairing_routes import (
+    PC_PAIRING_CLAIM_PATH,
+    PC_PAIRING_LINK_PATH,
+    PC_PAIRING_PATH,
+    PC_PAIRING_ROOT_PATH,
+    PC_PAIRING_ROOTS_PATH,
+    pc_pairing_approve_root,
+    pc_pairing_claim,
+    pc_pairing_issue,
+    pc_pairing_list,
+    pc_pairing_revoke,
+    pc_pairing_revoke_root,
+)
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
 from .project_file_routes import (
@@ -345,6 +359,7 @@ from .drive_case_pdf_routes import (
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .file_lane import FileLaneClient, file_upload_ticket, file_capabilities
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -477,6 +492,7 @@ def create_app(
     central_model_route_store=None,
     custom_credential_store=None,
     custom_provider_client=None,
+    file_lane_client=None,
     account_model_selection_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -619,6 +635,10 @@ def create_app(
         ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/byok/detect", byok_detect, methods=["POST"]),
+        Route("/api/byok/register", byok_register, methods=["POST"]),
+        Route("/api/files/ticket", file_upload_ticket, methods=["POST"]),
+        Route("/api/files/capabilities", file_capabilities, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
@@ -847,6 +867,16 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Route("/api/calendar/appointments/{appointment_id}", calendar_appointment_manage, methods=["PUT","DELETE"]),
         Route("/api/calendar/work-logs/{log_id}", calendar_work_log_manage, methods=["PUT","DELETE"]),
+        # #5573 PC pairing: an owner links their own PC to their own account.
+        # Every route refuses 503 while the pairing store is uncomposed, so
+        # mounting is not an activation — a deployment without the store behaves
+        # exactly as it did before.
+        Route(PC_PAIRING_PATH, pc_pairing_issue, methods=["POST"]),
+        Route(PC_PAIRING_PATH, pc_pairing_list, methods=["GET"]),
+        Route(PC_PAIRING_CLAIM_PATH, pc_pairing_claim, methods=["POST"]),
+        Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
+        Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
+        Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all
@@ -942,6 +972,8 @@ def create_app(
     )
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
+    app.state.file_lane_client = file_lane_client or FileLaneClient(
+        resolved.file_lane_origin, resolved.file_lane_ticket_secret, transport=web_transport)
     app.state.github_oauth_store = github_oauth_store
     app.state.github_oauth_provider = github_oauth_provider
     # #5121: owner-scoped customer-provider keys live in the canonical Chat D1,

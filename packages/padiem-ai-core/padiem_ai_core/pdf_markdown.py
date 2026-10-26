@@ -759,12 +759,22 @@ def convert_pdf_to_markdown(
         raise DocumentNormalizationError(
             "unsupported_binary_media_type", "Only PDF documents convert to Markdown."
         )
-    if not isinstance(payload, (bytes, bytearray)) or not payload:
+    if isinstance(payload, (bytes, bytearray)):
+        source = bytes(payload)
+        byte_size = len(source)
+    elif all(callable(getattr(payload, method, None)) for method in ("read", "seek", "tell")):
+        # CPython file lane passes a disk handle, avoiding a whole-PDF copy.
+        payload.seek(0, 2)
+        byte_size = payload.tell()
+        payload.seek(0)
+        source = payload
+    else:
         raise DocumentNormalizationError(
-            "invalid_binary_payload", "PDF payload must be non-empty bytes."
+            "invalid_binary_payload", "PDF payload must be bytes or a seekable file."
         )
-    binary = bytes(payload)
-    reader = _open_pdf_reader(binary)
+    if not byte_size:
+        raise DocumentNormalizationError("invalid_binary_payload", "PDF payload is empty.")
+    reader = _open_pdf_reader(source)
     emitted: list[list[str]] = []
     layers: list[str] = []
     rotated: list[bool] = []
@@ -843,7 +853,7 @@ def convert_pdf_to_markdown(
     return ConversionResult(
         name=safe_name,
         media_type=safe_media,
-        byte_size=len(binary),
+        byte_size=byte_size,
         page_count=page_count,
         markdown=markdown,
         mode=mode,

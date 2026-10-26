@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 import logging
 
-from starlette.routing import Router
+from starlette.routing import Route, Router
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -52,15 +52,11 @@ def _workspace_catalog_models() -> list[dict]:
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
-router = Router()
-
-
 def _new_request_id() -> str:
     import uuid
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
-@router.route("/workspace", methods=["GET"])
 async def workspace_page(request: Request):
     """Korean-first chat workspace page.
 
@@ -169,3 +165,10 @@ def _maybe_set_locale(request: Request, response: Response, locale: Locale) -> R
     if q in (Locale.KO, Locale.EN):
         set_locale_cookie(response, locale)
     return response
+
+
+router = Router(
+    routes=[
+        Route("/workspace", workspace_page, methods=["GET"]),
+    ]
+)

@@ -90,6 +90,8 @@ class Settings:
     # the call changes, including the caller proof.
     b14_upstream_mode: str = "binding"
     b66_quote_base_url: str | None = None
+    file_lane_origin: str | None = None
+    file_lane_ticket_secret: str | None = field(default=None, repr=False)
     timeout_seconds: float = 600.0
     completed_timeout_seconds: float = 600.0
     live_enabled: bool = False
@@ -150,6 +152,8 @@ class Settings:
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
         b66_quote_base_url: object = None,
+        file_lane_origin: object = None,
+        file_lane_ticket_secret: object = None,
         # #5784: appended last so every existing positional caller is untouched.
         b14_upstream_mode: object = None,
         b14_upstream_url: object = None,
@@ -317,6 +321,8 @@ class Settings:
 
         return cls(
             runtime_mode=mode,
+            file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,
+            file_lane_ticket_secret=_optional_secret(file_lane_ticket_secret, name="file_lane_ticket_secret"),
             b14_base_url=base,
             b14_upstream_mode=upstream.mode,
             b66_quote_base_url=b66_quote,
@@ -362,6 +368,8 @@ class Settings:
         )
         return cls.from_values(
             runtime_mode=runtime_mode,
+            file_lane_origin=os.getenv("PADIEM_CHAT_FILE_LANE_ORIGIN"),
+            file_lane_ticket_secret=os.getenv("PADIEM_CHAT_FILE_LANE_TICKET_SECRET"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             b14_upstream_mode=os.getenv("B14_UPSTREAM_MODE"),
             b14_upstream_url=os.getenv("B14_UPSTREAM_URL"),

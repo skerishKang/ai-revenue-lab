@@ -484,6 +484,10 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert "innerHTML" not in js
     assert "CREATE TABLE IF NOT EXISTS projects" in migration
     assert "ADD COLUMN project_id" in migration
-    assert "database_id" not in (root / "wrangler.toml").read_text(encoding="utf-8")
+    import tomllib
+    from uuid import UUID
+    declared = tomllib.loads((root / "wrangler.toml").read_text())["d1_databases"]
+    assert len(declared) == 1 and declared[0]["binding"] == "PADIEM_CHAT_DB"
+    assert str(UUID(declared[0]["database_id"])) == declared[0]["database_id"]
     repo = root.parents[1]
     assert (root / "static/styles.css").read_bytes() == (repo / "reference/business-62-padiem-chat-v1/styles.css").read_bytes()

@@ -73,7 +73,9 @@ jobs:
           assert 'R2_BINDING_READBACK=PASS' in workflow
           assert 'PRODUCTION_MUTATION=0' in workflow
           assert '"r2_bucket"' in generator
-          assert '[[r2_buckets]]' in generator
+          import tomllib
+          repo = tomllib.loads(Path('apps/padiem-chat/wrangler.toml').read_text())
+          assert repo['r2_buckets'] == [{'binding': 'PADIEM_WORKSPACE_FILES', 'bucket_name': 'padiem-workspace-files'}]
           assert 'bucket_name' in generator
           print('B62_WORKSPACE_R2_GATE_SOURCE=PASS')
           print('PRODUCTION_MUTATION=0')

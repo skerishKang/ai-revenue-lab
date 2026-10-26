@@ -136,11 +136,16 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # control-character rules, and locator provenance -- are untouched, and no
 # parser, process, network, filesystem, OCR, provider or Production authority
 # was added.
+# Re-pinned for #5881 phase 2: an explicit request-local OOXML allocation
+# budget lets the CPython file lane omit the Worker ceiling; default Worker
+# calls still enforce 32MiB. Path/encryption/DTD/inflation guards are unchanged.
+# The Core signature fixture names this additive keyword; file-lane tests prove
+# >32MiB acceptance and default rejection before/after the CPython request.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "c3ee6522331d835aca40e7cf4057a5f7dbd26f2ddf97b4a0e10c57868f5597fa",
+    CORE_PACKAGE / "document_normalization.py": "6886a3b09955ae48ddf69306a39fb7b1239067aed57c71280206e9e74048cc3c",
     CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
     CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
-    CORE_TESTS / "test_document_normalization.py": "9b1e314125aa11f2696c233c3bd51265ff1878c13d2c892a9079d7d7b2e89269",
+    CORE_TESTS / "test_document_normalization.py": "881a3ea5ba15584f6365922302e164d2f7e7f1e75b3e50df7a1822187e0a9d5e",
 }
 
 REF = "doc_s3doc0000000000b"

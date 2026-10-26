@@ -18,7 +18,7 @@ import time
 import uuid
 from typing import Any
 
-from starlette.routing import Router
+from starlette.routing import Route, Router
 from starlette.responses import JSONResponse
 from starlette.requests import Request
 
@@ -106,7 +106,6 @@ _SAME_ROUTE_RETRYABLE_CODES = frozenset({
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
-router = Router()
 
 _INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
 _INTERNAL_ERROR_MESSAGE = "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오."
@@ -469,7 +468,6 @@ def _catalog_summary_dicts() -> list[dict]:
     ]
 
 
-@router.route("/health", methods=["GET"])
 async def pilot_health(request: Request):
     """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
     from .platform_secrets import ensure_all_platform_secrets
@@ -545,7 +543,6 @@ async def pilot_health(request: Request):
     })
 
 
-@router.route("/models", methods=["GET"])
 async def pilot_models(request: Request):
     """List models available for pilot (multi-provider if configured)."""
     state = resolve_configuration()
@@ -596,7 +593,6 @@ async def pilot_models(request: Request):
     })
 
 
-@router.route("/router/resolve", methods=["POST"])
 async def pilot_router_resolve(
     request: Request,
 ):
@@ -1373,7 +1369,6 @@ async def _handle_alpha_chat(
     return JSONResponse(response_data)
 
 
-@router.route("/v1/chat/completions", methods=["POST"])
 async def pilot_chat_completions(
     request: Request,
 ):
@@ -1527,3 +1522,13 @@ async def pilot_chat_completions(
                 }
             },
         )
+
+
+router = Router(
+    routes=[
+        Route("/health", pilot_health, methods=["GET"]),
+        Route("/models", pilot_models, methods=["GET"]),
+        Route("/router/resolve", pilot_router_resolve, methods=["POST"]),
+        Route("/v1/chat/completions", pilot_chat_completions, methods=["POST"]),
+    ]
+)

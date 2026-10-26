@@ -5,6 +5,8 @@ synthetic. No provider, executor or production database call.
 """
 from datetime import datetime, timedelta, timezone
 
+import json
+
 import pytest
 from starlette.applications import Starlette
 from starlette.routing import Route
@@ -110,7 +112,9 @@ def test_every_pc_endpoint_accepts_a_pending_chat_tool_turn(
         if mode == "context":
             assert body["run_id"] == db.RUN
             assert body["device"]["device_id"] == DEVICE
-            assert body["roots"] == ["C:/padiem"]
+            # (A): a context names the owner's folders, never the real path.
+            assert body["roots"] == [{"label": "padiem"}]
+            assert "C:/padiem" not in json.dumps(body)
             assert not rows
         else:
             assert len(rows) == 1
