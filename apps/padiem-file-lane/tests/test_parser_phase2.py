@@ -72,7 +72,22 @@ def test_format_upload_parse_disk_cache_and_window(client, tmp_path, monkeypatch
     assert result.text == complete.text[1:6]
     assert result.headers['x-file-lane-next-offset'] == str(min(6, len(complete.text)))
     assert result.headers['x-file-lane-eof'] == str(len(complete.text) <= 6).lower()
+    assert result.headers['x-file-lane-total-chars'] == str(len(complete.text))
+    assert len(list(tmp_path.rglob('text-v2.chars'))) == 1
     assert client.get(url, headers=ticket(user='usr_other')).status_code == 404
+
+
+def test_saved_total_survives_a_lost_counter(tmp_path, client):
+    content = 'ab🙂c\n' * 200
+    meta = upload(client, content.encode(), 'legacy.txt').json()
+    url = f'/files/{meta["file_id"]}/text'
+    first = client.get(url, params={'offset': 0, 'max_chars': 4}, headers=ticket())
+    assert first.headers['x-file-lane-total-chars'] == str(len(content))
+    for counter in tmp_path.rglob('text-v2.chars'):
+        counter.unlink()
+    again = client.get(url, params={'offset': 4, 'max_chars': 4}, headers=ticket())
+    assert again.headers['x-file-lane-total-chars'] == str(len(content))
+    assert len(list(tmp_path.rglob('text-v2.chars'))) == 1
 
 
 def test_unicode_windows_reconstruct_large_result_without_splitting_characters(client):
@@ -81,6 +96,8 @@ def test_unicode_windows_reconstruct_large_result_without_splitting_characters(c
     url = f'/files/{meta["file_id"]}/text'
     first = client.get(url, params={'offset': 0}, headers=ticket())
     assert first.text == content[:64000]
+    # The total is the saved count, not a guess from this window's length.
+    assert first.headers['x-file-lane-total-chars'] == str(len(content))
     second = client.get(url, params={'offset': 64000, 'max_chars': len(content)}, headers=ticket())
     assert first.text + second.text == content
     assert second.headers['x-file-lane-eof'] == 'true'
