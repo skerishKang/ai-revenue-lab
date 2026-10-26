@@ -357,7 +357,7 @@
   async function requestStreaming(payload, signal) {
     const wire = withDeviceSelection(payload);
     // The server-owned opt-in defaults off; the legacy custom path stays exact.
-    const byokViaB14 = payload && payload.custom && window.PadiemCustomSelection?.viaB14?.() === true;
+    const byokViaB14 = payload && payload.custom && window.PadiemCustomSelection?.viaEngine?.() === true;
     const orchestrated = payload && payload.custom && !byokViaB14
       ? null : await tryOrchestration(byokViaB14 ? wire : payload, signal, byokViaB14);
     if (orchestrated) return orchestrated;

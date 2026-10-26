@@ -300,7 +300,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     if pc_context is not None or user_credential_ref is not None:
         if pc_context is None:
             # A text-only BYOK turn stages message history, never a PC run.
-            pc_context = {"workspace_id": "personal", "subject_id": uid, "pc_tools": None}
+            pc_context = {"workspace_id": "personal", "subject_id": None, "pc_tools": None}
         from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, _new_lane_run_id, pc_scope_notice_for_run
         from .claw_live_events import chat_pc_orchestration_sse
         begin = getattr(store, "begin_chat_stream_turn", None)

@@ -126,7 +126,7 @@ async def custom_credential_status(request: Request):
         )
     return JSONResponse(
         {"ok": True, "credentials": credentials, "providers": _provider_options(),
-         **({"byok_via_b14": True} if getattr(getattr(request.app.state, "settings", None), "byok_via_b14", False) else {})},
+         **({"byok_engine_enabled": True} if getattr(getattr(request.app.state, "settings", None), "byok_via_b14", False) else {})},
         headers=HEADERS,
     )
 

@@ -571,7 +571,7 @@ class B62EngineOrchestrationBridge:
     async def start_stream(
         self, *, user_id: str, messages: Sequence[Mapping[str, str]], skill: Any,
         model_id: str, user_text: str, conversation_id: str | None,
-        pc_tools: Mapping[str, Any] | None, subject_id: str, session_id: str,
+        pc_tools: Mapping[str, Any] | None, subject_id: str | None, session_id: str,
         user_credential_ref: str | None = None, byok_selection: Mapping[str, str] | None = None,
         additional_system_context: str | None = None, product_identity: str | None = None,
     ):
@@ -580,7 +580,7 @@ class B62EngineOrchestrationBridge:
             conversation_id=conversation_id, pc_tools=pc_tools,
             subject_id=subject_id, session_id=session_id,
             additional_system_context=additional_system_context, product_identity=product_identity,
-            byok_selection=byok_selection,
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
         wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}
         iterator = self._client.stream_orchestration(wire, pc_progress=pc_tools is not None)

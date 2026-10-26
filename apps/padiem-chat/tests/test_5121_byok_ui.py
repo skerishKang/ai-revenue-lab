@@ -219,7 +219,7 @@ def test_custom_failures_reopen_the_existing_model_card() -> None:
 
 def test_custom_lane_keeps_direct_path_without_server_owned_byok_opt_in() -> None:
     assert "payload && payload.custom && !byokViaB14" in TRANSPORT
-    assert "window.PadiemCustomSelection?.viaB14?.() === true" in TRANSPORT
+    assert "window.PadiemCustomSelection?.viaEngine?.() === true" in TRANSPORT
 
 
 _HARNESS = r"""
@@ -246,7 +246,7 @@ function responseFor(behavior) {
 async function runCase(testCase) {
   const calls = [];
   const sandbox = {
-    window: { PadiemCustomSelection: { viaB14: () => testCase.byokViaB14 === true } },
+    window: { PadiemCustomSelection: { viaEngine: () => testCase.byokViaB14 === true } },
     console,
     Intl,
     Response,
@@ -315,7 +315,7 @@ def _run_transport_cases() -> dict:
             },
         },
         {
-            "name": "byok_via_b14", "byokViaB14": True,
+            "name": "byok_engine_enabled", "byokViaB14": True,
             "payload": {**base, "custom": {"provider": CUSTOM_PROVIDER, "model": CUSTOM_MODEL}},
             "responses": {
                 "/api/orchestration/status": {"json": {"orchestration_ready": True, "authenticated": True}},
@@ -419,7 +419,7 @@ def test_byok_auto_registration_keeps_manual_advanced_and_never_renders_key():
 
 
 def test_byok_enabled_browser_uses_orchestration_once_and_never_direct_fallback():
-    case = _run_transport_cases()["byok_via_b14"]
+    case = _run_transport_cases()["byok_engine_enabled"]
     assert case["ok"] is True
     assert [row["url"] for row in case["calls"]] == ["/api/orchestration/status", "/api/orchestration"]
     body = json.loads(case["calls"][1]["body"])

@@ -80,6 +80,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_tools: Mapping[str, Any] | None = None,
+        byok_selection: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         resolved_subject_id = self._current_engine_subject.get()
         if resolved_subject_id is None:
@@ -107,6 +108,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             session_id=session_id,
             product_identity=product_identity,
             pc_tools=pc_tools,
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
 
     async def start(
@@ -160,8 +162,10 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         model_id: str,
         user_text: str,
         conversation_id: str | None,
-        subject_id: str,
+        subject_id: str | None,
         session_id: str,
+        user_credential_ref: str | None = None,
+        byok_selection: Mapping[str, str] | None = None,
         pc_tools: Mapping[str, Any] | None = None,
         additional_system_context: str | None = None,
         product_identity: str | None = None,
@@ -169,7 +173,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         # Async generators do not pass through start(): resolve the same
         # canonical identity before the inherited stream builds its request.
         resolved_subject_id = await self._resolve_engine_subject(user_id)
-        if subject_id != resolved_subject_id:
+        if subject_id is not None and subject_id != resolved_subject_id:
             raise B62OrchestrationError(
                 "canonical_subject_mismatch",
                 "현재 인증 사용자와 AI 작업의 사용자 식별자가 일치하지 않습니다.",
@@ -188,6 +192,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             session_id=session_id,
             additional_system_context=additional_system_context,
             product_identity=product_identity,
+            **({"user_credential_ref": user_credential_ref, "byok_selection": byok_selection}
+               if user_credential_ref is not None else {}),
         )
         try:
             async for record in iterator:
@@ -205,6 +211,7 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         continuation_ref: str,
         pause_id: str,
         outcome: str,
+        user_credential_resolver: Any = None,
     ):
         current_subject = await self._resolve_engine_subject(user_id)
         # Read-only preflight. The base bridge still owns the actual decision/state
@@ -225,4 +232,6 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             continuation_ref=continuation_ref,
             pause_id=pause_id,
             outcome=outcome,
+            **({"user_credential_resolver": user_credential_resolver}
+               if user_credential_resolver is not None else {}),
         )
