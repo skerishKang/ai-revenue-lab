@@ -315,3 +315,32 @@ async def test_worker_drains_ledger_after_asgi_response_and_resets_request_scope
         await pending[0]
     assert order == ["response_constructed", "write"]
     assert deferred._CURRENT.get() is None
+
+
+def test_worker_keeps_info_operations_logs_with_existing_runtime_handler(monkeypatch):
+    import io
+    import logging
+    import runpy
+    import sys
+    import types
+    output = io.StringIO()
+    handler = logging.StreamHandler(output)
+    root = logging.getLogger()
+    monkeypatch.setattr(root, "handlers", [handler])
+    monkeypatch.setattr(root, "level", logging.WARNING)
+    workers = types.ModuleType("workers")
+    workers.Response = object
+    workers.WorkerEntrypoint = object
+    main = types.ModuleType("app.main")
+    main.app = object()
+    monkeypatch.setitem(sys.modules, "workers", workers)
+    monkeypatch.setitem(sys.modules, "app.main", main)
+    runpy.run_path(str(WORKER_SRC))
+    for name in ("b14_ledger", "alpha_success"):
+        logger = logging.getLogger(name)
+        monkeypatch.setattr(logger, "level", logging.NOTSET)
+        logger.info(name + " safe synthetic event")
+        logger.debug("debug must stay hidden")
+    assert root.handlers == [handler]
+    assert output.getvalue().splitlines() == [
+        "b14_ledger safe synthetic event", "alpha_success safe synthetic event"]
