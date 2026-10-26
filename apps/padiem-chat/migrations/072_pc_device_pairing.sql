@@ -50,9 +50,10 @@ ON pc_pairing_codes (state, expires_at);
 CREATE TABLE IF NOT EXISTS pc_device_links (
   link_id TEXT PRIMARY KEY CHECK(length(link_id) BETWEEN 1 AND 64),
   user_id TEXT NOT NULL CHECK(length(user_id) BETWEEN 1 AND 256),
-  -- The composed MeshCentral identity only (`node/<domain>/<node>`); the bare
-  -- form is refused, so a link can never name a device the Mesh lane cannot
-  -- address. Validated again by the store on every write.
+  -- One PC identity the Mesh lane can address, in either canonical form
+  -- (`node/<domain>/<node>` or the `id@domain` spelling meshctrl reports).
+  -- The column bounds length only; the store validates the shape on every
+  -- write, so this stays one rule with one owner.
   mesh_node_id TEXT NOT NULL CHECK(length(mesh_node_id) BETWEEN 7 AND 256),
   label TEXT CHECK(label IS NULL OR length(label) BETWEEN 1 AND 128),
   state TEXT NOT NULL CHECK(state IN ('pending_verification','active','revoked')),

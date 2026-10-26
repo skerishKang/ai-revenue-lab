@@ -51,7 +51,7 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from padiem_ai_core.pc_device_identity import is_pc_device_id, is_pc_mesh_node_id
+from padiem_ai_core.pc_device_identity import is_pc_device_id
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -126,6 +126,11 @@ _SAFE_REF_CHARS = frozenset(
 #: or malformed, and every derived identity is resolved server-side.
 _PRESENCE_BODY_KEYS = frozenset({"presence"})
 _PRESENCE_ENTRY_KEYS = frozenset({"device_id", "connected"})
+# #5573: one optional key carries the observed agent NAME. A beta PC cannot
+# name its own composed node identity, so the pairing tag the installer stamped
+# into that name is what lets the server finish the claim it was given a code
+# for. The name is read, never stored.
+_PRESENCE_ENTRY_OPTIONAL_KEYS = frozenset({"agent_name"})
 _MAX_PRESENCE_ENTRIES = 8
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
@@ -1580,7 +1585,9 @@ async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
         return None
     parsed: list[dict[str, Any]] = []
     for entry in entries:
-        if not isinstance(entry, dict) or set(entry) != _PRESENCE_ENTRY_KEYS:
+        if not isinstance(entry, dict) or not _PRESENCE_ENTRY_KEYS.issubset(entry) or (
+            set(entry) - _PRESENCE_ENTRY_KEYS - _PRESENCE_ENTRY_OPTIONAL_KEYS
+        ):
             logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entry_shape")
             return None
         device_id = entry.get("device_id")
@@ -1588,7 +1595,18 @@ async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
         if not is_pc_device_id(device_id) or type(connected) is not bool:
             logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entry_value")
             return None
-        parsed.append({"device_id": device_id, "connected": connected})
+        row: dict[str, Any] = {"device_id": device_id, "connected": connected}
+        agent_name = entry.get("agent_name")
+        if agent_name is not None:
+            if (
+                not isinstance(agent_name, str)
+                or not 1 <= len(agent_name) <= 256
+                or any(ord(ch) < 32 or ord(ch) == 127 for ch in agent_name)
+            ):
+                logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entry_value")
+                return None
+            row["agent_name"] = agent_name
+        parsed.append(row)
     return parsed
 
 
@@ -1604,6 +1622,28 @@ async def _record_mesh_presence(
     received_at = datetime.now(timezone.utc)
     for entry in entries:
         reported = entry["device_id"]
+        # A name carrying this deployment's pairing tag is a claim attempt, and
+        # it is settled before anything else: the node has no link yet, which is
+        # exactly why the directory and map lookups below would refuse it.
+        agent_name = entry.get("agent_name")
+        if isinstance(agent_name, str) and callable(
+            getattr(pairing, "complete_claim_from_observation", None)
+        ):
+            try:
+                completed = await pairing.complete_claim_from_observation(
+                    agent_name=agent_name, mesh_node_id=reported, now=received_at,
+                )
+            except Exception as exc:
+                logging.getLogger(__name__).warning(
+                    "oracle_mesh_pairing_claim=refused reason=%s",
+                    type(exc).__name__,
+                )
+            else:
+                if completed is not None:
+                    logging.getLogger(__name__).info(
+                        "oracle_mesh_pairing_claim=completed link_id=%s",
+                        completed.get("link_id"),
+                    )
         # R4: the link directory answers first. A beat naming a PC somebody has
         # paired is recorded under the server's own composed node identity, so
         # the receipt key never depends on what the executor called it. The
@@ -3282,7 +3322,7 @@ async def _pc_files_directory_target(
     node_ref = link.get("mesh_node_id")
     roots = link.get("roots")
     if (
-        not isinstance(node_ref, str) or not is_pc_mesh_node_id(node_ref)
+        not isinstance(node_ref, str) or not is_pc_device_id(node_ref)
         or not isinstance(roots, list) or not roots
     ):
         # A linked PC with no approved folder cannot answer a file call, and a
