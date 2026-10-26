@@ -532,7 +532,7 @@ def test_worker_composes_the_async_authority_before_create_app() -> None:
     assert "DOCUMENT_PARSER_SERVICE_BINDING_NAME" in source
 
 
-def test_wrangler_declares_the_private_parser_service_binding() -> None:
+def test_wrangler_defers_parser_binding_until_the_worker_is_ready() -> None:
     source = (ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    assert 'binding = "DOCUMENT_PARSER_SERVICE"' in source
-    assert 'service = "padiem-document-parser"' in source
+    import tomllib
+    assert not any(b["binding"] == "DOCUMENT_PARSER_SERVICE" for b in tomllib.loads(source)["services"])

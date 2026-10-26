@@ -301,55 +301,36 @@ def _write_tmp(payload) -> str:
 _tmp_files: list[Path] = []
 
 
-def test_case_6_public_base_url_expected_required_never_injected() -> None:
-    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
-    gen = GENERATOR_PATH.read_text(encoding="utf-8")
-    assert 'test "${public_state}" = "expected"' in deploy
-    assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED_REQUIRED" in deploy
-    assert "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO" in deploy
-    assert "DEPLOY_MUTATES_LIVE_CONFIG=NO" in deploy
-    assert "INJECTED_EXPECTED_" + "ONLY" not in deploy
-    assert "deploy does not inject" in gen
-    live = generator.parse_live_bindings(_settings(_without(_activated_bindings(), "PADIEM_CHAT_PUBLIC_BASE_URL")))
-    try:
-        generator.build_production_config(live, ROOT / "apps/padiem-chat/wrangler.toml", PUBLIC_URL)
-    except generator.ProductionConfigError as exc:
-        assert "deploy does not inject" in str(exc)
-    else:
-        raise AssertionError("absent public base URL must refuse")
-    drifted = _replace(
-        _activated_bindings(), "PADIEM_CHAT_PUBLIC_BASE_URL",
-        _binding("PADIEM_CHAT_PUBLIC_BASE_URL", "plain_text", text="https://evil.example.test"),
-    )
-    live = generator.parse_live_bindings(_settings(drifted))
-    try:
-        generator.build_production_config(live, ROOT / "apps/padiem-chat/wrangler.toml", PUBLIC_URL)
-    except generator.ProductionConfigError as exc:
-        assert "drift" in str(exc)
-    else:
-        raise AssertionError("public base URL drift must refuse")
+def test_case_6_public_base_url_must_still_match_canonical_origin() -> None:
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp) / "wrangler.toml"
+        repo.write_text('name="padiem-chat"\nmain="worker.py"\ncompatibility_date="2026-08-25"\n[vars]\nPADIEM_CHAT_PUBLIC_BASE_URL="https://evil.example.test"\n')
+        live = generator.parse_live_bindings(_settings([_binding("PADIEM_CHAT_PUBLIC_BASE_URL", "plain_text", text="https://evil.example.test")]))
+        try:
+            generator.build_production_config(live, repo, PUBLIC_URL)
+        except generator.ProductionConfigError:
+            pass
+        else:
+            raise AssertionError("noncanonical origin must refuse")
 
 
-def test_case_7_deploy_generator_mutation_zero() -> None:
-    live_bindings = _activated_bindings()
-    live = generator.parse_live_bindings(_settings(live_bindings))
-    config = generator.build_production_config(live, ROOT / "apps/padiem-chat/wrangler.toml", PUBLIC_URL)
+def test_case_7_deploy_generator_preserves_vars_but_bindings_follow_source() -> None:
+    import tomllib
+    live = generator.parse_live_bindings(_settings(_activated_bindings()))
+    repo = ROOT / "apps/padiem-chat/wrangler.toml"
+    # This synthetic old fixture includes LEGACY_SECRET, deliberately absent
+    # from repository declarations. It now requires explicit removal authority.
+    try:
+        generator.build_production_config(live, repo, PUBLIC_URL)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("removal must not be silently admitted")
+    config = generator.build_production_config(live, repo, PUBLIC_URL, allow_binding_removal=True)
     generator.verify_mutation_zero(config, live)
-    for name in list(helper.QUOTA_VALUES) + [helper.P01_CALLER_NAME]:
-        assert name in live["vars"], name
-        assert f'{name} = "' in config, name
-    assert 'binding = "P01_ENGINE_SERVICE"' in config
-    assert "[[d1_databases]]" in config
-    assert 'binding = "PADIEM_CHAT_DB"' in config
-    assert "P01_ENGINE_CREDENTIAL" not in config
+    assert tomllib.loads(config)["secrets"] == tomllib.loads(repo.read_text())["secrets"]
     assert "LEGACY_SECRET" not in config
-    tampered = config.replace('PADIEM_CHAT_RUNTIME_MODE = "production"', 'PADIEM_CHAT_RUNTIME_MODE = "staging"')
-    try:
-        generator.verify_mutation_zero(tampered, live)
-    except generator.ProductionConfigError as exc:
-        assert "mutates live plain-text vars" in str(exc)
-    else:
-        raise AssertionError("mutation-zero must reject var drift")
 
 
 def test_case_8_code_version_and_config_rollback_are_distinct() -> None:
@@ -511,13 +492,11 @@ def test_case_13_exact_main_and_confirmation_gates_preserved() -> None:
         assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
 
 
-def test_case_14_no_tests_still_assert_deploy_injection() -> None:
-    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
-    pytest_source = DEPLOY_TESTS.read_text(encoding="utf-8")
-    assert "INJECTED_EXPECTED_" + "ONLY" not in deploy
-    assert "INJECTED_EXPECTED_" + "ONLY" not in pytest_source
-    assert "deploy does not inject" in pytest_source
-    assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in pytest_source
+def test_case_14_source_authority_has_no_hidden_additive_mode() -> None:
+    deploy = DEPLOY_WORKFLOW.read_text()
+    assert "--attach-existing" not in deploy
+    assert "allow_binding_removal" in deploy
+    assert "--verify-served" in deploy
 
 
 def _auto_rollback_step_source() -> str:

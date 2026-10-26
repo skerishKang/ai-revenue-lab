@@ -133,9 +133,10 @@ jobs:
           assert 'P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"' in worker_config
           assert 'name = "padiem-ai-engine"' in engine_config
 
-          # The chat worker must not pre-declare the P01 binding in wrangler;
-          # it is added only through this gate's settings patch.
-          assert "P01_ENGINE_SERVICE" not in chat_config
+          # The repository now declares the already-live binding target.
+          import tomllib
+          matches = [b for b in tomllib.loads(chat_config)["services"] if b["binding"] == "P01_ENGINE_SERVICE"]
+          assert matches == [{"binding": "P01_ENGINE_SERVICE", "service": "padiem-ai-engine"}]
 
           print("P01_ENGINE_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")

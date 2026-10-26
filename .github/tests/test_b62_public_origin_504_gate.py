@@ -64,7 +64,7 @@ def test_workflow_preserves_source_contract_and_rollback():
     assert text.count("https://${B62_WORKER}.charliekant.workers.dev/health") == 2
     assert "B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET" in text
     assert "B62_PUBLIC_ORIGIN_STILL_ENABLED=PASS" in text
-    assert "FULL_SECRET_SET_EQUALITY=PASS" in text
+    assert "BINDINGS_MATCH_REPOSITORY_PLAN=PASS" in text
     assert "Auto-rollback to recorded version on any failed step" in text
 
 

@@ -758,3 +758,5 @@ In particular, a historical product direction document is now an implementation 
 - [ ] #2824 격리 파서 전송 상한 512,768B — 파서 레인 소유자 판단 대기.
 - [ ] BYOK 2.0("키만 넣으면 공급자·엔드포인트 자동 등록") 설계 — Owner 사업 방향, 구현 시점 미정.
 - [ ] 다른 레인 코드가 Chat 배포에 실려 나가는 문제(#5817 파서 바인딩 미부착, #5850·#5862 등) — 배포마다 변경 스캔은 하되 기능 검증은 안 함.
+
+바인딩은 wrangler.toml이 정답, wrangler.toml 변경 PR은 CTO 검토 필수.
