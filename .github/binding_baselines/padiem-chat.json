@@ -1,6 +1,6 @@
 {
   "worker": "padiem-chat",
-  "reviewed_utc": "2026-10-27",
+  "reviewed_utc": "2026-10-23",
   "source_served_version": "507408da-abbb-411b-b2eb-9306a47bb6bc",
   "bindings": [
     {
@@ -126,10 +126,6 @@
     {
       "name": "PADIEM_CHAT_DB",
       "type": "d1"
-    },
-    {
-      "name": "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
-      "type": "secrets_store_secret"
     },
     {
       "name": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
