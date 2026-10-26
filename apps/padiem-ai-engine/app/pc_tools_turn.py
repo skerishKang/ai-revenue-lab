@@ -142,7 +142,8 @@ class PcToolsTurnRuntime:
             return await self.fallback.run(request)
         native = replace(request, tools=definitions(self.context), tool_choice="auto")
         runtime = service._pc_streaming_runtime_factory(self.payload["app_id"])
-        iterator = runtime.stream(native)
+        from app.byok_passthrough import core_request
+        iterator = runtime.stream(core_request(native))
         calls = []
         terminal = None
         try:

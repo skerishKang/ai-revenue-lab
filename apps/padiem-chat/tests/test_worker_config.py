@@ -80,6 +80,7 @@ def test_worker_b14_mode_requires_valid_fixed_url():
 def test_server_only_worker_bindings_and_google_config_validation():
     assert WORKER_BINDING_NAMES == {
         "PADIEM_CHAT_RUNTIME_MODE",
+        "BYOK_VIA_B14",
         "PADIEM_CHAT_B14_BASE_URL",
         "B14_UPSTREAM_MODE",
         "B14_UPSTREAM_URL",
@@ -285,3 +286,13 @@ def test_source_wrangler_model_idle_matches_chat_worker_default():
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "600"
     assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0
+
+
+def test_byok_via_b14_switch_defaults_off_and_reads_trusted_environment(monkeypatch):
+    assert Settings().byok_via_b14 is False
+    assert settings_from_worker_bindings({}).byok_via_b14 is False
+    assert settings_from_worker_bindings({"BYOK_VIA_B14":"true"}).byok_via_b14 is True
+    monkeypatch.setenv("BYOK_VIA_B14", "true")
+    assert Settings.from_env().byok_via_b14 is True
+    with pytest.raises(ConfigError):
+        settings_from_worker_bindings({"BYOK_VIA_B14":"invalid"})

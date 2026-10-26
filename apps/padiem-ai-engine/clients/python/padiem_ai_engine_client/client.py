@@ -91,6 +91,7 @@ _EXECUTION_ALLOWED = frozenset(
 _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
+        "user_credential_ref",
         "declared_plan",
         "pc_tools",
         "agent_plan",
@@ -104,6 +105,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
 _ORCHESTRATION_RESUME_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "continuation_ref",
+        "user_credential_ref",
         "decision",
         "subject_id",
         "agent_plan",
@@ -438,6 +440,11 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
     ):
         if name in data:
             payload[name] = data[name]
+    if "user_credential_ref" in data:
+        ref = data["user_credential_ref"]
+        if app_id != "padiem-chat" or not isinstance(ref, str) or not ref:
+            raise PadiemAiEngineClientError("invalid_engine_request", "User credential reference is invalid")
+        payload["user_credential_ref"] = ref
     if "pc_tools" in data:
         payload["pc_tools"] = _pc_tools_context(data, app_id)
     if "execution_context" in data:
