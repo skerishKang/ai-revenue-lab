@@ -470,21 +470,31 @@
         });
       }
 
-      // #5728: the roster is one small text file that carries the
-      // composition's order and the blog insertion positions; the photo
-      // originals themselves are already stored (each add uploaded them).
-      // Rewrites replace the previous roster in place, so a stale roster can
-      // never resurrect a photo the owner deleted.
+      // #5728: the roster is one small JSON file that carries the whole
+      // persisted composition — the photo order, the blog insertion
+      // positions, the saved draft text and the platform it was written
+      // for. The photo originals themselves are already stored (each add
+      // uploaded them). Rewrites replace the previous roster in place, so a
+      // stale roster can never resurrect a photo the owner deleted.
       const PHOTO_ROSTER_NAME = "SNS 사진 구성.json";
+      // The last explicitly saved draft rides every roster rewrite, so a
+      // later photo change never silently drops the saved text.
+      let lastSavedDraft = null;
       // Roster writes serialize: two changes landing together must never
       // leave two roster files behind (an older one would win a name lookup
       // and silently revert the newer order or position).
       let rosterWriteChain = Promise.resolve();
-      function writePhotoRoster(pid) {
+      function writePhotoRoster(pid, savedDraft) {
         if (!pid) return;
+        const carriedDraft = savedDraft === undefined ? lastSavedDraft : savedDraft;
         rosterWriteChain = rosterWriteChain.then(async () => {
-          const roster = { version: 1, photos: photos
+          const roster = { version: 2, photos: photos
             .map((p) => ({ fileId: String(p.id), name: p.name, position: p.position })) };
+          // #5728: the saved draft rides with the roster so re-entry
+          // restores the text too; the last explicit 저장 wins.
+          if (carriedDraft && carriedDraft.text) {
+            roster.draft = { text: carriedDraft.text, platform: carriedDraft.platform || platform };
+          }
           const existing = await listProjectFiles(pid);
           const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
           if (previous) await deleteProjectFile(pid, previous.id);
@@ -657,6 +667,8 @@
       // files are the originals; when the roster file exists it fixes the
       // order and the blog insertion positions, and photos it does not
       // mention still surface after it so nothing the owner stored vanishes.
+      // A roster that carries a saved draft (version 2) also restores the
+      // draft text and switches to the platform it was saved under.
       (async () => {
         try {
           if (!currentPid) currentPid = await ensureProject();
@@ -664,8 +676,8 @@
           const files = await listProjectFiles(currentPid);
           const imageFiles = files.filter((f) => f.media_type === "image/png"
             || f.media_type === "image/jpeg" || f.media_type === "image/webp");
-          if (photos.length || !imageFiles.length) return;
           let order = null;
+          let savedDraft = null;
           const rosterFile = files.find((f) => f.name === PHOTO_ROSTER_NAME);
           if (rosterFile) {
             const detailRes = await fetch("/api/projects/" + currentPid + "/files/" + encodeURIComponent(rosterFile.id), { credentials: "include" });
@@ -674,8 +686,32 @@
               try {
                 const roster = JSON.parse(String((detail && detail.file && detail.file.content) || ""));
                 if (roster && Array.isArray(roster.photos)) order = roster.photos;
+                // A saved draft is part of the same roster record; a v1
+                // roster (photos only) leaves the draft area untouched.
+                if (roster && roster.draft && typeof roster.draft.text === "string" && roster.draft.text.trim()) {
+                  savedDraft = roster.draft;
+                }
               } catch (_) { /* unreadable roster falls back to the stored order */ }
             }
+          }
+          if (savedDraft) {
+            // The draft comes back with the platform it was written for;
+            // photos restore after this so the preview is coherent. It also
+            // rides future roster rewrites, so a later photo change never
+            // silently drops the saved text.
+            lastSavedDraft = savedDraft;
+            result.hidden = false;
+            output.value = savedDraft.text;
+            if (previewBox) { previewBox.hidden = false; }
+            if (savedDraft.platform && savedDraft.platform !== platform) {
+              const targetTab = Array.from(tabDiv.querySelectorAll(".util-sns-tab")).find((t) => t.dataset.platform === savedDraft.platform);
+              if (targetTab) targetTab.click();
+              else { platform = savedDraft.platform; title.textContent = ({ blog: "블로그", facebook: "페이스북", instagram: "인스타그램" })[savedDraft.platform] + " 게시글"; }
+            }
+          }
+          if (photos.length || !imageFiles.length) {
+            if (savedDraft) renderPreview();
+            return;
           }
           const ordered = [];
           if (order && order.length) {
@@ -750,6 +786,10 @@
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          // #5728: the saved draft rides in the roster so re-entry restores
+          // the text and its platform, not only the photos.
+          lastSavedDraft = { text: text, platform: platform };
+          writePhotoRoster(currentPid, lastSavedDraft);
         } else {
           alert("저장 실패");
         }
