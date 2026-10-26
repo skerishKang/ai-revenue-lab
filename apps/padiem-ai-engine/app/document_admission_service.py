@@ -28,6 +28,17 @@ When either authority input is absent the route fails closed 503 with
 ``document_admission_unavailable``, exactly as the image admission lane
 does. Admission writes no model calls and reaches no provider: it is
 storage-side source wiring only.
+
+#5881 stage 3 adds the second source shape: an attachment that arrives as a
+COM2 ``file_id`` plus its asserted ``sha256`` and Chat's signed read ticket.
+The Engine then reads the lane's extracted-text window over the one
+deployment-configured ``FILE_LANE_ORIGIN`` and admits that text through the
+same ``admit_document`` authority, so the reference reaches the existing
+document context path instead of travelling as inline bytes. Only the first
+window is mounted; the receipt carries the continuation ``next_offset`` and
+the document's ``total_chars`` from the lane's saved count. Without a
+configured port the reference shape fails closed 503
+``file_lane_unavailable`` and the inline path is untouched.
 """
 
 from __future__ import annotations
@@ -36,6 +47,7 @@ import base64
 import binascii
 from collections.abc import Mapping
 import json
+from pathlib import PurePath
 import re
 from typing import Any
 
@@ -52,6 +64,7 @@ from app.document_byte_store import (
     StoredDocumentRecord,
 )
 from app.document_context_service import DocumentAuthorityError
+from app.file_lane_text_port import FileLaneTextError, FileLaneTextPort
 from app.service import ServiceResponse, _service_error
 
 DOCUMENT_ADMISSION_PATH = "/internal/v1/documents"
@@ -66,6 +79,13 @@ MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES = MAX_STORED_DOCUMENT_BASE64_CHARS + (
 # Unlike the image admission wire there is deliberately no trace_id field.
 _REQUIRED = frozenset({"app_id", "session_id", "media_type", "document_base64"})
 _ALLOWED = _REQUIRED | frozenset({"filename"})
+
+# The COM2 reference shape carries no media type: what the lane returns is
+# extracted text, so the Engine states the media itself rather than letting a
+# caller pick how those bytes are later parsed.
+_LANE_REQUIRED = frozenset({"app_id", "session_id", "file_id", "sha256", "file_ticket"})
+_LANE_ALLOWED = _LANE_REQUIRED | frozenset({"filename"})
+LANE_DOCUMENT_MEDIA_TYPE = "text/plain"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
@@ -83,6 +103,46 @@ _MEDIA_FILENAME_SUFFIX: dict[str, str] = {
 def _default_filename(media_type: str) -> str:
     suffix = _MEDIA_FILENAME_SUFFIX.get(media_type.strip().lower())
     return f"document.{suffix}" if suffix else "document"
+
+
+def _filename_is_valid(filename: object) -> bool:
+    return (
+        isinstance(filename, str)
+        and bool(filename.strip())
+        and len(filename.strip()) <= MAX_DOCUMENT_NAME_CHARS
+        and not _CONTROL_CHARS_RE.search(filename)
+    )
+
+
+def _lane_document_name(filename: object) -> str:
+    """The caller's own name carrying the media truth the lane text has.
+
+    The lane answers extracted text whatever the source was, so admitting a
+    name still ending ``.pdf`` under ``text/plain`` would break the document
+    context path: Core pins one media type per extension and fails closed on
+    the mismatch. The stem survives, the suffix follows the admitted bytes.
+    """
+
+    if isinstance(filename, str) and filename.strip():
+        candidate = f"{PurePath(filename.strip()).stem}.txt"
+        if len(candidate) <= MAX_DOCUMENT_NAME_CHARS:
+            return candidate
+    return _default_filename(LANE_DOCUMENT_MEDIA_TYPE)
+
+
+def _document_receipt(record: StoredDocumentRecord) -> dict[str, Any]:
+    """The bounded four-field receipt every admitted document answers with."""
+
+    return {
+        "document_ref": record.document_ref,
+        "media_type": record.media_type,
+        "byte_size": record.byte_size,
+        "expires_at": (
+            record.expires_at.isoformat()
+            if record.expires_at is not None
+            else None
+        ),
+    }
 
 
 class DocumentAdmissionAuthorityError(ValueError):
@@ -105,6 +165,7 @@ class DocumentAdmissionEngineService:
         *,
         document_byte_store: Any | None = None,
         scope_authority: AuthSessionScopeAuthority | None = None,
+        file_lane_text_port: FileLaneTextPort | None = None,
     ) -> None:
         if document_byte_store is not None and not callable(
             getattr(document_byte_store, "admit_document", None)
@@ -114,8 +175,13 @@ class DocumentAdmissionEngineService:
             getattr(scope_authority, "scope_for_request", None)
         ):
             raise ValueError("scope_authority must expose async scope_for_request")
+        if file_lane_text_port is not None and not callable(
+            getattr(file_lane_text_port, "read_window", None)
+        ):
+            raise ValueError("file_lane_text_port must expose async read_window")
         self._document_byte_store = document_byte_store
         self._scope_authority = scope_authority
+        self._file_lane_text_port = file_lane_text_port
 
     async def _scope_for(self, *, app_id: str, session_id: str) -> Any:
         if self._document_byte_store is None or self._scope_authority is None:
@@ -148,6 +214,8 @@ class DocumentAdmissionEngineService:
                 status_code=400,
             )
         data = dict(payload)
+        if "file_id" in data:
+            return await self._admit_file_lane_reference(data)
         unknown = set(data) - _ALLOWED
         if unknown:
             return _service_error(
@@ -179,12 +247,7 @@ class DocumentAdmissionEngineService:
                     f"Admission request field {name} is invalid.",
                     status_code=400,
                 )
-        if filename is not None and (
-            not isinstance(filename, str)
-            or not filename.strip()
-            or len(filename.strip()) > MAX_DOCUMENT_NAME_CHARS
-            or _CONTROL_CHARS_RE.search(filename)
-        ):
+        if filename is not None and not _filename_is_valid(filename):
             return _service_error(
                 "invalid_request",
                 "Admission request field filename is invalid.",
@@ -223,20 +286,94 @@ class DocumentAdmissionEngineService:
 
         return ServiceResponse(
             status_code=200,
-            body={
-                "ok": True,
-                "document": {
-                    "document_ref": record.document_ref,
-                    "media_type": record.media_type,
-                    "byte_size": record.byte_size,
-                    "expires_at": (
-                        record.expires_at.isoformat()
-                        if record.expires_at is not None
-                        else None
-                    ),
-                },
-            },
+            body={"ok": True, "document": _document_receipt(record)},
         )
+
+    async def _admit_file_lane_reference(
+        self, data: dict[str, Any]
+    ) -> ServiceResponse:
+        """Admit one COM2 text window: the lane keeps the bytes, Engine the context."""
+
+        unknown = set(data) - _LANE_ALLOWED
+        if unknown:
+            return _service_error(
+                "invalid_request",
+                "Admission request contains unsupported fields.",
+                status_code=400,
+            )
+        if _LANE_REQUIRED - set(data):
+            return _service_error(
+                "invalid_request",
+                "Admission request is missing required fields.",
+                status_code=400,
+            )
+        app_id = data["app_id"]
+        session_id = data["session_id"]
+        for value, name in ((app_id, "app_id"), (session_id, "session_id")):
+            if not isinstance(value, str):
+                return _service_error(
+                    "invalid_request",
+                    f"Admission request field {name} is invalid.",
+                    status_code=400,
+                )
+        filename = data.get("filename")
+        if filename is not None and not _filename_is_valid(filename):
+            return _service_error(
+                "invalid_request",
+                "Admission request field filename is invalid.",
+                status_code=400,
+            )
+        port = self._file_lane_text_port
+        if port is None:
+            # No configured origin means no outbound read, ever; the caller
+            # retries inline bytes or waits for the deployment to connect it.
+            return _service_error(
+                "file_lane_unavailable",
+                "COM2 file lane origin is not configured.",
+                status_code=503,
+            )
+
+        try:
+            # The session is resolved before any external request leaves the
+            # Engine, so an unreadable session never drives a file-lane read.
+            scope = await self._scope_for(app_id=app_id, session_id=session_id)
+            window = await port.read_window(
+                file_id=data["file_id"],
+                sha256=data["sha256"],
+                ticket=data["file_ticket"],
+            )
+            record = await self._document_byte_store.admit_document(
+                data=window.text.encode("utf-8"),
+                media_type=LANE_DOCUMENT_MEDIA_TYPE,
+                name=_lane_document_name(filename),
+                app_id=scope.app_id,
+                tenant_id=scope.tenant_id,
+                subject_id=scope.subject_id,
+            )
+        except DocumentAdmissionAuthorityError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except DocumentByteStoreError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except FileLaneTextError as exc:
+            if exc.status_code == 400:
+                # A malformed reference/ticket is the same wire error the inline
+                # shape answers with; the route keeps one error taxonomy.
+                return _service_error(
+                    "invalid_request",
+                    "Admission request field file reference is invalid.",
+                    status_code=400,
+                )
+            return _service_error(
+                exc.code,
+                "Document text could not be read from the COM2 file lane.",
+                status_code=exc.status_code,
+            )
+
+        document = _document_receipt(record)
+        document["total_chars"] = window.total_chars
+        document["next_offset"] = window.next_offset
+        document["window_eof"] = window.eof
+        return ServiceResponse(status_code=200, body={"ok": True, "document": document})
 
     async def handle(
         self,

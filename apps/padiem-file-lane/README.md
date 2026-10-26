@@ -35,7 +35,11 @@ are returned.
   cached result. Offset is a non-negative Unicode code-point index; max_chars
   is positive, defaults to 64000 when either query parameter is present, and
   is a requested window rather than a document-size ceiling. Response remains
-  plain UTF-8, with `X-File-Lane-Next-Offset` and `X-File-Lane-EOF` for traversal.
+  plain UTF-8, with `X-File-Lane-Next-Offset`, `X-File-Lane-EOF` and
+  `X-File-Lane-Total-Chars` for traversal. The total is counted once when the
+  text is saved and kept in `text-v2.chars`, so a mid-document window still
+  states the document's real length; a cache written before that file existed
+  is counted once on read and stored.
   EOF/past-EOF returns an empty window. Invalid parameters return 400 before
   parsing. Omitting both parameters preserves the full disk-streamed response.
 
@@ -87,7 +91,9 @@ Storage is `FILE_LANE_ROOT/<user_id namespace>/file_<uuid>/`. The namespace is
 SHA-256 of the **exact** user_id UTF-8 bytes: Windows folds case/trailing dots,
 so using raw IDs as path components could alias two owners. Original filenames
 are metadata only and never become disk paths. Files are named `data`,
-`meta.json`, `text-v2.txt`; metadata is published last. No global in-memory file
+`meta.json`, `text-v2.txt`, `text-v2.chars`; metadata is published last. The
+`.chars` counter is the saved code-point total of the cached text, written with
+it and re-derived once if an older cache lacks it. No global in-memory file
 index is required across restarts. Keep this root writable only by the service
 account; it is outside the checkout and must be on the chosen COM2 disk.
 

@@ -86,8 +86,10 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         if window:
             offset, max_chars = bounds
             content, eof = await run_in_threadpool(store.text_window, path, offset, max_chars)
+            total = await run_in_threadpool(store.text_char_count, path)
             return PlainTextResponse(content, headers={"Cache-Control": "no-store",
-                "X-File-Lane-Next-Offset": str(offset + len(content)), "X-File-Lane-EOF": str(eof).lower()})
+                "X-File-Lane-Next-Offset": str(offset + len(content)), "X-File-Lane-EOF": str(eof).lower(),
+                "X-File-Lane-Total-Chars": str(total)})
         return FileResponse(path, media_type="text/plain; charset=utf-8", headers={"Cache-Control": "no-store"})
 
     async def health(request):
@@ -112,7 +114,8 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         raise RuntimeError("FILE_LANE_ALLOWED_ORIGINS must name explicit Chat origins")
     if allowed:
         app.add_middleware(CORSMiddleware, allow_origins=allowed, allow_credentials=True, allow_methods=["GET", "POST"],
-                           expose_headers=["X-File-Lane-Next-Offset", "X-File-Lane-EOF"],
+                           expose_headers=["X-File-Lane-Next-Offset", "X-File-Lane-EOF",
+                                           "X-File-Lane-Total-Chars"],
                            allow_headers=["Content-Type", "X-Padiem-File-Ticket", "X-Padiem-File-Time", "X-Padiem-File-Proof"])
     return app
 
