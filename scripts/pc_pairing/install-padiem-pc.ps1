@@ -49,7 +49,8 @@ $Copy = @{
   AlreadyInstalled = "이 PC에는 에이전트가 이미 설치되어 있습니다. 코드만 다시 제출합니다."
   Installed       = "에이전트 설치를 시작했습니다. 이름에 연결 표식이 붙고 서버가 이 PC를 확인하면 연결이 완료됩니다."
   Waiting         = "서버 확인 대기 중 — PADIEM의 '내 PC 연결'에서 자동으로 '연결됨'으로 바뀝니다."
-  NoAgentUrl      = "서버가 설치 링크를 주지 않았습니다. 배포 설정(PC_AGENT_INSTALL_URL) 확인이 필요합니다."
+  LinkPending     = "이 PC에 에이전트가 아직 없고 서버가 아직 설치 링크를 내려주지 않았습니다. 설치 링크가 준비되면 이 프로그램을 다시 실행하세요. 연결 코드는 10분 안에 만료되니 새 코드로 다시 시도하세요."
+  AgentReady      = "에이전트가 이미 설치되어 있습니다. 서버 확인을 기다립니다."
   DryRunNote      = "(점검 실행: 설치 프로그램은 실행하지 않았습니다)"
 }
 
@@ -138,12 +139,20 @@ $pairingCode = Format-PadiemCode -Value $rawCode
 if (-not $pairingCode) { Write-Error $Copy.BadCode; exit 2 }
 
 $handoff = Invoke-PadiemHandoff -Origin $origin -PairingCode $pairingCode
-if (-not $handoff) { Write-Error $Copy.NotReady; exit 3 }
-if (-not $handoff.handoff -or -not $handoff.handoff.agent_url) { Write-Error $Copy.NoAgentUrl; exit 3 }
+if (-not $handoff -or -not $handoff.handoff) { Write-Error $Copy.NotReady; exit 3 }
 $agentUrl = [string] $handoff.handoff.agent_url
 $tag = [string] $handoff.handoff.install_tag
+$installed = Test-PadiemAgentInstalled -Directory $AgentInstallDir
 
-if (Test-PadiemAgentInstalled -Directory $AgentInstallDir) {
+if (-not $agentUrl -and -not $installed) {
+  # The code is still good and the tag was issued; only the download target is
+  # not configured yet. Saying so is the whole answer - an already installed PC
+  # continues below without ever needing a link.
+  Write-Host $Copy.LinkPending
+  exit 0
+}
+
+if ($installed) {
   Write-Host $Copy.AlreadyInstalled
   # The agent already exists, so the pairing is re-submitted by name: this is
   # the R3 path for a PC that is added to another account, or re-paired after a
@@ -154,7 +163,7 @@ if (Test-PadiemAgentInstalled -Directory $AgentInstallDir) {
     $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID
     if (-not $claim) { Write-Error $Copy.CodeRejected; exit 4 }
   }
-  Write-Host $Copy.Waiting
+  if ($agentUrl) { Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag) } else { Write-Host $Copy.AgentReady }
   exit 0
 }
 
