@@ -48,6 +48,7 @@ from app.claw_local_access_composition import (
 )
 from app.claw_device_directory_routes import build_broker_device_directory_source
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
+from app.pc_device_pairing_store import D1PcPairingStore
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -1514,6 +1515,11 @@ class Default(WorkerEntrypoint):
                 )
                 if mesh_presence_store is not None:
                     _worker_app.state.mesh_device_presence_store = mesh_presence_store
+                # #5573 PC pairing (migration 072): the owner↔PC link table and
+                # its per-link folder approvals. No D1 binding means no state, so
+                # every pairing route answers 503 exactly as before this slice.
+                if db_binding is not None:
+                    _worker_app.state.pc_device_pairing_store = D1PcPairingStore(db_binding)
                 _worker_app.state.mesh_presence_generation_resolver = (
                     build_mesh_presence_generation_resolver(self.env)
                 )
