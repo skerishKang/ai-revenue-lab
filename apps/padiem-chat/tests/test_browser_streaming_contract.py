@@ -292,3 +292,84 @@ def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> N
     assert 'cancelStreamButton.hidden = !inFlight' in source
     assert 'min-width: 64px' in css
     assert 'min-height: 42px' in css
+
+
+def test_terminal_error_records_render_before_first_token_without_pc_recovery() -> None:
+    """Run the shipped reader, stream consumer and error renderer together."""
+    script = _transport_runtime() + r'''
+const fs = require("fs");
+const vm = require("vm");
+const assert = require("node:assert/strict");
+const app = fs.readFileSync(process.argv[1], "utf8");
+const streamStart = app.indexOf("  async function requestStreamingAnswer(");
+const streamEnd = app.indexOf("\n  function cancelActiveStream(", streamStart);
+const renderStart = app.indexOf("  function renderStreamError(");
+const renderEnd = app.indexOf("\n  function renderCancelled(", renderStart);
+(async () => {
+  for (const wire of ["sse", "message", "ndjson", "ndjson-eof"]) {
+    for (const message of ["드라이브 입력을 확인해 주세요. <script>unsafe()</script>", ""]) {
+      const record = JSON.stringify({ok:false,error:{code:"input_schema_rejected",message}});
+      const bytes = wire.startsWith("ndjson") ? record + (wire.endsWith("eof") ? "" : "\n")
+        : `${wire === "sse" ? "event: error\n" : ""}data: ${record}\n\n`;
+      let reads = 0, cancelled = false, released = false, rendered, state, label;
+      const response = {
+        ok:true,
+        headers: new Headers({"content-type":wire.startsWith("ndjson") ? "application/x-ndjson" : "text/event-stream"}),
+        body: {getReader: () => ({
+          async read() {
+            reads++;
+            if (reads === 1) return {value:new TextEncoder().encode(bytes.slice(0, 9)),done:false};
+            if (reads === 2) return {value:new TextEncoder().encode(bytes.slice(9)),done:false};
+            if (wire.endsWith("eof")) return {done:true};
+            throw Error("reader must stop immediately after the refusal");
+          },
+          async cancel() {cancelled=true;}, releaseLock() {released=true;},
+        })},
+      };
+      global.fetch = async (url) => {
+        if (url === "/api/orchestration/status") return {ok:true,json:async()=>({orchestration_ready:true,authenticated:true})};
+        if (url === "/api/orchestration") return response;
+        throw Error("terminal refusal must not poll pending-result: " + url);
+      };
+      const typing = {remove() {this.removed=true;}};
+      const content = {querySelector:()=>typing,appendChild(box){rendered=box;}};
+      const marker = {};
+      const article = {querySelector:(selector)=>selector === ".assistant-content" ? content : marker};
+      const lifecycle = {FAILED:"failed",TIMED_OUT:"timed_out"};
+      const context = {
+        window: {PadiemChatLifecycle:{applyRuntimeLabel:(article,text)=>{label=text;}}},
+        chatTransport:PadiemChatTransport,
+        PadiemChatLifecycle:{set:(article,value)=>{state=value;}},
+        MESSAGE_LIFECYCLE:lifecycle,
+        uiT:key=>key,
+        failureStatusLabel:()=>"연결 오류",
+        buildRetryBox:(message)=>({textContent:message}),
+        failureCodeNote:()=>null,
+        revealErrorState:()=>{},
+        lifecycleForError:()=>lifecycle.FAILED,
+        fetch:()=>{throw Error("terminal refusal must not poll pending-result");},
+      };
+      const consume = vm.runInNewContext(
+        `(function(){${app.slice(renderStart,renderEnd)}\n${app.slice(streamStart,streamEnd)}\nreturn requestStreamingAnswer;})()`, context);
+      const result = await consume(article,{},[],null,{pcRunId:"chat_pcq_test"},new AbortController().signal,null);
+      assert.equal(result,false); // no throw to requestAnswer's recovery catch
+      assert.equal(state,"failed");
+      assert.equal(typing.removed,true);
+      assert.equal(label,"연결 오류");
+      assert.equal(rendered.textContent,message || "요청을 처리하지 못했습니다 (input_schema_rejected). 다시 시도해 주세요.");
+      assert.equal(released,true);
+      if (!wire.endsWith("eof")) assert.equal(cancelled,true);
+    }
+  }
+  global.fetch = async (url) => url.endsWith("/status")
+    ? {ok:true,json:async()=>({orchestration_ready:true,authenticated:true})}
+    : {ok:true,headers:new Headers({"content-type":"application/json"}),
+       json:async()=>({ok:false,error:{code:"input_schema_rejected",message:"입력이 거부되었습니다."}})};
+  await assert.rejects(PadiemChatTransport.requestStreaming({},null), error =>
+    error.terminalRecord === true && error.code === "input_schema_rejected" && error.message === "입력이 거부되었습니다.");
+  assert.equal(PadiemChatTransport.streamErrorMessage({error:{code:"upstream_timeout"}}),
+    "응답 시간이 초과되었습니다. 다시 시도해 주세요.");
+  console.log("terminal error records displayed; pending recovery not entered");
+})().catch(error=>{console.error(error);process.exit(1);});
+'''
+    assert "pending recovery not entered" in _run_node(script, str(APP_PATH))
