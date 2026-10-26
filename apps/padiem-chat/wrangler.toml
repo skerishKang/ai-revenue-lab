@@ -23,12 +23,12 @@ main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+base_dir = ".b66-worker-src"
 preview_urls = true
 
 [[routes]]
 pattern = "chat.padiem.net"
 custom_domain = true
-base_dir = ".b66-worker-src"
 
 # #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
 # A browser binding does not authorize XLSX READ/WRITE, trigger a PDF,

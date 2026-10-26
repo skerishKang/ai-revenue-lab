@@ -70,3 +70,9 @@ def test_d1_schema_probes_use_repository_planned_identifiers():
         assert generate < i
         assert 'b62-planned-d1-bindings.json' in step['run']
         assert 'b62-settings-before.json' not in step['run']
+
+
+def test_repository_route_table_cannot_capture_worker_build_fields():
+    config = tomllib.loads((ROOT/'apps/padiem-chat/wrangler.toml').read_text())
+    assert config['base_dir'] == '.b66-worker-src'
+    assert config['routes'] == [{'pattern': 'chat.padiem.net', 'custom_domain': True}]
