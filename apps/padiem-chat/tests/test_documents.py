@@ -90,12 +90,25 @@ def test_supported_text_documents_validate(name, media_type):
         doc("x.txt", "text/markdown", "x"),
         doc("x.txt", "text/plain", ""),
         doc("x.txt", "text/plain", "abc\x00def"),
-        doc("x.txt", "text/plain", "x" * (MAX_DOCUMENT_CHARS + 1)),
     ],
 )
-def test_unsupported_binary_mismatch_empty_and_oversize_documents_rejected(payload):
+def test_unsupported_binary_mismatch_and_empty_documents_rejected(payload):
     with pytest.raises(DocumentValidationError):
         parse_document_item(payload)
+
+
+def test_a_long_text_document_is_accepted_not_rejected() -> None:
+    """#5734 stage 2: the composer reads the document the owner attached.
+
+    The 40,000-character and 96 KiB refusals were product-side copies of limits
+    no platform or provider imposed; a text document still has to be the type it
+    claims, be non-empty, and carry no NUL.
+    """
+    body = "가나다\n" * 30_000
+    assert len(body) > 2 * MAX_DOCUMENT_CHARS
+    attachment = parse_document_item(doc("long.md", "text/markdown", body))
+    assert len(attachment.text) == len(body)
+    assert attachment.byte_size == len(body.encode("utf-8")) > 96 * 1024
 
 
 @pytest.mark.asyncio

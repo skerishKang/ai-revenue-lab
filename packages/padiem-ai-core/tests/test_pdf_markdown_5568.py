@@ -443,9 +443,9 @@ def test_conversion_reuses_core_bounds_and_invents_no_ceiling() -> None:
         pdf_markdown.MAX_PDF_PAGE_TEXT_CHARS
         is _CORE_MAX_PDF_PAGE_TEXT_CHARS
     )
-    with pytest.raises(DocumentNormalizationError) as too_long:
-        convert(blank_pdf(_CORE_MAX_PDF_PAGES + 1))
-    assert too_long.value.code == "pdf_page_limit"
+    # #5734 stage 2: the shared numbers remain shared, and neither one refuses
+    # a document any more. Length past the old ceiling converts like any other.
+    convert(blank_pdf(_CORE_MAX_PDF_PAGES + 1))
 
 
 def test_conversion_opens_only_the_canonical_reader_and_calls_no_provider() -> None:

@@ -27,15 +27,11 @@
     freezeFormat({ label: "XLSX", extensions: [".xlsx"], mediaTypes: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }),
   ]);
 
-  // #4379: an attached image or binary document carries no PADIEM byte
-  // total. The platform request limit and the provider limit are the real
-  // ceilings, and the route reader stays incremental instead of applying a
-  // product-side maximum. The text bounds below are a data shape, not a total.
-  const limits = Object.freeze({
-    textBytes: 96 * 1024,
-    textChars: 40000,
-  });
-
+  // #4379 removed the PADIEM byte total for an image or a binary document, and
+  // #5734 removed the ones that counted a document's own length — the 96 KiB and
+  // 40,000-character text bounds. The platform request limit and the Provider's
+  // own limit are the real ceilings, and each reports itself. This file
+  // therefore carries no size or length number for any attachment kind.
   const allDocuments = Object.freeze([...textDocuments, ...binaryDocuments]);
 
   // #2824: the runtime is the authority for whether binary parsing can run in
@@ -64,10 +60,7 @@
     const documentLabels = labelsFor(activeDocuments(), language === "en" ? ", " : "·");
     const textLabels = labelsFor(textDocuments, language === "en" ? ", " : "·");
     const binaryLabels = labelsFor(binaryDocuments, language === "en" ? ", " : "·");
-    const textLimit = language === "en" ? "up to 96 KiB / 40,000 characters" : "최대 96 KiB/40,000자";
-    const documentDetail = binaryEnabled
-      ? `${textLabels}, ${textLimit}; ${binaryLabels}`
-      : `${textLabels}, ${textLimit}`;
+    const documentDetail = binaryEnabled ? `${textLabels}; ${binaryLabels}` : textLabels;
 
     if (language === "en") {
       return Object.freeze({
@@ -76,8 +69,6 @@
         idleNote: `Attach one image (${imageLabels}) or document (${documentLabels}).`,
         fileButtonTitle: `Attach one image (${imageLabels}) or document (${documentDetail}).`,
         unsupportedFormat: `Supported attachment formats: ${imageLabels}, ${documentLabels}.`,
-        textTooLarge: "Text documents must be 96 KiB or smaller.",
-        textTooLong: "Text documents must be 40,000 characters or fewer.",
       });
     }
 
@@ -87,8 +78,6 @@
       idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels}) 한 개를 첨부할 수 있습니다.`,
       fileButtonTitle: `사진(${imageLabels}) 또는 문서(${documentDetail}) 한 개를 첨부합니다.`,
       unsupportedFormat: `지원 첨부 형식: ${imageLabels}·${documentLabels}.`,
-      textTooLarge: "텍스트 문서는 96 KiB 이하만 첨부할 수 있습니다.",
-      textTooLong: "텍스트 문서는 40,000자 이하만 첨부할 수 있습니다.",
     });
   }
 
@@ -97,7 +86,6 @@
     textDocuments,
     binaryDocuments,
     allDocuments,
-    limits,
     get accept() {
       return buildAccept();
     },
