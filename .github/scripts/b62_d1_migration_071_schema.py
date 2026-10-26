@@ -19,7 +19,13 @@ QUERY = (
 
 
 def norm(value):
-    return re.sub(r"\s+", " ", re.sub(r"--[^\n]*", "", value or "")).strip().lower()
+    # SQL keywords are case-insensitive; CHECK string literals are not.
+    # Keep literal case/spacing so a changed status constraint is DRIFT.
+    tokens = re.split(r"('(?:''|[^'])*')", value or "")
+    return "".join(
+        token if index % 2 else re.sub(r"\s+", " ", re.sub(r"--[^\n]*", "", token)).lower()
+        for index, token in enumerate(tokens)
+    ).strip()
 
 
 def source():
