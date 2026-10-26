@@ -96,7 +96,6 @@ def test_model_native_defaults_omitted_and_unverified_options_rejected():
 def test_store_binding_is_metadata_only_and_registered_in_worker():
     root=Path(__file__).resolve().parents[1]
     toml=(root/"wrangler.toml").read_text(encoding="utf8")
-    worker=(root/"worker.py").read_text(encoding="utf8")
     import tomllib
     bindings=tomllib.loads(toml)["secrets_store_secrets"]
     assert len(bindings)>=10
@@ -104,7 +103,11 @@ def test_store_binding_is_metadata_only_and_registered_in_worker():
     assert toml.count('binding = "'+BINDING+'"')==1
     assert toml.count('secret_name = "'+SECRET_NAME+'"')==1
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in toml
-    assert '"'+BINDING+'"' in worker
+    # The Worker derives its request scope from the registry, so the name being
+    # in that scope is the fact this onboarding must keep true; worker.py no
+    # longer hand-lists a Provider credential.
+    from app.pilot.model_registry_file import credential_binding_names
+    assert BINDING in credential_binding_names()
     spec=get_platform_provider("kira")
     assert spec is not None and spec.credential_binding_name==BINDING
     assert resolve_secret(spec)==""  # no live key is ever loaded by this test

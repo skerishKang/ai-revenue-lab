@@ -83,7 +83,10 @@ def test_worker_and_wrangler_use_approved_existing_store_metadata_only():
         "store_id": "f0b09ca04a7b43248154c773704a5616",
         "secret_name": SECRET_NAME,
     }]
-    assert BINDING in (root / "worker.py").read_text(encoding="utf-8")
+    # Membership in the registry-derived scope is what puts this binding in the
+    # Worker's request scope; worker.py no longer hand-lists a Provider credential.
+    from app.pilot.model_registry_file import credential_binding_names
+    assert BINDING in credential_binding_names()
     assert get_platform_provider(PROVIDER).credential_binding_name == BINDING
 
 

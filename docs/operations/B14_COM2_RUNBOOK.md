@@ -30,9 +30,12 @@ bash /opt/padiem/b14/deploy/host-com2/b14/install.sh --reload
 
 ## Step 2 — 키 입력 — Owner
 
-`/opt/padiem/b14/secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. 대상 이름은 §2.2 목록과 동일:
+`/opt/padiem/b14/secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. §2.2 목록의 이름:
 
 `PADIEM_B14_CREDENTIAL_01` … `PADIEM_B14_CREDENTIAL_14`, `PADIEM_B14_SERVICE_PROOF_SECRET`, `PADIEM_GRAFANA_OTLP_TOKEN`.
+
+- 신규 공급사는 이 목록을 늘리지 않는다. `apps/korean-ai-platform/app/pilot/b14_models.json`의 공급사 항목이 선언한 `credential_binding_name`이 곧 이 PC의 파일 이름이고, 앱은 그 이름으로 env → `$B14_SECRET_DIR/<이름>` 순서로 읽는다(#2107). 등록은 (1) 레지스트리에 공급사·모델 항목 추가, (2) 그 이름으로 값 입력 — 이 두 단계이며 어느 쪽 엔트리포인트도 손보지 않는다.
+- 그 이름을 Worker가 바인딩하지 않으면 해당 배포에서 공급사 라인은 값이 없어 닫힌 채로 동작한다. 복제 키를 만들거나 §2.2의 기존 Cloudflare 시크릿을 재사용하지 않는다.
 
 - 값 복사·스크린샷·PR 게시 금지. 확인은 존재·권한만으로: `stat -c '%a %n' /opt/padiem/b14/secrets/*`.
 - 그룹·타인 읽기 가능한 파일은 앱이 **거부**하고 그 라인은 실패로 닫힌다(값 노출 대신).

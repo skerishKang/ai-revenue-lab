@@ -227,10 +227,13 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
 
 
 def test_worker_projects_every_enabled_platform_secret_registry_binding():
-    """A declared Wrangler binding is unusable unless Worker explicitly
-    collects and mirrors it into the application's environment.
+    """A registry Provider is servable only if the Worker collects its binding.
 
-    This checks ALL active providers, not a one-off Google-only literal.
+    The credential scope is derived from b14_models.json — the same authority
+    the catalog installs from and from which the COM2 adapter derives its own —
+    so onboarding a Provider, including one whose credential lives only on COM2,
+    never adds a second hand-maintained list. This checks ALL active providers
+    and the derivation itself, not a one-off literal.
     """
     import ast
     import json
@@ -245,26 +248,42 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
         for entry in registry["providers"].values()
         if entry["enabled"] and entry["credential_source"] == "platform_secret"
     }
-    worker_ast = ast.parse(WORKER_SRC.read_text(encoding="utf-8"))
-    assignments = [
-        node for node in worker_ast.body
-        if isinstance(node, ast.Assign)
-        and any(isinstance(t, ast.Name) and t.id == "_ENV_KEYS" for t in node.targets)
-    ]
-    assert len(assignments) == 1
-    value = assignments[0].value
-    assert isinstance(value, ast.Call)
-    assert isinstance(value.func, ast.Name) and value.func.id == "frozenset"
-    assert len(value.args) == 1
-    allowlist = ast.literal_eval(value.args[0])
-    assert required <= allowlist, (
+    worker_text = WORKER_SRC.read_text(encoding="utf-8")
+    worker_ast = ast.parse(worker_text)
+
+    def _assignment(target_id: str):
+        matches = [
+            node for node in worker_ast.body
+            if isinstance(node, ast.Assign)
+            and any(isinstance(t, ast.Name) and t.id == target_id for t in node.targets)
+        ]
+        assert len(matches) == 1, f"{target_id} is not a single assignment in worker.py"
+        return matches[0]
+
+    from app.pilot.model_registry_file import (
+        credential_binding_names as registry_credential_names,
+    )
+
+    # Evaluate the entrypoint's own expression rather than unioning the two
+    # halves here: a hand-written union would still pass if worker.py stopped
+    # taking the registry into its scope.
+    scope: dict[str, object] = {}
+    for node in (_assignment("_FIXED_ENV_KEYS"), _assignment("_ENV_KEYS")):
+        exec(
+            compile(ast.Module(body=[node], type_ignores=[]), str(WORKER_SRC), "exec"),
+            {"credential_binding_names": registry_credential_names},
+            scope,
+        )
+    collected = set(scope["_ENV_KEYS"])
+    assert required <= collected, (
         "Worker missing required provider Secret bindings: "
-        + ", ".join(sorted(required - allowlist))
+        + ", ".join(sorted(required - collected))
     )
+    # A credential the registry declares must not also be hand-listed: that
+    # duplicate list is exactly what made every onboarding a code change.
+    assert not set(scope["_FIXED_ENV_KEYS"]) & set(registry_credential_names())
     assert "PADIEM_B14_CREDENTIAL_05" in required
-    assert "collect_request_bindings(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
-        encoding="utf-8"
-    )
+    assert "collect_request_bindings(self.env, _ENV_KEYS)" in worker_text
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("has_ctx", [True, False], ids=["waitUntil", "local_inline_after_response"])
