@@ -298,7 +298,7 @@ class ExistingResultReuseAdoptTests(unittest.IsolatedAsyncioTestCase):
         # tampering is applied to the durable row itself: a corrupted or
         # oversized index row must still never become a web source.
         cases = [
-            ("oversized record", "size_bytes", 10 * 1024 * 1024 + 1),
+            ("oversized record", "size_bytes", 1024 * 1024 * 1024 + 1),
             ("path traversal name", "filename", "../../secret.xlsx"),
             ("non xlsx name", "filename", "secret.pdf"),
             ("empty name", "filename", ""),

@@ -70,13 +70,13 @@ class Gate071Tests(unittest.TestCase):
         self.assertIn("idx_claw_web_xlsx_selections_owner", names)
         self.assertIn("idx_claw_web_xlsx_quote_edit_owner", names)
 
-    def test_old_one_mib_and_new_ten_mib_boundaries(self):
+    def test_old_one_mib_and_new_one_gib_boundaries(self):
         seed(self.db)
         with self.assertRaises(sqlite3.IntegrityError):
             self.db.execute("UPDATE claw_web_xlsx_selections SET size_bytes=1048577")
         self.migrate()
-        self.db.execute("UPDATE claw_web_xlsx_selections SET size_bytes=10485760")
-        for invalid in (0, 10485761):
+        self.db.execute("UPDATE claw_web_xlsx_selections SET size_bytes=1073741824")
+        for invalid in (0, 1073741825):
             with self.subTest(invalid=invalid), self.assertRaises(sqlite3.IntegrityError):
                 self.db.execute("UPDATE claw_web_xlsx_selections SET size_bytes=?", (invalid,))
         with self.assertRaises(sqlite3.IntegrityError):
@@ -88,6 +88,10 @@ class Gate071Tests(unittest.TestCase):
             if row["name"] == module.TABLES[0]:
                 row["sql"] = row["sql"].replace("1048576", "2097152")
         self.assertEqual(module.classify(value)[0], "DRIFT")
+
+    def test_old_ten_mib_071_is_drift_against_owner_one_gib(self):
+        self.db.executescript(module.source()[2].replace("1073741824", "10485760"))
+        self.assertEqual(module.classify(payload(self.db))[0], "DRIFT")
 
     def test_receipt_sql_drift_fails_even_with_valid_parent(self):
         self.migrate()

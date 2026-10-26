@@ -54,7 +54,7 @@ async def web_xlsx_quote_edit_preview(request: Request) -> Response:
     if protected.status_code != 200:
         return protected
     content = protected.body
-    if type(content) is not bytes or not 1 <= len(content) <= 10 * 1024 * 1024:
+    if type(content) is not bytes or not 1 <= len(content) <= 1024 * 1024 * 1024:
         return _error(503, "approved_workcopy_preview_invalid")
     sha = hashlib.sha256(content).hexdigest()
     try:
