@@ -415,6 +415,32 @@ const SCENARIOS = {
       reopened = find(session, "utilSpeechOutput").value;
     }
 
+    // #5731: a stored speech can be picked as the style reference. The saved
+    // list exposes one 참고로 선택 action per row; picking one fills the style
+    // sample textarea with the stored body, and the next generation's prompt
+    // carries it inside the sample fence.
+    const refButton = session.root.querySelectorAll("#utilSpeechSaved .util-speech-use-ref")[0] || null;
+    let refSelected = null;
+    let refPrompt = null;
+    if (refButton) {
+      const styleField = form.querySelector("[name=style]");
+      styleField.value = "";
+      await refButton.dispatch("click");
+      await sleep(20);
+      refSelected = styleField.value;
+      await form.dispatch("submit");
+      await sleep(20);
+      refPrompt = chatPayloads.length ? chatPayloads[chatPayloads.length - 1].messages[0].content : "";
+    }
+
+    // #5731: re-entering the tool later must still list the stored speeches —
+    // a fresh session opening speech sees the same saved list without saving
+    // anything first.
+    const reentry = spawnSession();
+    await openTool(reentry, "speech");
+    await sleep(30);
+    const reentryListButtons = reentry.root.querySelectorAll("#utilSpeechSaved button");
+
     return {
       prompt,
       generated,
@@ -423,6 +449,11 @@ const SCENARIOS = {
       savedBody: savedFile ? savedFile.content : null,
       savedListLabels: labels(savedListButtons),
       reopened,
+      refSelected,
+      refSelectedMatchesSaved: refSelected === (savedFile ? savedFile.content : null),
+      refPromptCarriesSample: refPrompt ? refPrompt.indexOf("아래는 사용자의 기존 축사/인사말 샘플입니다") >= 0 && refPrompt.indexOf(refSelected || "") >= 0 : null,
+      reentryListCount: reentryListButtons.length,
+      reentryListLabels: labels(reentryListButtons),
       chatPayload: chatPayloads[0] || null,
       endpoints: endpointSet(),
       alerts,

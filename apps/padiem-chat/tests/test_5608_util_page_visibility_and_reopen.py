@@ -392,14 +392,17 @@ function fail(label, extra) {
   if (storedFiles[0].name !== "2026 Padiem Community Sharing Party.txt") fail("SAVED_NAME_FROM_EVENT_FIELD");
 
   // 3) The saved list is populated from the (body-less) list projection.
+  // #5731: each row carries the reopen button plus a 참고로 선택 action, so
+  // the list renders two buttons for the one stored speech.
   const savedButtons = root.findAll("#utilSpeechSaved button");
-  if (savedButtons.length !== 1) fail("SAVED_LIST_NOT_RENDERED");
+  if (savedButtons.length !== 2) fail("SAVED_LIST_NOT_RENDERED", { count: savedButtons.length });
   if (savedButtons[0].textContent.indexOf("2026 Padiem Community Sharing Party.txt") < 0) {
     fail("SAVED_LIST_MISSING_FILE_NAME");
   }
   if (savedButtons[0].textContent.indexOf(DRAFT_BODY.length + "자") < 0) {
     fail("SAVED_LIST_MISSING_CHAR_COUNT");
   }
+  if (savedButtons[1].textContent !== "참고로 선택") fail("SAVED_LIST_MISSING_REFERENCE_ACTION");
 
   // 4) Reopening restores the stored body, not a filename placeholder.
   await savedButtons[0].dispatch("click");
