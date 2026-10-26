@@ -338,7 +338,7 @@ async def resolve_pc_connector_scope(
 
 async def resolve_pc_mesh_target(
     request: Any, *, owner_id: str, workspace_id: str,
-    connector: PcConnectorScope | None = None,
+    connector: PcConnectorScope | None = None, device_id: str | None = None,
 ) -> PcExecutionTarget:
     """Read the existing owner-authorized Mesh target without inventing heartbeat."""
     scope = connector if connector is not None else await resolve_pc_connector_scope(
@@ -347,7 +347,7 @@ async def resolve_pc_mesh_target(
     if not scope.ready:
         return PcExecutionTarget(status=_EXEC_OWNER_UNAVAILABLE)
     return await _resolve_execution_target(
-        request, session_id=scope.session_id, selected_device_id=None,
+        request, session_id=scope.session_id, selected_device_id=device_id,
         account_ref=scope.account_ref,
     )
 

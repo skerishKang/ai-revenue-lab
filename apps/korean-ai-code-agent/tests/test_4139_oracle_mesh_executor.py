@@ -476,5 +476,53 @@ class PollPresenceTests(unittest.TestCase):
         self.assertEqual(probed, [])
 
 
+
+class MultiplePresenceEntrypointTests(unittest.TestCase):
+    def _beats(self, configured, refused=False):
+        import kagent.local_agent_oracle_mesh_executor as entry
+        import kagent.local_agent_mesh_failover as failover
+        class Stop(Exception): pass
+        captured = {}
+        def factory(**kwargs):
+            captured["provider"] = kwargs["presence_provider"]
+            raise Stop()
+        class Presence:
+            def __init__(self, **kwargs): pass
+            def is_connected(self, device): return device.endswith("1")
+        env = {"MESH_FAILOVER_DEVICE_ID": configured, "ORACLE_MESH_PASSWORD_FILE": "fake",
+               "ORACLE_MESH_CHANNEL_SECRET_FILE": "fake", "ORACLE_MESH_MESHCTRL_JS": "fake",
+               "ORACLE_MESH_LOGIN_USER": "synthetic", "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test"}
+        with patch.object(entry, "deployment_secret_password_provider", return_value=lambda: "fake"), \
+             patch.object(entry, "_read_secret_file", return_value=SECRET), \
+             patch.object(entry, "make_oracle_mesh_executor", side_effect=factory), \
+             patch.object(failover, "MeshCentralDevicePresence", Presence):
+            if refused:
+                self.assertEqual(entry.main(env), 2)
+                return None
+            with self.assertRaises(Stop): entry.main(env)
+        seen = []
+        executor = OracleMeshExecutor(chat_origin="https://chat.example.test", channel_secret=SECRET,
+            read_port=_StubPort(), presence_provider=captured["provider"],
+            transport=lambda path, payload: (seen.append(payload) or (200, {"ok": True, "dispatch": None})))
+        executor.run_once()
+        return seen[0]
+
+    def test_multiple_devices_reach_the_actual_poll_envelope(self):
+        self.assertEqual(self._beats("pc@mesh+1, pc@mesh+2"), {"presence": [
+            {"device_id": "pc@mesh+1", "connected": True}, {"device_id": "pc@mesh+2", "connected": False}]})
+
+    def test_single_value_and_absent_setting_are_backward_compatible(self):
+        self.assertEqual(self._beats("pc@mesh+1"), {"presence": [{"device_id": "pc@mesh+1", "connected": True}]})
+        self.assertIsNone(self._beats(""))
+
+    def test_eight_devices_are_carried_and_duplicates_do_not_duplicate_beats(self):
+        self.assertEqual(len(self._beats(",".join("pc"+str(i) for i in range(8)))["presence"]), 8)
+        self.assertEqual(len(self._beats("pc1,pc1")["presence"]), 1)
+
+    def test_nine_devices_or_empty_segments_are_refused_before_factory(self):
+        self.assertIsNone(self._beats(",".join("pc"+str(i) for i in range(9)), refused=True))
+        self.assertIsNone(self._beats("pc1,", refused=True))
+
+
 if __name__ == "__main__":
     unittest.main()

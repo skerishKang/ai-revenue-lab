@@ -355,6 +355,13 @@ class OracleMeshReturnSource:
             return rows_for_path[0].get("device_id") or rows_for_path[0]["node_ref"]
         return selected_device_id or ""
 
+    def command_device_ids(self, *, account_ref: str) -> list[str]:
+        """Enumerate only this server-verified owner's unambiguous command targets."""
+        candidates = {row.get("device_id") or row["node_ref"] for row in self._rows
+                      if row["account_ref"] == account_ref and row["command_exec"] is True}
+        return sorted(device for device in candidates if is_pc_device_id(device)
+                      and self.command_target(account_ref=account_ref, device_id=device) is not None)
+
     def device_scope(self, *, device_id: str) -> dict[str, Any] | None:
         """Server-derived canonical identity for one reported Mesh device.
 
@@ -1590,14 +1597,16 @@ async def _record_mesh_presence(
             except Exception:
                 generation = None
         if type(generation) is not int or not 1 <= generation <= 1_000_000:
-            logging.getLogger(__name__).warning("oracle_mesh_presence=generation_unresolved")
-            continue
+            # Requirement 6: Broker is not a prerequisite for Mesh presence.
+            logging.getLogger(__name__).info("oracle_mesh_presence=generation_unresolved")
+            generation = None
         try:
             await store.upsert(
                 device_id=scope["device_id"],
                 connected=entry["connected"],
                 received_at=received_at,
                 credential_generation=generation,
+                source="mesh" if generation is None else "broker",
             )
         except Exception:
             logging.getLogger(__name__).warning("oracle_mesh_presence=store_failed")
