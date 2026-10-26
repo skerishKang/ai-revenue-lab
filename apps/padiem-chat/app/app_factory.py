@@ -310,6 +310,19 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
+from .pc_device_pairing_routes import (
+    PC_PAIRING_CLAIM_PATH,
+    PC_PAIRING_LINK_PATH,
+    PC_PAIRING_PATH,
+    PC_PAIRING_ROOT_PATH,
+    PC_PAIRING_ROOTS_PATH,
+    pc_pairing_approve_root,
+    pc_pairing_claim,
+    pc_pairing_issue,
+    pc_pairing_list,
+    pc_pairing_revoke,
+    pc_pairing_revoke_root,
+)
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
 from .project_file_routes import (
@@ -847,6 +860,16 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Route("/api/calendar/appointments/{appointment_id}", calendar_appointment_manage, methods=["PUT","DELETE"]),
         Route("/api/calendar/work-logs/{log_id}", calendar_work_log_manage, methods=["PUT","DELETE"]),
+        # #5573 PC pairing: an owner links their own PC to their own account.
+        # Every route refuses 503 while the pairing store is uncomposed, so
+        # mounting is not an activation — a deployment without the store behaves
+        # exactly as it did before.
+        Route(PC_PAIRING_PATH, pc_pairing_issue, methods=["POST"]),
+        Route(PC_PAIRING_PATH, pc_pairing_list, methods=["GET"]),
+        Route(PC_PAIRING_CLAIM_PATH, pc_pairing_claim, methods=["POST"]),
+        Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
+        Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
+        Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all
