@@ -827,6 +827,10 @@
       const panel = panels.meeting;
       if (!panel || panel.dataset.loaded) return;
       panel.dataset.loaded = "1";
+      // #5608: activity books persist under their own name rule so the
+      // meeting record list and the book list stay two separate data flows
+      // over the same project-file store.
+      const BOOK_PREFIX = "활동집 - ";
       const form = el("form", "util-form");
       form.id = "utilMeetingForm";
       const fields = [
@@ -922,7 +926,13 @@
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) return;
         const files = await listProjectFiles(currentPid);
+        // #5608/#5783: every .txt in the project is a stored record — speech
+        // drafts included. The builder only consumes what the user checks, so
+        // nothing unselected can reach the AI prompt (no cross-record bleed).
         const meetingFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
+        // #5608: activity books persist under the activity-book name rule;
+        // they surface in their own section, not as raw meeting records.
+        const bookFiles = meetingFiles.filter((f) => (f.name || "").startsWith(BOOK_PREFIX));
         arc.replaceChildren();
         const h = el("h3", null, "활동 기록");
         arc.appendChild(h);
@@ -937,41 +947,79 @@
         bookBtn.style.marginBottom = "8px";
         arc.appendChild(bookBtn);
 
+        // #5608: the record order here is the book order. The up/down moves
+        // re-arrange this list itself, so what the user sees is exactly the
+        // sequence the book builder reads.
+        let order = meetingFiles.slice();
         const ul = document.createElement("ul");
-        meetingFiles.forEach((f) => {
-          const li = document.createElement("li");
-          li.style.display = "flex";
-          li.style.alignItems = "center";
-          li.style.gap = "8px";
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.value = f.id;
-          cb.className = "util-book-check";
-          cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
-          li.appendChild(cb);
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
-          btn.style.flex = "1";
-          btn.addEventListener("click", async () => {
-            const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
-            if (res.ok) {
-              const data = await res.json();
-              const out = document.getElementById("utilMeetingOutput");
-              const content = data && data.file && (data.file.content || data.file.text);
-              if (out && typeof content === "string") {
-                out.value = content;
-                result.hidden = false;
+        function renderRows() {
+          ul.replaceChildren();
+          order.forEach((f, index) => {
+            const li = document.createElement("li");
+            li.style.display = "flex";
+            li.style.alignItems = "center";
+            li.style.gap = "8px";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = f.id;
+            cb.className = "util-book-check";
+            cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
+            li.appendChild(cb);
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            btn.style.flex = "1";
+            btn.addEventListener("click", async () => {
+              const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
+              if (res.ok) {
+                const data = await res.json();
+                const out = document.getElementById("utilMeetingOutput");
+                const content = data && data.file && (data.file.content || data.file.text);
+                if (out && typeof content === "string") {
+                  out.value = content;
+                  result.hidden = false;
+                } else {
+                  alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
+                }
               } else {
-                alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
+                alert("저장된 회의 기록을 열지 못했습니다.");
               }
-            } else {
-              alert("저장된 회의 기록을 열지 못했습니다.");
-            }
+            });
+            li.appendChild(btn);
+            const up = document.createElement("button");
+            up.type = "button";
+            up.className = "util-record-move";
+            up.dataset.move = "-1";
+            up.dataset.fileName = f.name;
+            up.textContent = "↑";
+            up.disabled = index === 0;
+            up.addEventListener("click", () => {
+              const to = index - 1;
+              if (to < 0) return;
+              const [moved] = order.splice(index, 1);
+              order.splice(to, 0, moved);
+              renderRows();
+            });
+            const down = document.createElement("button");
+            down.type = "button";
+            down.className = "util-record-move";
+            down.dataset.move = "1";
+            down.dataset.fileName = f.name;
+            down.textContent = "↓";
+            down.disabled = index === order.length - 1;
+            down.addEventListener("click", () => {
+              const to = index + 1;
+              if (to >= order.length) return;
+              const [moved] = order.splice(index, 1);
+              order.splice(to, 0, moved);
+              renderRows();
+            });
+            li.appendChild(up);
+            li.appendChild(down);
+            ul.appendChild(li);
           });
-          li.appendChild(btn);
-          ul.appendChild(li);
-        });
+        }
+        renderRows();
         arc.appendChild(ul);
 
         const bookResult = el("div", "util-result");
@@ -986,20 +1034,27 @@
         const bookActions = el("div", "util-actions");
         const bookCopy = el("button", null, "복사"); bookCopy.type = "button";
         const bookDl = el("button", null, "TXT 다운로드"); bookDl.type = "button";
-        bookActions.append(bookCopy, bookDl);
+        // #5608: the book draft is a product, not scratch — it persists
+        // through the same project-file channel under its own name rule, so
+        // re-entering the tool restores and re-edits it.
+        const bookSave = el("button", "util-save", "활동집 저장"); bookSave.type = "button"; bookSave.id = "utilBookSave";
+        bookActions.append(bookCopy, bookDl, bookSave);
         bookResult.append(bookH, bookOutput, bookActions);
         arc.appendChild(bookResult);
 
         bookBtn.addEventListener("click", async () => {
           const checked = Array.from(document.querySelectorAll(".util-book-check:checked"));
           if (!checked.length) { alert("선택된 기록이 없습니다."); return; }
+          // #5608: the book reads the records in the order the list shows —
+          // the same sequence the up/down moves arrange. Only the checked
+          // records enter the prompt: nothing unselected can bleed in.
+          const checkedIds = new Set(checked.map((cb) => cb.value));
+          const ordered = order.filter((f) => checkedIds.has(f.id));
           bookResult.hidden = false;
           bookOutput.value = "선택한 회의 기록을 불러오는 중...";
           try {
             const contents = [];
-            for (const checkbox of checked) {
-              const file = meetingFiles.find((item) => item.id === checkbox.value);
-              if (!file) continue;
+            for (const file of ordered) {
               const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(file.id), { credentials: "include" });
               if (!res.ok) throw new Error("선택한 회의 기록을 불러오지 못했습니다: " + file.name);
               const data = await res.json();
@@ -1027,6 +1082,62 @@
           try { await navigator.clipboard.writeText(bookOutput.value); bookCopy.textContent = "복사됨"; setTimeout(() => { bookCopy.textContent = "복사"; }, 1500); } catch (_) {}
         });
         bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book-draft.txt"); });
+
+        // #5608: saving the book uses its own name rule so books never mix
+        // with meeting records in the list — the book section reads only
+        // names starting with BOOK_PREFIX. The title comes from the draft's
+        // first line (what the user edited); fallback keeps a safe name.
+        bookSave.addEventListener("click", async () => {
+          const text = bookOutput.value.trim();
+          if (!text) return;
+          if (!currentPid) currentPid = await ensureProject();
+          if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+          const firstLine = text.split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
+          const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
+          const name = BOOK_PREFIX + (safe || "제목 미정") + ".txt";
+          const file = await saveProjectFile(currentPid, name, text);
+          if (file) {
+            bookSave.textContent = "저장됨";
+            setTimeout(() => { bookSave.textContent = "활동집 저장"; }, 1500);
+            await refreshArchive(arc);
+          } else {
+            alert("활동집 저장 실패");
+          }
+        });
+
+        // Stored books reopen into the editor for editing and re-saving.
+        if (bookFiles.length) {
+          const bookSec = el("div", null);
+          const bookSecH = el("h3", null, "저장된 활동집");
+          bookSec.appendChild(bookSecH);
+          const bookUl = document.createElement("ul");
+          bookFiles.forEach((f) => {
+            const li = document.createElement("li");
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "util-book-open";
+            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            btn.addEventListener("click", async () => {
+              const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
+              if (res.ok) {
+                const data = await res.json();
+                const content = data && data.file && (data.file.content || data.file.text);
+                if (typeof content === "string") {
+                  bookOutput.value = content;
+                  bookResult.hidden = false;
+                } else {
+                  alert("저장된 활동집의 본문을 읽을 수 없습니다.");
+                }
+              } else {
+                alert("저장된 활동집을 열지 못했습니다.");
+              }
+            });
+            li.appendChild(btn);
+            bookUl.appendChild(li);
+          });
+          bookSec.appendChild(bookUl);
+          arc.appendChild(bookSec);
+        }
       }
       refreshArchive(archive);
     }
