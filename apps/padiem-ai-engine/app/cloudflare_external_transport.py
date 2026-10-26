@@ -118,6 +118,13 @@ class _EmptyAsyncByteStream(httpx.AsyncByteStream):
 class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
     """Worker-native external GET transport with a fixed HTTPS host allowlist."""
 
+    # This bound is a decision about third-party web endpoints, not a general
+    # property of Worker fetch: the Service Binding path this lane supplements has
+    # never capped a model request body (#4379). A subclass that carries B14
+    # traffic declares `MAX_POST_BODY_BYTES = None` instead of editing this value,
+    # so the public-web lane keeps the number it has always had.
+    MAX_POST_BODY_BYTES: int | None = 8_192
+
     def __init__(
         self,
         *,
@@ -238,7 +245,10 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         # public-web subclass permits POST exclusively to TinyFish Fetch.
         if request.method == "POST":
             body = await request.aread()
-            if len(body) > 8_192:
+            if (
+                self.MAX_POST_BODY_BYTES is not None
+                and len(body) > self.MAX_POST_BODY_BYTES
+            ):
                 raise httpx.RequestError(
                     "Public-web Fetch body exceeds the safe bound.", request=request,
                 )
@@ -351,6 +361,53 @@ class CloudflarePublicWebTransport(CloudflareExternalHttpTransport):
         ):
             raise httpx.RequestError(
                 "External web-provider origin or method is not approved.",
+                request=request,
+            )
+
+
+class CloudflareB14UpstreamTransport(CloudflareExternalHttpTransport):
+    """The #5784 B14 upstream over HTTPS, reached from the Workers runtime.
+
+    A model request is one JSON body that the Service Binding path sends in full,
+    so this lane sends it in full: `MAX_POST_BODY_BYTES` is None here, and every
+    other caller keeps the public-web bound it has always had. The path allowlist
+    is deliberately not repeated — `padiem_ai_core.b14_upstream.B14HttpsTransport`
+    pins origin and path before a request reaches this transport, and a second
+    allowlist would be a second authority free to drift.
+    """
+
+    MAX_POST_BODY_BYTES = None
+
+    def __init__(
+        self,
+        *,
+        origin: str,
+        fetch_impl: Any | None = None,
+        abort_signal_api: Any | None = None,
+    ) -> None:
+        host = urlsplit(origin).hostname
+        if not host:
+            raise ValueError("b14_upstream_host_missing")
+        self._expected_host = host
+        super().__init__(
+            allowed_hosts=frozenset({host}),
+            fetch_impl=fetch_impl,
+            abort_signal_api=abort_signal_api,
+        )
+
+    def _validate_target(self, request: httpx.Request) -> None:
+        parsed = urlsplit(str(request.url))
+        if (
+            parsed.scheme != "https"
+            or parsed.port not in (None, 443)
+            or parsed.hostname != self._expected_host
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.fragment
+            or request.method not in {"GET", "POST"}
+        ):
+            raise httpx.RequestError(
+                "Business 14 upstream origin or method is not approved.",
                 request=request,
             )
 
