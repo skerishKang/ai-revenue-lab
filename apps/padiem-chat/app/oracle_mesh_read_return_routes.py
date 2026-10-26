@@ -51,7 +51,7 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from padiem_ai_core.pc_device_identity import is_pc_device_id
+from padiem_ai_core.pc_device_identity import is_pc_device_id, is_pc_mesh_node_id
 
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
@@ -926,6 +926,7 @@ async def dispatch_oracle_mesh_command_intent(
     request: Request, *, command: str, wire: dict[str, Any],
     trusted_owner: tuple[Any, str, str] | None = None,
     tool_call_ref: str | None = None,
+    files_target: dict[str, Any] | None = None,
 ) -> JSONResponse:
     """Owner intent for ONE terminal command on the pinned management PC.
 
@@ -938,6 +939,14 @@ async def dispatch_oracle_mesh_command_intent(
       read grant is never a command grant;
     * no file/root/path is accepted from the browser, so this route cannot
       retarget the read lane's file authority.
+
+    ``files_target`` is how the PC-files lane passes the target it already
+    resolved from this account's own PC links (#5573). It is server-derived and
+    never a caller value, and it exists so the folder the model was told about
+    and the device that receives the command cannot be chosen twice and drift.
+    A deployment with no directory to ask passes the map row it resolved, so the
+    behaviour is unchanged; the terminal lane passes nothing at all and keeps
+    asking the map.
     """
     if trusted_owner is None:
         session, denial = await _verified_owner_request(request)
@@ -1001,7 +1010,19 @@ async def dispatch_oracle_mesh_command_intent(
     ):
         return _error(404, "oracle_mesh_run_unavailable")
 
-    target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
+    if files_target is not None:
+        # The file lane resolved this account's own PC already. Resolving it a
+        # second time against the map here is how a folder and a device start
+        # disagreeing, so the resolved target is the authority for this call.
+        target = files_target
+        if (
+            not isinstance(target, dict)
+            or not isinstance(target.get("node_ref"), str)
+            or not is_pc_device_id(target["node_ref"])
+        ):
+            return _error(403, "oracle_mesh_command_unverified")
+    else:
+        target = mesh_source.command_target(account_ref=account_ref, device_id=selected)
     if target is None:
         return _error(403, "oracle_mesh_command_unverified")
 
@@ -1579,18 +1600,41 @@ async def _record_mesh_presence(
     if not callable(getattr(store, "upsert", None)):
         return
     resolver = getattr(request.app.state, "mesh_presence_generation_resolver", None)
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
     received_at = datetime.now(timezone.utc)
     for entry in entries:
-        scope = source.device_scope(device_id=entry["device_id"])
-        if scope is None:
-            logging.getLogger(__name__).warning("oracle_mesh_presence=device_unmapped")
-            continue
+        reported = entry["device_id"]
+        # R4: the link directory answers first. A beat naming a PC somebody has
+        # paired is recorded under the server's own composed node identity, so
+        # the receipt key never depends on what the executor called it. The
+        # ownership map still answers for a deployment with no directory to ask,
+        # exactly as it did before PR-2.
+        directory = None
+        if callable(getattr(pairing, "device_scope", None)):
+            try:
+                directory = await pairing.device_scope(device_id=reported)
+            except Exception:
+                directory = None
+        if directory is not None:
+            canonical = directory["device_id"]
+            accounts = list(directory["account_refs"])
+        else:
+            scope = source.device_scope(device_id=reported)
+            if scope is None:
+                logging.getLogger(__name__).warning("oracle_mesh_presence=device_unmapped")
+                continue
+            canonical = scope["device_id"]
+            accounts = [scope["account_ref"]]
         generation = None
-        if callable(resolver):
+        # One account behind the node resolves a Broker credential generation;
+        # a PC shared by several has no single generation to record, and the
+        # receipt stays Mesh-only (#5553 requirement 6) rather than borrowing
+        # another account's credential state.
+        if callable(resolver) and len(accounts) == 1:
             try:
                 generation = resolver(
-                    account_ref=scope["account_ref"],
-                    device_id=scope["device_id"],
+                    account_ref=accounts[0],
+                    device_id=canonical,
                 )
                 if hasattr(generation, "__await__"):
                     generation = await generation
@@ -1602,7 +1646,7 @@ async def _record_mesh_presence(
             generation = None
         try:
             await store.upsert(
-                device_id=scope["device_id"],
+                device_id=canonical,
                 connected=entry["connected"],
                 received_at=received_at,
                 credential_generation=generation,
@@ -3037,6 +3081,62 @@ def _pc_files_relative_path(value: Any) -> str | None:
     return "/".join(parts)
 
 
+def _pc_files_roots_of_map_row(file_path: Any) -> list[dict[str, Any]]:
+    """The deployment map's one approved folder, in the directory's shape.
+
+    The map pins a single real file, so its parent is the only root and the
+    folder's own name is the only label. This keeps the fallback lane answering
+    exactly what it answered before PR-2, through one shape.
+    """
+    root = _pc_files_approved_root(file_path)
+    if root is None:
+        return []
+    return [{"root_ref": None, "label": root.rsplit("/", 1)[-1], "path": root}]
+
+
+def _pc_files_pick_root(
+    roots: Any, value: Any,
+) -> tuple[str, str] | None:
+    """``(approved folder, relative path)`` for one requested path, or None.
+
+    (A) from the owner's decision: an account's PC can carry several approved
+    folders, and the model sees their labels and never a real path. With exactly
+    one folder a plain relative path still means what it meant before — that
+    folder — so the existing Engine calls are unaffected. With two or more, the
+    label is the namespace and is required: choosing between two of the owner's
+    folders by guessing is not authority.
+    """
+    if not isinstance(roots, list) or not roots:
+        return None
+    if any(
+        not isinstance(root, dict)
+        or not isinstance(root.get("label"), str) or not root["label"]
+        or not isinstance(root.get("path"), str) or not root["path"]
+        for root in roots
+    ):
+        return None
+    text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
+    if text is None:
+        return None
+    text = text.strip().replace("\\", "/")
+    if len(roots) == 1:
+        label, separator, remainder = text.partition("/")
+        # One folder means the label is redundant, not forbidden: a caller that
+        # names it gets the same folder either way.
+        if separator and label == roots[0]["label"]:
+            text = remainder
+        relative = _pc_files_relative_path(text)
+        return None if relative is None else (roots[0]["path"], relative)
+    label, separator, remainder = text.partition("/")
+    if not separator:
+        return None
+    named = [root for root in roots if root["label"] == label]
+    if len(named) != 1:
+        return None
+    relative = _pc_files_relative_path(remainder)
+    return None if relative is None else (named[0]["path"], relative)
+
+
 def _pc_files_powershell_literal(value: str) -> str:
     # A single-quoted PowerShell literal; the only escape is a doubled quote.
     return "'" + value.replace("'", "''") + "'"
@@ -3141,14 +3241,74 @@ async def _engine_pc_files_owner(
     return uid, bridged.auth_session, None
 
 
+#: The pairing directory could not be consulted at all, so the deployment map
+#: decides. Distinct from the directory answering "this account has no PC",
+#: which is a real answer and must never widen back to the map.
+_DIRECTORY_UNUSABLE = "directory_unusable"
+
+
+async def _pc_files_directory_target(
+    request: Request, *, user_id: str, selected_device_id: str | None,
+) -> tuple[str, dict[str, Any] | None]:
+    """The owner's own linked PC, from migration 072's link table.
+
+    R4's directory-first rule. A deployment with no pairing store, or one whose
+    072 tables are not applied yet, falls through to the ownership map so it
+    behaves exactly as before; an account the directory answered for is bounded
+    by what it answered. Ambiguity stays a refusal, never a guess.
+    """
+    store = getattr(request.app.state, "pc_device_pairing_store", None)
+    if not callable(getattr(store, "links_for_owner", None)):
+        return _DIRECTORY_UNUSABLE, None
+    try:
+        links = await store.links_for_owner(user_id=user_id)
+    except Exception:
+        return _DIRECTORY_UNUSABLE, None
+    if not isinstance(links, list):
+        return _DIRECTORY_UNUSABLE, None
+    if not links:
+        return "empty", None
+    matches = [
+        link for link in links
+        if isinstance(link, dict)
+        and (
+            selected_device_id is None
+            or link.get("mesh_node_id") == selected_device_id
+        )
+    ]
+    if len(matches) != 1:
+        return "ambiguous", None
+    link = matches[0]
+    node_ref = link.get("mesh_node_id")
+    roots = link.get("roots")
+    if (
+        not isinstance(node_ref, str) or not is_pc_mesh_node_id(node_ref)
+        or not isinstance(roots, list) or not roots
+    ):
+        # A linked PC with no approved folder cannot answer a file call, and a
+        # link that is not active never reaches here.
+        return "unapproved", None
+    return "link", {
+        "node_ref": node_ref,
+        # The link's composed node identity is the canonical device identity,
+        # the same rule an unpinned ownership row already follows.
+        "device_id": node_ref,
+        "link_id": link.get("link_id"),
+        "label": link.get("label"),
+        "roots": roots,
+    }
+
+
 async def _engine_pc_files_target(
-    request: Request, *, session: Any, selected_device_id: str | None,
+    request: Request, *, session: Any, selected_device_id: str | None, user_id: str,
 ) -> tuple[dict[str, Any] | None, JSONResponse | None]:
-    """Resolve the one command-capable owner target + its approved folder.
+    """Resolve the one owner target and the folders it may read.
 
     The context and the dispatch use this exact resolution, so the device the
     model is told about and the device that receives the command cannot drift
-    apart. A selected device only narrows the deployment map; it never adds one.
+    apart. A selected device only narrows the choice; it never adds one. The
+    account's own PC links decide first; the deployment ownership map is the
+    fallback for a deployment that has no directory to ask.
     """
     source = getattr(request.app.state, "oracle_mesh_return_source", None)
     if (
@@ -3177,6 +3337,20 @@ async def _engine_pc_files_target(
         or not isinstance(workspace_ref, str) or not workspace_ref
     ):
         return None, _error(503, "oracle_mesh_device_directory_unavailable")
+
+    kind, linked = await _pc_files_directory_target(
+        request, user_id=user_id, selected_device_id=selected_device_id,
+    )
+    if kind == "link":
+        return {
+            "target": linked,
+            "roots": linked["roots"],
+            "account_ref": account_ref,
+            "workspace_ref": workspace_ref,
+        }, None
+    if kind != _DIRECTORY_UNUSABLE:
+        return None, _error(403, "oracle_mesh_device_unverified")
+
     try:
         target = source.command_target(
             account_ref=account_ref, device_id=selected_device_id,
@@ -3185,12 +3359,12 @@ async def _engine_pc_files_target(
         return None, _error(503, "oracle_mesh_device_directory_unavailable")
     if target is None:
         return None, _error(403, "oracle_mesh_device_unverified")
-    root = _pc_files_approved_root(target.get("file_path"))
-    if root is None:
+    roots = _pc_files_roots_of_map_row(target.get("file_path"))
+    if not roots:
         return None, _error(503, "oracle_mesh_file_root_unavailable")
     return {
         "target": target,
-        "root": root,
+        "roots": roots,
         "account_ref": account_ref,
         "workspace_ref": workspace_ref,
     }, None
@@ -3273,12 +3447,12 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _error(403, "pc_scope_required" if scope_claim is None else "pc_scope_frozen")
 
     resolved, target_error = await _engine_pc_files_target(
-        request, session=session, selected_device_id=selected,
+        request, session=session, selected_device_id=selected, user_id=uid,
     )
     if target_error is not None:
         return target_error
     target = resolved["target"]
-    root = resolved["root"]
+    roots = resolved["roots"]
     device_id = target.get("device_id") or target["node_ref"]
 
     if mode in ("context", "dispatch") and scope_claim is not None:
@@ -3293,14 +3467,21 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             return _error(503, "pc_scope_store_unavailable")
 
     if mode == "context":
-        folder_name = root.rsplit("/", 1)[-1]
+        # (A): the model is shown the owner's own names for the approved
+        # folders, never a real path. One folder keeps the single-folder shape
+        # the tools already speak; several arrive as a label list, and a call
+        # must then name which one it means.
+        labels = [root["label"] for root in roots]
         return _response({
             "ok": True,
-            "roots": [root],
+            "roots": [{"label": label} for label in labels],
             "device": {
                 "device_id": device_id,
                 "status": "configured",
-                "folder": {"name": folder_name, "relative_path": "."},
+                "folder": {
+                    "name": labels[0] if len(labels) == 1 else (target.get("label") or "PC"),
+                    "relative_path": ".",
+                },
                 "online_verified": False,
             },
             "tools": [
@@ -3331,9 +3512,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         # constructor. The existing owner/path/size/idempotency checks follow.
         if scope_claim is not None and op not in scope_claim["ops"]:
             return _error(403, "pc_scope_denied")
-        relative = _pc_files_relative_path(payload.get("path"))
-        if relative is None:
+        picked = _pc_files_pick_root(roots, payload.get("path"))
+        if picked is None:
             return _error(422, "oracle_mesh_file_path_invalid")
+        root, relative = picked
         if op == "read" and not relative:
             return _error(422, "oracle_mesh_file_path_invalid")
         tool_call_ref = payload.get("tool_call_ref")
@@ -3377,6 +3559,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             },
             trusted_owner=(session, uid, command_workspace),
             tool_call_ref=tool_call_ref,
+            files_target=target,
         )
         return response
 

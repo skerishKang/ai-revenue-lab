@@ -48,6 +48,7 @@ PAIRING_TAG_PREFIX = "pd-"
 PAIRING_TAG_CHARS = 8
 MAX_ROOTS_PER_LINK = 32
 MAX_ROOT_PATH_CHARS = 512
+MAX_ROOT_LABEL_CHARS = 64
 MAX_LINK_LABEL_CHARS = 128
 
 _USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,255}$")
@@ -80,7 +81,12 @@ class PcPairingStore(Protocol):
 
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
+        label: str | None = None,
     ) -> dict[str, Any]: ...
+
+    async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]: ...
+
+    async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
@@ -154,6 +160,30 @@ def root_ref_for(path: str) -> str:
     return "pcroot_" + hashlib.sha256(path.lower().encode("utf-8")).hexdigest()[:16]
 
 
+def normalize_root_label(value: Any) -> str | None:
+    """The one name a link uses for one approved folder.
+
+    The model is shown this and never the real path (the CTO's (A) shape), so it
+    has to survive being typed back inside a requested path: no separator, no
+    control character, no leading or trailing space, bounded.
+    """
+    if not isinstance(value, str):
+        return None
+    cleaned = value.strip()
+    if not cleaned or len(cleaned) > MAX_ROOT_LABEL_CHARS:
+        return None
+    if any(ord(ch) < 32 or ord(ch) == 0x7F for ch in cleaned):
+        return None
+    if "/" in cleaned or "\\" in cleaned or cleaned in {".", ".."}:
+        return None
+    return cleaned
+
+
+def default_root_label(path: str) -> str:
+    """The folder's own name, used when the owner did not name the grant."""
+    return path.rsplit("/", 1)[-1]
+
+
 def _roots(value: Any) -> list[dict[str, Any]]:
     """Parse the server-written roots array, refusing anything malformed.
 
@@ -172,11 +202,14 @@ def _roots(value: Any) -> list[dict[str, Any]]:
     roots: list[dict[str, Any]] = []
     for row in parsed:
         if not isinstance(row, dict) or set(row) != {
-            "root_ref", "path", "state", "approved_at", "revoked_at",
+            "root_ref", "label", "path", "state", "approved_at", "revoked_at",
         }:
             raise PcPairingError("link roots unreadable")
         path = normalize_root_path(row.get("path"))
         if path is None or row.get("root_ref") != root_ref_for(path):
+            raise PcPairingError("link roots unreadable")
+        label = normalize_root_label(row.get("label"))
+        if label is None:
             raise PcPairingError("link roots unreadable")
         if row.get("state") not in (_STATE_ACTIVE, _STATE_REVOKED):
             raise PcPairingError("link roots unreadable")
@@ -188,6 +221,7 @@ def _roots(value: Any) -> list[dict[str, Any]]:
             raise PcPairingError("link roots unreadable")
         roots.append({
             "root_ref": row["root_ref"],
+            "label": label,
             "path": path,
             "state": row["state"],
             "approved_at": approved_at,
@@ -229,6 +263,7 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
         "roots": [
             {
                 "root_ref": root["root_ref"],
+                "label": root["label"],
                 "path": root["path"],
                 "state": root["state"],
                 "approved_at": root["approved_at"],
@@ -406,6 +441,52 @@ class D1PcPairingStore:
             raise PcPairingError("pairing link not stored")
         return stored
 
+    async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
+        """Every active link this account owns, with its granted folders.
+
+        The dispatch lane reads this: an empty list is the answer to "this
+        account has no PC connected", and more than one link is a choice the
+        caller must narrow, never something to guess.
+        """
+        owner = _user_id(user_id)
+        rows = await self._all(
+            "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
+            "created_at, updated_at FROM pc_device_links WHERE user_id=? "
+            "AND state='active' ORDER BY created_at DESC LIMIT 100",
+            owner,
+        )
+        links: list[dict[str, Any]] = []
+        for row in rows:
+            if not isinstance(row, dict) or not row.get("link_id"):
+                continue
+            row["roots"] = _active(_roots(row.get("roots_json")))
+            links.append(row)
+        return links
+
+    async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
+        """Who owns a reported Mesh identity, from the link directory only.
+
+        A presence beat is keyed by the server's composed node identity, so an
+        entry is accepted only when an active link names exactly that node. The
+        accounts behind a shared PC are returned as a set: one account resolves
+        a Broker credential generation, several do not, and the receipt is still
+        recorded as Mesh-only (#5553 requirement 6).
+        """
+        if not is_pc_mesh_node_id(device_id):
+            return None
+        rows = await self._all(
+            "SELECT link_id, user_id, mesh_node_id FROM pc_device_links "
+            "WHERE mesh_node_id=? AND state='active' LIMIT 100",
+            device_id,
+        )
+        accounts = {
+            row.get("user_id") for row in rows
+            if isinstance(row, dict) and row.get("link_id")
+        }
+        if not accounts:
+            return None
+        return {"device_id": device_id, "account_refs": sorted(accounts)}
+
     # -- links and roots ----------------------------------------------------
 
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
@@ -470,6 +551,7 @@ class D1PcPairingStore:
 
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
+        label: str | None = None,
     ) -> dict[str, Any]:
         owner = _user_id(user_id)
         normalized = normalize_root_path(path)
@@ -479,14 +561,23 @@ class D1PcPairingStore:
         roots = row["roots"]
         ref = root_ref_for(normalized)
         moment = _stamp(now)
+        requested = normalize_root_label(label) if label is not None else None
+        if label is not None and requested is None:
+            raise PcPairingError("root label invalid")
+        named = requested or default_root_label(normalized)
         for root in roots:
             if root["root_ref"] == ref and root["state"] == _STATE_ACTIVE:
                 return root
+            if root["state"] == _STATE_ACTIVE and root["label"] == named:
+                # Two folders the model cannot tell apart are worse than a
+                # refusal: the caller has to name one of them.
+                raise PcPairingError("root label exists")
         if len([root for root in roots if root["state"] == _STATE_ACTIVE]) >= MAX_ROOTS_PER_LINK:
             raise PcPairingError("too many approved roots")
         roots = [root for root in roots if root["root_ref"] != ref]
         roots.append({
             "root_ref": ref,
+            "label": named,
             "path": normalized,
             "state": _STATE_ACTIVE,
             "approved_at": moment,
@@ -552,12 +643,16 @@ class D1PcPairingStore:
 __all__ = [
     "D1PcPairingStore",
     "MAX_ROOTS_PER_LINK",
+    "MAX_ROOT_LABEL_CHARS",
+    "MAX_ROOT_PATH_CHARS",
     "PAIRING_CODE_CHARS",
     "PAIRING_CODE_TTL_SECONDS",
     "PAIRING_TAG_PREFIX",
     "PcPairingError",
     "PcPairingStore",
+    "default_root_label",
     "derive_install_tag",
+    "normalize_root_label",
     "normalize_root_path",
     "root_ref_for",
 ]
