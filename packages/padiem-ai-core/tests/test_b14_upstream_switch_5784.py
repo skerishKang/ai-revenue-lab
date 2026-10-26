@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from padiem_ai_core import b14_upstream as up
+import padiem_ai_core.b14_upstream as up
 
 BINDING_URL = "https://b14.padiem.net"
 ALLOWED = frozenset({"/api/pilot/v1/chat/completions"})
