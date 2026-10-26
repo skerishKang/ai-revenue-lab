@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2] / "apps/padiem-chat/migrations"
+UPLOAD_MAX_BYTES = 1024 * 1024 * 1024
 TABLES = ("claw_web_xlsx_selections", "claw_web_xlsx_quote_edit_receipts")
 FILES = ("029_claw_web_xlsx_selection.sql", "032_claw_web_xlsx_quote_edit_receipts.sql",
          "071_claw_web_xlsx_selection_limit.sql")
@@ -31,6 +32,7 @@ def norm(value):
 def source():
     scripts = [(ROOT / name).read_text(encoding="utf-8") for name in FILES]
     if not all(token in scripts[2] for token in (
+        f"size_bytes <= {UPLOAD_MAX_BYTES}",
         "CREATE TABLE claw_web_xlsx_receipts_limits_backup AS",
         "DELETE FROM claw_web_xlsx_quote_edit_receipts;",
         "INSERT INTO claw_web_xlsx_selections_limits_next",
