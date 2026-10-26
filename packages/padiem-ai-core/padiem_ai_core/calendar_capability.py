@@ -73,7 +73,7 @@ GOOGLE_CALENDAR_BASE_URL = "https://www.googleapis.com/calendar/v3"
 REQUEST_TIMEOUT_SECONDS: int | None = None
 
 # Core-side output bounds (analogous to the Gmail/Drive/Telegram/Slack promotions).
-MAX_PROVIDER_METADATA_BYTES = 128_000
+MAX_PROVIDER_METADATA_BYTES = 1024 * 1024
 MAX_NAME_CHARS = 512
 MAX_CALENDARS = 128
 MAX_CALENDAR_EVENT_SUMMARY_CHARS = 2_000

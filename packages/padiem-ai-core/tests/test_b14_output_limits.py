@@ -164,10 +164,10 @@ def test_i_b66_structured_extraction_budget_independent() -> None:
     assert "ModelOutputCapability" not in source
 
 
-# ── J. response byte/time guards unchanged ──
-def test_j_response_byte_and_time_guards_unchanged() -> None:
-    assert MAX_B14_RESPONSE_BYTES == 1_048_576
-    assert b14_execution_module.MAX_CONFIGURED_B14_RESPONSE_BYTES == 8 * 1_048_576
+# ── J. Owner byte tiers; provider idle timing is unchanged ──
+def test_j_owner_response_byte_tiers_preserve_the_model_idle_guard() -> None:
+    assert MAX_B14_RESPONSE_BYTES == 10 * 1_048_576
+    assert b14_execution_module.MAX_CONFIGURED_B14_RESPONSE_BYTES == 32 * 1_048_576
     config = b14_execution_module.B14ExecutionConfig(base_url="https://b14.example.test")
     assert config.timeout_seconds == 600.0
     assert config.max_response_bytes == MAX_B14_RESPONSE_BYTES

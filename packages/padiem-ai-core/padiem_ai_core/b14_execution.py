@@ -30,8 +30,10 @@ B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 # A feature may opt into its own explicit budget via b14_output_limits.
 PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
-MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
-MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
+# Owner rules 2026-10-26: completed JSON is materialized in Worker memory.
+# Define its 32MiB ceiling before the 10MiB default (never default > ceiling).
+MAX_CONFIGURED_B14_RESPONSE_BYTES = 32 * 1_048_576
+MAX_B14_RESPONSE_BYTES = 10 * 1_048_576
 # Provider-native inference messages have no legacy pilot count/character ceiling.
 # API gateway/provider capabilities and HTTP transport memory guards remain separate.
 # Retain legacy symbols for import compatibility; None is no product-native cap.

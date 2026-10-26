@@ -470,7 +470,7 @@ async def test_multimodal_stream_rejects_unsupported_media_before_runtime() -> N
             "POST",
             MULTIMODAL_STREAM_PATH,
             "application/json",
-            b"x" * (128 * 1024 + 1),
+            b"x" * (1024 * 1024 + 1),
             413,
             "request_too_large",
         ),

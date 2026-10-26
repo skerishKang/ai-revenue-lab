@@ -242,7 +242,7 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             "device_id": {"type": "string", "minLength": 1, "maxLength": 128},
             "use_pinned_device": {"type": "boolean", "enum": [True]},
         }, "additionalProperties": False},
-        output_contract={"type": "object"}, timeout_seconds=300.0,
+        output_contract={"type": "object"}, timeout_seconds=None,
     )
     runtime = ToolRuntime()
 
@@ -283,7 +283,7 @@ def build_claw_desktop_tool_binding(*, service, request_factory, secret):
             auth_scope=(DESKTOP_CAPTURE_SCOPE,),
             input_schema={"type": "object", "properties": schema,
                           "required": required, "additionalProperties": False},
-            output_contract={"type": "object"}, timeout_seconds=300.0,
+            output_contract={"type": "object"}, timeout_seconds=None,
         )
     for name, input_spec in input_specs.items():
         async def perform(arguments, _name=name):

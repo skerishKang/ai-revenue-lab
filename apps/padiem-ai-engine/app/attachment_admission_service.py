@@ -46,7 +46,7 @@ from app.service import ServiceResponse, _service_error
 ATTACHMENT_ADMISSION_PATH = "/internal/v1/multimodal/attachments"
 
 # Admission-only body ceiling: the canonical base64 payload bound plus headroom
-# for the JSON envelope. The shared MAX_REQUEST_BODY_BYTES (128 KiB) is for
+# for the JSON envelope. The shared MAX_REQUEST_BODY_BYTES (1 MiB) is for
 # text/reference routes and is far below one admitted image by design.
 MAX_ADMISSION_REQUEST_BODY_BYTES = MAX_STORED_IMAGE_BASE64_CHARS + (8 * 1024)
 

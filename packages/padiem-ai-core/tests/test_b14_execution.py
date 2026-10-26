@@ -111,6 +111,16 @@ def test_config_rejects_invalid_response_cap(bad) -> None:
         B14ExecutionConfig(base_url="https://b14.example", max_response_bytes=bad)  # type: ignore[arg-type]
 
 
+def test_response_default_fits_the_worker_whole_body_ceiling() -> None:
+    config = B14ExecutionConfig(base_url="https://b14.example")
+    assert config.max_response_bytes == 10 * 1024 * 1024
+    assert MAX_CONFIGURED_B14_RESPONSE_BYTES == 32 * 1024 * 1024
+    assert config.max_response_bytes <= MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert B14ExecutionConfig(
+        base_url="https://b14.example", max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES
+    ).max_response_bytes == MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+
 def test_config_public_state_contains_no_credentials_field() -> None:
     config = B14ExecutionConfig(base_url="https://b14.example")
     public = config.to_public_dict()

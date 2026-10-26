@@ -124,7 +124,7 @@ def test_package_has_no_self_approval_or_grant_fields() -> None:
 
 
 def test_default_skill_run_budget_matches_long_form_agent():
-    assert SkillExecutionBudget().max_wall_seconds == 900
+    assert SkillExecutionBudget().max_wall_seconds == 1800
     assert SkillExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
     with pytest.raises(SkillPackageError):
         SkillExecutionBudget(max_wall_seconds=0)

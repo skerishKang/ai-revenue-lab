@@ -167,7 +167,7 @@ def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
     """
 
     timeout_raw = _env_text(env, ENGINE_WEB_TIMEOUT_SECONDS_ENV)
-    timeout = 15.0 if timeout_raw is None else float(timeout_raw)
+    timeout = 30.0 if timeout_raw is None else float(timeout_raw)
     return WebRuntimeConfig(
         provider=_env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off",
         firecrawl_api_key=_env_text(env, ENGINE_FIRECRAWL_API_KEY_ENV),
@@ -194,7 +194,7 @@ def _engine_web_provider_for_env(env: Any):
         return TinyFishDaumPriorityWebProvider(
             tinyfish_key=_env_text(env, ENGINE_TINYFISH_API_KEY_ENV),
             daum_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
-            timeout_seconds=15.0 if timeout_raw is None else float(timeout_raw),
+            timeout_seconds=30.0 if timeout_raw is None else float(timeout_raw),
             daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
             transport=transport,
         )
