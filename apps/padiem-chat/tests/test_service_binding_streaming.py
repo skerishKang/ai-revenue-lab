@@ -734,9 +734,16 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "await response.text()" not in completed
     assert "read_bounded_service_binding_body" in completed
     assert "MAX_CONFIGURED_B14_RESPONSE_BYTES" in completed
-    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in WORKER_PATH.read_text(
-        encoding="utf-8"
-    )
+    # #5784: the Worker now hands the transport types to one composer instead of
+    # constructing them inline, so the composition point is what is pinned here.
+    worker = WORKER_PATH.read_text(encoding="utf-8")
+    wired = " ".join(worker.split())
+    assert (
+        "service_transport, stream_transport = _compose_b14_transports( "
+        "settings=settings, binding=b14_binding, proof_secret=b14_proof_secret, )"
+    ) in wired
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
     for forbidden in (".text()", ".json()", ".arrayBuffer()"):
         assert forbidden not in streaming
         assert forbidden not in byte_stream

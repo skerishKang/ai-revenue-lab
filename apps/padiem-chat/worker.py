@@ -18,6 +18,10 @@ from urllib.parse import urlparse
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from app.b14_upstream_composition import (
+    compose_b14_transports,
+    request_correlation_headers,
+)
 from padiem_ai_core.isolated_parser_composition import (
     compose_worker_isolated_parser_authority_async,
     reset_worker_isolated_parser_async_composition,
@@ -704,6 +708,29 @@ def build_push_transport() -> Any:
         return None
 
 
+def _compose_b14_transports(*, settings, binding, proof_secret):
+    """Compose the B14 transports for the upstream this deployment chose (#5784).
+
+    Default is the fixed ``B14_SERVICE`` binding, or nothing at all when the
+    binding is absent — which leaves every platform-credential route failing
+    closed exactly as it does today.
+    """
+    return compose_b14_transports(
+        upstream_mode=settings.b14_upstream_mode,
+        origin=settings.b14_base_url,
+        binding=binding,
+        proof_secret=proof_secret,
+        service_binding_factory=CloudflareB14ServiceTransport,
+        stream_binding_factory=CloudflareB14StreamingServiceTransport,
+        https_client_factory=lambda: httpx.AsyncClient(
+            transport=CloudflareExternalHttpTransport(),
+            timeout=None,
+            follow_redirects=False,
+        ),
+        correlation_headers=request_correlation_headers,
+    )
+
+
 class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
     """Real-httpx transport backed by Workers' JavaScript fetch API.
 
@@ -1014,15 +1041,10 @@ class Default(WorkerEntrypoint):
                     if base_usage_store is not None
                     else None
                 )
-                service_transport = (
-                    CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)
-                    if b14_binding is not None
-                    else None
-                )
-                stream_transport = (
-                    CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)
-                    if b14_binding is not None
-                    else None
+                service_transport, stream_transport = _compose_b14_transports(
+                    settings=settings,
+                    binding=b14_binding,
+                    proof_secret=b14_proof_secret,
                 )
                 web_transport = CloudflareExternalHttpTransport()
                 b66_pdf_renderer_client = (

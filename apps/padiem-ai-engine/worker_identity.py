@@ -66,8 +66,9 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    CloudflareB14ServiceBindingTransport,
+    b14_upstream_from_bindings,
     build_b14_execution_configs,
+    build_b14_transport,
 )
 from app.cloudflare_external_transport import (
     calendar_worker_transport,
@@ -1083,16 +1084,19 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             scope_authority=scope_authority,
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
+    b14_upstream = b14_upstream_from_bindings(env)
+    transport = build_b14_transport(
         binding=binding,
         request_factory=Request,
         # B14 spends platform-owned Provider credentials on its catalog
         # execution lane. The deployment-owned proof secret lets B14 verify
         # this server-to-server caller before it resolves one.
         proof_secret=await _resolve_b14_proof_secret(env),
+        upstream=b14_upstream,
     )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=legacy_worker._b14_timeout_seconds_for_env(env),
+        upstream=b14_upstream,
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)

@@ -81,6 +81,8 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert WORKER_BINDING_NAMES == {
         "PADIEM_CHAT_RUNTIME_MODE",
         "PADIEM_CHAT_B14_BASE_URL",
+        "B14_UPSTREAM_MODE",
+        "B14_UPSTREAM_URL",
         "PADIEM_CHAT_B66_QUOTE_BASE_URL",
         "PADIEM_CHAT_TIMEOUT_SECONDS",
         "PADIEM_CHAT_LIVE_ENABLED",
@@ -112,6 +114,10 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
     assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
+    # #5784: the upstream switch is a declared read name on both platforms, and
+    # the same two names are what a COM2 unit sets as environment variables.
+    assert "B14_UPSTREAM_MODE" in WORKER_BINDING_NAMES
+    assert "B14_UPSTREAM_URL" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})

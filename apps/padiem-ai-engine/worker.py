@@ -46,8 +46,9 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    CloudflareB14ServiceBindingTransport,
+    b14_upstream_from_bindings,
     build_b14_execution_configs,
+    build_b14_transport,
 )
 from app.drive_case_pdf_binary import B67_CASE_PDF_BINARY_PATH
 from app.engine_composition import EngineServices
@@ -423,15 +424,18 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
+    b14_upstream = b14_upstream_from_bindings(env)
+    transport = build_b14_transport(
         binding=binding,
         request_factory=Request,
-        # B14 spends platform-owned Provider credentials on its catalog
-        # execution lane; prove this server-to-server caller before dispatch.
+        # B14 spends platform-owned Provider credentials on this lane.
+        # The proof binds this exact body to this deployment.
         proof_secret=await _resolve_b14_proof_secret(env),
+        upstream=b14_upstream,
     )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
+        upstream=b14_upstream,
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)

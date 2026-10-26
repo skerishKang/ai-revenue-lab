@@ -6,6 +6,7 @@ ordinary httpx transport and therefore stays platform-neutral.
 
 from __future__ import annotations
 
+import sys
 from typing import Any, Callable
 from urllib.parse import urlsplit
 
@@ -18,10 +19,16 @@ from padiem_ai_core.b14_execution import (
     MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
 from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_upstream import (
+    BINDING_ORIGIN as B14_INTERNAL_ORIGIN,
+    UPSTREAM_MODE_ENV,
+    UPSTREAM_URL_ENV,
+    B14HttpsTransport,
+    B14Upstream,
+    resolve_b14_upstream,
+)
 
 from app.b14_service_proof import service_proof_headers
-
-B14_INTERNAL_ORIGIN = "https://b14.internal"
 # #4379: the model request body has no PADIEM aggregate ceiling. The request is
 # read in full and the total is never refused; the platform's own request limit
 # and the provider's context window are the real bounds.
@@ -148,9 +155,34 @@ def _correlation_header() -> dict[str, str]:
     return {"X-Request-Id": value} if value is not None else {}
 
 
-def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
-    B14ExecutionConfig, B14ExecutionConfig
-]:
+def _workers_runtime_active() -> bool:
+    return "pyodide.ffi" in sys.modules or "js" in sys.modules
+
+
+def _default_https_client() -> httpx.AsyncClient:
+    """The plain-host client. Redirects are never followed for an internal call."""
+    return httpx.AsyncClient(timeout=None, follow_redirects=False)
+
+
+def b14_upstream_from_bindings(env: Any) -> B14Upstream:
+    """Read the #5784 switch from this deployment's own bindings.
+
+    On Workers the two names are plain vars; on a host they are environment
+    variables supplied by the unit. Only values this deployment owns are read,
+    so a binding that does not exist cannot be filled in from a stray process
+    environment.
+    """
+    values: dict[str, str] = {}
+    for name in (UPSTREAM_MODE_ENV, UPSTREAM_URL_ENV):
+        value = getattr(env, name, None) if env is not None else None
+        if value is not None:
+            values[name] = str(value)
+    return resolve_b14_upstream(values)
+
+
+def build_b14_execution_configs(
+    *, timeout_seconds: float, upstream: B14Upstream | None = None
+) -> tuple[B14ExecutionConfig, B14ExecutionConfig]:
     """Return the Engine's completed-response and stream-frame B14 budgets.
 
     The two clients bound different things and must not share one number:
@@ -162,18 +194,62 @@ def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
 
     Sharing the smaller frame bound with the completed client made the Engine
     refuse healthy model answers that Chat/Claw accept (#4379).
+
+    ``upstream`` is the #5784 switch. Absent, it resolves to the Service Binding
+    origin the Engine has always used, and both configs are identical to before.
     """
+    origin = (upstream or resolve_b14_upstream()).origin
     completed = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=origin,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
     )
     streaming = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=origin,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_B14_RESPONSE_BYTES,
     )
     return completed, streaming
+
+
+def build_b14_transport(
+    *,
+    binding: Any,
+    request_factory: Callable[..., Any],
+    proof_secret: str | None,
+    upstream: B14Upstream | None = None,
+    https_client_factory: Callable[[], httpx.AsyncClient] | None = None,
+) -> httpx.AsyncBaseTransport:
+    """Pick the one transport the switch names, and never guess a substitute.
+
+    ``binding`` mode returns the existing Service Binding transport untouched.
+    ``https`` mode needs a client, because a Worker has no socket to open; the
+    caller supplies one built on the fetch transport it already uses. If that
+    factory is missing the Engine refuses to start its B14 lane rather than
+    quietly falling back to a binding the deployment just turned off.
+    """
+    resolved = upstream or resolve_b14_upstream()
+    if resolved.uses_service_binding:
+        return CloudflareB14ServiceBindingTransport(
+            binding=binding,
+            request_factory=request_factory,
+            proof_secret=proof_secret,
+        )
+    if https_client_factory is None:
+        if _workers_runtime_active():
+            # A Worker has no socket to open, and the existing fetch-backed
+            # transport bounds a POST body far below a model request. Reaching a
+            # COM2 B14 from a Worker needs a reviewed large-body fetch transport
+            # first, so this refuses instead of quietly truncating the request.
+            raise ValueError("b14_upstream_https_requires_a_worker_fetch_transport")
+        https_client_factory = _default_https_client
+    return B14HttpsTransport(
+        origin=resolved.origin,
+        allowed_paths=_ALLOWED_B14_PATHS,
+        headers_for_body=lambda body: service_proof_headers(proof_secret, body),
+        correlation_headers=_correlation_header,
+        client=https_client_factory(),
+    )
 
 
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
