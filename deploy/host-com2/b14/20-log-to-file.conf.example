@@ -1,0 +1,11 @@
+# Optional drop-in: keep a rotated file copy of the B14 stdout stream.
+#
+# Install as /etc/systemd/system/padiem-b14.service.d/20-log-to-file.conf by the
+# authorized COM2 operator only. Without it the service logs to journald alone,
+# which is the default and the reviewed posture.
+#
+# append: keeps the same file descriptor across restarts, so the rotation policy
+# in logrotate.conf.example uses copytruncate rather than creating a new inode.
+[Service]
+StandardOutput=append:/opt/padiem/b14/logs/b14.log
+StandardError=append:/opt/padiem/b14/logs/b14.error.log
