@@ -40,6 +40,7 @@ from app.pc_device_pairing_store import (
 sys.path.insert(0, str(Path(__file__).parent))
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "072_pc_device_pairing.sql"
+MIGRATIONS = MIGRATION.parent
 OWNER = "usr_" + "a" * 32
 OTHER = "usr_" + "b" * 32
 NODE = "node//mesh-pc-01"
@@ -81,15 +82,18 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def database() -> sqlite3.Connection:
+def database(*, with_072: bool = True) -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:", isolation_level=None)
     conn.row_factory = sqlite3.Row
-    conn.executescript(MIGRATION.read_text(encoding="utf-8"))
+    for path in sorted(MIGRATIONS.glob("*.sql")):
+        if not with_072 and path.name == MIGRATION.name:
+            continue
+        conn.executescript(path.read_text(encoding="utf-8"))
     return conn
 
 
-def store() -> D1PcPairingStore:
-    return D1PcPairingStore(RealSQLiteD1(database()))
+def store(*, with_072: bool = True) -> D1PcPairingStore:
+    return D1PcPairingStore(RealSQLiteD1(database(with_072=with_072)))
 
 
 def app_with(store_value=None, *, verifier=None):
@@ -469,3 +473,55 @@ def test_an_unknown_or_foreign_pairing_code_id_is_not_redeemable_by_another_owne
     assert mine != theirs
     assert [row["mesh_node_id"] for row in mine_links] == [NODE]
     assert [row["mesh_node_id"] for row in their_links] == [NODE]
+
+
+# -- before the Owner applies 072, the surface reads as "not ready" ----------
+
+def test_every_pairing_route_answers_503_not_ready_until_072_is_applied() -> None:
+    """The live case between the Chat deploy and the migration.
+
+    The Worker composes this store against whatever D1 binding exists, so on a
+    database where 072 has not been applied every call fails inside the driver.
+    That has to be a bounded 503, never an unhandled exception (HTTP 500) and
+    never an answer that looks like an empty but valid directory.
+    """
+    async def journey():
+        app = app_with(store(with_072=False))
+        async with client(app) as session:
+            issued = await session.post(PC_PAIRING_PATH, json={})
+            listed = await session.get(PC_PAIRING_PATH)
+            claimed = await session.post(
+                PC_PAIRING_CLAIM_PATH, json={"code": "ABCDEF234567", "mesh_node_id": NODE},
+            )
+            revoked = await session.delete(PC_PAIRING_PATH + "/pclink_" + "0" * 32)
+            roots = await session.post(
+                PC_PAIRING_ROOTS_PATH.format(link_id="pclink_" + "0" * 32),
+                json={"path": "C:/Users/me/a"},
+            )
+            return [
+                (response.status_code, response.json()["error"]["code"])
+                for response in (issued, listed, claimed, revoked, roots)
+            ]
+
+    outcomes = run(journey())
+    assert [code for _, code in outcomes] == ["pc_pairing_not_ready"] * 5
+    assert [status for status, _ in outcomes] == [503] * 5
+
+
+def test_an_unexplained_store_fault_is_still_a_refusal_and_not_a_500() -> None:
+    async def journey():
+        class Broken:
+            async def list_links(self, **values):
+                raise RuntimeError("driver fault, never to be echoed")
+
+            async def list_codes(self, **values):
+                return []
+
+        app = app_with(Broken())
+        async with client(app) as session:
+            listed = await session.get(PC_PAIRING_PATH)
+        return listed.status_code, listed.json()["error"]["code"], listed.text
+
+    status, code, body = run(journey())
+    assert status == 503 and code == "pc_pairing_unavailable"
+    assert "driver fault" not in body
