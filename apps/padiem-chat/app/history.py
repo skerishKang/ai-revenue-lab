@@ -66,6 +66,17 @@ def _merge_run_result_summaries(stored: object, addition: str) -> str:
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
+ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
+
+
+def _oracle_mesh_original_max_bytes(row: dict[str, Any]) -> int:
+    # The persisted server dispatch owns this distinction, never a store-call
+    # argument or model value. Commands and other reads retain the 6MB guard.
+    if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
+        return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+    return ORACLE_MESH_ORIGINAL_MAX_BYTES
+
+
 #: #4139 dispatch row bounds. Each number is the ceiling of the thing it
 #: describes, not a safety guess:
 #: * a reference keeps the bound this table has always used;
@@ -2966,7 +2977,7 @@ class D1HistoryStore:
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
         row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
             "WHERE dispatch_id=?",
             dispatch_id,
         )
@@ -2978,7 +2989,7 @@ class D1HistoryStore:
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
         key = await self._put_full_message(
-            conversation_id, message_id, raw, max_bytes=ORACLE_MESH_ORIGINAL_MAX_BYTES,
+            conversation_id, message_id, raw, max_bytes=_oracle_mesh_original_max_bytes(row),
         )
         if key is None:
             # _put_full_message only skips short texts; an over-budget output
@@ -3008,7 +3019,7 @@ class D1HistoryStore:
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
         row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
+            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
             "WHERE dispatch_id=?",
             dispatch_id,
         )
@@ -3019,7 +3030,7 @@ class D1HistoryStore:
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
-        if len(data) > ORACLE_MESH_ORIGINAL_MAX_BYTES:
+        if len(data) > _oracle_mesh_original_max_bytes(row):
             raise HistoryError("mesh original exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):
