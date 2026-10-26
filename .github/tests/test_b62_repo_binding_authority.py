@@ -20,10 +20,17 @@ def test_actual_declared_vs_served_inventory_matches_now_that_metadata_is_served
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
     expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
-    # CF_VERSION_METADATA went live with the 95c9a36d deploy, so the reviewed
-    # served inventory and the repository declaration are now the same set: a
-    # steady state with nothing added, removed or changed.
-    assert binding_diff(index(rows), expected) == {'added': [], 'removed': [], 'changed': []}
+    # The repository declares one binding the served inventory does not carry yet:
+    # the #5881 file-lane ticket secret, whose value the OWNER stores first and the
+    # next exact-main deploy attaches. The reviewed baseline already allows it, so the
+    # only pending delta is that single addition - nothing removed, nothing changed.
+    # Once that deploy lands, this returns to the steady-state empty diff.
+    assert binding_diff(index(rows), expected) == {
+        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
+                   'type': 'secrets_store_secret'}],
+        'removed': [],
+        'changed': [],
+    }
     assert '<synthetic-private-value>' not in capsys.readouterr().out
 
 

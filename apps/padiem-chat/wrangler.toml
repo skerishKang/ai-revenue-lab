@@ -217,6 +217,16 @@ binding = "TINYFISH_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_TINY_FISH_API_KEY"
 
+# #5881 COM2 file lane ticket signature key. Declaration only: name, store
+# reference and secret name. The value is entered by the OWNER in the Cloudflare
+# dashboard (and on the COM2 host .env for the file-lane service), never in source.
+# The Worker reads it as PADIEM_CHAT_FILE_LANE_TICKET_SECRET, and the binding goes
+# live with the exact-main deploy that follows the value entry.
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"
+
 # Platform-managed secret_text: names only; values are never source data.
 [secrets]
 required = ["B66_ADMIN_GOOGLE_EMAIL", "B66_ALERT_EMAIL_FROM", "B66_ALERT_EMAIL_TO", "B66_MEMBERSHIP_ENFORCED", "P01_ENGINE_CREDENTIAL", "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", "PADIEM_CHAT_CUSTOM_KEY_SECRET", "PADIEM_CHAT_GOOGLE_CLIENT_SECRET", "PADIEM_CHAT_QUOTA_SALT", "PADIEM_CHAT_SESSION_SECRET", "PADIEM_PUSH_VAPID_PRIVATE_KEY", "PADIEM_PUSH_VAPID_PUBLIC_KEY", "PADIEM_PUSH_VAPID_SUBJECT"]
