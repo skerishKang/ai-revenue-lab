@@ -1,10 +1,9 @@
-"""Deployment-owned caller proof for the platform-credential B14 lanes.
+"""Deployment-owned caller proof for the B14 provider-dispatch lanes.
 
 The B14 Worker is publicly routable, so an anonymous internet caller could
-otherwise reach the catalog execution lane and spend the platform's own model
-credentials. Every lane that resolves a platform-owned credential therefore
-requires the existing PADIEM server-to-server caller proof before any
-Provider credential is resolved.
+otherwise reach an execution lane and make B14 send a Provider request. Every
+lane that dispatches a Provider request therefore requires the existing PADIEM
+server-to-server caller proof before any credential is resolved.
 
 Contract (the same construction the Engine -> Chat desktop lane already uses)::
 
@@ -17,8 +16,14 @@ proof key, never a Provider credential. The proof is body-bound, so a captured
 header cannot authorize a different request, and time-bound, so a captured
 proof cannot be replayed outside the skew window.
 
-BYOK (caller-owned key) and the read-only model-authority reads are not
-affected: they never spend a platform-owned credential.
+The request-carried credential lane (#5824 PR-3a) is proved the same way. Who
+may make B14 dispatch is a separate question from whose key the dispatch spends,
+and a caller-supplied Provider key does not answer the first one; without this
+gate a public caller could also use the Worker as a relay for its own key.
+
+The legacy ``X-Business14-Provider-Key`` header route predates that decision and
+keeps its own contract (#5224 pins it). The read-only model-authority reads are
+not affected: they dispatch no Provider request.
 """
 
 from __future__ import annotations

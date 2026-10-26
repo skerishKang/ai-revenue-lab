@@ -18,6 +18,7 @@ import time
 import uuid
 from typing import Any
 
+import httpx
 from starlette.routing import Route, Router
 from starlette.responses import JSONResponse
 from starlette.requests import Request
@@ -176,6 +177,10 @@ _ALLOWED_CHAT_FIELDS = frozenset({
     "business14",
     "reasoning_effort", "top_p", "top_k", "min_p",
     "presence_penalty", "repetition_penalty",
+    # #5824 PR-3a: the request-carried caller credential. Accepted only so this
+    # validator can parse and classify it; it never reaches a response or the
+    # ledger as anything but the label "user".
+    "user_credential_ref", "user_credential",
 })
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
@@ -250,11 +255,23 @@ def _validate_body(raw: Any) -> dict:
     if extra:
         raise _InvalidBody(f"Unexpected top-level fields: {', '.join(sorted(extra))}")
 
+    from .user_credential import credential_from_body
+
+    # Resolved before anything that could touch a credential plane: an unusable
+    # credential is a shape/refusal problem, and it is answered with a code and
+    # a fixed message that never repeat what was sent.
+    credential = credential_from_body(raw)
+
     # model
     if not isinstance(raw.get("model"), str) or not raw["model"].strip():
         raise _InvalidBody("model must be a non-empty string")
 
     model = raw["model"].strip()
+    if credential is not None and model == "b14/auto":
+        # A caller-owned key names one provider and one model. The automatic
+        # route would answer with a supplier the credential never offered, so
+        # the combination is refused instead of silently served by one of them.
+        raise _InvalidBody("b14/auto cannot be combined with a request credential")
     # Provider/model controls supported context size and message count.
     # B14 validates the message shape, not a second artificial context cap.
     msgs = raw.get("messages")
@@ -311,7 +328,7 @@ def _validate_body(raw: Any) -> dict:
     except UnsupportedModelParameter as exc:
         raise _InvalidBody(str(exc)) from exc
 
-    return {
+    body = {
         "model": model,
         "messages": validated_messages,
         "temperature": float(temp) if temp is not None else None,
@@ -321,6 +338,11 @@ def _validate_body(raw: Any) -> dict:
         "tool_choice": tool_choice,
         "business14": _validate_b14_options(raw.get("business14")),
     }
+    # Absent, not None: a request that carried no credential keeps the exact
+    # body shape it had before this field existed.
+    if credential is not None:
+        body["user_credential"] = credential
+    return body
 
 
 def _validate_b14_options(raw: Any) -> dict:
@@ -813,6 +835,27 @@ def _protocol_for(
     return "chat/completions" if platform_provider_id else "unknown"
 
 
+def _write_ledger_record(request_id: str, record) -> None:
+    """Append one finished row, deferred until the caller has its answer.
+
+    Mock mode performs no provider call, so it produces no execution record.
+    Only the bounded storage status is logged: never a payload, never a value.
+    """
+    from .platform import _provider_mode
+
+    if _provider_mode() == "mock":
+        return
+
+    async def write() -> None:
+        status = await record_call(record)
+        logger.info(
+            "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
+            request_id, record.log_id, record.outcome, record.attempt_count, status,
+        )
+
+    enqueue(write, request_id=request_id)
+
+
 async def _handle_alpha_chat(
     request_id: str, body: dict, origin_headers: Any = None
 ) -> JSONResponse:
@@ -900,19 +943,7 @@ async def _handle_alpha_chat(
         skipped(request_id, ledger_exc)
 
     def _write_ledger(record) -> None:
-        from .platform import _provider_mode
-
-        if _provider_mode() == "mock":
-            return
-
-        async def write() -> None:
-            status = await record_call(record)
-            logger.info(
-                "b14_ledger request_id=%s log_id=%s outcome=%s attempts=%d status=%s",
-                request_id, record.log_id, record.outcome, record.attempt_count, status,
-            )
-
-        enqueue(write, request_id=request_id)
+        _write_ledger_record(request_id, record)
 
     candidates: list[dict[str, str]] = [
         {
@@ -1369,6 +1400,248 @@ async def _handle_alpha_chat(
     return JSONResponse(response_data)
 
 
+async def _handle_user_credential_chat(
+    request: Request, request_id: str, body: dict, origin_headers: Any = None
+) -> JSONResponse:
+    """Serve one request with the key that arrived inside its own body (#5824).
+
+    This lane resolves no platform credential and builds no roster: no
+    ``ensure_route_secrets`` read, no tier candidate, no same-route retry. One
+    provider, the caller's own key, one physical attempt, and the provider's own
+    error code when it fails. Nothing here is tried again on another supplier,
+    because a substitution would either spend a key the caller did not offer or
+    answer with a model the caller did not choose.
+    """
+    from app.pilot.b14_runtime_config import runtime_config as cfg
+    from .platform import call_user_credential_chat_completions
+    from .user_credential import UserCredential
+
+    credential: UserCredential = body["user_credential"]
+    model_id = body["model"]
+    route_id = "user_credential"
+
+    # #5536's rule applies unchanged to a caller-owned key: B14 holds no
+    # capability record for a model it did not register, so a tool declaration
+    # is refused rather than forwarded unverified.
+    if body.get("tools"):
+        raise ToolsNotSupported(model_id)
+
+    ledger: LedgerDraft | None = None
+    try:
+        ledger = LedgerDraft(
+            log_id=new_log_id(), request_id=request_id,
+            endpoint=request.url.path, protocol="chat/completions",
+            streaming=False, requested_model_id=model_id, started_at=utc_now_iso(),
+            origin=origin_from_headers(origin_headers),
+        )
+    except Exception as ledger_exc:
+        skipped(request_id, ledger_exc)
+
+    def _finish(record_kwargs: dict) -> None:
+        if ledger is None:
+            return
+        try:
+            _write_ledger_record(
+                request_id,
+                ledger.finish(
+                    credential_source="user", fallback_used=False, fallback_depth=0,
+                    route_mode="manual", selected_model_id=model_id,
+                    selected_provider=credential.provider_id,
+                    selected_upstream_model=credential.upstream_model,
+                    selected_route_id=route_id,
+                    **record_kwargs,
+                ),
+            )
+        except Exception as ledger_exc:
+            skipped(request_id, ledger_exc)
+
+    transport = getattr(request.app.state, "stream_transport", None)
+    if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
+        raise InvalidRequest("Invalid streaming transport configuration.")
+
+    start_time = time.monotonic()
+    attempt_started = time.perf_counter()
+    evidence = {
+        "attempt": 1,
+        "model_id": model_id,
+        "upstream_model": credential.upstream_model,
+        "provider": credential.provider_id,
+        "route_id": route_id,
+        "outcome": "error",
+        "error_code": None,
+        "retry_index": 0,
+        "actual_response_model": None,
+    }
+    def _attempt_elapsed_ms() -> int:
+        return int((time.perf_counter() - attempt_started) * 1000)
+
+    try:
+        response_data = await call_user_credential_chat_completions(
+            credential=credential,
+            messages=body["messages"],
+            temperature=body.get("temperature"),
+            max_tokens=body.get("max_tokens"),
+            **({"transport": transport} if transport is not None else {}),
+        )
+    except PilotError as exc:
+        evidence["error_code"] = exc.code
+        if ledger is not None:
+            try:
+                ledger.record_attempt(
+                    provider=credential.provider_id, model_id=model_id,
+                    upstream_model=credential.upstream_model, route_id=route_id,
+                    outcome="error", error_code=exc.code,
+                    elapsed_ms=_attempt_elapsed_ms(),
+                )
+            except Exception as ledger_exc:
+                skipped(request_id, ledger_exc)
+        _finish({
+            "outcome": "error", "http_status": exc.status_code, "error_code": exc.code,
+            "elapsed_ms": int((time.monotonic() - start_time) * 1000),
+        })
+        logger.warning(
+            "user_credential_error request_id=%s provider=%s code=%s status=%d",
+            request_id, credential.provider_id, exc.code, exc.status_code,
+        )
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "code": exc.code,
+                    "message": exc.message,
+                    "request_id": request_id,
+                    "attempt_count": 1,
+                    "fallback_used": False,
+                    "reason_codes": [route_id],
+                    "attempt_evidence": [evidence],
+                }
+            },
+        )
+    except Exception as exc:
+        # The provider call raised something B14 does not model. The redacted
+        # text is the only thing that leaves this branch, and a caller key is
+        # never part of it: the value lives in one header built per call.
+        logger.error(
+            "user_credential_unexpected_error request_id=%s provider=%s error=%s",
+            request_id,
+            credential.provider_id,
+            redact_sensitive(str(exc)),
+        )
+        evidence["error_code"] = "internal_error"
+        if ledger is not None:
+            try:
+                ledger.record_attempt(
+                    provider=credential.provider_id, model_id=model_id,
+                    upstream_model=credential.upstream_model, route_id=route_id,
+                    outcome="error", error_code="internal_error",
+                    elapsed_ms=_attempt_elapsed_ms(),
+                )
+            except Exception as ledger_exc:
+                skipped(request_id, ledger_exc)
+        internal = PilotError(
+            code="internal_error", message=_INTERNAL_ERROR_MESSAGE, status_code=500,
+        )
+        _finish({
+            "outcome": "error", "http_status": 500, "error_code": "internal_error",
+            "elapsed_ms": int((time.monotonic() - start_time) * 1000),
+        })
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": {
+                    "code": internal.code,
+                    "message": internal.message,
+                    "request_id": request_id,
+                    "attempt_count": 1,
+                    "fallback_used": False,
+                    "reason_codes": [route_id],
+                    "attempt_evidence": [evidence],
+                }
+            },
+        )
+
+    latency_ms = int((time.monotonic() - start_time) * 1000)
+    actual_response_model = response_data.get("_actual_response_model")
+    usage = response_data.get("usage") or {}
+    evidence["outcome"] = "success"
+    evidence["actual_response_model"] = actual_response_model
+
+    if ledger is not None:
+        try:
+            ledger.record_attempt(
+                provider=credential.provider_id, model_id=model_id,
+                upstream_model=credential.upstream_model, route_id=route_id,
+                outcome="success", elapsed_ms=_attempt_elapsed_ms(),
+                usage=response_data.get("usage"),
+                actual_response_model=actual_response_model,
+                finish_reason=_first_finish_reason(response_data),
+                provider_request_id=response_data.get("id")
+                if isinstance(response_data.get("id"), str) else None,
+            )
+        except Exception as ledger_exc:
+            skipped(request_id, ledger_exc)
+
+    if cfg.is_mock:
+        biz14 = _build_b14_mock_metadata(
+            request_id=request_id, model_id=model_id,
+            upstream_model=credential.upstream_model, provider=credential.provider_id,
+            routing_policy=None,
+        )
+    else:
+        biz14 = _build_b14_live_metadata(
+            request_id=request_id, model_id=model_id,
+            upstream_model=credential.upstream_model, provider=credential.provider_id,
+            latency_ms=latency_ms,
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+            total_tokens=usage.get("total_tokens"),
+            attempt_count=1, fallback_used=False,
+            actual_response_model=actual_response_model, routing_policy=None,
+        )
+
+    biz14.update({
+        "route_mode": "manual",
+        "selected_provider": credential.provider_id,
+        "selected_model": model_id,
+        "selected_upstream_model": credential.upstream_model,
+        "selected_route_id": route_id,
+        "actual_response_model": actual_response_model,
+        "reason_codes": [route_id],
+        "fallback_allowed": False,
+        "fallback_used": False,
+        "attempt_count": 1,
+        "attempt_evidence": [evidence],
+        "route_evidence_status": (
+            "mock_no_upstream_call" if cfg.is_mock else "live_verified"
+        ),
+        # The caller can confirm from its own response that its key, not the
+        # platform's, answered. The label is the only credential fact recorded.
+        "credential_source": "user",
+        "prompt_tokens": usage.get("prompt_tokens"),
+        "completion_tokens": usage.get("completion_tokens"),
+        "total_tokens": usage.get("total_tokens"),
+    })
+
+    if actual_response_model:
+        response_data["model"] = actual_response_model
+    response_data["business14"] = biz14
+    for internal_key in [k for k in response_data if k.startswith("_")]:
+        del response_data[internal_key]
+
+    _finish({
+        "outcome": "success", "http_status": 200,
+        "finish_reason": _first_finish_reason(response_data), "elapsed_ms": latency_ms,
+        "usage": response_data.get("usage"),
+        "actual_response_model": actual_response_model,
+    })
+
+    logger.info(
+        "user_credential_success request_id=%s model=%s provider=%s mode=%s latency_ms=%d",
+        request_id, model_id, credential.provider_id, cfg.provider_mode, latency_ms,
+    )
+    return JSONResponse(response_data)
+
+
 async def pilot_chat_completions(
     request: Request,
 ):
@@ -1389,6 +1662,27 @@ async def pilot_chat_completions(
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
         raw_body = await _read_json_body(request)
+
+        # #5824 PR-3a: a body-carried caller credential selects its own lane,
+        # whatever the model id looks like. Neither the catalog roster nor the
+        # legacy header path is consulted, and no platform credential is
+        # resolved for the request. Caller identity is still required: the proof
+        # answers who may make B14 dispatch a provider request, which is a
+        # different question from whose key that request spends.
+        from .user_credential import has_credential
+
+        if has_credential(raw_body):
+            if raw_body.get("stream") is True:
+                from .stream_gateway import pilot_stream_preview
+
+                return await pilot_stream_preview(request, parsed_body=raw_body)
+            denial = await _platform_caller_denial(request, request_id)
+            if denial is not None:
+                return denial
+            body = _validate_body(raw_body)
+            return await _handle_user_credential_chat(
+                request, request_id, body, origin_headers=request.headers
+            )
 
         # Explicit stream=true on a registered, manual B14 model reuses the
         # independently validated SSE preview path. The original raw request
