@@ -103,7 +103,7 @@ jobs:
               (port, 'ENGINE_SLACK_ALLOWED_CHANNELS = "ENGINE_SLACK_ALLOWED_CHANNELS"'),
               (port, 'ENGINE_SLACK_PRIVATE_CHANNELS = "ENGINE_SLACK_PRIVATE_CHANNELS"'),
               (port, 'SLACK_CONVERSATIONS_LIST_PATH = "/api/conversations.list"'),
-              (port, "MAX_SLACK_RESPONSE_BYTES = 1_000_000"),
+              (port, "MAX_SLACK_RESPONSE_BYTES = 10 * 1024 * 1024"),
               (grants, "async def load_slack_grants"),
               (bindings, 'SLACK_REFERENCE_APP_ID = "b54-padiem-claw-slack"'),
               (bindings, 'SLACK_AGENT_ID = "agent:padiem:claw_slack_reader@1"'),

@@ -309,7 +309,7 @@ def test_valid_large_b66_quote_completion_crosses_legacy_core_one_mib():
         "choices": [{"message": {"role": "assistant", "content": answer}}],
         "business14": {"route_mode": "manual", "selected_model": MODEL},
     }).encode()
-    assert MAX_B14_RESPONSE_BYTES < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert 1_048_576 < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
 
     class LongBinding:
         def __init__(self):

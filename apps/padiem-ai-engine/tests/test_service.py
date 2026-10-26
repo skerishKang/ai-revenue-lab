@@ -452,7 +452,7 @@ def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> Non
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     # Three model-orchestration paths share the existing 6MB model ingress;
-    # all unrelated Engine routes continue using their original 128KiB.
+    # all unrelated Engine routes retain their own 1MiB bounded guard.
     assert "EXECUTE_PATH, ORCHESTRATE_PATH," in worker
     assert "ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH," in worker
     assert "else MAX_REQUEST_BODY_BYTES" in worker

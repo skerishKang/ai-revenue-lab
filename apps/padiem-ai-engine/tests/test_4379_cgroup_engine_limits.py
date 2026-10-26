@@ -17,7 +17,7 @@ def test_the_engine_model_route_declares_no_padiem_body_total() -> None:
     )
 
     assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
-    # The non-model Engine guard stays where it was: loosening the model path
+    # The non-model Engine guard stays bounded (Owner tier: 1MiB): loosening the model path
     # is not a licence to loosen the tool, control, memory and approval
     # routes in the same sweep.
     assert MAX_REQUEST_BODY_BYTES == 1024 * 1024

@@ -225,7 +225,7 @@ async def test_b62_general_completed_healthy_large_json_answer_survives():
                 "model": "agnes",
                 "choices": [{"message": {"content": answer}, "finish_reason": "stop"}],
             }, ensure_ascii=False).encode("utf-8")
-            assert MAX_B14_RESPONSE_BYTES < len(body) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+            assert 1_048_576 < len(body) < MAX_CONFIGURED_B14_RESPONSE_BYTES
             return 200, body
 
     service = LongService()
