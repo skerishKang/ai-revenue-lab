@@ -17,11 +17,18 @@ from .document_normalization import (
 MAX_MERGE_INPUT_FILES = 8
 MAX_INPUT_BYTES_PER_FILE = MAX_BINARY_DOCUMENT_BYTES
 MAX_AGGREGATE_INPUT_BYTES = MAX_INPUT_BYTES_PER_FILE * MAX_MERGE_INPUT_FILES
+#: #5734 stage 2: the page-count proxies below described capacity, not risk, and
+#: are retained for import compatibility without being enforced. A range that
+#: exceeds the source, overlapping ranges and active content are still refused,
+#: and the output byte bound below is the limit that actually constrains the work.
 MAX_PDF_PAGES_PER_INPUT = MAX_PDF_PAGES
+#: Retained for import compatibility and no longer enforced.
 MAX_OUTPUT_PAGES = MAX_PDF_PAGES
 MAX_OUTPUT_BYTES = MAX_BINARY_DOCUMENT_BYTES
 MAX_SPLIT_RANGES = 16
+#: Retained for import compatibility and no longer enforced.
 MAX_RANGE_WIDTH = MAX_PDF_PAGES
+#: Retained for import compatibility and no longer enforced.
 MAX_TOTAL_SELECTED_PAGES = MAX_PDF_PAGES
 USER_PAGE_NUMBERING = "one_based"
 ACTIVE_CONTENT_POLICY = "fail_closed"
@@ -83,10 +90,13 @@ class PdfOperationResult:
             raise DocumentNormalizationError(
                 "pdf_output_empty", "PDF operation output is empty."
             )
-        if self.page_count < 1 or self.page_count > MAX_OUTPUT_PAGES:
+        if self.page_count < 1:
             raise DocumentNormalizationError(
-                "pdf_output_page_limit", "PDF output page count is out of bounds."
+                "pdf_output_empty", "PDF operation output has no pages."
             )
+        # #5734 stage 2: no ceiling on page count. The byte bound below is the
+        # real limit on what this can hold, and it stays enforced.
+
         if len(self.payload) > MAX_OUTPUT_BYTES:
             raise DocumentNormalizationError(
                 "pdf_output_bytes_limit", "PDF output byte count is out of bounds."
@@ -246,11 +256,6 @@ def merge_pdfs(payloads: Sequence[bytes]) -> PdfOperationResult:
             _reject_active_content(reader)
             pages = list(reader.pages)
             source_page_count += len(pages)
-            if source_page_count > MAX_OUTPUT_PAGES:
-                raise DocumentNormalizationError(
-                    "pdf_output_page_limit",
-                    "PDF merge output page count is out of bounds.",
-                )
             for page_index, page in enumerate(pages):
                 writer.add_page(page)
                 provenance.append(
@@ -295,10 +300,6 @@ def split_pdf(payload: bytes, ranges: Sequence[tuple[int, int]]) -> PdfOperation
         source_pages = list(reader.pages)
         for start, end in normalized:
             width = end - start + 1
-            if width > MAX_RANGE_WIDTH:
-                raise DocumentNormalizationError(
-                    "pdf_split_range_width", "PDF split range is too wide."
-                )
             if end > len(source_pages):
                 raise DocumentNormalizationError(
                     "pdf_split_range_page", "PDF split range exceeds source pages."
@@ -314,11 +315,6 @@ def split_pdf(payload: bytes, ranges: Sequence[tuple[int, int]]) -> PdfOperation
                 provenance.append(
                     PdfPageProvenance(len(provenance) + 1, 0, page_number)
                 )
-        if len(provenance) > MAX_TOTAL_SELECTED_PAGES:
-            raise DocumentNormalizationError(
-                "pdf_split_selected_limit",
-                "PDF split selected page count is out of bounds.",
-            )
         if len(provenance) > MAX_OUTPUT_PAGES:
             raise DocumentNormalizationError(
                 "pdf_output_page_limit", "PDF split output page count is out of bounds."

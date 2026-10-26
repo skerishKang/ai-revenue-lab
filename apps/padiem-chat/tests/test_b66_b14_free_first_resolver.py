@@ -311,7 +311,7 @@ def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
             return Response()
 
     async def read_body(response, *, max_bytes):
-        assert max_bytes == 131072
+        assert max_bytes == 1024 * 1024
         return b'{"registered_routes":[],"catalog":[]}'
 
     class TooLarge(Exception):

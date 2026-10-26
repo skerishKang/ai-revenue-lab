@@ -133,14 +133,15 @@ def test_backslash_member_name_is_rejected_by_the_shared_predicate() -> None:
     assert validate_ooxml_member_name("a/b.xml") == "a/b.xml"
 
 
-def test_capacity_is_not_a_refusal_and_a_bomb_still_is() -> None:
-    """#5734: member count and member bytes stopped being reasons to refuse.
+def test_capacity_is_not_a_refusal_and_a_bomb_and_an_oversized_member_are() -> None:
+    """#5734 then #5876: what this reader still refuses, and why.
 
     Three shapes that used to fail here are ordinary documents: more members than
-    the old 256 count, one member over the old 1MiB bound, and a package whose
-    parts summed past the old 8MiB total. The shape that must still be refused is
-    a decompression bomb — content that expands enormously against the bytes it
-    was carried in — and the path, encryption and DTD checks are untouched.
+    the old 256 count, one member past the old 1MiB bound, and a package whose
+    parts summed past the old 8MiB total. Two shapes must still be refused. A bomb
+    is content that expands enormously against the bytes it was carried in. An
+    oversized member is a single part asking for more inflated bytes than the
+    Worker isolate owns — a memory bound, not a size preference.
     """
 
     many = {f"safe/{i}.xml": b"<a/>" for i in range(MAX_ENTRIES * 4)}
@@ -148,11 +149,11 @@ def test_capacity_is_not_a_refusal_and_a_bomb_still_is() -> None:
     assert DOCX_TEXT in extract_docx_text(_zip_bytes(many))
 
     big = {"word/document.xml": _docx_xml(DOCX_TEXT),
-           "big.bin": b"abcdefgh" * (MAX_ENTRY_UNCOMPRESSED_BYTES * 4)}
+           "big.bin": b"abcdefgh" * (1024 * 1024)}                      # 8MiB
     assert DOCX_TEXT in extract_docx_text(_zip_bytes(big))
 
-    chunk = b"abcdefgh" * (MAX_ENTRY_UNCOMPRESSED_BYTES // 8)
-    wide = {f"safe/{i}.bin": chunk for i in range(MAX_ENTRIES)}
+    chunk = b"abcdefgh" * (64 * 1024)                                   # 512KiB
+    wide = {f"safe/{i}.bin": chunk for i in range(32)}                  # 16MiB total
     wide["word/document.xml"] = _docx_xml(DOCX_TEXT)
     assert DOCX_TEXT in extract_docx_text(_zip_bytes(wide))
 
@@ -162,6 +163,10 @@ def test_capacity_is_not_a_refusal_and_a_bomb_still_is() -> None:
             "bomb.bin": bytes(64 * 1024 * 1024)}
     with pytest.raises(OOXMLExtractionError, match="extraction failed safely"):
         extract_docx_text(_zip_bytes(bomb))
+
+    over_bound = (b"abcdefgh" * (MAX_ENTRY_UNCOMPRESSED_BYTES // 8)) + b"a"
+    with pytest.raises(OOXMLExtractionError, match="entry exceeds size limit"):
+        extract_docx_text(_zip_bytes({"word/document.xml": over_bound}))
 
 
 def test_xlsx_archive_level_dtd_is_rejected_before_openpyxl():

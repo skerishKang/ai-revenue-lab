@@ -249,7 +249,8 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     assert "파일 업로드" in html
     assert "지원 형식" in html
     assert "MAX_IMAGE_BYTES" not in js
-    assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in js
+    assert "MAX_DOCUMENT_BYTES" not in js
+    assert "MAX_DOCUMENT_CHARS" not in js
     assert "ALLOWED_IMAGE_TYPES" in js
     assert "ALLOWED_DOCUMENT_TYPES" in js
     assert "URL.createObjectURL" in js

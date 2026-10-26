@@ -611,6 +611,38 @@ async def test_genuine_ooxml_packages_are_accepted():
 
 
 @pytest.mark.asyncio
+async def test_a_package_with_more_parts_than_the_old_member_ceiling_is_accepted():
+    """#5734 stage 2: the central-directory walk judges shape, not size.
+
+    A quotation workbook with 600 worksheet parts used to be refused for its
+    member count before a single byte was stored. The path, encryption and
+    required-part judgements still decide.
+    """
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+        for index in range(600):
+            archive.writestr(f"xl/worksheets/sheet{index}.xml", "<sheet/>")
+    body = buffer.getvalue()
+
+    store = B66TemplateSourceStore(MemoryMetadata(), MemoryR2())
+    saved = await store.put_template_source(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        original_filename="wide.xlsx",
+        body=body,
+    )
+    _, payload = await store.get_for_owner(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        template_source_id=saved.template_source_id,
+    )
+    assert payload == body
+
+
+@pytest.mark.asyncio
 async def test_xlsx_media_type_rejects_docx_container_and_vice_versa():
     store = _store()
     with pytest.raises(B66TemplateSourceError, match="does not match"):

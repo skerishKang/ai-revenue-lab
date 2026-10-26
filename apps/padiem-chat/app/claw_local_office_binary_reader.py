@@ -16,7 +16,7 @@ from typing import Any
 
 from kagent.xlsx_fidelity_route import classify_xlsx, XlsxRoute
 
-MAX_OFFICE_BYTES = 8 * 1024 * 1024
+MAX_OFFICE_BYTES = 32 * 1024 * 1024
 OFFICE_CHUNK_BYTES = 48 * 1024
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 _REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")

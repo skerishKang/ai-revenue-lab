@@ -148,20 +148,23 @@ Current composer contract:
 
 ```text
 Images:      JPEG / PNG / WebP, one attachment, no PADIEM byte total
-Text docs:   TXT / Markdown / CSV / JSON, one attachment,
-             up to 96 KiB and 40,000 decoded text characters
+Text docs:   TXT / Markdown / CSV / JSON, one attachment, no PADIEM byte total
+             or character limit
 Binary docs: PDF / DOCX / PPTX / XLSX, one attachment,
              raw binary payload with no PADIEM byte total
 ```
 
-#4379: an image or a binary document carries no product-side size ceiling. The
-platform request limit and the selected Provider's own limit are the real
-ceilings, and a payload beyond them fails with that true platform or Provider
+#4379 removed the product-side byte total for images and binary documents, and
+#5734 removed the ones that counted a document's own length: the 96 KiB and
+40,000-character text bounds, the PDF page and per-page text bounds, the XLSX
+row, column and cell ceilings, and the OOXML per-entry and total uncompressed
+bounds. The platform request limit and the selected Provider's own limit are the
+real ceilings, and a payload beyond them fails with that true platform or Provider
 error instead of a PADIEM maximum. What stays enforced is the shape and safety
 set: one attachment, the media-type and magic-byte checks, the base64 rules, the
-name rules, the empty-payload rule, the PDF page and text bounds, the XLSX sheet,
-row, column and cell bounds, and the OOXML per-entry and total uncompressed
-bounds that stop a decompression bomb.
+name rules, the empty-payload rule, the NUL and control-character rules, the
+OOXML member-path, encryption and DTD rules, and the archive inflation-ratio
+guard that stops a decompression bomb.
 
 Binary extraction remains server-side behind the existing completed `/api/chat` attachment contract; the frontend does not reimplement document extraction.
 

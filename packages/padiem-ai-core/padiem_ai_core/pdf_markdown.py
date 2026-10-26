@@ -34,8 +34,11 @@ from typing import Any
 import unicodedata
 
 from .document_normalization import (
-    MAX_PDF_PAGE_TEXT_CHARS,
+    # #5734 stage 2: imported, not applied. The conversion enforces no page
+    # count and no per-page text length; the names stay so this module can
+    # never grow a second, quieter ceiling than Core's vocabulary.
     MAX_PDF_PAGES,
+    MAX_PDF_PAGE_TEXT_CHARS,
     DocumentNormalizationError,
     _open_pdf_reader,
     validate_document_identity,
@@ -772,10 +775,9 @@ def convert_pdf_to_markdown(
             raise DocumentNormalizationError(
                 "pdf_no_pages", "PDF contains no readable pages."
             )
-        if page_count > MAX_PDF_PAGES:
-            raise DocumentNormalizationError(
-                "pdf_page_limit", "PDF contains more pages than one conversion may carry."
-            )
+        # #5734 stage 2: a page count is not a reason to refuse a document. What
+        # bounds this conversion is the work it actually does per page, not a
+        # PADIEM number for how long a normal contract may be.
         for number, page in enumerate(reader.pages, start=1):
             try:
                 lines, runs, layer, fragmented = _page_lines(page, number, notices)
@@ -785,10 +787,7 @@ def convert_pdf_to_markdown(
                 raise DocumentNormalizationError(
                     "pdf_page_text_invalid", "PDF page text could not be read safely."
                 ) from exc
-            if len(layer) > MAX_PDF_PAGE_TEXT_CHARS:
-                raise DocumentNormalizationError(
-                    "pdf_page_text_limit", "PDF page text exceeds the character limit."
-                )
+            # Same judgement per page: a dense page is a dense page.
             emitted.append(lines)
             layers.append(layer)
             fragmented_pages.append(fragmented)

@@ -14,7 +14,7 @@ from typing import Any
 
 from .b66_quote_assets import _read_r2_bytes
 
-MAX_PREVIEW_BYTES = 1024 * 1024
+MAX_PREVIEW_BYTES = 10 * 1024 * 1024
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
