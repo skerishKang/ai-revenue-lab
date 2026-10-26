@@ -31,6 +31,9 @@ MAX_MESSAGES: int | None = None
 MAX_MESSAGE_CHARS: int | None = None
 MAX_TOTAL_MESSAGE_CHARS: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
+# Routing label for the three 의원3종 utilities. It grants no identity, tier,
+# entitlement or tool scope, and it is not an authentication input.
+_UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
 
 
 class BrowserRequestError(ValueError):
@@ -109,13 +112,27 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     raise BrowserRequestError("지원하지 않는 도구입니다.")
 
 
+def declared_util_scope(raw: Any) -> str | None:
+    """Return the utility scope of a request that declared one.
+
+    Call this only after ``_validate_payload_async`` accepted the payload; the
+    re-check here is the trust boundary, not a second validator.
+    """
+    scope = raw.get("util") if isinstance(raw, dict) else None
+    return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
+
+
 def _validate_payload_parts(
     raw: Any,
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "pc_run_id", "web_search"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "pc_run_id", "web_search", "util"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
+    if "util" in raw:
+        util_scope = raw["util"]
+        if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:
+            raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")
     if "pc_run_id" in raw:
         try:
             validate_chat_pc_run_id(raw.get("pc_run_id"))

@@ -4,13 +4,10 @@ Group: ``meeting``. Covers the existing feature only: the summary prompt, the
 saved record, the 활동 기록 archive, reopening a stored record, and the 활동집
 (book) draft built from the records the user selects.
 
-One real defect was found while writing this group and is pinned below as a
-strict xfail instead of being fixed here: ``util-menu.js`` meeting generation
-ends with the SNS preview lines (``previewBox`` / ``renderPreview``), which are
-declared inside the SNS builder. A browser logs the resulting ReferenceError as
-an unhandled rejection and keeps the answer on screen, so the user-visible
-summary still works; the stray call is #5608/#5731 territory, and this issue is
-scoped to test infrastructure.
+A real defect found while writing this group was pinned as a strict xfail there
+(``util-menu.js`` meeting generation ended with the SNS preview lines
+``previewBox`` / ``renderPreview``, which are declared inside the SNS builder).
+The stray call is now removed, so the test asserts a clean page-error list.
 
 Run alone::
 
@@ -94,14 +91,5 @@ def test_the_group_touches_only_the_existing_endpoints(meeting: dict) -> None:
     assert "POST /api/chat" in meeting["endpoints"]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "util-menu.js meeting gen() ends with the SNS preview lines "
-        "(previewBox/renderPreview), which are scoped to buildSns; the browser "
-        "logs 'previewBox is not defined' after the summary is rendered. "
-        "Removing the stray call is #5608/#5731 work, not #5785 test scope."
-    ),
-)
 def test_meeting_generation_does_not_reference_the_sns_preview(meeting: dict) -> None:
     assert meeting["pageErrors"] == []

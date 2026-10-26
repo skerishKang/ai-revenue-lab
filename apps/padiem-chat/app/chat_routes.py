@@ -53,6 +53,7 @@ from .request_contract import (
     CustomModelSelection,
     _apply_b62_model_policy,
     _validate_payload_async,
+    declared_util_scope,
 )
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
@@ -504,14 +505,16 @@ async def api_chat_stream(request: Request):
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -1038,14 +1041,16 @@ async def api_chat(request: Request) -> JSONResponse:
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):

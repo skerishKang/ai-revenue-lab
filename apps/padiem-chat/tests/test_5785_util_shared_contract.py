@@ -62,6 +62,24 @@ def test_generation_alone_writes_nothing_to_storage(shared: dict) -> None:
     assert not shared["alerts"]
 
 
+def test_each_tool_declares_which_utility_it_is(shared: dict) -> None:
+    """The util scope is what keeps a utility out of the calendar branch.
+
+    Offsets come from the recorded per-tool request lists rather than a
+    hard-coded order, so a tool that starts making two model calls cannot
+    silently shift the assertion onto another tool.
+    """
+    offset = 0
+    seen = {}
+    for tool, calls in shared["perTool"].items():
+        count = sum(1 for call in calls if call == "POST /api/chat")
+        for payload in shared["chatPayloads"][offset:offset + count]:
+            seen[tool] = payload.get("util")
+        offset += count
+    assert offset == len(shared["chatPayloads"])
+    assert seen == {"speech": "speech", "sns": "sns", "meeting": "meeting"}
+
+
 def test_util_api_chat_sends_selected_tier_or_free_and_preserves_server_errors() -> None:
     observed = run("tier")
     assert not observed["pageErrors"]
