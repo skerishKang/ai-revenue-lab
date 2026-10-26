@@ -160,18 +160,9 @@ def test_the_production_deploy_config_carries_the_deployed_compatibility_date(
     module = _load_deploy_config_module()
     manifest = _manifest()
     repo_config = tmp_path / "wrangler.toml"
-    repo_config.write_text(
-        'name = "padiem-chat"\n'
-        'main = "worker.py"\n'
-        f'compatibility_date = "{manifest["compatibility_date"]}"\n'
-        'compatibility_flags = ["python_workers"]\n'
-        'base_dir = ".b66-worker-src"\n'
-        "\n"
-        "[assets]\n"
-        'directory = "static"\n'
-        'binding = "ASSETS"\n',
-        encoding="utf-8",
-    )
+    # Use the complete source inventory: a minimal manifest would deliberately
+    # remove the live service/secret bindings and must now be refused.
+    repo_config.write_text(CHAT_MANIFEST.read_text(encoding="utf-8"), encoding="utf-8")
     live = module.parse_live_bindings({
         "success": True,
         "result": {
