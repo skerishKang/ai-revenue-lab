@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import json
+import re
 from typing import Any
 
 from starlette.requests import Request
@@ -35,6 +36,9 @@ from .pc_device_pairing_store import (
 #: exactly the one it is showing.
 PC_PAIRING_PATH = "/api/pc/pairings"
 PC_PAIRING_CLAIM_PATH = "/api/pc/pairings/claim"
+#: What the code entitles its holder to download. One path, one Windows link,
+#: and the URL is never assembled from anything the request says.
+PC_PAIRING_HANDOFF_PATH = "/api/pc/pairings/handoff"
 PC_PAIRING_LINK_PATH = "/api/pc/pairings/{link_id}"
 PC_PAIRING_ROOTS_PATH = "/api/pc/pairings/{link_id}/roots"
 PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
@@ -232,6 +236,72 @@ async def pc_pairing_revoke(request: Request) -> JSONResponse:
     return _json({"ok": True, "revoked": True}, 200)
 
 
+def install_url_from_config(value: Any) -> str | None:
+    """The reviewed deployment value, or ``None`` when there is nothing to hand out.
+
+    Only a plain https URL with a host and no credentials is accepted: this value
+    is what a PC downloads an installer from, so an empty or http configuration
+    is treated exactly like no configuration rather than as a weaker grant. The
+    route never takes the URL from the request, so an unconfigured deployment
+    answers "준비 중" instead of guessing a host or letting a caller point a PC at
+    a machine of its own choosing.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text or len(text) > 2048:
+        return None
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in text):
+        return None
+    scheme, _, rest = text.partition("://")
+    if scheme.lower() != "https" or not rest:
+        return None
+    host = rest.split("/", 1)[0]
+    if not host or "@" in host:
+        return None
+    if not re.fullmatch(r"[A-Za-z0-9.-]+(:[0-9]{1,5})?", host):
+        return None
+    return text
+
+
+async def pc_pairing_handoff(request: Request) -> JSONResponse:
+    """Turn a code the PC already holds into the tag and installer it needs.
+
+    No session: whoever presents the code is the PC it was issued for, and the
+    code is the whole proof (R2, R3). Nothing is consumed here — the claim
+    completes when the tag reappears in an observed agent name, or when the PC
+    posts the code itself, so a download that fails mid-way leaves a code that
+    still works inside its ten minutes.
+    """
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    agent_url = install_url_from_config(
+        getattr(request.app.state, "pc_pairing_install_url", None),
+    )
+    if agent_url is None:
+        return _error(503, "pc_pairing_not_ready")
+    body = await _body(request)
+    if body is None or set(body) != {"code"}:
+        return _error(400, "pc_pairing_body_invalid")
+    code = body.get("code")
+    if not isinstance(code, str) or not code:
+        return _error(400, "pc_pairing_body_invalid")
+    handoff, refused = await _await_store(
+        store.peek_pairing_code, code=code, now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({
+        "ok": True,
+        "handoff": {
+            "install_tag": handoff["install_tag"],
+            "agent_url": agent_url,
+            "expires_at": handoff["expires_at"],
+        },
+    }, 200)
+
+
 async def pc_pairing_claim(request: Request) -> JSONResponse:
     """One PC redeems the code it was given (R2, R3).
 
@@ -328,12 +398,15 @@ async def pc_pairing_revoke_root(request: Request) -> JSONResponse:
 
 __all__ = [
     "PC_PAIRING_CLAIM_PATH",
+    "PC_PAIRING_HANDOFF_PATH",
     "PC_PAIRING_LINK_PATH",
     "PC_PAIRING_PATH",
     "PC_PAIRING_ROOTS_PATH",
     "PC_PAIRING_ROOT_PATH",
     "pc_pairing_approve_root",
     "pc_pairing_claim",
+    "pc_pairing_handoff",
+    "install_url_from_config",
     "pc_pairing_issue",
     "pc_pairing_list",
     "pc_pairing_revoke",
