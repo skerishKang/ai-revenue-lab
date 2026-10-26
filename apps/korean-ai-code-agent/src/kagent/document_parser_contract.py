@@ -109,9 +109,11 @@ MAX_MEDIA_TYPE_CHARS = 128
 #: fixed frame.
 MAX_CHILD_ENVELOPE_BYTES = ((MAX_BINARY_DOCUMENT_BYTES + 2) // 3) * 4 + 4096
 
-#: Child -> parent. The only successful payload is the Core-bounded extracted
-#: text; JSON escaping can expand a single character to six bytes, so the byte
-#: ceiling is derived from the Core character ceiling rather than guessed.
+#: Child -> parent. The only successful payload is extracted text; JSON escaping
+#: can expand a single character to six bytes, so this is the parent's pipe-read
+#: allocation for one report from a child it does not trust. It is not a document
+#: content limit: #5734 stage 2 stopped capping extracted text by character count,
+#: and the character number it is sized from is no longer enforced anywhere.
 MAX_CHILD_OUTPUT_BYTES = (MAX_DOCUMENT_CHARS * 6) + 4096
 
 #: Child stderr is drained to keep the pipe from filling, and is never surfaced.
@@ -142,6 +144,12 @@ class ParserReport:
     A successful report carries text and no code; a refusal carries a bounded
     code and no text. The two shapes cannot be mixed, so a caller can never read
     a partial success or an unbounded error string.
+
+    How long the text is has never been this report's judgement. It used to
+    repeat a Core character ceiling that #5734 stage 2 stopped enforcing, which
+    made the IPC contract the strictest place in the system to return a long
+    document. What still bounds the report is the pipe: the parent keeps
+    :data:`MAX_CHILD_OUTPUT_BYTES` and refuses anything past it (#2824).
     """
 
     ok: bool
@@ -154,8 +162,6 @@ class ParserReport:
         if self.ok:
             if not isinstance(self.text, str) or self.code is not None:
                 raise ValueError("a successful report carries text only")
-            if len(self.text) > MAX_DOCUMENT_CHARS:
-                raise ValueError("report text exceeds the Core character bound")
         else:
             if is_bounded_reason_code(self.code) is False or self.text is not None:
                 raise ValueError("a refusal report carries a bounded code only")
@@ -247,8 +253,10 @@ def decode_report(raw: Any) -> ParserReport | None:
 
     A report is trusted only when it is a JSON object with exactly one of the two
     bounded shapes and a reason code that matches the bounded grammar. Anything
-    else — a traceback string, a partial write, an extra key, oversized text —
-    is refused here so it can never be projected as a parse outcome.
+    else — a traceback string, a partial write, an extra key — is refused here so
+    it can never be projected as a parse outcome. Length is not one of the
+    judgements: how much the parent may hold is :data:`MAX_CHILD_OUTPUT_BYTES`,
+    enforced on the pipe before this function ever sees the bytes.
     """
 
     if not isinstance(raw, (bytes, bytearray)):
@@ -266,7 +274,7 @@ def decode_report(raw: Any) -> ParserReport | None:
         if set(frame) != REPORT_SUCCESS_KEYS:
             return None
         text = frame["text"]
-        if not isinstance(text, str) or len(text) > MAX_DOCUMENT_CHARS:
+        if not isinstance(text, str):
             return None
         return ParserReport(ok=True, text=text)
     if set(frame) != REPORT_REJECTION_KEYS or not is_bounded_reason_code(frame["code"]):
