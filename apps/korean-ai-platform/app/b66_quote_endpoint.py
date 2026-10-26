@@ -22,11 +22,10 @@ from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Router
+from starlette.routing import Route, Router
 
 from app.pilot import gateway as pilot_gateway
 
-router = Router()
 
 EXTRACT_IMAGE_PATH = "/v1/quote/extract-image"
 EXTRACT_DOCUMENT_PATH = "/v1/quote/extract-document"
@@ -208,7 +207,6 @@ async def _platform_caller_denial(request: Request) -> JSONResponse | None:
     return _error(denial.code, status=denial.status_code)
 
 
-@router.route(EXTRACT_IMAGE_PATH, methods=["POST"])
 async def extract_image(request: Request) -> JSONResponse:
     denial = await _platform_caller_denial(request)
     if denial is not None:
@@ -250,7 +248,6 @@ async def extract_image(request: Request) -> JSONResponse:
     )
 
 
-@router.route(EXTRACT_DOCUMENT_PATH, methods=["POST"])
 async def extract_document(request: Request) -> JSONResponse:
     denial = await _platform_caller_denial(request)
     if denial is not None:
@@ -319,3 +316,11 @@ async def extract_document(request: Request) -> JSONResponse:
         media_type=media_type,
         byte_size=byte_size,
     )
+
+
+router = Router(
+    routes=[
+        Route(EXTRACT_IMAGE_PATH, extract_image, methods=["POST"]),
+        Route(EXTRACT_DOCUMENT_PATH, extract_document, methods=["POST"]),
+    ]
+)

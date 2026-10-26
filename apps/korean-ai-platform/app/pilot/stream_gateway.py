@@ -19,7 +19,7 @@ from typing import Any
 import httpx
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
-from starlette.routing import Router
+from starlette.routing import Route, Router
 
 from app.pilot.call_ledger import (
     LedgerDraft,
@@ -56,7 +56,6 @@ from app.pilot.stream_error_contract import public_stream_error
 
 logger = logging.getLogger("korean-ai-platform.pilot.stream-preview")
 
-router = Router()
 
 _STREAM_PREVIEW_PATH = "/v1/chat/completions/stream-preview"
 
@@ -543,7 +542,6 @@ async def _stream_body(
                 skipped(request_id, ledger_exc)
 
 
-@router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
 async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
     """Stream a manual platform route with finite owner-tier pre-token fallback.
 
@@ -803,3 +801,10 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
                 }
             },
         )
+
+
+router = Router(
+    routes=[
+        Route(_STREAM_PREVIEW_PATH, pilot_stream_preview, methods=["POST"]),
+    ]
+)

@@ -10,7 +10,6 @@ import pytest
 # filters must be added BEFORE the warning fires, so they take precedence.
 warnings.filterwarnings("ignore", message=r"Using .httpx. with .starlette.testclient")
 warnings.filterwarnings("ignore", message=r"Setting per-request cookies")
-warnings.filterwarnings("ignore", message=r"The `route` decorator is deprecated")
 warnings.filterwarnings("ignore", message=r"unclosed <socket.socket", category=ResourceWarning)
 warnings.filterwarnings("ignore", message=r"unclosed event loop", category=ResourceWarning)
 # Starlette's TestClient portal creates a per-test asyncio event loop whose GC
