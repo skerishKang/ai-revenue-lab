@@ -7,6 +7,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from padiem_ai_engine_client import (
+    ENGINE_DOCUMENT_ADMISSION_PATH,
     ENGINE_HEALTH_PATH,
     ENGINE_INTERNAL_ORIGIN,
     ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
@@ -56,6 +57,10 @@ _ALLOWED_ENGINE_PATHS = frozenset(
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
         ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
+        # #5881: a COM2 document reference plus its signed read claim. No
+        # document bytes travel here, so the text/reference bound above is the
+        # right envelope and no new limit is introduced.
+        ENGINE_DOCUMENT_ADMISSION_PATH,
     }
 )
 

@@ -3343,26 +3343,35 @@ async def _engine_pc_files_target(
     )
     if kind == "link":
         return {
+            "authorized": True,
             "target": linked,
             "roots": linked["roots"],
             "account_ref": account_ref,
             "workspace_ref": workspace_ref,
         }, None
-    if kind != _DIRECTORY_UNUSABLE:
-        return None, _error(403, "oracle_mesh_device_unverified")
-
+    # No answer from the directory is NOT an error here. #5906 made "this
+    # account has no linked PC" a 403, and an ordinary chat turn that only asked
+    # what tools exist then read as a failure. Context answers 200 with no roots
+    # and no PC tools; only a call that actually needs a PC refuses.
     try:
         target = source.command_target(
             account_ref=account_ref, device_id=selected_device_id,
         )
     except Exception:
-        return None, _error(503, "oracle_mesh_device_directory_unavailable")
+        if kind == _DIRECTORY_UNUSABLE:
+            return None, _error(503, "oracle_mesh_device_directory_unavailable")
+        return None, None
     if target is None:
-        return None, _error(403, "oracle_mesh_device_unverified")
+        return None, None
     roots = _pc_files_roots_of_map_row(target.get("file_path"))
     if not roots:
         return None, _error(503, "oracle_mesh_file_root_unavailable")
+    # TODO(#5573): transitional only. Until the Owner claims their two PCs
+    # through the pairing flow (Astra3, after 072), a linked-less account falls
+    # back to the deployment ownership map so production keeps its existing
+    # devices working. Delete this fallback once those links exist.
     return {
+        "authorized": True,
         "target": target,
         "roots": roots,
         "account_ref": account_ref,
@@ -3451,6 +3460,19 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     )
     if target_error is not None:
         return target_error
+    if resolved is None:
+        # No PC for this account: tool discovery answers honestly instead of
+        # failing the turn, and only a call that needs a device is refused.
+        if mode == "context":
+            return _response({
+                "ok": True,
+                "roots": [],
+                "device": {"device_id": selected, "status": "not_connected",
+                           "online_verified": False},
+                "tools": [],
+                "run_id": payload["run_id"],
+            })
+        return _error(403, "oracle_mesh_device_unverified")
     target = resolved["target"]
     roots = resolved["roots"]
     device_id = target.get("device_id") or target["node_ref"]
