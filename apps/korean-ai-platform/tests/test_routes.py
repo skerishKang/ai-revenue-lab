@@ -6,8 +6,8 @@ from app.demo_data import MODELS, get_available_models
 
 
 class TestCoreRoutes:
-    def test_home_renders(self, client):
-        resp = client.get("/")
+    def test_home_renders(self, demo_home_client):
+        resp = demo_home_client.get("/")
         assert resp.status_code == 200
         assert "한국 개발자를 위한 하나의 AI API" in resp.text
 
@@ -287,8 +287,8 @@ class TestTruthfulness:
         assert resp.status_code == 200
         assert "무엇을 AI에게 맡기고 싶으세요" not in resp.text
 
-    def test_demo_label_present(self, client):
-        resp = client.get("/")
+    def test_demo_label_present(self, demo_home_client):
+        resp = demo_home_client.get("/")
         assert resp.status_code == 200
         assert "Demo" in resp.text
 
@@ -338,8 +338,8 @@ class TestNavigation:
         assert "사용자 화면" not in resp.text
         assert "운영자 화면" not in resp.text
 
-    def test_brand_subtitle_is_provider(self, client):
-        resp = client.get("/")
+    def test_brand_subtitle_is_provider(self, demo_home_client):
+        resp = demo_home_client.get("/")
         assert resp.status_code == 200
         assert "AI API Provider" in resp.text
 
@@ -540,8 +540,8 @@ class TestP1FixHomeWording:
         assert resp.status_code == 200
         assert "실시간" not in resp.text
 
-    def test_home_model_cards_have_demo_label(self, client):
-        resp = client.get("/")
+    def test_home_model_cards_have_demo_label(self, demo_home_client):
+        resp = demo_home_client.get("/")
         assert resp.status_code == 200
         assert "Demo" in resp.text
 

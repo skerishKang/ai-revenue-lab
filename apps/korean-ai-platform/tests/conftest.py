@@ -37,12 +37,36 @@ from app.factory import create_app
 
 @pytest.fixture()
 def app():
+    """The application under test.
+
+    Default is the plain ASGI app. ``B14_TEST_RUNTIME=local`` rebuilds it through
+    the COM2 adapter (``app.local_runtime.create_local_app``) so one suite can
+    prove both runtimes; nothing else in the suite changes between the two runs.
+    """
+    from app.local_runtime import adapter_selected, create_local_app
+
+    if adapter_selected():
+        return create_local_app()
     return create_app()
 
 
 @pytest.fixture()
 def client(app):
     with TestClient(app) as test_client:
+        yield test_client
+
+
+@pytest.fixture()
+def demo_home_client():
+    """A client on the ASGI application's own root, in either runtime.
+
+    Four tests assert what the legacy demo home page renders. Both the Worker
+    entrypoint and the local COM2 adapter answer ``/`` with the product
+    entrypoint redirect, so those tests read the application they describe
+    instead of the deployment policy in front of it. The redirect itself is
+    pinned in ``test_5784_b14_local_runtime.py``.
+    """
+    with TestClient(create_app()) as test_client:
         yield test_client
 
 
