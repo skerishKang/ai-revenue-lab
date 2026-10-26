@@ -166,6 +166,12 @@ class FakeFileReader {
 const chatRequests = [];
 const storedFiles = [];
 const requestsLog = [];
+// The real store never reuses an id after a DELETE; the fake must not either,
+// or a delete+recreate (exactly what the roster rewrite does) collides two
+// different files under one id.
+let fakeFileSeq = 0;
+function nextBinaryId() { return "file_" + String(1000 + ++fakeFileSeq).padStart(32, "0").slice(-32); }
+function nextTextId() { return "f" + (++fakeFileSeq); }
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
 const CURRENT = { alerts: [] };
 
@@ -182,7 +188,7 @@ async function fetch(url, opts) {
   if (method === "POST" && path === "/api/projects/p1/files" && opts.headers && String(opts.headers["Content-Type"] || "").indexOf("octet-stream") >= 0) {
     const fname = decodeURIComponent(opts.headers["X-Padiem-Filename"] || "");
     const ftype = opts.headers["X-Padiem-Media-Type"] || "";
-    const id = "file_" + String(1000 + storedFiles.length).padStart(32, "0").slice(-32);
+    const id = nextBinaryId();
     storedFiles.push({ id, name: fname, media_type: ftype, binary: true });
     return json({ file: { id, name: fname, media_type: ftype, content_chars: 0 } });
   }
@@ -219,7 +225,7 @@ async function fetch(url, opts) {
     if (ext === "json" && body.media_type !== "application/json") {
       return { ok: false, status: 422, json: async () => ({ error: { code: "invalid_document", message: "문서 확장자와 파일 형식이 일치하지 않습니다." } }) };
     }
-    const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
+    const file = { id: nextTextId(), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
     storedFiles.push(file);
     return json({ file });
   }
@@ -426,8 +432,28 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (roster.photos[0].name !== "a.png" || roster.photos[1].name !== "c.png") fail("ROSTER_ORDER_WRONG", { roster: roster.photos });
   if (roster.photos[0].position !== "0") fail("ROSTER_POSITION_NOT_KEPT", { roster: roster.photos });
 
-  // 11) session B: re-entry restores the composition at build time — no
-  // interaction — in the roster's order with its positions.
+  // 11) the user writes the draft and presses 저장: the draft text and its
+  // platform ride the SAME roster record, and the roster is rewritten in
+  // place (never a second roster file).
+  const draftText = "저장한 초안입니다.\n\n둘째 문단입니다.";
+  root._descendants().find((n) => n.id === "utilSnsOutput").value = draftText;
+  const saveBtnA = root._descendants().find((n) => n.id === "utilSnsSave");
+  if (!saveBtnA) fail("SAVE_BUTTON_MISSING");
+  await saveBtnA.dispatch("click");
+  await sleep(60);
+  const rosterCount = storedFiles.filter((f) => f.name === "SNS 사진 구성.json").length;
+  if (rosterCount !== 1) fail("ROSTER_DUPLICATED", { count: rosterCount });
+  let savedRoster = null;
+  try { savedRoster = JSON.parse(storedFiles.find((f) => f.name === "SNS 사진 구성.json").content); } catch (_) { fail("ROSTER_NOT_JSON_AFTER_SAVE"); }
+  if (!savedRoster.draft || savedRoster.draft.text !== draftText) fail("ROSTER_DRAFT_NOT_SAVED", { draft: savedRoster.draft || null });
+  if (savedRoster.draft.platform !== "blog") fail("ROSTER_DRAFT_PLATFORM_WRONG", { platform: savedRoster.draft.platform });
+  if (!Array.isArray(savedRoster.photos) || savedRoster.photos.length !== 2) fail("ROSTER_PHOTOS_LOST_ON_SAVE", { photos: savedRoster.photos });
+  const draftTxtFiles = storedFiles.filter((f) => f.name === "블로그 게시글.txt");
+  if (draftTxtFiles.length !== 1 || draftTxtFiles[0].content !== draftText) fail("DRAFT_FILE_NOT_SAVED");
+
+  // 12) session B: re-entry restores the composition at build time — no
+  // interaction — in the roster's order with its positions, and the saved
+  // draft text comes back with it.
   const B = spawnSession("B");
   await B.navBtn.dispatch("click");
   const snsTabB = B.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
@@ -441,12 +467,40 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (!restoredSelect || restoredSelect.value !== "0") fail("RESTORE_POSITION_WRONG");
   const restoredCount = B.root._descendants().find((n) => n.id === "utilSnsPhotoCount");
   if (!restoredCount || restoredCount.textContent !== "2장") fail("RESTORE_COUNT_LABEL_WRONG");
+  const restoredOutput = B.root._descendants().find((n) => n.id === "utilSnsOutput");
+  if (!restoredOutput || restoredOutput.value !== draftText) fail("RESTORE_DRAFT_WRONG", { text: restoredOutput ? restoredOutput.value : null });
+  const restoredResult = B.root._descendants().find((n) => n.id === "utilSnsResult");
+  if (!restoredResult || restoredResult.hidden) fail("RESTORE_RESULT_HIDDEN");
+  const restoredTitle = B.root._descendants().find((n) => n.id === "utilSnsTitle");
+  if (!restoredTitle || restoredTitle.textContent !== "블로그 게시글") fail("RESTORE_TITLE_WRONG", { title: restoredTitle ? restoredTitle.textContent : null });
+
+  // 13) a draft saved under another platform re-opens on that platform.
+  // Session B switches to facebook, saves, then session C must restore the
+  // facebook draft through the platform tab, not the blog default.
+  const fbTabB = B.root._descendants().find((n) => n.id === "utilSnsForm").querySelectorAll(".util-sns-tab").find((t) => t.dataset.platform === "facebook");
+  if (!fbTabB) fail("FB_TAB_MISSING_IN_B");
+  await fbTabB.dispatch("click");
+  const fbDraftText = "페이스북용으로 다시 저장한 초안입니다.";
+  restoredOutput.value = fbDraftText;
+  await B.root._descendants().find((n) => n.id === "utilSnsSave").dispatch("click");
+  await sleep(60);
+  const C = spawnSession("C");
+  await C.navBtn.dispatch("click");
+  const snsTabC = C.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
+  await snsTabC.dispatch("click");
+  await sleep(50);
+  const cOutput = C.root._descendants().find((n) => n.id === "utilSnsOutput");
+  if (!cOutput || cOutput.value !== fbDraftText) fail("RESTORE_C_DRAFT_WRONG", { text: cOutput ? cOutput.value : null });
+  const cTitle = C.root._descendants().find((n) => n.id === "utilSnsTitle");
+  if (!cTitle || cTitle.textContent !== "페이스북 게시글") fail("RESTORE_C_PLATFORM_WRONG", { title: cTitle ? cTitle.textContent : null });
 
   console.log(JSON.stringify({
     ok: true,
     photos: root.findAll(".util-photo-item").length,
     restored: restoredNames,
     restoredPosition: restoredSelect ? restoredSelect.value : null,
+    restoredDraft: restoredOutput ? restoredOutput.value : null,
+    restoredPlatform: cTitle ? cTitle.textContent : null,
     rosterOrder: roster.photos.map((p) => p.name + ":" + p.position),
     promptHead: prompt.slice(0, 60),
     blogSeq: seq.slice(0, 6),
@@ -472,10 +526,14 @@ def test_the_photo_composition_contract() -> None:
         pytest.fail(f"harness produced no verdict: {result.stdout}\n{result.stderr}")
     assert payload.get("ok") is True, payload
     # The two-session persistence verdicts: the roster carried order and the
-    # blog insertion position, and session B restored both at build time.
+    # blog insertion position, and session B restored both at build time —
+    # with the saved draft text and its platform title.
     assert payload.get("restored") == ["a.png", "c.png"], payload
     assert payload.get("restoredPosition") == "0", payload
     assert payload.get("rosterOrder") == ["a.png:0", "c.png:auto"], payload
+    assert payload.get("restoredDraft") == "페이스북용으로 다시 저장한 초안입니다.", payload
+    assert payload.get("restoredPlatform") == "페이스북 게시글", payload
+    assert payload.get("alertsB") == [], payload
 
 
 def test_the_url_field_is_gone_from_the_source() -> None:
