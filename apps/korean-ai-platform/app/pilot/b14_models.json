@@ -109,6 +109,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
       "enabled": false
+    },
+    "yeta": {
+      "base_origin": "https://platform.yeta.ai/v1",
+      "allowed_hosts": [
+        "platform.yeta.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "YETA_API_KEY",
+      "enabled": true
     }
   },
   "models": [
@@ -492,6 +501,54 @@
       "source": "Account-authenticated GET https://zanslab.id/v1/models (200; exact id op/gpt-6-luna) on 2026-10-12; https://zanslab.id/documentation; completion/SSE unverified",
       "source_checked_at": "2026-10-12",
       "enabled": false
+    },
+    {
+      "id": "yeta/deepseek-v4.1-flash",
+      "provider_id": "yeta",
+      "upstream_model": "deepseek-v4.1-flash",
+      "display_name": "DeepSeek V4.1 Flash (Yeta)",
+      "provider_name": "Yeta",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.35,
+      "source": "Owner-supplied Yeta account Models screen 2026-10-27 (input/cached-input/output USD per 1M, context labels 1M and 262K as displayed); OpenAI-compatible base proven keyless on 2026-10-27 by GET https://platform.yeta.ai/v1/models -> 401 {\"type\":\"new_api_error\",\"message\":\"Invalid token\"} while https://platform.yeta.ai/api/v1/models -> 404; tool-calling/vision support and the exact context-window counts NOT verified, so capabilities stay chat-only and context_window records the displayed label; cached input US$0.01 per 1M tokens, currency USD, billed per 1M tokens",
+      "source_checked_at": "2026-10-27",
+      "enabled": true
+    },
+    {
+      "id": "yeta/glm-5.3-flash",
+      "provider_id": "yeta",
+      "upstream_model": "glm-5.3-flash",
+      "display_name": "GLM 5.3 Flash (Yeta)",
+      "provider_name": "Yeta",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 262000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.42,
+      "source": "Owner-supplied Yeta account Models screen 2026-10-27 (input/cached-input/output USD per 1M, context labels 1M and 262K as displayed); OpenAI-compatible base proven keyless on 2026-10-27 by GET https://platform.yeta.ai/v1/models -> 401 {\"type\":\"new_api_error\",\"message\":\"Invalid token\"} while https://platform.yeta.ai/api/v1/models -> 404; tool-calling/vision support and the exact context-window counts NOT verified, so capabilities stay chat-only and context_window records the displayed label; cached input US$0.03 per 1M tokens, currency USD, billed per 1M tokens",
+      "source_checked_at": "2026-10-27",
+      "enabled": true
+    },
+    {
+      "id": "yeta/deepseek-v4.1-flash-uncensored",
+      "provider_id": "yeta",
+      "upstream_model": "deepseek-v4.1-flash-uncensored",
+      "display_name": "DeepSeek V4.1 Flash Uncensored (Yeta)",
+      "provider_name": "Yeta",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": 0.08,
+      "output_price_usd_per_1m": 0.35,
+      "source": "Owner-supplied Yeta account Models screen 2026-10-27 (input/cached-input/output USD per 1M, context labels 1M and 262K as displayed); OpenAI-compatible base proven keyless on 2026-10-27 by GET https://platform.yeta.ai/v1/models -> 401 {\"type\":\"new_api_error\",\"message\":\"Invalid token\"} while https://platform.yeta.ai/api/v1/models -> 404; tool-calling/vision support and the exact context-window counts NOT verified, so capabilities stay chat-only and context_window records the displayed label; cached input US$0.01 per 1M tokens, currency USD, billed per 1M tokens",
+      "source_checked_at": "2026-10-27",
+      "enabled": true
     }
   ],
   "groups": {
