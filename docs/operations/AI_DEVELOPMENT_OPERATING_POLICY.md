@@ -85,6 +85,19 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
 16. 파일 업로드·파싱·대용량 결과는 컴2 파일 레인이 담당한다. Worker 경로에 새 파일 처리 기능을 추가하지 않는다(#5881).
 17. 현재 범위는 채팅/클로(일반 채팅·PC 레인·첨부 문서·자동화)뿐이다. Util·SNS·B66는 장애 수정만 한다. 미룬 문제는 보류 목록 이슈(#5882)에 적고, 범위를 넓힐 때 그 목록부터 확인한다.
 
+### 0G. MVP/베타 운영 원칙 (Owner, 2026-10-26) — §0F와 충돌 시 0G 우선
+
+#### 운영 원칙 (Owner, 2026-10-26)
+1. 극한까지 점검하지 않는다. 실사용에서 오류가 나면 그때 고친다.
+2. 기본적인 사용만 되면 바로 다음 단계로 간다.
+3. 현재 목표는 완성 — 최소한의 MVP와 베타 사용이다. 견고화·관측성·문서 정비는 막히지 않는 한 뒤로.
+
+#### 점검·보고 규칙
+- 배포 후 점검은 일반 채팅 1회. PC 레인 점검은 PC 레인 코드가 바뀐 배포에만 1회.
+- 일반 채팅이 아예 안 되면 롤백(복구는 점검이 아니다). 그 외 간헐 오류는 기록만 하고 다음 단계 진행.
+- 아스트라 보고는 "됨/안 됨 + SHA 한 줄". 사전점검표·사후표·소명 요구 없음.
+- 한 번에 하나씩 지시, 쉬는 로컬은 구현 과제 우선.
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
