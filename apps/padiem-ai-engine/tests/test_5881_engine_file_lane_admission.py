@@ -104,6 +104,7 @@ def _lane(
     *,
     next_offset: object = _DEFAULT,
     eof: object = _DEFAULT,
+    total_chars: object = _DEFAULT,
     failure_status: int | None = None,
 ) -> tuple[httpx.MockTransport, list[httpx.Request]]:
     """Mock of the merged lane window contract: it slices exactly as COM2 does."""
@@ -126,6 +127,10 @@ def _lane(
             ),
             "X-File-Lane-EOF": (
                 str(reached >= len(document)).lower() if eof is _DEFAULT else eof
+            ),
+            # The saved count: known whatever length this window happened to be.
+            "X-File-Lane-Total-Chars": (
+                str(len(document)) if total_chars is _DEFAULT else total_chars
             ),
         }
         # ``None`` answers the header away: an origin that does not implement
@@ -327,12 +332,29 @@ def test_long_document_mounts_first_window_and_reports_continuation() -> None:
     document = response.body["document"]
     window = LONG_DOCUMENT[:MAX_CONTEXT_PREVIEW_CHARS]
     assert document["next_offset"] == MAX_CONTEXT_PREVIEW_CHARS
-    # A window that stops mid-document proves only that more text follows.
-    assert document["total_chars"] is None
+    # The lane counted the whole document when it saved the text, so a window
+    # that stops mid-document still states the real length.
+    assert document["total_chars"] == len(LONG_DOCUMENT)
     assert document["window_eof"] is False
     assert document["byte_size"] == len(window.encode("utf-8"))
     assert store.calls[0]["data"] == window.encode("utf-8")
     assert len(store.calls[0]["data"].decode("utf-8")) == MAX_CONTEXT_PREVIEW_CHARS
+
+    # An origin that answers without the saved count claims nothing it cannot
+    # prove: exact at end of file, unclaimed while text still follows.
+    unreported, unreported_store, _unreported_authority, _unreported_seen = _service(
+        document=LONG_DOCUMENT, total_chars=None
+    )
+    partial = _admit(unreported, _reference_payload())
+    assert partial.body["document"]["total_chars"] is None
+    assert partial.body["document"]["next_offset"] == MAX_CONTEXT_PREVIEW_CHARS
+    assert unreported_store.calls[0]["data"] == window.encode("utf-8")
+
+    short_unreported, _short_store, _authority, _seen = _service(
+        document="끝.", total_chars=None
+    )
+    ended = _admit(short_unreported, _reference_payload())
+    assert ended.body["document"]["total_chars"] == 2
 
     # A document that ends inside the first window reports an exact total.
     short_service, short_store, _short_authority, short_seen = _service(document="끝.")
@@ -408,14 +430,27 @@ def test_lane_failure_surfaces_only_a_safe_code(
 
 
 @pytest.mark.parametrize(
-    ("next_offset", "eof"),
-    [("999999", "true"), (_DEFAULT, "maybe"), (None, None), ("not-a-number", "true")],
-    ids=["offset_mismatch", "eof_not_boolean", "headers_absent", "header_malformed"],
+    ("next_offset", "eof", "total_chars"),
+    [
+        ("999999", "true", _DEFAULT),
+        (_DEFAULT, "maybe", _DEFAULT),
+        (None, None, None),
+        ("not-a-number", "true", _DEFAULT),
+        (_DEFAULT, _DEFAULT, "999999999"),
+        (_DEFAULT, _DEFAULT, "3"),
+        (_DEFAULT, _DEFAULT, "nope"),
+    ],
+    ids=[
+        "offset_mismatch", "eof_not_boolean", "headers_absent", "header_malformed",
+        "total_beyond_end_of_file", "total_below_window_end", "total_malformed",
+    ],
 )
 def test_malformed_window_headers_are_refused_instead_of_mounted(
-    next_offset: str | None, eof: str | None
+    next_offset: str | None, eof: str | None, total_chars: str | None
 ) -> None:
-    service, store, _authority, seen = _service(next_offset=next_offset, eof=eof)
+    service, store, _authority, seen = _service(
+        next_offset=next_offset, eof=eof, total_chars=total_chars
+    )
 
     response = _admit(service, _reference_payload())
 

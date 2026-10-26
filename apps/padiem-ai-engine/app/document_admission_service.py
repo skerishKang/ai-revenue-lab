@@ -36,7 +36,7 @@ deployment-configured ``FILE_LANE_ORIGIN`` and admits that text through the
 same ``admit_document`` authority, so the reference reaches the existing
 document context path instead of travelling as inline bytes. Only the first
 window is mounted; the receipt carries the continuation ``next_offset`` and
-``total_chars``, which is exact once the lane reports end of file. Without a
+the document's ``total_chars`` from the lane's saved count. Without a
 configured port the reference shape fails closed 503
 ``file_lane_unavailable`` and the inline path is untouched.
 """

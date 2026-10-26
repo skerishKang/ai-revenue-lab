@@ -35,7 +35,11 @@ are returned.
   cached result. Offset is a non-negative Unicode code-point index; max_chars
   is positive, defaults to 64000 when either query parameter is present, and
   is a requested window rather than a document-size ceiling. Response remains
-  plain UTF-8, with `X-File-Lane-Next-Offset` and `X-File-Lane-EOF` for traversal.
+  plain UTF-8, with `X-File-Lane-Next-Offset`, `X-File-Lane-EOF` and
+  `X-File-Lane-Total-Chars` for traversal. The total is counted once when the
+  text is saved and kept in `text-v2.chars`, so a mid-document window still
+  states the document's real length; a cache written before that file existed
+  is counted once on read and stored.
   EOF/past-EOF returns an empty window. Invalid parameters return 400 before
   parsing. Omitting both parameters preserves the full disk-streamed response.
 

@@ -81,6 +81,12 @@ class Store:
                 output.flush()
                 os.fsync(output.fileno())
             os.replace(pending, target)
+            try:
+                self._write_char_count(target, len(text))
+            except (OSError, FileError):
+                # The window reader re-derives the count on demand; a missing
+                # counter never wastes the parse that already succeeded.
+                pass
         except OSError as exc:
             raise disk_error(exc) from None
         except FileError:
@@ -91,6 +97,42 @@ class Store:
         finally:
             pending.unlink(missing_ok=True)
         return target
+
+    def char_count_path(self, path: Path) -> Path:
+        return path.with_name(path.stem + ".chars")
+
+    def _write_char_count(self, path: Path, count: int):
+        pending = path.with_name(uuid.uuid4().hex + ".chars.part")
+        try:
+            with pending.open("xb") as output:
+                write_bytes(output, str(count).encode("utf-8"), self.root)
+            os.replace(pending, self.char_count_path(path))
+        finally:
+            pending.unlink(missing_ok=True)
+
+    def text_char_count(self, path):
+        # Total code points of the cached text, computed once at save time and
+        # kept beside it. Readers never re-scan a document already counted.
+        counter = self.char_count_path(path)
+        if counter.is_file():
+            try:
+                raw = counter.read_text(encoding="utf-8").strip()
+            except OSError:
+                raw = ""
+            if raw.isdigit():
+                return int(raw)
+        total = 0
+        with path.open("r", encoding="utf-8", newline="") as source:
+            while True:
+                block = source.read(64 * 1024)
+                if not block:
+                    break
+                total += len(block)
+        try:
+            self._write_char_count(path, total)
+        except (OSError, FileError):
+            pass
+        return total
 
 
     def text_window(self, path, offset, max_chars):

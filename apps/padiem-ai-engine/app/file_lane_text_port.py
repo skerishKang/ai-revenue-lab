@@ -41,6 +41,7 @@ _ERROR_CODE_RE = re.compile(r"\A[a-z][a-z0-9_]{0,63}\Z")
 
 TEXT_WINDOW_EOF_HEADER = "X-File-Lane-EOF"
 TEXT_WINDOW_NEXT_OFFSET_HEADER = "X-File-Lane-Next-Offset"
+TEXT_WINDOW_TOTAL_CHARS_HEADER = "X-File-Lane-Total-Chars"
 
 # One window is the largest text the existing context projection can mount at
 # all; the remainder stays readable from ``next_offset`` on the lane.
@@ -71,8 +72,10 @@ class FileLaneTextError(ValueError):
 class FileLaneTextWindow:
     """One window of lane-extracted text plus its continuation coordinates.
 
-    ``total_chars`` is exact only once the lane reports end of file: a window
-    that stops mid-document proves the document is longer, never how long.
+    ``total_chars`` comes from the lane's saved count, so a mid-document window
+    still states how long the document is. An origin that answers without that
+    header is only exact once it reports end of file; otherwise the Engine
+    reports the continuation point and leaves the total unclaimed.
     """
 
     text: str
@@ -142,7 +145,7 @@ class FileLaneTextPort:
         max_chars: int = DEFAULT_TEXT_WINDOW_CHARS,
     ) -> FileLaneTextWindow:
         self._require_reference(file_id=file_id, sha256=sha256)
-        headers = self._ticket_headers(ticket)
+        ticket_headers = self._ticket_headers(ticket)
         url = f"{self._origin}/files/{file_id}/text"
         try:
             async with httpx.AsyncClient(
@@ -155,15 +158,12 @@ class FileLaneTextPort:
                     "GET",
                     url,
                     params={"offset": str(offset), "max_chars": str(max_chars)},
-                    headers=headers,
+                    headers=ticket_headers,
                 ) as response:
                     if response.status_code != 200:
                         raise self._failure(response.status_code)
                     parts = [part async for part in response.aiter_text()]
-                    eof_header = response.headers.get(TEXT_WINDOW_EOF_HEADER)
-                    next_offset_header = response.headers.get(
-                        TEXT_WINDOW_NEXT_OFFSET_HEADER
-                    )
+                    window_headers = response.headers
         except FileLaneTextError:
             raise
         except httpx.HTTPError:
@@ -172,8 +172,9 @@ class FileLaneTextPort:
         return self._window(
             text="".join(parts),
             offset=offset,
-            eof_header=eof_header,
-            next_offset_header=next_offset_header,
+            eof_header=window_headers.get(TEXT_WINDOW_EOF_HEADER),
+            next_offset_header=window_headers.get(TEXT_WINDOW_NEXT_OFFSET_HEADER),
+            total_chars_header=window_headers.get(TEXT_WINDOW_TOTAL_CHARS_HEADER),
         )
 
     @staticmethod
@@ -203,7 +204,12 @@ class FileLaneTextPort:
 
     @staticmethod
     def _window(
-        *, text: str, offset: int, eof_header: object, next_offset_header: object
+        *,
+        text: str,
+        offset: int,
+        eof_header: object,
+        next_offset_header: object,
+        total_chars_header: object = None,
     ) -> FileLaneTextWindow:
         if not isinstance(next_offset_header, str) or not next_offset_header.isdigit():
             raise FileLaneTextError("file_lane_invalid_response", status_code=502)
@@ -215,11 +221,26 @@ class FileLaneTextPort:
             # text on the next window, so the window is refused, not mounted.
             raise FileLaneTextError("file_lane_invalid_response", status_code=502)
         eof = eof_header == "true"
+        total_chars = next_offset if eof else None
+        if total_chars_header is not None:
+            if not isinstance(total_chars_header, str) or not total_chars_header.isdigit():
+                raise FileLaneTextError("file_lane_invalid_response", status_code=502)
+            reported = int(total_chars_header)
+            if eof:
+                # A window that reached the end contains the whole remainder,
+                # so the lane total and this window's end must be one number.
+                if reported != next_offset:
+                    raise FileLaneTextError("file_lane_invalid_response", status_code=502)
+            elif reported <= next_offset:
+                # Text still follows this window, so a total at or before its
+                # end contradicts the EOF flag the lane just reported.
+                raise FileLaneTextError("file_lane_invalid_response", status_code=502)
+            total_chars = reported
         return FileLaneTextWindow(
             text=text,
             next_offset=next_offset,
             eof=eof,
-            total_chars=next_offset if eof else None,
+            total_chars=total_chars,
         )
 
 
