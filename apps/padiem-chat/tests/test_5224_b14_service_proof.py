@@ -28,6 +28,7 @@ from app.b14_service_proof import (
 )
 
 WORKER_PATH = Path(__file__).resolve().parents[1] / "worker.py"
+COMPOSITION_PATH = Path(__file__).resolve().parents[1] / "app/b14_upstream_composition.py"
 
 SIGNING_SECRET = "b14-signing-secret-0123456789abcdef"
 
@@ -187,9 +188,17 @@ def test_streaming_transport_signs_the_exact_request_body():
 def test_worker_wires_the_proof_secret_into_both_b14_transports():
     """Both B14 transports receive the deployment-owned proof secret."""
     worker = WORKER_PATH.read_text(encoding="utf-8")
-    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
+    wired = " ".join(worker.split())
     assert (
-        "CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)" in worker
-    )
+        "service_transport, stream_transport = _compose_b14_transports( "
+        "settings=settings, binding=b14_binding, proof_secret=b14_proof_secret, )"
+    ) in wired
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
+    # #5784: the two binding transports are now built by one composer, so the
+    # proof secret is proven to reach both at the place that builds them.
+    composition = COMPOSITION_PATH.read_text(encoding="utf-8")
+    assert "service_binding_factory(binding, proof_secret)," in composition
+    assert "stream_binding_factory(binding, proof_secret)," in composition
     assert "b14_proof_secret = await resolve_secret_binding(" in worker
 
