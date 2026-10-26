@@ -61,7 +61,7 @@ def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, mode
     ("upstream_auth_failed", False),
     ("upstream_client_error", False),
     ("internal_error", False),
-    ("malformed_upstream_response", False),
+    ("malformed_upstream_response", True),
 ])
 def test_fallback_only_on_recoverable_errors(code, expected):
     assert router_core.is_error_fallback_allowed(code) is expected

@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.pilot.errors import MalformedUpstreamResponse, PilotError
+from .malformed_diagnostics import text_content
 
 _KNOWN_FINISH = frozenset({"stop", "length", "content_filter", "tool_calls", "function_call"})
 
@@ -48,17 +49,19 @@ def require_completed_text_answer(
     """
     choices = data.get("choices")
     if not isinstance(choices, list) or not choices:
-        raise MalformedUpstreamResponse()
+        raise MalformedUpstreamResponse("choices_empty_or_invalid")
     first = choices[0]
     if not isinstance(first, dict):
-        raise MalformedUpstreamResponse()
+        raise MalformedUpstreamResponse("choice_not_object")
     message = first.get("message")
     if not isinstance(message, dict):
-        raise MalformedUpstreamResponse()
-    content = message.get("content")
+        raise MalformedUpstreamResponse("message_not_object")
+    content = text_content(message.get("content"))
+    if message.get("content") is not None:
+        message["content"] = content
     if content is None or (isinstance(content, str) and not content.strip()):
         if allow_tool_calls and _has_tool_calls(message):
             return
         raise UpstreamEmptyAnswer(first.get("finish_reason"))
     if not isinstance(content, str):
-        raise MalformedUpstreamResponse()
+        raise MalformedUpstreamResponse("content_not_str")

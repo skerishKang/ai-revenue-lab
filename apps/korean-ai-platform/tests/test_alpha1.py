@@ -60,7 +60,7 @@ def _legacy_live_transport_synthetic_model(request, monkeypatch):
             "test_manual_model_explicit_true_429_fallback",
             "test_manual_model_explicit_true_401_no_fallback",
             "test_manual_model_explicit_true_404_no_fallback",
-            "test_manual_model_explicit_true_malformed_no_fallback",
+            "test_manual_model_explicit_true_malformed_without_roster_stops",
             "test_manual_model_explicit_true_unknown_error_no_fallback",
         })
     )
@@ -1267,7 +1267,7 @@ class TestFallbackFailClosed:
                 transport=httpx.MockTransport(handler),
             )
         assert exc_info.value.code == expected_code
-        assert is_error_fallback_allowed(exc_info.value.code) is False
+        assert is_error_fallback_allowed(exc_info.value.code, reason=getattr(exc_info.value, "reason", None)) is False
 
     def test_unknown_exception_no_fallback_in_gateway(self, client):
         _set_live()
@@ -1869,8 +1869,8 @@ class TestManualRouteDefaultFallback:
         assert resp.json()["error"]["fallback_used"] is False
         assert len(calls) == 1
 
-    def test_manual_model_explicit_true_malformed_no_fallback(self, client):
-        """manual model, allow_external_fallback=true → malformed NO fallback."""
+    def test_manual_model_explicit_true_malformed_without_roster_stops(self, client):
+        """Malformed is recoverable, but no eligible roster still means one attempt."""
         _set_live()
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import MalformedUpstreamResponse

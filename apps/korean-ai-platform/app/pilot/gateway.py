@@ -1209,7 +1209,7 @@ async def _handle_alpha_chat(
                     await asyncio.sleep(backoff)
                     continue
 
-            if not rcore.is_error_fallback_allowed(error.code):
+            if not rcore.is_error_fallback_allowed(error.code, reason=getattr(error, "reason", None)):
                 break
             if idx >= len(candidates) - 1:
                 break

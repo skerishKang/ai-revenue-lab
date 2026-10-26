@@ -14,6 +14,7 @@ import json
 from typing import Any
 
 from app.pilot.errors import MalformedUpstreamResponse
+from .malformed_diagnostics import malformed, text_content
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,33 +132,40 @@ def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
         rest = rest[index + len(separator) :]
 
 
-def _usage_from_payload(raw: Any) -> StreamUsage | None:
+def _usage_from_payload(raw: Any, *, provider="unknown", model="unknown", path="usage", payload=None) -> StreamUsage | None:
+    def fail(reason):
+        return malformed(reason, payload if payload is not None else {"usage": raw}, provider=provider, model=model, path=path)
+
     if raw is None:
         return None
     if not isinstance(raw, dict):
-        raise MalformedUpstreamResponse()
+        raise fail("usage_not_object")
     values: dict[str, int | None] = {}
     for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
         value = raw.get(name)
         if value is not None and (
             isinstance(value, bool) or not isinstance(value, int) or value < 0
         ):
-            raise MalformedUpstreamResponse()
+            raise fail("usage_value")
         values[name] = value
     details = raw.get("completion_tokens_details")
     reasoning = details.get("reasoning_tokens") if isinstance(details, dict) else None
     if reasoning is not None and (
         isinstance(reasoning, bool) or not isinstance(reasoning, int) or reasoning < 0
     ):
-        raise MalformedUpstreamResponse()
+        raise fail("usage_value")
     return StreamUsage(**values, reasoning_tokens=reasoning)
 
 
-def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
+def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") -> StreamEvent | None:
+    payload = None
+    def fail(reason):
+        return malformed(reason, payload, provider=provider, model=model_id, path="stream")
+
     try:
         text = frame.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise MalformedUpstreamResponse() from exc
+        raise fail("utf8_decode") from None
 
     data_lines: list[str] = []
     for line in text.splitlines():
@@ -179,45 +187,48 @@ def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     if data == "[DONE]":
         return StreamEvent(done=True)
     if not data:
-        raise MalformedUpstreamResponse()
+        raise fail("empty_data")
 
     try:
         payload = json.loads(data)
     except (json.JSONDecodeError, ValueError) as exc:
-        raise MalformedUpstreamResponse() from exc
+        raise fail("json_decode") from None
     if not isinstance(payload, dict):
-        raise MalformedUpstreamResponse()
+        raise fail("payload_not_object")
 
     response_id = payload.get("id")
     model = payload.get("model")
     if response_id is not None and not isinstance(response_id, str):
-        raise MalformedUpstreamResponse()
+        raise fail("response_id_not_str")
     if model is not None and not isinstance(model, str):
-        raise MalformedUpstreamResponse()
+        raise fail("model_not_str")
 
-    usage = _usage_from_payload(payload.get("usage"))
+    usage = _usage_from_payload(payload.get("usage"), provider=provider, model=model_id, path="stream", payload=payload)
     choices = payload.get("choices")
     if not isinstance(choices, list):
-        raise MalformedUpstreamResponse()
+        raise fail("choices_not_list")
 
     delta_content: str | None = None
     finish_reason: str | None = None
     if choices:
         choice = choices[0]
         if not isinstance(choice, dict):
-            raise MalformedUpstreamResponse()
-        delta = choice.get("delta")
+            raise fail("choice_not_object")
+        delta = choice.get("delta", choice.get("message"))
+        if delta is None and choice.get("finish_reason") is not None:
+            delta = {}
         if not isinstance(delta, dict):
-            raise MalformedUpstreamResponse()
+            raise fail("delta_not_object")
         content = delta.get("content")
-        if content is not None and not isinstance(content, str):
-            raise MalformedUpstreamResponse()
-        delta_content = content
+        try:
+            delta_content = text_content(content)
+        except MalformedUpstreamResponse as exc:
+            raise fail(exc.reason) from None
         finish_reason = choice.get("finish_reason")
         if finish_reason is not None and not isinstance(finish_reason, str):
-            raise MalformedUpstreamResponse()
+            raise fail("finish_reason_not_str")
     elif usage is None:
-        raise MalformedUpstreamResponse()
+        return None  # Empty no-usage chunks are keepalives, not failed answers.
 
     return StreamEvent(
         response_id=response_id,

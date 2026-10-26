@@ -40,6 +40,7 @@ def _client_args(transport):
 @pytest.mark.parametrize("body,reason", [
     (_payload(None, finish="length"), "length"),
     (_payload("", finish="stop"), "stop"),
+    (_payload([], finish="stop"), "stop"),
     (_payload("  \n\t", finish="stop"), "stop"),
     (_payload(None, finish="private raw value"), "other"),
     (_payload(None, finish={"private": "secret"}), "other"),
@@ -54,7 +55,7 @@ def test_completed_empty_answer_is_nonretryable_failure(body, reason):
     assert "private" not in raised.value.message
 
 
-@pytest.mark.parametrize("content", [False, [], {"text": "hidden"}, 42])
+@pytest.mark.parametrize("content", [False, [7], {"text": "hidden"}, 42])
 def test_invalid_content_shape_is_malformed(content):
     with pytest.raises(MalformedUpstreamResponse):
         require_completed_text_answer(_payload(content))

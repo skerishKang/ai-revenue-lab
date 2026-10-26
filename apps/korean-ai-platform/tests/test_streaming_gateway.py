@@ -270,7 +270,7 @@ def test_google_invalid_tool_response_is_an_upstream_error(monkeypatch, parts):
     _google_live(monkeypatch)
     stream = _ChunkStream([_native_frame(parts, finish="STOP")])
     response = _client(httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))).post(
-        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL]),
+        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL], business14={"product_tier": "plus"}),
     )
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "malformed_upstream_response"

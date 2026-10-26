@@ -26,6 +26,8 @@ from typing import Any
 
 import httpx
 
+from app.pilot.malformed_diagnostics import malformed
+
 from app.pilot.errors import (
     KiloFreeRateLimited,
     MalformedUpstreamResponse,
@@ -48,7 +50,9 @@ from app.pilot.owner_model_exclusions import (
     excluded_from_owner_customer_selection,
     free_candidate_excluded_from_execution,
 )
-from app.pilot.stream_types import StreamEvent, StreamUsage
+from app.pilot.stream_types import (
+    StreamEvent, StreamUsage, _pop_sse_frames, _parse_sse_frame, _usage_from_payload,
+)
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -228,7 +232,7 @@ def _log_tokenharbor_rejection(
 
 
 def _raise_upstream_error(
-    status: int, provider_id: str = "", body_text: str = ""
+    status: int, provider_id: str = "", body_text: str = "", *, model_id: str = "unknown"
 ) -> None:
     if status in (401, 403):
         if provider_id == "tokenharbor":
@@ -250,12 +254,12 @@ def _raise_upstream_error(
             raise UpstreamBusyRateLimited()
         raise UpstreamRateLimited()
     if status == 400:
-        raise MalformedUpstreamResponse()
+        raise malformed("upstream_http_400", provider=provider_id, model=model_id, path="http_status")
     if 500 <= status < 600:
         raise UpstreamServerError()
     if 300 <= status < 500:
         raise UpstreamClientError(status)
-    raise MalformedUpstreamResponse()
+    raise malformed("unexpected_http_status", provider=provider_id, model=model_id, path="http_status")
 
 
 def _require_owner_allowed_live_model(
@@ -405,7 +409,7 @@ def _openai_compatible_messages(
     return projected
 
 
-def _canonicalize_google_compat_signatures(response_data: dict[str, Any]) -> None:
+def _canonicalize_google_compat_signatures(response_data: dict[str, Any], *, model_id="unknown") -> None:
     """Move a Google compatible response's signature onto B14's own field."""
 
     from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
@@ -425,7 +429,7 @@ def _canonicalize_google_compat_signatures(response_data: dict[str, Any]) -> Non
             or not signature.strip()
             or len(signature) > MAX_TOOL_SIGNATURE_CHARS
         ):
-            raise MalformedUpstreamResponse()
+            raise malformed("invalid_signature", response_data, provider="google", model=model_id, path="completed")
         entry["signature"] = signature
         if not google:
             extra.pop("google", None)
@@ -567,7 +571,7 @@ async def call_platform_chat_completions(
                             response.headers, error_body,
                         )
                     _raise_upstream_error(
-                        response.status_code, platform_provider_id, error_body
+                        response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
                 body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as exc:
@@ -584,21 +588,30 @@ async def call_platform_chat_completions(
     try:
         response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
-        raise MalformedUpstreamResponse()
+        raise malformed("json_decode", provider=platform_provider_id, model=model_id, path="completed") from None
 
     if not isinstance(response_data, dict):
-        raise MalformedUpstreamResponse()
+        raise malformed("payload_not_object", response_data, provider=platform_provider_id, model=model_id, path="completed")
     if "choices" not in response_data:
-        raise MalformedUpstreamResponse()
+        raise malformed("choices_missing", response_data, provider=platform_provider_id, model=model_id, path="completed")
 
     # HTTP 200 with choices but no user-visible text is NOT a valid completion.
     # A small output budget may exhaust on reasoning alone; never call it success.
     # #5536: a declared tool makes a tool call a valid answer of its own.
-    require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+    try:
+        require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+        _usage_from_payload(response_data.get("usage"), provider=platform_provider_id,
+                            model=model_id, path="completed", payload=response_data)
+    except MalformedUpstreamResponse as exc:
+        # Usage validation already emitted its one structural warning.
+        if not exc.reason.startswith("usage_"):
+            raise malformed(exc.reason, response_data, provider=platform_provider_id,
+                            model=model_id, path="completed") from None
+        raise
     # #4727: a Google compatible call's thought signature is relayed under
     # B14's canonical contract field so a consumer can return it unchanged.
     if platform_provider_id == "google":
-        _canonicalize_google_compat_signatures(response_data)
+        _canonicalize_google_compat_signatures(response_data, model_id=model_id)
     choices = response_data["choices"]
 
     usage = response_data.get("usage")
@@ -781,7 +794,7 @@ async def stream_platform_chat_completions(
                             response.headers, error_body,
                         )
                     _raise_upstream_error(
-                        response.status_code, platform_provider_id, error_body
+                        response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
 
                 # Bound our accumulator per frame without delaying first-token
@@ -796,7 +809,7 @@ async def stream_platform_chat_completions(
                     for frame in frames:
                         if len(frame) > MAX_RESPONSE_BYTES:
                             raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
-                        event = _parse_sse_frame(frame)
+                        event = _parse_sse_frame(frame, provider=platform_provider_id, model_id=model_id)
                         if event is None:
                             continue
                         if event.delta_content and event.delta_content.strip():
@@ -812,7 +825,7 @@ async def stream_platform_chat_completions(
                             return
 
                 if buffer.strip():
-                    event = _parse_sse_frame(buffer)
+                    event = _parse_sse_frame(buffer, provider=platform_provider_id, model_id=model_id)
                     if event is not None:
                         if event.delta_content and event.delta_content.strip():
                             saw_text = True
@@ -835,7 +848,7 @@ async def stream_platform_chat_completions(
         raise UpstreamServerError() from exc
 
     if not saw_done:
-        raise MalformedUpstreamResponse()
+        raise malformed("missing_done", provider=platform_provider_id, model=model_id, path="stream")
 
 
 
@@ -851,111 +864,3 @@ async def _iter_sse_bounded_slices(response: httpx.Response):
     async for block in response.aiter_bytes():
         for offset in range(0, len(block), 64 * 1024):
             yield block[offset:offset + 64 * 1024]
-
-def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
-    frames: list[bytes] = []
-    rest = buffer
-    while True:
-        candidates: list[tuple[int, bytes]] = []
-        for separator in (b"\r\n\r\n", b"\n\n"):
-            index = rest.find(separator)
-            if index >= 0:
-                candidates.append((index, separator))
-        if not candidates:
-            return frames, rest
-        index, separator = min(candidates, key=lambda item: item[0])
-        frames.append(rest[:index])
-        rest = rest[index + len(separator):]
-
-
-def _usage_from_payload(raw: Any) -> StreamUsage | None:
-    if raw is None:
-        return None
-    if not isinstance(raw, dict):
-        raise MalformedUpstreamResponse()
-    values: dict[str, int | None] = {}
-    for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
-        value = raw.get(name)
-        if value is not None and (
-            isinstance(value, bool) or not isinstance(value, int) or value < 0
-        ):
-            raise MalformedUpstreamResponse()
-        values[name] = value
-    return StreamUsage(**values)
-
-
-def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
-    try:
-        text = frame.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise MalformedUpstreamResponse() from exc
-
-    data_lines: list[str] = []
-    for line in text.splitlines():
-        if not line or line.startswith(":"):
-            continue
-        if line.startswith("data:"):
-            value = line[5:]
-            if value.startswith(" "):
-                value = value[1:]
-            data_lines.append(value)
-            continue
-
-    if not data_lines:
-        return None
-
-    data = "\n".join(data_lines).strip()
-    if data == "[DONE]":
-        return StreamEvent(done=True)
-    if not data:
-        raise MalformedUpstreamResponse()
-
-    try:
-        payload = json.loads(data)
-    except (json.JSONDecodeError, ValueError) as exc:
-        raise MalformedUpstreamResponse() from exc
-    if not isinstance(payload, dict):
-        raise MalformedUpstreamResponse()
-
-    response_id = payload.get("id")
-    model = payload.get("model")
-    if response_id is not None and not isinstance(response_id, str):
-        raise MalformedUpstreamResponse()
-    if model is not None and not isinstance(model, str):
-        raise MalformedUpstreamResponse()
-
-    usage = _usage_from_payload(payload.get("usage"))
-    choices = payload.get("choices")
-    if not isinstance(choices, list):
-        raise MalformedUpstreamResponse()
-
-    delta_content: str | None = None
-    finish_reason: str | None = None
-    if choices:
-        choice = choices[0]
-        if not isinstance(choice, dict):
-            raise MalformedUpstreamResponse()
-        delta = choice.get("delta")
-        if not isinstance(delta, dict):
-            raise MalformedUpstreamResponse()
-        content = delta.get("content")
-        if content is not None and not isinstance(content, str):
-            raise MalformedUpstreamResponse()
-        delta_content = content
-        finish_reason = choice.get("finish_reason")
-        if finish_reason is not None and not isinstance(finish_reason, str):
-            raise MalformedUpstreamResponse()
-    elif usage is None:
-        raise MalformedUpstreamResponse()
-
-    return StreamEvent(
-        response_id=response_id,
-        model=model,
-        delta_content=delta_content,
-        finish_reason=finish_reason,
-        usage=usage,
-    )
-
-
-# Model/provider registration is sourced exclusively from b14_models.json.
-# Loaded by catalog.py; do not call legacy module-local register_* functions here.

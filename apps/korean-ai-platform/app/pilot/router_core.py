@@ -338,21 +338,21 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
 
 
 # Fallback-allowable error codes:
-# transport failure, timeout, HTTP 429, HTTP 5xx ONLY.
+# transport failure, timeout, HTTP 429/5xx and unreadable provider responses.
 _FALLBACK_ALLOWED_CODES = frozenset({
     "upstream_timeout",
+    "malformed_upstream_response",
     "upstream_server_error",
     "upstream_rate_limited",
 })
 
 # Fallback-prohibited error codes:
 # HTTP 400/401/403/404/409/422/any other 4xx, malformed request,
-# malformed upstream response, oversize response, missing key,
+# oversize response, missing key,
 # unsupported feature, internal errors.
 _FALLBACK_PROHIBITED_CODES = frozenset({
     "upstream_auth_failed",
     "upstream_client_error",
-    "malformed_upstream_response",
     "upstream_response_too_large",
     "missing_provider_key",
     "placeholder_key_rejected",
@@ -367,11 +367,15 @@ _FALLBACK_PROHIBITED_CODES = frozenset({
 })
 
 
-def is_error_fallback_allowed(code: str) -> bool:
+def is_error_fallback_allowed(code: str, *, reason: str | None = None) -> bool:
     """Return True if an error code permits fallback to another candidate.
 
     Anything not explicitly allowed is prohibited (fail closed).
     """
+    # HTTP 400 has a legacy malformed code. Preserve its no-fallback rule
+    # without changing the external error/attempt schema for rejected input.
+    if reason in {"upstream_http_400", "unexpected_http_status"}:
+        return False
     if code in _FALLBACK_ALLOWED_CODES:
         return True
     return False
