@@ -50,6 +50,7 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "tests/test_5785_util_shared_contract.py",
         "tests/test_5608_util_sidebar_submenu.py",
         "tests/test_5608_body_glass_unification.py",
+        "tests/test_5655_intent_boundary.py",
     ),
 }
 

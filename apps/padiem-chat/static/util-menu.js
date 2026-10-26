@@ -9,15 +9,17 @@
     }
   }
 
-  async function apiChat(prompt) {
+  async function apiChat(prompt, util) {
     // Same rule as app.js selectedProductTier(), lines 3039-3040.
     const selected = window.PadiemTierSelection?.get?.();
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
+    const payload = { messages: [{ role: "user", content: prompt }], mode: "auto", tier };
+    if (util) payload.util = util;
     const res = await fetch("/api/chat", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }], mode: "auto", tier }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
@@ -291,7 +293,7 @@
       speechResult.hidden = false;
       speechOutput.value = "생성 중...";
       try {
-        speechOutput.value = await apiChat(prompt);
+        speechOutput.value = await apiChat(prompt, "speech");
       } catch (e) {
         speechOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
       }
@@ -729,7 +731,7 @@
         prompt += "\n제목, 본문, 해시태그를 구분하여 작성해 주세요.";
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(prompt); }
+        try { output.value = await apiChat(prompt, "sns"); }
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
         if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
@@ -827,9 +829,8 @@
         prompt += "다음 항목으로 정리해 주세요:\n1. 회의 요약 (3-5문장)\n2. 주요 논의사항 (bullet)\n3. 결정사항 (bullet)\n4. 후속 업무 (담당자/일정이 원문에 있으면 포함)\n5. 미해결 사항";
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(prompt); }
+        try { output.value = await apiChat(prompt, "meeting"); }
         catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
-        if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
       copyB.addEventListener("click", async () => {
@@ -951,7 +952,7 @@
             prompt += "4. 마무리 인사\n\n";
             prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.";
             bookOutput.value = "생성 중...";
-            bookOutput.value = await apiChat(prompt);
+            bookOutput.value = await apiChat(prompt, "meeting");
           } catch (e) {
             bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
           }
