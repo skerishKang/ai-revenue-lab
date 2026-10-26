@@ -97,6 +97,14 @@ class Gate071Tests(unittest.TestCase):
                 row["sql"] = row["sql"].replace("supply_amount>0", "supply_amount>=0")
         self.assertEqual(module.classify(value)[0], "DRIFT")
 
+    def test_status_literal_case_drift_is_not_case_folded_away(self):
+        value = payload(self.db)
+        for row in value["result"][0]["results"]:
+            if row["name"] == module.TABLES[0]:
+                row["sql"] = row["sql"].replace(
+                    "'source_selected_p01_not_started'", "'SOURCE_SELECTED_P01_NOT_STARTED'")
+        self.assertEqual(module.classify(value)[0], "DRIFT")
+
     def test_missing_duplicate_or_wrong_type_table_fails(self):
         value = payload(self.db)
         for rows in (value["result"][0]["results"][:1],
