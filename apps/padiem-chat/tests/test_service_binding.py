@@ -198,7 +198,15 @@ def test_worker_wires_service_binding_and_browser_cannot_choose_target():
 
     assert "binding_value(self.env, B14_SERVICE_BINDING_NAME)" in worker
     assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
-    assert 'require_service_binding=settings.runtime_mode == "b14"' in worker
+    # #5784: the flag is still composed only from server-side settings, never from a
+    # request value. The binding stays mandatory on the live lane; only an operator
+    # chosen HTTPS upstream releases it, and that lane is wired at this same boundary.
+    assert "require_service_binding=" in worker
+    wired = " ".join(worker.split())
+    assert (
+        'require_service_binding=( settings.runtime_mode == "b14" '
+        'and settings.b14_upstream_mode == "binding" ),'
+    ) in wired
     assert 'B14_SERVICE' not in main
     assert '"B14_SERVICE"' not in main
 

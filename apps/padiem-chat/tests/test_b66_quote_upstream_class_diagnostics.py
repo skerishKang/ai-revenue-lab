@@ -101,9 +101,10 @@ def _production_settings() -> Settings:
 def _unbound_production_client() -> DispatchAwareB14Client:
     """The Production-composed client with the B14 Service Binding absent.
 
-    worker.py composes ``require_service_binding=settings.runtime_mode == "b14"``
-    and leaves ``service_transport`` None when the binding is missing, so this is
-    the real pre-dispatch shape, not a simulated raise. No provider call happens.
+    worker.py composes ``require_service_binding`` from ``settings.runtime_mode`` and
+    the operator-chosen B14 upstream mode, and leaves ``service_transport`` None when
+    the binding is missing, so on the default binding lane this is the real
+    pre-dispatch shape, not a simulated raise. No provider call happens.
     """
 
     return DispatchAwareB14Client(
