@@ -14,6 +14,7 @@
     "test_5121_byok_key_separation.py": "BYOK_DIRECT",
     "test_5002_byok_product_e2e.py": "BYOK_DIRECT",
     "test_2550_stream_fail_taxonomy.py": "B14_MANAGED",
+    "test_5784_b14_upstream_switch.py": "B14_MANAGED",
     "test_5108_chat_central_route_execution.py": "B14_MANAGED",
     "test_3977_provider_default_temperature_bridge.py": "B14_MANAGED",
     "test_4317_free_completed_tier_fallback.py": "B14_MANAGED",

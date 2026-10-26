@@ -31,6 +31,10 @@ from padiem_ai_core import (
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 from padiem_ai_core.b14_streaming import B14StreamToolCall
 from padiem_ai_core.tool_channel import ToolDefinition
+from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH, B14_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
+
+from .b14_service_proof import service_proof_headers
 
 from padiem_ai_core.dispatch_preinstruction import (
     render_dispatch_preinstruction,
@@ -147,6 +151,80 @@ class _BeforeDispatchHTTPTransport(execution_httpx.AsyncBaseTransport):
 
     async def aclose(self) -> None:
         await self._transport.aclose()
+
+
+#: #5784: the paths the https upstream may be asked for. Identical to the set the
+#: Service Binding lane accepts, so switching upstreams cannot widen a request.
+B14_UPSTREAM_PATHS = frozenset(
+    {
+        B14_CHAT_COMPLETIONS_PATH,
+        B14_STREAM_PREVIEW_PATH,
+        B14_AUTO_STREAM_PREVIEW_PATH,
+    }
+)
+
+
+class B14HTTPSUpstreamTransport(execution_httpx.AsyncBaseTransport):
+    """The https twin of the Chat→B14 Service Binding lane, with the same proof.
+
+    Only the dispatch differs: the request leaves through ordinary httpx to the
+    configured origin instead of a binding fetch. POST only, the same three
+    paths, the same correlation header and the same body-bound
+    ``x-padiem-b14-proof`` — B14 refuses an unattested caller on this API either
+    way, and Core parses the response identically on both lanes.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        proof_secret: str | None = None,
+        *,
+        delegate: execution_httpx.AsyncBaseTransport | None = None,
+    ) -> None:
+        if not isinstance(base_url, str) or not base_url.startswith("https://"):
+            raise ValueError("B14 https upstream must be an https origin")
+        if "b14.internal" in base_url:
+            raise ValueError("B14 https upstream cannot name the internal binding origin")
+        self._origin = base_url.rstrip("/")
+        self._proof_secret = proof_secret
+        self._delegate = delegate or execution_httpx.AsyncHTTPTransport()
+
+    def _validate(self, request: execution_httpx.Request) -> None:
+        from urllib.parse import urlsplit
+
+        parsed = urlsplit(str(request.url))
+        if (
+            request.method != "POST"
+            or f"{parsed.scheme}://{parsed.netloc}" != self._origin
+            or parsed.port is not None
+            or parsed.path not in B14_UPSTREAM_PATHS
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise execution_httpx.RequestError(
+                "Business 14 https upstream target is invalid.", request=request
+            )
+
+    async def handle_async_request(
+        self, request: execution_httpx.Request
+    ) -> execution_httpx.Response:
+        self._validate(request)
+        raw_body = bytes(await request.aread())
+        outbound = execution_httpx.Request(
+            "POST",
+            request.url,
+            headers={
+                "Content-Type": "application/json",
+                **service_proof_headers(self._proof_secret, raw_body),
+            },
+            content=raw_body,
+        )
+        response = await self._delegate.handle_async_request(outbound)
+        response.request = request
+        return response
+
+    async def aclose(self) -> None:
+        await self._delegate.aclose()
 
 
 @dataclass(frozen=True, slots=True)

@@ -89,6 +89,7 @@ from app.control_plane_identity_shadow import (
     RefreshingCanonicalSubjectResolver,
 )
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+from app.b14_client import B14HTTPSUpstreamTransport
 from app.dispatch_quota import (
     DispatchAwareB14Client,
     DispatchAwareUsageCounterStore,
@@ -1013,16 +1014,28 @@ class Default(WorkerEntrypoint):
                     if base_usage_store is not None
                     else None
                 )
-                service_transport = (
-                    CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)
-                    if b14_binding is not None
-                    else None
-                )
-                stream_transport = (
-                    CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)
-                    if b14_binding is not None
-                    else None
-                )
+                if settings.b14_upstream_mode == "https":
+                    # #5784: the same lane pointed at B14's public origin. The
+                    # binding is not consulted, so a deployment cannot fall back
+                    # to it silently, and the proof stays body-bound.
+                    https_transport = B14HTTPSUpstreamTransport(
+                        settings.b14_base_url, b14_proof_secret
+                    )
+                    service_transport = None
+                    stream_transport = https_transport
+                    execution_transport = https_transport
+                else:
+                    service_transport = (
+                        CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)
+                        if b14_binding is not None
+                        else None
+                    )
+                    stream_transport = (
+                        CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)
+                        if b14_binding is not None
+                        else None
+                    )
+                    execution_transport = None
                 web_transport = CloudflareExternalHttpTransport()
                 b66_pdf_renderer_client = (
                     CloudflareB66PdfRendererClient(b66_pdf_binding)
@@ -1370,9 +1383,13 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.usage_gate_enforced = True
                 _worker_app.state.b14_client = DispatchAwareB14Client(
                     settings,
+                    transport=execution_transport,
                     service_transport=service_transport,
                     stream_transport=stream_transport,
-                    require_service_binding=settings.runtime_mode == "b14",
+                    require_service_binding=(
+                        settings.runtime_mode == "b14"
+                        and settings.b14_upstream_mode == "binding"
+                    ),
                 )
                 # #3760 owner correction: quote extraction validates one user-selected,
                 # owner-allowed, chat-capable and live-ready B14 registered

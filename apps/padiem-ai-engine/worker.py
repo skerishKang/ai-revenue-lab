@@ -46,8 +46,11 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
+    B14HTTPSProofTransport,
+    B14_UPSTREAM_HTTPS,
     CloudflareB14ServiceBindingTransport,
     build_b14_execution_configs,
+    resolve_b14_upstream_from_env,
 )
 from app.drive_case_pdf_binary import B67_CASE_PDF_BINARY_PATH
 from app.engine_composition import EngineServices
@@ -423,15 +426,26 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
-        binding=binding,
-        request_factory=Request,
-        # B14 spends platform-owned Provider credentials on its catalog
-        # execution lane; prove this server-to-server caller before dispatch.
-        proof_secret=await _resolve_b14_proof_secret(env),
-    )
+    b14_proof_secret = await _resolve_b14_proof_secret(env)
+    # #5784: the upstream switch. Unset stays on the Service Binding, byte for
+    # byte; https points the same client at B14's public origin.
+    b14_upstream_mode, b14_upstream_origin = resolve_b14_upstream_from_env(env)
+    if b14_upstream_mode == B14_UPSTREAM_HTTPS:
+        transport = B14HTTPSProofTransport(
+            base_url=b14_upstream_origin,
+            proof_secret=b14_proof_secret,
+        )
+    else:
+        transport = CloudflareB14ServiceBindingTransport(
+            binding=binding,
+            request_factory=Request,
+            # B14 spends platform-owned Provider credentials on its catalog
+            # execution lane; prove this server-to-server caller before dispatch.
+            proof_secret=b14_proof_secret,
+        )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
+        base_url=b14_upstream_origin,
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)

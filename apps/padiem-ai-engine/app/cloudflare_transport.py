@@ -22,6 +22,13 @@ from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 from app.b14_service_proof import service_proof_headers
 
 B14_INTERNAL_ORIGIN = "https://b14.internal"
+# #5784: the same lane can reach Business 14 through the Service Binding or
+# through its public https origin. ``binding`` is the default and keeps every
+# byte of today's request identical; ``https`` exists so the upstream can move
+# to a host the platform edge does not run, without a second client.
+B14_UPSTREAM_BINDING = "binding"
+B14_UPSTREAM_HTTPS = "https"
+B14_UPSTREAM_MODES = frozenset({B14_UPSTREAM_BINDING, B14_UPSTREAM_HTTPS})
 # #4379: the model request body has no PADIEM aggregate ceiling. The request is
 # read in full and the total is never refused; the platform's own request limit
 # and the provider's context window are the real bounds.
@@ -32,6 +39,62 @@ _ALLOWED_B14_PATHS = frozenset(
         B14_AUTO_STREAM_PREVIEW_PATH,
     }
 )
+
+
+def resolve_b14_upstream(*, mode: str | None = None, url: str | None = None) -> tuple[str, str]:
+    """Return ``(mode, origin)`` for the Business 14 lane.
+
+    An unset mode is ``binding``, and the binding branch ignores ``url`` on
+    purpose: a deployment that has not chosen https cannot be redirected by a
+    stray variable. The https branch accepts an origin only - no port, path,
+    query or credentials - because the request path is the fixed allowlist above
+    and an operator-supplied path would silently widen it.
+    """
+
+    resolved = B14_UPSTREAM_BINDING if mode is None else str(mode).strip().lower()
+    if resolved not in B14_UPSTREAM_MODES:
+        raise ValueError("B14_UPSTREAM_MODE must be binding or https")
+    if resolved == B14_UPSTREAM_BINDING:
+        return B14_UPSTREAM_BINDING, B14_INTERNAL_ORIGIN
+    parsed = urlsplit((url or "").strip())
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.hostname == "b14.internal"
+        or parsed.port is not None
+        or parsed.path not in ("", "/")
+        or parsed.query
+        or parsed.fragment
+        or parsed.username
+        or parsed.password
+    ):
+        raise ValueError(
+            "B14_UPSTREAM_URL must be an https origin with no port, path, query or credentials"
+        )
+    return B14_UPSTREAM_HTTPS, f"https://{parsed.hostname}"
+
+
+def resolve_b14_upstream_from_env(env: object) -> tuple[str, str]:
+    """Read the upstream switch from deployment state, failing closed.
+
+    Unset is ``binding``, which is today's byte-identical Service Binding lane.
+    A mistyped mode or a URL that is not a bare https origin raises here, before
+    any client exists, so a stray variable cannot quietly redirect the lane that
+    spends platform-owned provider credentials.
+    """
+
+    def read(name: str) -> str | None:
+        try:
+            value = getattr(env, name)
+        except Exception:
+            return None
+        if isinstance(value, str) and value.strip():
+            return value
+        return None
+
+    return resolve_b14_upstream(
+        mode=read("B14_UPSTREAM_MODE"), url=read("B14_UPSTREAM_URL")
+    )
 
 
 class CloudflareReadableByteStream(httpx.AsyncByteStream):
@@ -148,9 +211,9 @@ def _correlation_header() -> dict[str, str]:
     return {"X-Request-Id": value} if value is not None else {}
 
 
-def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
-    B14ExecutionConfig, B14ExecutionConfig
-]:
+def build_b14_execution_configs(
+    *, timeout_seconds: float, base_url: str = B14_INTERNAL_ORIGIN,
+) -> tuple[B14ExecutionConfig, B14ExecutionConfig]:
     """Return the Engine's completed-response and stream-frame B14 budgets.
 
     The two clients bound different things and must not share one number:
@@ -162,18 +225,79 @@ def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
 
     Sharing the smaller frame bound with the completed client made the Engine
     refuse healthy model answers that Chat/Claw accept (#4379).
+
+    ``base_url`` is the only thing the upstream switch changes; both budgets stay
+    identical whichever way the lane is pointed.
     """
     completed = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=base_url,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
     )
     streaming = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=base_url,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_B14_RESPONSE_BYTES,
     )
     return completed, streaming
+
+
+class B14HTTPSProofTransport(httpx.AsyncBaseTransport):
+    """The https twin of the binding transport: same proof, same allowlist.
+
+    Only the dispatch differs. The caller still sees one fixed origin, POST only,
+    the three allowed paths, the same correlation header and the same body-bound
+    ``x-padiem-b14-proof``; the response is an ordinary httpx response, so Core
+    parses exactly what it parses on the binding lane.
+    """
+
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        proof_secret: str | None = None,
+        delegate: httpx.AsyncBaseTransport | None = None,
+    ) -> None:
+        if base_url == B14_INTERNAL_ORIGIN or not base_url.startswith("https://"):
+            raise ValueError("B14 https upstream must be an external https origin")
+        self._origin = base_url.rstrip("/")
+        self._proof_secret = proof_secret
+        self._delegate = delegate or httpx.AsyncHTTPTransport()
+
+    def _validate_target(self, url: httpx.URL) -> None:
+        parsed = urlsplit(str(url))
+        if (
+            f"{parsed.scheme}://{parsed.netloc}" != self._origin
+            or parsed.scheme != "https"
+            or parsed.port is not None
+            or parsed.path not in _ALLOWED_B14_PATHS
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise httpx.RequestError("Business 14 https target is invalid.")
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        if request.method != "POST":
+            raise httpx.RequestError(
+                "Business 14 https upstream accepts POST only.", request=request
+            )
+        self._validate_target(request.url)
+        raw_body = bytes(await request.aread())
+        outbound = httpx.Request(
+            "POST",
+            request.url,
+            headers={
+                "Content-Type": "application/json",
+                **_correlation_header(),
+                # The same server-to-server proof the binding lane sends: B14
+                # refuses an unattested caller on this API either way.
+                **service_proof_headers(self._proof_secret, raw_body),
+            },
+            content=raw_body,
+        )
+        response = await self._delegate.handle_async_request(outbound)
+        response.request = request
+        return response
 
 
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):

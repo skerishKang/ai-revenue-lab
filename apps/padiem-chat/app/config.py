@@ -85,6 +85,10 @@ def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, .
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
+    # #5784: which upstream the B14 lane talks to. ``binding`` is today's
+    # Service Binding and the default; ``https`` points the same client at B14's
+    # public origin. It never widens what a request may reach.
+    b14_upstream_mode: str = "binding"
     b66_quote_base_url: str | None = None
     file_lane_origin: str | None = None
     file_lane_ticket_secret: str | None = field(default=None, repr=False)
@@ -148,6 +152,7 @@ class Settings:
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
         b66_quote_base_url: object = None,
+        b14_upstream_mode: object = None,
         file_lane_origin: object = None,
         file_lane_ticket_secret: object = None,
     ) -> "Settings":
@@ -155,10 +160,25 @@ class Settings:
         if mode not in {"mock", "b14"}:
             raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
 
+        # An unset upstream mode is the Service Binding, so a deployment that
+        # never set the switch keeps sending exactly the bytes it sends today.
+        upstream_mode = str(b14_upstream_mode or "binding").strip().lower()
+        if upstream_mode not in {"binding", "https"}:
+            raise ConfigError("B14_UPSTREAM_MODE must be binding or https")
+
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
+        if upstream_mode == "https":
+            # https is the only mode that reads the URL, and it reads it as an
+            # origin. In binding mode this variable is ignored on purpose, so a
+            # stray value cannot redirect a lane that has not opted out of the
+            # Service Binding.
+            if base is None or not base.startswith("https://"):
+                raise ConfigError("B14_UPSTREAM_URL must be an https origin when B14_UPSTREAM_MODE=https")
+            if "b14.internal" in base:
+                raise ConfigError("B14_UPSTREAM_URL cannot name the internal binding origin")
 
         raw_b66_quote = "" if b66_quote_base_url is None else str(b66_quote_base_url).strip()
         b66_quote = (
@@ -295,6 +315,7 @@ class Settings:
             file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,
             file_lane_ticket_secret=_optional_secret(file_lane_ticket_secret, name="file_lane_ticket_secret"),
             b14_base_url=base,
+            b14_upstream_mode=upstream_mode,
             b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
             completed_timeout_seconds=completed_timeout,
