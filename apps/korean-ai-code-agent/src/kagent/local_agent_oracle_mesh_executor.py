@@ -35,15 +35,14 @@ MAX_PRESENCE_ENTRIES = 8
 #: evaluated. This executor is a first-party product client, so it identifies
 #: itself with the same product token the kagent transport already sends.
 PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
-#: #4139 wire envelope shared by both lanes: the same 6 MB the Claw request
-#: route already accepts for one user message. A command body above it is
-#: reported as ``output_too_large`` and a file body is refused whole — neither
-#: is truncated, and neither is buffered past this bound.
+#: Commands retain 6MB. A server-authorized PC read may explicitly request
+#: up to 20MB; a legacy/default read retains 6MB. Oversize is refused whole,
+#: never truncated.
 MAX_COMMAND_BYTES = 6_000_000
-MAX_READ_BYTES_ENVELOPE = 6_000_000
-#: Legacy alias for callers that still import it; the read port now takes its
-#: bound from the shared envelope instead of a trial-era byte count.
-MAX_READ_BYTES = MAX_READ_BYTES_ENVELOPE
+MAX_READ_BYTES_ENVELOPE = 20_000_000
+#: Legacy/default reads retain the pre-existing 6MB bound. The server-owned
+#: dispatch max_bytes opts into the separate 20MB PC-file ceiling.
+MAX_READ_BYTES = 6_000_000
 #: Existing PC-file error markers the Engine already maps. A read failure is a
 #: truthful body, not an empty success: the executor reports the marker so the
 #: verified result lane can deliver the same outcome the model lane expects.
@@ -390,7 +389,7 @@ class OracleMeshExecutor:
         """
         read_bound = dispatch.max_bytes
         if read_bound is None:
-            read_bound = MAX_READ_BYTES_ENVELOPE
+            read_bound = MAX_READ_BYTES
         read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
@@ -959,7 +958,10 @@ class OracleMeshExecutor:
                 isinstance(exit_code, bool) or not isinstance(exit_code, int)
             ):
                 raise ValueError("pending exit code is not an integer")
-            if len(body) > MAX_COMMAND_BYTES:
+            if len(body) > (
+                (dispatch.max_bytes or MAX_READ_BYTES)
+                if dispatch.kind == "read" else MAX_COMMAND_BYTES
+            ):
                 raise ValueError("pending body exceeds the wire envelope")
             note = meta.get("note", "")
             if not isinstance(note, str):

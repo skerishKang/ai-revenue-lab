@@ -103,12 +103,25 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # Production authority, changes no declared-metadata bound or decision, and keeps
 # the magic, encryption and page gates plus the strict reader for merge, split,
 # markdown and preview. Only this source pin moves; the other hashes are unchanged.
+# Re-pinned for #5734 stage 2: Core stopped refusing a document for its own
+# length. The OOXML archive gate judges a decompression bomb by inflation ratio
+# instead of by size or member count, the XLSX table reader dropped its
+# 500/50/5,000 ceilings, the PDF reader stopped refusing a page count and a
+# per-page text length, and a text document no longer carries a 96 KiB or
+# 40,000-character total. Then #5876 put one absolute number back for a
+# different reason: a single archive member may not claim more than 32MiB of
+# inflated bytes, because a Pyodide Worker isolate owns 128MB -- a memory
+# allocation, not a size preference. All four pinned files moved: two Core
+# sources and their two fixtures. The guards these canaries exist to catch -- the
+# archive path, encryption, DTD and inflation gates, the NUL and
+# control-character rules, and locator provenance -- are untouched, and no
+# parser, process, network, filesystem, OCR, provider or Production authority
+# was added.
 PINNED_SHA256 = {
-    # Re-pinned for #5734 (2026-10-26): the OOXML archive gate now refuses a    # decompression bomb by inflation ratio instead of refusing a document for    # its size or member count. Both files changed on that commit; the guard this    # canary exists to catch is untouched.
-    CORE_PACKAGE / "document_normalization.py": "513c563348afb6fa58c56f00255cea88e46ba4f31aabebc1bcbd6522a23f264d",
-    CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
-    CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "b20b76039c5f1b5d9350f0c3622666944511eb1f3ff0972326b011ee49a363f7",
+    CORE_PACKAGE / "document_normalization.py": "c3ee6522331d835aca40e7cf4057a5f7dbd26f2ddf97b4a0e10c57868f5597fa",
+    CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
+    CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
+    CORE_TESTS / "test_document_normalization.py": "9b1e314125aa11f2696c233c3bd51265ff1878c13d2c892a9079d7d7b2e89269",
 }
 
 REF = "doc_r2741resolvertest1"

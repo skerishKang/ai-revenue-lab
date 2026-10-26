@@ -154,6 +154,11 @@ async def call(store, documents, *, owner=OWNER, workspace=WORKSPACE,
 class ExistingResultReuseAdoptTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.db = setup_database()
+        # Use the released metadata schema; 026 alone still rejects >10MiB
+        # before the current WEB XLSX input guard can examine a corrupt row.
+        for migration in ("008_claw_document_metadata.sql", "027_b66_template_source.sql",
+                          "060_byte_length_capacity_ceiling_release.sql"):
+            self.db.executescript((ROOT / "migrations" / migration).read_text())
         self.history = D1HistoryStore(D1Sqlite(self.db))
         self.documents = FakeDocuments()
 
@@ -293,7 +298,7 @@ class ExistingResultReuseAdoptTests(unittest.IsolatedAsyncioTestCase):
         # tampering is applied to the durable row itself: a corrupted or
         # oversized index row must still never become a web source.
         cases = [
-            ("oversized record", "size_bytes", 2_000_000),
+            ("oversized record", "size_bytes", 10 * 1024 * 1024 + 1),
             ("path traversal name", "filename", "../../secret.xlsx"),
             ("non xlsx name", "filename", "secret.pdf"),
             ("empty name", "filename", ""),

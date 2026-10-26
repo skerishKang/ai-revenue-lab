@@ -6,11 +6,6 @@ from typing import Any
 
 from padiem_ai_core.document_normalization import (
     BINARY_DOCUMENT_MEDIA,
-    MAX_PDF_PAGES,
-    MAX_XLSX_COLUMNS,
-    MAX_XLSX_NONEMPTY_CELLS,
-    MAX_XLSX_ROWS,
-    MAX_XLSX_SHEETS,
     DocumentNormalizationError,
     validate_document_identity,
 )
@@ -34,11 +29,9 @@ _BINARY_ERROR_MESSAGES = {
     "media_extension_mismatch": "문서 확장자와 파일 형식이 일치하지 않습니다.",
     "invalid_binary_payload": "문서 데이터가 올바르지 않습니다.",
     "empty_document": "빈 문서는 첨부할 수 없습니다.",
-    "extracted_text_too_long": "문서에서 추출한 텍스트가 40,000자를 초과합니다.",
     "pdf_magic_mismatch": "PDF 형식과 실제 파일 내용이 일치하지 않습니다.",
     "pdf_encrypted": "암호화된 PDF는 현재 첨부할 수 없습니다.",
     "pdf_no_pages": "PDF에서 읽을 페이지를 찾지 못했습니다.",
-    "pdf_page_limit": "PDF는 80페이지 이하만 첨부할 수 있습니다.",
     "pdf_empty_text": "이 PDF에서는 텍스트를 읽지 못했습니다. 스캔 문서 OCR은 아직 지원하지 않습니다.",
     "pdf_invalid": "PDF를 안전하게 읽지 못했습니다.",
     "docx_missing_part": "DOCX 파일을 안전하게 읽지 못했습니다.",
@@ -47,9 +40,6 @@ _BINARY_ERROR_MESSAGES = {
     "pptx_empty": "PPTX에서 읽을 텍스트를 찾지 못했습니다.",
     "xlsx_invalid": "XLSX 파일을 안전하게 읽지 못했습니다.",
     "xlsx_no_sheets": "XLSX에서 워크시트를 찾지 못했습니다.",
-    "xlsx_sheet_limit": "XLSX는 워크시트 20개 이하만 첨부할 수 있습니다.",
-    "xlsx_dimension_limit": "XLSX는 시트당 500행 × 50열 범위까지만 읽을 수 있습니다.",
-    "xlsx_cell_limit": "XLSX의 값이 너무 많습니다.",
     "xlsx_empty": "XLSX에서 읽을 값을 찾지 못했습니다.",
     "document_dependency_unavailable": "문서 처리 기능을 사용할 수 없습니다.",
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE: "현재 실행 환경에서는 격리된 문서 파서를 사용할 수 없어 문서를 처리할 수 없습니다.",
@@ -61,11 +51,9 @@ _BINARY_ERROR_MESSAGES = {
 }
 _OOXML_CODES = {
     "ooxml_archive_size",
-    "ooxml_entry_count",
     "ooxml_unsafe_path",
     "ooxml_encrypted",
     "ooxml_entry_size",
-    "ooxml_total_size",
     "ooxml_dtd_rejected",
     "ooxml_malformed",
     "ooxml_invalid_xml",
@@ -99,7 +87,6 @@ def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) ->
     message = _BINARY_ERROR_MESSAGES.get(exc.code)
     if message is None and exc.code in {
         "invalid_text",
-        "text_too_long",
         "binary_text_rejected",
         "excessive_control_characters",
     }:

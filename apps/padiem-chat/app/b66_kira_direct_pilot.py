@@ -22,7 +22,7 @@ from .b66_registered_model_boundary import (
 KIRA_B66_MODEL_ID = "kira/qwen3.8-flash-free"
 _KIRA_UPSTREAM_MODEL = "qwen3.8-flash-free"
 _KIRA_URL = "https://kiraai.vn/api/v1/chat/completions"
-_MAX_RESPONSE_BYTES = 1024 * 1024
+_MAX_RESPONSE_BYTES = 10 * 1024 * 1024
 
 
 class B66KiraPilotExecutor:

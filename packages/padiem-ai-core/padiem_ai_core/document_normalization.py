@@ -10,7 +10,6 @@ from zipfile import ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from .document_semantics import (
     DOCUMENT_CONTENT_TRUST_CLASS,
-    MAX_DOCUMENT_SEGMENTS,
     MAX_SEGMENT_TEXT_CHARS,
     DocumentKind,
     DocumentLocator,
@@ -24,7 +23,17 @@ from .document_semantics import (
 )
 
 MAX_DOCUMENT_NAME_CHARS = 120
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). A
+#: document's character count is its length, not a safety property: what a text
+#: document has to satisfy is its type, its encoding, and the absence of NUL and
+#: an overwhelming share of control characters. Both numbers still size the
+#: isolated-parser transport ceiling, which is an allocation on a wire rather
+#: than a verdict about a document.
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). The
+#: 96 KiB total was a product-side copy of a limit nobody imposed: the request
+#: transport and the model's own context window are the real ceilings, and each
+#: is reported by the layer that owns it rather than guessed here.
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 # #4379: a binary document carries no PADIEM byte total. The symbol is
 # retained for import compatibility and is no longer enforced.
@@ -34,36 +43,53 @@ MAX_BINARY_DOCUMENT_BYTES = 1024 * 1024 * 1024
 #: page, and bounded so a caller-supplied size can never inflate the section
 #: part without limit.
 MAX_HWPX_PICTURE_HWPUNIT = 1_000_000
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). A
+#: page count is a document's length, not a safety property: the checks that
+#: describe a threat — active content, structure, provenance — stayed.
 MAX_PDF_PAGES = 80
+#: Retained for import compatibility and no longer enforced: a dense page is a
+#: dense page, and refusing it served no integrity purpose.
 MAX_PDF_PAGE_TEXT_CHARS = 16_000
 PDF_NATIVE_TEXT_PRESENT = "native_text_present"
 PDF_NATIVE_TEXT_ABSENT = "no_native_text_ocr_may_be_required"
 #: #5573: the OOXML bounds below were absolute capacity limits, and a normal
 #: large workbook or deck tripped them: a single worksheet part passes 1MiB, and
 #: a real 100MB document passes 8MiB uncompressed. Capacity is the owner's to
-#: spend, so the refusal is gone. What stays describes a decompression bomb
+#: spend, so those refusals are gone. What stays describes a decompression bomb
 #: rather than a big document: the ratio between the bytes handed over and the
 #: bytes they claim to expand into. Real content sits in the low tens; the
 #: classic bomb sits in the tens of thousands, so the guard is nowhere near a
-#: size limit a legitimate file has to work to stay under.
+#: size limit a legitimate file has to work to stay under. The one absolute
+#: number that came back is the per-member ceiling below, and it came back for a
+#: different reason: what the isolate can hold, not how big a document may be.
 MAX_OOXML_TOTAL_INFLATION_RATIO = 1_000
 #: Retained for import compatibility and no longer enforced: an OOXML member
 #: count is bounded by the archive's own byte total, not by a PADIEM number.
 MAX_OOXML_ENTRIES = 256
 MAX_OOXML_MEMBER_NAME_CHARS = 255
-#: Retained for import compatibility and no longer enforced. The inflate work is
-#: bounded per member by the declared size the ratio check just admitted.
-MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
+#: One member's absolute inflate ceiling, enforced (CTO 2026-10-26, #5876). This
+#: is a memory allocation, not a capacity preference: a Pyodide Worker isolate has
+#: 128MB, and the process must never hold more than 32MiB for a single archive
+#: part — the same buffering window #5872 set for response bodies. It is
+#: deliberately independent of the ratio guard above, because a document can pass
+#: a ratio test and still ask for more RAM than the isolate owns. The gate's
+#: `.xml`/`.rels` pre-read and every extraction read inherit it.
+MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 32 * 1024 * 1024
+#: Retained for import compatibility and no longer enforced: members are read one
+#: at a time under their own bound, so no archive-wide uncompressed total is ever
+#: accumulated to compare against a number.
 MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
+#: Retained for import compatibility and no longer enforced: the reader walks
+#: every worksheet a workbook declares.
 MAX_XLSX_SHEETS = 20
-#: Retained as the default a caller gets when it asks for a table without
-#: saying how big; it no longer caps what a caller may ask for, and a workbook
-#: is never refused for exceeding it.
+#: The default a caller gets when it asks for a table without saying how big.
+#: It is no longer a ceiling on what may be asked for: a caller may name any
+#: positive bound, and a worksheet bigger than these numbers is not refused.
 MAX_XLSX_ROWS = 500
 MAX_XLSX_COLUMNS = 50
 #: Retained for import compatibility and no longer enforced: counting the cells
 #: a document contains and then refusing the document is a capacity limit, not
-#: integrity.
+#: integrity. A sheet is read for as long as the caller asked for it.
 MAX_XLSX_NONEMPTY_CELLS = 5_000
 
 TEXT_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
@@ -126,16 +152,6 @@ class NormalizedDocument:
             raise DocumentNormalizationError(
                 "invalid_document_segments",
                 "Document segments must contain DocumentSegment values.",
-            )
-        if len(self.segments) > MAX_DOCUMENT_SEGMENTS:
-            raise DocumentNormalizationError(
-                "document_segment_limit",
-                "Document segments exceed the bounded count.",
-            )
-        if sum(item.char_count for item in self.segments) > MAX_DOCUMENT_CHARS:
-            raise DocumentNormalizationError(
-                "document_segment_budget",
-                "Document segments exceed the bounded character budget.",
             )
         orders = tuple(item.order for item in self.segments)
         if len(set(orders)) != len(orders):
@@ -219,8 +235,6 @@ def normalize_document_text(value: Any) -> str:
     text = value.removeprefix("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
     if not text.strip():
         raise DocumentNormalizationError("empty_document", "Document text is empty.")
-    if len(text) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("text_too_long", "Document text exceeds the character limit.")
     if "\x00" in text:
         raise DocumentNormalizationError("binary_text_rejected", "NUL bytes are not allowed in text documents.")
     bad_controls = sum(1 for ch in text if ord(ch) < 32 and ch not in {"\n", "\t"})
@@ -242,12 +256,9 @@ def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> Normali
     )
 
 
-def _append_bounded(parts: list[str], value: str) -> None:
-    if not value:
-        return
-    parts.append(value)
-    if sum(len(part) for part in parts) + max(0, len(parts) - 1) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("extracted_text_too_long", "Extracted document text exceeds the character limit.")
+def _append_part(parts: list[str], value: str) -> None:
+    if value:
+        parts.append(value)
 
 
 def _safe_ooxml_member(name: str) -> bool:
@@ -283,7 +294,7 @@ def validate_ooxml_member_name(name: object) -> str:
 
 def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *,
                          max_bytes: int | None = None) -> bytes:
-    """Read one archive member with the inflate work bounded by the member bound.
+    """Read one archive member with the inflate work bounded twice over.
 
     ``ZipFile.read``/``ZipExtFile.read()`` inflate the *entire* deflate stream
     and only afterwards truncate the result to the declared uncompressed size,
@@ -293,18 +304,21 @@ def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *,
     the streaming API caps the real inflate work at the bound; because the
     declared size is also the truncation cap ``read()`` applies, a well-formed
     archive reads byte-identically.
+
+    The second bound is absolute: one member may not ask the process to hold more
+    than :data:`MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES`, whatever its ratio. A caller
+    with its own narrower budget may pass ``max_bytes``, which replaces that
+    default ceiling but never widens the declared size.
     """
 
     info = member if isinstance(member, ZipInfo) else archive.getinfo(member)
-    # The declared size is the bound by default: :func:`validate_ooxml_archive`
-    # has already judged how far that declaration may inflate. An explicit
-    # ``max_bytes`` stays available for a caller with its own narrower budget.
-    limit = info.file_size if max_bytes is None else min(info.file_size, max_bytes)
+    ceiling = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES if max_bytes is None else max_bytes
+    limit = min(info.file_size, ceiling)
     with archive.open(info) as handle:
         data = handle.read(limit + 1)
     if len(data) > limit:
         raise DocumentNormalizationError(
-            "ooxml_entry_size", "OOXML archive entry exceeds the size limit."
+            "ooxml_entry_size", "OOXML archive entry exceeds the member bound."
         )
     return data
 
@@ -369,8 +383,10 @@ def validate_ooxml_archive(payload: bytes) -> None:
                         raise DocumentNormalizationError("ooxml_dtd_rejected", "DTDs are not supported in OOXML documents.")
             # The judgement is one number against another the caller already
             # handed over: bytes in, bytes out. A stored member costs nothing to
-            # inflate, so it passes at any size, while a member that turns a few
-            # kilobytes into megabytes is the shape this exists to refuse.
+            # inflate, so the ratio says nothing about it; the absolute member
+            # bound above is what still limits it once anything reads it. A
+            # member that turns a few kilobytes into megabytes is the shape this
+            # ratio exists to refuse.
             if total > len(payload) * MAX_OOXML_TOTAL_INFLATION_RATIO:
                 raise DocumentNormalizationError(
                     "ooxml_total_inflation", "OOXML archive inflates far beyond its stored bytes.")
@@ -448,14 +464,14 @@ def _extract_docx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
             if tag == "p":
                 value = _docx_paragraph_text(child)
                 if value:
-                    _append_bounded(parts, value)
+                    _append_part(parts, value)
                     segments.append(DocumentSegment(text=value, order=len(segments)))
             elif tag == "tbl":
                 table_index += 1
                 for row_index, row_value in enumerate(_docx_table_rows(child), start=1):
                     if not row_value:
                         continue
-                    _append_bounded(parts, row_value)
+                    _append_part(parts, row_value)
                     segments.append(
                         DocumentSegment(
                             text=row_value,
@@ -515,7 +531,7 @@ def _extract_pptx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ..
                 slide = "\n".join(piece for piece in pieces if piece).strip()
                 if not slide:
                     continue
-                _append_bounded(parts, slide)
+                _append_part(parts, slide)
                 segments.append(
                     DocumentSegment(
                         text=slide,
@@ -989,10 +1005,10 @@ def extract_hwpx_text(payload: bytes) -> str:
         for paragraph in parsed.paragraphs:
             if paragraph.holds_nested_paragraph:
                 continue
-            _append_bounded(paragraphs, paragraph.text)
+            _append_part(paragraphs, paragraph.text)
         section = "\n".join(paragraphs).strip()
         if section:
-            _append_bounded(sections, section)
+            _append_part(sections, section)
     text = "\n".join(sections).strip()
     if not text:
         raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
@@ -1152,8 +1168,6 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
                 text = (page.extract_text() or "").strip()
             except Exception as exc:
                 raise DocumentNormalizationError("pdf_page_text_invalid", "PDF page text could not be read safely.") from exc
-            if len(text) > MAX_PDF_PAGE_TEXT_CHARS:
-                raise DocumentNormalizationError("pdf_page_text_limit", "PDF page text exceeds the character limit.")
             pages.append(PdfPageInspection(index, index + 1, page_count, text))
     finally:
         reader.close() if hasattr(reader, "close") else None
@@ -1233,10 +1247,10 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
                 "invalid_pdf_page_provenance",
                 "PDF inspection page provenance is inconsistent.",
             )
-        if not isinstance(page.text, str) or len(page.text) > MAX_PDF_PAGE_TEXT_CHARS:
+        if not isinstance(page.text, str):
             raise DocumentNormalizationError(
                 "invalid_pdf_page_text",
-                "PDF inspection page text is invalid or exceeds the bounded limit.",
+                "PDF inspection page text is invalid.",
             )
         if not page.text.strip():
             continue
@@ -1285,7 +1299,7 @@ def _extract_pdf_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...
             extracted = (page.extract_text() or "").strip()
             if not extracted:
                 continue
-            _append_bounded(parts, extracted)
+            _append_part(parts, extracted)
             segments.append(
                 DocumentSegment(
                     text=extracted,
@@ -1366,12 +1380,12 @@ def _extract_xlsx_text(payload: bytes) -> str:
                     formula = formula_cell.value
                     if isinstance(formula, str) and formula.startswith("="):
                         shown = value or "(no cached value)"
-                        _append_bounded(
+                        _append_part(
                             parts,
                             f"[{value_sheet.title}!{value_cell.coordinate}] {formula} => {shown}",
                         )
                     elif value:
-                        _append_bounded(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
+                        _append_part(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("xlsx_empty", "XLSX contains no readable values.")
@@ -1451,20 +1465,18 @@ def read_xlsx_table(
             "invalid_sheet_index",
             "Sheet index must be a non-negative integer.",
         )
-    if isinstance(max_rows, bool) or not isinstance(max_rows, int) or not 1 <= max_rows <= MAX_XLSX_ROWS:
-        raise DocumentNormalizationError(
-            "invalid_row_bound",
-            "Row bound is outside the supported range.",
-        )
-    if (
-        isinstance(max_columns, bool)
-        or not isinstance(max_columns, int)
-        or not 1 <= max_columns <= MAX_XLSX_COLUMNS
+    # A caller asking for a bigger table is asking for a bigger table. The bound
+    # has to be a usable positive number; the old ceiling that refused anything
+    # past 500 rows or 50 columns was a PADIEM preference applied to someone
+    # else's document, and it is gone.
+    for name, value, code in (
+        ("max_rows", max_rows, "invalid_row_bound"),
+        ("max_columns", max_columns, "invalid_column_bound"),
     ):
-        raise DocumentNormalizationError(
-            "invalid_column_bound",
-            "Column bound is outside the supported range.",
-        )
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise DocumentNormalizationError(
+                code, f"{name} must be a positive integer without coercion.",
+            )
 
     validate_ooxml_archive(bytes(binary))
     try:
@@ -1497,7 +1509,6 @@ def read_xlsx_table(
         headers: tuple[str, ...] = ()
         rows: list[tuple[str, ...]] = []
         total_rows_seen = 0
-        nonempty_cells = 0
         truncated = declared_rows > max_rows + 1
         column_limit = min(declared_columns, max_columns)
         row_limit = min(declared_rows, max_rows + 1)
@@ -1511,12 +1522,6 @@ def read_xlsx_table(
             if not any(value.strip() for value in values):
                 continue
             total_rows_seen += 1
-            nonempty_cells += sum(1 for value in values if value.strip())
-            if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
-                raise DocumentNormalizationError(
-                    "xlsx_cell_budget",
-                    "XLSX contains too many non-empty cells.",
-                )
             if len(rows) >= max_rows:
                 truncated = True
                 continue
@@ -1577,11 +1582,6 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         raise DocumentNormalizationError("unsupported_binary_media_type", "Unsupported binary document media type.")
 
     normalized = normalize_document_text(text)
-    # A pathological document can exceed the bounded segment count even under
-    # the character budget. Keep the flat text and let the single-segment
-    # fallback carry it instead of rejecting an otherwise readable document.
-    if len(segments) > MAX_DOCUMENT_SEGMENTS:
-        segments = ()
     return NormalizedDocument(
         name=safe_name,
         media_type=safe_media,

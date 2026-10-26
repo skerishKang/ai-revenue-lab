@@ -112,6 +112,8 @@ class EngineBindingFixture:
         kinds = (OrchestrationEventKind.RUN_STARTED,
                  OrchestrationEventKind.CONTEXT_PREPARED,
                  OrchestrationEventKind.RUN_COMPLETED)
+        if self.mode == "long_stream":
+            kinds = (kinds[0],) + (kinds[1],) * 256 + (kinds[-1],)
         result = _ResultFactory.result(self.core_request, kinds)
         wire = result.to_public_dict()
         if self.mode == "foreign":
@@ -259,6 +261,16 @@ class TestRealP01StreamBridge(unittest.TestCase):
                 response = client.get(CAP)
         self.assertTrue(response.json()["live_events_available"])
         self.assertEqual(engine.calls, [])
+
+    def test_real_binding_more_than_128_events_reaches_sse_done(self):
+        adapter, engine = self.bridge("long_stream")
+        _, response = self.query(adapter, engine)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text.count("event: p01_event"), 258)
+        self.assertEqual(response.text.count("event: done"), 1)
+        self.assertNotIn("event: error", response.text)
+        self.assertEqual(len(engine.calls), 1)
+        self.assertEqual(engine.readers[0].released, 1)
 
     def test_real_engine_binding_stream_cancel_releases_reader(self):
         from app.claw_general_routes import create_claw_run

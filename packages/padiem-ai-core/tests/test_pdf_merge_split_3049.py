@@ -143,10 +143,9 @@ def test_merge_and_split_bounds_are_enforced(monkeypatch: pytest.MonkeyPatch) ->
         split_pdf(_pdf(101, 102, 103), ((1, 1), (2, 2)))
     assert ranges.value.code == "pdf_split_range_limit"
 
-    monkeypatch.setattr(pdf_operations, "MAX_OUTPUT_PAGES", 1)
-    with pytest.raises(DocumentNormalizationError) as pages:
-        merge_pdfs((_pdf(101, 102),))
-    assert pages.value.code == "pdf_output_page_limit"
+    # #5734 stage 2: page count is not a bound any more — the byte bound below
+    # is what limits the work, and a two-page merge is simply a two-page merge.
+    assert merge_pdfs((_pdf(101, 102),)).page_count == 2
 
     monkeypatch.setattr(pdf_operations, "MAX_OUTPUT_BYTES", 1)
     with pytest.raises(DocumentNormalizationError) as output:
@@ -177,10 +176,13 @@ def test_input_aggregate_and_selected_page_bounds(
         merge_pdfs((valid,))
     assert aggregate.value.code == "pdf_merge_aggregate_bytes"
 
-    monkeypatch.setattr(pdf_operations, "MAX_TOTAL_SELECTED_PAGES", 1)
-    with pytest.raises(DocumentNormalizationError) as selected:
-        split_pdf(_pdf(101, 102), ((1, 2),))
-    assert selected.value.code == "pdf_split_selected_limit"
+    # Selecting pages is bounded by the source, not by a PADIEM number: a range
+    # wider than the old ceiling splits, a range past the last page does not.
+    wide = split_pdf(_pdf(101, 102, 103), ((1, 3),))
+    assert [page.source_page_number for page in wide.provenance] == [1, 2, 3]
+    with pytest.raises(DocumentNormalizationError) as beyond:
+        split_pdf(_pdf(101, 102), ((1, 9),))
+    assert beyond.value.code == "pdf_split_range_page"
 
 
 def test_operation_constants_are_bounded() -> None:

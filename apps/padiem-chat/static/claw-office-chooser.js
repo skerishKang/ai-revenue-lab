@@ -20,7 +20,7 @@
           || /[\\/:\x00-\x1f]/.test(row.filename)
           || !["xls", "xlsx"].includes(row.kind)
           || !row.filename.toLowerCase().endsWith("." + row.kind)
-          || !Number.isSafeInteger(row.size_bytes) || row.size_bytes < 1 || row.size_bytes > 1048576
+          || !Number.isSafeInteger(row.size_bytes) || row.size_bytes < 1 || row.size_bytes > 10 * 1024 * 1024
           || typeof row.candidate_ref !== "string" || !TOKEN.test(row.candidate_ref)
           || seen.has(row.candidate_ref)) return null;
       seen.add(row.candidate_ref);

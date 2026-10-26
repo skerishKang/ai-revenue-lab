@@ -37,7 +37,7 @@ def test_web_config_defaults_off_and_firecrawl_requires_server_key():
     settings = Settings.from_values()
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
-    assert settings.web_timeout_seconds == 15.0
+    assert settings.web_timeout_seconds == 30.0
 
     with pytest.raises(ConfigError):
         Settings.from_values(web_provider="firecrawl")
@@ -50,7 +50,8 @@ def test_web_config_defaults_off_and_firecrawl_requires_server_key():
     assert configured.firecrawl_api_key == "fc-secret-server-only"
     assert "fc-secret-server-only" not in repr(configured)
 
-    for bad in ("31", "0", "not-a-number"):
+    assert Settings.from_values(web_timeout_seconds=60).web_timeout_seconds == 60
+    for bad in ("61", "0", "not-a-number"):
         with pytest.raises(ConfigError):
             Settings.from_values(web_timeout_seconds=bad)
 

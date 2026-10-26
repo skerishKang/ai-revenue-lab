@@ -362,8 +362,6 @@ class P01EngineOrchestrationClient:
                         event = orchestration_event_from_public(record["event"])
                     except (OrchestrationEventError, ValueError, TypeError) as exc:
                         raise fail("p01_stream_invalid_event") from exc
-                    if len(stream_events) >= 128:
-                        raise fail("p01_stream_event_budget")
                     if not stream_events:
                         if event.sequence != 1 or event.kind is not OrchestrationEventKind.RUN_STARTED:
                             raise fail("p01_stream_missing_start")

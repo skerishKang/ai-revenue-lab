@@ -6,7 +6,6 @@ from typing import Any, Iterable
 from padiem_ai_core.document_normalization import (
     MAX_DOCUMENT_CHARS,
     MAX_DOCUMENT_NAME_CHARS,
-    MAX_TEXT_DOCUMENT_BYTES,
     TEXT_DOCUMENT_MEDIA,
     DocumentNormalizationError,
     normalize_document_name,
@@ -16,7 +15,6 @@ from padiem_ai_core.document_normalization import (
 )
 from padiem_ai_core.document_semantics import DocumentSegment, LocatorKind
 
-MAX_DOCUMENT_BYTES = MAX_TEXT_DOCUMENT_BYTES
 MAX_EPHEMERAL_DOCUMENT_CONTEXT_CHARS = 2_800
 MAX_PROJECT_FILES_CONTEXT_CHARS = 2_600
 MAX_REFERENCE_CONTEXT_CHARS = 8_000
@@ -34,10 +32,8 @@ _TEXT_ERROR_MESSAGES = {
     "media_extension_mismatch": "문서 확장자와 파일 형식이 일치하지 않습니다.",
     "invalid_text": "문서 내용 형식이 올바르지 않습니다.",
     "empty_document": "빈 문서는 첨부할 수 없습니다.",
-    "text_too_long": "문서는 40,000자 이하만 첨부할 수 있습니다.",
     "binary_text_rejected": "바이너리 파일은 문서로 첨부할 수 없습니다.",
     "excessive_control_characters": "텍스트 문서로 읽을 수 없는 제어 문자가 너무 많습니다.",
-    "text_bytes_too_large": "문서는 96 KiB 이하만 첨부할 수 있습니다.",
 }
 
 

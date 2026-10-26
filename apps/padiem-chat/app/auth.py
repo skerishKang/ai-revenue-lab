@@ -21,7 +21,7 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 SESSION_COOKIE = "padiem_session"
 OAUTH_STATE_COOKIE = "padiem_oauth_state"
 OAUTH_STATE_MAX_AGE_SECONDS = 600
-MAX_AUTH_RESPONSE_BYTES = 128 * 1024
+MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
 # Android handoff states are signed with a distinct purpose so a normal
 # cookie-bound OAuth state can never be replayed as a handoff state or back.
 ANDROID_HANDOFF_STATE_PURPOSE = "padiem-chat/android-handoff-state/v1"

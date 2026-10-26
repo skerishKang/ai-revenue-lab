@@ -82,6 +82,8 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
     근거 사례: 드라이브의 schema 거부와 downstream 503을 구분할 진단이 없으면 같은 준비 중 화면으로 보였다(#5855·#5573).
 15. 테스트 픽스처는 운영의 실제 형태를 대표한다. 정식 기기 ID 문법(`@`·`+` 포함), 새 경로의 pending/admit/등록 상태와 실제 응답 모양을 합성 데이터로 재현하고, 거부·복구도 검증한다.
     근거 사례: 단순 `office-pc` 픽스처는 운영 형태의 device_id 패턴 거부를 놓쳤다(#5855); 실제 식별자·자격증명은 픽스처에 복사하지 않는다.
+16. 파일 업로드·파싱·대용량 결과는 컴2 파일 레인이 담당한다. Worker 경로에 새 파일 처리 기능을 추가하지 않는다(#5881).
+17. 현재 범위는 채팅/클로(일반 채팅·PC 레인·첨부 문서·자동화)뿐이다. Util·SNS·B66는 장애 수정만 한다. 미룬 문제는 보류 목록 이슈(#5882)에 적고, 범위를 넓힐 때 그 목록부터 확인한다.
 
 ## 1. Purpose
 
@@ -729,3 +731,17 @@ In particular, a historical product direction document is now an implementation 
 - GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
 - Owner-only model/provider decisions: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Templates: `templates/`
+
+## 보류 목록 (나중에 반드시 확인)
+
+정본 이슈: #5882. 범위를 넓힐 때는 이 목록부터 다시 연다.
+
+- [ ] 웹 XLSX 원본 상한 1MiB → 1GiB(#5878 Draft: 선택 저장소·DB CHECK 마이그레이션 071·게이트 미완). 1GiB는 컴2 파일 레인 전제.
+- [ ] B66 상수 변경(#5877: 인증 미리보기·견적 번들·키라/체험 파일럿·가이드 초안·견적 이력 128KiB→1MiB 등)은 배포되지만 B66 흐름 실측 검증을 하지 않음 — 범위 재개 시 B66 E2E 1회.
+- [ ] SNS 메시지 상한 1MB→10MiB(#5872) 실측 미검증(Slack/Telegram 실제 한도는 공급자 기준).
+- [ ] Util은 등급 전달(#5810)까지만. Util 전용 오류 표시·스트리밍 없음.
+- [ ] 프로젝트 파일 본문 160KB / content_chars 40,000 DB CHECK(003/068/069) — 올리려면 project_files 재생성 마이그레이션+게이트.
+- [ ] 음성 STT 오디오 5MiB(base64), Drive 케이스폴더 PDF 4MB — 업로드 상한 통일(1GiB)은 컴2 파일 레인 이후.
+- [ ] #2824 격리 파서 전송 상한 512,768B — 파서 레인 소유자 판단 대기.
+- [ ] BYOK 2.0("키만 넣으면 공급자·엔드포인트 자동 등록") 설계 — Owner 사업 방향, 구현 시점 미정.
+- [ ] 다른 레인 코드가 Chat 배포에 실려 나가는 문제(#5817 파서 바인딩 미부착, #5850·#5862 등) — 배포마다 변경 스캔은 하되 기능 검증은 안 함.
