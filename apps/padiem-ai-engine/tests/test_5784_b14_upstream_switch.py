@@ -21,7 +21,7 @@ from app.cloudflare_transport import (
     build_b14_transport,
 )
 from app.b14_service_proof import service_proof_headers
-from padiem_ai_core import b14_upstream as upstream_module
+import padiem_ai_core.b14_upstream as upstream_module
 from padiem_ai_core.b14_upstream import B14HttpsTransport, B14UpstreamConfigError
 
 TUNNEL_ORIGIN = "https://b14.padiem.net"

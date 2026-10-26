@@ -17,9 +17,14 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Any
 
-from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH, B14_STREAM_PREVIEW_PATH
-from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
-from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_execution import (
+    MAX_CONFIGURED_B14_RESPONSE_BYTES,
+    B14_CHAT_COMPLETIONS_PATH,
+)
+from padiem_ai_core.b14_streaming import (
+    B14_AUTO_STREAM_PREVIEW_PATH,
+    B14_STREAM_PREVIEW_PATH,
+)
 from padiem_ai_core.b14_upstream import (
     MODE_HTTPS,
     B14HttpsPostJson,
