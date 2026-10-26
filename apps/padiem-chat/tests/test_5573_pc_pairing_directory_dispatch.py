@@ -93,25 +93,65 @@ def test_context_names_the_owner_folders_and_no_real_path(monkeypatch):
 
 # -- no link is a refusal, never a fallthrough ------------------------------
 
-def test_an_account_with_no_link_is_refused_and_cannot_borrow_the_map_row(monkeypatch):
+def test_no_link_falls_back_to_the_map_only_while_the_owner_has_not_claimed_yet(monkeypatch):
+    """#5906 hotfix (b), transitional on purpose.
+
+    An account with no link uses the deployment map row it already had, so
+    production devices keep working until the Owner claims them through the
+    pairing flow. This is NOT a widening: the map still only answers for the
+    account the map itself pins.
+    """
     empty = pairing.store()
     state = _state(monkeypatch, pairing_store=empty)
 
     status, body = lane._dispatch(state, lane._base_payload())
-    assert status == 403, body
-    assert body["error"]["code"] == "oracle_mesh_device_unverified"
-    # The map row for this account exists and is command-capable; consulting it
-    # anyway would be the whole point of an account↔PC link table.
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    assert row["node_ref"] == lane.NODE and lane.ROOT in row["command_text"]
+
+
+def test_an_account_with_nothing_to_use_gets_no_pc_tools_and_no_failure(monkeypatch):
+    """#5906 hotfix (a): the real chat-breaking case.
+
+    Tool discovery must answer 200 with no roots and no PC tools when this
+    account has neither a link nor a mapped device. Before this it answered 403,
+    and an ordinary chat turn that only asked what tools exist read as a failure.
+    """
+    state = _state(monkeypatch, pairing_store=pairing.store())
+    state.oracle_mesh_return_source = routes.build_oracle_mesh_return_source(
+        [{**lane._mapping()[0], "account_ref": "someone-else"}],
+        lane.CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,
+    )
+
+    status, body = lane._dispatch(state, lane._context_payload())
+    assert status == 200, body
+    assert body["roots"] == [] and body["tools"] == []
+    assert body["device"]["status"] == "not_connected"
+    assert state.history_store.status_writes == []
+    assert state.history_store.run_rows[lane.RUN]["status"] == "pending"
+    assert state.history_store.rows == {}
+
+    refused, refused_body = lane._dispatch(state, lane._base_payload())
+    assert refused == 403 and refused_body["error"]["code"] == "oracle_mesh_device_unverified"
     assert state.history_store.rows == {}
 
 
-def test_revoking_the_link_stops_the_lane_on_the_next_call(monkeypatch):
+def test_revoking_the_link_leaves_only_what_the_map_still_pins(monkeypatch):
+    """R5 with the transitional fallback, stated exactly.
+
+    Revoking kills the link's own authority — its folders and its node. What
+    survives is the *separate* deployment map row for the same account, which is
+    the thing scheduled for deletion once the Owner claims their PCs (TODO in the
+    route). The revoked node and its folder never come back: the dispatch below
+    runs on the map's device and the map's folder, not the link's.
+    """
     state = _state(monkeypatch, revoke=True)
 
     status, body = lane._dispatch(state, lane._base_payload())
-    assert status == 403, body
-    assert body["error"]["code"] == "oracle_mesh_device_unverified"
-    assert state.history_store.rows == {}
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    assert row["node_ref"] == lane.NODE != LINK_NODE
+    assert QUOTATION not in row["command_text"] and lane.ROOT in row["command_text"]
 
 
 # -- two approved folders: the label is the namespace ----------------------
