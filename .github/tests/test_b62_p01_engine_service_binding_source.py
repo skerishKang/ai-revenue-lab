@@ -177,4 +177,3 @@ def test_chat_wrangler_declares_the_already_live_engine_target():
     services = tomllib.loads(CHAT_CONFIG)["services"]
     matches = [x for x in services if x["binding"] == "P01_ENGINE_SERVICE"]
     assert matches == [{"binding": "P01_ENGINE_SERVICE", "service": "padiem-ai-engine"}]
-
