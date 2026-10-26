@@ -8,6 +8,7 @@ Provider/model execution remains Business 14 authority.
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlparse
@@ -931,6 +932,8 @@ class Default(WorkerEntrypoint):
                 settings = apply_live_deadman_switch(
                     settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)
                 )
+                settings = replace(settings, file_lane_ticket_secret=await resolve_secret_binding(
+                    self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 # B14 spends platform-owned Provider credentials on its catalog

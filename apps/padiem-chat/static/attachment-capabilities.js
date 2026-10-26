@@ -38,9 +38,11 @@
   // this deployment. Unknown defaults to supported, so a transient health
   // failure never hides a capability the server would accept.
   let binaryEnabled = true;
+  let fileLaneEnabled = false;
 
   function activeDocuments() {
-    return binaryEnabled ? allDocuments : textDocuments;
+    return binaryEnabled ? allDocuments : fileLaneEnabled
+      ? [...textDocuments, binaryDocuments[0]] : textDocuments;
   }
 
   function buildAccept() {
@@ -60,7 +62,7 @@
     const documentLabels = labelsFor(activeDocuments(), language === "en" ? ", " : "·");
     const textLabels = labelsFor(textDocuments, language === "en" ? ", " : "·");
     const binaryLabels = labelsFor(binaryDocuments, language === "en" ? ", " : "·");
-    const documentDetail = binaryEnabled ? `${textLabels}; ${binaryLabels}` : textLabels;
+    const documentDetail = binaryEnabled ? `${textLabels}; ${binaryLabels}` : documentLabels;
 
     if (language === "en") {
       return Object.freeze({
@@ -92,6 +94,8 @@
     get binarySupported() {
       return binaryEnabled;
     },
+    get fileLaneSupported() { return fileLaneEnabled; },
+    setFileLaneSupport(value) { fileLaneEnabled = value === true; },
     setBinarySupport(value) {
       binaryEnabled = value !== false;
     },

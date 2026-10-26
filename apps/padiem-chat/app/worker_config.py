@@ -275,6 +275,7 @@ def settings_from_worker_bindings(
     )
     return Settings.from_values(
         runtime_mode=runtime_mode,
+        file_lane_origin=binding_value(env, "PADIEM_CHAT_FILE_LANE_ORIGIN"),
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "600",

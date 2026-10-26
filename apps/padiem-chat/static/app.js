@@ -877,7 +877,9 @@
       if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
         throw new Error(uiT("claw-image-attachment-unsupported"));
       }
-      if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+      if (window.PadiemFileLane?.shouldUse(file) && await window.PadiemFileLane.available()) {
+        next = window.PadiemFileLane.pending(file);
+      } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
       else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
       else next = await readDocumentFile(file);
       if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
@@ -890,6 +892,7 @@
   }
   function attachmentPayload(attachment) {
     if (!attachment) return undefined;
+    if (attachment.fileId) return [{ type: "file", file_id: attachment.fileId }];
     if (attachment.file) {
       return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
     }
@@ -3162,6 +3165,10 @@
       // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
+      if (attachment?.fileLane && !attachment.fileId) {
+        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal);
+        attachment = { ...attachment, ...reference };
+      }
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
