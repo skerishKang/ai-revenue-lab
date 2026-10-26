@@ -70,7 +70,7 @@ MAX_OOXML_MEMBER_NAME_CHARS = 255
 #: One member's absolute inflate ceiling, enforced (CTO 2026-10-26, #5876). This
 #: is a memory allocation, not a capacity preference: a Pyodide Worker isolate has
 #: 128MB, and the process must never hold more than 32MiB for a single archive
-#: part — the same buffering window #5761 set for response bodies. It is
+#: part — the same buffering window #5872 set for response bodies. It is
 #: deliberately independent of the ratio guard above, because a document can pass
 #: a ratio test and still ask for more RAM than the isolate owns. The gate's
 #: `.xml`/`.rels` pre-read and every extraction read inherit it.

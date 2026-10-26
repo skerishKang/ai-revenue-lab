@@ -139,7 +139,7 @@ HWPX_MANIFEST_MEMBER = "Contents/content.hpf"
 HWPX_BIN_DATA_PREFIX = "BinData/"
 
 #: Largest canonical PNG this authority will embed — an owner-decided image cap
-#: (#5761, 2026-10-26). It used to ride the archive gate's per-entry uncompressed
+#: (#5872, 2026-10-26). It used to ride the archive gate's per-entry uncompressed
 #: bound because an image larger than that could not be admitted back through the
 #: same gate. That bound is now a 32MiB memory allocation for a single inflated
 #: part, so riding it would have turned a 10MiB photo policy into 320MiB. The two
