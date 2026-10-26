@@ -263,7 +263,11 @@ async def test_an_unnamed_binding_is_not_a_handle(host_dirs) -> None:
 
 
 def test_credential_names_come_from_the_catalog_and_stay_inside_worker_scope() -> None:
-    """No second allowlist: the names the app asks for are a subset of the Worker's."""
+    """No second allowlist: the names the app asks for are a subset of the Worker's.
+
+    The names come from the package registry file, so the answer does not depend
+    on which modules happen to be imported first.
+    """
     collected = _worker_literal("_ENV_KEYS")
     names = set(credential_binding_names())
     platform = {name for name in names if name.startswith("PADIEM_B14_CREDENTIAL_")}
@@ -341,6 +345,25 @@ def test_stdout_logging_is_installed_once_and_points_at_stdout() -> None:
     installed = [h for h in target.handlers if getattr(h, "_b14_local_stdout", False)]
     assert len(installed) == 1
     assert installed[0].stream is sys.stdout
+
+
+def test_the_catalog_and_assets_are_package_files_not_an_assets_binding() -> None:
+    """The ASSETS replacement is already the shipped authority: read from disk.
+
+    The owner model registry and the static surface were package reads before
+    this adapter existed, so the local runtime needs no second asset service and
+    gains no new authority here.
+    """
+    from app.pilot.model_registry_file import REGISTRY_PATH
+
+    assert REGISTRY_PATH.is_file() and REGISTRY_PATH.name == "b14_models.json"
+    with TestClient(create_local_app()) as client:
+        catalog = client.get("/api/pilot/models")
+        stylesheet = client.get("/app.css")
+    assert catalog.status_code == 200
+    assert catalog.json()["catalog"], "the package registry did not answer the catalog"
+    assert stylesheet.status_code == 200
+    assert "text/css" in stylesheet.headers["content-type"]
 
 
 def test_entrypoint_imports_without_the_workers_runtime() -> None:

@@ -136,20 +136,36 @@ class FileOrEnvSecret:
 
 
 def credential_binding_names() -> tuple[str, ...]:
-    """Every platform credential name the running catalog actually asks for.
+    """Every platform credential name this catalog can ask for.
 
-    Derived from the registered platform providers rather than a second literal
-    list, so a provider onboarded in the catalog is resolvable here without a
-    parallel edit — and a name never registered can still not be requested.
+    Read from the package registry file (the same authority the catalog installs
+    from) plus anything registered later, so the set does not depend on import
+    order and no second allowlist is created. A name the catalog never registers
+    cannot appear here, which is what keeps the adapter from becoming a way to
+    request an arbitrary secret.
     """
+    from app.pilot.model_registry_file import read_registry, validate_registry
     from app.pilot.platform_secrets import CredentialSource, list_platform_providers
 
-    names = {
+    names: set[str] = set()
+    try:
+        providers = validate_registry(read_registry())["providers"]
+    except Exception as exc:
+        # An unreadable catalog is a deployment fault, not a reason to widen or
+        # narrow the scope silently: the fixed name below says which.
+        logger.warning("b14_local_registry_unreadable reason=%s", type(exc).__name__)
+        providers = {}
+    for entry in providers.values():
+        if entry.get("credential_source") == CredentialSource.PLATFORM_SECRET.value:
+            binding = entry.get("credential_binding_name") or ""
+            if binding:
+                names.add(binding)
+    names.update(
         spec.credential_binding_name
         for spec in list_platform_providers()
         if spec.credential_source == CredentialSource.PLATFORM_SECRET
         and spec.credential_binding_name
-    }
+    )
     names.update({SERVICE_PROOF_BINDING, OBSERVABILITY_BINDING, SENSENOVA_BINDING})
     return tuple(sorted(names))
 
