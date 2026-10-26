@@ -91,7 +91,9 @@ Storage is `FILE_LANE_ROOT/<user_id namespace>/file_<uuid>/`. The namespace is
 SHA-256 of the **exact** user_id UTF-8 bytes: Windows folds case/trailing dots,
 so using raw IDs as path components could alias two owners. Original filenames
 are metadata only and never become disk paths. Files are named `data`,
-`meta.json`, `text-v2.txt`; metadata is published last. No global in-memory file
+`meta.json`, `text-v2.txt`, `text-v2.chars`; metadata is published last. The
+`.chars` counter is the saved code-point total of the cached text, written with
+it and re-derived once if an older cache lacks it. No global in-memory file
 index is required across restarts. Keep this root writable only by the service
 account; it is outside the checkout and must be on the chosen COM2 disk.
 
