@@ -21,6 +21,7 @@ from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .model_policy import (
+    ResolvedModelPolicy,
     ModelPolicyError,
     resolve_model_policy,
     resolve_request_model_policy,
@@ -177,7 +178,19 @@ async def api_orchestration(request: Request) -> JSONResponse:
     try:
         raw = await _json_body(request)
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
-        if tool_request is not None or attachments or project_id is not None or custom is not None:
+        user_credential_ref = None
+        if custom is not None:
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            try:
+                resolved = await resolve_reference(request.app.state, uid, custom)
+            except (CustomProviderError, CustomProviderSelectionError) as exc:
+                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422))
+            if resolved is None:
+                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409)
+            byok_model, user_credential_ref = resolved
+        if tool_request is not None or attachments or project_id is not None:
             return _error(
                 "orchestration_not_applicable",
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
@@ -187,7 +200,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
         # Reuse the same server-side grade/administrator gates and resolver the
         # Chat stream route applies. A legacy request without a tier keeps the
         # existing alias/default resolution.
-        if "tier" in raw:
+        if custom is not None:
+            policy = ResolvedModelPolicy(model_id=byok_model, messages=messages)
+            product_identity = PADIEM_IDENTITY_INSTRUCTION
+        elif "tier" in raw:
             if raw.get("tier") == "admin":
                 admin_denial = await selected_admin_denial(request, uid)
                 if admin_denial is not None:
@@ -281,7 +297,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
             grounding_context = prepared.context
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
-    if pc_context is not None:
+    if pc_context is not None or user_credential_ref is not None:
+        if pc_context is None:
+            # A text-only BYOK turn stages message history, never a PC run.
+            pc_context = {"workspace_id": "personal", "subject_id": uid, "pc_tools": None}
         from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, _new_lane_run_id, pc_scope_notice_for_run
         from .claw_live_events import chat_pc_orchestration_sse
         begin = getattr(store, "begin_chat_stream_turn", None)
@@ -319,6 +338,9 @@ async def api_orchestration(request: Request) -> JSONResponse:
             pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
             session_id=pc_run_id, additional_system_context=grounding_context,
             product_identity=product_identity,
+            **({"user_credential_ref": user_credential_ref,
+                "byok_selection": {"provider": custom.provider, "model": custom.model}}
+               if user_credential_ref is not None else {}),
         )
         async def scope_notice():
             return await pc_scope_notice_for_run(request, run_id=pc_run_id)
@@ -405,11 +427,21 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
     try:
         raw = await _json_body(request)
         continuation_ref, pause_id, outcome = parse_approval_intent(raw)
+        async def user_credential_resolver(selection):
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            from .request_contract import parse_custom_selection
+            try:
+                return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
+            except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
         result = await bridge.resume(
             user_id=uid,
             continuation_ref=continuation_ref,
             pause_id=pause_id,
             outcome=outcome,
+            user_credential_resolver=user_credential_resolver,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)

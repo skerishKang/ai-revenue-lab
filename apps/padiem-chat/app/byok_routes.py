@@ -125,7 +125,8 @@ async def custom_credential_status(request: Request):
             503,
         )
     return JSONResponse(
-        {"ok": True, "credentials": credentials, "providers": _provider_options()},
+        {"ok": True, "credentials": credentials, "providers": _provider_options(),
+         **({"byok_via_b14": True} if getattr(getattr(request.app.state, "settings", None), "byok_via_b14", False) else {})},
         headers=HEADERS,
     )
 

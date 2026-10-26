@@ -588,6 +588,9 @@ class OrchestrationEngineService:
 
     def _runtime_for_payload(self, app_id, payload):
         runtime = self._runtime_factory(app_id)
+        if payload.get("agent", {}).get("model_policy", {}).get("user_credential_required") is True:
+            from app.byok_passthrough import UserCredentialRuntime
+            runtime = UserCredentialRuntime(runtime)
         if "pc_tools" not in payload:
             return runtime
         from app.pc_tools_turn import PcToolsTurnRuntime
@@ -794,8 +797,9 @@ class OrchestrationEngineService:
                 (tool_arguments or {}).get(ceiling, {}),
             )}
         driver_options = {"initial_decision": initial_decision} if initial_decision is not None else {}
+        from app.byok_passthrough import core_model_policy
         driver = self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy,
+                model_id, core_model_policy(exec_req.agent.model_policy),
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
                 tool_arguments=tool_arguments, **driver_options,
         )
@@ -1129,6 +1133,11 @@ class OrchestrationEngineService:
         The keyword is private Python composition only; it is never parsed
         from the Engine HTTP JSON payload or accepted as a model argument.
         """
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
@@ -1194,7 +1203,8 @@ class OrchestrationEngineService:
                     app_id, getattr(orch_req, "subject_id", None),
                 ),
             )
-            result = await runner.run(orch_req)
+            with credential_scope(user_credential_ref):
+                result = await runner.run(orch_req)
         except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
             response = self._orchestration_run_error_response(exc)
             if response is not None:
@@ -1220,6 +1230,11 @@ class OrchestrationEngineService:
 
     async def resume_payload(self, payload: Any) -> ServiceResponse:
         """Resume only a server-issued continuation with a verified decision."""
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         if not self._b14_service_bound:
             return _service_error(
                 "b14_service_unavailable",
@@ -1396,13 +1411,17 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
+            if exec_req.agent.model_policy.get("user_credential_required") is True:
+                from app.byok_passthrough import UserCredentialRuntime
+                runtime = UserCredentialRuntime(runtime)
             runner = OrchestrationRunner(
                 runtime=runtime, idempotency=self._idempotency_adapter,
                 agent_result_ledger=self._tool_result_ledger(
                     app_id, getattr(resume_req, "subject_id", None),
                 ),
             )
-            result = await runner.resume(resume_req)
+            with credential_scope(user_credential_ref):
+                result = await runner.resume(resume_req)
         except OrchestrationError as exc:
             if exc.code == "approval_denied":
                 try:
@@ -1716,6 +1735,11 @@ class OrchestrationEngineService:
         except (UnicodeDecodeError, json.JSONDecodeError):
             return _service_error("invalid_json", "Request body must contain valid UTF-8 JSON.", status_code=400)
 
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
@@ -1791,7 +1815,8 @@ class OrchestrationEngineService:
             if pc_stream else None
         )
         try:
-            task = asyncio.create_task(runner.run(orch_req))
+            with credential_scope(user_credential_ref):
+                task = asyncio.create_task(runner.run(orch_req))
         finally:
             _PC_TURN_STREAM_SINK.reset(turn_sink_token)
             _PC_PROGRESS_SINK.reset(progress_token)
