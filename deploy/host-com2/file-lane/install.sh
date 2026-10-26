@@ -32,7 +32,7 @@ fi
 install -d -m 0700 -o padiem-file-lane -g padiem-file-lane "$data"
 if [[ ! -x "$app/venv/bin/python" ]]; then (umask 022; python3 -m venv "$app/venv"); fi
 (umask 022; "$app/venv/bin/python" -m pip --isolated install --index-url https://pypi.org/simple --disable-pip-version-check --require-hashes -r "$here/requirements.txt")
-(umask 022; "$app/venv/bin/python" -m pip --isolated install --index-url https://pypi.org/simple --disable-pip-version-check --no-deps "$source_root/apps/padiem-file-lane")
+(umask 022; "$app/venv/bin/python" -m pip --isolated install --index-url https://pypi.org/simple --disable-pip-version-check --no-deps "$source_root/packages/padiem-ai-core" "$source_root/apps/padiem-file-lane")
 install -m 0644 "$here/check_config.py" "$app/check_config.py"
 install -m 0755 "$here/health.py" "$app/health.py"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/.env.example" "$app/.env"; fi
@@ -40,7 +40,7 @@ chown root:root "$app/.env"
 chmod 0600 "$app/.env"
 # DrvFS/NTFS permissions are host-specific. Prove this service identity can
 # create/remove a private probe, rather than claiming chmod alone is enough.
-if ! runuser -u padiem-file-lane -- "$app/venv/bin/python" -c 'import os, pathlib, tempfile, padiem_file_lane, uvicorn, pypdf; fd, name=tempfile.mkstemp(dir="/mnt/d/padiem/file-lane"); os.close(fd); pathlib.Path(name).unlink()' >/dev/null 2>&1; then
+if ! runuser -u padiem-file-lane -- "$app/venv/bin/python" -c 'import os, pathlib, tempfile, padiem_file_lane, uvicorn, pypdf, openpyxl, padiem_ai_core; fd, name=tempfile.mkstemp(dir="/mnt/d/padiem/file-lane"); os.close(fd); pathlib.Path(name).unlink()' >/dev/null 2>&1; then
   fail RUNTIME_OR_HDD_PERMISSION_FAILED
 fi
 install -m 0644 "$here/$unit" "/etc/systemd/system/$unit"

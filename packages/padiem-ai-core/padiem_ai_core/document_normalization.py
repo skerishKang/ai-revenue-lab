@@ -75,6 +75,11 @@ MAX_OOXML_MEMBER_NAME_CHARS = 255
 #: a ratio test and still ask for more RAM than the isolate owns. The gate's
 #: `.xml`/`.rels` pre-read and every extraction read inherit it.
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 32 * 1024 * 1024
+# Worker callers retain their allocation ceiling. CPython file-lane callers
+# explicitly select None for this request; never mutate the shared constant.
+_OOXML_MEMBER_BUDGET: ContextVar[int | None] = ContextVar(
+    "ooxml_member_budget", default=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+)
 #: Retained for import compatibility and no longer enforced: members are read one
 #: at a time under their own bound, so no archive-wide uncompressed total is ever
 #: accumulated to compare against a number.
@@ -305,15 +310,16 @@ def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *,
     declared size is also the truncation cap ``read()`` applies, a well-formed
     archive reads byte-identically.
 
-    The second bound is absolute: one member may not ask the process to hold more
-    than :data:`MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES`, whatever its ratio. A caller
-    with its own narrower budget may pass ``max_bytes``, which replaces that
-    default ceiling but never widens the declared size.
+    The second bound is runtime-owned: Worker/default calls use
+    :data:`MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES`. The CPython file lane explicitly
+    opts out of that Worker allocation ceiling for its own extraction context.
+    ``max_bytes`` may select a narrower read; neither option widens the declared
+    size or removes archive integrity checks.
     """
 
     info = member if isinstance(member, ZipInfo) else archive.getinfo(member)
-    ceiling = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES if max_bytes is None else max_bytes
-    limit = min(info.file_size, ceiling)
+    ceiling = _OOXML_MEMBER_BUDGET.get() if max_bytes is None else max_bytes
+    limit = info.file_size if ceiling is None else min(info.file_size, ceiling)
     with archive.open(info) as handle:
         data = handle.read(limit + 1)
     if len(data) > limit:
@@ -1544,7 +1550,30 @@ def read_xlsx_table(
         workbook.close()
 
 
-def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
+def extract_binary_document(
+    *, name: Any, media_type: Any, payload: Any,
+    ooxml_member_max_bytes: int | None = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
+) -> NormalizedDocument:
+    """Use the canonical parser with a runtime-owned OOXML allocation budget.
+
+    The default retains the Worker ceiling. Only a disk-backed CPython caller
+    selects None; archive path/encryption/DTD/inflation checks remain in force.
+    Context-local state prevents a concurrent Worker/default call inheriting it.
+    """
+    if ooxml_member_max_bytes is not None and (
+        isinstance(ooxml_member_max_bytes, bool)
+        or not isinstance(ooxml_member_max_bytes, int)
+        or ooxml_member_max_bytes < 1
+    ):
+        raise ValueError("ooxml_member_max_bytes must be positive or None")
+    token = _OOXML_MEMBER_BUDGET.set(ooxml_member_max_bytes)
+    try:
+        return _extract_binary_document(name=name, media_type=media_type, payload=payload)
+    finally:
+        _OOXML_MEMBER_BUDGET.reset(token)
+
+
+def _extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
     file_payload = (
         safe_media == "application/pdf"

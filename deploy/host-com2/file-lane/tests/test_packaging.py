@@ -40,6 +40,7 @@ class Packaging(unittest.TestCase):
         self.assertNotIn("rm -rf", source)
         self.assertIn('if [[ ! -e "$app/.env" ]]', source)
         self.assertIn("--require-hashes", source)
+        self.assertIn('"$source_root/packages/padiem-ai-core"', source)
 
     def test_checkout_paths_avoid_windows_reserved_device_names(self):
         self.assertEqual(HERE.relative_to(ROOT).parts, ("deploy", "host-com2", "file-lane"))
@@ -135,7 +136,7 @@ class Packaging(unittest.TestCase):
                 opener.assert_not_called()
 
     def test_runtime_requirements_match_the_committed_service_lock(self):
-        result = subprocess.run(["uv", "export", "--project", "apps/padiem-file-lane", "--frozen", "--no-dev", "--no-emit-project", "--no-header"],
+        result = subprocess.run(["uv", "export", "--project", "apps/padiem-file-lane", "--frozen", "--no-dev", "--no-emit-project", "--no-emit-package", "padiem-ai-core", "--no-header"],
                                 cwd=ROOT, check=True, capture_output=True, text=True)
         self.assertEqual((HERE / "requirements.txt").read_text(), result.stdout)
 

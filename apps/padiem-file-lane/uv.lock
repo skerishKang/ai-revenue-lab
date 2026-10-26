@@ -43,6 +43,15 @@ wheels = [
 ]
 
 [[package]]
+name = "et-xmlfile"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d3/38/af70d7ab1ae9d4da450eeec1fa3918940a5fafb9055e934af8d6eb0c2313/et_xmlfile-2.0.0.tar.gz", hash = "sha256:dab3f4764309081ce75662649be815c4c9081e88f0837825f90fd28317d4da54", size = 17234, upload-time = "2024-10-25T17:25:40.039Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c1/8b/5fe2cc11fee489817272089c4203e679c63b570a5aaeb18d852ae3cbba6a/et_xmlfile-2.0.0-py3-none-any.whl", hash = "sha256:7a91720bc756843502c3b7504c77b8fe44217c85c537d85037f0f536151b2caa", size = 18059, upload-time = "2024-10-25T17:25:39.051Z" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -98,6 +107,18 @@ wheels = [
 ]
 
 [[package]]
+name = "openpyxl"
+version = "3.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "et-xmlfile" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3d/f9/88d94a75de065ea32619465d2f77b29a0469500e99012523b91cc4141cd1/openpyxl-3.1.5.tar.gz", hash = "sha256:cf0e3cf56142039133628b5acffe8ef0c12bc902d2aadd3e0fe5878dc08d1050", size = 186464, upload-time = "2024-06-28T14:03:44.161Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl", hash = "sha256:5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2", size = 250910, upload-time = "2024-06-28T14:03:41.161Z" },
+]
+
+[[package]]
 name = "packaging"
 version = "26.3"
 source = { registry = "https://pypi.org/simple" }
@@ -107,11 +128,44 @@ wheels = [
 ]
 
 [[package]]
+name = "padiem-ai-core"
+version = "0.6.0"
+source = { directory = "../../packages/padiem-ai-core" }
+dependencies = [
+    { name = "httpx" },
+]
+
+[package.optional-dependencies]
+documents = [
+    { name = "openpyxl" },
+    { name = "pypdf" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.27,<1" },
+    { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.23,<5" },
+    { name = "jsonschema", marker = "extra == 'tools'", specifier = ">=4.23,<5" },
+    { name = "openpyxl", marker = "extra == 'dev'", specifier = ">=3.1,<4" },
+    { name = "openpyxl", marker = "extra == 'documents'", specifier = ">=3.1,<4" },
+    { name = "pdfplumber", marker = "extra == 'dev'", specifier = "==0.11.10" },
+    { name = "pdfplumber", marker = "extra == 'tables'", specifier = "==0.11.10" },
+    { name = "pypdf", marker = "extra == 'dev'", specifier = ">=6.19.0,<6.20" },
+    { name = "pypdf", marker = "extra == 'documents'", specifier = ">=6.19.0,<6.20" },
+    { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
+    { name = "pypdfium2", marker = "extra == 'render'", specifier = "==5.13.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
+    { name = "reportlab", marker = "extra == 'authoring'", specifier = "==5.0.1" },
+    { name = "reportlab", marker = "extra == 'dev'", specifier = "==5.0.1" },
+]
+provides-extras = ["tools", "documents", "render", "tables", "authoring", "dev"]
+
+[[package]]
 name = "padiem-file-lane"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "pypdf" },
+    { name = "padiem-ai-core", extra = ["documents"] },
     { name = "starlette" },
     { name = "uvicorn" },
 ]
@@ -129,7 +183,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pypdf", specifier = ">=6,<7" },
+    { name = "padiem-ai-core", extras = ["documents"], directory = "../../packages/padiem-ai-core" },
     { name = "pywin32", marker = "sys_platform == 'win32' and extra == 'windows'", specifier = ">=308" },
     { name = "starlette", specifier = ">=0.45,<1" },
     { name = "uvicorn", specifier = ">=0.32,<1" },
@@ -162,11 +216,11 @@ wheels = [
 
 [[package]]
 name = "pypdf"
-version = "6.21.2"
+version = "6.19.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/06/28/081f1cbcca7042441dafc8de00f48ba60853f89e5bff92c5f26477346d81/pypdf-6.21.2.tar.gz", hash = "sha256:0a3e1c5c886a1be03646c16a04827cc166c2a0575c971b26a4bf89686551c2d4", size = 7144571, upload-time = "2026-10-21T16:44:55.272Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1f/ac/63d71aaedb59acbcdef491e6ca6469165e3771c9c74358204818fd9bc5a6/pypdf-6.19.0.tar.gz", hash = "sha256:bbc43aca292369ccc6cbc8a921991ecf2538a3587ab5a116eff06c321d647155", size = 7033266, upload-time = "2026-09-16T09:32:05.946Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/4d/c9d2d67f204eff463237a1a8f5e25a6923b7b1043982b91fcaf104c8ef60/pypdf-6.21.2-py3-none-any.whl", hash = "sha256:1d44d1a3a200f25062adff0085b02040e4646431ac2ccac22e42679e91466084", size = 407766, upload-time = "2026-10-21T16:44:53.626Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/2c/c43c03eaf630435f023f1dc61ec4a4a78951ad5530a62c71cc89bde307b7/pypdf-6.19.0-py3-none-any.whl", hash = "sha256:7e5d6e730e7dae87d560a2cee218b852f6498c8be61966f3cd02ead971e48d14", size = 395480, upload-time = "2026-09-16T09:32:04.087Z" },
 ]
 
 [[package]]

@@ -1,7 +1,6 @@
 """Stream to local disk; no fixed file-size ceiling beyond signed budget/disk."""
 from __future__ import annotations
 
-import codecs
 import errno
 import hashlib
 import json
@@ -12,7 +11,7 @@ import shutil
 import uuid
 
 FILE_PATTERN = re.compile(r"file_[a-f0-9]{32}\Z")
-KINDS = {".txt": "txt", ".md": "md", ".csv": "csv", ".pdf": "pdf"}
+KINDS = {".txt": "txt", ".md": "md", ".csv": "csv", ".pdf": "pdf", ".docx": "docx", ".pptx": "pptx", ".xlsx": "xlsx"}
 
 
 class FileError(Exception):
@@ -67,7 +66,7 @@ class Store:
 
     def text(self, user_id, file_id):
         directory = self.directory(user_id, file_id)
-        target = directory / "text.txt"
+        target = directory / "text-v2.txt"
         if target.is_file():
             return target
         meta = self.meta(user_id, file_id)
@@ -75,23 +74,10 @@ class Store:
         pending = directory / (uuid.uuid4().hex + ".text.part")
         try:
             with pending.open("xb") as output:
-                if meta["kind"] == "pdf":
-                    from pypdf import PdfReader
-                    with (directory / "data").open("rb") as source:
-                        reader = PdfReader(source)
-                        if reader.is_encrypted:
-                            raise FileError("encrypted_pdf", 422)
-                        for index, page in enumerate(reader.pages):
-                            text = page.extract_text() or ""
-                            if index:
-                                write_bytes(output, b"\n", self.root)
-                            write_bytes(output, text.encode("utf-8"), self.root)
-                else:
-                    decoder = codecs.getincrementaldecoder("utf-8-sig")()
-                    with (directory / "data").open("rb") as source:
-                        while block := source.read(64 * 1024):
-                            write_bytes(output, decoder.decode(block).encode("utf-8"), self.root)
-                        write_bytes(output, decoder.decode(b"", final=True).encode("utf-8"), self.root)
+                from .parsing import parse_text
+                text = parse_text(directory / "data", meta["kind"])
+                for offset in range(0, len(text), 64 * 1024):
+                    write_bytes(output, text[offset:offset + 64 * 1024].encode("utf-8"), self.root)
                 output.flush()
                 os.fsync(output.fileno())
             os.replace(pending, target)
@@ -105,6 +91,29 @@ class Store:
         finally:
             pending.unlink(missing_ok=True)
         return target
+
+
+    def text_window(self, path, offset, max_chars):
+        # Offsets count Unicode code points, never UTF-8 bytes. Skip in bounded
+        # blocks so a distant offset does not allocate the preceding text.
+        with path.open("r", encoding="utf-8", newline="") as source:
+            remaining = offset
+            while remaining:
+                skipped = source.read(min(remaining, 64 * 1024))
+                if not skipped:
+                    return "", True
+                remaining -= len(skipped)
+            chunks = []
+            remaining = max_chars
+            while remaining:
+                chunk = source.read(min(remaining, 64 * 1024))
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            text = "".join(chunks)
+            eof = not source.read(1)
+        return text, eof
 
 
 def disk_error(exc):
