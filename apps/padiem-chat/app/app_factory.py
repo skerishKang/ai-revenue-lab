@@ -346,6 +346,7 @@ from .drive_case_pdf_routes import (
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .file_lane import FileLaneClient, file_upload_ticket, file_capabilities
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -478,6 +479,7 @@ def create_app(
     central_model_route_store=None,
     custom_credential_store=None,
     custom_provider_client=None,
+    file_lane_client=None,
     account_model_selection_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -622,6 +624,8 @@ def create_app(
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/byok/detect", byok_detect, methods=["POST"]),
         Route("/api/byok/register", byok_register, methods=["POST"]),
+        Route("/api/files/ticket", file_upload_ticket, methods=["POST"]),
+        Route("/api/files/capabilities", file_capabilities, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
@@ -945,6 +949,8 @@ def create_app(
     )
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
+    app.state.file_lane_client = file_lane_client or FileLaneClient(
+        resolved.file_lane_origin, resolved.file_lane_ticket_secret, transport=web_transport)
     app.state.github_oauth_store = github_oauth_store
     app.state.github_oauth_provider = github_oauth_provider
     # #5121: owner-scoped customer-provider keys live in the canonical Chat D1,

@@ -86,6 +86,8 @@ class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
     b66_quote_base_url: str | None = None
+    file_lane_origin: str | None = None
+    file_lane_ticket_secret: str | None = field(default=None, repr=False)
     timeout_seconds: float = 600.0
     completed_timeout_seconds: float = 600.0
     live_enabled: bool = False
@@ -146,6 +148,8 @@ class Settings:
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
         b66_quote_base_url: object = None,
+        file_lane_origin: object = None,
+        file_lane_ticket_secret: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -288,6 +292,8 @@ class Settings:
 
         return cls(
             runtime_mode=mode,
+            file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,
+            file_lane_ticket_secret=_optional_secret(file_lane_ticket_secret, name="file_lane_ticket_secret"),
             b14_base_url=base,
             b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
@@ -332,6 +338,8 @@ class Settings:
         )
         return cls.from_values(
             runtime_mode=runtime_mode,
+            file_lane_origin=os.getenv("PADIEM_CHAT_FILE_LANE_ORIGIN"),
+            file_lane_ticket_secret=os.getenv("PADIEM_CHAT_FILE_LANE_TICKET_SECRET"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600"),

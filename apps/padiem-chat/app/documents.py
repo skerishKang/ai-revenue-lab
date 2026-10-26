@@ -70,9 +70,12 @@ class DocumentAttachment:
     text: str = field(repr=False)
     byte_size: int = 0
     segments: tuple[DocumentSegment, ...] = field(default=(), repr=False)
+    file_id: str | None = None
+    sha256: str | None = None
 
     def public_dict(self) -> dict[str, Any]:
         return {
+            **({"file_id": self.file_id, "sha256": self.sha256} if self.file_id else {}),
             "type": "document",
             "name": self.name,
             "media_type": self.media_type,

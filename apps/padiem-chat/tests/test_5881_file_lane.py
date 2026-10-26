@@ -1,0 +1,198 @@
+"""Chat -> ticket -> real COM2 app -> file_id -> Chat context, all offline."""
+import asyncio
+import base64
+import hashlib
+import hmac
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+import httpx
+import pytest
+
+from app.auth import SESSION_COOKIE, create_session_token
+from app.config import Settings, ConfigError
+from app.file_lane import FileLaneClient
+from app.history import UserProfile
+from app.main import create_app
+from app.request_contract import _validate_payload_async
+from app.attachments import AttachmentValidationError
+from app.claw_attachment_context import parse_claw_turn_attachments_async
+
+SECRET = "offline-file-lane-contract-000000000000000000"
+USER = "usr_" + "a" * 32
+OTHER = "usr_" + "b" * 32
+
+
+class History:
+    async def get_user(self, user):
+        return UserProfile(user, "offline@example.test", "Offline", "") if user in {USER, OTHER} else None
+    async def append_exchange(self, *args, **kwargs):
+        return "chat_" + "c" * 32
+    async def list_conversations(self, *args, **kwargs):
+        return []
+
+
+def config(**kwargs):
+    return Settings.from_values(auth_mode="google", public_base_url="https://chat.example.test",
+        google_client_id="offline.apps.googleusercontent.com", google_client_secret="offline",
+        session_secret="offline-chat-session-secret-00000000000000000", **kwargs)
+
+
+def cookies(settings, user=USER):
+    return {SESSION_COOKIE: create_session_token(settings, user)}
+
+
+@pytest.fixture
+def file_app(tmp_path, monkeypatch):
+    # Cross-app fixture imports source only: Chat production has no COM2 package
+    # dependency and never imports its disk/parser implementation.
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[2] / "padiem-file-lane/src"))
+    from padiem_file_lane.app import create_app as create_file_app
+    return create_file_app(root=tmp_path, secret=SECRET)
+
+
+@pytest.mark.asyncio
+async def test_ticket_upload_reference_completion_and_claw_context(file_app):
+    settings = config()
+    lane = FileLaneClient("https://files.example.test", SECRET, transport=httpx.ASGITransport(app=file_app))
+    app = create_app(settings, history_store=History(), file_lane_client=lane)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", cookies=cookies(settings)) as chat:
+        cap = await chat.get("/api/files/capabilities")
+        assert cap.json()["ready"] is True
+        ticket = await chat.post("/api/files/ticket", json={"size_bytes": 100}, headers={"Origin": "https://chat.example.test"})
+        assert ticket.status_code == 200 and ticket.headers["cache-control"] == "no-store"
+        issued = ticket.json()
+        assert SECRET not in ticket.text and USER not in ticket.text  # claims encoded, never secret
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=file_app), base_url="https://files.example.test") as files:
+            uploaded = await files.post("/files?filename=notes.txt", headers=issued["headers"], content=b"COM2 document context")
+        assert uploaded.status_code == 201
+        ref = {"type": "file", "file_id": uploaded.json()["file_id"]}
+        response = await chat.post("/api/chat", json={"messages": [{"role":"user", "content":"문서를 요약해줘"}], "attachments": [ref]}, headers={"Origin":"https://chat.example.test"})
+        assert response.status_code == 200
+        attachment = response.json()["attachments"][0]
+        assert attachment["file_id"] == ref["file_id"] and attachment["sha256"] == hashlib.sha256(b"COM2 document context").hexdigest()
+        assert "COM2 document context" not in json.dumps(attachment)
+        # The same shared async resolver supplies Claw's untrusted context.
+        async def resolve(item):
+            return await lane.resolve(USER, item)
+        context, images = await parse_claw_turn_attachments_async([ref], file_resolver=resolve)
+        assert "COM2 document context" in context and "신뢰되지 않은" in context and not images
+        with pytest.raises(AttachmentValidationError):
+            await lane.resolve(OTHER, ref)
+        chat.cookies.clear()
+        assert (await chat.post("/api/files/ticket", json={"size_bytes":100})).status_code == 401
+        assert (await chat.post("/api/chat", json={"messages":[{"role":"user","content":"읽어줘"}],"attachments":[ref]})).status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_no_csrf_bypass_and_no_browser_selected_owner_or_origin(file_app):
+    settings = config()
+    app = create_app(settings, history_store=History(), file_lane_client=FileLaneClient("https://files.example.test", SECRET, transport=httpx.ASGITransport(app=file_app)))
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", cookies=cookies(settings)) as client:
+        assert (await client.post("/api/files/ticket", json={"size_bytes":1}, headers={"Origin":"https://foreign.example.test"})).status_code == 403
+        for extra in [{"user_id":OTHER}, {"origin":"https://foreign.example.test"}, {"max_bytes":999}]:
+            response = await client.post("/api/files/ticket", json={"size_bytes":1, **extra}, headers={"Origin":"https://chat.example.test"})
+            assert response.status_code == 422
+        ticket = (await client.post("/api/files/ticket", json={"size_bytes":1}, headers={"Origin":"https://chat.example.test"})).json()
+        headers = ticket["headers"]
+        raw = base64.urlsafe_b64decode(headers["X-Padiem-File-Ticket"] + "=" * (-len(headers["X-Padiem-File-Ticket"]) % 4))
+        claims = json.loads(raw)
+        assert claims["user_id"] == USER and claims["max_bytes"] == 1
+        assert hmac.compare_digest(headers["X-Padiem-File-Proof"], hmac.new(SECRET.encode(), headers["X-Padiem-File-Time"].encode()+b"."+raw, hashlib.sha256).hexdigest())
+
+
+@pytest.mark.asyncio
+async def test_unconfigured_lane_preserves_inline_attachments_and_no_external_call():
+    settings = config()
+    app = create_app(settings, history_store=History())
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", cookies=cookies(settings)) as client:
+        assert (await client.get("/api/files/capabilities")).json()["ready"] is False
+        assert (await client.post("/api/files/ticket", json={"size_bytes": 10_000_000}, headers={"Origin":"https://chat.example.test"})).status_code == 503
+    parsed = await _validate_payload_async({"messages":[{"role":"user","content":"읽어줘"}],"attachments":[{"type":"document","name":"notes.txt","media_type":"text/plain","text":"inline stays"}]})
+    assert parsed[3][0].text == "inline stays"
+
+
+@pytest.mark.parametrize("origin", ["http://files.example.test", "https://u:p@files.example.test", "https://files.example.test/path", "https://files.example.test?x=y"])
+def test_configured_origin_is_https_fixed_root_only(origin):
+    with pytest.raises(ConfigError):
+        config(file_lane_origin=origin)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("item", [{"type":"file","file_id":"../escape"}, {"type":"file","file_id":"file_"+"a"*32,"url":"https://foreign.example"}])
+async def test_reference_cannot_select_paths_or_origins(item):
+    with pytest.raises(AttachmentValidationError):
+        await FileLaneClient("https://files.example.test", SECRET).resolve(USER,item)
+
+
+def test_browser_file_lane_routing_and_raw_file_upload():
+    static = Path(__file__).resolve().parents[1] / "static"
+    source = (static / "file-lane.js").read_text()
+    script = 'global.window=globalThis;\n' + source + r'''
+const assert = require("node:assert/strict");
+(async()=>{
+  const api = PadiemFileLane;
+  assert.equal(api.shouldUse({name:"large.pdf",size:9_999_999}),false);
+  assert.equal(api.shouldUse({name:"large.pdf",size:10_000_000}),true);
+  for(const name of ["large.txt","large.md","large.csv"]) assert.equal(api.shouldUse({name,size:10_000_000}),true);
+  // Phase-1 automatic routing never changes unsupported/image inline paths.
+  assert.equal(api.shouldUse({name:"large.docx",size:10_000_000}),false);
+  assert.equal(api.shouldUse({name:"photo.png",size:10_000_000}),false);
+  window.PadiemAttachmentCapabilities={binarySupported:false,fileLaneSupported:true};
+  assert.equal(api.shouldUse({name:"small.pdf",size:100}),true);
+  window.PadiemAttachmentCapabilities.fileLaneSupported=false;
+  assert.equal(api.shouldUse({name:"small.pdf",size:100}),false);
+  let calls=[];
+  const file={name:"large.pdf",size:10_000_000};
+  global.fetch=async(url,options)=>{
+    calls.push({url,options});
+    if(url==="/api/files/capabilities") return {ok:true,json:async()=>({ready:false})};
+    if(url==="/api/files/ticket") return {ok:true,json:async()=>({ok:true,upload_url:"https://files.example.test/files",headers:{"X-Padiem-File-Proof":"fixture"}})};
+    return {ok:true,json:async()=>({ok:true,file_id:"file_"+"a".repeat(32),size_bytes:file.size})};
+  };
+  assert.equal(await api.available(),false);
+  const pending=api.pending(file);
+  assert.equal(pending.file,file);
+  const result=await api.upload(file,new AbortController().signal);
+  assert.equal(result.fileId,"file_"+"a".repeat(32));
+  assert.equal(calls[2].options.body,file); // no FileReader/arrayBuffer/base64
+  assert.equal(calls[2].options.credentials,"include");
+  assert.equal(calls[1].options.body,JSON.stringify({size_bytes:10_000_000}));
+  console.log("PASS");
+})().catch(e=>{console.error(e);process.exit(1)});
+'''
+    result = subprocess.run(["node", "-e", script], text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    app = (static / "app.js").read_text()
+    assert 'if (attachment.fileId) return [{ type: "file", file_id: attachment.fileId }];' in app
+    assert 'await window.PadiemFileLane.upload(attachment.file, controller.signal)' in app
+
+
+def test_worker_config_never_borrows_a_process_secret(monkeypatch):
+    from app.worker_config import settings_from_worker_bindings
+    monkeypatch.setenv("PADIEM_CHAT_FILE_LANE_TICKET_SECRET", SECRET)
+    bound = settings_from_worker_bindings({"PADIEM_CHAT_FILE_LANE_ORIGIN":"https://files.example.test"})
+    assert bound.file_lane_origin == "https://files.example.test" and bound.file_lane_ticket_secret is None
+    assert SECRET not in repr(config(file_lane_origin="https://files.example.test", file_lane_ticket_secret=SECRET))
+    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text()
+    assert 'self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"' in worker
+
+
+def test_picker_exposes_only_com2_pdf_when_old_binary_parser_is_missing():
+    static = Path(__file__).resolve().parents[1] / "static"
+    script = "global.window=globalThis;\n" + (static/"attachment-capabilities.js").read_text() + r"""
+const assert=require('node:assert/strict');
+const caps=PadiemAttachmentCapabilities;
+caps.setBinarySupport(false);
+assert(!caps.accept.includes('.pdf'));
+caps.setFileLaneSupport(true);
+assert(caps.accept.includes('.pdf'));
+assert(!caps.accept.includes('.docx'));
+assert(caps.copy('ko').documentFormats.includes('PDF'));
+caps.setFileLaneSupport(false);
+assert(!caps.accept.includes('.pdf'));
+"""
+    result=subprocess.run(["node","-e",script],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr

@@ -197,13 +197,13 @@ def _validate_payload(
 
 
 async def _validate_payload_async(
-    raw: Any,
+    raw: Any, *, file_resolver=None,
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None, CustomModelSelection | None]:
     """Worker request path: validate with the async isolated parser authority."""
 
     messages, skill, tool_request = _validate_payload_parts(raw)
     try:
-        attachments = await parse_attachments_async(raw.get("attachments"))
+        attachments = await parse_attachments_async(raw.get("attachments"), file_resolver=file_resolver)
     except AttachmentValidationError as exc:
         raise BrowserRequestError(str(exc)) from exc
     return _finish_payload(
