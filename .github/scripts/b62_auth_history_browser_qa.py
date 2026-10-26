@@ -205,7 +205,16 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
             headers={"Cache-Control": "no-store"},
         )
 
+    async def no_paired_pc(route: Route) -> None:
+        # #5573: the PC card reads /api/pc/pairings when an account opens the
+        # sidebar. Left unmocked, that request only ends when the card's own
+        # AbortController fires, and this harness counts the abort as a browser
+        # failure. The fixture answers the same shape the route returns for an
+        # account with no paired PC.
+        await _fulfill_json(route, {"links": []})
+
     await page.route("**/api/auth/status", auth_status)
+    await page.route("**/api/pc/pairings", no_paired_pc)
     await page.route("**/api/auth/logout", logout)
     await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)

@@ -236,6 +236,7 @@
   let autoDetectButton = null, autoRegisterButton = null, customAdvanced = null;
   let autoDetection = null, autoSequence = 0;
   let customSelection = null;
+  let customViaEngine = false;
   let customProviders = [];
   let customCredentials = [];
   let customLoadState = "idle";
@@ -1127,6 +1128,7 @@
   async function refreshCustomStatus() {
     const ticket = ++customRequestSeq;
     if (!auth.authenticated) {
+      customViaEngine = false;
       customProviders = [];
       customCredentials = [];
       customLoadState = "idle";
@@ -1172,6 +1174,7 @@
         syncModeCopy();
         return;
       }
+      customViaEngine = data.byok_engine_enabled === true;
       const providers = Array.isArray(data.providers) ? data.providers : [];
       const credentials = Array.isArray(data.credentials) ? data.credentials : [];
       customProviders = providers
@@ -2140,6 +2143,7 @@
     ready: tierSelectionReady,
   });
   window.PadiemCustomSelection = Object.freeze({
+    viaEngine: () => auth.authenticated && customViaEngine,
     get: () => (customSelection
       ? Object.freeze({ provider: customSelection.provider, model: customSelection.model })
       : null),

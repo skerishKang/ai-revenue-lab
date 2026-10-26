@@ -315,6 +315,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         return bytes(await request.aread())
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        from app.byok_passthrough import b14_body, safe_cause
         if request.method != "POST":
             raise httpx.RequestError(
                 "Business 14 Service Binding accepts POST only.", request=request
@@ -322,13 +323,14 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         try:
             self._validate_target(request.url)
             raw_body = await self._read_request_body(request)
+            raw_body = b14_body(raw_body)
             body_text = raw_body.decode("utf-8")
         except httpx.RequestError:
             raise
         except Exception as exc:
             raise httpx.RequestError(
                 "Business 14 request could not be encoded.", request=request
-            ) from exc
+            ) from safe_cause(exc)
 
         service_request = self._request_factory(
             str(request.url),
@@ -355,7 +357,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         except Exception as exc:
             raise httpx.ConnectError(
                 "Business 14 Service Binding is unavailable.", request=request
-            ) from exc
+            ) from safe_cause(exc)
 
         try:
             status_code = int(service_response.status)
@@ -365,7 +367,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             raise httpx.ProtocolError(
                 "Business 14 Service Binding returned malformed response metadata.",
                 request=request,
-            ) from exc
+            ) from safe_cause(exc)
 
         headers: dict[str, str] = {}
         if content_type is not None:

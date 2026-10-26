@@ -2204,3 +2204,66 @@ async def test_pc_turn_classification_keeps_heartbeat_opt_in(monkeypatch, pc_pro
     records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
     assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS if pc_progress else None]
     assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('stream', [False, True])
+async def test_byok_reference_passthrough_never_enters_core_or_public_record(stream, caplog):
+    from app.byok_passthrough import b14_body
+    ref = 'unit-opaque-user-credential-only'
+    seen = []
+    class Runtime(MockEngineRuntime):
+        async def run(self, request):
+            assert ref not in repr(request)
+            seen.append(json.loads(b14_body(b'{"model":"google/unit-model"}')))
+            return await super().run(request)
+    runtime = Runtime()
+    service = OrchestrationEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+    payload = make_valid_payload('padiem-chat')
+    payload.update(subject_id='usr_unit', user_credential_ref=ref, max_retries=0)
+    payload['agent']['model_policy'].update(user_credential_required=True)
+    if stream:
+        public = await _collect_orchestration_stream_lines(service, json.dumps(payload).encode())
+    else:
+        response = await service.orchestrate_payload(payload)
+        assert response.status_code == 200
+        public = response.body
+    assert [x.get('user_credential_ref') for x in seen] == [ref]
+    assert ref not in json.dumps(public) and ref not in caplog.text
+    assert runtime.call_count == 1
+    assert 'user_credential_ref' not in json.loads(b14_body(b'{}'))
+
+
+@pytest.mark.asyncio
+async def test_byok_missing_reference_is_refused_without_company_runtime_fallback():
+    runtime = MockEngineRuntime()
+    service = OrchestrationEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+    payload = make_valid_payload('padiem-chat')
+    payload['subject_id'] = 'usr_unit'
+    payload['agent']['model_policy']['user_credential_required'] = True
+    result = await service.orchestrate_payload(payload)
+    assert result.body['error']['code'] == 'byok_credential_required'
+    assert runtime.call_count == 0
+
+
+@pytest.mark.asyncio
+async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
+    from padiem_ai_core import B14ExecutionClient, B14ExecutionConfig, ExecutionRuntime
+    from test_cloudflare_transport import transport_for, FakeResponse, valid_b14_json, B14_INTERNAL_ORIGIN
+    ref = 'unit-opaque-request-credential'
+    transport, binding, factory = transport_for(response=FakeResponse(chunks=[valid_b14_json('user answer')]))
+    client = B14ExecutionClient(B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN), transport=transport)
+    service = OrchestrationEngineService(runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=client), b14_service_bound=True)
+    payload = make_valid_payload('padiem-chat')
+    payload.update(subject_id='usr_unit', user_credential_ref=ref, max_retries=0)
+    payload['agent']['model_policy'].update(user_credential_required=True,
+        byok_selection={'provider':'gemini','model':'unit-model'})
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 200
+    assert len(binding.calls) == 1
+    sent = json.loads(factory.calls[0].kwargs['body'])
+    assert sent['user_credential_ref'] == ref
+    assert sent['business14']['allow_external_fallback'] is False
+    assert sent['business14']['max_retries'] == 0
+    assert 'byok_selection' not in json.dumps(sent)
+    assert ref not in json.dumps(response.body)

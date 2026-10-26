@@ -13,6 +13,12 @@ Security boundary
 - redirects disabled; bounded per-phase timeouts; bounded response bytes;
 - missing required secret fails closed with zero upstream calls;
 - secret values are never logged, returned, or stored.
+
+The request-carried credential lane (#5824 PR-3a) lives here too, beside the
+transport guards it reuses. It accepts no platform credential and no
+caller-chosen host: the key comes from the request body, the address comes from
+``app.pilot.user_credential``'s fixed table, and the same byte/timeout/error
+contract applies to both.
 """
 
 from __future__ import annotations
@@ -62,6 +68,7 @@ from app.pilot.platform_secrets import (
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
+from app.pilot.user_credential import UserCredential
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
@@ -864,3 +871,289 @@ async def _iter_sse_bounded_slices(response: httpx.Response):
     async for block in response.aiter_bytes():
         for offset in range(0, len(block), 64 * 1024):
             yield block[offset:offset + 64 * 1024]
+
+
+def _user_credential_headers(credential: UserCredential) -> dict[str, str]:
+    """The one place a caller-supplied key becomes an outbound header.
+
+    The platform plane's own secret resolution is not consulted: this header
+    carries the key that arrived with this request and nothing else. It is built
+    per call, held for the call, and never stored on the spec, the request or an
+    exception.
+    """
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {credential.key}",
+    }
+
+
+def _user_credential_request_shape(
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None,
+    max_tokens: int | None,
+    *,
+    streaming: bool,
+) -> dict[str, Any]:
+    body: dict[str, Any] = {
+        "model": credential.upstream_model,
+        "messages": _openai_compatible_messages(messages, credential.provider_id),
+    }
+    if streaming:
+        body["stream"] = True
+    if temperature is not None:
+        body["temperature"] = float(temperature)
+    # Same rule as the platform adapter: no invented generation budget. None
+    # delegates to the provider/model default.
+    if max_tokens is not None:
+        body["max_tokens"] = int(max_tokens)
+    return body
+
+
+async def call_user_credential_chat_completions(
+    *,
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> dict[str, Any]:
+    """One completed call with the caller's own key: no pool, no roster, no retry.
+
+    This is the #5824 PR-3a request-carried credential lane. It deliberately
+    mirrors the platform adapter's transport contract (fixed origin, redirects
+    off, phase timeouts, bounded bytes, the same error mapping and answer
+    contract) while resolving no server-owned credential at all. A failure here
+    ends the request with the provider's own code; there is no second candidate
+    to try, because a substitution would either spend a platform key the caller
+    did not ask for or answer with a model the caller did not choose.
+    """
+    model_id = f"{credential.provider_id}/{credential.upstream_model}"
+
+    if _provider_mode() == "mock":
+        # Mock performs no provider call, so a caller key never leaves the
+        # process. The answer stays clearly labelled as simulated.
+        logger.info(
+            "user_credential_mock_call provider=%s model=%s (no real API call)",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(credential.upstream_model),
+        )
+        return _mock_response(model_id, credential.upstream_model, credential.provider_id)
+
+    client_kwargs: dict[str, Any] = {
+        "timeout": build_provider_http_timeout(model_id),
+    }
+    if transport is not None:
+        client_kwargs["transport"] = transport
+
+    start = time.monotonic()
+    try:
+        async with httpx.AsyncClient(**client_kwargs) as client:
+            async with client.stream(
+                "POST",
+                credential.chat_completions_url,
+                headers=_user_credential_headers(credential),
+                json=_user_credential_request_shape(
+                    credential, messages, temperature, max_tokens, streaming=False
+                ),
+                follow_redirects=False,
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    _raise_upstream_error(
+                        response.status_code, credential.provider_id,
+                        error_bytes.decode("utf-8", "replace"), model_id=model_id,
+                    )
+                body_bytes = await _read_bounded_body(
+                    response, cap=MAX_COMPLETED_RESPONSE_BYTES
+                )
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, credential.provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
+    except httpx.RequestError as exc:
+        logger.error(
+            "user_credential_request_error provider=%s error=%s",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(str(exc)),
+        )
+        raise UpstreamServerError() from exc
+
+    try:
+        response_data = json.loads(body_bytes)
+    except (json.JSONDecodeError, ValueError):
+        raise malformed(
+            "json_decode", provider=credential.provider_id, model=model_id,
+            path="completed",
+        ) from None
+    if not isinstance(response_data, dict):
+        raise malformed(
+            "payload_not_object", response_data, provider=credential.provider_id,
+            model=model_id, path="completed",
+        )
+    if "choices" not in response_data:
+        raise malformed(
+            "choices_missing", response_data, provider=credential.provider_id,
+            model=model_id, path="completed",
+        )
+
+    try:
+        require_completed_text_answer(response_data)
+        _usage_from_payload(
+            response_data.get("usage"), provider=credential.provider_id,
+            model=model_id, path="completed", payload=response_data,
+        )
+    except MalformedUpstreamResponse as exc:
+        if not exc.reason.startswith("usage_"):
+            raise malformed(
+                exc.reason, response_data, provider=credential.provider_id,
+                model=model_id, path="completed",
+            ) from None
+        raise
+
+    if credential.provider_id == "google":
+        _canonicalize_google_compat_signatures(response_data, model_id=model_id)
+
+    usage = response_data.get("usage")
+    prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
+    completion_tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
+    total_tokens = usage.get("total_tokens") if isinstance(usage, dict) else None
+    actual = response_data.get("model")
+    actual_response_model = actual if isinstance(actual, str) and actual else None
+
+    return {
+        "id": response_data.get("id", f"b14byok_{uuid.uuid4().hex[:12]}"),
+        "object": "chat.completion",
+        "model": actual_response_model or credential.upstream_model,
+        "choices": response_data["choices"],
+        "usage": (
+            {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
+            }
+            if usage
+            else None
+        ),
+        "_live": True,
+        "_upstream_latency_ms": int((time.monotonic() - start) * 1000),
+        "_requested_upstream_model": credential.upstream_model,
+        "_actual_response_model": actual_response_model,
+        "_response_bytes": len(body_bytes),
+    }
+
+
+async def stream_user_credential_chat_completions(
+    *,
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> Any:
+    """Streaming twin of :func:`call_user_credential_chat_completions`.
+
+    Same single-attempt contract: after a visible token a failure is terminal,
+    and no candidate list exists to advance to.
+    """
+    model_id = f"{credential.provider_id}/{credential.upstream_model}"
+
+    if _provider_mode() == "mock":
+        for event in (
+            StreamEvent(
+                response_id="b14byok_mock_stream",
+                model=credential.upstream_model,
+                delta_content="이것은 Mock 스트리밍 응답입니다. 실제 Provider 호출 없음.",
+            ),
+            StreamEvent(
+                response_id="b14byok_mock_stream",
+                model=credential.upstream_model,
+                finish_reason="stop",
+                usage=StreamUsage(0, 0, 0),
+            ),
+            StreamEvent(done=True, finish_reason="stop"),
+        ):
+            yield event
+        return
+
+    client_kwargs: dict[str, Any] = {
+        "timeout": build_provider_http_timeout(model_id),
+    }
+    if transport is not None:
+        client_kwargs["transport"] = transport
+
+    saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
+    buffer = b""
+    try:
+        async with httpx.AsyncClient(**client_kwargs) as client:
+            async with client.stream(
+                "POST",
+                credential.chat_completions_url,
+                headers=_user_credential_headers(credential),
+                json=_user_credential_request_shape(
+                    credential, messages, temperature, max_tokens, streaming=True
+                ),
+                follow_redirects=False,
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    _raise_upstream_error(
+                        response.status_code, credential.provider_id,
+                        error_bytes.decode("utf-8", "replace"), model_id=model_id,
+                    )
+                async for chunk in _iter_sse_bounded_slices(response):
+                    buffer += chunk
+                    frames, buffer = _pop_sse_frames(buffer)
+                    if len(buffer) > MAX_RESPONSE_BYTES:
+                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                    for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                        event = _parse_sse_frame(
+                            frame, provider=credential.provider_id, model_id=model_id,
+                        )
+                        if event is None:
+                            continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
+                        yield event
+                        if event.done:
+                            return
+
+                if buffer.strip():
+                    event = _parse_sse_frame(
+                        buffer, provider=credential.provider_id, model_id=model_id,
+                    )
+                    if event is not None:
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
+                        yield event
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, credential.provider_id, exc, "stream")
+        raise UpstreamTimeout() from exc
+    except httpx.RequestError as exc:
+        logger.error(
+            "user_credential_stream_error provider=%s error=%s",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(str(exc)),
+        )
+        raise UpstreamServerError() from exc
+
+    if not saw_done:
+        raise malformed(
+            "missing_done", provider=credential.provider_id, model=model_id,
+            path="stream",
+        )

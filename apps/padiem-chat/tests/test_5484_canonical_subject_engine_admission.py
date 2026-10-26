@@ -493,3 +493,24 @@ async def test_supplied_resolver_selects_canonical_stream_and_early_close_clears
         await stream.aclose()
     assert closed == [True]
     assert bridge._current_engine_subject.get() is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('pc_tools', [None, _PC_TOOLS])
+async def test_byok_production_selected_canonical_bridge_forwards_private_ref(monkeypatch, pc_tools):
+    bridge, transport, resolver = _selected_stream_bridge(monkeypatch, with_resolver=True)
+    ref = 'unit-opaque-reference-never-public'
+    stream = bridge.start_stream(
+        user_id=PRODUCT_USER, messages=[{'role':'user','content':'hello'}],
+        skill=get_task_mode('auto'), model_id='google/unit-model', user_text='hello',
+        conversation_id=None, subject_id=CANONICAL_SUBJECT if pc_tools else None,
+        session_id='session_user_key', pc_tools=pc_tools,
+        user_credential_ref=ref, byok_selection={'provider':'gemini','model':'unit-model'})
+    records = [record async for record in stream]
+    wire = json.loads(transport.calls[0]['body'])
+    assert wire['subject_id'] == CANONICAL_SUBJECT
+    assert wire['user_credential_ref'] == ref
+    assert wire['max_retries'] == 0
+    assert ref not in str(records[-1]['result'].orchestration)
+    assert resolver.calls == [PRODUCT_USER]
+    assert bridge._current_engine_subject.get() is None

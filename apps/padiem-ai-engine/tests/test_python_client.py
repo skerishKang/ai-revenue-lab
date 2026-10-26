@@ -305,3 +305,17 @@ async def test_invalid_declared_pc_plan_fails_before_transport(invalid):
         })
     assert error.value.code == "invalid_engine_request"
     assert transport.calls == []
+
+
+@pytest.mark.asyncio
+async def test_chat_only_opaque_byok_reference_is_forwarded_on_orchestration():
+    transport = FakeTransport(EngineTransportResponse(status=200, body=b'{"ok":true,"orchestration":{}}'))
+    client = PadiemAiEngineClient(transport=transport, app_id='padiem-chat',
+        caller_id='padiem-chat-b62', credential=CREDENTIAL)
+    ref = 'unit-opaque-reference-not-json'
+    await client.orchestrate({'agent':AGENT,'messages':MESSAGES,'subject_id':'usr_unit','user_credential_ref':ref})
+    assert json.loads(transport.calls[0]['body'])['user_credential_ref'] == ref
+    assert all(ref not in value for value in transport.calls[0]['headers'].values())
+    with pytest.raises(PadiemAiEngineClientError):
+        await _client(transport).orchestrate({'agent':AGENT,'messages':MESSAGES,'user_credential_ref':ref})
+    assert len(transport.calls) == 1

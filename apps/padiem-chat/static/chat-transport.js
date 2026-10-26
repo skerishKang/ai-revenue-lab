@@ -274,8 +274,11 @@
     });
   }
 
-  async function tryOrchestration(payload, signal) {
-    if (!await orchestrationReady(signal)) return null;
+  async function tryOrchestration(payload, signal, required = false) {
+    if (!await orchestrationReady(signal)) {
+      if (required) throw errorFor({error: {code: "orchestration_unavailable", message: "AI 작업 연결을 현재 사용할 수 없습니다."}});
+      return null;
+    }
     let data;
     try {
       data = await postOrchestration("/api/orchestration", payload, signal);
@@ -353,9 +356,10 @@
 
   async function requestStreaming(payload, signal) {
     const wire = withDeviceSelection(payload);
-    // PADIEM Custom is a direct provider lane. It must never be routed
-    // through B14 orchestration, which stays on the PADIEM-provided path.
-    const orchestrated = payload && payload.custom ? null : await tryOrchestration(payload, signal);
+    // The server-owned opt-in defaults off; the legacy custom path stays exact.
+    const byokViaB14 = payload && payload.custom && window.PadiemCustomSelection?.viaEngine?.() === true;
+    const orchestrated = payload && payload.custom && !byokViaB14
+      ? null : await tryOrchestration(byokViaB14 ? wire : payload, signal, byokViaB14);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {

@@ -115,9 +115,9 @@ def test_a_second_start_applies_nothing_and_records_the_same_migrations(host_dir
     """
     path, _ = host_dirs
     first = SqliteLedger(path)
-    assert first.apply_migrations() == 1
+    assert first.apply_migrations() == 2
     recorded = first.recorded_migrations()
-    assert [name[:4] for name in recorded] == ["0001"]
+    assert [name[:4] for name in recorded] == ["0001", "0002"]
     first.close()
 
     restarted = SqliteLedger(path)
@@ -134,21 +134,28 @@ def test_a_second_start_applies_nothing_and_records_the_same_migrations(host_dir
 
 
 def test_a_later_migration_runs_once_and_in_order_after_the_first(host_dirs, tmp_path) -> None:
-    """0002 arrives later; the next start applies only it, and never twice."""
+    """A migration added after the committed pair runs once, in name order.
+
+    The committed 0002 is the case this ordering protects: an ``ALTER TABLE``
+    that a second boot would re-run is exactly the non-replayable file the
+    recorded-name list exists to skip.
+    """
     import shutil
 
     path, _ = host_dirs
     source = tmp_path / "migrations"
     shutil.copytree(APP_ROOT / "migrations", source)
     ledger = SqliteLedger(path, migrations_dir=source)
-    assert ledger.apply_migrations() == 1
+    assert ledger.apply_migrations() == 2
 
-    (source / "0002_b14_local_marker.sql").write_text(
+    (source / "0003_b14_local_marker.sql").write_text(
         "CREATE TABLE b14_local_marker (id INTEGER PRIMARY KEY CHECK (id = 1));",
         encoding="utf-8",
     )
     assert ledger.apply_migrations() == 1
-    assert [name[:4] for name in ledger.recorded_migrations()] == ["0001", "0002"]
+    assert [name[:4] for name in ledger.recorded_migrations()] == [
+        "0001", "0002", "0003",
+    ]
     # A third start sees both names recorded and runs neither script again.
     assert ledger.apply_migrations() == 0
     import sqlite3
@@ -178,6 +185,52 @@ def test_migration_constraints_are_the_same_constraints(host_dirs) -> None:
             " 'measured','missing','unknown')"
         )
     connection.close()
+
+
+def test_the_credential_source_column_names_two_states_and_defaults_to_pool(host_dirs) -> None:
+    """#5824 PR-3a: 0002 adds the pool/user label without touching old rows.
+
+    The column is a category, so the only thing proven here is the vocabulary:
+    a row that omits it is platform consumption, a row that names anything else
+    is refused, and the ALTER never rewrites what 0001 already stored.
+    """
+    path, _ = host_dirs
+    ledger = SqliteLedger(path)
+    assert ledger.apply_migrations() == 2
+    import sqlite3
+
+    connection = sqlite3.connect(str(path))
+    try:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(b14_model_call)")}
+        assert "credential_source" in columns
+        minimum = (
+            "INSERT INTO b14_model_call (log_id, request_id, product, origin_source,"
+            " protocol, outcome, latency_source, token_source, cost_basis)"
+            " VALUES ('log_a12345678','r1','chat','b14_observed','chat/completions',"
+            " 'success','unknown','missing','unknown')"
+        )
+        connection.execute(minimum)
+        assert connection.execute(
+            "SELECT credential_source FROM b14_model_call WHERE log_id = 'log_a12345678'"
+        ).fetchone()[0] == "pool"
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                "INSERT INTO b14_model_call (log_id, request_id, product, origin_source,"
+                " protocol, outcome, latency_source, token_source, cost_basis,"
+                " credential_source)"
+                " VALUES ('log_b12345678','r2','chat','b14_observed',"
+                " 'chat/completions','success','unknown','missing','unknown',"
+                " 'service_account')"
+            )
+        connection.execute(
+            "INSERT INTO b14_model_call (log_id, request_id, product, origin_source,"
+            " protocol, outcome, latency_source, token_source, cost_basis,"
+            " credential_source)"
+            " VALUES ('log_c12345678','r3','chat','b14_observed',"
+            " 'chat/completions','success','unknown','missing','unknown','user')"
+        )
+    finally:
+        connection.close()
 
 
 @pytest.mark.asyncio

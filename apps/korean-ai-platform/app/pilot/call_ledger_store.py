@@ -40,14 +40,14 @@ DEFAULT_PAGE_LIMIT = 50
 AGGREGATE_DIMENSIONS = frozenset({
     "selected_model_id", "selected_provider", "actual_response_model",
     "product", "membership_tier", "outcome", "error_code", "cost_basis",
-    "token_source", "protocol",
+    "token_source", "protocol", "credential_source",
 })
 
 FILTERABLE_COLUMNS = frozenset({
     "request_id", "log_id", "product", "subject_ref", "tenant_ref",
     "membership_tier", "selected_model_id", "selected_provider",
     "actual_response_model", "outcome", "error_code", "fallback_used",
-    "token_source", "cost_basis", "protocol", "streaming",
+    "token_source", "cost_basis", "protocol", "streaming", "credential_source",
 })
 
 _CALL_COLUMNS = (
@@ -60,6 +60,7 @@ _CALL_COLUMNS = (
     "attempt_count", "fallback_used", "fallback_depth",
     "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
     "token_source", "estimated_usd", "estimated_krw", "cost_basis", "currency",
+    "credential_source",
 )
 
 _ATTEMPT_COLUMNS = (

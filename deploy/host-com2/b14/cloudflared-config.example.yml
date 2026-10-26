@@ -1,0 +1,35 @@
+# COM2 cloudflared ingress — B14 and the file lane in ONE config file (template).
+#
+# Target on the host: /opt/padiem/cloudflared/config.yml
+#
+# This is a reviewed EXAMPLE for the operator, not an installed artifact, and it
+# deliberately does not come from scripts/ops/com2_tunnel.py: that renderer owns
+# the Windows-side supervisor ingress file, rebuilds the whole file from its
+# --map list, and refuses to publish an internal service (`b14`), a contract two
+# committed tests pin. Extending PUBLIC_SERVICES to force b14 public would change
+# that security contract for a decision the Owner has not made, so the B14 entry
+# below is added to the operator's existing config instead — beside the file
+# lane host #5892 already prepared, in the same file.
+#
+# Install rule for the operator: if a config already exists, ADD the missing
+# hostname entry and re-run `cloudflared tunnel --config <file> ingress validate`
+# offline. Never overwrite a config you did not generate, and stop on a hostname
+# conflict rather than reassigning it.
+
+ingress:
+  # File lane (already proposed in docs/operations/COM2_TUNNEL_RUNBOOK.md, #5881/#5892).
+  - hostname: files.padiem.net
+    service: http://127.0.0.1:8788
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: false
+  # B14 without Workers (#5784). Loopback origin only; the service is reached on
+  # 127.0.0.1:8789 by padiem-b14.service and authenticates its callers with the
+  # same body-bound proof header it verifies on the Worker.
+  - hostname: b14.padiem.net
+    service: http://127.0.0.1:8789
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: false
+  # The catch-all stays last: an unknown hostname is refused, not proxied.
+  - service: http_status:404
