@@ -23,6 +23,8 @@ from starlette.routing import Route, Router
 
 from app.pilot.call_ledger import (
     LedgerDraft,
+    CREDENTIAL_POOL,
+    CREDENTIAL_USER,
     OUTCOME_ABORTED,
     OUTCOME_ERROR,
     OUTCOME_SUCCESS,
@@ -38,6 +40,7 @@ from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotError,
     StreamNotSupported,
+    ToolsNotSupported,
     UnsupportedModel,
 )
 from app.pilot.gateway import (
@@ -51,6 +54,7 @@ from app.pilot.stream_types import (
     StreamUsage,
 )
 from app.pilot.platform import stream_platform_chat_completions
+from app.pilot.user_credential import has_credential
 from app.pilot import router_core as rcore
 from app.pilot.stream_error_contract import public_stream_error
 
@@ -196,6 +200,10 @@ def _route_metadata(
         "fallback_used": fallback_used,
         "attempt_count": attempt_count,
         "provider_mode": runtime_config.provider_mode,
+        # Only the request-carried lane names where its credential came from
+        # (#5824 PR-3a). A platform route keeps the exact metadata it had before.
+        **({"credential_source": "user"}
+           if decision.credential_source == "request_byok" else {}),
         "route_evidence_status": (
             "mock_no_upstream_call"
             if runtime_config.is_mock
@@ -435,6 +443,11 @@ async def _finalize_stream_ledger(
         selected_route_id=candidate.get("route_id"),
         actual_response_model=response_model, route_mode=decision.route_mode,
         fallback_used=fallback_used,
+        # The route decision's credential plane is the only signal this lane
+        # carries: a request-supplied key belongs to the caller, and everything
+        # the platform resolved — keyless route included — is pool consumption.
+        credential_source=CREDENTIAL_USER
+        if decision.credential_source == "request_byok" else CREDENTIAL_POOL,
     )
     _enqueue_ledger(record)
 
@@ -542,6 +555,164 @@ async def _stream_body(
                 skipped(request_id, ledger_exc)
 
 
+def _user_credential_decision(
+    request_id: str, body: dict[str, Any], credential: Any
+) -> rcore.RouteDecision:
+    """The route record for one request-carried credential (#5824 PR-3a).
+
+    No roster exists here: the caller named the provider, the model and the key,
+    so the decision says exactly that and allows nothing to fall back to.
+    ``platform_provider_id`` carries the credential's own provider id so the
+    ledger's protocol projection names this wire the way it names any other
+    OpenAI-compatible call; it implies no platform Provider spec and reads no
+    platform binding.
+    """
+    return rcore.RouteDecision(
+        route_mode="manual",
+        selected_provider=credential.provider_id,
+        selected_model=body["model"],
+        selected_upstream_model=credential.upstream_model,
+        selected_route_id="user_credential",
+        reason_codes=["user_credential"],
+        fallback_allowed=False,
+        eligible_fallback=[],
+        excluded_candidates=[],
+        credential_available=True,
+        credential_status="request_supplied",
+        evidence_status="caller_supplied_credential",
+        request_id=request_id,
+        provider_mode=runtime_config.provider_mode,
+        credential_source="request_byok",
+        platform_provider_id=credential.provider_id,
+    )
+
+
+async def _user_credential_stream_preview(
+    request: Request, request_id: str, raw: Any, handler_started: float
+) -> StreamingResponse:
+    """Stream one answer from the caller's own key: no pool read, no fallback.
+
+    A failure before the first visible token is the answer; there is no next
+    candidate to advance to, because a substitution would either spend a key the
+    caller did not offer or answer with a model the caller did not choose.
+    """
+    from app.pilot.platform import stream_user_credential_chat_completions
+
+    # The canonical validator refuses stream=true by design, so preview runs it
+    # on an otherwise identical copy. That keeps one request contract for both
+    # lanes instead of a second, weaker BYOK schema.
+    canonical_raw = dict(raw)
+    canonical_raw["stream"] = False
+    body = _validate_body(canonical_raw)
+    credential = body["user_credential"]
+    if body.get("tools"):
+        raise ToolsNotSupported(body["model"])
+
+    transport = getattr(request.app.state, "stream_transport", None)
+    if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
+        raise InvalidRequest("Invalid streaming transport configuration.")
+
+    decision = _user_credential_decision(request_id, body, credential)
+    candidate = {
+        "model_id": body["model"],
+        "upstream_model": credential.upstream_model,
+        "provider": credential.provider_id,
+        "route_id": "user_credential",
+        "platform_provider_id": credential.provider_id,
+    }
+    protocol = _protocol_for(credential.provider_id, credential.upstream_model)
+
+    ledger: LedgerDraft | None = None
+    try:
+        ledger = LedgerDraft(
+            log_id=new_log_id(), request_id=request_id, endpoint=request.url.path,
+            protocol=protocol, streaming=True, requested_model_id=body["model"],
+            started_at=utc_now_iso(), origin=origin_from_headers(request.headers),
+        )
+    except Exception as ledger_exc:
+        skipped(request_id, ledger_exc)
+
+    def _record_failure(error_code: str, *, dispatched: bool) -> None:
+        """Close the row for an attempt that produced nothing the caller saw."""
+        if ledger is None:
+            return
+        elapsed = int((time.perf_counter() - handler_started) * 1000)
+        try:
+            ledger.record_attempt(
+                provider=credential.provider_id, model_id=body["model"],
+                upstream_model=credential.upstream_model,
+                route_id=candidate["route_id"], outcome=OUTCOME_ERROR,
+                error_code=error_code, dispatched=dispatched,
+                elapsed_ms=int((time.perf_counter() - attempt_started) * 1000),
+                protocol=protocol,
+            )
+            if dispatched:
+                _enqueue_ledger(ledger.finish(
+                    outcome=OUTCOME_ERROR, error_code=error_code, elapsed_ms=elapsed,
+                    selected_model_id=candidate["model_id"],
+                    selected_provider=candidate["provider"],
+                    selected_upstream_model=candidate["upstream_model"],
+                    selected_route_id=candidate["route_id"],
+                    route_mode=decision.route_mode, fallback_used=False,
+                    credential_source=CREDENTIAL_USER,
+                ))
+        except Exception as ledger_exc:
+            skipped(request_id, ledger_exc)
+
+    iterator: AsyncIterator[StreamEvent] = stream_user_credential_chat_completions(
+        credential=credential,
+        messages=body["messages"],
+        temperature=body.get("temperature"),
+        max_tokens=body.get("max_tokens"),
+        **({"transport": transport} if transport is not None else {}),
+    )
+    initial_events: list[StreamEvent] = []
+    attempt_started = time.perf_counter()
+    dispatched = False
+    try:
+        while True:
+            dispatched = True
+            try:
+                event = await anext(iterator)
+            except StopAsyncIteration as exc:
+                raise MalformedUpstreamResponse() from exc
+            initial_events.append(event)
+            if event.done or event.tool_call is not None or (
+                isinstance(event.delta_content, str)
+                and bool(event.delta_content.strip())
+            ):
+                break
+    except PilotError as exc:
+        _record_failure(exc.code, dispatched=dispatched)
+        await _close_iterator(iterator)
+        raise
+    except Exception:
+        _record_failure("internal_error", dispatched=dispatched)
+        await _close_iterator(iterator)
+        raise
+
+    return StreamingResponse(
+        _stream_body(
+            iterator,
+            initial_events,
+            request_id=request_id,
+            decision=decision,
+            attempt_count=1,
+            fallback_used=False,
+            ledger=ledger,
+            candidate=candidate,
+            attempt_started=attempt_started,
+            tools_declared=False,
+        ),
+        status_code=200,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
     """Stream a manual platform route with finite owner-tier pre-token fallback.
 
@@ -557,10 +728,25 @@ async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = No
     try:
         # The preview lane spends platform-owned Provider credentials. Refuse an
         # unproven caller before any credential is resolved or any Provider
-        # request is built.
+        # request is built. The request-carried credential lane is refused by the
+        # same gate: who is calling is a separate question from whose key the
+        # call spends (#5224 contract, extended by #5824 PR-3a).
         denial = await _platform_caller_denial(request, request_id)
         if denial is not None:
             return denial
+
+        # #5824 PR-3a: a body-carried credential selects its own single-attempt
+        # lane below the caller gate.
+        probe = parsed_body
+        if probe is None:
+            try:
+                probe = await request.json()
+            except (ValueError, UnicodeDecodeError):
+                probe = None
+        if has_credential(probe):
+            return await _user_credential_stream_preview(
+                request, request_id, probe, handler_started
+            )
 
         if parsed_body is not None:
             raw = parsed_body

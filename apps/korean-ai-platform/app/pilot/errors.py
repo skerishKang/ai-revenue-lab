@@ -204,6 +204,57 @@ class InvalidRequest(PilotError):
         )
 
 
+class InvalidUserCredential(PilotError):
+    """#5824 PR-3a: the request-carried credential is not a usable document.
+
+    The message names no field value. A malformed credential can contain a real
+    provider key, and an error body is not a place to repeat it.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_invalid",
+            message=(
+                "user_credential은 provider·endpoint·model·key를 담은 JSON "
+                "객체 또는 같은 형태의 JSON 문자열이어야 합니다."
+            ),
+            status_code=422,
+        )
+
+
+class UnsupportedUserCredentialWire(PilotError):
+    """The key is for a wire B14 does not speak, so this route cannot serve it.
+
+    Chat keeps its own direct path for these providers; the refusal is a route
+    statement, never a verdict on the customer's key.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_unsupported_via_b14",
+            message="이 공급자 wire은 B14 경유로 지원하지 않습니다. 기존 직행 경로를 사용하십시오.",
+            status_code=400,
+        )
+
+
+class UnsupportedUserCredentialEndpoint(PilotError):
+    """The presented endpoint is not the provider's fixed official origin.
+
+    B14 dials only its own approved address per provider, so an arbitrary
+    endpoint is refused instead of being contacted with the caller's key.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="user_credential_endpoint_unsupported",
+            message=(
+                "등록된 공식 엔드포인트가 아니므로 B14가 해당 주소로 요청을 보내지 않습니다. "
+                "키를 다시 등록하십시오."
+            ),
+            status_code=400,
+        )
+
+
 class RegistryInvalid(PilotError):
     def __init__(self, detail: str = "Provider registry 설정이 올바르지 않습니다.") -> None:
         super().__init__(
