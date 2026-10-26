@@ -254,7 +254,7 @@ contact-verification·COM2 backup·Engine ingress·source canary·B64에는 전�
 | `b64-ai-reward-router` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-b66-pdf-renderer` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-com2-backup` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
-| `ai-revenue-korean-ai-platform` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. 진행: #5897(Workers 없이 실행)·#5900(상류 스위치)·아래 PR-3(컴2 배포 묶음) — 코드·문서 등록까지이며 설치·기동·배포는 미수행. |
+| `ai-revenue-korean-ai-platform` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. 진행: #5897(Workers 없이 실행)·#5900(상류 스위치)·#5901(컴2 배포 묶음) — 코드·문서 등록까지이며 설치·기동·배포는 미수행. |
 | `living-fiction-cloudflare-m0` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `living-fiction-cloudflare-container-m0` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-ai-engine-ingress` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
