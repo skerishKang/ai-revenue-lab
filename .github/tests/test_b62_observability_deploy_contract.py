@@ -101,4 +101,5 @@ def test_observability_gate_tests_and_all_deploy_attempts_use_the_generated_conf
     assert "--config wrangler.production.generated.toml" in package
     deploy = workflow.split("\n      - name: Deploy production code preserving the full binding set", 1)[1].split("\n      - name: Read back exact post-deploy binding and variable state", 1)[0]
     assert 'generated="wrangler.production.generated.toml"' in deploy
-    assert deploy.count('--config "${generated}"') == deploy.count("pywrangler deploy") == 3
+    assert deploy.count("pywrangler deploy") == 3
+    assert deploy.count('--config "${generated}"') == 6  # Three upload commands and three private-output filters.

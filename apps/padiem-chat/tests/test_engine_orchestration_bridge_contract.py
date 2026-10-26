@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -302,7 +303,8 @@ def test_worker_and_schema_keep_activation_fail_closed() -> None:
 
     assert "padiem-ai-engine-client @ file://" in pyproject
     assert 'main = "worker.py"' in wrangler
-    assert "ENGINE_SERVICE" not in wrangler
+    config = tomllib.loads(wrangler)
+    assert {item["binding"]: item["service"] for item in config["services"]}["P01_ENGINE_SERVICE"] == "padiem-ai-engine"
     assert "PADIEM_CHAT_ORCHESTRATION_ENABLED" not in wrangler
     assert "PADIEM_CHAT_ENGINE_CALLER_SECRET" not in wrangler
     assert "build_orchestration_bridge" in worker
