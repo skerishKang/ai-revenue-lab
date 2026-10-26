@@ -192,8 +192,11 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-snapshot.sql
+          # --command is the D1 query API: one result block per statement. --file
+          # would take wrangler's bulk import, which answers with counters and no
+          # rows and leaves the database unavailable while it runs.
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-snapshot.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-snapshot.sql)" > /tmp/b62-d1-gate-snapshot.json
           echo 'B62_D1_SNAPSHOT_READ=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -213,7 +216,7 @@ jobs:
           if [ "${LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql --out /tmp/b62-d1-gate-ledger.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           fi
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
@@ -223,7 +226,7 @@ jobs:
             --out /tmp/b62-d1-gate-detail.sql
           if [ -s /tmp/b62-d1-gate-detail.sql ]; then
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-detail.sql > /tmp/b62-d1-gate-detail.json
+              --command="$(cat /tmp/b62-d1-gate-detail.sql)" > /tmp/b62-d1-gate-detail.json
             DETAIL_ARGS=(--detail /tmp/b62-d1-gate-detail.json)
           else
             DETAIL_ARGS=()
@@ -341,7 +344,7 @@ jobs:
             --out /tmp/b62-d1-gate-inventory.json
           python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-before.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-before.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-before.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-before.json \
@@ -349,7 +352,7 @@ jobs:
             --out /tmp/b62-d1-gate-before-detail.sql
           if [ -s /tmp/b62-d1-gate-before-detail.sql ]; then
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before-detail.sql > /tmp/b62-d1-gate-before-detail.json
+              --command="$(cat /tmp/b62-d1-gate-before-detail.sql)" > /tmp/b62-d1-gate-before-detail.json
           else
             printf '[]\n' > /tmp/b62-d1-gate-before-detail.json
           fi
@@ -392,7 +395,7 @@ jobs:
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --command \
               "CREATE TABLE IF NOT EXISTS \"d1_migrations\"(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);"
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-ledger-check.json
+              --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-ledger-check.json
             test "$(python .github/scripts/b62_d1_migrate_gate.py probe \
               --snapshot /tmp/b62-d1-gate-ledger-check.json)" = "yes"
             echo 'B62_D1_LEDGER_TABLE=CREATED'
@@ -408,14 +411,14 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-snapshot.json
           DROP_ARGS=()
           if [ "${ALLOW_TABLE_DROP}" = "true" ]; then DROP_ARGS=(--allow-table-drop); fi
           if [ "${READONLY_LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql \
               --out /tmp/b62-d1-gate-ledger-query.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger-query.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger-query.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           else
             LEDGER_ARGS=()
@@ -433,7 +436,7 @@ jobs:
               --inventory /tmp/b62-d1-gate-inventory.json \
               --out /tmp/b62-d1-gate-seed.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote \
-              --file=/tmp/b62-d1-gate-seed.sql
+              --command="$(cat /tmp/b62-d1-gate-seed.sql)"
             echo "B62_D1_BASELINE_RECORDED=${SEED_COUNT}"
             echo 'PRODUCTION_MUTATION=1'
           else
@@ -472,7 +475,7 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-after.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-after.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-after.json \
@@ -481,15 +484,21 @@ jobs:
             --out /tmp/b62-d1-gate-after-detail.sql
           if [ -s /tmp/b62-d1-gate-after-detail.sql ]; then
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-after-detail.sql > /tmp/b62-d1-gate-after-detail.json
+              --command="$(cat /tmp/b62-d1-gate-after-detail.sql)" > /tmp/b62-d1-gate-after-detail.json
           else
             printf '[]\n' > /tmp/b62-d1-gate-after-detail.json
           fi
+          python .github/scripts/b62_d1_migrate_gate.py ledger-sql \
+            --out /tmp/b62-d1-gate-final-ledger.sql
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --command="$(cat /tmp/b62-d1-gate-final-ledger.sql)" \
+            > /tmp/b62-d1-gate-final-ledger.json
           python .github/scripts/b62_d1_migrate_gate.py report \
             --before /tmp/b62-d1-gate-before.json \
             --after /tmp/b62-d1-gate-after.json \
             --detail-before /tmp/b62-d1-gate-before-detail.json \
             --detail-after /tmp/b62-d1-gate-after-detail.json \
+            --ledger /tmp/b62-d1-gate-final-ledger.json \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --plan /tmp/b62-d1-gate-plan.json \
             --up-to "${READONLY_UP_TO}"

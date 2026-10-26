@@ -36,7 +36,10 @@ Safety
   `--allow-table-drop` is passed (SQL comments are stripped first, so a comment
   that names DROP TABLE is not a trigger);
 * a name recorded in the ledger whose representative object is missing from the
-  live schema is drift: hard stop, nothing is applied.
+  live schema is drift: hard stop, nothing is applied;
+* every D1 statement — reads included — goes to the query API with `--command`.
+  `--file` is wrangler's bulk-import path: it returns no rows and takes the
+  database offline while it runs, so the gate never passes it.
 """
 
 from __future__ import annotations
@@ -283,8 +286,18 @@ def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
 
     Accepted shapes: the list-of-blocks wrangler prints, a single block, or the
     Cloudflare `/query` result the older gates used.
+
+    Only `--command` produces those shapes: it POSTs the SQL to the D1 query API,
+    which splits on `;` server-side and answers with one `QueryResult` per
+    statement. `--file` is a different operation — wrangler uploads the file and
+    takes the bulk-import path, whose response is one block of counters plus a
+    `finalBookmark` and no rows. A read built that way cannot prove a schema, and
+    a write built that way makes the database unavailable while it runs, so the
+    import shape is refused by name rather than reported as a block count.
     """
 
+    if isinstance(payload, dict) and "finalBookmark" in payload:
+        raise GateError(f"B62_D1_GATE_{expect}_IS_IMPORT_NOT_QUERY")
     if isinstance(payload, dict) and isinstance(payload.get("result"), list):
         payload = payload["result"]
     if isinstance(payload, dict) and isinstance(payload.get("results"), list):
@@ -296,6 +309,8 @@ def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
     for item in payload:
         if not isinstance(item, dict) or not isinstance(item.get("results"), list):
             raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
+        if "finalBookmark" in item:
+            raise GateError(f"B62_D1_GATE_{expect}_IS_IMPORT_NOT_QUERY")
         blocks.append(
             [{str(key).lower(): value for key, value in row.items()} for row in item["results"]]
         )
@@ -665,6 +680,9 @@ def cmd_report(argv: argparse.Namespace) -> int:
         "B62_D1_LEDGER_PRESENT="
         f"{str(before_ledger_present).lower()}->{str(after_ledger_present).lower()}"
     )
+    if argv.ledger:
+        # Read back from the database rather than echoing the plan it came from.
+        print(f"B62_D1_LEDGER_RECORDED={len(ledger_rows(read_json(argv.ledger)))}")
     if argv.detail_before and argv.detail_after:
         inventory = read_json(argv.inventory) if argv.inventory else []
         up_to = resolve_up_to(inventory, argv.up_to) if inventory else "999"
@@ -770,6 +788,7 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--after", required=True)
     handle.add_argument("--detail-before")
     handle.add_argument("--detail-after")
+    handle.add_argument("--ledger")
     handle.add_argument("--inventory")
     handle.add_argument("--plan")
     handle.add_argument("--up-to", default="")

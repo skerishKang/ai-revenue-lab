@@ -528,6 +528,50 @@ def test_a_wrangler_response_is_parsed_around_its_banner(tmp_path) -> None:
         gate.read_json(noise)
 
 
+def test_d1_statements_go_to_the_query_api_never_the_import_file_flag() -> None:
+    """The fourth Production readonly run died on wrangler's import response.
+
+    `--file` uploads the SQL and takes D1's bulk-import path: the answer is one
+    block of counters plus a `finalBookmark` and no rows, and the database is
+    unavailable while it runs. `--command` is the query API, which splits on `;`
+    server-side and answers one result block per statement — the shape every
+    reader in the gate unwraps, and the shape the fixtures above are built from.
+    """
+
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "--file=" not in text
+    joined = re.sub(r"\\\n\s*", " ", text)
+    calls = re.findall(r"npx --yes wrangler@4 d1 execute[^\n]*", joined)
+    assert len(calls) >= 10, len(calls)
+    for call in calls:
+        assert "--command" in call, call
+        if "--json" in call:
+            assert '--command="$(cat ' in call, call
+
+    # An import response is named, never read as a short block list.
+    import_block = [
+        {
+            "results": [
+                {
+                    "Total queries executed": 2,
+                    "Rows read": 0,
+                    "Rows written": 0,
+                    "Database size (MB)": "1.00",
+                }
+            ],
+            "success": True,
+            "finalBookmark": "1761500000000000000#0000000002",
+            "meta": {"duration": 1.0, "rows_read": 0, "rows_written": 0, "size_after": 1000000},
+        }
+    ]
+    with pytest.raises(gate.GateError, match="SNAPSHOT_IS_IMPORT_NOT_QUERY"):
+        gate.snapshot_rows(import_block)
+    with pytest.raises(gate.GateError, match="LEDGER_IS_IMPORT_NOT_QUERY"):
+        gate.ledger_rows(import_block)
+    with pytest.raises(gate.GateError, match="DETAIL_IS_IMPORT_NOT_QUERY"):
+        gate.detail_rows(import_block, [])
+
+
 def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> None:
     delta = gate.schema_diff(
         {"tables": {"users"}, "columns": {"users.id"}, "other": set()},
@@ -544,13 +588,25 @@ def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> 
     inventory_path = write(tmp_path / "inv.json", inventory)
     snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema, ledger_present=True))
     detail_path, tables = with_detail(tmp_path, inventory, schema)
+    ledger_path = write(
+        tmp_path / "live-ledger.json",
+        ledger_payload([{"name": item["name"]} for item in inventory]),
+    )
     assert gate.main([
         "report",
         "--before", str(snapshot_path), "--after", str(snapshot_path),
         "--detail-before", str(detail_path), "--detail-after", str(detail_path),
+        "--ledger", str(ledger_path),
         "--inventory", str(inventory_path),
     ]) == 0
     out = capsys.readouterr().out
     assert "B62_D1_SCHEMA_TABLES_ADDED=" in out
     assert "B62_D1_ROW_COUNT conversations=7->7" in out
     assert "B62_D1_REPORT_ROWS=read_count_metadata_only" in out
+    # The apply job reads the ledger back instead of echoing the plan it wrote,
+    # so the recorded-name count in the report is a fact about the database.
+    assert f"B62_D1_LEDGER_RECORDED={len(inventory)}" in out
+    apply_section = WORKFLOW.read_text(encoding="utf-8")
+    apply_section = apply_section[apply_section.index("  apply:") :]
+    assert "b62-d1-gate-final-ledger.json" in apply_section
+    assert "--ledger /tmp/b62-d1-gate-final-ledger.json" in apply_section
