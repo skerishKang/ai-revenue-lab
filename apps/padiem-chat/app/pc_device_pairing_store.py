@@ -84,6 +84,10 @@ class PcPairingStore(Protocol):
 
     async def list_codes(self, *, user_id: str, now: datetime) -> list[dict[str, Any]]: ...
 
+    async def peek_pairing_code(
+        self, *, code: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
     async def revoke_link(self, *, user_id: str, link_id: str, now: datetime) -> bool: ...
 
     async def approve_root(
@@ -361,6 +365,34 @@ class D1PcPairingStore:
             "install_tag": derive_install_tag(code),
             "issued_at": issued,
             "expires_at": expires,
+        }
+
+    async def peek_pairing_code(self, *, code: str, now: datetime) -> dict[str, Any]:
+        """What a presented code entitles its holder to, without consuming it.
+
+        The install wrapper needs the tag derived from the code it was handed, so
+        it can stamp that tag into the agent name the server will later observe.
+        Nothing here writes: a handoff that consumed the code would leave the PC
+        installed and unpaired if the download then failed, and a code is a
+        10-minute possession proof, not a one-shot download ticket.
+        """
+        if not isinstance(code, str) or len(code) > 64:
+            raise PcPairingError("pairing code invalid")
+        moment = _stamp(now)
+        row = await self._first(
+            "SELECT code_id, state, expires_at FROM pc_pairing_codes WHERE code_sha256=?",
+            _hash(code),
+        )
+        if not isinstance(row, dict) or not row.get("code_id"):
+            raise PcPairingError("pairing code unknown")
+        if row.get("state") != "pending":
+            raise PcPairingError("pairing code used")
+        if str(row.get("expires_at") or "") <= moment:
+            raise PcPairingError("pairing code expired")
+        return {
+            "code_id": row["code_id"],
+            "install_tag": derive_install_tag(code),
+            "expires_at": row["expires_at"],
         }
 
     async def list_codes(self, *, user_id: str, now: datetime) -> list[dict[str, Any]]:

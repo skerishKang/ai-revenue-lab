@@ -178,7 +178,28 @@ def build_inventory(app_name: str) -> list[dict[str, Any]]:
 
 
 def read_json(path: str | Path) -> Any:
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    """Parse a gate response file.
+
+    `wrangler --json` prints its banner and trailing log lines into the same
+    stdout the JSON goes to, so the file is not necessarily bare JSON. The
+    first complete JSON value is taken and anything around it is ignored; a file
+    with no JSON at all is a named refusal, never a silent empty ledger.
+    """
+
+    text = Path(path).read_text(encoding="utf-8")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    decoder = json.JSONDecoder()
+    for index, character in enumerate(text):
+        if character not in "[{":
+            continue
+        try:
+            return decoder.raw_decode(text, index)[0]
+        except json.JSONDecodeError:
+            continue
+    raise GateError("B62_D1_GATE_RESPONSE_NOT_JSON")
 
 
 def detail_tables(

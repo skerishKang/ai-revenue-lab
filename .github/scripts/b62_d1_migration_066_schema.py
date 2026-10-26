@@ -8,8 +8,9 @@ of a conversion request. No customer document content lives in D1: the original
 PDF bytes and the converted Markdown stay in the signed-in owner's own R2
 workspace objects, and this ledger holds only object keys and aggregates.
 
-This helper is the contract of the 066 gate in
-``.github/workflows/b62-d1-migration-066-gate.yml``:
+This helper holds the 066 source contract. Its per-migration gate
+``.github/workflows/b62-d1-migration-066-gate.yml`` was retired by #5895 ②, so
+the helper is kept as the reviewed record of 066 and is no longer dispatched:
 
 * it pins the approved 066 source by SHA-256, so the applied SQL is exactly the
   reviewed file;
