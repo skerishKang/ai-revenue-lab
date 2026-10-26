@@ -321,7 +321,7 @@ def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -
 
     import inspect
 
-    assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload")
+    assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload", "ooxml_member_max_bytes")
 
 
 def test_pdf_inspection_normalizes_to_exact_page_segments() -> None:

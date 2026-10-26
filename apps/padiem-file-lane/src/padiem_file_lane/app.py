@@ -9,7 +9,7 @@ from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import ClientDisconnect, Request
-from starlette.responses import FileResponse, JSONResponse
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
 from .storage import FileError, Store, disk_error, require_space
@@ -69,7 +69,25 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
 
     async def text(request: Request):
         claims = ticket(request)
+        window = any(key in request.query_params for key in ("offset", "max_chars"))
+        bounds = []
+        for key, default, minimum in (("offset", "0", 0), ("max_chars", "64000", 1)):
+            raw = request.query_params.get(key, default)
+            try:
+                if not raw.isascii() or not raw.isdigit():
+                    raise ValueError
+                value = int(raw)
+                if value < minimum:
+                    raise ValueError
+            except ValueError:
+                raise FileError("invalid_text_window", 400) from None
+            bounds.append(value)
         path = await run_in_threadpool(store.text, claims.user_id, request.path_params["file_id"])
+        if window:
+            offset, max_chars = bounds
+            content, eof = await run_in_threadpool(store.text_window, path, offset, max_chars)
+            return PlainTextResponse(content, headers={"Cache-Control": "no-store",
+                "X-File-Lane-Next-Offset": str(offset + len(content)), "X-File-Lane-EOF": str(eof).lower()})
         return FileResponse(path, media_type="text/plain; charset=utf-8", headers={"Cache-Control": "no-store"})
 
     async def health(request):
@@ -94,6 +112,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         raise RuntimeError("FILE_LANE_ALLOWED_ORIGINS must name explicit Chat origins")
     if allowed:
         app.add_middleware(CORSMiddleware, allow_origins=allowed, allow_credentials=True, allow_methods=["GET", "POST"],
+                           expose_headers=["X-File-Lane-Next-Offset", "X-File-Lane-EOF"],
                            allow_headers=["Content-Type", "X-Padiem-File-Ticket", "X-Padiem-File-Time", "X-Padiem-File-Proof"])
     return app
 

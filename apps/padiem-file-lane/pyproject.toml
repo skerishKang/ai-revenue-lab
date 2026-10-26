@@ -7,7 +7,7 @@ name = "padiem-file-lane"
 version = "0.1.0"
 description = "COM2 disk-backed file upload and text service"
 requires-python = ">=3.11"
-dependencies = ["starlette>=0.45,<1", "uvicorn>=0.32,<1", "pypdf>=6,<7"]
+dependencies = ["starlette>=0.45,<1", "uvicorn>=0.32,<1", "padiem-ai-core[documents]"]
 
 [project.optional-dependencies]
 windows = ["pywin32>=308; sys_platform == 'win32'"]
@@ -23,3 +23,6 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.uv.sources]
+padiem-ai-core = { path = "../../packages/padiem-ai-core" }

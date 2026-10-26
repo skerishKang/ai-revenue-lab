@@ -1,4 +1,4 @@
-# COM2 file lane — phase 1 (#5881)
+# COM2 file lane — parser phase 2 (#5881)
 
 Local CPython ASGI service for the Chat/Claw file lane, following
 `docs/architecture/FILE_LANE_COM2_MIGRATION_20261026.md`. No Worker receives the
@@ -8,7 +8,7 @@ password or Cloudflare credential.
 
 This PR contains code and offline tests. It does **not** install a service,
 create a Tunnel, change production bindings, deploy, or enable the Chat path.
-OOXML, OCR, previews, PC-result ingestion and Util/B66 are outside phase 1.
+OCR, previews, PC-result ingestion and Util/B66 remain outside this slice.
 
 ## HTTP contract
 
@@ -22,11 +22,32 @@ are returned.
   `{ok,file_id,name,kind,size_bytes,sha256}` after durable original data and
   metadata publication. No whole-request buffer or file-size constant is used.
 - `GET /files/{file_id}/meta`: same metadata, scoped to the ticket's user.
-- `GET /files/{file_id}/text`: disk-streamed UTF-8 plain text. txt/md/csv use
-  incremental UTF-8/BOM decoding; PDF uses pypdf page text extraction. No OCR.
-  The first GET writes an atomic text cache; later GETs reuse it. A PDF without
-  a text layer returns empty text, not invented OCR. Unsupported encoding,
-  encrypted/unreadable PDF or parser failure returns a fixed 422 error code.
+- `GET /files/{file_id}/text`: UTF-8 text/Markdown from Core's canonical
+  `document_normalization` / `pdf_markdown` authorities. Supports txt/md/csv,
+  PDF native text to Markdown (including page markers), DOCX, PPTX and XLSX.
+  UTF-8/BOM and line endings use Core normalization. No OCR is invented: PDF
+  pages without native text carry Core's unreadable-page notice.
+  The first GET writes an atomic `text-v2.txt` cache; later GETs reuse it.
+  Old phase-1 `text.txt` caches are ignored and preserved for rollback.
+  Unsupported encoding, encrypted/unreadable PDF or parser failure returns a
+  fixed 422 error code; parser exceptions and content are never echoed.
+- `GET /files/{file_id}/text?offset=0&max_chars=64000`: read a window of the
+  cached result. Offset is a non-negative Unicode code-point index; max_chars
+  is positive, defaults to 64000 when either query parameter is present, and
+  is a requested window rather than a document-size ceiling. Response remains
+  plain UTF-8, with `X-File-Lane-Next-Offset` and `X-File-Lane-EOF` for traversal.
+  EOF/past-EOF returns an empty window. Invalid parameters return 400 before
+  parsing. Omitting both parameters preserves the full disk-streamed response.
+
+PDF input stays a seekable disk handle through Core's Markdown converter.
+OOXML uses Core's existing in-memory parser on CPython, with the explicit
+request-local `ooxml_member_max_bytes=None`; the Worker default stays 32MiB and
+archive path/encryption/DTD/inflation checks stay enabled. OOXML payloads and
+extracted strings still need host RAM: this is not an external-memory OOXML
+parser. Large results persist on disk; window reads skip in bounded blocks and
+never load the preceding result in full. No Worker transport-byte limit is
+applied by this service. Existing Chat attachment integration remains unchanged
+in this PR; its capability list/consumer has not been expanded to OOXML.
 
 JSON failures use `{ok:false,error:{code}}`. Missing/bad/expired ticket: 401;
 foreign/unknown file: 404; ticket size: 413; unsupported type: 415;
@@ -66,7 +87,7 @@ Storage is `FILE_LANE_ROOT/<user_id namespace>/file_<uuid>/`. The namespace is
 SHA-256 of the **exact** user_id UTF-8 bytes: Windows folds case/trailing dots,
 so using raw IDs as path components could alias two owners. Original filenames
 are metadata only and never become disk paths. Files are named `data`,
-`meta.json`, `text.txt`; metadata is published last. No global in-memory file
+`meta.json`, `text-v2.txt`; metadata is published last. No global in-memory file
 index is required across restarts. Keep this root writable only by the service
 account; it is outside the checkout and must be on the chosen COM2 disk.
 
@@ -114,3 +135,12 @@ configuration is deliberately not created here.
 
 `uv run --frozen pytest -q` runs network-free fixtures plus one temporary
 loopback startup check. Ubuntu and Windows CI use the same committed lock.
+
+
+Phase-2 offline fixtures cover all seven formats, UTF-8/emoji window traversal,
+cached reads, owner isolation, invalid windows, unsafe archives, and a real
+>100MiB PDF uploaded in 1MiB ASGI chunks then parsed through Core. That PDF has
+one native-text page and a 100MiB embedded synthetic file: it proves byte-scale
+storage/seekable parsing, not many-page performance or a Cloudflare edge limit.
+A stored DOCX member above 32MiB proves CPython acceptance and Worker/default
+rejection before and after that call. No production upload or deployment runs.

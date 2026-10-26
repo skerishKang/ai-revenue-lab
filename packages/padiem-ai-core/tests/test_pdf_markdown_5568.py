@@ -453,6 +453,6 @@ def test_conversion_opens_only_the_canonical_reader_and_calls_no_provider() -> N
 
     assert "PdfReader" not in code
     assert "pypdf" not in code
-    assert "_open_pdf_reader(binary)" in code
+    assert "_open_pdf_reader(source)" in code
     for forbidden in ("httpx", "requests", "openai", "subprocess", "multiprocessing", "pdfplumber", "pdfium"):
         assert forbidden not in code.lower()

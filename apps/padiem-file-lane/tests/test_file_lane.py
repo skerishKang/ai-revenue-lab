@@ -118,7 +118,7 @@ def test_pdf_text_is_extracted_on_disk(client):
     assert response.status_code == 200 and "COM2 PDF text" in response.text
 
 
-@pytest.mark.parametrize("name,data,status", [("sample.docx", b"zip", 415),
+@pytest.mark.parametrize("name,data,status", [("sample.hwp", b"unsupported", 415),
     ("../evil.txt", b"x", 400), ("empty.txt", b"", 422), ("fake.pdf", b"not pdf", 422)])
 def test_invalid_uploads_leave_no_partial_files(client, tmp_path, name, data, status):
     assert upload(client, data, name).status_code == status
@@ -135,7 +135,7 @@ def test_size_ticket_and_disk_space_are_enforced(client, tmp_path, monkeypatch):
 def test_parser_failure_does_not_publish_partial_text(client, tmp_path):
     file_id = upload(client, b"\xff\xfeinvalid", "bytes.txt").json()["file_id"]
     assert client.get(f"/files/{file_id}/text", headers=ticket()).status_code == 422
-    assert not list(tmp_path.rglob("*.part")) and not list(tmp_path.rglob("text.txt"))
+    assert not list(tmp_path.rglob("*.part")) and not list(tmp_path.rglob("text-v2.txt"))
 
 
 @pytest.mark.parametrize("mode", ["complete", "oversize", "disconnect", "disk_full"])
