@@ -95,7 +95,7 @@ def web_xlsx_confirmation_spec() -> ToolSpec:
             "p01_intent_confirmed", "source_sha256", "read_executed",
             "workcopy_created", "drive_write",
         ]},
-        timeout_seconds=5.0, user_visible=False,
+        timeout_seconds=None, user_visible=False,
     )
 
 def build_web_xlsx_p01_tool_binding(

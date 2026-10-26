@@ -105,7 +105,7 @@ class D1WebXlsxTrustedScopeResolver:
                 or type(row.get("size_bytes")) is not int
                 or type(row.get("stored_size")) is not int
                 or row["size_bytes"] != row["stored_size"]
-                or not 0 < row["size_bytes"] <= 1_048_576):
+                or not 0 < row["size_bytes"] <= 10 * 1_048_576):
             return None
         key = (
             f"workspaces/{workspace}/claw/web-office/{owner}/{workspace}/"

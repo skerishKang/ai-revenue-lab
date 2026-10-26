@@ -268,6 +268,6 @@ def test_delegation_default_is_long_form_but_not_unbounded_authority():
         child_agent_id="agent:padiem:child@1",
         reason="Test inherited long-running model budget",
     )
-    assert delegation.max_wall_seconds == 900
+    assert delegation.max_wall_seconds == 1800
     # An explicit lower 60s limit must still narrow child authority.
     assert request(definition("agent:padiem:parent@1"), definition("agent:padiem:child@1")).max_wall_seconds == 60

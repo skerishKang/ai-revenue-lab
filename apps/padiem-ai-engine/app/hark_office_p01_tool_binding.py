@@ -89,7 +89,7 @@ def _spec(*, listing: bool) -> ToolSpec:
             "intent_confirmed", "request_fingerprint",
             "file_read_executed", "local_file_content",
         ]},
-        timeout_seconds=5.0, user_visible=False,
+        timeout_seconds=None, user_visible=False,
     )
 
 

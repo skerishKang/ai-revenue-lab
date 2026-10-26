@@ -78,7 +78,7 @@ class SkillExecutionBudget:
     # progress instead of a skill that legitimately runs long.
     max_steps: int | None = None
     max_tool_calls: int | None = None
-    max_wall_seconds: int = 900  # skills share the supervised agent run budget
+    max_wall_seconds: int = 1800  # skills share the supervised agent run budget
 
     def __post_init__(self) -> None:
         # #4379: an explicit skill budget is a caller choice, so it has no

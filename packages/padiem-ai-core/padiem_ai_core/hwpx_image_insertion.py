@@ -143,7 +143,7 @@ HWPX_BIN_DATA_PREFIX = "BinData/"
 #: gate's own per-entry uncompressed bound: an image larger than this could not
 #: be admitted back through the same gate, so embedding it would only produce a
 #: package this Core would then refuse.
-MAX_HWPX_IMAGE_BYTES = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+MAX_HWPX_IMAGE_BYTES = 10 * MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
 
 #: HWPUNIT per pixel used when the caller supplies no draw extent. 96 DPI is the
 #: screen resolution the reference implementation's 14400-HWPUNIT default width

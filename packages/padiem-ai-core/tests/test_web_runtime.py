@@ -34,7 +34,7 @@ def test_web_config_defaults_off_and_redacts_server_key() -> None:
     assert default.provider == "off"
     assert default.firecrawl_api_key is None
     assert default.daum_rest_api_key is None
-    assert default.web_timeout_seconds == 15.0
+    assert default.web_timeout_seconds == 30.0
 
     with pytest.raises(ValueError, match="server-side API key"):
         WebRuntimeConfig(provider="firecrawl")
@@ -58,7 +58,7 @@ def test_web_config_defaults_off_and_redacts_server_key() -> None:
     }
 
 
-@pytest.mark.parametrize("bad", [0, -1, 30.1, True, "15"])
+@pytest.mark.parametrize("bad", [0, -1, 60.1, True, "15"])
 def test_web_config_rejects_invalid_timeout(bad) -> None:
     with pytest.raises(ValueError, match="web_timeout_seconds"):
         WebRuntimeConfig(web_timeout_seconds=bad)  # type: ignore[arg-type]

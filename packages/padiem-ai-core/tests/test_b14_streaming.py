@@ -359,6 +359,23 @@ def test_fragmented_single_oversize_sse_frame_fails_closed():
         collect(client, request())
     assert err.value.code == "upstream_response_too_large"
 
+
+def test_default_stream_frame_above_one_mib_reaches_the_final_record():
+    content = "x" * (1024 * 1024 + 1)
+    frame = sse(chunk_payload(content=content))
+
+    async def handler(req):
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([frame[:500_000], frame[500_000:], b"data: [DONE]\n\n"]),
+        )
+
+    events = collect(B14StreamingClient(
+        B14ExecutionConfig(BASE_URL), transport=httpx.MockTransport(handler)
+    ), request())
+    assert "".join(e.delta_content or "" for e in events) == content
+    assert events[-1].done is True
+
 def test_timeout_and_transport_errors_are_normalized():
     async def timeout_handler(req: httpx.Request) -> httpx.Response:
         raise httpx.ReadTimeout("secret timeout detail", request=req)
