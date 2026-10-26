@@ -992,6 +992,9 @@ jobs:
           echo "B62_PRODUCTION_CONFIG_GENERATED=VERIFIED"
 
       - name: Prove live config prerequisites before any deploy mutation
+        # Historical snapshot recovery retains its original prerequisite contract.
+        # New code uses the repository binding plan and preserves arbitrary live vars.
+        if: ${{ inputs.mode == 'recover_p01_sse_off' }}
         shell: bash
         run: |
           set -euo pipefail

@@ -76,3 +76,10 @@ def test_repository_route_table_cannot_capture_worker_build_fields():
     config = tomllib.loads((ROOT/'apps/padiem-chat/wrangler.toml').read_text())
     assert config['base_dir'] == '.b66-worker-src'
     assert config['routes'] == [{'pattern': 'chat.padiem.net', 'custom_domain': True}]
+
+
+def test_normal_deploy_has_no_legacy_live_target_or_variable_prerequisite():
+    text = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text()
+    steps = yaml.safe_load(text)['jobs']['deploy-production-code']['steps']
+    legacy = next(s for s in steps if 'deploy-prereq' in s.get('run', ''))
+    assert legacy['if'] == "${{ inputs.mode == 'recover_p01_sse_off' }}"
