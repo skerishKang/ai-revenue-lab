@@ -20,18 +20,22 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
     expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
-    # Two reviewed entries are declared and not yet served, and the reviewed
+    # Three reviewed entries are declared and not yet served, and the reviewed
     # inventory is what production is answering with today:
     #   - #5919 declares PC_AGENT_INSTALL_URL in [vars] with an empty value, which
     #     the pairing handoff reads as "not ready" until a deploy injects the real
     #     https installer URL.
-    #   - this change declares the #5881 file-lane ticket secret, whose value the
-    #     OWNER stores first and the next exact-main deploy attaches.
+    #   - #5923 declares the #5881 file-lane ticket secret; its value is stored by
+    #     the OWNER first and the next exact-main deploy attaches the binding.
+    #   - this change declares PADIEM_CHAT_FILE_LANE_ORIGIN in [vars] with an empty
+    #     value, which the file-lane client reports as "not connected" until a
+    #     deploy injects the COM2 origin.
     # Each one is named here as a pending addition - never unexplained drift, and
-    # never a silent removal of something serving traffic. Both return to an empty
-    # diff as their deploys land.
+    # never a silent removal of something serving traffic. Each returns to an empty
+    # diff as its own deploy lands.
     assert binding_diff(index(rows), expected) == {
-        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
+        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
                    'type': 'secrets_store_secret'},
                   {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'}],
         'removed': [],
