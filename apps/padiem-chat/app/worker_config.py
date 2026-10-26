@@ -11,6 +11,10 @@ from .config import ConfigError, Settings
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
     "PADIEM_CHAT_B14_BASE_URL",
+    # #5784: the upstream switch. Plain vars on both platforms — a Worker binding
+    # here, an environment variable on a host — so the same names read everywhere.
+    "B14_UPSTREAM_MODE",
+    "B14_UPSTREAM_URL",
     "PADIEM_CHAT_B66_QUOTE_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
     "PADIEM_CHAT_LIVE_ENABLED",
@@ -276,6 +280,8 @@ def settings_from_worker_bindings(
     return Settings.from_values(
         runtime_mode=runtime_mode,
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
+        b14_upstream_mode=binding_value(env, "B14_UPSTREAM_MODE"),
+        b14_upstream_url=binding_value(env, "B14_UPSTREAM_URL"),
         b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "600",
         completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "600",

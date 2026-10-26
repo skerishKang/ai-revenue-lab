@@ -44,7 +44,13 @@ def test_worker_reuses_core_streaming_runtime_and_fixed_binding() -> None:
     assert "B14StreamingClient" in source
     assert "StreamingExecutionRuntime" in source
     assert 'B14_SERVICE_BINDING_NAME = "B14_SERVICE"' in source
-    assert 'B14_INTERNAL_ORIGIN = "https://b14.internal"' in transport
+    # #5784: the binding origin now lives in the one module both products read to
+    # choose an upstream, so the pin follows it instead of duplicating it here.
+    assert "BINDING_ORIGIN as B14_INTERNAL_ORIGIN" in transport
+    core_upstream = (
+        APP_ROOT.parent.parent / "packages" / "padiem-ai-core" / "padiem_ai_core" / "b14_upstream.py"
+    ).read_text(encoding="utf-8")
+    assert 'BINDING_ORIGIN = "https://b14.internal"' in core_upstream
     assert "B14_CHAT_COMPLETIONS_PATH" in transport
     assert "B14_STREAM_PREVIEW_PATH" in transport
     assert "B14_AUTO_STREAM_PREVIEW_PATH" in transport

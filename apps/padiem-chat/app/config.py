@@ -85,6 +85,10 @@ def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, .
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
+    # #5784: "binding" (default) reaches the Worker through the Service Binding;
+    # "https" reaches the same contract over the Tunnel host. Nothing else about
+    # the call changes, including the caller proof.
+    b14_upstream_mode: str = "binding"
     b66_quote_base_url: str | None = None
     timeout_seconds: float = 600.0
     completed_timeout_seconds: float = 600.0
@@ -146,6 +150,9 @@ class Settings:
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
         b66_quote_base_url: object = None,
+        # #5784: appended last so every existing positional caller is untouched.
+        b14_upstream_mode: object = None,
+        b14_upstream_url: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -153,6 +160,28 @@ class Settings:
 
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
+        # #5784: one deployment variable chooses which B14 this Worker talks to.
+        # Unset means the Service Binding, and the origin stays what it is today.
+        from padiem_ai_core.b14_upstream import (
+            UPSTREAM_MODE_ENV,
+            UPSTREAM_URL_ENV,
+            B14UpstreamConfigError,
+            resolve_b14_upstream,
+        )
+
+        try:
+            upstream = resolve_b14_upstream({
+                UPSTREAM_MODE_ENV: "" if b14_upstream_mode is None else str(b14_upstream_mode),
+                UPSTREAM_URL_ENV: "" if b14_upstream_url is None else str(b14_upstream_url),
+            })
+        except B14UpstreamConfigError as exc:
+            raise ConfigError(exc.code) from None
+        if upstream.uses_https:
+            if base is not None and base != upstream.origin:
+                # An old binding-mode base URL left beside a flipped switch is a
+                # half-applied change; refusing beats picking one of the two.
+                raise ConfigError("PADIEM_CHAT_B14_BASE_URL conflicts with B14_UPSTREAM_URL")
+            base = upstream.origin
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
 
@@ -289,6 +318,7 @@ class Settings:
         return cls(
             runtime_mode=mode,
             b14_base_url=base,
+            b14_upstream_mode=upstream.mode,
             b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
             completed_timeout_seconds=completed_timeout,
@@ -333,6 +363,8 @@ class Settings:
         return cls.from_values(
             runtime_mode=runtime_mode,
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
+            b14_upstream_mode=os.getenv("B14_UPSTREAM_MODE"),
+            b14_upstream_url=os.getenv("B14_UPSTREAM_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600"),
             completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "600"),
