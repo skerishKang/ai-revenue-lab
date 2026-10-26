@@ -28,6 +28,7 @@ ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
+ENGINE_DOCUMENT_ADMISSION_PATH = "/internal/v1/documents"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
@@ -47,6 +48,35 @@ _ATTACHMENT_ADMISSION_ALLOWED = frozenset(
 )
 _ATTACHMENT_ADMISSION_REQUIRED = frozenset({"session_id", "media_type", "image_base64"})
 _ATTACHMENT_PROJECTION_FIELDS = ("attachment_ref", "media_type", "byte_size", "expires_at")
+
+# COM2 document reference admission (#5881). The Engine route stays the single
+# size/media/grammar authority; this client mirrors the bounded shape so a
+# malformed reference fails before any transport, and it never rewrites the
+# signed ticket values it carries for the product. Pinned against the Engine's
+# own module by a drift test so the two copies cannot silently diverge.
+FILE_TICKET_HEADER_NAMES = frozenset(
+    {"X-Padiem-File-Ticket", "X-Padiem-File-Time", "X-Padiem-File-Proof"}
+)
+_DOCUMENT_FILE_ID_RE = re.compile(r"^file_[a-f0-9]{32}$")
+_DOCUMENT_SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+_DOCUMENT_TICKET_VALUE_RE = re.compile(r"^[\x20-\x7e]+$")
+_DOCUMENT_REF_RE = re.compile(r"^doc_[A-Za-z0-9_-]{16,120}$")
+_DOCUMENT_ADMISSION_ALLOWED = frozenset(
+    {"session_id", "file_id", "sha256", "file_ticket", "filename"}
+)
+_DOCUMENT_ADMISSION_REQUIRED = frozenset(
+    {"session_id", "file_id", "sha256", "file_ticket"}
+)
+DOCUMENT_LANE_MEDIA_TYPE = "text/plain"
+_DOCUMENT_PROJECTION_FIELDS = (
+    "document_ref",
+    "media_type",
+    "byte_size",
+    "expires_at",
+    "total_chars",
+    "next_offset",
+    "window_eof",
+)
 
 _EXECUTION_ALLOWED = frozenset(
     {
@@ -535,6 +565,105 @@ def _attachment_projection(body: dict[str, Any]) -> dict[str, Any]:
     return {name: attachment[name] for name in _ATTACHMENT_PROJECTION_FIELDS}
 
 
+def _document_admission_payload(app_id: str, request: Any) -> dict[str, Any]:
+    if not isinstance(request, Mapping):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document request must be an object"
+        )
+    data = dict(request)
+    if set(data) - _DOCUMENT_ADMISSION_ALLOWED:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine document request contains unsupported fields",
+        )
+    if _DOCUMENT_ADMISSION_REQUIRED - set(data):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine document request is missing required fields",
+        )
+    file_id = data["file_id"]
+    if not isinstance(file_id, str) or not _DOCUMENT_FILE_ID_RE.fullmatch(file_id):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document file_id is invalid"
+        )
+    sha256 = data["sha256"]
+    if not isinstance(sha256, str) or not _DOCUMENT_SHA256_RE.fullmatch(sha256):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document sha256 is invalid"
+        )
+    ticket = data["file_ticket"]
+    if not isinstance(ticket, Mapping) or set(ticket) != FILE_TICKET_HEADER_NAMES:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine document file_ticket is invalid"
+        )
+    # The claim values are the product's own signed bytes: carried unchanged so
+    # a second signature can never be minted here, and refused only when the
+    # shape could not survive an HTTP header.
+    headers = {name: ticket[name] for name in sorted(FILE_TICKET_HEADER_NAMES)}
+    for name, value in headers.items():
+        if not isinstance(value, str) or not _DOCUMENT_TICKET_VALUE_RE.fullmatch(value):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request",
+                f"Engine document file_ticket {name} is invalid",
+            )
+    payload: dict[str, Any] = {
+        "app_id": app_id,
+        "session_id": _safe_identifier("session_id", data["session_id"]),
+        "file_id": file_id,
+        "sha256": sha256,
+        "file_ticket": headers,
+    }
+    if "filename" in data:
+        filename = data["filename"]
+        if not isinstance(filename, str) or not filename.strip():
+            raise PadiemAiEngineClientError(
+                "invalid_engine_request", "Engine document filename is invalid"
+            )
+        payload["filename"] = filename.strip()
+    return payload
+
+
+def _document_projection(body: dict[str, Any]) -> dict[str, Any]:
+    invalid = PadiemAiEngineClientError(
+        "invalid_engine_response", "Engine document admission response is invalid"
+    )
+    if body.get("ok") is not True:
+        raise invalid
+    document = body.get("document")
+    if not isinstance(document, Mapping) or set(document) != set(_DOCUMENT_PROJECTION_FIELDS):
+        raise invalid
+    projected = dict(document)
+    if not isinstance(projected["document_ref"], str) or not _DOCUMENT_REF_RE.fullmatch(
+        projected["document_ref"]
+    ):
+        raise invalid
+    if projected["media_type"] != DOCUMENT_LANE_MEDIA_TYPE:
+        raise invalid
+    if projected["window_eof"] not in (True, False):
+        raise invalid
+    for name in ("byte_size", "total_chars", "next_offset"):
+        value = projected[name]
+        if name == "total_chars" and value is None:
+            continue
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise invalid
+    if projected["byte_size"] < 1:
+        raise invalid
+    if projected["total_chars"] is not None and projected["total_chars"] < projected["next_offset"]:
+        raise invalid
+    expires_at = projected["expires_at"]
+    if expires_at is not None:
+        if not isinstance(expires_at, str):
+            raise invalid
+        try:
+            parsed = datetime.fromisoformat(expires_at)
+        except ValueError:
+            raise invalid from None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise invalid
+    return {name: projected[name] for name in _DOCUMENT_PROJECTION_FIELDS}
+
+
 def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
     try:
         body = json.loads(response.body.decode("utf-8"))
@@ -778,6 +907,19 @@ class PadiemAiEngineClient:
             _attachment_admission_payload(self.app_id, request),
         )
         return _attachment_projection(body)
+
+    async def admit_document_reference(self, request: Mapping[str, Any]) -> dict[str, Any]:
+        """Admit one COM2 file reference: the lane keeps the bytes, Engine the text.
+
+        The reference shape carries no document bytes, so the request stays far
+        below the inline admission envelope. ``file_ticket`` is the product's own
+        signed read claim, forwarded unchanged.
+        """
+        body = await self._post(
+            ENGINE_DOCUMENT_ADMISSION_PATH,
+            _document_admission_payload(self.app_id, request),
+        )
+        return _document_projection(body)
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(
