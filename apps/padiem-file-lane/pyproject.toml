@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padiem-file-lane"
+version = "0.1.0"
+description = "COM2 disk-backed file upload and text service"
+requires-python = ">=3.11"
+dependencies = ["starlette>=0.45,<1", "uvicorn>=0.32,<1", "pypdf>=6,<7"]
+
+[project.optional-dependencies]
+windows = ["pywin32>=308; sys_platform == 'win32'"]
+
+[dependency-groups]
+dev = ["pytest>=8.3,<9", "httpx>=0.28,<1"]
+
+[project.scripts]
+padiem-file-lane = "padiem_file_lane.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
