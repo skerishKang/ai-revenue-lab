@@ -26,6 +26,8 @@ on:
       - ".github/tests/test_b62_atomic_web_secrets_3523.py"
       - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
       - ".github/tests/test_b62_cloudflare_rollback_deployment_request.py"
+      - ".github/scripts/b62_rollback_recorded_version_guard.py"
+      - ".github/tests/test_b62_rollback_recovered_latest_and_active_bindings.py"
       - ".github/scripts/b62_public_origin_504_guard.py"
       - ".github/scripts/b62_cloudflare_504_readonly_get.sh"
       - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
@@ -611,6 +613,10 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Passed as an environment value rather than interpolated into the command, so a
+      # dispatch input can never become shell text; the guard then refuses any id that
+      # is not a canonical version UUID.
+      PREVIOUS_VERSION_ID_INPUT: ${{ inputs.previous_version_id }}
     steps:
       # #2898: this job invokes the checked-in canonical lineage primitive, and a job
       # workspace is not shared between jobs, so it must check out the exact dispatch
@@ -674,6 +680,16 @@ jobs:
             python3 .github/scripts/b62_code_deploy_served_preflight.py \
               --active-version="$active" \
               --latest-version="$latest"
+          elif [ "${{ inputs.mode }}" = "rollback_production_code" ]; then
+            # A refused post-deploy audit restores traffic to the recorded version but
+            # leaves the refused upload as the newest one, so latest != active is the
+            # scar of the failure a rollback is here to confirm. Refusing on it would
+            # lock the only read that proves the scar is inert, so the mismatch is
+            # warned and the recorded id is validated against served history instead.
+            python3 .github/scripts/b62_rollback_recorded_version_guard.py \
+              --deployments "${deployments}" \
+              --newest-upload-version="${latest}" \
+              --previous-version-id="${PREVIOUS_VERSION_ID_INPUT}"
           else
             # Preserve canonical strict lineage for all normal read-only modes.
             python3 .github/scripts/cloudflare_served_version_lineage.py \
@@ -836,9 +852,26 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
 
           chat_settings="${RUNNER_TEMP}/baseline-chat-settings.json"
+          chat_served="${RUNNER_TEMP}/baseline-chat-served-version.json"
+          active="${{ steps.audit.outputs.active_version }}"
+          test -n "${active}"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/${B62_WORKER}/settings" "${chat_settings}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/${B62_WORKER}/versions/${active}" "${chat_served}"
+          # The reviewed baseline is proved against the version that is answering
+          # requests. GET /settings follows the newest upload, so a deploy that served
+          # a version and then refused it leaves that plane describing bindings no
+          # traffic ever ran; proving against it would either block every later
+          # release or teach the next generated config to carry that residue forward.
           python3 .github/scripts/b62_binding_baseline.py \
-            --worker "${B62_WORKER}" --payload "${chat_settings}"
+            --worker "${B62_WORKER}" --payload "${chat_served}"
+          if python3 .github/scripts/b62_binding_baseline.py \
+            --worker "${B62_WORKER}" --payload "${chat_settings}" \
+            > "${RUNNER_TEMP}/b62-baseline-settings-plane.txt" 2>&1; then
+            echo "B62_SETTINGS_PLANE_MATCHES_BASELINE=PASS"
+          else
+            # Bounded: the settings plane is compared, never echoed.
+            echo "B62_SETTINGS_PLANE_BINDING_RESIDUE=PRESENT"
+          fi
 
           echo "B62_BINDING_BASELINE=PASS"
           echo "B62_BINDING_BASELINE_VALUES_EMITTED=0"
@@ -1624,7 +1657,11 @@ jobs:
             done
             extra_args=(--attach-document-parser-service)
           fi
-          config_settings="${RUNNER_TEMP}/b62-settings-before.json"
+          # The bindings a new production config must carry forward are read from the
+          # served version, not GET /settings: the settings plane follows the newest
+          # upload, so a refused deploy's extra binding would otherwise be adopted as
+          # live state and uploaded again on the next release.
+          config_settings="${RUNNER_TEMP}/b62-version-before.json"
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             test -s "${RECOVERY_SNAPSHOT}"
             config_settings="${RECOVERY_SNAPSHOT}"
@@ -1733,15 +1770,20 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
           normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
-          before_comparison="${RUNNER_TEMP}/b62-settings-before.json"
+          # Recovery keeps its own immutable settings snapshot; every other deploy
+          # compares against the version that is serving traffic right now.
+          before_comparison="${RUNNER_TEMP}/b62-version-before.json"
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then before_comparison="${RECOVERY_SNAPSHOT}"; fi
           python - "${before_comparison}" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
           import json
           import sys
 
+          sys.path.insert(0, ".github/scripts")
+          from b62_cloudflare_production_deploy_config import live_binding_entries
+
           source, destination, public_url = sys.argv[1:]
           payload = json.load(open(source, encoding="utf-8"))
-          bindings = payload["result"]["bindings"]
+          bindings = live_binding_entries(payload)
           matches = [b for b in bindings if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
           if len(matches) == 1 and matches[0].get("type") == "plain_text" and matches[0].get("text") == public_url:
               print("PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED")
@@ -2149,6 +2191,28 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${PREVIOUS_VERSION_ID}" "${detail}"
           etag="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag}" = "${ROLLBACK_TARGET_ETAG}"
+          # The authority that must hold after a rollback is the recorded version's own
+          # binding set, read from the versions API on both sides. GET /settings is not
+          # consulted here, because it follows the newest upload and still carries the
+          # residue of the deploy this rollback is undoing.
+          python .github/scripts/b62_binding_state_guard.py \
+            --before "${RUNNER_TEMP}/b62-rollback-target.json" \
+            --after "${detail}"
+          echo "B62_ROLLBACK_ACTIVE_BINDING_PRESERVED=PASS"
+          python3 .github/scripts/b62_binding_baseline.py \
+            --worker "${B62_WORKER}" --payload "${detail}"
+          echo "B62_ROLLBACK_SERVED_BINDING_BASELINE=PASS"
+          settings_plane="${RUNNER_TEMP}/b62-rollback-settings-plane.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings_plane}"
+          if python3 .github/scripts/b62_binding_baseline.py \
+            --worker "${B62_WORKER}" --payload "${settings_plane}" \
+            > "${RUNNER_TEMP}/b62-rollback-settings-baseline.txt" 2>&1; then
+            echo "B62_SETTINGS_PLANE_MATCHES_BASELINE=PASS"
+          else
+            # Reported, not repaired: the refused upload's plane is bounded here and
+            # never becomes the source of a later deploy.
+            echo "B62_SETTINGS_PLANE_BINDING_RESIDUE=PRESENT"
+          fi
           health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
           test "${health_status}" = "200"
           echo "B62_ROLLBACK_ETAG_MATCH=PASS"
