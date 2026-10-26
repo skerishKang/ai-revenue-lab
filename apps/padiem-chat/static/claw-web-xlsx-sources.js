@@ -8,7 +8,7 @@
   // context module DELEGATE the one owner-scoped adopt call to the shipped
   // panel instead of gaining a transport of its own.
   let active = null;
-  const MAX_BYTES = 1048576;
+  const MAX_BYTES = 10 * 1024 * 1024;
   const ID = /^doc_[0-9a-f]{32}$/;
   const HASH = /^[a-f0-9]{64}$/;
   const CHAT_ID = /^chat_[a-f0-9]{32}$/;
@@ -174,7 +174,7 @@
       const reason = data?.error?.code;
       const error = new Error(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
         : reason === "web_xlsx_store_unavailable" ? "웹 파일 보관 기능이 아직 연결되지 않았습니다."
-        : reason === "web_xlsx_too_large" ? "XLSX 파일은 1 MiB 이하여야 합니다."
+        : reason === "web_xlsx_too_large" ? "XLSX 파일은 10 MiB 이하여야 합니다."
         : reason === "invalid_web_xlsx_file" ? "안전하게 확인할 수 있는 XLSX 파일만 보관할 수 있습니다."
         : "웹 파일 요청에 실패했습니다. 연결과 파일 상태를 확인해 주세요.");
       // The closed server error code stays available so a caller can tell a
@@ -1113,7 +1113,7 @@
         return;
       }
       if (!file.size || file.size > MAX_BYTES) {
-        report("XLSX 파일은 1 MiB 이하여야 합니다.");
+        report("XLSX 파일은 10 MiB 이하여야 합니다.");
         return;
       }
       setBusy(true);

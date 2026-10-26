@@ -163,3 +163,61 @@ async def test_ttl_and_bounded_selection_count_rejects_extra():
     conn.execute("UPDATE claw_web_xlsx_selections SET expires_at='2000-01-01T00:00:00+00:00'")
     assert (await request(app, settings, path=ENDPOINT)).json()["selections"] == []
     conn.close()
+
+
+def test_limit_migration_preserves_rows_receipts_and_fks_in_one_transaction():
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    conn = sqlite3.connect(":memory:", isolation_level=None)
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.executescript((migrations / "029_claw_web_xlsx_selection.sql").read_text())
+    conn.executescript((migrations / "032_claw_web_xlsx_quote_edit_receipts.sql").read_text())
+    row = ("sel_" + "a" * 32, OWNER, "ws", "doc_" + "b" * 32,
+           "c" * 64, "safe.xlsx", 1048576,
+           "source_selected_p01_not_started", "created", "expires")
+    conn.execute("INSERT INTO claw_web_xlsx_selections VALUES (?,?,?,?,?,?,?,?,?,?)", row)
+    receipt = (row[0], OWNER, "ws", "run", row[3], row[4], "workcopy",
+               "d" * 64, "school", 100, "confirmed", "revision", "e" * 64,
+               "created", "updated")
+    conn.execute("INSERT INTO claw_web_xlsx_quote_edit_receipts VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", receipt)
+    conn.executescript("BEGIN;" + (migrations / "071_claw_web_xlsx_selection_limit.sql").read_text() + "COMMIT;")
+    assert conn.execute("SELECT * FROM claw_web_xlsx_selections").fetchone() == row
+    assert conn.execute("SELECT * FROM claw_web_xlsx_quote_edit_receipts").fetchone() == receipt
+    assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+    assert conn.execute("PRAGMA foreign_keys").fetchone() == (1,)
+    conn.execute("UPDATE claw_web_xlsx_selections SET size_bytes=?", (10 * 1024 * 1024,))
+    for invalid in (0, 10 * 1024 * 1024 + 1):
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute("UPDATE claw_web_xlsx_selections SET size_bytes=?", (invalid,))
+    with pytest.raises(sqlite3.IntegrityError):
+        conn.execute("UPDATE claw_web_xlsx_selections SET source_sha256='bad'")
+    assert conn.execute("SELECT name FROM sqlite_master WHERE type='index' AND name='idx_claw_web_xlsx_selections_owner'").fetchone()
+    conn.close()
+
+
+@pytest.mark.asyncio
+async def test_ten_mib_xlsx_upload_selection_uses_new_sql_bound_and_keeps_owner_scope():
+    from io import BytesIO
+    from zipfile import ZipFile
+    import hashlib
+    from app.workspace_storage import MAX_WEB_XLSX_BYTES
+    app, settings, metadata, r2, source, conn = setup()
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    conn.executescript((migrations / "032_claw_web_xlsx_quote_edit_receipts.sql").read_text())
+    conn.executescript((migrations / "071_claw_web_xlsx_selection_limit.sql").read_text())
+    output = BytesIO(workbook())
+    with ZipFile(output, "a") as archive:
+        archive.writestr("xl/padding.bin", b"a" * (MAX_WEB_XLSX_BYTES - len(workbook()) - 104))
+    raw = output.getvalue()
+    assert 1048576 < len(raw) <= MAX_WEB_XLSX_BYTES
+    response = await request(app, settings, method="POST", payload={
+        "name": "large.xlsx", "base64": base64.b64encode(raw).decode(),
+    })
+    assert response.status_code == 201, response.text
+    file = response.json()["file"]
+    selection = await selected(app, settings, file["document_id"])
+    assert selection.status_code == 201, selection.text
+    persisted = conn.execute("SELECT size_bytes, source_sha256 FROM claw_web_xlsx_selections").fetchone()
+    assert tuple(persisted) == (len(raw), hashlib.sha256(raw).hexdigest())
+    foreign = await selected(app, settings, file["document_id"], owner=FOREIGN)
+    assert foreign.status_code in (403, 404)
+    assert conn.execute("SELECT COUNT(*) FROM claw_web_xlsx_selections").fetchone()[0] == 1
