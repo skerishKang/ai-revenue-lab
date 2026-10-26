@@ -1542,6 +1542,13 @@ class Default(WorkerEntrypoint):
                 # every pairing route answers 503 exactly as before this slice.
                 if db_binding is not None:
                     _worker_app.state.pc_device_pairing_store = D1PcPairingStore(db_binding)
+                # #5573 PC pairing handoff: the ONE Windows installer value, read
+                # from deployment vars. An empty or non-https value is no value,
+                # and the handoff route answers 503 "준비 중" rather than inventing
+                # a download target.
+                _worker_app.state.pc_pairing_install_url = (
+                    getattr(self.env, "PC_AGENT_INSTALL_URL", None) or ""
+                ).strip()
                 _worker_app.state.mesh_presence_generation_resolver = (
                     build_mesh_presence_generation_resolver(self.env)
                 )

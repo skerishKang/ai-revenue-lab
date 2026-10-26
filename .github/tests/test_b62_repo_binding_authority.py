@@ -13,21 +13,27 @@ from b62_repo_binding_authority import binding_diff, inventory, index, verify_ex
 from b62_cloudflare_production_deploy_config import parse_live_bindings, production_plan, build_production_config
 
 
-def test_actual_declared_vs_served_inventory_matches_now_that_metadata_is_served(capsys):
+def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(capsys):
     rows = json.loads((ROOT/'.github/tests/fixtures/b62_served_binding_inventory_20261026.json').read_text())
     for row in rows:
         if row['type'] == 'plain_text': row['text'] = '<synthetic-private-value>'
     live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
     repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
     expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
-    # The repository declares one binding the served inventory does not carry yet:
-    # the #5881 file-lane ticket secret, whose value the OWNER stores first and the
-    # next exact-main deploy attaches. The reviewed baseline already allows it, so the
-    # only pending delta is that single addition - nothing removed, nothing changed.
-    # Once that deploy lands, this returns to the steady-state empty diff.
+    # Two reviewed entries are declared and not yet served, and the reviewed
+    # inventory is what production is answering with today:
+    #   - #5919 declares PC_AGENT_INSTALL_URL in [vars] with an empty value, which
+    #     the pairing handoff reads as "not ready" until a deploy injects the real
+    #     https installer URL.
+    #   - this change declares the #5881 file-lane ticket secret, whose value the
+    #     OWNER stores first and the next exact-main deploy attaches.
+    # Each one is named here as a pending addition - never unexplained drift, and
+    # never a silent removal of something serving traffic. Both return to an empty
+    # diff as their deploys land.
     assert binding_diff(index(rows), expected) == {
         'added': [{'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
-                   'type': 'secrets_store_secret'}],
+                   'type': 'secrets_store_secret'},
+                  {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'}],
         'removed': [],
         'changed': [],
     }
