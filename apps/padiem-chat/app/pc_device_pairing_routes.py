@@ -47,6 +47,10 @@ _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 _MESSAGES = {
     "unauthorized": "로그인이 필요합니다.",
     "pc_pairing_unavailable": "PC 연결을 현재 처리할 수 없습니다.",
+    #: Migration 072 not applied yet: the Worker composes the store against a
+    #: live D1 binding that has no pairing tables. This is the sentence the
+    #: browser sees until the Owner applies the migration.
+    "pc_pairing_not_ready": "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
     "pc_pairing_body_invalid": "PC 연결 요청 형식이 올바르지 않습니다.",
     "pc_pairing_code_unknown": "연결 코드를 확인할 수 없습니다. 새 코드로 다시 시도해 주세요.",
     "pc_pairing_code_used": "이 연결 코드는 이미 사용되었습니다. 새 코드를 발급해 주세요.",
@@ -117,6 +121,35 @@ def _store(request: Request) -> Any:
     return getattr(request.app.state, "pc_device_pairing_store", None)
 
 
+#: What a D1 database says when the migration that creates a pairing table has
+#: not been applied. Text matching is enough here because both branches refuse:
+#: neither one authorizes anything, and neither echoes the driver's sentence.
+_MISSING_SCHEMA_MARKERS = ("no such table", "no such column")
+
+
+def _unavailable(exc: BaseException) -> JSONResponse:
+    """A store fault is always a refusal, never a partial answer.
+
+    The Worker composes this store against whatever D1 binding is configured, so
+    before the Owner applies 072 every pairing query fails in the driver. The
+    deployment must read as "not ready yet" rather than as an HTTP 500.
+    """
+    text = str(exc).lower()
+    return _error(503, "pc_pairing_not_ready"
+                  if any(marker in text for marker in _MISSING_SCHEMA_MARKERS)
+                  else "pc_pairing_unavailable")
+
+
+async def _await_store(action: Any, **values: Any) -> tuple[Any, JSONResponse | None]:
+    """Run one store call, or return the refusal it deserves."""
+    try:
+        return await action(**values), None
+    except PcPairingError as exc:
+        return None, _refused(exc)
+    except Exception as exc:
+        return None, _unavailable(exc)
+
+
 async def _body(request: Request) -> dict[str, Any] | None:
     """One closed JSON object, or None when the body is not one."""
     try:
@@ -145,10 +178,9 @@ async def pc_pairing_issue(request: Request) -> JSONResponse:
     body = await _body(request)
     if body is None or set(body) not in (set(), {"label"}):
         return _error(400, "pc_pairing_body_invalid")
-    try:
-        issued = await store.issue_code(user_id=user_id, issued_at=_now())
-    except PcPairingError as exc:
-        return _refused(exc)
+    issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
+    if refused is not None:
+        return refused
     return _json({
         "ok": True,
         "pairing": {
@@ -168,11 +200,12 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
     store = _store(request)
     if store is None:
         return _error(503, "pc_pairing_unavailable")
-    try:
-        links = await store.list_links(user_id=user_id)
-        codes = await store.list_codes(user_id=user_id, now=_now())
-    except PcPairingError as exc:
-        return _refused(exc)
+    links, refused = await _await_store(store.list_links, user_id=user_id)
+    if refused is not None:
+        return refused
+    codes, refused = await _await_store(store.list_codes, user_id=user_id, now=_now())
+    if refused is not None:
+        return refused
     return _json({"ok": True, "links": links, "codes": codes}, 200)
 
 
@@ -184,12 +217,12 @@ async def pc_pairing_revoke(request: Request) -> JSONResponse:
     store = _store(request)
     if store is None:
         return _error(503, "pc_pairing_unavailable")
-    try:
-        revoked = await store.revoke_link(
-            user_id=user_id, link_id=request.path_params.get("link_id"), now=_now(),
-        )
-    except PcPairingError as exc:
-        return _refused(exc)
+    revoked, refused = await _await_store(
+        store.revoke_link, user_id=user_id,
+        link_id=request.path_params.get("link_id"), now=_now(),
+    )
+    if refused is not None:
+        return refused
     if not revoked:
         return _error(404, "pc_pairing_link_not_found")
     return _json({"ok": True, "revoked": True}, 200)
@@ -226,12 +259,12 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             verified = bool(await verifier(mesh_node_id=mesh_node_id, code=code))
         except Exception:
             verified = False
-    try:
-        link = await store.redeem_code(
-            code=code, mesh_node_id=mesh_node_id, label=label, now=_now(), verified=verified,
-        )
-    except PcPairingError as exc:
-        return _refused(exc)
+    link, refused = await _await_store(
+        store.redeem_code, code=code, mesh_node_id=mesh_node_id, label=label,
+        now=_now(), verified=verified,
+    )
+    if refused is not None:
+        return refused
     return _json({
         "ok": True,
         "link": {
@@ -257,12 +290,12 @@ async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     path = normalize_root_path(body.get("path"))
     if path is None:
         return _error(400, "pc_pairing_root_invalid")
-    try:
-        root = await store.approve_root(
-            user_id=user_id, link_id=request.path_params.get("link_id"), path=path, now=_now(),
-        )
-    except PcPairingError as exc:
-        return _refused(exc)
+    root, refused = await _await_store(
+        store.approve_root, user_id=user_id,
+        link_id=request.path_params.get("link_id"), path=path, now=_now(),
+    )
+    if refused is not None:
+        return refused
     return _json({"ok": True, "root": root}, 201)
 
 
@@ -274,15 +307,13 @@ async def pc_pairing_revoke_root(request: Request) -> JSONResponse:
     store = _store(request)
     if store is None:
         return _error(503, "pc_pairing_unavailable")
-    try:
-        revoked = await store.revoke_root(
-            user_id=user_id,
-            link_id=request.path_params.get("link_id"),
-            root_ref=request.path_params.get("root_ref"),
-            now=_now(),
-        )
-    except PcPairingError as exc:
-        return _refused(exc)
+    revoked, refused = await _await_store(
+        store.revoke_root, user_id=user_id,
+        link_id=request.path_params.get("link_id"),
+        root_ref=request.path_params.get("root_ref"), now=_now(),
+    )
+    if refused is not None:
+        return refused
     if not revoked:
         return _error(404, "pc_pairing_root_not_found")
     return _json({"ok": True, "revoked": True}, 200)
