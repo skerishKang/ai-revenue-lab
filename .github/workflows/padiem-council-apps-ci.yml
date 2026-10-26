@@ -1,0 +1,74 @@
+name: PADIEM Council Apps CI
+
+# Focused contract test lane for the PADIEM council apps (의원3종)
+# independent entry (#5608/#5655/#5731 base).
+#
+# It proves only what it executes: the app's own structure, prompt-contract
+# and behavioural-harness tests. The app owns no model route and no store;
+# generation and storage run on the existing PADIEM contracts, so this lane
+# never depends on a provider and never deploys anything.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-council-apps/**'
+      - '.github/workflows/padiem-council-apps-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-council-apps/**'
+      - '.github/workflows/padiem-council-apps-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-council-apps-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  council-apps-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install the council apps entry with its test extras
+        run: |
+          python -m pip install --disable-pip-version-check -e 'apps/padiem-council-apps[dev]'
+          python -m pip check
+
+      - name: Check the browser module parses
+        run: node --check apps/padiem-council-apps/static/council-app.js
+
+      - name: Test the council apps contracts
+        run: python -m pytest apps/padiem-council-apps/tests -q
