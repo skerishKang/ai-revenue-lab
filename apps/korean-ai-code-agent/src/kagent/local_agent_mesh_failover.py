@@ -527,6 +527,21 @@ class MeshCentralDevicePresence:
                 connected.add(node_id)
         return frozenset(connected)
 
+    def name_of(self, device_id: str) -> str | None:
+        """The name the local server reports for one device, or ``None``.
+
+        #5573: the pairing tag an installer stamps into the agent name is how a
+        PC that cannot name its own node identity still gets claimed. The name
+        is observation only — it is handed to the server and never kept here.
+        """
+        if not isinstance(device_id, str) or not device_id.strip():
+            raise ContractError("the device id is required")
+        for row in self._parse_listdevices(self._run_listdevices()):
+            if row.get("id") == device_id:
+                name = row.get("name")
+                return name if isinstance(name, str) and name.strip() else None
+        return None
+
     def is_connected(self, device_id: str) -> bool:
         """Whether the named device is connected to the local server."""
         if not isinstance(device_id, str) or not device_id.strip():
