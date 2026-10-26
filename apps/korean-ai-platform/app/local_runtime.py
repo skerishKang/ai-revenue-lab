@@ -28,6 +28,7 @@ import sqlite3
 import sys
 import threading
 from collections.abc import Iterable, Sequence
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -202,8 +203,11 @@ class SqliteLedger:
     letting a database problem undo an answer a customer received.
     """
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, migrations_dir: Path | None = None) -> None:
         self._path = path
+        self._migrations_dir = Path(migrations_dir) if migrations_dir is not None else (
+            Path(__file__).resolve().parents[1] / "migrations"
+        )
         self._lock = threading.Lock()
         self._connection: sqlite3.Connection | None = None
 
@@ -226,16 +230,66 @@ class SqliteLedger:
         self._connection = connection
         return connection
 
-    def apply_migrations(self) -> int:
-        """Apply the committed ledger migrations verbatim; return the count."""
-        migrations = sorted((Path(__file__).resolve().parents[1] / "migrations").glob("*.sql"))
-        if not migrations:
+    def _ledger_migrations(self) -> list[Path]:
+        """The committed migration files, in the order they must be applied."""
+
+        found = sorted(self._migrations_dir.glob("*.sql"))
+        if not found:
             raise RuntimeError("b14_ledger_migrations_missing")
+        return found
+
+    def recorded_migrations(self) -> tuple[str, ...]:
+        """The migration names this database has already applied."""
+
         with self._lock:
             connection = self.connect()
+            self._ensure_migration_table(connection)
+            return tuple(
+                str(row[0])
+                for row in connection.execute(
+                    "SELECT name FROM b14_local_migration ORDER BY name"
+                )
+            )
+
+    @staticmethod
+    def _ensure_migration_table(connection: sqlite3.Connection) -> None:
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS b14_local_migration ("
+            " name TEXT PRIMARY KEY CHECK (length(name) BETWEEN 1 AND 256),"
+            " applied_at TEXT NOT NULL)"
+        )
+
+    def apply_migrations(self) -> int:
+        """Apply each committed migration once, in filename order; return how many.
+
+        Re-running every file at every start was survivable only because 0001 is
+        written with ``IF NOT EXISTS``. A migration that is not re-runnable — a
+        backfill, a ``DROP``, an ``ALTER`` the engine resolves differently — would
+        have broken the second boot, so the applied names are recorded here and
+        later files (0002 onward) are picked up in order without touching what
+        already ran. The count is what this call applied, not what exists: a
+        restart that applied nothing reports zero rather than pretending.
+        """
+
+        migrations = self._ledger_migrations()
+        applied_now = 0
+        with self._lock:
+            connection = self.connect()
+            self._ensure_migration_table(connection)
+            done = {
+                str(row[0])
+                for row in connection.execute("SELECT name FROM b14_local_migration")
+            }
             for migration in migrations:
+                if migration.name in done:
+                    continue
                 connection.executescript(migration.read_text(encoding="utf-8"))
-        return len(migrations)
+                connection.execute(
+                    "INSERT INTO b14_local_migration (name, applied_at) VALUES (?, ?)",
+                    (migration.name, datetime.now(timezone.utc).isoformat()),
+                )
+                applied_now += 1
+        return applied_now
 
     def prepare(self, sql: str) -> _LedgerStatement:
         return _LedgerStatement(self, sql)
@@ -346,7 +400,10 @@ def build_local_env() -> LocalEnv:
         else:
             ledger = candidate
             logger.info(
-                "b14_local_ledger bound migrations=%d storage_state=bound", applied
+                "b14_local_ledger bound migrations_applied=%d migrations_recorded=%d"
+                " storage_state=bound",
+                applied,
+                len(candidate.recorded_migrations()),
             )
     else:
         logger.info("b14_local_ledger unset storage_state=not_configured")

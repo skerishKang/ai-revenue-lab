@@ -107,6 +107,61 @@ def test_ledger_applies_the_committed_migration_and_creates_the_file(host_dirs) 
     assert {"b14_model_call", "b14_model_call_attempt", "b14_model_call_started"} <= names
 
 
+def test_a_second_start_applies_nothing_and_records_the_same_migrations(host_dirs) -> None:
+    """Re-running 0001 at every boot only worked while 0001 was re-runnable.
+
+    The applied names are what makes the second, third and hundredth start the
+    same as the first, so a restart must apply zero and still find its schema.
+    """
+    path, _ = host_dirs
+    first = SqliteLedger(path)
+    assert first.apply_migrations() == 1
+    recorded = first.recorded_migrations()
+    assert [name[:4] for name in recorded] == ["0001"]
+    first.close()
+
+    restarted = SqliteLedger(path)
+    assert restarted.apply_migrations() == 0
+    assert restarted.recorded_migrations() == recorded
+    import sqlite3
+
+    connection = sqlite3.connect(str(path))
+    try:
+        tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master")}
+    finally:
+        connection.close()
+    assert {"b14_model_call", "b14_model_call_attempt"} <= tables
+
+
+def test_a_later_migration_runs_once_and_in_order_after_the_first(host_dirs, tmp_path) -> None:
+    """0002 arrives later; the next start applies only it, and never twice."""
+    import shutil
+
+    path, _ = host_dirs
+    source = tmp_path / "migrations"
+    shutil.copytree(APP_ROOT / "migrations", source)
+    ledger = SqliteLedger(path, migrations_dir=source)
+    assert ledger.apply_migrations() == 1
+
+    (source / "0002_b14_local_marker.sql").write_text(
+        "CREATE TABLE b14_local_marker (id INTEGER PRIMARY KEY CHECK (id = 1));",
+        encoding="utf-8",
+    )
+    assert ledger.apply_migrations() == 1
+    assert [name[:4] for name in ledger.recorded_migrations()] == ["0001", "0002"]
+    # A third start sees both names recorded and runs neither script again.
+    assert ledger.apply_migrations() == 0
+    import sqlite3
+
+    connection = sqlite3.connect(str(path))
+    try:
+        connection.execute("INSERT INTO b14_local_marker (id) VALUES (1)")
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute("INSERT INTO b14_local_marker (id) VALUES (2)")
+    finally:
+        connection.close()
+
+
 def test_migration_constraints_are_the_same_constraints(host_dirs) -> None:
     """A look-alike table would pass a round-trip and still lie later."""
     path, _ = host_dirs
