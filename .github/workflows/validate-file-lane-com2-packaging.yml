@@ -2,7 +2,7 @@ name: Validate COM2 File Lane Packaging
 on:
   pull_request:
     paths:
-      - 'deploy/com2/file-lane/**'
+      - 'deploy/host-com2/file-lane/**'
       - 'docs/operations/FILE_LANE_COM2_RUNBOOK.md'
       - 'apps/padiem-file-lane/**'
       - '.github/workflows/validate-file-lane-com2-packaging.yml'
@@ -23,4 +23,4 @@ jobs:
         with:
           version: '0.13.5'
       - name: Offline installer, systemd syntax, health and lock contracts
-        run: python -m unittest discover -s deploy/com2/file-lane/tests -q
+        run: python -m unittest discover -s deploy/host-com2/file-lane/tests -q

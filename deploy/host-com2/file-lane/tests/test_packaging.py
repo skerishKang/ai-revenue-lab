@@ -41,6 +41,13 @@ class Packaging(unittest.TestCase):
         self.assertIn('if [[ ! -e "$app/.env" ]]', source)
         self.assertIn("--require-hashes", source)
 
+    def test_checkout_paths_avoid_windows_reserved_device_names(self):
+        self.assertEqual(HERE.relative_to(ROOT).parts, ("deploy", "host-com2", "file-lane"))
+        reserved = {"CON", "PRN", "AUX", "NUL"} | {f"{prefix}{i}" for prefix in ("COM", "LPT") for i in range(1, 10)}
+        for path in HERE.rglob("*"):
+            for part in path.relative_to(ROOT).parts:
+                self.assertNotIn(part.split(".")[0].upper(), reserved)
+
     def test_unit_matches_the_actual_host_contract(self):
         source = (HERE / "padiem-file-lane.service").read_text()
         for value in ["EnvironmentFile=/opt/padiem/file-lane/.env", "Environment=FILE_LANE_ROOT=/mnt/d/padiem/file-lane",

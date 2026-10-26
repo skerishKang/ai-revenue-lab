@@ -41,13 +41,13 @@ reviewed file-lane process; do not kill an unknown listener to obtain the port.
 From the reviewed checkout root, first print the non-mutating plan:
 
 ```bash
-bash deploy/com2/file-lane/install.sh --dry-run
+bash deploy/host-com2/file-lane/install.sh --dry-run
 ```
 
 After the separate installation GO, run:
 
 ```bash
-sudo bash deploy/com2/file-lane/install.sh --apply --source-root "$PWD"
+sudo bash deploy/host-com2/file-lane/install.sh --apply --source-root "$PWD"
 ```
 
 The installer refuses an active `padiem-file-lane.service`; stop only that unit
