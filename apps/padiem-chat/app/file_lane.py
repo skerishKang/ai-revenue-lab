@@ -53,6 +53,18 @@ class FileLaneClient:
         return {"ok": True, "upload_url": self.origin + "/files", "headers": headers,
                 "expires": expires, "max_bytes": maximum}
 
+    def read_ticket(self, user_id):
+        """One fresh read capability for the server-verified current owner.
+
+        max_bytes is an upload budget, not permission to another namespace, so
+        every read mints the same minimal claim. #5881 stage 4 hands that claim
+        to the Engine instead of using it here, and both paths keep this single
+        mint point so no second ticket authority appears.
+        """
+        if not self.ready:
+            raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
+        return ticket_headers(self._secret, user_id, 1)
+
     async def resolve(self, user_id, item):
         if (not isinstance(item, dict) or set(item) != {"type", "file_id"}
                 or item.get("type") != "file" or not isinstance(item.get("file_id"), str)
@@ -60,9 +72,7 @@ class FileLaneClient:
             raise AttachmentValidationError("첨부 파일 참조 형식이 올바르지 않습니다.")
         if not self.ready:
             raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
-        # A read ticket is minted only for the server-verified current user.
-        # max_bytes is an upload budget, not permission to another namespace.
-        headers, _ = ticket_headers(self._secret, user_id, 1)
+        headers, _ = self.read_ticket(user_id)
         url = self.origin + "/files/" + item["file_id"]
         try:
             async with httpx.AsyncClient(transport=self._transport, timeout=None, follow_redirects=False, trust_env=False) as client:

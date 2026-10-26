@@ -67,6 +67,31 @@ The ticket is a per-user bearer capability until expiry, as in PR-1. Expiry is
 checked at request start; it is not an upload timeout. No retention/deletion,
 OOXML/OCR, Util, B66, PC-result ingestion or model route change is added here.
 
+## PR-4: the Engine reads the lane, not Chat
+
+`app/claw_file_lane_admission_composition.py` adds the server-only seam that
+presents one reference to the Engine instead of carrying its text:
+
+```json
+{"session_id": "<server-resolved auth session>", "file_id": "file_<32 hex>",
+ "sha256": "<64 hex>", "file_ticket": {"X-Padiem-File-Ticket": "...",
+ "X-Padiem-File-Time": "...", "X-Padiem-File-Proof": "..."}}
+```
+
+It is posted to `POST /internal/v1/documents` over the existing P01 Engine
+Service Binding, and the reply is the Engine receipt projection
+(`document_ref`, `media_type`, `byte_size`, `expires_at`, `total_chars`,
+`next_offset`, `window_eof`). No document text enters this process, no new
+secret path exists (`ticket_headers` stays the single mint point, reached
+through `FileLaneClient.read_ticket`), and the claim is minted inside the call
+so the Engine always presents it within its own lifetime.
+
+The seam is deliberately route-free: no Worker route or browser-callable path
+reaches it, and turning a turn's attachment into that call is a later slice.
+`PADIEM_CHAT_FILE_LANE_ORIGIN` unset (or missing `P01_ENGINE_*` bindings)
+composes nothing, so the inline path above stays exactly as it was. No Engine,
+Chat or COM2 deployment is performed by this slice.
+
 ## Offline evidence
 
 `tests/test_5881_file_lane.py` runs real Chat and COM2 ASGI apps through the
@@ -74,3 +99,7 @@ whole ticket/upload/reference/completion seam, verifies HMAC wire parity and
 owner isolation, checks same-origin and client-selected-owner refusals, and
 runs the shipped browser module in Node. Existing inline and Claw document,
 image, binary, streaming and Worker regressions remain part of verification.
+`tests/test_5881_claw_file_lane_admission.py` proves the PR-4 load against a
+recording Engine binding with the real COM2 app as the ticket authority, and
+that an unconfigured lane composes no seam while the inline path answers
+unchanged.
