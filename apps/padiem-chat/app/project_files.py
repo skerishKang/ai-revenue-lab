@@ -18,6 +18,14 @@ DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingm
 IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
 BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
+#: The stored ceiling of `project_files.content_chars`, declared by migrations
+#: 003/068/069 as `CHECK(content_chars <= 40000)`. Checking it before the INSERT
+#: turns a D1 constraint violation into the route's own 422. It is the schema's
+#: bound on a persisted row, not a limit on how long a document may be: #5734
+#: stage 2 removed the document-length refusals, and an ephemeral composer
+#: attachment of any length is unaffected.
+PROJECT_FILE_MAX_CONTENT_CHARS = 40_000
+
 #: #5728 — the same honesty the document path enforces through its parser:
 #: the declared image media type must match the bytes actually uploaded, so a
 #: text payload renamed to .png can never masquerade as a stored original.
@@ -344,6 +352,10 @@ class D1ProjectFileStore:
         *,
         source_media_type: str | None = None,
     ) -> ProjectFileRecord:
+        if len(text) > PROJECT_FILE_MAX_CONTENT_CHARS:
+            raise ProjectFileLimitError(
+                f"프로젝트 파일 본문은 저장 스키마의 한계({PROJECT_FILE_MAX_CONTENT_CHARS}자)를 넘었습니다."
+            )
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
         if media_type in IMAGE_PROJECT_FILE_MEDIA:
