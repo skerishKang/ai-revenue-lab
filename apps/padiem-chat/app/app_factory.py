@@ -279,6 +279,7 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
 from .byok_client import CustomProviderClient
 from .byok_credentials import D1CustomProviderCredentialStore
 from .byok_routes import (
+    byok_detect, byok_register,
     custom_credential_delete,
     custom_credential_save,
     custom_credential_status,
@@ -619,6 +620,8 @@ def create_app(
         ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/byok/detect", byok_detect, methods=["POST"]),
+        Route("/api/byok/register", byok_register, methods=["POST"]),
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),

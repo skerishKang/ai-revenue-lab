@@ -331,12 +331,13 @@ QUOTE_CANDIDATE = {"recipient": {"company": "ABC건설"}, "items": []}
 
 
 @pytest.mark.asyncio
-async def test_status_exposes_the_five_official_providers_and_capabilities():
+async def test_status_exposes_the_official_providers_and_capabilities():
     app, *_ = build_chat_app()
     response = await request(app, "GET", "/api/chat/custom/credential", uid=OWNER)
     assert response.status_code == 200, response.text
     providers = {row["provider"]: row for row in response.json()["providers"]}
-    assert set(providers) == {"opencode-go", "openai", "openrouter", "anthropic", "gemini"}
+    assert set(providers) == {"opencode-go", "openai", "openrouter", "anthropic", "gemini",
+        "deepseek", "groq", "xai", "perplexity", "huggingface"}
     assert providers["opencode-go"]["manual_model"] is False
     assert providers["opencode-go"]["supports_model_listing"] is False
     assert providers["opencode-go"]["supports_connection_test"] is False
@@ -1273,3 +1274,115 @@ async def test_claw_and_b66_use_a_non_opencode_provider_without_b14():
         assert wire.headers["x-api-key"] == API_KEY
     assert len(harness.recorder.requests) == 3
     harness.assert_no_managed_dispatch()
+
+
+@pytest.mark.parametrize("provider,prefix", [
+    ("anthropic", "sk-ant-"), ("gemini", "AIza"), ("openai", "sk-proj-"),
+    ("openai", "sk-"), ("groq", "gsk_"), ("xai", "xai-"),
+    ("perplexity", "pplx-"), ("openrouter", "sk-or-"), ("huggingface", "hf_"),
+])
+async def test_byok_detect_prefix_table_verifies_without_key_echo(provider, prefix, caplog):
+    from app.byok_client import detect_byok
+    key = prefix + "synthetic" * 6
+    calls = []
+    def handler(req):
+        calls.append((req.method, req.url.path))
+        if req.url.path.endswith("/models"):
+            if provider == "gemini":
+                return httpx.Response(200, json={"models": [{"name": "models/chat-light", "supportedGenerationMethods": ["generateContent"]}]})
+            return httpx.Response(200, json={"data": [{"id": "chat-light"}]})
+        if req.method == "POST":
+            assert json.loads(req.content)["max_tokens"] == 1
+            return httpx.Response(200, json={"choices": [{"message": {"content": "H"}}]})
+        return httpx.Response(200, json={"data": {}})
+    result = await detect_byok(CustomProviderClient(transport=httpx.MockTransport(handler), endpoint_resolver=StaticResolver()), key=key)
+    assert result["provider"] == provider and result["verified"] is True
+    assert bool(result["models"])
+    assert not bool(key in json.dumps(result) or key in caplog.text)
+    assert len(calls) <= 2
+
+
+@pytest.mark.parametrize("status,expected,calls_expected", [(401, "deepseek", 2), (403, "openai", 1), (502, "openai", 1)])
+async def test_byok_ambiguous_sk_only_retries_deepseek_after_401(status, expected, calls_expected):
+    from app.byok_client import detect_byok
+    calls = []
+    def handler(req):
+        calls.append(req.url.host)
+        if req.url.host == "api.openai.com":
+            return httpx.Response(status)
+        return httpx.Response(200, json={"data": [{"id": "deepseek-flash"}]})
+    result = await detect_byok(CustomProviderClient(transport=httpx.MockTransport(handler)), key="sk-" + "synthetic" * 6)
+    assert result["provider"] == expected
+    assert result["verified"] == (status == 401)
+    assert len(calls) == calls_expected
+
+
+async def test_byok_unknown_endpoint_probe_and_registration_reverify_sealed_owner_store(caplog):
+    class Recorder:
+        def __init__(self):
+            self.calls = []
+            self.transport = httpx.MockTransport(self.handle)
+        def handle(self, req):
+            self.calls.append((req.method, req.url.host, req.url.path))
+            return httpx.Response(200, json={"data": [{"id": "chat-light"}]})
+    recorder = Recorder()
+    app, d1, _, store, _, b14 = build_chat_app(recorder=recorder)
+    key = "unknown_" + "synthetic" * 6
+    body = {"key": key, "base_url": "https://gateway.example.test/v1"}
+    unknown = await request(app, "POST", "/api/byok/detect", uid=OWNER, json_body={"key": key})
+    assert unknown.json()["verified"] is False and not recorder.calls
+    detect = await request(app, "POST", "/api/byok/detect", uid=OWNER, json_body=body)
+    assert detect.json()["verified"] is True
+    assert await store.credential(OWNER, "openai") is None
+    denied = await request(app, "POST", "/api/byok/register", uid=OWNER,
+        json_body={**body, "provider": "groq", "model": "chat-light"})
+    assert denied.status_code == 409
+    registered = await request(app, "POST", "/api/byok/register", uid=OWNER,
+        json_body={**body, "provider": "openai", "model": "chat-light"})
+    assert registered.status_code == 200
+    assert registered.json()["selection"] == {"provider": "openai", "model": "chat-light"}
+    assert bool((await store.credential(OWNER, "openai"))[0] == key)
+    assert await store.credential(OTHER, "openai") is None
+    for response in (unknown, detect, denied, registered):
+        assert not bool(key in response.text)
+    assert not bool(key in caplog.text)
+    assert all(path == "/v1/models" for _, _, path in recorder.calls)
+
+
+@pytest.mark.parametrize("fault", ["auth", "network", "redirect", "empty", "echo"])
+async def test_byok_detect_failure_is_static_and_never_saves_or_echoes_key(fault, caplog):
+    from app.byok_client import detect_byok
+    key = "gsk_" + "synthetic" * 6
+    def handler(req):
+        if fault == "network":
+            raise httpx.ConnectError("private " + key, request=req)
+        if fault == "auth":
+            return httpx.Response(401, json={"error": key})
+        if fault == "redirect":
+            return httpx.Response(302, headers={"Location": "https://untrusted.example.test"})
+        return httpx.Response(200, json={"data": [{"id": key}] if fault == "echo" else []})
+    result = await detect_byok(CustomProviderClient(transport=httpx.MockTransport(handler)), key=key)
+    assert result["verified"] is False
+    assert not bool(key in json.dumps(result) or key in caplog.text)
+    assert "고급" in result["reason"]
+
+
+async def test_byok_registered_default_uses_existing_direct_stream_and_no_b14():
+    class Recorder:
+        def __init__(self):
+            self.transport = httpx.MockTransport(self.handle)
+        def handle(self, req):
+            if req.method == "GET":
+                return httpx.Response(200, json={"data": [{"id": "chat-light"}]})
+            return sse(data({"choices": [{"delta": {"content": "direct answer"}}]}),
+                       "data: [DONE]\n\n")
+    app, _, _, _, _, b14 = build_chat_app(recorder=Recorder())
+    registered = await request(app, "POST", "/api/byok/register", uid=OWNER,
+        json_body={"key": "gsk_" + "synthetic" * 6})
+    assert registered.status_code == 200
+    selection = registered.json()["selection"]
+    response = await request(app, "POST", "/api/chat/stream", uid=OWNER,
+        json_body={"messages": [{"role": "user", "content": "hello"}], "custom": selection})
+    assert response.status_code == 200
+    assert "direct answer" in response.text
+    assert not b14.calls
