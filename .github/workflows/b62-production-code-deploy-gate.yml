@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_repo_binding_authority.py"
+      - ".github/tests/fixtures/b62_served_binding_inventory_20261026.json"
       - ".github/tests/test_b62_observability_deploy_contract.py"
       - ".github/scripts/b62_connector_broker_additive_preflight.py"
       - ".github/tests/test_b62_connector_broker_additive_preflight.py"
@@ -23,7 +25,7 @@ on:
       - "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py"
       - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
       - ".github/scripts/b62_web_secrets_store_contract.py"
-      - ".github/tests/test_b62_atomic_web_secrets_3523.py"
+      - ".github/tests/test_b62_repo_binding_authority.py"
       - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
       - ".github/tests/test_b62_cloudflare_rollback_deployment_request.py"
       - ".github/scripts/b62_rollback_recorded_version_guard.py"
@@ -130,61 +132,16 @@ on:
         required: false
         default: ""
         type: string
-      commission_hark_browser:
-        description: "Explicit owner-authorized BROWSER-only additive install; no PDF rendering or Hark flag activation"
+      allow_binding_removal:
+        description: "Explicitly permit removal of repository-absent bindings or set_var null removals"
         required: false
         type: boolean
         default: false
-      attach_existing_web_secrets_store:
-        description: "Atomically attach the two existing Charliekant TinyFish and Daum secret bindings with new main code"
+      set_var:
+        description: "Private JSON object: explicit variable overrides; null removes only with allow_binding_removal"
         required: false
-        type: boolean
-        default: false
-      attach_existing_grafana_telemetry:
-        description: "Owner-authorized exact Grafana OTLP Secrets Store binding only, no secret values or other configuration changes"
-        required: false
-        type: boolean
-        default: false
-      attach_existing_oracle_mesh:
-        description: "#4139: attach only the two existing Oracle Mesh Secrets Store references (no values, no other changes)"
-        required: false
-        type: boolean
-        default: false
-      attach_existing_claw_desktop_secret:
-        description: "#4139: attach only the one existing shared Engine/Chat desktop Secrets Store reference (no value, no other changes)"
-        required: false
-        type: boolean
-        default: false
-      attach_existing_b14_service_proof_secret:
-        description: "#5224: attach only the one deployment-owned B14 caller-proof Secrets Store reference (no value, no other changes)"
-        required: false
-        type: boolean
-        default: false
-      attach_existing_resend_secret:
-        description: "#5441: attach only the one Owner-registered transactional-mail Secrets Store reference (no value, no other changes)"
-        required: false
-        type: boolean
-        default: false
-      attach_document_parser_service:
-        description: "Attach only DOCUMENT_PARSER_SERVICE to the already deployed private parser Worker"
-        required: false
-        type: boolean
-        default: false
-      attach_existing_connector_broker:
-        description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
-        required: false
-        type: boolean
-        default: false
-      activate_claw_public_search:
-        description: "Owner-authorized one-variable Claw web-search ON addition; preserve all other live settings"
-        required: false
-        type: boolean
-        default: false
-      preserve_existing_b66_membership_secret:
-        description: "Explicitly admit only the already-existing B66_MEMBERSHIP_ENFORCED secret_text metadata when a concurrent B66 change is present; do not read/set value"
-        required: false
-        type: boolean
-        default: false
+        type: string
+        default: "{}"
       previous_version_id:
         description: "Recorded previous production version id (rollback mode)"
         required: false
@@ -279,11 +236,11 @@ jobs:
           echo "B62_OBSERVABILITY_DEPLOY_CONTRACT=PASS"
           echo "PRODUCTION_MUTATION=0"
 
-      - name: Prove Owner-approved atomic web Secrets Store addition contract
+      - name: Verify repository binding authority and private variable controls
         shell: bash
         run: |
           set -euo pipefail
-          python -m pytest .github/tests/test_b62_atomic_web_secrets_3523.py -q
+          python -m pytest .github/tests/test_b62_repo_binding_authority.py -q
           echo "B62_WEB_SECRETS_STORE_SOURCE_GUARD=PASS"
           echo "PRODUCTION_MUTATION=0"
 
@@ -458,12 +415,7 @@ jobs:
           assert "B62_BINDING_BASELINE=PASS" in workflow
           assert "B62_BINDING_BASELINE_VALUES_EMITTED=0" in workflow
           assert ".github/binding_baselines/**" in workflow
-          assert "b62-settings-before-normalized.json" in workflow
-          assert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow
           assert "INJECTED_EXPECTED_" + "ONLY" not in workflow
-          assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in workflow
-          assert "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO" in workflow
-          assert "DEPLOY_MUTATES_LIVE_CONFIG=NO" in workflow
           assert "test \"${public_state}\" = \"expected\"" in workflow
           assert "B62_DEPLOY_LIVE_PREREQ=VERIFIED" in workflow
           assert "deploy-prereq" in workflow
@@ -558,12 +510,11 @@ jobs:
           assert "SECRET_VALUES_READ=0" in generator
           assert "SECRET_VALUES_EMITTED=0" in generator
           assert "duplicate binding names" in generator
-          assert "drift" in generator
-          assert "runtime mode is mock" in generator
+          assert "production_plan" in generator
+          assert "allow_binding_removal" in generator
+          assert "--dispatch-event" in workflow
+          assert "inputs." + "set_var" not in workflow
           assert "tomllib" in generator
-          assert "deploy does not inject" in generator
-          assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in generator
-          assert "DEPLOY_CONFIG_MUTATION_ZERO=PASS" in generator
           assert "verify_mutation_zero" in generator
 
           assert "bucket_name" in binding_guard
@@ -574,14 +525,12 @@ jobs:
           assert "SECRET_VALUES_READ=0" in binding_guard
 
           assert "python .github/scripts/b62_served_version_secret_guard.py capture" in workflow
-          assert "python .github/scripts/b62_served_version_secret_guard.py verify" in workflow
           assert "b62-served-secret-set-before.json" in workflow
           assert "PREDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow
           assert "POSTDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow
-          assert "FULL_SECRET_SET_EQUALITY=PASS" in workflow
           capture_pos = workflow.rindex("b62_served_version_secret_guard.py capture")
           deploy_pos = workflow.rindex("- name: Deploy production code preserving the full binding set")
-          verify_pos = workflow.rindex("b62_served_version_secret_guard.py verify")
+          verify_pos = workflow.rindex("--verify-served")
           assert capture_pos < deploy_pos < verify_pos
           assert "ambiguous active deployment" in served_guard
           assert "duplicate binding names" in served_guard
@@ -862,21 +811,23 @@ jobs:
           # a version and then refused it leaves that plane describing bindings no
           # traffic ever ran; proving against it would either block every later
           # release or teach the next generated config to carry that residue forward.
-          python3 .github/scripts/b62_binding_baseline.py \
-            --worker "${B62_WORKER}" --payload "${chat_served}"
-          if python3 .github/scripts/b62_binding_baseline.py \
-            --worker "${B62_WORKER}" --payload "${chat_settings}" \
-            > "${RUNNER_TEMP}/b62-baseline-settings-plane.txt" 2>&1; then
-            echo "B62_SETTINGS_PLANE_MATCHES_BASELINE=PASS"
-          else
-            # Bounded: the settings plane is compared, never echoed.
-            echo "B62_SETTINGS_PLANE_BINDING_RESIDUE=PRESENT"
-          fi
+          if [ "${{ inputs.mode }}" = "rollback_production_code" ]; then
+            python3 .github/scripts/b62_binding_baseline.py \
+              --worker "${B62_WORKER}" --payload "${chat_served}"
+            if python3 .github/scripts/b62_binding_baseline.py \
+              --worker "${B62_WORKER}" --payload "${chat_settings}" \
+              > "${RUNNER_TEMP}/b62-baseline-settings-plane.txt" 2>&1; then
+              echo "B62_SETTINGS_PLANE_MATCHES_BASELINE=PASS"
+            else
+              # Bounded: the settings plane is compared, never echoed.
+              echo "B62_SETTINGS_PLANE_BINDING_RESIDUE=PRESENT"
+            fi
 
-          echo "B62_BINDING_BASELINE=PASS"
-          echo "B62_BINDING_BASELINE_VALUES_EMITTED=0"
-          echo "B62_BINDING_BASELINE_WORKERS=${B62_WORKER}"
-          echo "PRODUCTION_MUTATION=0"
+            echo "B62_BINDING_BASELINE=PASS"
+            echo "B62_BINDING_BASELINE_VALUES_EMITTED=0"
+            echo "B62_BINDING_BASELINE_WORKERS=${B62_WORKER}"
+            echo "PRODUCTION_MUTATION=0"
+          fi
 
   deploy-production-code:
     needs: [source-contract, cloudflare-readonly]
@@ -895,132 +846,19 @@ jobs:
       READONLY_LATEST_VERSION: ${{ needs.cloudflare-readonly.outputs.latest_version }}
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
-      ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
-      ATTACH_GRAFANA_TELEMETRY: ${{ inputs.attach_existing_grafana_telemetry }}
-      ATTACH_ORACLE_MESH: ${{ inputs.attach_existing_oracle_mesh }}
-      ATTACH_CLAW_DESKTOP_SECRET: ${{ inputs.attach_existing_claw_desktop_secret }}
-      ATTACH_B14_SERVICE_PROOF_SECRET: ${{ inputs.attach_existing_b14_service_proof_secret }}
-      ATTACH_RESEND_ALERT_SECRET: ${{ inputs.attach_existing_resend_secret }}
-      ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
-      ATTACH_DOCUMENT_PARSER_SERVICE: ${{ inputs.attach_document_parser_service }}
-      ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
-      PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
-      COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
+      ALLOW_BINDING_REMOVAL: ${{ inputs.allow_binding_removal }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-          fi
-          if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "false"
-          fi
-          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            test "${ATTACH_RESEND_ALERT_SECRET}" = "false"
-          fi
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            test "${ATTACH_RESEND_ALERT_SECRET}" = "false"
-          fi
-          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            test "${ATTACH_RESEND_ALERT_SECRET}" = "false"
-          fi
           if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
             test "${CONFIRMATION}" = "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            test "${ATTACH_RESEND_ALERT_SECRET}" = "false"
             echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
-          elif [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_GRAFANA_TELEMETRY_FROM_EXACT_MAIN"
-            echo "GRAFANA_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
-          elif [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_ORACLE_MESH_ATTACH_FROM_EXACT_MAIN"
-            echo "ORACLE_MESH_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
-          elif [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_DESKTOP_SECRET_ATTACH_FROM_EXACT_MAIN"
-            echo "CLAW_DESKTOP_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
-          elif [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_B14_SERVICE_PROOF_SECRET_ATTACH_FROM_EXACT_MAIN"
-            echo "B14_SERVICE_PROOF_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
-          elif [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_RESEND_ALERT_SECRET_ATTACH_FROM_EXACT_MAIN"
-            echo "RESEND_ALERT_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
-          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
-            echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
-          elif [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            echo "B66_MEMBERSHIP_BINDING_METADATA_EXCEPTION=EXPLICIT_SINGLE_NAME_ONLY"
-          elif [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
-            test "${CONFIRMATION}" = "DEPLOY_B62_HARK_BROWSER_FROM_EXACT_MAIN"
-            test "${ATTACH_WEB_SECRETS_STORE}" != "true"
-            echo "HARK_BROWSER_COMMISSION_OWNER_AUTHORIZED=PASS"
+            echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
           else
             test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
           fi
-          test "${ATTACH_WEB_SECRETS_STORE}" = "true" || test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-          test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" || test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-          test "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" || test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-          test -n "${READONLY_ACTIVE_VERSION}"
-          if [ "${PUBLIC_BASE_URL_STATE}" != "expected" ]; then
-            echo "Refusing deploy: PADIEM_CHAT_PUBLIC_BASE_URL must already be exactly expected (state=${PUBLIC_BASE_URL_STATE}). Live config activation owns any fix; deploy never injects it." >&2
-            exit 1
-          fi
-          echo "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED_REQUIRED"
-          echo "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO"
-          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
-            echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
-          elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
-            echo "DEPLOY_ADDS_ONLY_EXPLICIT_CLAW_SEARCH_ON=YES"
-          else
-            echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
-          fi
-          echo "B62_PRODUCTION_CODE_DEPLOY_AUTHORIZATION=PASS"
-
       - name: Checkout exact approved main SHA
         uses: actions/checkout@v4
         with:
@@ -1127,6 +965,31 @@ jobs:
           echo "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Generate exact production config from live settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          generated="apps/padiem-chat/wrangler.production.generated.toml"
+          test ! -e "${generated}"
+          extra_args=()
+          if [ "${ALLOW_BINDING_REMOVAL}" = "true" ]; then extra_args+=(--allow-binding-removal); fi
+          config_settings="${RUNNER_TEMP}/b62-version-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            test -s "${RECOVERY_SNAPSHOT}"
+            config_settings="${RECOVERY_SNAPSHOT}"
+            extra_args+=(--recovery-snapshot)
+          fi
+          # set_var is read privately from GITHUB_EVENT_PATH: never interpolate it into
+          # a shell script, CLI argument, environment block or log.
+          python .github/scripts/b62_cloudflare_production_deploy_config.py \
+            "${extra_args[@]}" --settings "${config_settings}" \
+            --repo-config apps/padiem-chat/wrangler.toml \
+            --public-base-url "${B62_PUBLIC_BASE_URL}" \
+            --dispatch-event "${GITHUB_EVENT_PATH}" --output "${generated}" \
+            --planned-d1-settings "${RUNNER_TEMP}/b62-planned-d1-bindings.json"
+          echo "B62_PRODUCTION_CONFIG_GENERATED=VERIFIED"
+
       - name: Prove live config prerequisites before any deploy mutation
         shell: bash
         run: |
@@ -1145,7 +1008,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           payload = json.load(open(sys.argv[1], encoding='utf-8'))
           if payload.get('success') is not True:
@@ -1194,7 +1057,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           payload = json.load(open(sys.argv[1], encoding='utf-8'))
           if payload.get('success') is not True:
@@ -1243,7 +1106,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1289,7 +1152,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1329,7 +1192,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1369,7 +1232,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1411,7 +1274,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1453,7 +1316,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1491,7 +1354,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1532,7 +1395,7 @@ jobs:
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-planned-d1-bindings.json" "${D1_BINDING}" <<'PY'
           import json, re, sys
           from pathlib import Path
           payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
@@ -1571,108 +1434,7 @@ jobs:
           echo "D1_IDENTIFIER_OUTPUT=0"
           echo "PRODUCTION_MUTATION=0"
 
-      - name: Prove connector baseline between active version and settings
-        if: ${{ inputs.mode == 'deploy_production_code' && inputs.attach_existing_connector_broker }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          python .github/scripts/b62_binding_state_guard.py \
-            --check-connector-baseline \
-            --before "${RUNNER_TEMP}/b62-version-before.json" \
-            --after "${RUNNER_TEMP}/b62-settings-before.json"
-          echo "CONNECTOR_BASELINE_PREDEPLOY=PASS"
-          echo "PRODUCTION_MUTATION=0"
 
-      - name: Generate exact production config from live settings
-        shell: bash
-        run: |
-          set -euo pipefail
-          generated="apps/padiem-chat/wrangler.production.generated.toml"
-          test ! -e "${generated}"
-          extra_args=()
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" != "true"
-            extra_args=(--attach-existing-web-secrets-store)
-          fi
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            extra_args=(--attach-existing-grafana-telemetry)
-          fi
-          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            extra_args=(--attach-existing-oracle-mesh)
-          fi
-          if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            extra_args=(--attach-existing-claw-desktop-secret)
-          fi
-          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            extra_args=(--attach-existing-b14-service-proof-secret)
-          fi
-          if [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
-            test "${ATTACH_ORACLE_MESH}" = "false"
-            test "${ATTACH_GRAFANA_TELEMETRY}" = "false"
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
-            test "${ATTACH_CLAW_DESKTOP_SECRET}" = "false"
-            test "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "false"
-            extra_args=(--attach-existing-resend-secret)
-          fi
-          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
-            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
-            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
-            test "${COMMISSION_HARK_BROWSER}" = "false"
-            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
-            extra_args=(--activate-claw-public-search)
-          fi
-          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
-            test "${COMMISSION_HARK_BROWSER}" != "true"
-            extra_args=(--attach-existing-connector-broker)
-          fi
-          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
-            test "${ATTACH_WEB_SECRETS_STORE}" != "true"
-            extra_args=(--commission-hark-browser)
-          fi
-          if [ "${ATTACH_DOCUMENT_PARSER_SERVICE}" = "true" ]; then
-            test "${P01_SSE_RECOVERY_OFF}" != "true"
-            for setting in "${ATTACH_EXISTING_CONNECTOR_BROKER}" "${COMMISSION_HARK_BROWSER}" "${ATTACH_WEB_SECRETS_STORE}" "${ATTACH_GRAFANA_TELEMETRY}" "${ATTACH_ORACLE_MESH}" "${ATTACH_CLAW_DESKTOP_SECRET}" "${ATTACH_B14_SERVICE_PROOF_SECRET}" "${ATTACH_RESEND_ALERT_SECRET}" "${ACTIVATE_CLAW_PUBLIC_SEARCH}" "${PRESERVE_B66_MEMBERSHIP_SECRET}"; do
-              test "$setting" = "false"
-            done
-            extra_args=(--attach-document-parser-service)
-          fi
-          # The bindings a new production config must carry forward are read from the
-          # served version, not GET /settings: the settings plane follows the newest
-          # upload, so a refused deploy's extra binding would otherwise be adopted as
-          # live state and uploaded again on the next release.
-          config_settings="${RUNNER_TEMP}/b62-version-before.json"
-          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
-            test -s "${RECOVERY_SNAPSHOT}"
-            config_settings="${RECOVERY_SNAPSHOT}"
-          fi
-          python .github/scripts/b62_cloudflare_production_deploy_config.py \
-            "${extra_args[@]}" \
-            --settings "${config_settings}" \
-            --repo-config apps/padiem-chat/wrangler.toml \
-            --public-base-url "${B62_PUBLIC_BASE_URL}" \
-            --output "${generated}"
-          echo "B62_PRODUCTION_CONFIG_GENERATED=VERIFIED"
 
       - name: Package production bundle without deploying
         working-directory: apps/padiem-chat
@@ -1681,7 +1443,8 @@ jobs:
           set -euo pipefail
           uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
             --config wrangler.production.generated.toml \
-            --dry-run --outdir "${RUNNER_TEMP}/b62-production-dry-run"
+            --dry-run --outdir "${RUNNER_TEMP}/b62-production-dry-run" 2>&1 | \
+            python ../../.github/scripts/b62_redact_deploy_output.py --config wrangler.production.generated.toml
           test -d "${RUNNER_TEMP}/b62-production-dry-run"
           echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
           echo "PRODUCTION_MUTATION=0"
@@ -1698,7 +1461,8 @@ jobs:
             --config "${generated}" --strict \
             --tag "git-${TARGET_SHA}" \
             --message "B62 production code ${TARGET_SHA}" \
-            > "${RUNNER_TEMP}/b62-deploy-attempt-1.log" 2>&1
+            2>&1 | python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}" \
+            > "${RUNNER_TEMP}/b62-deploy-attempt-1.log"
           attempt1_status=$?
           set -e
           if [ "${attempt1_status}" -eq 0 ]; then
@@ -1721,12 +1485,14 @@ jobs:
             uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
               --config "${generated}" \
               --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA} (state adoption)"
+              --message "B62 production code ${TARGET_SHA} (state adoption)" 2>&1 | \
+              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
             echo "STATE_ADOPTION_UPLOADS=1"
             uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
               --config "${generated}" --strict \
               --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA}"
+              --message "B62 production code ${TARGET_SHA}" 2>&1 | \
+              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
             echo "STATE_ADOPTION_PERFORMED=YES"
           else
             cat "${RUNNER_TEMP}/b62-deploy-attempt-1.log" >&2
@@ -1769,150 +1535,8 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
-          normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
-          # Recovery keeps its own immutable settings snapshot; every other deploy
-          # compares against the version that is serving traffic right now.
-          before_comparison="${RUNNER_TEMP}/b62-version-before.json"
-          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then before_comparison="${RECOVERY_SNAPSHOT}"; fi
-          python - "${before_comparison}" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
-          import json
-          import sys
-
-          sys.path.insert(0, ".github/scripts")
-          from b62_cloudflare_production_deploy_config import live_binding_entries
-
-          source, destination, public_url = sys.argv[1:]
-          payload = json.load(open(source, encoding="utf-8"))
-          bindings = live_binding_entries(payload)
-          matches = [b for b in bindings if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
-          if len(matches) == 1 and matches[0].get("type") == "plain_text" and matches[0].get("text") == public_url:
-              print("PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED")
-          else:
-              raise SystemExit("refusing pre-deploy PADIEM_CHAT_PUBLIC_BASE_URL state that is not exactly expected")
-          with open(destination, "w", encoding="utf-8") as handle:
-              json.dump(payload, handle, separators=(",", ":"))
-          PY
-
-          verify_args=()
-          if [ "${ATTACH_DOCUMENT_PARSER_SERVICE}" = "true" ]; then
-            verify_args=(--expected-add-document-parser)
-          fi
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            verify_args=(--expected-add-grafana-telemetry)
-          fi
-          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            verify_args=(--expected-add-oracle-mesh)
-          fi
-          if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            verify_args=(--expected-add-claw-desktop-secret)
-          fi
-          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            verify_args=(--expected-add-b14-service-proof-secret)
-          fi
-          if [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
-            verify_args=(--expected-add-resend-alert)
-          fi
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
-            verify_args=(--expected-add-web-secrets-store)
-          fi
-          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
-            verify_args=(--expected-add-hark-browser)
-          fi
-          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
-            verify_args=(--expected-add-connector-broker)
-          fi
-          if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
-            verify_args=(--expected-add-claw-public-search)
-          fi
-          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
-            verify_args=(--expected-add-b66-membership-secret)
-          fi
-          python .github/scripts/b62_binding_state_guard.py \
-            "${verify_args[@]}" \
-            --before "${normalized_before}" \
-            --after "${settings}"
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_ORACLE_MESH}" = "true" ] || [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${ATTACH_DOCUMENT_PARSER_SERVICE}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ] || [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ] || [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
-            echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
-          else
-            echo "BINDINGS_PRESERVED_EXACTLY=PASS"
-          fi
-
-          python - "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${B62_PUBLIC_BASE_URL}" <<'PY'
-          import json
-          import sys
-
-          after = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
-          binding_name, identity_worker, public_url = sys.argv[2:]
-          identity = [b for b in after if b.get("name") == binding_name]
-          assert len(identity) == 1 and identity[0].get("type") == "service"
-          assert identity[0].get("service") == identity_worker
-          public = [b for b in after if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
-          assert len(public) == 1 and public[0].get("type") == "plain_text" and public[0].get("text") == public_url
-          secrets_after = sorted(b["name"] for b in after if b.get("type") == "secret_text")
-          assert "PADIEM_CHAT_QUOTA_SALT" in secrets_after
-          print("SECRET_BINDINGS_PRESERVED=PASS")
-          print("PUBLIC_BASE_URL_SET=PASS")
-          PY
-
           detail="${RUNNER_TEMP}/b62-version-after.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-grafana-telemetry \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "PADIEM_GRAFANA_OTLP_TOKEN" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "PADIEM_GRAFANA_OTLP_TOKEN")' "${detail}" >/dev/null
-            jq -e '[.result.resources.bindings[] | select(.name == "PADIEM_GRAFANA_OTLP_ENDPOINT" and .type == "plain_text" and .text == "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs")] | length == 1' "${detail}" >/dev/null
-            jq -e '[.result.resources.bindings[] | select(.name == "PADIEM_GRAFANA_OTLP_USERNAME" and .type == "plain_text" and .text == "1876517")] | length == 1' "${detail}" >/dev/null
-            echo "GRAFANA_SERVED_IMMUTABLE_BINDING=PASS"
-            echo "GRAFANA_SERVED_PUBLIC_VARS=PASS"
-          fi
-          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-oracle-mesh \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "ORACLE_MESH_CHANNEL_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "ORACLE_MESH_CHANNEL_SECRET")' "${detail}" >/dev/null
-            jq -e '.result.resources.bindings | any(.name == "ORACLE_MESH_OWNERSHIP_MAP" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "ORACLE_MESH_OWNERSHIP_MAP")' "${detail}" >/dev/null
-            echo "ORACLE_MESH_SERVED_IMMUTABLE_BINDINGS=PASS"
-          fi
-          if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-claw-desktop-secret \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "CLAW_ENGINE_DESKTOP_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "CLAW_ENGINE_DESKTOP_SECRET")' "${detail}" >/dev/null
-            echo "CLAW_DESKTOP_SECRET_SERVED_IMMUTABLE_BINDING=PASS"
-          fi
-          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-b14-service-proof-secret \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "PADIEM_B14_SERVICE_PROOF_SECRET" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "PADIEM_B14_SERVICE_PROOF_SECRET")' "${detail}" >/dev/null
-            echo "B14_SERVICE_PROOF_SECRET_SERVED_IMMUTABLE_BINDING=PASS"
-          fi
-          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-hark-browser \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "BROWSER" and .type == "browser")' "${detail}" >/dev/null
-            echo "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS"
-            echo "HARK_BROWSER_QUICK_ACTION_CALLS=0"
-          fi
-          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
-            python .github/scripts/b62_binding_state_guard.py \
-              --expected-add-connector-broker \
-              --before "${RUNNER_TEMP}/b62-version-before.json" \
-              --after "${detail}"
-            jq -e '.result.resources.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE" and .type == "service" and .service == "padiem-local-agent-broker-state")' "${detail}" >/dev/null
-            echo "CONNECTOR_BROKER_SERVED_IMMUTABLE_BINDING=PASS"
-          fi
-          if [ "${ATTACH_DOCUMENT_PARSER_SERVICE}" = "true" ]; then
-            jq -e '.result.resources.bindings | any(.name == "DOCUMENT_PARSER_SERVICE" and .type == "service" and .service == "padiem-document-parser")' "${detail}" >/dev/null
-            echo "DOCUMENT_PARSER_SERVED_BINDING=PASS"
-          fi
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"
           echo "SCRIPT_ETAG_CHANGED=PASS"
@@ -1944,38 +1568,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          verify_args=()
-          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
-            verify_args=(--allow-add-existing-grafana-telemetry)
+          extra_args=()
+          if [ "${ALLOW_BINDING_REMOVAL}" = "true" ]; then extra_args+=(--allow-binding-removal); fi
+          config_settings="${RUNNER_TEMP}/b62-version-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            config_settings="${RECOVERY_SNAPSHOT}"
+            extra_args+=(--recovery-snapshot)
           fi
-          if [ "${ATTACH_ORACLE_MESH}" = "true" ]; then
-            verify_args=(--allow-add-existing-oracle-mesh)
-          fi
-          if [ "${ATTACH_CLAW_DESKTOP_SECRET}" = "true" ]; then
-            verify_args=(--allow-add-existing-claw-desktop-secret)
-          fi
-          if [ "${ATTACH_B14_SERVICE_PROOF_SECRET}" = "true" ]; then
-            verify_args=(--allow-add-existing-b14-service-proof-secret)
-          fi
-          if [ "${ATTACH_RESEND_ALERT_SECRET}" = "true" ]; then
-            verify_args=(--allow-add-existing-resend-alert-secret)
-          fi
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
-            verify_args=(--allow-add-existing-web-secrets-store)
-          fi
-          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
-            verify_args=(--allow-add-existing-b66-membership-secret)
-          fi
-          python .github/scripts/b62_served_version_secret_guard.py verify \
-            "${verify_args[@]}" \
-            --expected "${RUNNER_TEMP}/b62-served-secret-set-before.json" \
-            --deployments "${RUNNER_TEMP}/b62-deployments-after.json" \
-            --version-detail "${RUNNER_TEMP}/b62-version-after.json"
+          python .github/scripts/b62_cloudflare_production_deploy_config.py \
+            "${extra_args[@]}" --settings "${config_settings}" \
+            --repo-config apps/padiem-chat/wrangler.toml --public-base-url "${B62_PUBLIC_BASE_URL}" \
+            --dispatch-event "${GITHUB_EVENT_PATH}" --output "${RUNNER_TEMP}/unused-config" \
+            --verify-served "${RUNNER_TEMP}/b62-version-after.json"
           echo "POSTDEPLOY_SERVED_VERSION_IDENTIFIED=PASS"
-          echo "FULL_SECRET_SET_EQUALITY=PASS"
+          echo "BINDINGS_MATCH_REPOSITORY_PLAN=PASS"
+          echo "SECRET_VALUES_READ=0"
+          echo "SECRET_VALUES_EMITTED=0"
           echo "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO"
           echo "PRODUCTION_MUTATION=0"
-
       - name: Production smoke — connector ticket edge contract (Scenario A)
         shell: bash
         run: |

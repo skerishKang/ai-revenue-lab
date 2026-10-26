@@ -109,8 +109,7 @@ def test_only_protected_code_gate_with_snapshot_and_hard_recovery_scope():
     assert "38444728738" in block and "b62-claw-config-premutation-settings" in block
     assert block.index("Prove sole SSE drift, exact snapshot and pinned active/latest versions") < block.index("Deploy production code preserving the full binding set")
     assert 'config_settings="' + chr(36) + '{RECOVERY_SNAPSHOT}"' in block
-    assert 'before_comparison="' + chr(36) + '{RECOVERY_SNAPSHOT}"' in block
-    assert "b62_served_version_secret_guard.py verify" in block
+    assert "--verify-served" in block
     assert "MIGRATION_040_PREDEPLOY=EXACT" in block
     assert "MIGRATION_008_PREDEPLOY=EXACT" in block
     assert "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED" in block

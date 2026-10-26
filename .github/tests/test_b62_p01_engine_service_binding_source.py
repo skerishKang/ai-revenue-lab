@@ -172,8 +172,9 @@ def test_no_second_production_config_generator() -> None:
     print("SECOND_PRODUCTION_CONFIG_GENERATOR=0")
 
 
-def test_chat_wrangler_does_not_pre_declare_p01() -> None:
-    assert "P01_ENGINE_SERVICE" not in CHAT_CONFIG
-    assert 'P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"' in WORKER_CONFIG
-    assert 'name = "padiem-ai-engine"' in ENGINE_CONFIG
-    print("P01_ENGINE_BINDING_GATE_SOURCE=PASS")
+def test_chat_wrangler_declares_the_already_live_engine_target():
+    import tomllib
+    services = tomllib.loads(CHAT_CONFIG)["services"]
+    matches = [x for x in services if x["binding"] == "P01_ENGINE_SERVICE"]
+    assert matches == [{"binding": "P01_ENGINE_SERVICE", "service": "padiem-ai-engine"}]
+

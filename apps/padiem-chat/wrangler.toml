@@ -23,6 +23,11 @@ main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+preview_urls = true
+
+[[routes]]
+pattern = "chat.padiem.net"
+custom_domain = true
 base_dir = ".b66-worker-src"
 
 # #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
@@ -44,7 +49,7 @@ binding = "ASSETS"
 # #3252 source declaration: the served Worker exposes its own version provenance
 # so a server-side lane can read the exact deployed git revision. This is a
 # runtime provenance binding, not a cron trigger, and it is NOT live Production
-# activation — live settings remain the production authority.
+# activation. Repository declarations are the binding authority.
 [version_metadata]
 binding = "CF_VERSION_METADATA"
 
@@ -98,9 +103,10 @@ service = "padiem-voice-stt"
 # pypdf/openpyxl extraction, so Chat never parses a binary document in its own
 # isolate. Deployment order: deploy padiem-document-parser first, then Chat;
 # the target Worker must exist or the Chat deploy fails.
-[[services]]
-binding = "DOCUMENT_PARSER_SERVICE"
-service = "padiem-document-parser"
+# Deferred: parser Worker is not ready; source declaration is the deploy authority.
+# [[services]]
+# binding = "DOCUMENT_PARSER_SERVICE"
+# service = "padiem-document-parser"
 
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
@@ -156,7 +162,8 @@ ORACLE_MESH_EXECUTION_MODE = "off"
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
-PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# Default remains false; no new runtime variable/cron activation in this change.
+# PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
 # #4469 Claw public research: owner-approved opt-in. The Worker requires
 # live B14 + canonical identity/Engine client + a durable D1 quota in addition
 # to this flag; no unauthenticated or unmetered invocation can use it.
@@ -178,3 +185,38 @@ head_sampling_rate = 1
 [observability.logs]
 enabled = true
 invocation_logs = true
+
+[[services]]
+binding = "B66_PDF_RENDERER_SERVICE"
+service = "padiem-b66-pdf-renderer"
+
+[[services]]
+binding = "GOOGLE_OAUTH_STATE_SERVICE"
+service = "padiem-google-oauth-state"
+
+[[services]]
+binding = "P01_ENGINE_SERVICE"
+service = "padiem-ai-engine"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_DAUM_REST_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KAKAO_API_KEY"
+
+[[d1_databases]]
+binding = "PADIEM_CHAT_DB"
+database_name = "padiem-chat-db"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+
+[[r2_buckets]]
+binding = "PADIEM_WORKSPACE_FILES"
+bucket_name = "padiem-workspace-files"
+
+[[secrets_store_secrets]]
+binding = "TINYFISH_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_TINY_FISH_API_KEY"
+
+# Platform-managed secret_text: names only; values are never source data.
+[secrets]
+required = ["B66_ADMIN_GOOGLE_EMAIL", "B66_ALERT_EMAIL_FROM", "B66_ALERT_EMAIL_TO", "B66_MEMBERSHIP_ENFORCED", "P01_ENGINE_CREDENTIAL", "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY", "PADIEM_CHAT_CUSTOM_KEY_SECRET", "PADIEM_CHAT_GOOGLE_CLIENT_SECRET", "PADIEM_CHAT_QUOTA_SALT", "PADIEM_CHAT_SESSION_SECRET", "PADIEM_PUSH_VAPID_PRIVATE_KEY", "PADIEM_PUSH_VAPID_PUBLIC_KEY", "PADIEM_PUSH_VAPID_SUBJECT"]
