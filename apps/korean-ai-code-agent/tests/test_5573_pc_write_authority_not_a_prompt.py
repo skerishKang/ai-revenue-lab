@@ -13,6 +13,10 @@ pause a run - is therefore never consulted by this lane.
 """
 from __future__ import annotations
 
+import asyncio
+
+import pytest
+
 from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect
 
 from kagent.pc_query_adapter import (
@@ -50,6 +54,53 @@ def test_write_tools_declare_the_authority_instead_of_a_user_prompt():
         # No time ceiling: #5995 removed the arbitrary cap, and the write lane
         # adds none of its own back.
         assert spec.timeout_seconds is None, tool_id
+
+
+def test_a_write_step_reaches_the_handler_without_an_approval_pause():
+    """The real authority, the real Core runtime, and no wait in between.
+
+    A set comparison cannot show this: what matters is that an executed
+    ``claw.pc.write_file`` gets to the handler on the first pass, because the
+    pairing link that already binds this account to this PC is the authorization.
+    The counter-case is stated next to it on purpose - if the id were not in the
+    grant set, Core would answer tool_external_authorization_required and the
+    Engine would read that as a pause.
+    """
+    from padiem_ai_core.tool_runtime import ToolInvocation, ToolRuntime
+
+    contract = _contract()
+    executed: list[str] = []
+
+    async def handler(arguments):
+        executed.append(arguments["path"])
+        return {"ok": True}
+
+    runtime = ToolRuntime()
+    runtime.register(pc_write_file_tool_spec(), handler)
+    result = asyncio.run(runtime.execute(
+        ToolInvocation(tool_id=PC_WRITE_FILE_TOOL_ID,
+                       arguments={"path": "문서/견적.txt", "content": "본문"}),
+        contract.compiled.runtime_profile,
+        contract.authorization,
+    ))
+    assert executed == ["문서/견적.txt"], "the write step never reached its handler"
+    assert getattr(result, "approval_requirement", None) is None
+    assert getattr(result, "approval_pause", None) is None
+
+    # The same call without the grant is the pause shape the lane must not hit.
+    from dataclasses import replace
+
+    ungranted = replace(contract.authorization, externally_authorized_tools=frozenset())
+    runtime2 = ToolRuntime()
+    runtime2.register(pc_write_file_tool_spec(), handler)
+    with pytest.raises(Exception) as refused:
+        asyncio.run(runtime2.execute(
+            ToolInvocation(tool_id=PC_WRITE_FILE_TOOL_ID,
+                           arguments={"path": "문서/견적.txt", "content": "본문"}),
+            contract.compiled.runtime_profile,
+            ungranted,
+        ))
+    assert "tool_external_authorization_required" in str(refused.value)
 
 
 def test_no_pc_tool_declares_a_deadline_of_its_own():
