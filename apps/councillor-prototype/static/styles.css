@@ -267,3 +267,10 @@ body {
 
 .ka-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; margin-bottom: 12px; background: var(--navy-soft); }
 [data-theme="light"] .ka-thumb { background: var(--bg-soft); }
+
+[data-theme="light"] .hero-veil {
+  background:
+    linear-gradient(100deg, rgba(245,241,232,0.92) 0%, rgba(245,241,232,0.6) 35%, rgba(245,241,232,0.15) 70%),
+    linear-gradient(180deg, rgba(245,241,232,0.1) 0%, rgba(245,241,232,0.85) 100%);
+}
+[data-theme="light"] .hero-media img { filter: contrast(1.05) saturate(0.9) brightness(1.05); }
