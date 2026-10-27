@@ -110,6 +110,10 @@ jobs:
           for forbidden in ('routes', 'domain', 'custom_domains', 'zone_name'):
               assert forbidden not in config, f'wrangler.jsonc must not declare {forbidden}'
           assert config.get('workers_dev') is True, 'the workers.dev target must stay enabled'
+          # B64 authenticates its own members (owner decision 2026-10-27), so it
+          # binds no other product's Worker. A service here would mean a B64
+          # login depends on another product staying up.
+          assert 'services' not in config, 'wrangler.jsonc must declare no service bindings'
 
           database = next(
               (db for db in config.get('d1_databases', []) if db.get('binding') == 'B64_INCOME_DB'),
@@ -124,7 +128,7 @@ jobs:
           assert set(database_id.replace('-', '')) != {'0'}, 'database_id is still the zero placeholder'
           print(f'D1_BINDING=PASS (database_id ends {database_id[-9:]})')
 
-          origin = config.get('vars', {}).get('PADIEM_B64_PUBLIC_BASE_URL')
+          origin = config.get('vars', {}).get('B64_PUBLIC_BASE_URL')
           assert isinstance(origin, str) and origin.startswith('https://'), origin
           print(f'PUBLIC_BASE_URL=PASS ({origin})')
           PY
@@ -309,9 +313,11 @@ jobs:
           # The unauthenticated dashboard must stay reachable and must not show
           # anyone's records: an anonymous visitor gets the login prompt.
           anon="$(fetch /pipeline)"
-          printf '%s' "${anon}" | grep 'PADIEM 계정 로그인 후 이용할 수 있습니다' >/dev/null \
+          printf '%s' "${anon}" | grep 'B64 계정으로 이용할 수 있습니다' >/dev/null \
             || { echo 'B64_ANON_PIPELINE=UNEXPECTED'; false; }
-          echo 'B64_ANON_PIPELINE=PASS (no user data without a session)'
+          printf '%s' "${anon}" | grep 'action="/join"' >/dev/null \
+            || { echo 'B64_JOIN_FORM=MISSING (#987 independent account entry)'; false; }
+          echo 'B64_ANON_PIPELINE=PASS (B64 own account entry, no user data without a session)'
           echo "B64_DEPLOYED_FROM_SHA=${TARGET_SHA}"
           echo 'B64_POST_DEPLOY_PARITY=PASS'
 
@@ -353,11 +359,20 @@ jobs:
                   print(f'BINDING {name}: {got} MATCHES_BASELINE')
 
           print('LIVE_BINDING_NAMES=' + ','.join(sorted(live)))
+          # B64 signs its own session cookies with its own key. That key is
+          # minted by the owner, not copied from another product, so it is
+          # reported here rather than being a hard baseline entry: the deploy
+          # itself is valid without it, and nothing authenticates until it is
+          # registered as a Worker secret.
+          print('B64_SESSION_SECRET_BINDING=' + (
+              'PRESENT' if live.get('B64_SESSION_SECRET') == 'secret_text'
+              else 'ABSENT (owner must register B64_SESSION_SECRET before login works; every /pipeline request stays anonymous)'
+          ))
           # Every binding the reviewed baseline declares is required: the income
-          # path denies all authentication when the authority or the chat relay
-          # is missing, and answers 503 for storage without the D1. A missing
-          # entry means the deployment did not take, so it fails the gate rather
-          # than being reported as a note.
+          # path denies all authentication when its storage is missing, and
+          # answers 503 for storage without the D1. A missing entry means the
+          # deployment did not take, so it fails the gate rather than being
+          # reported as a note.
           print('B64_BINDING_PARITY=' + ('PASS' if not missing else 'INCOMPLETE:' + ','.join(missing)))
           if missing:
               sys.exit(1)

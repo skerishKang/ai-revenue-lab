@@ -18,7 +18,16 @@ import {
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
 import { defaultAuthResolver, type AuthResolver, type AuthResult } from '../income-pipeline/auth.js';
-import { PADIEM_SESSION_COOKIE_NAME } from '../income-pipeline/padiem-session-auth.js';
+import {
+  B64_SESSION_COOKIE_NAME,
+  b64SessionClearCookieValue,
+} from '../identity/session.js';
+import {
+  B64MemberExistsError,
+  type B64MemberStore,
+} from '../identity/member-store.js';
+import { logoutSession, registerMember, signInMember } from '../identity/auth.js';
+import { CredentialError } from '../identity/password.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
@@ -47,6 +56,13 @@ export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
   readonly resolveAuth?: AuthResolver;
   /**
+   * B64's own member and session store. Without it the identity endpoints
+   * answer 503 instead of falling back to a non-durable account store.
+   */
+  readonly memberStore?: B64MemberStore | undefined;
+  /** B64's own session signing secret (`B64_SESSION_SECRET`). */
+  readonly sessionSecret?: string | undefined;
+  /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
    * prototype default exists for tests and local prototypes only.
@@ -73,6 +89,13 @@ export interface ConsumerHttpDependencies {
    */
   readonly loadIncomeRecords?: UserIncomeLoader;
 }
+
+/**
+ * B64's own account endpoints. They are POST-only because the consumer surface
+ * runs under `script-src 'none'`: the forms that reach them live on /pipeline,
+ * and a stray GET lands back on the dashboard instead of a blank page.
+ */
+const IDENTITY_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/join', '/login', '/logout']));
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
@@ -140,11 +163,11 @@ function supplyUnavailable(request: Request): Response {
   });
 }
 
-function carriesPadiemSessionCookie(cookieHeader: string): boolean {
+function carriesB64SessionCookie(cookieHeader: string): boolean {
   for (const part of cookieHeader.split(';')) {
     const separator = part.indexOf('=');
     const name = separator < 0 ? part : part.slice(0, separator);
-    if (name.trim() === PADIEM_SESSION_COOKIE_NAME) return true;
+    if (name.trim() === B64_SESSION_COOKIE_NAME) return true;
   }
   return false;
 }
@@ -190,7 +213,8 @@ export function createConsumerHttpHandler(
       return methodNotAllowed(request);
     }
 
-    if (request.method === 'POST' && url.pathname !== '/pipeline' && url.pathname !== '/income') {
+    const isIdentity = IDENTITY_PATHS.has(url.pathname);
+    if (request.method === 'POST' && !isIdentity && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
 
@@ -201,7 +225,7 @@ export function createConsumerHttpHandler(
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income') {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity) {
       return notFound(request);
     }
 
@@ -228,6 +252,75 @@ export function createConsumerHttpHandler(
       theme,
       themeToggleHref: themeToggleHref(url.pathname, url.searchParams),
     };
+
+    if (isIdentity) {
+      if (request.method !== 'POST') {
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({ location: '/pipeline' }),
+        });
+      }
+      // Join, sign-in and sign-out each create or destroy a member cookie, so
+      // they are same-origin mutations even when no session exists yet — a
+      // cross-site form could otherwise log a visitor into an attacker's
+      // account.
+      const expectedOrigin = dependencies.expectedBrowserOrigin;
+      if (!expectedOrigin) {
+        return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
+      }
+      const origin = request.headers.get('origin');
+      if (!origin || origin !== expectedOrigin) {
+        return jsonErrorResponse(request, 403, 'origin_rejected');
+      }
+      const { memberStore, sessionSecret } = dependencies;
+      if (!memberStore || !sessionSecret) {
+        return jsonErrorResponse(request, 503, 'identity_unavailable');
+      }
+
+      if (url.pathname === '/logout') {
+        try {
+          await logoutSession({ store: memberStore, sessionSecret, cookieHeader });
+        } catch {
+          return storageUnavailableResponse(request);
+        }
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({
+            location: '/pipeline',
+            'set-cookie': b64SessionClearCookieValue(),
+          }),
+        });
+      }
+
+      const formData = await request.formData().catch(() => null);
+      if (!formData) {
+        return responseForMethod(request, 'Bad Request', {
+          status: 400,
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        });
+      }
+      const email = formData.get('email');
+      const password = formData.get('password');
+      try {
+        const issued = url.pathname === '/join'
+          ? await registerMember({ store: memberStore, sessionSecret, email, password })
+          : await signInMember({ store: memberStore, sessionSecret, email, password });
+        if (issued === null) {
+          return jsonErrorResponse(request, 401, 'invalid_credentials');
+        }
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({
+            location: '/pipeline',
+            'set-cookie': issued.cookieHeader,
+          }),
+        });
+      } catch (error) {
+        if (error instanceof CredentialError) return jsonErrorResponse(request, 400, error.code);
+        if (error instanceof B64MemberExistsError) return jsonErrorResponse(request, 409, 'member_exists');
+        return storageUnavailableResponse(request);
+      }
+    }
 
     let candidates: readonly AdClickConsumerCandidate[];
     try {
@@ -296,7 +389,7 @@ export function createConsumerHttpHandler(
       // Same-origin guard for cookie-authenticated mutations (#3476 policy,
       // mirrored from apps/padiem-chat/app/same_origin_guard.py): SameSite=Lax
       // is a site boundary, not an origin boundary, so a request carrying the
-      // `padiem_session` cookie must present an Origin header exactly equal to
+      // `b64_session` cookie must present an Origin header exactly equal to
       // the reviewed deployment origin. Missing Origin is denied (fail
       // closed); an unconfigured expected origin denies everything with 503
       // rather than weakening to "allow without expectation". Requests without
@@ -304,7 +397,7 @@ export function createConsumerHttpHandler(
       // subjects, and keep their existing auth error semantics (401 below).
       if (request.method === 'POST') {
         const cookieHeader = request.headers.get('cookie');
-        if (cookieHeader !== null && carriesPadiemSessionCookie(cookieHeader)) {
+        if (cookieHeader !== null && carriesB64SessionCookie(cookieHeader)) {
           const expectedOrigin = dependencies.expectedBrowserOrigin;
           if (!expectedOrigin) {
             return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
