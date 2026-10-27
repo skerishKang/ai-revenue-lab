@@ -3193,6 +3193,22 @@ def _pc_files_roots_of_map_row(file_path: Any) -> list[dict[str, Any]]:
     return [{"root_ref": None, "label": root.rsplit("/", 1)[-1], "path": root}]
 
 
+#: How an owner refers to a drive they did not name: `C`, `C:`, `C드라이브`,
+#: `c drive` all mean the whole C drive, which is the scope a linked PC has by
+#: default (#5573, Owner decision).
+_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?", re.IGNORECASE)
+#: How an owner refers to the place they are already standing.
+_ROOT_WORDS = frozenset({
+    "루트", "여기", "최상위", "최 상위", "승인 폴더", "승인폴더", "root", "here",
+})
+
+
+def _drive_reference(text: str) -> str | None:
+    """The drive root a reference names, or ``None`` when it names none."""
+    match = _DRIVE_REFERENCE.fullmatch(text.strip())
+    return None if match is None else match.group(1).upper() + ":"
+
+
 def _pc_files_pick_root(
     roots: Any, value: Any,
 ) -> tuple[str, str] | None:
@@ -3218,6 +3234,17 @@ def _pc_files_pick_root(
     if text is None:
         return None
     text = text.strip().replace("\\", "/")
+    drive = _drive_reference(text)
+    if drive is not None and any(root["path"].upper() == drive for root in roots):
+        # A drive the account granted means that drive, the whole of it - not a
+        # folder inside another grant. Anything else stays ordinary path text, so
+        # a file actually named `C` is still reachable.
+        return drive, ""
+    if text in _ROOT_WORDS and len(roots) == 1:
+        # "여기·루트·최상위" means the granted place. With one grant that is
+        # unambiguous; with several the owner has to say which one, and the label
+        # rule below is what makes them say it.
+        return roots[0]["path"], ""
     if len(roots) == 1:
         label, separator, remainder = text.partition("/")
         # One folder means the label is redundant, not forbidden: a caller that

@@ -34,6 +34,7 @@ from app.pc_device_pairing_store import (
     D1PcPairingStore,
     PcPairingError,
     derive_install_tag,
+    drive_root,
     normalize_root_label,
     normalize_root_path,
 )
@@ -304,11 +305,25 @@ def test_roots_are_approved_per_link_and_a_revoked_pair_keeps_the_other_alive() 
     assert [root["path"] for root in out["theirs_after"]["roots"]] == ["C:/Users/other/경리"]
 
 
-def test_a_bare_drive_and_a_traversing_path_are_never_approvable() -> None:
+def test_a_traversing_relative_or_wildcard_path_is_still_refused() -> None:
     assert normalize_root_path("C:/Users/me/견적") == "C:/Users/me/견적"
     assert normalize_root_path("C:\\Users\\me\\\t견적") is None
-    for rejected in ("C:", "C:/", "C:/Users/../Windows", "상대경로", "C:/a*b", "   "):
+    for rejected in ("C:/Users/../Windows", "상대경로", "C:/a*b", "   ", "C:/Users/me/x:y"):
         assert normalize_root_path(rejected) is None, rejected
+
+
+def test_a_whole_drive_is_an_approvable_root() -> None:
+    """#5573 Owner decision: a linked PC works over its drives by default.
+
+    The shape is accepted in every spelling the PC or an owner types, and the
+    other guards - traversal, wildcards, control characters, relative text -
+    are unchanged, so widening the default scope did not widen the grammar.
+    """
+    for accepted, expected in (
+        ("C:", "C:"), ("c:", "C:"), ("C:/", "C:"), ("C:\\", "C:"),
+        ("D:\\", "D:"), ("Z:/", "Z:"),
+    ):
+        assert normalize_root_path(accepted) == expected, accepted
 
     async def journey():
         pairing = store()
@@ -316,13 +331,93 @@ def test_a_bare_drive_and_a_traversing_path_are_never_approvable() -> None:
         link = await pairing.redeem_code(
             code=issued["code"], mesh_node_id=NODE, label=None, now=_now(), verified=True,
         )
-        with pytest.raises(PcPairingError) as refused:
-            await pairing.approve_root(
-                user_id=OWNER, link_id=link["link_id"], path="C:", now=_now(),
-            )
-        return refused.value
+        approved = await pairing.approve_root(
+            user_id=OWNER, link_id=link["link_id"], path="C:\\", now=_now(),
+        )
+        async with client(app_with(pairing)) as session:
+            listed = await session.get(PC_PAIRING_PATH)
+        return approved, listed.json()
 
-    assert str(run(journey())) == "root path invalid"
+    approved, listed = run(journey())
+    assert approved["path"] == "C:" and approved["label"] == "C:"
+    assert [root["path"] for root in listed["links"][0]["roots"]] == ["C:"]
+
+
+def test_a_claiming_pc_seeds_its_own_fixed_drives_and_the_scope_is_said() -> None:
+    """The PC names the drives it has; the server grants them and says so.
+
+    A PC that could not answer the query is reported (`lookup_failed`), because a
+    silently empty link reads as "this machine has no drives" - which is a lie
+    about a PC nobody asked.
+    """
+    assert drive_root("c:\\") == "C:" and drive_root("C:/Users/me") is None
+
+    async def journey():
+        pairing = store()
+        issued = await pairing.issue_code(user_id=OWNER, issued_at=_now())
+        claimed = await pairing.redeem_code(
+            code=issued["code"], mesh_node_id=NODE, label=None, now=_now(),
+            verified=True, drives=["C:", "D:"],
+        )
+        quiet = await pairing.issue_code(user_id=OTHER, issued_at=_now())
+        bare = await pairing.redeem_code(
+            code=quiet["code"], mesh_node_id=OTHER_NODE, label=None, now=_now(),
+            verified=True, drives=[],
+        )
+        adopted = await pairing.adopt_link(
+            user_id=OTHER, mesh_node_id=NODE, root_paths=["C:/Users/other/경리"],
+            now=_now(), drives=["E:"],
+        )
+        async with client(app_with(pairing)) as session:
+            code = await session.post(PC_PAIRING_PATH, json={})
+            body = (await session.post(PC_PAIRING_CLAIM_PATH, json={
+                "code": code.json()["pairing"]["code"],
+                "mesh_node_id": "node//mesh-pc-09",
+                "drives": ["C:\\"],
+            })).json()
+            oversized = await session.post(PC_PAIRING_CLAIM_PATH, json={
+                "code": code.json()["pairing"]["code"],
+                "mesh_node_id": "node//mesh-pc-10",
+                "drives": ["C:/Users/me"],
+            })
+        return claimed, bare, adopted, body, oversized
+
+    claimed, bare, adopted, body, oversized = run(journey())
+    assert [root["path"] for root in claimed["roots"]] == ["C:", "D:"]
+    assert [root["label"] for root in claimed["roots"]] == ["C:", "D:"]
+    assert bare["roots"] == []
+    assert [root["path"] for root in adopted["roots"]] == ["C:/Users/other/경리", "E:"]
+    assert body["drives_status"] == "seeded"
+    # A PC may report drives, not folders: the claim channel cannot name a folder.
+    assert oversized.status_code == 400, oversized.text
+
+
+def test_one_accounts_drive_grant_stays_on_its_own_link() -> None:
+    """Two accounts on one machine, and the drive belongs to exactly one of them."""
+    async def journey():
+        pairing = store()
+        first = await pairing.issue_code(user_id=OWNER, issued_at=_now())
+        mine = await pairing.redeem_code(
+            code=first["code"], mesh_node_id=NODE, label=None, now=_now(),
+            verified=True, drives=["C:"],
+        )
+        second = await pairing.issue_code(user_id=OTHER, issued_at=_now())
+        theirs = await pairing.redeem_code(
+            code=second["code"], mesh_node_id=NODE, label=None, now=_now(), verified=True,
+        )
+        rows = await pairing.links_for_owner(user_id=OTHER)
+        revoked = await pairing.revoke_root(
+            user_id=OTHER, link_id=theirs["link_id"],
+            root_ref=mine["roots"][0]["root_ref"], now=_now(),
+        )
+        still_mine = await pairing.links_for_owner(user_id=OWNER)
+        return theirs, rows, revoked, still_mine
+
+    theirs, rows, revoked, still_mine = run(journey())
+    assert theirs["roots"] == []
+    assert [root["path"] for root in rows[0]["roots"]] == []
+    assert revoked is False
+    assert [root["path"] for root in still_mine[0]["roots"]] == ["C:"]
 
 
 def test_a_root_removal_leaves_the_link_and_its_other_roots_usable() -> None:

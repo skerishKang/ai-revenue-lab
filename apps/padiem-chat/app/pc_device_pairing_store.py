@@ -46,13 +46,15 @@ PAIRING_CODE_CHARS = 12
 #: derived from the code, so the PC needs nothing but the code to reproduce it.
 PAIRING_TAG_PREFIX = "pd-"
 PAIRING_TAG_CHARS = 8
-MAX_ROOTS_PER_LINK = 32
+MAX_ROOTS_JSON_CHARS = 8192
 MAX_ROOT_PATH_CHARS = 512
 MAX_ROOT_LABEL_CHARS = 64
 MAX_LINK_LABEL_CHARS = 128
 
 _USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,255}$")
 _LINK_ID_RE = re.compile(r"^pclink_[0-9a-f]{32}$")
+#: A whole drive, the shape the Owner's default scope grants (`C:`).
+_DRIVE_ROOT_RE = re.compile(r"[A-Za-z]:")
 _CODE_ID_RE = re.compile(r"^pcpair_[0-9a-f]{32}$")
 #: The derived install tag: `pd-` plus the eight hex characters this module
 #: produces. MeshCentral agent names are operator-editable text, so the tag is
@@ -77,7 +79,7 @@ class PcPairingStore(Protocol):
 
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
-        verified: bool = False,
+        verified: bool = False, drives: list[str] | None = None,
     ) -> dict[str, Any]: ...
 
     async def list_links(self, *, user_id: str) -> list[dict[str, Any]]: ...
@@ -102,7 +104,7 @@ class PcPairingStore(Protocol):
 
     async def adopt_link(
         self, *, user_id: str, mesh_node_id: str, root_paths: list[str],
-        now: datetime, label: str | None = None,
+        now: datetime, label: str | None = None, drives: list[str] | None = None,
     ) -> dict[str, Any]: ...
 
     async def revoke_root(
@@ -157,8 +159,14 @@ def normalize_root_path(value: Any) -> str | None:
     """The approved folder, in the one spelling the Mesh lane addresses.
 
     Same judgement `_pc_files_approved_root` makes from the other side: a real
-    folder at least one component below a drive, never a bare drive root, never
-    a relative or traversing path. Returns ``None`` for anything else.
+    folder at least one component below a drive, or a whole drive - never a
+    relative or traversing path. Returns ``None`` for anything else.
+
+    A drive root (``C:``) is a valid grant by the Owner's decision on #5573: a
+    connected PC works over its local drives by default, and narrowing to
+    folders is a later feature. The other guards - no traversal, no wildcards,
+    no control characters, bounded length, absolute shape - stay exactly as they
+    were, because they are what makes the grant addressable at all.
     """
     if not isinstance(value, str) or not value.strip():
         return None
@@ -169,6 +177,8 @@ def normalize_root_path(value: Any) -> str | None:
     while "//" in normalized:
         normalized = normalized.replace("//", "/")
     normalized = normalized.rstrip("/")
+    if _DRIVE_ROOT_RE.fullmatch(normalized) is not None:
+        return normalized.upper()
     segments = [segment for segment in normalized.split("/") if segment]
     if len(segments) < 2:
         return None
@@ -209,12 +219,61 @@ def default_root_label(path: str) -> str:
     return path.rsplit("/", 1)[-1]
 
 
+def drive_root(value: Any) -> str | None:
+    """One whole drive, the way the PC names it (`C:\\`, `d:`, `D:/`) → `C:`.
+
+    This is the shape a claiming PC is allowed to report about itself. Nothing
+    deeper is accepted here on purpose: a PC may declare which drives it has, it
+    may not use that call to name folders it has not been granted.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip().replace("\\", "/")
+    while text.endswith("/"):
+        text = text[:-1]
+    return text.upper() if _DRIVE_ROOT_RE.fullmatch(text) else None
+
+
+def _root_row(path: str, moment: str) -> dict[str, Any]:
+    return {
+        "root_ref": root_ref_for(path),
+        "label": default_root_label(path),
+        "path": path,
+        "state": _STATE_ACTIVE,
+        "approved_at": moment,
+        "revoked_at": None,
+    }
+
+
+def _merge_roots(
+    roots: list[dict[str, Any]], paths: list[str], moment: str,
+) -> list[dict[str, Any]]:
+    """Grant `paths` on top of `roots`, keeping what is already granted.
+
+    One drive letter and one deep folder are the same shape to the store from
+    here on: both are absolute grants, normalized or refused.
+    """
+    merged = list(roots)
+    for path in paths:
+        normalized = normalize_root_path(path)
+        if normalized is None:
+            raise PcPairingError("root path invalid")
+        if any(existing["path"] == normalized for existing in merged):
+            continue
+        merged.append(_root_row(normalized, moment))
+    return merged
+
+
 def _roots(value: Any) -> list[dict[str, Any]]:
     """Parse the server-written roots array, refusing anything malformed.
 
     A malformed column is a hard error rather than an empty list: an approved
     folder must never silently disappear from the authority that guards a read.
+    There is no count rule here - how many folders or drives one link carries is
+    bounded only by the storage the applied schema already enforces.
     """
+    if isinstance(value, str) and len(value) > MAX_ROOTS_JSON_CHARS:
+        raise PcPairingError("link roots unreadable")
     if isinstance(value, str):
         try:
             parsed = json.loads(value)
@@ -222,7 +281,7 @@ def _roots(value: Any) -> list[dict[str, Any]]:
             raise PcPairingError("link roots unreadable") from None
     else:
         parsed = value
-    if not isinstance(parsed, list) or len(parsed) > MAX_ROOTS_PER_LINK:
+    if not isinstance(parsed, list):
         raise PcPairingError("link roots unreadable")
     roots: list[dict[str, Any]] = []
     for row in parsed:
@@ -425,7 +484,7 @@ class D1PcPairingStore:
 
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
-        verified: bool = False,
+        verified: bool = False, drives: list[str] | None = None,
     ) -> dict[str, Any]:
         """Consume one code and create or refresh the (user, node) link.
 
@@ -433,6 +492,12 @@ class D1PcPairingStore:
         reaches the link table. `verified` is what PR-2 sets from the executor's
         own MeshCentral observation; without it the link exists but is not
         usable, because nothing has yet proved the node is real.
+
+        `drives` is what the installing PC reported as its own fixed local
+        drives. The Owner's default scope is the whole drive, so a fresh link
+        starts granted instead of starting empty and waiting for a hand. An
+        existing link is not widened here: a re-claim must not resurrect a
+        folder the owner has since withdrawn.
         """
         if not isinstance(code, str) or len(code) > 64:
             raise PcPairingError("pairing code invalid")
@@ -472,10 +537,25 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
-        return await self._claim_link(
+        link = await self._claim_link(
             owner=owner, node=node, label=label, code_id=row["code_id"],
             moment=moment, verified=verified,
         )
+        if drives:
+            granted = [entry["path"] for entry in link["roots"]]
+            missing = [path for path in drives if path not in granted]
+            if missing:
+                # Only a link that just came into being gains from the PC's own
+                # report. An already-granted link keeps exactly what its owner
+                # left on it.
+                await self._write_roots(
+                    owner, link["link_id"],
+                    _merge_roots(link["roots"], missing, moment), moment,
+                )
+                stored = await self._read_link(owner, link["link_id"])
+                if stored is not None:
+                    link = stored
+        return link
 
     async def _claim_link(
         self, *, owner: str, node: str, label: Any, code_id: str, moment: str,
@@ -610,7 +690,7 @@ class D1PcPairingStore:
 
     async def adopt_link(
         self, *, user_id: str, mesh_node_id: str, root_paths: list[str], now: datetime,
-        label: str | None = None,
+        label: str | None = None, drives: list[str] | None = None,
     ) -> dict[str, Any]:
         """Create the link an administrator adopted, with the folders the map already pinned.
 
@@ -620,6 +700,9 @@ class D1PcPairingStore:
         is not a display record - the file lane reads the same table - and it is
         idempotent, because an owner who clicks twice must not end up with two
         grants or a widened one.
+
+        `drives` is what the caller knows of the PC's fixed local drives - the
+        same default scope a claiming PC gets from its own report.
         """
         owner = _user_id(user_id)
         node = _mesh_node_id(mesh_node_id)
@@ -631,23 +714,7 @@ class D1PcPairingStore:
             # way to resurrect a revoked grant.
             return existing
         moment = _stamp(now)
-        roots: list[dict[str, Any]] = []
-        for path in root_paths:
-            normalized = normalize_root_path(path)
-            if normalized is None:
-                raise PcPairingError("root path invalid")
-            if any(existing["path"] == normalized for existing in roots):
-                continue
-            roots.append({
-                "root_ref": root_ref_for(normalized),
-                "label": default_root_label(normalized),
-                "path": normalized,
-                "state": _STATE_ACTIVE,
-                "approved_at": moment,
-                "revoked_at": None,
-            })
-            if len(roots) >= MAX_ROOTS_PER_LINK:
-                break
+        roots = _merge_roots([], list(root_paths) + list(drives or []), moment)
         link = await self._claim_link(
             owner=owner, node=node, label=label, code_id=None, moment=moment,
             verified=True,
@@ -770,8 +837,6 @@ class D1PcPairingStore:
                 # Two folders the model cannot tell apart are worse than a
                 # refusal: the caller has to name one of them.
                 raise PcPairingError("root label exists")
-        if len([root for root in roots if root["state"] == _STATE_ACTIVE]) >= MAX_ROOTS_PER_LINK:
-            raise PcPairingError("too many approved roots")
         roots = [root for root in roots if root["root_ref"] != ref]
         roots.append({
             "root_ref": ref,
@@ -829,18 +894,22 @@ class D1PcPairingStore:
         self, owner: str, link_id: str, roots: list[dict[str, Any]], moment: str,
     ) -> None:
         payload = json.dumps(roots, ensure_ascii=False, separators=(",", ":"))
-        if len(payload) > 8192:
+        if len(payload) > MAX_ROOTS_JSON_CHARS:
             raise PcPairingError("link roots too large")
+        # A live link only: a revoked pair's roots stay exactly as its owner left
+        # them. A link still waiting on its Mesh observation is a real link, and
+        # the drives its PC reported have to survive until it verifies - the file
+        # lane reads active links, so a pending grant grants nothing yet.
         await self._run(
             "UPDATE pc_device_links SET roots_json=?, updated_at=? "
-            "WHERE user_id=? AND link_id=? AND state='active'",
+            "WHERE user_id=? AND link_id=? AND state IN ('active', 'pending_verification')",
             payload, moment, owner, link_id,
         )
 
 
 __all__ = [
     "D1PcPairingStore",
-    "MAX_ROOTS_PER_LINK",
+    "MAX_ROOTS_JSON_CHARS",
     "MAX_ROOT_LABEL_CHARS",
     "MAX_ROOT_PATH_CHARS",
     "PAIRING_CODE_CHARS",
@@ -850,6 +919,7 @@ __all__ = [
     "PcPairingStore",
     "default_root_label",
     "derive_install_tag",
+    "drive_root",
     "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",
