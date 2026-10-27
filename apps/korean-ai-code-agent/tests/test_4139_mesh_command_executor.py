@@ -167,6 +167,17 @@ class CommandPortTests(unittest.TestCase):
         self.assertEqual(kwargs["input"], PASSWORD + "\n")
         self.assertEqual(kwargs["timeout"], 45)
 
+    def test_long_and_unbounded_command_deadlines_are_accepted(self):
+        # #5895: the 60s default and 300s ceiling are gone. A ten-minute command
+        # is accepted as written, and None carries no PADIEM client deadline (the
+        # desktop-lane default), so a long-running job is never refused for time.
+        for value in (600, None):
+            calls = []
+            port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
+            outcome = port.run_command(node_ref=NODE, command="long_running.exe", timeout_seconds=value)
+            self.assertEqual(outcome.termination, "exited", value)
+            self.assertEqual(calls[0][1]["timeout"], value)
+
     def test_timeout_claims_no_exit_code(self):
         expired = subprocess.TimeoutExpired(cmd="node", timeout=45, output=b"")
         port = _port(exc=expired)

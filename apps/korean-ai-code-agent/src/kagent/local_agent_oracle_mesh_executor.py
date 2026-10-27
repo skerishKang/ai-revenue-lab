@@ -585,7 +585,9 @@ class OracleMeshExecutor:
             observed = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
                 command=dispatch.command_text or "",
-                timeout_seconds=max(1, self._timeout * 2),
+                # Long-running commands carry no PADIEM client deadline; the
+                # progress trace is already reported through phase (#5983).
+                timeout_seconds=None,
                 phase_observer=phase,
             )
         except Exception as exc:

@@ -301,7 +301,7 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str,
         command: str,
-        timeout_seconds: int = 60,
+        timeout_seconds: int | None = None,
         phase_observer: Callable[[str], None] | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
@@ -314,10 +314,15 @@ class MeshCentralCliCommandPort:
 
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
-        if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
-            raise MeshCentralCommandRefused("timeout_seconds must be an integer")
-        if timeout_seconds < 1 or timeout_seconds > 300:
-            raise MeshCentralCommandRefused("timeout_seconds is out of range")
+        # Owner decision (#5895): a long-running command carries no PADIEM
+        # client deadline by default, the way the desktop lane already runs
+        # with None. An explicit timeout remains available and is a caller
+        # choice, not a product ceiling, so it is only bounded below by one.
+        if timeout_seconds is not None:
+            if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
+                raise MeshCentralCommandRefused("timeout_seconds must be an integer or None")
+            if timeout_seconds < 1:
+                raise MeshCentralCommandRefused("timeout_seconds is out of range")
         body = _bounded_command(command)
         wrapped = _wrap(body)
         # The NUL the C execve boundary appends is counted, so a refusal here
@@ -375,16 +380,18 @@ class MeshCentralCliCommandPort:
 
     # ---- streaming execution -------------------------------------------
     def _run_streaming(
-        self, argv: list[str], password: str, timeout_seconds: int,
+        self, argv: list[str], password: str, timeout_seconds: int | None,
         phase: Callable[[str], None],
     ) -> MeshCentralCommandOutcome:
         """Read the child's transcript in bounded chunks.
 
         Memory is bounded by the wire envelope plus one chunk: the moment the
         transcript passes it, the child is killed and the outcome reports
-        ``output_too_large``. A command that never answers is killed at the
-        deadline and reported as ``timed_out`` — the remote process may still be
-        running, so no exit code is claimed.
+        ``output_too_large``. A ``timeout_seconds`` of None means no PADIEM client
+        deadline (the desktop-lane default): the command runs until the console
+        answers, and only an explicit timeout is killed at its deadline and
+        reported as ``timed_out`` — the remote process may still be running, so
+        no exit code is claimed.
         """
         import subprocess
         import time
@@ -404,16 +411,18 @@ class MeshCentralCliCommandPort:
                 process.stdin.write((password + "\n").encode("utf-8"))
                 process.stdin.flush()
                 process.stdin.close()
-            deadline = time.monotonic() + timeout_seconds
+            deadline = None if timeout_seconds is None else time.monotonic() + timeout_seconds
             while True:
-                if time.monotonic() > deadline:
+                if deadline is not None and time.monotonic() > deadline:
                     process.kill()
                     phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
+                # None deadline: wait on the console with a fixed read slice so
+                # the loop stays responsive to the child finishing.
+                remaining = 1.0 if deadline is None else deadline - time.monotonic()
+                if deadline is not None and remaining <= 0:
                     process.kill()
                     phase("timeout")
                     return MeshCentralCommandOutcome(
