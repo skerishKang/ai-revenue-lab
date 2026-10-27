@@ -368,6 +368,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return chat_pc_orchestration_sse(
             stream, pc_run_id=pc_run_id, on_completed=complete_stream,
             on_scope=scope_notice, done_fields=completion_fields, on_failed=fail_stream,
+            pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
         )
 
     try:

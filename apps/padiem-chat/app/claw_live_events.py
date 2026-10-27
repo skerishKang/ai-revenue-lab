@@ -346,8 +346,17 @@ def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
 
 def chat_pc_orchestration_sse(
     stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None, on_failed=None,
+    pending_fields=None,
 ) -> StreamingResponse:
-    """Relay one verified Engine stream; heartbeats are presentation only."""
+    """Relay one verified Engine stream; heartbeats are presentation only.
+
+    ``pending_fields`` names the run the caller already opened (its id and the
+    conversation it belongs to). When the Engine stream stops without a verified
+    result while that run is still executing, the relay hands the browser the
+    same pending continuation a normal ``done`` frame uses instead of a terminal
+    error: the run may still be stored, and an error frame reads as a refusal on
+    every client, including the ones already open before a fix ships.
+    """
     from .orchestration_bridge import B62OrchestrationError, _safe_events
     async def settle_failure():
         if on_failed is not None:
@@ -446,12 +455,22 @@ def chat_pc_orchestration_sse(
             if not settled:
                 raise ValueError("Engine stream ended without a result")
         except B62OrchestrationError as exc:
+            if pending_fields is not None and exc.code == "invalid_engine_stream":
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
             await settle_failure()
             error = {"code": exc.code, "message": exc.user_message}
             if exc.code == "invalid_engine_stream":
                 error["cause"] = _engine_stream_cause(exc, record_kind)
             yield _frame("error", {"error": error})
         except Exception as exc:
+            # #5895: any unclassified stop of a started Engine stream — a
+            # transport cut included — leaves the run running on the server. The
+            # pending frame keeps the screen on "still processing" and lets the
+            # existing owner-scoped read-back deliver the stored answer.
+            if pending_fields is not None:
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
             await settle_failure()
             yield _frame("error", {"error": {
                 "cause": _engine_stream_cause(exc, record_kind),
