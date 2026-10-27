@@ -68,11 +68,16 @@ function renderKeyActivities() {
   const grid = document.getElementById("keyActivities");
   if (!grid) return;
   grid.innerHTML = "";
-  ACTIVITIES.slice(0, 3).forEach(a => {
+  const thumbs = [
+    "https://council.gwangju.go.kr/attach/270/67be8e27a73ef9e637d0afd43dca98bbt.jpg",
+    "https://council.gwangju.go.kr/attach/270/6ff19762dcce4baefb738da6599dab22t.jpg",
+    "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg"
+  ];
+  ACTIVITIES.slice(0, 3).forEach((a, i) => {
     const card = document.createElement("a");
     card.className = "key-activity-card";
     card.href = "./activity.html";
-    card.innerHTML = `<div class="ka-date">${a.date} · ${a.tag}</div><div class="ka-title">${a.title}</div>`;
+    card.innerHTML = `<img class="ka-thumb" src="${thumbs[i]}" alt="${a.title}" loading="lazy" onerror="this.style.display='none'" /><div class="ka-date">${a.date} · ${a.tag}</div><div class="ka-title">${a.title}</div>`;
     grid.appendChild(card);
   });
 }
