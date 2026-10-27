@@ -1,5 +1,13 @@
 import type { AuthResolver } from '../income-pipeline/auth.js';
 import type { B64MemberStore } from './member-store.js';
+import {
+  b64GoogleRedirectUri,
+  defaultGoogleFetch,
+  exchangeGoogleCode,
+  fetchGoogleVerifiedIdentity,
+  type B64GoogleIdentity,
+  type GoogleFetch,
+} from './google.js';
 import { normalizeEmail, hashPassword, validatePassword, verifyPassword } from './password.js';
 import {
   B64_SESSION_COOKIE_NAME,
@@ -19,7 +27,7 @@ import {
  * the row is what makes logout and revocation actually take effect.
  */
 
-function extractCookieValue(cookieHeader: string, name: string): string | null {
+export function extractCookieValue(cookieHeader: string, name: string): string | null {
   let match: string | null = null;
   for (const part of cookieHeader.split(';')) {
     const separator = part.indexOf('=');
@@ -133,6 +141,62 @@ async function openSession(options: {
     revokedAt: null,
   });
   return Object.freeze({ memberId: options.memberId, cookieHeader: b64SessionCookieValue(token) });
+}
+
+/**
+ * Signs a Google-verified visitor in with the session machinery above — the
+ * same signed `b64_session` cookie and the same D1 session row a password login
+ * gets, so logout and revocation work identically (#987 reuse).
+ *
+ * The provider subject is the only account key. An unknown subject becomes a
+ * new B64 member; a matching email address never attaches the login to an
+ * existing email/password member, because that would merge two people's
+ * ledgers on the strength of a string.
+ */
+export async function signInWithGoogle(options: {
+  readonly store: B64MemberStore;
+  readonly sessionSecret: string;
+  readonly clientId: string | undefined;
+  readonly clientSecret: string | undefined;
+  readonly publicBaseUrl: string | undefined;
+  readonly code: string;
+  readonly fetchImpl?: GoogleFetch;
+}): Promise<B64IssuedSession> {
+  const redirectUri = b64GoogleRedirectUri(options.publicBaseUrl);
+  const fetchImpl = options.fetchImpl ?? defaultGoogleFetch;
+  const accessToken = await exchangeGoogleCode({
+    code: options.code,
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    redirectUri,
+    fetchImpl,
+  });
+  const identity = await fetchGoogleVerifiedIdentity({ accessToken, fetchImpl });
+  const linked = await options.store.findMemberIdByGoogleSub(identity.googleSub);
+  const memberId = linked ?? (await linkNewGoogleMember(options.store, identity));
+  return openSession({ store: options.store, sessionSecret: options.sessionSecret, memberId });
+}
+
+async function linkNewGoogleMember(
+  store: B64MemberStore,
+  identity: B64GoogleIdentity,
+): Promise<string> {
+  const memberId = newB64MemberId();
+  try {
+    await store.linkGoogleMember({
+      googleSub: identity.googleSub,
+      memberId,
+      email: identity.email,
+      linkedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    // Two first-time logins for one subject: the row that won the race names
+    // the member, and the just-minted id is simply never used.
+    const winner = await store.findMemberIdByGoogleSub(identity.googleSub);
+    if (winner !== null) return winner;
+    throw error;
+  }
+  return memberId;
 }
 
 /**

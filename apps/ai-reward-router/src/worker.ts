@@ -27,11 +27,20 @@ import {
  *   required by the same-origin guard on cookie mutations. It is a
  *   configuration value, not a hard-coded assumption: moving B64 to its own
  *   registered domain is a one-line change here plus a redeploy.
+ * - `B64_GOOGLE_CLIENT_ID` / `B64_GOOGLE_CLIENT_SECRET` (#987): B64's OWN
+ *   Google OAuth client, registered on the redirect
+ *   `<B64_PUBLIC_BASE_URL>/auth/google/callback`. They are the credentials a
+ *   Google login needs, and nothing else: no other product's client id, login
+ *   endpoint or session cookie is referenced anywhere in this Worker. Left
+ *   unset, the Google entry is not offered and `/auth/google/*` answers 503 —
+ *   the site keeps working for every other request.
  */
 export interface B64WorkerEnv {
   readonly B64_SESSION_SECRET?: string;
   readonly B64_INCOME_DB?: D1DatabaseLike;
   readonly B64_PUBLIC_BASE_URL?: string;
+  readonly B64_GOOGLE_CLIENT_ID?: string;
+  readonly B64_GOOGLE_CLIENT_SECRET?: string;
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
@@ -78,6 +87,8 @@ export default {
       }),
       memberStore: members,
       sessionSecret: env.B64_SESSION_SECRET,
+      googleClientId: env.B64_GOOGLE_CLIENT_ID,
+      googleClientSecret: env.B64_GOOGLE_CLIENT_SECRET,
       incomeRepository: env.B64_INCOME_DB
         ? new D1UserIncomeRepository(env.B64_INCOME_DB)
         : new UnboundUserIncomeRepository(INCOME_D1_BINDING_NAME),

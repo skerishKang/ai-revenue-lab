@@ -386,3 +386,79 @@ Python implementation.
 - Account copy now says `B64 계정` instead of pointing at a PADIEM login. The
   wider brand wording across the consumer surface is a separate pass and is not
   part of this change.
+
+## Google sign-in through B64's own OAuth client (2026-10-27, issue #987 reuse)
+
+The owner instruction for this step was to reuse what is already built rather
+than start a second auth engine. What is reused is the **contract** the
+repository already proved in `apps/padiem-chat/app/auth.py` — authorization-code
+flow, the same parameter set, a random state kept in a purpose-signed HttpOnly
+cookie and compared constant-time, and identity taken from `userinfo` with
+`verified_email` — plus B64's own existing session minting, session row and
+member id. What is reused is **not** another product's endpoint, client, cookie
+or account table, and no new signing or hashing engine was written: both token
+types now go through one primitive, `src/identity/hmac.ts`.
+
+| Piece | B64's own value |
+|---|---|
+| OAuth client | `B64_GOOGLE_CLIENT_ID` / `B64_GOOGLE_CLIENT_SECRET` — B64's credentials, registered on B64's origin |
+| Redirect URI | `B64_PUBLIC_BASE_URL` + `/auth/google/callback`, derived from server config, never from the request Host |
+| State cookie | `b64_oauth_state`, purpose `b64-reward/oauth-state/v1`, 600s, single-use |
+| Session cookie | `b64_session`, purpose `b64-reward/session/v1` — unchanged, and the same row `b64_session` that logout revokes |
+| Member id | `b64m_…` minted by B64; the Google `sub` is linked in `b64_member_google` (`0003`, additive) |
+
+Email address is **not** an account key. Signing in with Google for an address
+that already has an email/password member creates a separate B64 member rather
+than merging the two, because merging would put one person's ledger in another
+person's account. Google-only members have no row in `b64_member`, so they have
+no password to guess.
+
+Required configuration, all fail closed when absent:
+
+| Binding | Kind | When missing |
+|---|---|---|
+| `B64_GOOGLE_CLIENT_ID` | var | No `Google 로그인` entry is rendered; `/auth/google/*` answers 503 `auth_unavailable` |
+| `B64_GOOGLE_CLIENT_SECRET` | secret | same |
+| `B64_SESSION_SECRET` | secret | same (it signs the state as well as the session) |
+| `B64_INCOME_DB` | D1 | the state is signed and Google is reached, but the login completes 503 `storage_unavailable` and the state is spent |
+| `B64_PUBLIC_BASE_URL` | var | same — there is no origin to name as the redirect URI |
+
+Neither Google binding is declared in `wrangler.jsonc`, and
+`.github/binding_baselines/b64-ai-reward-router.json` is unchanged: an owner
+value that does not exist yet must not be guessed into a reviewed config.
+
+### Order of operations for a working Google login (CENTRAL / OWNER)
+
+1. Create the OAuth client in Google Cloud for B64 (LOCAL cannot and did not).
+   Authorized redirect URI: `https://b64-ai-reward-router.charliekant.workers.dev/auth/google/callback`
+   — exactly the value `B64_PUBLIC_BASE_URL` plus the callback path, and a new
+   client entry is required whenever that origin changes.
+2. Register both on the worker, from `apps/ai-reward-router`, without ever
+   printing the values:
+   `npx wrangler@4 secret put B64_GOOGLE_CLIENT_SECRET --name b64-ai-reward-router`
+   and the client id as a var at deploy time.
+3. Apply the additive schema by dispatching
+   `.github/workflows/b64-independent-identity-activation-gate.yml`. It now runs
+   `0003_b64_google_identity.sql` after `0002`, counts
+   `b64_user_income` / `b64_member` / `b64_session` rows before and after and
+   fails if any decreased, and reports the two Google bindings by name and type
+   only. It mints no OAuth client, rotates no key and deploys no Worker.
+4. Deploy through `b64-cloudflare-worker-production-deploy-gate.yml`.
+5. Live E2E, which is the only proof that the client is correct: `/pipeline` →
+   `Google 로그인` → choose an account → back on `/pipeline` as a member → save
+   one record → reload and see it → log out → reload and see the gate. Until
+   step 1 exists this cannot be run, and no amount of passing unit tests stands
+   in for it: `B64_GOOGLE_LOGIN_LIVE_E2E=NOT_RUN`.
+
+### What this change deliberately does not do
+
+- It does not merge PR #5985. Its PBKDF2 cost change stays open for CENTRAL's
+  review, and its technical record stays in #5986. Google sign-in needs no KDF,
+  which is why it is the path that works inside the free-plan CPU budget today.
+- It does not add a service binding, an outbound call to another product, or any
+  dependency on `chat.padiem.net` staying up. The two HTTP calls in the flow go
+  to Google's own token and userinfo endpoints, from the Worker.
+- It does not use Google Identity Services in the page. The consumer surface
+  runs under `script-src 'none'`, so the login is a server-side redirect and one
+  plain link.
+
