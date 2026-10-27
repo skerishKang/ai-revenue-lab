@@ -1,0 +1,176 @@
+/* #5895: the shared "bring a file from my PC" dialog.
+   One surface every menu that needs a PC file opens, so the wording, the touch
+   targets and the waiting state are the same in all of them. Touch targets keep the
+   >=44px floor the other PC surfaces follow, and nothing here hides an entry the PC
+   reported: the list is split on screen, never shortened. */
+.pc-exchange-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(16, 34, 48, 0.42);
+}
+
+.pc-exchange-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(680px, 100%);
+  max-height: min(80vh, 720px);
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+  background: var(--surface, rgba(255, 255, 255, 0.94));
+  box-shadow: 0 12px 40px rgba(20, 51, 73, 0.16);
+  color: var(--text, #243f53);
+}
+
+.pc-exchange-dialog[hidden],
+.pc-exchange-pcs[hidden],
+.pc-exchange-more[hidden],
+.pc-exchange-status[hidden] {
+  display: none !important;
+}
+
+.pc-exchange-heading {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 700;
+}
+
+.pc-exchange-note,
+.pc-exchange-folder-label,
+.pc-exchange-selection {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted, #5a7488);
+}
+
+.pc-exchange-pcs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pc-exchange-pc,
+.pc-exchange-choice {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  cursor: pointer;
+}
+
+.pc-exchange-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pc-exchange-back,
+.pc-exchange-search-button,
+.pc-exchange-more,
+.pc-exchange-pick,
+.pc-exchange-cancel {
+  font: inherit;
+  font-weight: 650;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  cursor: pointer;
+}
+
+.pc-exchange-search {
+  font: inherit;
+  flex: 1 1 180px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--field, #fff);
+  color: inherit;
+}
+
+.pc-exchange-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pc-exchange-item {
+  margin: 0;
+}
+
+.pc-exchange-entry {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pc-exchange-entry:hover,
+.pc-exchange-entry:focus-visible {
+  border-color: var(--line, rgba(66, 106, 135, 0.3));
+  background: var(--tint, rgba(66, 106, 135, 0.07));
+}
+
+.pc-exchange-name {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.pc-exchange-mark {
+  flex: 0 0 auto;
+  color: var(--muted, #5a7488);
+}
+
+.pc-exchange-size,
+.pc-exchange-folder {
+  flex: 0 1 auto;
+  font-size: 0.78rem;
+  color: var(--muted, #5a7488);
+  overflow-wrap: anywhere;
+}
+
+.pc-exchange-status {
+  font-size: 0.84rem;
+  font-weight: 650;
+  color: var(--muted, #4a6a80);
+}
+
+.pc-exchange-status[data-state="error"] {
+  color: var(--danger, #a1303f);
+}
+
+.pc-exchange-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pc-exchange-dialog {
+    background: var(--surface, rgba(22, 33, 43, 0.96));
+  }
+}
