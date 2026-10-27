@@ -16,7 +16,8 @@
 --
 -- Bindings, in the order they are enforced:
 --   product_id + recipient  — which product and which relay may claim this row
---   state_sha256            — which LoveTree login request it belongs to
+--   state_sha256            — which LoveTree login request it belongs to (claim must present it)
+--   return_origin           — where the finished login may send the browser, fixed at creation
 --   expires_at              — how long it stays alive (the relay re-checks it)
 --   status                  — single use: 'ready' -> 'claimed' happens at most once
 
@@ -25,6 +26,19 @@ CREATE TABLE IF NOT EXISTS lovetree_login_handoffs (
     product_id TEXT NOT NULL CHECK (product_id = 'lovetree-4-0'),
     recipient TEXT NOT NULL CHECK (recipient = 'lovetree-auth-caller'),
     state_sha256 TEXT NOT NULL CHECK (length(state_sha256) = 64),
+    return_origin TEXT NOT NULL CHECK (
+        -- Origin only: https host (+ optional path-free), or loopback http for tests.
+        -- A path, query, fragment, or userinfo would make the return leg an open redirect.
+        (
+            substr(return_origin, 1, 8) = 'https://'
+            AND substr(return_origin, 9) NOT GLOB '*[/?#@ ]*'
+            AND instr(substr(return_origin, 9), '.') > 0
+        )
+        OR (
+            substr(return_origin, 1, 7) = 'http://'
+            AND (substr(return_origin, 8) LIKE '127.0.0.1:%' OR substr(return_origin, 8) LIKE 'localhost:%')
+        )
+    ),
     status TEXT NOT NULL DEFAULT 'awaiting_login'
         CHECK (status IN ('awaiting_login', 'ready', 'claimed')),
     pending_user_id TEXT REFERENCES users(id) ON DELETE CASCADE,

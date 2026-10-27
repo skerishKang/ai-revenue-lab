@@ -8,14 +8,16 @@ UPDATE so an expired or already claimed row cannot be advanced by a late or repl
 request — the same discipline as ``android_auth_store.py``.
 
 What a row proves is narrow: the existing PADIEM login verified this identity in this
-browser for this LoveTree login request (``state_sha256``) for this product and
-recipient, until ``expires_at``. Nothing else in the system may treat a ticket id as
-login evidence.
+browser for one specific LoveTree login request (``state_sha256``), for this product and
+recipient, back to this return origin, until ``expires_at``. A ticket is consumable only
+by the login request that created it, and a refused claim leaves the row untouched.
 """
 
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import re
 from dataclasses import dataclass, replace
 from typing import Any, Protocol
 
@@ -28,6 +30,32 @@ HANDOFF_STATUS_CLAIMED = "claimed"
 
 _LIVE_HANDOFF_STATUSES = frozenset({HANDOFF_STATUS_AWAITING_LOGIN, HANDOFF_STATUS_READY})
 _AUTH_PROVIDERS = frozenset({"google", "password"})
+_SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
+# Origin only: scheme + host (+ optional port for loopback tests). Never a path or query.
+_HTTPS_ORIGIN = re.compile(r"^https://[A-Za-z0-9][A-Za-z0-9.-]*$")
+_LOOPBACK_ORIGIN = re.compile(r"^http://(?:127\.0\.0\.1|localhost)(?::[0-9]{1,5})?$")
+
+_SELECT_COLUMNS = (
+    "ticket_id, product_id, recipient, state_sha256, return_origin, status, pending_user_id, "
+    "auth_provider, provider_subject, created_at, updated_at, expires_at"
+)
+
+
+def handoff_digest(login_request: str) -> str:
+    """The digest a claim must present. The login request value itself is never stored."""
+    return hashlib.sha256(str(login_request).encode("utf-8")).hexdigest()
+
+
+def checked_digest(value: Any) -> str:
+    if not isinstance(value, str) or not _SHA256_HEX.fullmatch(value):
+        raise ValueError("login request must be a sha256 digest")
+    return value
+
+
+def checked_origin(value: Any) -> str:
+    if isinstance(value, str) and (_HTTPS_ORIGIN.fullmatch(value) or _LOOPBACK_ORIGIN.fullmatch(value)):
+        return value
+    raise ValueError("return origin must be an allowlisted https origin (loopback http for tests)")
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +64,7 @@ class LoveTreeHandoffRecord:
     product_id: str
     recipient: str
     state_sha256: str
+    return_origin: str
     status: str
     pending_user_id: str | None
     auth_provider: str | None
@@ -58,10 +87,11 @@ class LoveTreeLoginHandoffStore(Protocol):
         self,
         *,
         ticket_id: str,
-        state_sha256: str,
+        login_request: str,
+        return_origin: str,
         now_iso: str,
         expires_at_iso: str,
-    ) -> None: ...
+    ) -> LoveTreeHandoffRecord: ...
 
     async def get(self, ticket_id: str) -> LoveTreeHandoffRecord | None: ...
 
@@ -74,13 +104,13 @@ class LoveTreeLoginHandoffStore(Protocol):
         provider_subject: str,
         state_sha256: str,
         now_iso: str,
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
     async def claim(
         self,
         ticket_id: str,
         *,
+        login_request_sha256: str,
         now_iso: str,
     ) -> LoveTreeHandoffRecord | None: ...
 
@@ -114,6 +144,7 @@ def _record(row: Any) -> LoveTreeHandoffRecord | None:
         "product_id",
         "recipient",
         "state_sha256",
+        "return_origin",
         "status",
         "created_at",
         "updated_at",
@@ -125,19 +156,24 @@ def _record(row: Any) -> LoveTreeHandoffRecord | None:
         return None
     if values["status"] not in _LIVE_HANDOFF_STATUSES | {HANDOFF_STATUS_CLAIMED}:
         return None
+    if not _SHA256_HEX.fullmatch(values["state_sha256"]):
+        return None
+    if not (_HTTPS_ORIGIN.fullmatch(values["return_origin"]) or _LOOPBACK_ORIGIN.fullmatch(values["return_origin"])):
+        return None
     auth_provider = _optional_text(values.get("auth_provider"))
     provider_subject = _optional_text(values.get("provider_subject"))
     pending_user_id = _optional_text(values.get("pending_user_id"))
-    if values["status"] != HANDOFF_STATUS_AWAITING_LOGIN:
-        if not (pending_user_id and auth_provider in _AUTH_PROVIDERS and provider_subject):
+    if values["status"] == HANDOFF_STATUS_AWAITING_LOGIN:
+        if pending_user_id or auth_provider or provider_subject:
             return None
-    elif pending_user_id or auth_provider or provider_subject:
+    elif not (pending_user_id and auth_provider in _AUTH_PROVIDERS and provider_subject):
         return None
     return LoveTreeHandoffRecord(
         ticket_id=values["ticket_id"],
         product_id=values["product_id"],
         recipient=values["recipient"],
         state_sha256=values["state_sha256"],
+        return_origin=values["return_origin"],
         status=values["status"],
         pending_user_id=pending_user_id,
         auth_provider=auth_provider,
@@ -175,34 +211,40 @@ class D1LoveTreeLoginHandoffStore:
         self,
         *,
         ticket_id: str,
-        state_sha256: str,
+        login_request: str,
+        return_origin: str,
         now_iso: str,
         expires_at_iso: str,
-    ) -> None:
+    ) -> LoveTreeHandoffRecord:
         if not isinstance(ticket_id, str) or not ticket_id:
             raise ValueError("ticket_id is required")
-        if not isinstance(state_sha256, str) or len(state_sha256) != 64:
-            raise ValueError("login request state must be a sha256 digest")
+        state_sha256 = handoff_digest(login_request)
+        origin = checked_origin(return_origin)
         if expires_at_iso <= now_iso:
             raise ValueError("handoff expiry must be in the future")
         await self._first(
             "INSERT INTO lovetree_login_handoffs "
-            "(ticket_id, product_id, recipient, state_sha256, status, created_at, updated_at, expires_at) "
-            "VALUES (?, ?, ?, ?, 'awaiting_login', ?, ?, ?) RETURNING ticket_id",
+            "(ticket_id, product_id, recipient, state_sha256, return_origin, status, "
+            "created_at, updated_at, expires_at) "
+            "VALUES (?, ?, ?, ?, ?, 'awaiting_login', ?, ?, ?) "
+            f"RETURNING {_SELECT_COLUMNS}",
             ticket_id,
             LOVETREE_HANDOFF_PRODUCT_ID,
             LOVETREE_HANDOFF_RECIPIENT,
             state_sha256,
+            origin,
             now_iso,
             now_iso,
             expires_at_iso,
         )
+        record = await self.get(ticket_id)
+        if record is None:
+            raise ValueError("handoff row was not created")
+        return record
 
     async def get(self, ticket_id: str) -> LoveTreeHandoffRecord | None:
         row = await self._first(
-            "SELECT ticket_id, product_id, recipient, state_sha256, status, pending_user_id, "
-            "auth_provider, provider_subject, created_at, updated_at, expires_at "
-            "FROM lovetree_login_handoffs WHERE ticket_id=?",
+            f"SELECT {_SELECT_COLUMNS} FROM lovetree_login_handoffs WHERE ticket_id=?",
             ticket_id,
         )
         return _record(row)
@@ -218,8 +260,7 @@ class D1LoveTreeLoginHandoffStore:
         now_iso: str,
     ) -> bool:
         _identity_arguments(user_id, auth_provider, provider_subject)
-        if not isinstance(state_sha256, str) or len(state_sha256) != 64:
-            raise ValueError("login request state must be a sha256 digest")
+        digest = checked_digest(state_sha256)
         row = await self._first(
             "UPDATE lovetree_login_handoffs "
             "SET status='ready', pending_user_id=?, auth_provider=?, provider_subject=?, bound_at=?, updated_at=? "
@@ -234,23 +275,31 @@ class D1LoveTreeLoginHandoffStore:
             ticket_id,
             LOVETREE_HANDOFF_PRODUCT_ID,
             LOVETREE_HANDOFF_RECIPIENT,
-            state_sha256,
+            digest,
             now_iso,
         )
         return _row_to_dict(row) is not None
 
-    async def claim(self, ticket_id: str, *, now_iso: str) -> LoveTreeHandoffRecord | None:
+    async def claim(
+        self,
+        ticket_id: str,
+        *,
+        login_request_sha256: str,
+        now_iso: str,
+    ) -> LoveTreeHandoffRecord | None:
+        digest = checked_digest(login_request_sha256)
         row = await self._first(
             "UPDATE lovetree_login_handoffs "
             "SET status='claimed', claimed_at=?, updated_at=? "
-            "WHERE ticket_id=? AND product_id=? AND recipient=? AND status='ready' AND expires_at > ? "
-            "RETURNING ticket_id, product_id, recipient, state_sha256, status, pending_user_id, "
-            "auth_provider, provider_subject, created_at, updated_at, expires_at",
+            "WHERE ticket_id=? AND product_id=? AND recipient=? AND state_sha256=? "
+            "AND status='ready' AND expires_at > ? "
+            f"RETURNING {_SELECT_COLUMNS}",
             now_iso,
             now_iso,
             ticket_id,
             LOVETREE_HANDOFF_PRODUCT_ID,
             LOVETREE_HANDOFF_RECIPIENT,
+            digest,
             now_iso,
         )
         return _record(row)
@@ -267,22 +316,24 @@ class InMemoryLoveTreeLoginHandoffStore:
         self,
         *,
         ticket_id: str,
-        state_sha256: str,
+        login_request: str,
+        return_origin: str,
         now_iso: str,
         expires_at_iso: str,
-    ) -> None:
+    ) -> LoveTreeHandoffRecord:
         if not isinstance(ticket_id, str) or not ticket_id:
             raise ValueError("ticket_id is required")
-        if not isinstance(state_sha256, str) or len(state_sha256) != 64:
-            raise ValueError("login request state must be a sha256 digest")
+        state_sha256 = handoff_digest(login_request)
+        origin = checked_origin(return_origin)
         if expires_at_iso <= now_iso:
             raise ValueError("handoff expiry must be in the future")
         async with self._lock:
-            self.records[ticket_id] = LoveTreeHandoffRecord(
+            record = LoveTreeHandoffRecord(
                 ticket_id=ticket_id,
                 product_id=LOVETREE_HANDOFF_PRODUCT_ID,
                 recipient=LOVETREE_HANDOFF_RECIPIENT,
                 state_sha256=state_sha256,
+                return_origin=origin,
                 status=HANDOFF_STATUS_AWAITING_LOGIN,
                 pending_user_id=None,
                 auth_provider=None,
@@ -291,6 +342,8 @@ class InMemoryLoveTreeLoginHandoffStore:
                 updated_at=now_iso,
                 expires_at=expires_at_iso,
             )
+            self.records[ticket_id] = record
+            return record
 
     async def get(self, ticket_id: str) -> LoveTreeHandoffRecord | None:
         return self.records.get(ticket_id)
@@ -306,13 +359,12 @@ class InMemoryLoveTreeLoginHandoffStore:
         now_iso: str,
     ) -> bool:
         _identity_arguments(user_id, auth_provider, provider_subject)
-        if not isinstance(state_sha256, str) or len(state_sha256) != 64:
-            raise ValueError("login request state must be a sha256 digest")
+        digest = checked_digest(state_sha256)
         async with self._lock:
             record = self.records.get(ticket_id)
             if record is None or record.status != HANDOFF_STATUS_AWAITING_LOGIN:
                 return False
-            if record.is_expired(now_iso) or record.state_sha256 != state_sha256:
+            if record.is_expired(now_iso) or record.state_sha256 != digest:
                 return False
             self.records[ticket_id] = replace(
                 record,
@@ -324,10 +376,22 @@ class InMemoryLoveTreeLoginHandoffStore:
             )
             return True
 
-    async def claim(self, ticket_id: str, *, now_iso: str) -> LoveTreeHandoffRecord | None:
+    async def claim(
+        self,
+        ticket_id: str,
+        *,
+        login_request_sha256: str,
+        now_iso: str,
+    ) -> LoveTreeHandoffRecord | None:
+        digest = checked_digest(login_request_sha256)
         async with self._lock:
             record = self.records.get(ticket_id)
-            if record is None or record.status != HANDOFF_STATUS_READY or record.is_expired(now_iso):
+            if (
+                record is None
+                or record.status != HANDOFF_STATUS_READY
+                or record.state_sha256 != digest
+                or record.is_expired(now_iso)
+            ):
                 return None
             claimed = replace(record, status=HANDOFF_STATUS_CLAIMED, updated_at=now_iso)
             self.records[ticket_id] = claimed
@@ -344,4 +408,7 @@ __all__ = [
     "LOVETREE_HANDOFF_RECIPIENT",
     "LoveTreeHandoffRecord",
     "LoveTreeLoginHandoffStore",
+    "checked_digest",
+    "checked_origin",
+    "handoff_digest",
 ]

@@ -12,13 +12,16 @@ const iso = (ms) => new Date(ms).toISOString().slice(0, 19) + 'Z';
 const FUTURE = iso(AT + 600_000);
 const PAST = iso(AT - 600_000);
 const clock = { clock: () => AT };
+const STATE_SHA = 'a'.repeat(64);
+const OTHER_SHA = 'b'.repeat(64);
+const mintBody = (ticket = TICKET, sha = STATE_SHA) => ({ handoff_ticket: ticket, login_request_sha256: sha });
 
 function rowFor(overrides = {}) {
   return {
     ticket_id: TICKET,
     product_id: LOVETREE_PRODUCT_ID,
     recipient: LOVETREE_HANDOFF_RECIPIENT,
-    state_sha256: 'a'.repeat(64),
+    state_sha256: STATE_SHA,
     status: 'ready',
     pending_user_id: 'usr_lovetree_1',
     auth_provider: 'google',
@@ -31,7 +34,7 @@ function rowFor(overrides = {}) {
 }
 
 /**
- * D1 대신 같은 조건으로 전이하는 이중이다. 조건(제품·수신자·status='ready'·만료)이
+ * D1 대신 같은 조건으로 전이하는 이중이다. 조건(제품·수신자·로그인 요청 해시·status='ready'·만료)이
  * SQL에 그대로 남아 있는지도 함께 확인하고, 실제 SQL 검증은
  * `apps/padiem-chat/tests/test_lovetree_login_handoff.py`가 sqlite3로 한다.
  */
@@ -48,11 +51,14 @@ function handoffDb(rows = [rowFor()]) {
           seen.push({ sql, params });
           if (!sql.includes('UPDATE lovetree_login_handoffs') || !sql.includes("SET status='claimed'")
             || !sql.includes("status='ready'") || !sql.includes('product_id = ?')
-            || !sql.includes('recipient = ?') || !sql.includes('expires_at > ?')) return null;
-          const [claimedAt, , ticketId, productId, recipient, now] = params;
+            || !sql.includes('recipient = ?') || !sql.includes('state_sha256 = ?')
+            || !sql.includes('expires_at > ?')) return null;
+          const [claimedAt, , ticketId, productId, recipient, stateSha, now] = params;
           const row = byTicket.get(ticketId);
           if (!row) return null;
-          if (row.status !== 'ready' || row.product_id !== productId || row.recipient !== recipient || row.expires_at <= now) return null;
+          // 소비 조건에 실패하면 행은 그대로 남는다 — 남의 요청이 표를 소모하지 못한다.
+          if (row.status !== 'ready' || row.product_id !== productId || row.recipient !== recipient
+            || row.state_sha256 !== stateSha || row.expires_at <= now) return null;
           row.status = 'claimed';
           row.claimed_at = claimedAt;
           row.updated_at = claimedAt;
@@ -104,7 +110,7 @@ const post = (path, body, token = SECRET) => new Request(`https://lovetree-auth-
 test('a verified handoff mints exactly one LoveTree session', async () => {
   const made = authority();
   const db = handoffDb();
-  const response = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made }, clock);
+  const response = await handleRequest(post(MINT_PATH, mintBody()), { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made }, clock);
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.session.session_id, SID);
@@ -141,18 +147,40 @@ test('the same ticket cannot mint twice, even concurrently', async () => {
   const db = handoffDb();
   const env = { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made };
   const raced = await Promise.all([
-    handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock),
-    handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock),
-    handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock)
+    handleRequest(post(MINT_PATH, mintBody()), env, clock),
+    handleRequest(post(MINT_PATH, mintBody()), env, clock),
+    handleRequest(post(MINT_PATH, mintBody()), env, clock)
   ]);
   const statuses = await Promise.all(raced.map(response => response.status));
   assert.equal(statuses.filter(status => status === 200).length, 1, '발급은 하나만 성공');
   assert.deepEqual(statuses.filter(status => status !== 200), [401, 401]);
   assert.equal(made.calls.filter(call => call[0] === 'establish_auth_session').length, 1);
 
-  const late = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock);
+  const late = await handleRequest(post(MINT_PATH, mintBody()), env, clock);
   assert.equal(late.status, 401);
   assert.equal((await late.json()).error.code, 'invalid_handoff');
+});
+
+// A/B 동시 로그인의 교차 교환: 표는 자기를 만든 로그인 요청의 해시와 맞을 때만 소비된다.
+test('a ticket presented by another login request is refused without consuming it', async () => {
+  const made = authority();
+  const db = handoffDb();
+  const env = { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made };
+
+  const crossed = await handleRequest(post(MINT_PATH, mintBody(TICKET, OTHER_SHA)), env, clock);
+  assert.equal(crossed.status, 401, '남의 요청으로는 발급하지 않는다');
+  assert.equal((await crossed.json()).error.code, 'invalid_handoff');
+  assert.deepEqual(made.calls, [], '거부는 권위에 닿지 않는다');
+
+  const rightful = await handleRequest(post(MINT_PATH, mintBody()), env, clock);
+  assert.equal(rightful.status, 200, '거부된 시도는 정당한 요청을 방해하지 않는다');
+  assert.equal(made.calls.filter(call => call[0] === 'establish_auth_session').length, 1);
+
+  const afterClaim = await handleRequest(post(MINT_PATH, mintBody(TICKET, OTHER_SHA)), env, clock);
+  assert.equal(afterClaim.status, 401, '소진된 뒤에도 같은 코드로 닫힌다');
+
+  const codes = new Set(db.seen.map(entry => entry.params[2]));
+  assert.deepEqual([...codes], [TICKET], '클레임은 항상 같은 표 조건에서만 나온다');
 });
 
 test('a caller-asserted identity never reaches the store or the authority', async () => {
@@ -162,12 +190,15 @@ test('a caller-asserted identity never reaches the store or the authority', asyn
   for (const attempt of [
     post(MINT_PATH, { handoff_ticket: TICKET, product_user_id: 'usr_someone_else', provider_subject: 'whoever' }),
     post(MINT_PATH, { product_user_id: 'usr_any', provider_subject: 'whoever' }),
+    post(MINT_PATH, { handoff_ticket: TICKET }),
+    post(MINT_PATH, { handoff_ticket: TICKET, login_request_sha256: 'not-a-digest' }),
+    post(MINT_PATH, { handoff_ticket: TICKET, login_request_sha256: STATE_SHA, provider_subject: 'whoever' }),
     post(MINT_PATH, { handoff_ticket: 'x'.repeat(200) }),
     post(MINT_PATH, { handoff_ticket: 'lovt$bad' }),
     post(MINT_PATH, {}),
     post(MINT_PATH, 'not-json'),
-    post(MINT_PATH, { handoff_ticket: TICKET }, null),
-    post(MINT_PATH, { handoff_ticket: TICKET }, 'wrong-secret')
+    post(MINT_PATH, mintBody(), null),
+    post(MINT_PATH, mintBody(), 'wrong-secret')
   ]) {
     const response = await handleRequest(attempt, env, clock);
     assert.ok([400, 401].includes(response.status), `${response.status}`);
@@ -191,7 +222,7 @@ test('an unbound, expired, or foreign handoff is refused without minting', async
     const made = authority();
     const db = handoffDb([row]);
     const env = { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made };
-    const response = await handleRequest(post(MINT_PATH, { handoff_ticket: row.ticket_id }), env, clock);
+    const response = await handleRequest(post(MINT_PATH, mintBody(row.ticket_id)), env, clock);
     assert.equal(response.status, 401, name);
     assert.equal((await response.json()).error.code, 'invalid_handoff', name);
     assert.deepEqual(made.calls, [], `${name}: 발급 RPC를 부르지 않는다`);
@@ -209,30 +240,30 @@ test('a mint that fails after the claim leaves the ticket spent', async () => {
     const made = authority(answer);
     const db = handoffDb();
     const env = { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: db, IDENTITY_AUTHORITY: made };
-    const first = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock);
+    const first = await handleRequest(post(MINT_PATH, mintBody()), env, clock);
     assert.equal(first.status, 503, name);
     assert.ok(['session_not_minted', 'authority_unavailable'].includes((await first.json()).error.code), name);
 
-    const retry = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), env, clock);
+    const retry = await handleRequest(post(MINT_PATH, mintBody()), env, clock);
     assert.equal(retry.status, 401, `${name}: 소진된 표로 재시도할 수 없다`);
   }
 });
 
 test('mint fails closed when a binding is missing', async () => {
   const made = authority();
-  const noStore = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), { LOVETREE_CALLER_SECRET: SECRET, IDENTITY_AUTHORITY: made }, clock);
+  const noStore = await handleRequest(post(MINT_PATH, mintBody()), { LOVETREE_CALLER_SECRET: SECRET, IDENTITY_AUTHORITY: made }, clock);
   assert.equal(noStore.status, 503);
   assert.equal((await noStore.json()).error.code, 'handoff_store_unavailable');
 
-  const noSecret = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), { LOVETREE_LOGIN_DB: handoffDb(), IDENTITY_AUTHORITY: made }, clock);
+  const noSecret = await handleRequest(post(MINT_PATH, mintBody()), { LOVETREE_LOGIN_DB: handoffDb(), IDENTITY_AUTHORITY: made }, clock);
   assert.equal(noSecret.status, 503);
   assert.equal((await noSecret.json()).error.code, 'caller_credential_unavailable');
 
-  const noAuthority = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: handoffDb() }, clock);
+  const noAuthority = await handleRequest(post(MINT_PATH, mintBody()), { LOVETREE_CALLER_SECRET: SECRET, LOVETREE_LOGIN_DB: handoffDb() }, clock);
   assert.equal(noAuthority.status, 503);
   assert.equal((await noAuthority.json()).error.code, 'authority_unavailable');
 
-  const brokenStore = await handleRequest(post(MINT_PATH, { handoff_ticket: TICKET }), {
+  const brokenStore = await handleRequest(post(MINT_PATH, mintBody()), {
     LOVETREE_CALLER_SECRET: SECRET,
     LOVETREE_LOGIN_DB: { prepare: () => { throw new Error('D1 없음'); } },
     IDENTITY_AUTHORITY: made
@@ -311,6 +342,7 @@ test('the table contract and the store still match what this relay claims', asyn
     'lovetree_login_handoffs',
     "status='ready'",
     "status='claimed'",
+    'AND state_sha256=?',
     'expires_at > ?',
     'RETURNING',
     LOVETREE_PRODUCT_ID,

@@ -62,7 +62,7 @@ jobs:
           echo "login handoff caller: pass=$pass fail=$fail skipped=$skipped"
           [ "${fail:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 실패"; exit 1; }
           [ "${skipped:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 skip"; exit 1; }
-          [ "${pass:-0}" -ge 10 ] || { echo "실패: 발급 중계 테스트 10건 미만 실행"; exit 1; }
+          [ "${pass:-0}" -ge 11 ] || { echo "실패: 발급 중계 테스트 11건 미만 실행"; exit 1; }
 
       # migration 073의 SQL·CHECK과 저장소 전이 규칙은 이 lane에서 텍스트 계약으로 묶고(drift guard),
       # 실제 SQL 실행 검증은 apps/padiem-chat/tests/test_lovetree_login_handoff.py가 B62 Chat CI lane에서

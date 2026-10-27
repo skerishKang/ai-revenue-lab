@@ -11,9 +11,10 @@
  * - 서버 간 인증(COM2 → 이 중계): `authorization: Bearer <LOVETREE_CALLER_SECRET>`. 서비스 신원이지 사용자 신원이 아니다.
  * - 사용자 세션: 폐기할 canonical session id는 권위가 제품 소속을 확인한다
  *   (`identity_authority_worker.py:264-281`은 `product_id` + `session_id`만 받고 행이 그 제품의 것이 아니면 닫힌다).
- * - 발급 근거: caller가 보낸 것은 **handoff 표 하나**뿐이다. 제품·수신자·로그인 요청·검증된 신원은
- *   이미 확인된 로그인(`lovetree_login_handoffs`)이 행에 써 놓은 값만 쓴다. 호출자가 provider_subject·
- *   사용자 ID·제품을 주장하는 경로는 어떤 요청에도 없다.
+ * - 발급 근거: caller가 보낸 것은 **handoff 표와 그 표를 부른 로그인 요청의 해시** 두 값뿐이다.
+ *   제품·수신자·로그인 요청·검증된 신원은 이미 확인된 로그인(`lovetree_login_handoffs`)이 행에 써 놓은
+ *   값만 쓴다. 호출자가 provider_subject·사용자 ID·제품을 주장하는 경로는 어떤 요청에도 없고,
+ *   해시가 행에 적힌 로그인 요청과 다르면 표는 소비조차 되지 않는다.
  *
  * 표는 단일 사용이다. 클레임은 조건부 UPDATE 한 문장이라 늦거나 반복된 요청은 두 번째 발급을 만들지
  * 못하고, 클레임 이후 발급이 실패하면 그 표는 소진된 채로 남는다 — 재시도는 로그인을 처음부터 다시 해야 한다.
@@ -28,6 +29,7 @@ export const MAX_REQUEST_BYTES = 4096;
 export const SESSION_TTL_SECONDS = 3600;
 
 const CANONICAL_SESSION_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+const SHA256_HEX = /^[0-9a-f]{64}$/;
 const PRODUCT_USER_ID = /^usr_[A-Za-z0-9_-]{1,80}$/;
 const AUTH_PROVIDERS = new Set(["google", "password"]);
 const HANDOFF_COLUMNS =
@@ -89,14 +91,16 @@ function nowIso(at) {
   return new Date(at).toISOString().slice(0, 19) + "Z";
 }
 
-async function claimHandoff(db, ticketId, at) {
+async function claimHandoff(db, ticketId, requestDigest, at) {
   const statement = db.prepare(
     "UPDATE lovetree_login_handoffs "
     + "SET status='claimed', claimed_at=?, updated_at=? "
-    + "WHERE ticket_id=? AND product_id = ? AND recipient = ? AND status='ready' AND expires_at > ? "
+    + "WHERE ticket_id=? AND product_id = ? AND recipient = ? AND state_sha256 = ? AND status='ready' AND expires_at > ? "
     + `RETURNING ${HANDOFF_COLUMNS}`
   );
-  const row = await statement.bind(nowIso(at), nowIso(at), ticketId, LOVETREE_PRODUCT_ID, LOVETREE_HANDOFF_RECIPIENT, nowIso(at)).first();
+  const row = await statement
+    .bind(nowIso(at), nowIso(at), ticketId, LOVETREE_PRODUCT_ID, LOVETREE_HANDOFF_RECIPIENT, requestDigest, nowIso(at))
+    .first();
   const record = row?.to_py?.() ?? row;
   if (!record || typeof record !== "object") return null;
   if (record.status !== "claimed" || record.product_id !== LOVETREE_PRODUCT_ID || record.recipient !== LOVETREE_HANDOFF_RECIPIENT) return null;
@@ -111,8 +115,11 @@ async function mintSession(request, env, at) {
   if (state === "unavailable") return jsonResponse(503, { ok: false, error: { code: "caller_credential_unavailable", message: "LOVETREE_CALLER_SECRET is not available." } });
 
   const body = await readClosedBody(request);
-  if (!body || Object.keys(body).length !== 1 || typeof body.handoff_ticket !== "string" || !CANONICAL_SESSION_ID.test(body.handoff_ticket)) {
-    return jsonResponse(400, { ok: false, error: { code: "invalid_request", message: "Exactly one bounded handoff_ticket is required." } });
+  const ticket = body?.handoff_ticket;
+  const digest = body?.login_request_sha256;
+  if (!body || Object.keys(body).length !== 2 || typeof ticket !== "string" || !CANONICAL_SESSION_ID.test(ticket)
+    || typeof digest !== "string" || !SHA256_HEX.test(digest)) {
+    return jsonResponse(400, { ok: false, error: { code: "invalid_request", message: "Exactly one bounded handoff_ticket and its login request digest are required." } });
   }
   if (!env?.LOVETREE_LOGIN_DB) {
     return jsonResponse(503, { ok: false, error: { code: "handoff_store_unavailable", message: "LOVETREE_LOGIN_DB is not bound." } });
@@ -121,14 +128,16 @@ async function mintSession(request, env, at) {
     return jsonResponse(503, { ok: false, error: { code: "authority_unavailable", message: "Identity authority is unavailable." } });
   }
 
-  // 표 소비는 이 한 문장에서 끝난다. 실패한 클레임은 아무것도 돌려주지 않는다.
+  // 표 소비는 이 한 문장에서 끝난다. 지금 요청의 해시가 행에 적힌 해시와 다르면
+  // 행은 그대로 남는다(WHERE가 소비 조건이라, 남의 요청으로는 표가 소모되지 않는다).
   let claimed;
   try {
-    claimed = await claimHandoff(env.LOVETREE_LOGIN_DB, body.handoff_ticket, at);
+    claimed = await claimHandoff(env.LOVETREE_LOGIN_DB, ticket, digest, at);
   } catch {
     return jsonResponse(503, { ok: false, error: { code: "handoff_store_unavailable", message: "The login handoff store could not be reached." } });
   }
   if (!claimed) {
+    // 존재·상태·요청 결합 중 어느 실패인지 가르지 않고 같은 코드로 닫는다.
     return jsonResponse(401, { ok: false, error: { code: "invalid_handoff", message: "That login handoff is not claimable." } });
   }
 
