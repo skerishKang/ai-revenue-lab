@@ -17,6 +17,10 @@ on:
       - ".github/workflows/b14-production-deploy-gate.yml"
       - ".github/workflows/b14-deploy-gate-contract-tests.yml"
       - ".github/tests/test_b14_production_deploy_gate.py"
+      # #5895 item 4: the post-deploy real model call step and its script had no CI
+      # host, so a change to either could never go red here. Now they run.
+      - ".github/scripts/b14_real_model_call_smoke.py"
+      - ".github/tests/test_b14_real_model_call_smoke.py"
       - ".github/tests/test_cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version.py"
@@ -52,6 +56,7 @@ jobs:
         run: |
           python -m pytest -q \
             .github/tests/test_b14_production_deploy_gate.py \
+            .github/tests/test_b14_real_model_call_smoke.py \
             .github/tests/test_cloudflare_served_version_cli.py
 
       - name: Record no production deployment

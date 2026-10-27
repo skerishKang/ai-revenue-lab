@@ -109,6 +109,38 @@ def test_post_deploy_verification_is_blocking() -> None:
     assert any("Post-deploy verification" in name for name in step_names)
 
 
+def test_real_model_call_step_runs_after_the_deploy_and_is_not_rolled_back() -> None:
+    # #5895 ④: one real completion proves the promoted version serves traffic.
+    wf = _workflow()
+    deploy = wf["jobs"]["deploy-production-b14"]
+    names = [step.get("name", "") for step in deploy["steps"]]
+    assert "Post-deploy real model call" in names
+    call = names.index("Post-deploy real model call")
+    assert call > next(i for i, n in enumerate(names) if "Post-deploy verification" in n)
+    # The bounded evidence artifact is published before the proof, so a red proof
+    # cannot hide the run's evidence.
+    assert call > next(i for i, n in enumerate(names) if "Publish the bounded" in n)
+    step = deploy["steps"][call]
+    # Default success() semantics only: no condition that would let a provider
+    # limit or a failure be skipped, and no rollback is wired to this job.
+    assert "if" not in step
+    assert ".github/scripts/b14_real_model_call_smoke.py" in step["run"]
+    assert not any("failure()" in str(other.get("if", "")) for other in deploy["steps"])
+    text = _workflow_text()
+    assert text.count("b14_real_model_call_smoke.py") == 1
+
+
+def test_real_model_call_script_names_no_model_and_carries_no_credential() -> None:
+    source = (ROOT / ".github/scripts/b14_real_model_call_smoke.py").read_text(encoding="utf-8")
+    assert 'REQUESTED_ROUTE = "b14/auto"' in source
+    assert '"product_tier": PRODUCT_TIER' in source
+    assert "PROVIDER_LIMIT_STATUSES = frozenset({429, 503})" in source
+    assert 'print(f"REAL_MODEL_CALL={verdict} model={model}")' in source
+    for forbidden in ("Authorization", "api_key", "API_KEY", "secrets.", "X-Padiem-B14-Proof"):
+        assert forbidden not in source, forbidden
+    assert "if __name__" in source
+
+
 def test_rollback_job_is_separately_confirmed() -> None:
     wf = _workflow()
     rollback = wf["jobs"]["rollback-production-b14"]
