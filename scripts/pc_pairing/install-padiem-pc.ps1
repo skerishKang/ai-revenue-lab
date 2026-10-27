@@ -95,9 +95,24 @@ function Invoke-PadiemHandoff {
   }
 }
 
+function Get-PadiemDriveRoots {
+  # A linked PC works over its whole local drives by default (#5573, Owner
+  # decision), so the PC names the fixed drives it actually has. Network drives
+  # carry a DisplayRoot and stay out. A failed query reports nothing at all: the
+  # server then says the drive lookup failed instead of guessing a scope.
+  try {
+    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
+      Where-Object { $null -eq $_.DisplayRoot } |
+      ForEach-Object { $_.Name.ToUpperInvariant() + ':' } | Sort-Object -Unique)
+  } catch {
+    return @()
+  }
+}
+
 function Invoke-PadiemClaim {
-  param([string] $Origin, [string] $PairingCode, [string] $MeshNodeId)
-  $body = @{ code = $PairingCode; mesh_node_id = $MeshNodeId } | ConvertTo-Json -Compress
+  param([string] $Origin, [string] $PairingCode, [string] $MeshNodeId, [string[]] $Drives)
+  $body = @{ code = $PairingCode; mesh_node_id = $MeshNodeId; drives = @($Drives) } |
+    ConvertTo-Json -Compress
   try {
     return Invoke-RestMethod -Method Post -Uri ($Origin + $ClaimPath) `
       -ContentType 'application/json' -Body $body -TimeoutSec 30
@@ -160,7 +175,7 @@ if ($installed) {
   # observation lane (#5573 PR-4a) already carries; the claim endpoint stays the
   # direct route when a caller knows the node id.
   if ($env:PADIEM_MESH_NODE_ID) {
-    $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID
+    $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID -Drives (Get-PadiemDriveRoots)
     if (-not $claim) { Write-Error $Copy.CodeRejected; exit 4 }
   }
   if ($agentUrl) { Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag) } else { Write-Host $Copy.AgentReady }
