@@ -43,6 +43,20 @@ class CandidatePlanTest(unittest.TestCase):
         self.assertFalse(proof["existing_secret_values_read"])
         self.assertTrue(any(x["name"] == "CF_VERSION_METADATA" for x in proof["binding_diff"]["added"]))
 
+    def test_the_structural_plan_is_silent_and_the_step_names_the_baseline_once(self):
+        """The triple B62_BINDING_DIFF_COUNTS spam was a structural plan wearing
+        the production name; the plan prints nothing and the step says the
+        repo-vs-baseline comparison exactly once under its own name."""
+
+        output = io.StringIO()
+        with redirect_stdout(output):
+            planner.candidate_preservation(live())
+        self.assertEqual(output.getvalue(), "")
+        source = (SCRIPTS / "b62_connector_broker_additive_preflight.py").read_text(encoding="utf-8")
+        self.assertIn("emit=False", source)
+        workflow = (SCRIPTS.parent / "workflows" / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+        self.assertEqual(workflow.count("B62_REPO_VS_BASELINE_DIFF_COUNTS"), 1)
+
     def test_source_rpc_contract_pins_state_worker_not_edge(self):
         planner.verify_broker_source_rpc_contract()
         proof = planner.candidate_preservation(live())
