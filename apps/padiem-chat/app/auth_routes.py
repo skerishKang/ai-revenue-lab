@@ -16,6 +16,12 @@ from .android_auth_routes import (
     load_android_handoff_for_callback,
 )
 from .android_auth_store import HANDOFF_STATUS_AWAITING_CONFIRMATION
+from .lovetree_auth_routes import (
+    bind_lovetree_handoff,
+    load_lovetree_handoff_for_callback,
+    not_ready as lovetree_handoff_not_ready,
+    return_to_lovetree,
+)
 from .auth import (
     AuthError,
     OAUTH_STATE_COOKIE,
@@ -436,6 +442,7 @@ async def google_callback(request: Request) -> Response:
     query_state = request.query_params.get("state")
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE)
     handoff_record = None
+    pending = None
     if not verify_oauth_state(settings, query_state, cookie_state):
         # Android 1.0.0 completes Google in the device's external browser. That
         # browser has no WebView state cookie, so a handoff state is verified by
@@ -452,13 +459,19 @@ async def google_callback(request: Request) -> Response:
         if handoff_response is not None:
             return handoff_response
         if handoff_record is None:
-            # Not a signed handoff state either: keep the pre-existing
-            # invalid-OAuth-state rejection and never exchange the code.
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
-        if handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
+            # LoveTree sends its own browser here the same way: the login request is
+            # named by a Chat-signed state, and that state only picks a pending row.
+            pending, pending_response = await load_lovetree_handoff_for_callback(request, query_state)
+            if pending_response is not None:
+                return pending_response
+            if pending is None:
+                # Not a signed handoff state either: keep the pre-existing
+                # invalid-OAuth-state rejection and never exchange the code.
+                return JSONResponse(
+                    {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
+                    status_code=400,
+                )
+        if handoff_record is not None and handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
             # The Google code was already exchanged on the first callback. A
             # reload must not consume it again; render the same code form.
             return android_handoff_confirm_page(query_state)
@@ -495,7 +508,7 @@ async def google_callback(request: Request) -> Response:
                 now=authenticated_epoch,
                 canonical_session_id=canonical_session_id,
             )
-            if handoff_record is None
+            if handoff_record is None and pending is None
             else None
         )
     except AuthError as exc:
@@ -522,6 +535,20 @@ async def google_callback(request: Request) -> Response:
         if not bound:
             return android_handoff_terminal_page("failed")
         return android_handoff_confirm_page(query_state)
+
+    if pending is not None:
+        # LoveTree's browser also gets no PADIEM session. What it gets is one ticket,
+        # and the only identity written is the one this callback just verified.
+        bound = await bind_lovetree_handoff(
+            request,
+            pending,
+            user_id=profile.id,
+            auth_provider="google",
+            provider_subject=identity["subject"],
+        )
+        if not bound:
+            return lovetree_handoff_not_ready()
+        return await return_to_lovetree(request, pending)
 
     if not isinstance(session, str) or not session:
         return JSONResponse(
