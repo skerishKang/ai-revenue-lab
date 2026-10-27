@@ -205,6 +205,32 @@ function carriesB64SessionCookie(cookieHeader: string): boolean {
   return false;
 }
 
+/**
+ * The #3476 origin boundary, applied to the request shapes B64 actually
+ * receives.
+ *
+ * A fetch/XHR mutation carries the document's real Origin, so an exact compare
+ * against the reviewed origin is the whole check. B64's consumer surface runs
+ * under `script-src 'none'`, so every mutation is instead a top-level HTML form
+ * POST, and a top-level form POST arrives with `Origin: null` — measured on
+ * Chrome 154 against the live Worker on 2026-10-28, where it made the visitor's
+ * own Save/Login/Logout buttons answer 403.
+ *
+ * The fallback keeps the boundary where #3476 put it. `Sec-Fetch-Site` is a
+ * forbidden request header, so a cross-site document cannot set it, and the
+ * same-site sibling that SameSite=Lax still carries the cookie to — the exact
+ * case this guard exists for — reports `same-site`, not `same-origin`. The
+ * request must also be addressed to the reviewed origin. A non-browser caller
+ * can forge both headers and still needs that member's own session cookie,
+ * which is not ambient browser authority. Everything else stays denied.
+ */
+function mutationOriginAccepted(request: Request, url: URL, expectedOrigin: string): boolean {
+  const origin = request.headers.get('origin');
+  if (origin === expectedOrigin) return true;
+  if (origin !== null && origin !== '' && origin !== 'null') return false;
+  return request.headers.get('sec-fetch-site') === 'same-origin' && url.origin === expectedOrigin;
+}
+
 function jsonErrorResponse(request: Request, status: number, error: string): Response {
   return responseForMethod(request, JSON.stringify({ error }), {
     status,
@@ -336,8 +362,7 @@ export function createConsumerHttpHandler(
       if (!expectedOrigin) {
         return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
       }
-      const origin = request.headers.get('origin');
-      if (!origin || origin !== expectedOrigin) {
+      if (!mutationOriginAccepted(request, url, expectedOrigin)) {
         return jsonErrorResponse(request, 403, 'origin_rejected');
       }
       const { memberStore, sessionSecret } = dependencies;
@@ -528,8 +553,7 @@ export function createConsumerHttpHandler(
           if (!expectedOrigin) {
             return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
           }
-          const origin = request.headers.get('origin');
-          if (!origin || origin !== expectedOrigin) {
+          if (!mutationOriginAccepted(request, url, expectedOrigin)) {
             return jsonErrorResponse(request, 403, 'origin_rejected');
           }
         }
