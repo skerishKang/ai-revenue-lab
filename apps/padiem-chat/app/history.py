@@ -6,7 +6,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 from .workspace_storage import _safe_identifier
@@ -32,6 +32,15 @@ MAX_RUN_RESULT_SUMMARY_CHARS = 200
 #: tool lane, and that lane is this one; the marker therefore names the same
 #: lane the dispatch scope names, without a second authority.
 MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query"})
+
+#: #5895 — how long one executor claim is held before the same dispatch may be
+#: handed out again. The Oracle executor holds a poll open for 20 seconds and
+#: re-requests about a second after an empty or dead round, so a claim whose
+#: response never reached it is offered again inside roughly three of those
+#: rounds. This is a delivery timer, not a workload limit: it decides nothing
+#: about how long a PC command may run, and the instant that ends a dispatch
+#: stays the `expires_at` the poll route stamps (#4139).
+ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
@@ -306,8 +315,12 @@ def _search_snippet(hit: object, query: object) -> str:
     return prefix + excerpt + suffix
 
 
+def _iso(moment: datetime) -> str:
+    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return _iso(datetime.now(timezone.utc))
 
 
 def _user_id(subject: str) -> str:
@@ -2670,7 +2683,7 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "tool_call_ref=?, nonce_sha256=NULL, state=?, "
+                "tool_call_ref=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
@@ -2746,18 +2759,23 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and never handed out (no nonce).
-        The caller (the poll route, under the channel secret) atomically claims
-        it before responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or handed
+        out under a lease that has run out (#5895). A lease that ran out is the
+        only evidence that a claim reached nobody: the poll route wrote the nonce
+        and the response died before the executor could read it. The caller (the
+        poll route, under the channel secret) re-claims atomically before
+        responding; this read alone hands out nothing.
         """
+        now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
-            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NULL "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
-            "pending", _now_iso(),
+            "pending", now, now,
         )
         return dict(row) if row is not None else None
 
@@ -2767,18 +2785,27 @@ class D1HistoryStore:
         """#4139 — atomically hand one pending dispatch to the executor.
 
         The conditional update is the single-claim gate: exactly one poll wins
-        per dispatch. Returns False when another poll already claimed it, when
-        it expired, or when it left pending meanwhile.
+        one round. #5895 makes the hand-out a lease — the same UPDATE records the
+        instant the claim may be handed out again, under the same condition the
+        yield uses — so a claim whose response never reached the executor is not
+        a permanent loss. Re-claiming rolls the nonce, so a submission still
+        carrying the superseded nonce is refused by the existing nonce comparison
+        instead of attaching a second result. Returns False when another poll won
+        this round, when it expired, or when it left pending meanwhile.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce_sha256, str) or not nonce_sha256:
             raise HistoryError("nonce_sha256 is required")
-        now = _now_iso()
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
         written = await self._run(
-            "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
-            "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
-            nonce_sha256, dispatch_id, "pending", now,
+            "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            nonce_sha256,
+            _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
+            dispatch_id, "pending", now, now,
         )
         return _changed_rows(written) == 1
 
