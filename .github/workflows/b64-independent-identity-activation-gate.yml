@@ -280,7 +280,7 @@ jobs:
           #
           # secret_text rather than a plain var, on purpose: the application reads
           # env.B64_ADMIN_EMAIL as a string either way, a secret binding survives a
-          # later `wrangler deploy` (proven by run 40578410849 reading back
+          # later Worker release (proven by run 40578410849 reading back
           # B64_SESSION_SECRET, which no config file declares), and the address
           # stays out of the publicly readable vars list.
           if [ -z "${ADMIN_EMAIL_VALUE}" ]; then
