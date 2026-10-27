@@ -27,11 +27,15 @@ INDEX_HTML = STATIC_DIR / "index.html"
 #: The exact endpoint set the shared contract layer may touch. This is the
 #: shipped util contract: the public chat lane, the project-file store and
 #: the session status probe. Anything else is a second authority.
+#: #5942 adds the EXISTING password credential route, so a signed-out visitor
+#: signs in inside this page instead of being sent to the Chat home; it is the
+#: same server-owned session contract, not a new login system.
 ALLOWED_ENDPOINTS = {
     "/api/chat",
     "/api/projects",
     "/api/projects/",
     "/api/auth/status",
+    "/api/auth/password/login",
 }
 
 FORBIDDEN_MARKERS = (

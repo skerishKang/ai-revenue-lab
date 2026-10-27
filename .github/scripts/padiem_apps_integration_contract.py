@@ -40,9 +40,13 @@ DOCUMENT_NORMALIZATION = ROOT / "packages/padiem-ai-core/padiem_ai_core/document
 IDENTITY_AUTHORITY = ROOT / "packages/padiem-control-plane/identity_authority_worker.py"
 
 #: The only platform routes an app may call. `/api/chat` is the AI lane: B14
-#: routing, the model policy and the UsageGate all stay behind it.
+#: routing, the model policy and the UsageGate all stay behind it. `/api/auth/status`
+#: is the session read and `/api/auth/password/login` is the SAME session's credential
+#: entry, so an app can sign a visitor in inside its own page (#5942) without a second
+#: login system; signup, reset and logout stay with Chat.
 PLATFORM_ROUTES: tuple[tuple[str, tuple[str, ...], str], ...] = (
     ("auth", ("GET",), "/api/auth/status"),
+    ("login", ("POST",), "/api/auth/password/login"),
     ("generate", ("POST",), "/api/chat"),
     ("projects", ("GET", "POST"), "/api/projects"),
     ("files", ("GET", "POST"), "/api/projects/{project_id}/files"),

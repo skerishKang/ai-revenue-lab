@@ -19,6 +19,10 @@
  *   - session:     cookie credentials on every call ("include"), signed-in
  *     state read from GET /api/auth/status (fail-closed gate like
  *     councillor.js: the tools stay locked until authenticated === true).
+ *     A signed-out visit logs in INSIDE this page through the existing
+ *     POST /api/auth/password/login credential contract (#5942); the visitor is
+ *     never sent to the Chat home page, and the Google route is a plain link
+ *     that returns to this entry through the server's signed state.
  *
  * Nothing here calls /api/b66*, /api/claw*, /auth/* POST routes or any other
  * path, and no second authority, store or model lane is introduced. The
@@ -55,6 +59,7 @@
     });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
+      if (res.status === 401) markSessionLost();
       const message = data?.error?.message;
       throw new Error(typeof message === "string" && message ? message : "HTTP " + res.status);
     }
@@ -1085,44 +1090,262 @@
   async function checkSignedIn() {
     try {
       const res = await fetch("/api/auth/status", { credentials: "include" });
-      if (!res.ok) return false;
+      if (!res.ok) return { signedIn: false, methods: null };
       const data = await res.json().catch(() => null);
-      return !!(data && data.authenticated === true);
+      // fail-closed gate, unchanged from councillor.js: nothing is attached
+      // unless the server itself says this cookie is authenticated.
+      return { signedIn: !!(data && data.authenticated === true), methods: (data && data.methods) || null };
     } catch (_) {
-      return false;
+      return { signedIn: false, methods: null };
     }
   }
 
-  async function init() {
-    const bodies = {
-      speech: document.getElementById("councilSpeechBody"),
-      sns: document.getElementById("councilSnsBody"),
-      meeting: document.getElementById("councilMeetingBody"),
-    };
-    const signedIn = await checkSignedIn();
-    const badge = document.getElementById("councilAuthBadge");
-    const note = document.getElementById("councilSigninNote");
-    if (!signedIn) {
-      if (badge) badge.textContent = "로그인 필요";
-      if (note) note.hidden = false;
-      // fail-closed: the tool builders are not attached while signed out.
-      return { signedIn, tools: null };
+  // ── session and selection state (this page's UI state, never an authority) ──
+  // The three cards are the entry: one chosen tool, one panel. A signed-out visit
+  // logs in here (the existing same-origin session contract), then continues into
+  // the tool it had picked. No new endpoint, store, token or account system.
+  const TOOLS = Object.freeze(["speech", "sns", "meeting"]);
+  const LABELS = Object.freeze({ speech: "축사·인사말", sns: "SNS 홍보", meeting: "회의정리·활동집" });
+  const session = { signedIn: false, built: false, bound: false, selected: null, pending: null };
+  let bodies = {};
+
+  function host(id) { return document.getElementById(id); }
+  function setBadge(text) { const node = host("councilAuthBadge"); if (node) node.textContent = text; }
+  function setStatus(text) {
+    const node = host("councilAuthStatus");
+    if (!node) return;
+    node.textContent = text || "";
+    node.hidden = !text;
+  }
+  function showAuthPanel(message) {
+    const panel = host("councilAuthPanel");
+    if (panel) panel.hidden = false;
+    const action = host("councilAuthAction");
+    if (action) action.hidden = false;
+    setBadge("로그인 필요");
+    if (message) setStatus(message);
+  }
+  function hideAuthPanel() {
+    const panel = host("councilAuthPanel");
+    if (panel) panel.hidden = true;
+    const action = host("councilAuthAction");
+    if (action) action.hidden = true;
+    setStatus("");
+  }
+
+  function store() {
+    // A host may refuse storage (private mode, and the module harness runs this
+    // file with no storage at all). Selection then lives in the URL only.
+    try { return window.localStorage || null; } catch (_) { return null; }
+  }
+  function rememberedTool() {
+    try {
+      const value = store() && store().getItem("padiem-council-tool");
+      return TOOLS.indexOf(value) >= 0 ? value : null;
+    } catch (_) { return null; }
+  }
+  function rememberTool(tool) {
+    try { if (store()) store().setItem("padiem-council-tool", tool); } catch (_) {}
+  }
+  function toolFromUrl() {
+    const hash = (window.location && window.location.hash) || "";
+    const value = hash.replace(/^#\/?/, "");
+    return TOOLS.indexOf(value) >= 0 ? value : null;
+  }
+  function writeToolToUrl(tool) {
+    const history = window.history;
+    if (!tool || !history || typeof history.replaceState !== "function") return;
+    try { history.replaceState(null, "", "#/" + tool); } catch (_) {}
+  }
+
+  function cardButtons() {
+    return Array.from(document.querySelectorAll(".council-card-select"));
+  }
+
+  function focusToolPanel(tool) {
+    const body = bodies[tool];
+    const field = body ? body.querySelector("input") : null;
+    if (field && typeof field.focus === "function") field.focus();
+    const section = host("council-" + tool);
+    if (section && typeof section.scrollIntoView === "function") {
+      try { section.scrollIntoView({ block: "start" }); } catch (_) {}
     }
-    if (badge) badge.textContent = "로그인됨";
-    const tools = {
-      speech: speechModule,
-      sns: snsModule,
-      meeting: meetingModule,
-    };
-    Object.keys(bodies).forEach((key) => {
-      const host = bodies[key];
-      if (host && tools[key]) tools[key].build(host);
+  }
+
+  function applySelection(tool, moveFocus) {
+    session.selected = tool;
+    TOOLS.forEach((key) => {
+      const body = bodies[key];
+      if (body) body.hidden = key !== tool;
+      const section = host("council-" + key);
+      if (section && section.classList) section.classList[ key === tool ? "add" : "remove"]("active");
     });
-    return { signedIn, tools };
+    cardButtons().forEach((button) => {
+      const active = button.dataset.tool === tool;
+      button.setAttribute("aria-expanded", active ? "true" : "false");
+      if (button.classList) button.classList[active ? "add" : "remove"]("active");
+      const label = LABELS[button.dataset.tool] || "";
+      button.textContent = active ? "닫기" : "열기";
+      button.setAttribute("aria-label", label + " " + (active ? "닫기" : "열기"));
+    });
+    if (tool) {
+      rememberTool(tool);
+      writeToolToUrl(tool);
+      if (moveFocus) focusToolPanel(tool);
+    }
+    return session.selected;
+  }
+
+  function openLoginHere(tool, message) {
+    if (tool) session.pending = tool;
+    showAuthPanel(message || (!session.signedIn && session.pending
+      ? "로그인이 필요합니다. 선택한 업무(" + LABELS[session.pending] + ")는 로그인 후 이 화면에서 바로 이어집니다."
+      : ""));
+    const form = host("councilLoginForm");
+    const field = form ? form.querySelector("[name=identifier]") : null;
+    if (field && typeof field.focus === "function") field.focus();
+  }
+
+  function bindCards() {
+    if (session.bound) return;
+    cardButtons().forEach((button) => {
+      button.addEventListener("click", () => {
+        const tool = button.dataset.tool;
+        if (!session.signedIn) { openLoginHere(tool); return; }
+        applySelection(session.selected === tool ? null : tool, true);
+      });
+    });
+    const action = host("councilAuthAction");
+    if (action) action.addEventListener("click", () => openLoginHere(session.selected));
+  }
+
+  function offerGoogle(methods) {
+    const row = host("councilGoogleRow");
+    if (row) row.hidden = !(methods && methods.google === true);
+  }
+
+  async function loginWithPassword(form) {
+    const identifier = form.querySelector("[name=identifier]");
+    const password = form.querySelector("[name=password]");
+    const submit = form.querySelector(".council-login");
+    setStatus("로그인 중…");
+    if (submit) submit.disabled = true;
+    let outcome = { ok: false, message: "로그인하지 못했습니다. 다시 시도해 주세요." };
+    try {
+      // The EXISTING PADIEM credential contract: same-origin JSON, host-only
+      // session cookie, one non-disclosing failure projection.
+      const res = await fetch("/api/auth/password/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: identifier ? identifier.value : "",
+          password: password ? password.value : "",
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "";
+      outcome = { ok: res.ok, message: res.ok ? "" : (message || "이메일 또는 비밀번호가 올바르지 않습니다.") };
+    } catch (_) {
+      outcome = { ok: false, message: "로그인하지 못했습니다. 네트워크를 확인해 주세요." };
+    }
+    if (submit) submit.disabled = false;
+    if (!outcome.ok) {
+      setStatus(outcome.message);
+      if (password) password.value = "";
+      return false;
+    }
+    if (password) password.value = "";
+    await enterSignedIn();
+    return true;
+  }
+
+  async function enterSignedIn() {
+    const auth = await checkSignedIn();
+    session.signedIn = auth.signedIn;
+    if (!session.signedIn) { showAuthPanel("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요."); return false; }
+    setBadge("로그인됨");
+    hideAuthPanel();
+    buildToolPanels();
+    const wanted = session.pending || toolFromUrl() || rememberedTool();
+    const focusWanted = Boolean(session.pending);
+    session.pending = null;
+    applySelection(TOOLS.indexOf(wanted) >= 0 ? wanted : null, focusWanted);
+    return true;
+  }
+
+  function buildToolPanels() {
+    if (session.built) return;
+    const tools = { speech: speechModule, sns: snsModule, meeting: meetingModule };
+    TOOLS.forEach((key) => {
+      const hostNode = bodies[key];
+      if (hostNode && tools[key]) tools[key].build(hostNode);
+    });
+    session.built = true;
+  }
+
+  function bindAuthForm() {
+    const form = host("councilLoginForm");
+    if (!form || form.dataset.councilBound === "1") return;
+    form.dataset.councilBound = "1";
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      await loginWithPassword(form);
+    });
+  }
+
+  function markSessionLost() {
+    if (!session.signedIn) return false;
+    session.signedIn = false;
+    openLoginHere(session.selected, "세션이 만료되었습니다. 다시 로그인하면 이 화면에서 이어나갑니다.");
+    return true;
+  }
+
+  async function init() {
+    bodies = {
+      speech: host("councilSpeechBody"),
+      sns: host("councilSnsBody"),
+      meeting: host("councilMeetingBody"),
+    };
+    bindCards();
+    bindAuthForm();
+    // The page runs init() once at load; a second call must not stack a second
+    // set of listeners, or one click would open and immediately close the panel.
+    session.bound = true;
+    const auth = await checkSignedIn();
+    session.signedIn = auth.signedIn;
+    offerGoogle(auth.methods);
+    if (!session.signedIn) {
+      // fail-closed: the tool builders are not attached while signed out. The
+      // cards stay readable as descriptions, and choosing one opens the in-page
+      // login instead of sending the visitor to Chat.
+      showAuthPanel();
+      return { signedIn: false, tools: null, selected: null };
+    }
+    setBadge("로그인됨");
+    hideAuthPanel();
+    buildToolPanels();
+    const tool = toolFromUrl() || rememberedTool();
+    applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
+    return {
+      signedIn: true,
+      tools: { speech: speechModule, sns: snsModule, meeting: meetingModule },
+      selected: session.selected,
+    };
   }
 
   window.PadiemCouncilApps = {
     init,
+    state: () => ({
+      signedIn: session.signedIn,
+      built: session.built,
+      bound: session.bound,
+      selected: session.selected,
+      pending: session.pending,
+    }),
+    select: (tool, moveFocus) => applySelection(tool, moveFocus),
+    openLogin: (tool) => openLoginHere(tool),
+    sessionLost: () => markSessionLost(),
     speech: speechModule,
     sns: snsModule,
     meeting: meetingModule,
