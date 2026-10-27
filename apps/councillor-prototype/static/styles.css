@@ -226,6 +226,10 @@ body {
   background: var(--accent-soft); color: var(--accent);
   font-size: 15px; font-weight: 700;
 }
+/* The reference marks each strip item with its own icon, not an ordinal number. */
+.strip-icon svg { width: 18px; height: 18px; display: block; }
+.ka-badge svg { width: 14px; height: 14px; display: block; }
+.stat-icon svg { width: 14px; height: 14px; display: block; }
 .strip-title { margin: 0; font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.35; }
 .strip-desc { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 .strip-link { color: var(--accent-2); text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
@@ -270,7 +274,7 @@ body {
 [data-theme="dark"] .key-activity-card { background: var(--navy-soft); border-color: var(--border); }
 .key-activity-card:hover { border-color: var(--accent-2); transform: translateY(-3px); box-shadow: 0 12px 28px rgba(11, 26, 46, 0.08); }
 .ka-media { position: relative; }
-.ka-thumb { display: block; width: 100%; aspect-ratio: 16 / 6; object-fit: cover; background: var(--bg-soft); }
+.ka-thumb { display: block; width: 100%; aspect-ratio: 20 / 7; object-fit: cover; background: var(--bg-soft); }
 [data-theme="light"] .ka-thumb { background: var(--ivory-soft); }
 .ka-badge {
   position: absolute; left: 10px; bottom: -13px;
@@ -280,19 +284,21 @@ body {
   border: 2px solid var(--paper);
 }
 [data-theme="dark"] .ka-badge { border-color: var(--navy-soft); }
-.ka-body { padding: 16px 14px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.ka-date { font-size: 11px; color: var(--accent-2); font-weight: 700; letter-spacing: 0.04em; }
+/* Tighter than the first pass: the reference card is 183px tall and its text block sits
+   close to the photo. Every verified field (date, title, note, source link) is kept. */
+.ka-body { padding: 12px 12px 10px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.ka-date { font-size: 11px; color: var(--accent-2); font-weight: 700; letter-spacing: 0.04em; line-height: 1.35; }
 .ka-title {
   margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .ka-desc {
-  margin: 0; font-size: 12px; color: var(--muted); line-height: 1.45;
+  margin: 0; font-size: 12px; color: var(--muted); line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
 }
-.ka-foot { margin-top: auto; padding-top: 10px; color: var(--accent-2); font-size: 12.5px; font-weight: 600; }
+.ka-foot { margin-top: auto; padding-top: 7px; color: var(--accent-2); font-size: 12.5px; font-weight: 600; line-height: 1.35; }
 .key-activity-card.is-summary { justify-content: center; }
-.key-activity-card.is-summary .ka-body { padding: 28px 20px; }
+.key-activity-card.is-summary .ka-body { padding: 22px 18px; }
 .key-activity-card.is-summary .ka-count { font-family: var(--font-serif); font-size: 34px; font-weight: 700; line-height: 1; color: var(--accent); }
 
 /* ── navy info band (reference y 736..860) ────────────────────────────── */
@@ -484,21 +490,23 @@ body {
   .brand-tagline { display: none; }
   .top-cta { display: none; }
 
-  /* hero collapses to a compact vertical band: portrait on top, copy below */
-  .hero { display: block; min-height: 0; padding: 18px 0 24px; }
+  /* Hero collapses to a column: copy first, then the portrait standing on the band's
+     bottom edge. The official cut-out is cut flat at the chest, so we let that cut land
+     exactly on the band boundary — the same way the desktop band hides it — instead of
+     fading it out in mid-air. The old mid-air fade showed a translucent band across the
+     jacket where the mask started, which read as a torn photo on a phone. */
+  .hero { display: flex; flex-direction: column; min-height: 0; padding: 18px 0 0; }
+  .hero-inner { order: 1; padding: 0 var(--gutter); }
   .hero-portrait {
+    order: 2;
     position: static;
     display: block;
-    height: 176px;
+    height: 196px;
     width: auto;
-    max-width: 52%;
-    margin: 0 var(--gutter) 2px auto;
+    max-width: 58%;
+    margin: 10px var(--gutter) 0 auto;
     filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
-    /* the cut-out is cut flat at the chest; fade the cut instead of ending it hard */
-    -webkit-mask-image: linear-gradient(180deg, #000 84%, rgba(0, 0, 0, 0) 100%);
-    mask-image: linear-gradient(180deg, #000 84%, rgba(0, 0, 0, 0) 100%);
   }
-  .hero-inner { padding: 0 var(--gutter); }
   .hero-copy { max-width: none; }
   .hero-name { font-size: 30px; margin-bottom: 10px; }
   .hero-lead { font-size: 13.5px; margin-bottom: 16px; max-width: none; }

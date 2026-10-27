@@ -5,6 +5,34 @@
 (function () {
   "use strict";
 
+  // Line icons drawn inline. The reference marks each strip item, activity card and
+  // statistic with its own glyph rather than an ordinal number, and the two webfonts
+  // carry no icon set, so the paths live here instead of an icon dependency.
+  const PATHS = {
+    record: '<rect x="3.2" y="2.6" width="13.6" height="14.8" rx="2.2"/><path d="M6.6 7.2h6.8M6.6 10.4h6.8M6.6 13.6h4.2"/>',
+    person: '<circle cx="10" cy="6.6" r="3.2"/><path d="M4 17c0-3.3 2.7-5.3 6-5.3s6 2 6 5.3"/>',
+    people: '<circle cx="7.4" cy="6.9" r="2.6"/><circle cx="13.3" cy="8.1" r="2.1"/><path d="M2.9 16.4c0-2.7 2-4.3 4.5-4.3s4.5 1.6 4.5 4.3"/><path d="M12.1 12.5c2.4-.5 5 .6 5 3.9"/>',
+    document: '<path d="M5 2.6h6.2l3.8 3.8v11H5z"/><path d="M11.2 2.6v3.8h3.8"/><path d="M7.6 11h4.8M7.6 14h4.8"/>',
+    building: '<path d="M2.8 8.6L10 3.4l7.2 5.2"/><path d="M5.2 9.4v6.4M9 9.4v6.4M11 9.4v6.4M14.8 9.4v6.4"/><path d="M2.6 17.4h14.8"/>',
+    flag: '<path d="M5.6 17.2V3.4"/><path d="M5.6 4.3c3-1.5 6 1.5 9 .3v6.4c-3 1.2-6-1.8-9-.3z"/>',
+    photo: '<rect x="2.8" y="4.2" width="14.4" height="11.6" rx="2.1"/><circle cx="7.4" cy="8.5" r="1.5"/><path d="M4.6 14.4l4.1-3.7 3 2.7 2.2-1.9 3.3 3"/>',
+    news: '<path d="M4 4.2h9.6v12H5.6A1.6 1.6 0 014 14.6z"/><path d="M13.6 7.2h2.8v7.6a1.4 1.4 0 01-1.4 1.4h-1.4"/><path d="M6.5 7.2h4.8M6.5 10h4.8"/>',
+    source: '<path d="M8.6 11.4a3 3 0 004.2 0l2.6-2.6a3 3 0 00-4.2-4.2L10 5.8"/><path d="M11.4 8.6a3 3 0 00-4.2 0L4.6 11.2a3 3 0 004.2 4.2l1.2-1.2"/>'
+  };
+
+  function icon(name) {
+    return (
+      '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (PATHS[name] || PATHS.record) +
+      "</svg>"
+    );
+  }
+
+  // Meeting kind -> icon. A record of a 회의 reads as a minute/record, a 본회의 as the
+  // assembly itself, a 기념식 as a flag; anything else falls back to the record glyph.
+  const TAG_ICON = { 회의: "record", 위원회: "people", 본회의: "building", 기념식: "flag" };
+
   // Same three verified thumbnails app.js uses for the activity cards.
   const THUMBS = [
     "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg",
@@ -35,7 +63,7 @@
         '<div class="ka-media">' +
           '<img class="ka-thumb" src="' + THUMBS[i] + '" alt="" loading="lazy" ' +
             'onerror="this.style.visibility=\'hidden\'" />' +
-          '<span class="ka-badge" aria-hidden="true">' + (i + 1) + "</span>" +
+          '<span class="ka-badge" aria-hidden="true">' + icon(TAG_ICON[a.tag] || "record") + "</span>" +
         "</div>" +
         '<div class="ka-body">' +
           '<span class="ka-date">' + a.date + " · " + a.tag + "</span>" +
@@ -63,17 +91,17 @@
     const list = document.getElementById("statList");
     if (!list) return;
     const items = [
-      ["의정활동 기록", ACTIVITIES.length + "건"],
-      ["사진·영상 자료", MEDIA.length + "건"],
-      ["의정소식", NEWS.length + "건"],
-      ["자료 출처", "3곳"]
+      ["record", "의정활동 기록", ACTIVITIES.length + "건"],
+      ["photo", "사진·영상 자료", MEDIA.length + "건"],
+      ["news", "의정소식", NEWS.length + "건"],
+      ["source", "자료 출처", "3곳"]
     ];
-    list.innerHTML = items.map((it, i) =>
+    list.innerHTML = items.map(it =>
       '<li class="stat-item">' +
-        '<span class="stat-icon" aria-hidden="true">' + (i + 1) + "</span>" +
+        '<span class="stat-icon" aria-hidden="true">' + icon(it[0]) + "</span>" +
         "<span>" +
-          '<span class="stat-value">' + it[1] + "</span>" +
-          '<span class="stat-label">' + it[0] + "</span>" +
+          '<span class="stat-value">' + it[2] + "</span>" +
+          '<span class="stat-label">' + it[1] + "</span>" +
         "</span>" +
       "</li>"
     ).join("");
