@@ -1,4 +1,5 @@
 import type { D1DatabaseLike } from '../income-pipeline/d1-user-income-repository.js';
+import { isB64GoogleSubject } from './google.js';
 import { isB64MemberId, isB64SessionId } from './session.js';
 
 /**
@@ -12,8 +13,9 @@ import { isB64MemberId, isB64SessionId } from './session.js';
  * - every statement is prepared with bound parameters, so input can never
  *   change statement shape;
  * - a D1 result reporting `success: false` is a storage failure, never ignored;
- * - DDL is never executed at runtime — `migrations/d1/0002_b64_member.sql` is
- *   applied by the dispatch-only B64 D1 provision gate;
+ * - DDL is never executed at runtime — `migrations/d1/0002_b64_member.sql` and
+ *   `0003_b64_google_identity.sql` are applied by the dispatch-only B64 D1
+ *   provision gate;
  * - no global delete: a member's rows are addressed by that member, and the
  *   existing income data in `b64_user_income` is untouched by this schema.
  */
@@ -30,6 +32,17 @@ export interface B64Session {
   readonly memberId: string;
   readonly expiresAt: string;
   readonly revokedAt: string | null;
+}
+
+/**
+ * One Google account linked to one B64 member (`0003_b64_google_identity.sql`).
+ * The subject, not the email, is what resolves a returning visitor.
+ */
+export interface B64GoogleMember {
+  readonly googleSub: string;
+  readonly memberId: string;
+  readonly email: string;
+  readonly linkedAt: string;
 }
 
 export class B64MemberStorageError extends Error {
@@ -53,6 +66,9 @@ export interface B64MemberStore {
   /** Returns the session only while it is unrevoked; expiry is the caller's check. */
   findLiveSession(sessionId: string): Promise<B64Session | null>;
   revokeSession(sessionId: string): Promise<void>;
+  /** The member a Google subject was linked to, or null. Email is never consulted here. */
+  findMemberIdByGoogleSub(googleSub: string): Promise<string | null>;
+  linkGoogleMember(record: B64GoogleMember): Promise<void>;
 }
 
 function assertMemberShape(member: B64Member): void {
@@ -68,11 +84,23 @@ function assertSessionShape(session: B64Session): void {
   if (!session.expiresAt) throw new B64MemberStorageError('session rows require expires_at');
 }
 
+function assertGoogleShape(record: B64GoogleMember): void {
+  if (!isB64GoogleSubject(record.googleSub)) throw new B64MemberStorageError('google subject is not a usable identity');
+  if (!isB64MemberId(record.memberId)) throw new B64MemberStorageError('google link requires a B64 member id');
+  if (!record.email || !record.linkedAt) {
+    throw new B64MemberStorageError('google link requires email and linked_at');
+  }
+}
+
 interface MemberRow {
   id: string;
   email: string;
   password_hash: string;
   created_at: string;
+}
+
+interface GoogleRow {
+  member_id: string;
 }
 
 interface SessionRow {
@@ -138,6 +166,27 @@ export class D1B64MemberStore implements B64MemberStore {
       .run();
     if (result.success === false) throw new B64MemberStorageError('session revoke failed');
   }
+
+  async findMemberIdByGoogleSub(googleSub: string): Promise<string | null> {
+    if (!isB64GoogleSubject(googleSub)) throw new B64MemberStorageError('google subject is not a usable identity');
+    const row = await this.db
+      .prepare('SELECT member_id FROM b64_member_google WHERE google_sub = ?')
+      .bind(googleSub)
+      .first<GoogleRow>();
+    if (!row) return null;
+    if (!isB64MemberId(row.member_id)) throw new B64MemberStorageError('google link points at a non-B64 member');
+    return row.member_id;
+  }
+
+  /** The subject is the key: re-linking a subject that already exists fails. */
+  async linkGoogleMember(record: B64GoogleMember): Promise<void> {
+    assertGoogleShape(record);
+    const result = await this.db
+      .prepare('INSERT INTO b64_member_google (google_sub, member_id, email, linked_at) VALUES (?, ?, ?, ?)')
+      .bind(record.googleSub, record.memberId, record.email, record.linkedAt)
+      .run();
+    if (result.success === false) throw new B64MemberStorageError('google link failed');
+  }
 }
 
 /** Fail-closed stand-in for a deployment without the D1 binding. */
@@ -155,12 +204,15 @@ export class UnboundB64MemberStore implements B64MemberStore {
   async createSession(_session: B64Session): Promise<void> { this.fail(); }
   async findLiveSession(_sessionId: string): Promise<B64Session | null> { this.fail(); }
   async revokeSession(_sessionId: string): Promise<void> { this.fail(); }
+  async findMemberIdByGoogleSub(_googleSub: string): Promise<string | null> { this.fail(); }
+  async linkGoogleMember(_record: B64GoogleMember): Promise<void> { this.fail(); }
 }
 
 /** Test/local-prototype store. Never injected as a production fallback. */
 export class InMemoryB64MemberStore implements B64MemberStore {
   private readonly membersByEmail = new Map<string, B64Member>();
   private readonly sessions = new Map<string, B64Session>();
+  private readonly membersByGoogleSub = new Map<string, string>();
 
   async createMember(member: B64Member): Promise<void> {
     assertMemberShape(member);
@@ -187,5 +239,16 @@ export class InMemoryB64MemberStore implements B64MemberStore {
     const session = this.sessions.get(sessionId);
     if (!session || session.revokedAt !== null) return;
     this.sessions.set(sessionId, Object.freeze({ ...session, revokedAt: new Date().toISOString() }));
+  }
+
+  async findMemberIdByGoogleSub(googleSub: string): Promise<string | null> {
+    if (!isB64GoogleSubject(googleSub)) throw new B64MemberStorageError('google subject is not a usable identity');
+    return this.membersByGoogleSub.get(googleSub) ?? null;
+  }
+
+  async linkGoogleMember(record: B64GoogleMember): Promise<void> {
+    assertGoogleShape(record);
+    if (this.membersByGoogleSub.has(record.googleSub)) throw new B64MemberStorageError('google link failed');
+    this.membersByGoogleSub.set(record.googleSub, record.memberId);
   }
 }

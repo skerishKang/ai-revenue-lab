@@ -26,7 +26,20 @@ import {
   B64MemberExistsError,
   type B64MemberStore,
 } from '../identity/member-store.js';
-import { logoutSession, registerMember, signInMember } from '../identity/auth.js';
+import { extractCookieValue, logoutSession, registerMember, signInMember, signInWithGoogle } from '../identity/auth.js';
+import {
+  B64_GOOGLE_CALLBACK_PATH,
+  B64_GOOGLE_START_PATH,
+  B64_OAUTH_STATE_COOKIE_NAME,
+  GoogleAuthError,
+  b64GoogleAuthorizationUrl,
+  b64GoogleRedirectUri,
+  b64OAuthStateClearCookieValue,
+  b64OAuthStateCookieValue,
+  mintB64OAuthState,
+  verifyB64OAuthState,
+  type GoogleFetch,
+} from '../identity/google.js';
 import { CredentialError } from '../identity/password.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
@@ -46,6 +59,7 @@ import {
 interface ConsumerThemeInfo {
   readonly theme: B64Theme;
   readonly themeToggleHref: string;
+  readonly googleLoginAvailable: boolean;
 }
 
 export type ConsumerCandidateLoader = (
@@ -62,6 +76,17 @@ export interface ConsumerHttpDependencies {
   readonly memberStore?: B64MemberStore | undefined;
   /** B64's own session signing secret (`B64_SESSION_SECRET`). */
   readonly sessionSecret?: string | undefined;
+  /**
+   * B64's OWN Google OAuth client (`B64_GOOGLE_CLIENT_ID` /
+   * `B64_GOOGLE_CLIENT_SECRET`, issue #987). These are B64's credentials on
+   * B64's own redirect origin; another product's client id, redirect URI or
+   * login cookie is never accepted. Missing either one means the Google entry
+   * is not offered and the endpoints answer 503 rather than half-working.
+   */
+  readonly googleClientId?: string | undefined;
+  readonly googleClientSecret?: string | undefined;
+  /** Provider transport seam. Production uses the runtime fetch; tests pin it. */
+  readonly googleFetch?: GoogleFetch;
   /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
@@ -96,6 +121,14 @@ export interface ConsumerHttpDependencies {
  * and a stray GET lands back on the dashboard instead of a blank page.
  */
 const IDENTITY_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/join', '/login', '/logout']));
+
+/**
+ * The Google round trip. Both halves are GET-only navigations: `/start` sends
+ * the browser to Google with a signed state cookie, `/callback` refuses
+ * anything whose `state` does not match that cookie. A form post to either is
+ * refused 405 by the method rule below.
+ */
+const GOOGLE_PATHS: ReadonlySet<string> = Object.freeze(new Set([B64_GOOGLE_START_PATH, B64_GOOGLE_CALLBACK_PATH]));
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
@@ -183,6 +216,39 @@ function storageUnavailableResponse(request: Request): Response {
   return jsonErrorResponse(request, 503, 'storage_unavailable');
 }
 
+/**
+ * A Google callback response always drops the single-use state cookie, whether
+ * the login succeeded or not — a state that has been presented once is spent.
+ */
+function googleCallbackErrorResponse(request: Request, status: number, error: string): Response {
+  const headers = withSecurityHeaders({ 'content-type': 'application/json; charset=utf-8' });
+  headers.append('set-cookie', b64OAuthStateClearCookieValue());
+  return responseForMethod(request, JSON.stringify({ error }), { status, headers });
+}
+
+/** Everything the Google flow needs, or null: the flow is all-or-nothing. */
+interface GoogleFlowConfig {
+  readonly members: B64MemberStore;
+  readonly sessionSecret: string;
+  readonly clientId: string;
+  readonly clientSecret: string;
+  readonly redirectOrigin: string;
+}
+
+function googleFlowConfig(dependencies: ConsumerHttpDependencies): GoogleFlowConfig | null {
+  const { memberStore, sessionSecret, googleClientId, googleClientSecret, expectedBrowserOrigin } = dependencies;
+  if (!memberStore || !sessionSecret || !googleClientId || !googleClientSecret || !expectedBrowserOrigin) {
+    return null;
+  }
+  return Object.freeze({
+    members: memberStore,
+    sessionSecret,
+    clientId: googleClientId,
+    clientSecret: googleClientSecret,
+    redirectOrigin: expectedBrowserOrigin,
+  });
+}
+
 /** Redirect target for a theme toggle: same route without the theme parameter. */
 function themeRedirectTarget(url: URL): string {
   const params = new URLSearchParams(url.searchParams);
@@ -214,6 +280,7 @@ export function createConsumerHttpHandler(
     }
 
     const isIdentity = IDENTITY_PATHS.has(url.pathname);
+    const isGoogle = GOOGLE_PATHS.has(url.pathname);
     if (request.method === 'POST' && !isIdentity && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
@@ -225,7 +292,7 @@ export function createConsumerHttpHandler(
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity) {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle) {
       return notFound(request);
     }
 
@@ -251,6 +318,7 @@ export function createConsumerHttpHandler(
     const themeInfo: ConsumerThemeInfo = {
       theme,
       themeToggleHref: themeToggleHref(url.pathname, url.searchParams),
+      googleLoginAvailable: googleFlowConfig(dependencies) !== null,
     };
 
     if (isIdentity) {
@@ -319,6 +387,64 @@ export function createConsumerHttpHandler(
         if (error instanceof CredentialError) return jsonErrorResponse(request, 400, error.code);
         if (error instanceof B64MemberExistsError) return jsonErrorResponse(request, 409, 'member_exists');
         return storageUnavailableResponse(request);
+      }
+    }
+
+    if (isGoogle) {
+      const config = googleFlowConfig(dependencies);
+      if (config === null) {
+        // No B64 Google client on this deployment: refuse rather than send a
+        // visitor to a login that cannot complete. The entry link is already
+        // hidden for this case.
+        return jsonErrorResponse(request, 503, 'auth_unavailable');
+      }
+      if (url.pathname === B64_GOOGLE_START_PATH) {
+        const issued = await mintB64OAuthState({ sessionSecret: config.sessionSecret });
+        const headers = withSecurityHeaders({
+          location: b64GoogleAuthorizationUrl({
+            clientId: config.clientId,
+            redirectUri: b64GoogleRedirectUri(config.redirectOrigin),
+            state: issued.state,
+          }),
+        });
+        headers.append('set-cookie', b64OAuthStateCookieValue(issued.token));
+        return new Response(null, { status: 303, headers });
+      }
+
+      const code = url.searchParams.get('code');
+      const state = url.searchParams.get('state');
+      const stateToken = cookieHeader === null
+        ? null
+        : extractCookieValue(cookieHeader, B64_OAUTH_STATE_COOKIE_NAME);
+      const stateVerified = await verifyB64OAuthState({
+        sessionSecret: config.sessionSecret,
+        state,
+        token: stateToken,
+      });
+      // No code (Google reported a refusal) and a state mismatch are the same
+      // answer: this callback was not produced by a /start this Worker issued.
+      if (!stateVerified || !code) {
+        return googleCallbackErrorResponse(request, 403, 'invalid_state');
+      }
+      try {
+        const issued = await signInWithGoogle({
+          store: config.members,
+          sessionSecret: config.sessionSecret,
+          clientId: config.clientId,
+          clientSecret: config.clientSecret,
+          publicBaseUrl: config.redirectOrigin,
+          code,
+          fetchImpl: dependencies.googleFetch,
+        });
+        const headers = withSecurityHeaders({ location: '/pipeline' });
+        headers.append('set-cookie', issued.cookieHeader);
+        headers.append('set-cookie', b64OAuthStateClearCookieValue());
+        return new Response(null, { status: 303, headers });
+      } catch (error) {
+        if (error instanceof GoogleAuthError) {
+          return googleCallbackErrorResponse(request, error.status, error.code);
+        }
+        return googleCallbackErrorResponse(request, 503, 'storage_unavailable');
       }
     }
 
