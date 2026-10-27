@@ -404,7 +404,11 @@ def _pc_file_tool_spec(
         auth_scope=(scope,),
         input_schema={"type": "object", "properties": properties, "required": required,
                       "additionalProperties": False},
-        output_contract={"type": "object"}, timeout_seconds=300.0)
+        # Reads keep the bound they have always declared. A write names none: the
+        # PC may run as long as the change takes, and #5995 removed the cap it
+        # used to inherit.
+        output_contract={"type": "object"},
+        timeout_seconds=300.0 if reading else None)
 
 
 def _pc_path_property() -> dict[str, Any]:
