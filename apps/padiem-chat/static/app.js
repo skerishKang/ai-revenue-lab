@@ -2819,7 +2819,11 @@
         return;
       }
       if (result.kind === "pending") {
-        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+        // #5895: an unfinished run is not a failed run. Say what is actually
+        // true — still processing, and the stored answer lands in this
+        // conversation — instead of a failure the owner cannot act on.
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
       if (article.isConnected && !signal.aborted) {
@@ -2977,6 +2981,15 @@
               && data.error.message.trim()
               ? data.error.message : chatTransport.streamErrorMessage(data);
           if (clawGeneralRequest && !paragraph) throw chatTransport.errorFor(data, message);
+          // #5895: on the PC lane a cut stream is not a refusal. The run keeps
+          // executing on the server and its answer is persisted, so keep this
+          // turn in its processing state and let the owner-scoped pending-result
+          // recovery below read the stored answer instead of claiming a failure.
+          if (!clawGeneralRequest && contextSnapshot?.pcRunId && chatTransport.isStreamLoss?.(data)) {
+            PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
+            throw chatTransport.errorFor(data, message);
+          }
           // An explicit refusal is terminal even before the first token.
           // Handle it here so the outer catch never starts pending-result GETs.
           terminalError = true;

@@ -1936,10 +1936,14 @@ class OrchestrationEngineService:
             yield _stream_event_line(prepared.first_event)
             while not prepared.task.done():
                 event_task = asyncio.ensure_future(prepared.queue.get())
+                # #5895: liveness is not an opt-in. Any Engine turn can wait
+                # longer than a proxy is willing to hold a silent response, so
+                # every stream reuses the existing heartbeat window instead of
+                # only the PC opt-in one. No new timeout value is introduced.
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
-                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS,
                 )
                 if not done:
                     event_task.cancel()
