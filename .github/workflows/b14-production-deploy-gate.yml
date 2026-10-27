@@ -226,6 +226,9 @@ jobs:
           VERSION_ID="$(grep -oE 'Current Version ID:\s*[0-9a-fA-F-]+' /tmp/b14-deploy.log | tail -n 1 | awk '{print $NF}')"
           test -n "$VERSION_ID"
           echo "DEPLOY_CURRENT_VERSION_ID=${VERSION_ID}"
+          # #5895: one uniform, grep-able line naming the version this deploy
+          # promoted, on stdout and in the step summary. The id is not a secret.
+          echo "DEPLOYED_VERSION_ID=${VERSION_ID}" | tee -a "${GITHUB_STEP_SUMMARY}"
           curl -fsS --max-time 30 \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
@@ -553,6 +556,8 @@ jobs:
           fi
           served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
           record "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          record "DEPLOYED_VERSION_ID=${served_version}"
+          echo "DEPLOYED_VERSION_ID=${served_version}" >> "${GITHUB_STEP_SUMMARY}"
           record "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS"
           record "B14_PRODUCTION_ROLLBACK=PASS"
 

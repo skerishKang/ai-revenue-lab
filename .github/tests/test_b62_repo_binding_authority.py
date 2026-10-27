@@ -53,9 +53,12 @@ def test_binding_exact_readback_detects_target_and_type_changes():
 
 def test_rollback_job_and_automatic_rollback_are_unchanged():
     import hashlib, re
-    after = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text()
-    assert hashlib.sha256(after.split('\n  rollback-production-code:',1)[1].encode()).hexdigest() == 'a2d44aedc2aee11e30677b8adf3b86d77aaee372a5e6f2ed54901a6cf0ab3a4f'
-    assert hashlib.sha256(re.search(r'      - name: Auto-rollback.*?(?=\n      - name:)',after,re.S).group().encode()).hexdigest() == '31e7e332d6cffb63a25db824b7134c5725a8223f2b3e778c9307ed11b9df5dce'
+    after = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text(encoding='utf-8')
+    # #5895 (2026-10-27): both rollback paths gained one stdout+step-summary line
+    # naming the version they put into service, so the pinned bytes moved. The
+    # assertions themselves are unchanged: any further edit still goes red.
+    assert hashlib.sha256(after.split('\n  rollback-production-code:',1)[1].encode()).hexdigest() == 'e344233047f0a17fe82aa3c86154ee2a9ec57e3355bc96eb1167791dd627bb34'
+    assert hashlib.sha256(re.search(r'      - name: Auto-rollback.*?(?=\n      - name:)',after,re.S).group().encode()).hexdigest() == '4f9afbff0a519c9e5be995bc72bb5020ea68153f7f32221ebdf0ff52984cd532'
 
 
 def test_workflow_uses_private_event_input_and_keeps_exact_main_and_d1_checks():

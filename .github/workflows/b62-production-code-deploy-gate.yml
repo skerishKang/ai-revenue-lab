@@ -1540,6 +1540,10 @@ jobs:
           test "${active}" != "${PREVIOUS_VERSION_ID}"
           echo "NEW_VERSION_ACTIVE=PASS"
           echo "DEPLOYED_VERSION_ID=${active}" >> "${GITHUB_ENV}"
+          # #5895: a run log that only puts the id in GITHUB_ENV cannot be read
+          # after the fact. The version id is not a secret, so stdout and the
+          # step summary both name the version this deploy promoted.
+          echo "DEPLOYED_VERSION_ID=${active}" | tee -a "${GITHUB_STEP_SUMMARY}"
 
           settings="${RUNNER_TEMP}/b62-settings-after.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
@@ -1670,6 +1674,7 @@ jobs:
             echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
             echo "ROLLBACK_POST_ATTEMPTED=NO"
             echo "ROLLBACK_EFFECT=NONE_VERIFIED"
+          echo "DEPLOYED_VERSION_ID=${active}" | tee -a "${GITHUB_STEP_SUMMARY}"
             exit 0
           fi
           rollback_request="${RUNNER_TEMP}/b62-auto-rollback-request.json"
@@ -1694,6 +1699,7 @@ jobs:
           health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
           test "${health_status}" = "200"
           echo "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED"
+          echo "DEPLOYED_VERSION_ID=${active}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
           echo "ROLLBACK_EFFECT=EXECUTED"
 
@@ -1814,6 +1820,7 @@ jobs:
           test "${active}" = "${PREVIOUS_VERSION_ID}"
           echo "B62_PRODUCTION_CODE_ROLLBACK=SUCCESS"
           echo "PRODUCTION_MUTATION=1"
+          echo "DEPLOYED_VERSION_ID=${active}" | tee -a "${GITHUB_STEP_SUMMARY}"
 
       - name: Read back rollback exactness and health
         shell: bash
