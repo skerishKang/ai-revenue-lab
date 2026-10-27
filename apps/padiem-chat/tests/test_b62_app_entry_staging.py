@@ -15,7 +15,6 @@ directory level renders a page with no CSS and no JS.
 from __future__ import annotations
 
 from functools import lru_cache
-import hashlib
 import importlib.util
 from pathlib import Path
 import re

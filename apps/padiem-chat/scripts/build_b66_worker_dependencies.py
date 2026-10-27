@@ -20,6 +20,7 @@ import stat
 import subprocess
 import tempfile
 import tomllib
+from typing import Iterable
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
