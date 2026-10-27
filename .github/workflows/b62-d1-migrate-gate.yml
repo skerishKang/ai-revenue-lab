@@ -454,12 +454,19 @@ jobs:
               --command="$(cat /tmp/b62-d1-gate-ledger-query.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           fi
+          # The column evidence this classify needs is the same window the
+          # measure step already asked about; without it the gate would classify
+          # an applied ALTER as pending and re-run it in Production.
+          DETAIL_ARGS=()
+          if [ -s /tmp/b62-d1-gate-before-detail.sql ]; then
+            DETAIL_ARGS=(--detail /tmp/b62-d1-gate-before-detail.json)
+          fi
           python .github/scripts/b62_d1_migrate_gate.py classify \
             --app "$GATE_APP" \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-snapshot.json \
             --probe /tmp/b62-d1-gate-probe.json \
-            "${LEDGER_ARGS[@]}" "${DROP_ARGS[@]}" \
+            "${LEDGER_ARGS[@]}" "${DETAIL_ARGS[@]}" "${DROP_ARGS[@]}" \
             --up-to "${READONLY_UP_TO}" --out /tmp/b62-d1-gate-plan.json
           SEED_COUNT="$(python -c 'import json;print(len(json.load(open("/tmp/b62-d1-gate-plan.json"))["seed"]))')"
           if [ "${SEED_COUNT}" != "0" ]; then
