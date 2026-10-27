@@ -313,12 +313,14 @@ from .grounding import GroundedChatService
 from .history import HistoryStore
 from .pc_device_pairing_routes import (
     PC_PAIRING_CLAIM_PATH,
+    PC_PAIRING_ADOPT_PATH,
     PC_PAIRING_HANDOFF_PATH,
     PC_PAIRING_LINK_PATH,
     PC_PAIRING_PATH,
     PC_PAIRING_ROOT_PATH,
     PC_PAIRING_ROOTS_PATH,
     pc_pairing_approve_root,
+    pc_pairing_adopt,
     pc_pairing_claim,
     pc_pairing_handoff,
     pc_pairing_issue,
@@ -877,6 +879,7 @@ def create_app(
         Route(PC_PAIRING_PATH, pc_pairing_list, methods=["GET"]),
         Route(PC_PAIRING_CLAIM_PATH, pc_pairing_claim, methods=["POST"]),
         Route(PC_PAIRING_HANDOFF_PATH, pc_pairing_handoff, methods=["POST"]),
+        Route(PC_PAIRING_ADOPT_PATH, pc_pairing_adopt, methods=["POST"]),
         Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
         Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
         Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),

@@ -39,6 +39,10 @@ PC_PAIRING_CLAIM_PATH = "/api/pc/pairings/claim"
 #: What the code entitles its holder to download. One path, one Windows link,
 #: and the URL is never assembled from anything the request says.
 PC_PAIRING_HANDOFF_PATH = "/api/pc/pairings/handoff"
+#: Administrator adoption: the Owner links a device this deployment already
+#: knows about to their own account, without waiting for somebody else's PC to
+#: run an installer.
+PC_PAIRING_ADOPT_PATH = "/api/pc/pairings/adopt"
 PC_PAIRING_LINK_PATH = "/api/pc/pairings/{link_id}"
 PC_PAIRING_ROOTS_PATH = "/api/pc/pairings/{link_id}/roots"
 PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
@@ -66,6 +70,8 @@ _MESSAGES = {
     "pc_pairing_root_label_taken": "같은 PC 연결에 이미 같은 이름의 폴더가 있습니다. 다른 이름으로 지정해 주세요.",
     "pc_pairing_root_limit": "이 PC 연결에 승인할 수 있는 폴더 한계에 도달했습니다.",
     "pc_pairing_link_not_found": "연결을 찾을 수 없습니다.",
+    "pc_pairing_not_admin": "이 PC를 채택할 수 있는 권한이 없습니다.",
+    "pc_pairing_device_unmapped": "이 배포에서 확인할 수 없는 PC입니다.",
     "pc_pairing_link_not_active": "이 PC 연결은 아직 사용 대기 중이거나 해제되었습니다.",
 }
 
@@ -352,6 +358,82 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     }, 201 if link["state"] == "active" else 202)
 
 
+async def pc_pairing_adopt(request: Request) -> JSONResponse:
+    """Adopt a mapped PC into the calling administrator's own account (PR-4e).
+
+    Three rules carry the whole design. Only a platform administrator may call
+    this — the guard is the existing central-admin one, and it runs before
+    anything is read out of the deployment map, so a refused call learns nothing
+    about which devices exist. A device the map does not name is a 404, because
+    inventing a target from a request is exactly what this lane must never do.
+    And adoption produces the same authority a normal claim does: an active link
+    with that device's approved folders, usable by the file lane and idempotent,
+    so a second click returns the same link instead of widening anything.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    body = await _body(request)
+    if body is None or set(body) != {"device_id"}:
+        return _error(400, "pc_pairing_body_invalid")
+    device_id = body.get("device_id")
+    if not isinstance(device_id, str) or not device_id:
+        return _error(400, "pc_pairing_body_invalid")
+    from .platform_admin_authority import platform_authority_for
+    authority = platform_authority_for(request)
+    try:
+        admin = await authority.is_global_model_admin(user_id=user_id)
+    except Exception:
+        admin = False
+    if admin is not True:
+        return _error(403, "pc_pairing_not_admin")
+    source = getattr(request.app.state, "oracle_mesh_return_source", None)
+    if source is None or getattr(source, "configured", False) is not True:
+        return _error(503, "pc_pairing_unavailable")
+    try:
+        mapped = source.names_device(device_id=device_id)
+        roots = source.adopted_roots_for_device(device_id=device_id)
+    except Exception:
+        return _error(503, "pc_pairing_unavailable")
+    if not mapped:
+        return _error(404, "pc_pairing_device_unmapped")
+    if not roots:
+        # The map names the device but pins no usable folder: adopting it would
+        # create a link that cannot be used, so it is refused instead.
+        return _error(404, "pc_pairing_device_unmapped")
+    adopted, refused = await _await_store(
+        store.adopt_link, user_id=user_id, mesh_node_id=device_id,
+        root_paths=roots, now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({
+        "ok": True,
+        "link": {
+            "link_id": adopted["link_id"],
+            "mesh_node_id": adopted["mesh_node_id"],
+            "label": adopted.get("label"),
+            "state": adopted["state"],
+            "roots": [
+                {
+                    "root_ref": root["root_ref"],
+                    "label": root["label"],
+                    "path": root["path"],
+                    "state": root["state"],
+                    "approved_at": root["approved_at"],
+                }
+                for root in adopted["roots"]
+                if root["state"] == "active"
+            ],
+            "created_at": adopted["created_at"],
+            "updated_at": adopted["updated_at"],
+        },
+    }, 200)
+
+
 async def pc_pairing_approve_root(request: Request) -> JSONResponse:
     """Approve one folder on one link (R1)."""
     user_id = current_user_id(request)
@@ -400,6 +482,7 @@ async def pc_pairing_revoke_root(request: Request) -> JSONResponse:
 
 __all__ = [
     "PC_PAIRING_CLAIM_PATH",
+    "PC_PAIRING_ADOPT_PATH",
     "PC_PAIRING_HANDOFF_PATH",
     "PC_PAIRING_LINK_PATH",
     "PC_PAIRING_PATH",
@@ -408,6 +491,7 @@ __all__ = [
     "pc_pairing_approve_root",
     "pc_pairing_claim",
     "pc_pairing_handoff",
+    "pc_pairing_adopt",
     "install_url_from_config",
     "pc_pairing_issue",
     "pc_pairing_list",
