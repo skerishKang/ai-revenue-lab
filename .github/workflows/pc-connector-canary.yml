@@ -1,0 +1,129 @@
+name: PC Connector Canary
+
+# #5895: connector stability as a number, once an hour.
+#
+# The deploy gates prove a version is served and that one chat completes. Nothing
+# proved that a paired PC still ANSWERS, which is the thing an owner feels as "the
+# connector broke". This workflow signs in as the existing production QA identity,
+# asks that account's PC for a top-level listing of its C: drive, and waits until the
+# result arrives — then records one line: verdict, entry count, elapsed seconds,
+# failure code.
+#
+# It measures and never acts: this file ships no mutation job of any kind — no
+# version change, no binding change, no automatic response to a FAIL. A FAIL reddens
+# the run and nothing else happens, so an owner sees the truth instead of an
+# automated guess. The wait inside the canary sets no deadline (#5983's durable
+# read-back decides), so the only ceiling here is the runner's own job timeout, sized
+# to cover one full delivery and redelivery window.
+#
+# QA accounts with no paired PC are recorded as CANARY=SKIP_NO_PC, which is a pass:
+# there is nothing to test. Connecting the test PC to the QA account is a separate
+# owner action (administrator adoption, target = the QA account).
+
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/scripts/pc_connector_canary.py'
+      - '.github/tests/test_pc_connector_canary.py'
+      - '.github/workflows/pc-connector-canary.yml'
+      - '.github/scripts/b62_live_long_context_canary.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pc-connector-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    name: Verdict table and shipped boundaries (offline)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile both shipped files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile .github/scripts/pc_connector_canary.py
+          python -m py_compile .github/scripts/b62_live_long_context_canary.py
+
+      - name: Run the canary self-test and the contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/pc_connector_canary.py --self-test
+          python .github/tests/test_pc_connector_canary.py
+          echo 'PC_CONNECTOR_CANARY_OFFLINE_ONLY=YES'
+
+      - name: Pin the authority names and the absence of any new credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}' .github/workflows/pc-connector-canary.yml
+          grep -Fq 'B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}' .github/workflows/pc-connector-canary.yml
+          if grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml | grep -vx 'secrets.B66_CGI_ALPHA_PASSWORD'; then
+            echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=UNEXPECTED' >&2
+            exit 1
+          fi
+          echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=EXISTING_ONLY'
+          echo 'PC_CONNECTOR_CANARY_MUTATIONS=NONE'
+
+  live-canary:
+    name: One real PC listing through the composer lane
+    needs: source-contract
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    # The runner's own ceiling, not a product deadline: the canary inside never stops
+    # waiting on account of it. Sized above one full dispatch life (600 s) plus a
+    # redelivery round, so an answered hour is always recorded as an answer.
+    timeout-minutes: 35
+    environment: production
+    env:
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Confirm the existing QA identity is present, without printing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'PC_CONNECTOR_CANARY_QA_AUTH_PREFLIGHT=PASS'
+          echo 'CREDENTIAL_VALUES_LOGGED=0'
+          echo 'RUNNER_JOB_CEILING_IS_NOT_A_PRODUCT_DEADLINE=YES'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Ask the PC for the C-drive root listing and wait for the stored result
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          python .github/scripts/pc_connector_canary.py | tee "${RUNNER_TEMP}/pc-connector-canary.log" || status=$?
+          line="$(grep -E '^CANARY=' "${RUNNER_TEMP}/pc-connector-canary.log" | tail -1 || true)"
+          if [ -z "${line}" ]; then
+            line='CANARY=FAIL items=0 elapsed_seconds=0 code=canary_reported_nothing pc_state=unknown'
+            status=1
+          fi
+          printf '%s\n' "${line}" | tee -a "${GITHUB_STEP_SUMMARY}"
+          echo "PC_CONNECTOR_CANARY_MUTATIONS=NONE" >> "${GITHUB_STEP_SUMMARY}"
+          exit "${status}"
+        continue-on-error: false
