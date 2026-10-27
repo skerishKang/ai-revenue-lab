@@ -91,6 +91,7 @@ _NO_STORE_HEADERS = {
 _REASON_UNCONFIGURED = "local_access_truth_source_unconfigured"
 _REASON_NO_OWNER = "owner_session_required"
 _REASON_SOURCE_FAILED = "local_access_source_failed"
+_REASON_LINKED_PC = "pc_device_linked"
 _REASON_OK = None
 
 
@@ -132,6 +133,26 @@ def _capabilities(value: Any) -> list[str]:
         if capability and capability not in cleaned:
             cleaned.append(capability)
     return cleaned
+
+
+async def _owner_has_linked_pc(request: Request, owner_id: str) -> bool:
+    """Whether #5573 already links a PC for this account.
+
+    One read-only question to the pairing directory the same deployment already
+    composed. No store, an unapplied 072 migration or a failed read all answer
+    ``False``, which leaves the panel exactly as it behaved before links.
+    """
+    store = getattr(request.app.state, "pc_device_pairing_store", None)
+    reader = getattr(store, "links_for_owner", None)
+    if not callable(reader):
+        return False
+    try:
+        links = reader(user_id=owner_id)
+        if inspect.isawaitable(links):
+            links = await links
+    except Exception:
+        return False
+    return isinstance(links, list) and bool(links)
 
 
 def _unavailable_projection(reason: str, conversation_id: str | None) -> dict[str, Any]:
@@ -262,6 +283,15 @@ async def claw_local_access(request: Request) -> JSONResponse:
             pass
     if projected is None:
         return _failure(reason, conversation_id)
+    if (_flag(_read(projected, "requires_local_access"))
+            and await _owner_has_linked_pc(request, uid)):
+        # The #3084 card asks for the computer the user is browsing on. A PC this
+        # account linked through #5573 is not that computer, and a file request
+        # that already has a linked PC runs on the Mesh lane without it. Showing
+        # the card anyway tells the user to install a desktop app the request
+        # never uses, so it is not shown. Presentation only: no device state is
+        # claimed and no execution authority changes.
+        return _failure(_REASON_LINKED_PC, conversation_id)
 
     return JSONResponse(
         {
