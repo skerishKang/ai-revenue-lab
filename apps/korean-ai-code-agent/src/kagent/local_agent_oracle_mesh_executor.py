@@ -604,7 +604,7 @@ class OracleMeshExecutor:
         termination = getattr(observed, "termination", "no_reply")
         if termination not in (
             "exited", "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "output_too_large",
+            "output_too_large", "bad_reply",
         ):
             termination = "no_reply"
         exit_code = getattr(observed, "exit_code", None)
@@ -1040,7 +1040,7 @@ class OracleMeshExecutor:
             termination = meta.get("termination")
             if termination not in (
                 "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
-                "not_executed", "output_too_large",
+                "not_executed", "output_too_large", "bad_reply",
                 "captured", "acted", "desktop_unavailable",
             ):
                 raise ValueError("pending termination is unknown")

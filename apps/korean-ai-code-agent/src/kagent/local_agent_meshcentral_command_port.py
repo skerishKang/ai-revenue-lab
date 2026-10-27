@@ -18,10 +18,20 @@ Two facts drive this module:
   ``no_exit_code``: the output is complete and the code stays unobserved.
 
 The bytes returned here are the PC output verbatim, including CR/LF and any
-leading/trailing whitespace, minus the sentinel line this module itself added.
+leading/trailing whitespace, minus the envelope line and the sentinel line this
+module itself added.
+
+The envelope exists because of what the PC's own console does with Korean. A
+Windows console answers in its code page (cp949 on 한국어 installations), the
+MeshCentral agent puts that reply on a WebSocket *text* frame, and MeshCentral
+rejects the frame with ``WS_ERR_INVALID_UTF8`` — the command ran, and the answer
+was destroyed before anyone could read it. The reply is therefore Base64 of its
+UTF-8 bytes, so only ASCII ever crosses the frame on the way back. The command
+itself travels as MeshCentral's own UTF-8 JSON, which the server encodes.
 """
 from __future__ import annotations
 
+import base64
 import re
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -31,6 +41,8 @@ from .local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
 
 #: Marker appended to the requested command so the PC reports its own exit code.
 EXIT_SENTINEL = "__PADIEM_EXIT__"
+#: #5573: the PC's own console label for the encoded reply body.
+ENVELOPE_PREFIX = "PADIEM_B64="
 #: #4139: a command is ordinary text. Korean, quotes, tabs and several lines are
 #: allowed, and there is no product length rule — the former 512- and
 #: 8,192-character caps were trial limits. Only NUL and CR are refused, because
@@ -47,14 +59,20 @@ _COMMAND_BODY = re.compile(r"[^\x00\r]+")
 #: dispatch row can carry.
 _MAX_ARGV_ELEMENT_BYTES = 131_072
 _SENTINEL_LINE = re.compile(rb"__PADIEM_EXIT__(-?\d+)?")
+_ENVELOPE_WHITESPACE = re.compile(rb"\s+")
 METHOD_LABEL = "powershell_runcommand_reply"
-#: stdout and stderr travel merged (trailing ``2>&1``); the conversation says so.
+#: stdout and stderr travel merged (``2>&1`` inside the captured expression);
+#: the conversation says so.
 MERGED_STREAMS = True
 #: Wire envelope for one output body: the same 6 MB the Claw request route
 #: already accepts for one user message. Above it the child is killed and the
 #: outcome reports ``output_too_large`` — nothing is truncated and nothing is
 #: buffered past this bound.
 MAX_COMMAND_BYTES = 6_000_000
+#: The same bound seen through the Base64 envelope, which is about four thirds
+#: the size of what it carries. The child is killed on this number; the product
+#: limit is still applied to the decoded PC bytes in ``parse_transcript``.
+MAX_TRANSCRIPT_BYTES = MAX_COMMAND_BYTES * 4 // 3 + 4096
 
 
 class MeshCentralCommandRefused(ValueError):
@@ -66,8 +84,11 @@ class MeshCentralCommandOutcome:
     """What one real command run produced, exactly as observed."""
 
     #: "exited" | "timed_out" | "no_reply" | "no_exit_code" | "output_too_large"
+    #: | "bad_reply"
     #: no_reply means the console never answered; no_exit_code means it answered
-    #: completely and PowerShell had no code to report.
+    #: completely and PowerShell had no code to report; bad_reply means it
+    #: answered but the envelope could not be read, so nothing is claimed about
+    #: what the PC printed.
     termination: str
     exit_code: int | None
     output: bytes
@@ -90,22 +111,64 @@ def _bounded_command(value: Any) -> str:
 
 
 def _wrap(command: str) -> str:
-    """Merge the error stream, then append the exit-code sentinel.
+    """Run one command on the PC and bring its output back as ASCII Base64.
 
-    Measured on the real PC: without the merge, a command that writes to stderr
-    either loses that text or never returns a transcript at all; with a trailing
-    ``2>&1`` the same command returns its error text through the console. The
-    merge is applied to the *whole* trailing statement only — a multi-statement
-    command keeps its own stream wiring for the earlier statements, and the
-    conversation states that the streams are merged.
+    Three rules carry it:
 
-    ``$LASTEXITCODE`` is PowerShell's record of the last native command, so the
-    sentinel reports the real remote exit code instead of the shell's own.
+    * ``[Console]::OutputEncoding`` is set to UTF-8 first, so the console writes
+      the script's own bytes instead of the machine's code page;
+    * the merged stdout+stderr string is Base64-encoded **on the PC**, so the
+      reply frame carries only Base64 characters whatever the console produced —
+      this is what stops a cp949 answer from being destroyed in transit;
+    * the captured run is inside ``try``/``catch``, because a command carrying
+      ``-ErrorAction Stop`` raises a *terminating* error, and an uncaught one
+      would skip the envelope and the exit sentinel entirely. The error record's
+      own text then travels inside the envelope instead of being lost.
+
+    Only the reply is encoded. The command itself travels as MeshCentral's own
+    UTF-8 JSON — measured on the real PC, a Korean path in the command reaches
+    the agent intact — and encoding it too would shrink the argument the OS can
+    exec by a third for no transport gain. The merge is applied to the whole
+    statement (``2>&1`` inside the captured expression), which is what #4139
+    measured: without it, a command that writes to stderr either loses that text
+    or never returns a transcript at all. ``$LASTEXITCODE`` is PowerShell's
+    record of the last native command, so the sentinel reports the real remote
+    exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
     """
     return (
-        command + " 2>&1; Write-Output (\""
-        + EXIT_SENTINEL + "\" + $LASTEXITCODE)"
+        "[Console]::OutputEncoding=[Text.Encoding]::UTF8;"
+        " $__padiem=$null; try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
+        " } catch { $__padiem=($_ | Out-String) };"
+        ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
+        "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+        ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
     )
+
+
+def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
+    """Split one transcript into (text before the envelope, decoded body).
+
+    ``None`` means the reply is not a readable envelope: no marker, a payload
+    that is not Base64, or bytes that are not valid UTF-8. A caller that got a
+    console answer must not present mangled bytes as if the PC had printed them.
+    """
+    marker = ENVELOPE_PREFIX.encode("ascii")
+    position = output.find(marker)
+    if position < 0:
+        return None
+    prefix = output[:position]
+    # Whitespace is not part of Base64 and a long body may be wrapped by the
+    # console, so the token is read as the payload it is, not as one line.
+    payload = _ENVELOPE_WHITESPACE.sub(b"", output[position + len(marker):])
+    try:
+        body = base64.b64decode(payload, validate=True)
+    except Exception:
+        return None
+    try:
+        body.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    return prefix, body
 
 
 def _read_some(process: Any, timeout_seconds: float) -> bytes:
@@ -167,6 +230,20 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     raw_code = match.group(1)
     # Drop the sentinel line (and the newline that ended it) from the output.
     output = data[:start] + (data[end + 1:] if end < len(data) else b"")
+    code = None if raw_code is None else int(raw_code)
+    envelope = _unwrap_envelope(output)
+    if envelope is None:
+        # The console answered, but not with a readable envelope. This is not a
+        # silent console and not a truncation: it is a reply that cannot be
+        # presented as the PC's output, so it keeps its own outcome.
+        return "bad_reply", code, b""
+    prefix, body = envelope
+    if prefix:
+        body = prefix + body
+    if len(body) > MAX_COMMAND_BYTES:
+        # The bound is the product's, on the PC's own bytes: the Base64 envelope
+        # is bigger than its content, so the raw transcript is measured here.
+        return "output_too_large", code, b""
     if raw_code is None:
         # The sentinel printed an empty value. That is not a console that never
         # answered: PowerShell records `$LASTEXITCODE` only for "the exit code of
@@ -174,8 +251,8 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
         # about_Automatic_Variables), so a pipeline made only of cmdlets and .NET
         # calls leaves it empty while still returning its whole output. The code
         # stays unobserved here and is never turned into 0.
-        return "no_exit_code", None, output
-    return "exited", int(raw_code), output
+        return "no_exit_code", None, body
+    return "exited", int(raw_code), body
 
 
 class MeshCentralCliCommandPort:
@@ -349,7 +426,7 @@ class MeshCentralCliCommandPort:
                     continue
                 chunks.append(chunk)
                 total += len(chunk)
-                if total > MAX_COMMAND_BYTES:
+                if total > MAX_TRANSCRIPT_BYTES:
                     oversize = True
                     process.kill()
                     break
@@ -387,8 +464,10 @@ class MeshCentralCliCommandPort:
 
 
 __all__ = [
+    "ENVELOPE_PREFIX",
     "EXIT_SENTINEL",
     "MAX_COMMAND_BYTES",
+    "MAX_TRANSCRIPT_BYTES",
     "MERGED_STREAMS",
     "METHOD_LABEL",
     "MeshCentralCliCommandPort",
