@@ -37,7 +37,12 @@ BASE_ORIGIN = "https://api.synthetic-manager.example/v1"
 def host(tmp_path, monkeypatch):
     """A COM2-shaped host: a private secret directory and a copy of the registry."""
     secret_dir = tmp_path / "secrets"
-    secret_dir.mkdir()
+    # StateDirectory hands the service a 0700 directory it owns, and the store
+    # refuses a looser one rather than quietly tightening the operator's host.
+    # A default mkdir() is 0755 under the usual umask, which is exactly the
+    # posture a real COM2 must never be in.
+    secret_dir.mkdir(mode=0o700)
+    os.chmod(secret_dir, 0o700)
     registry = tmp_path / "b14_models.json"
     shutil.copyfile(REGISTRY_PATH, registry)
     monkeypatch.setenv(SECRET_DIR_ENV, str(secret_dir))
@@ -116,6 +121,10 @@ def test_the_value_never_reaches_a_response_or_a_log(admin, host, caplog) -> Non
             f"{PROVIDER}/test", data={"provider_id": "yeta"}, follow_redirects=False
         ).text)
     joined = "\n".join(bodies) + "\n" + caplog.text
+    # Prove the value really was stored first: otherwise a failed write would
+    # look like a passing leak test for the wrong reason.
+    assert (host["secrets"] / SYNTHETIC).read_text(encoding="utf-8") == SECRET_VALUE
+    assert "등록됨" in bodies[1], bodies[1][:400]
     assert SECRET_VALUE not in joined
     # A masked preview is also a leak here: the screen reports state, not content.
     assert SECRET_VALUE[:6] not in joined
@@ -254,6 +263,23 @@ def test_a_written_secret_is_private_enough_for_the_reader(admin, host) -> None:
     admin.post(SECRETS, data={"name": SYNTHETIC, "value": SECRET_VALUE})
     mode = (host["secrets"] / SYNTHETIC).stat().st_mode
     assert not (mode & 0o077), oct(stat.S_IMODE(mode))
+
+
+@pytest.mark.skipif(os.name != "posix", reason="mode bits are only meaningful on the host OS")
+def test_a_loose_secret_directory_is_refused_not_tightened(admin, host) -> None:
+    """The store reports the host's fault instead of rewriting its permissions.
+
+    A directory every user on the machine can read would put credentials where
+    other tenants look, and chmod'ing it from a web request would silently
+    change the operator's host. So: refuse, explain, write nothing.
+    """
+    os.chmod(host["secrets"], 0o755)
+    response = admin.post(
+        SECRETS, data={"name": SYNTHETIC, "value": SECRET_VALUE}, follow_redirects=False
+    )
+    assert "reason=secret_dir_not_writable" in response.headers["location"]
+    assert not (host["secrets"] / SYNTHETIC).exists()
+    assert SECRET_VALUE not in admin.get(SECRETS).text
 
 
 def test_settings_survive_a_restart(admin, host) -> None:
