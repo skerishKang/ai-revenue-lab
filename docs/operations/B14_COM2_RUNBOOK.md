@@ -30,14 +30,17 @@ bash /opt/padiem/b14/deploy/host-com2/b14/install.sh --reload
 
 ## Step 2 — 키 입력 — Owner
 
-`/opt/padiem/b14/secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. §2.2 목록의 이름:
+`/var/lib/padiem-b14/b14-secrets/` 아래에 **바인딩 이름 그대로** 파일 하나씩(0600), 또는 Unit이 읽는 `/opt/padiem/b14/env/b14.env`에 직접 기입. §2.2 목록의 이름:
 
 `PADIEM_B14_CREDENTIAL_01` … `PADIEM_B14_CREDENTIAL_14`, `PADIEM_B14_SERVICE_PROOF_SECRET`, `PADIEM_GRAFANA_OTLP_TOKEN`.
+
+- 이 디렉터리는 systemd가 `StateDirectory=b14-secrets`로 만들고 매 시작 때마다 서비스의 실행 신원에 소유권을 맞춘다. `DynamicUser`는 기동마다 uid가 바뀌므로, root가 만들어 둔 0600 파일은 다음 재시작에서 읽히지 않는다 — 그래서 `install.sh`는 이 디렉터리를 만들지 않는다.
+- **그리고 보통은 직접 치지 않는다.** #2107의 관리자 화면(`http://127.0.0.1:8789/com2/admin/secrets`, loopback 전용)이 이름과 값을 받아 같은 경로에 0600으로 기록한다. 이 화면은 `create_local_app()`에만 존재하고 Worker 배포에는 라우트 자체가 없다.
 
 - 신규 공급사는 이 목록을 늘리지 않는다. `apps/korean-ai-platform/app/pilot/b14_models.json`의 공급사 항목이 선언한 `credential_binding_name`이 곧 이 PC의 파일 이름이고, 앱은 그 이름으로 env → `$B14_SECRET_DIR/<이름>` 순서로 읽는다(#2107). 등록은 (1) 레지스트리에 공급사·모델 항목 추가, (2) 그 이름으로 값 입력 — 이 두 단계이며 어느 쪽 엔트리포인트도 손보지 않는다.
 - 그 이름을 Worker가 바인딩하지 않으면 해당 배포에서 공급사 라인은 값이 없어 닫힌 채로 동작한다. 복제 키를 만들거나 §2.2의 기존 Cloudflare 시크릿을 재사용하지 않는다.
 
-- 값 복사·스크린샷·PR 게시 금지. 확인은 존재·권한만으로: `stat -c '%a %n' /opt/padiem/b14/secrets/*`.
+- 값 복사·스크린샷·PR 게시 금지. 확인은 존재·권한만으로: `stat -c '%a %n' /var/lib/padiem-b14/b14-secrets/*`.
 - 그룹·타인 읽기 가능한 파일은 앱이 **거부**하고 그 라인은 실패로 닫힌다(값 노출 대신).
 - Cloudflare 자격증명을 이 PC로 옮기지 않는다. Owner가 새 값을 입력한다.
 

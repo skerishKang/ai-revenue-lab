@@ -449,10 +449,28 @@ def test_security_policy_is_the_worker_policy_value_for_value() -> None:
 
 
 def test_adapter_keeps_the_plain_route_table() -> None:
+    """The adapter may only ADD the declared host-local screen, never drift.
+
+    #2107 gives COM2 an Owner-facing secret and Provider screen. It is carried
+    by the local door alone, so parity is asserted as: every plain route is
+    still here, unchanged, and the only extras are the named admin paths.
+    """
     def paths(app):
         return sorted(getattr(route, "path", None) or repr(route) for route in app.routes)
 
-    assert paths(create_local_app()) == paths(create_app())
+    plain = paths(create_app())
+    local = paths(create_local_app())
+    assert set(plain) <= set(local), sorted(set(plain) - set(local))
+    from app.pilot.com2_admin import PROVIDER_PATH, SECRETS_PATH
+
+    assert set(local) - set(plain) == {
+        SECRETS_PATH,
+        f"{SECRETS_PATH}/delete",
+        PROVIDER_PATH,
+        f"{PROVIDER_PATH}/new",
+        f"{PROVIDER_PATH}/test",
+    }
+    assert [path for path in plain if local.count(path) != plain.count(path)] == []
 
 
 def test_service_proof_boundary_is_unchanged_in_adapter_mode(monkeypatch) -> None:

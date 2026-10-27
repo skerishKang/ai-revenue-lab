@@ -8,6 +8,13 @@
 # process inherits the service's write access. No credential value appears in
 # ExecStart, in this file, or in any argument list — systemd reads the names
 # from EnvironmentFile and the app reads values from the secret directory.
+#
+# StateDirectory, not a hand-made /opt path, owns the two places the service
+# writes. DynamicUser gets a fresh uid every start, so a credential file created
+# once by root — which the app requires to be 0600 — would belong to a uid that
+# no longer exists after the next restart and stop resolving. systemd chowns
+# these directories to whatever identity the service gets, on every start, and
+# adds them to the writable set that ProtectSystem=strict otherwise denies.
 
 [Unit]
 Description=PADIEM B14 (korean-ai-platform) on COM2
@@ -26,7 +33,8 @@ EnvironmentFile=-/opt/padiem/b14/env/b14.env
 Environment=B14_HOST=127.0.0.1
 Environment=B14_PORT=8789
 Environment=B14_CALL_LEDGER_PATH=/opt/padiem/b14/ledger/b14-call-ledger.db
-Environment=B14_SECRET_DIR=/opt/padiem/b14/secrets
+Environment=B14_SECRET_DIR=/var/lib/padiem-b14/b14-secrets
+Environment=B14_REGISTRY_PATH=/var/lib/padiem-b14/b14-registry/b14_models.json
 # Structure logs go to stdout and are collected by journald. To keep a rotated
 # file as well, install 20-log-to-file.conf.example as a drop-in; the matching
 # rotation policy is logrotate.conf.example. This unit declares no log path the
@@ -42,6 +50,9 @@ PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/opt/padiem/b14/ledger /opt/padiem/b14/logs
+# b14-secrets holds one 0600 file per credential name; b14-registry holds the
+# one registry file this deployment reads. The checkout stays read-only.
+StateDirectory=b14-secrets b14-registry
 LimitNOFILE=8192
 UMask=0077
 
