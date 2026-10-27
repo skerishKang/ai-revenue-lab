@@ -158,7 +158,7 @@ jobs:
             # runs when the target is an ancestor of main and the migration
             # directory did not move between them, because that directory is the
             # only thing this gate applies.
-            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}"
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
           fi
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           # Nothing in the migration directory may differ from, or sit beside,
@@ -310,7 +310,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
           if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
-            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}"
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
           fi
           test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'

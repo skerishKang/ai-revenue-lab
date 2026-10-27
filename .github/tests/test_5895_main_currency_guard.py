@@ -65,6 +65,21 @@ def test_an_ancestor_whose_app_path_moved_since_stops_the_gate(capsys) -> None:
     assert "path_changed=YES" in out
 
 
+def test_a_change_under_packages_alone_stops_the_gate(capsys) -> None:
+    # Each of these bundles ships packages/ beside its app directory, so a merge
+    # that moved only packages changed the thing being released.
+    def diff(_target, _main, paths):
+        return "packages" in paths
+
+    rc = guard.evaluate(TARGET, MAIN, [APP_PATH, "packages"], repo="owner/repo",
+                        token="synthetic-token", api="https://api.example.invalid",
+                        transport=lambda *_a, **_k: TARGET, diff=diff)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "MAIN_CURRENCY=FAIL basis=app_path_changed_since_target" in out
+    assert f"app_path={APP_PATH},packages path_changed=YES" in out
+
+
 def test_a_target_that_is_not_on_main_stops_without_reading_paths(capsys) -> None:
     rc, out, diff_reads = _verdict(capsys, merge_base=ELSEWHERE, path_changed=False)
     assert rc == 1

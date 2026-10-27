@@ -892,7 +892,7 @@ jobs:
             # apps/padiem-chat moved between the two -- that directory is the whole
             # surface this gate deploys. A moved path stops the run exactly as an
             # unequal SHA did before, so a stale release is never waved through.
-            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path apps/padiem-chat
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path apps/padiem-chat --path packages
           fi
           echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
 

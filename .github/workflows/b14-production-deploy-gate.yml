@@ -71,7 +71,7 @@ jobs:
             # still ships when it is an ancestor of main and nothing under
             # apps/korean-ai-platform moved between the two -- that directory is
             # the whole surface this gate deploys.
-            python3 .github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/korean-ai-platform
+            python3 .github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/korean-ai-platform --path packages
           fi
           test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
