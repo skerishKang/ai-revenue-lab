@@ -24,6 +24,8 @@ STYLES = ("classic", "modern", "dark", "light", "minimal")
 
 RAMP = frozenset(f"--tone-{n}" for n in range(1, 9))
 SCENE = frozenset({"--sky-1", "--sky-2", "--sky-3", "--sky-4", "--sun", "--sun-glow", "--skyline", "--skyline-back", "--reflection", "--haze", "--lit", "--vignette"})
+# 사진 층은 국가가 재료를 정한다. 없는 국가는 `none`을 명시해 미확보 상태를 코드에 남긴다.
+PHOTO = frozenset({"--hero-photo", "--hero-photo-position", "--hero-photo-size", "--skyline-display"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op"})
 
@@ -32,7 +34,12 @@ COMMENT = re.compile(r"/\*.*?\*/", re.S)
 VARREF = re.compile(r"var\(--[a-z0-9-]+\)")
 COLOR_LITERAL = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(|(?<![-\w])(?:red|blue|green|white|black|navy|silver|cream|gold)(?![-\w])")
 NETWORK = re.compile(r"fetch\s*\(|XMLHttpRequest|new\s+WebSocket|EventSource|sendBeacon|navigator\.clipboard")
-EXTERNAL_ASSET = re.compile(r"""(?:src|href)\s*=\s*["'](?:https?:)?//|url\(\s*["']?(?:https?:)?//""")
+EXTERNAL_ASSET = re.compile(
+    r"""(?:src|href)\s*=\s*["'](?:https?:)?//[^"']*|url\(\s*["']?(?:https?:)?//|@import"""
+)
+# <a href>는 자산을 읽지 않는다. 링크는 저작 표기 2건만 허용하고, 그 밖의 외부 링크는 실패시킨다.
+ANCHOR_HREF = re.compile(r"""<a\s[^>]*href="((?:https?:)?//[^"]+)"""  )
+ALLOWED_LINK_HOSTS = ("commons.wikimedia.org", "creativecommons.org")
 
 
 def rules(text: str) -> list[tuple[str, str]]:
@@ -70,15 +77,33 @@ def layout_text() -> str:
 def test_prototype_calls_no_api_and_loads_no_remote_asset() -> None:
     assert not NETWORK.search(JS), f"the prototype must not touch the network: {NETWORK.findall(JS)[:3]}"
     for name, text in (("index.html", HTML), ("parliament-theme.css", CSS), ("parliament-app.js", JS)):
-        assert not EXTERNAL_ASSET.search(text), f"{name} must load no remote asset"
+        offenders = [o for o in EXTERNAL_ASSET.findall(text) if not o.startswith("<a")]
+        assert not offenders, f"{name} must load no remote asset: {offenders[:3]}"
     assert "@import" not in CSS
 
 
-def test_prototype_adds_no_binary_next_to_the_code() -> None:
+def test_the_only_outbound_links_are_the_licence_record() -> None:
+    links = ANCHOR_HREF.findall(HTML)
+    assert links, "the attribution link must exist for CC BY"
+    for href in links:
+        host = href.split("/")[2] if "//" in href else ""
+        assert host in ALLOWED_LINK_HOSTS, f"unexpected outbound link: {host or href}"
+    assert any("creativecommons.org" in h for h in links), "the licence itself must be linked"
+
+
+def test_binaries_are_limited_to_licensed_assets_and_captures() -> None:
+    """바이너리는 (1) 출처가 기록된 히어로 자산, (2) 검토 캡처 두 자리만 허용한다."""
     shipped = sorted(p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*") if p.is_file() and "__pycache__" not in p.parts)
-    outside_captures = [p for p in shipped if not p.startswith("docs/screenshots/")]
-    assert outside_captures, "the prototype must ship its own source files"
-    assert all(Path(p).suffix in {".html", ".css", ".js", ".md", ".py"} for p in outside_captures), outside_captures
+    code = [p for p in shipped if not p.startswith(("assets/", "docs/screenshots/"))]
+    assert code, "the prototype must ship its own source files"
+    assert all(Path(p).suffix in {".html", ".css", ".js", ".md", ".py"} for p in code), code
+    images = [p for p in shipped if p.startswith("assets/") and Path(p).suffix in {".jpg", ".jpeg", ".png", ".webp"}]
+    assert images, "the hero asset must actually be present once a photo is adopted"
+    attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
+    for image in images:
+        assert Path(image).name in attribution, f"{image} ships without a recorded source"
+    for probe in ("CC BY", "creativecommons.org", "upload.wikimedia.org", "저작자"):
+        assert probe in attribution, f"the licence record is missing {probe}"
 
 
 # ── 축 1 · 국가 = 음계만 정의하고 역할은 배정하지 않는다 ─────────────────────
@@ -86,7 +111,7 @@ def test_each_country_declares_exactly_one_ramp_block() -> None:
     for country in COUNTRIES:
         declaring = [b for b in blocks_for("country", country) if re.search(r"--[a-z0-9-]+\s*:", b)]
         assert len(declaring) == 1, f"{country} declares its ramp in {len(declaring)} places"
-        assert props_of(*declaring) == RAMP | SCENE | IDENTITY, country
+        assert props_of(*declaring) == RAMP | SCENE | PHOTO | IDENTITY, country
 
 
 def test_countries_share_the_identical_token_contract() -> None:
@@ -207,6 +232,19 @@ def test_prototype_never_links_to_the_production_entry() -> None:
 def test_chat_asset_stager_does_not_learn_this_directory() -> None:
     assert "padiem-parliament" not in CHAT_BUILDER
     assert '"prefix": "apps/council"' in CHAT_BUILDER, "the shipped entry staging must stay exactly as it is"
+
+
+def test_countries_without_a_photo_say_so_explicitly() -> None:
+    """대체 그림을 지어 완성을 주장하지 않도록, 사진 없는 국가는 none을 코드로 선언해야 한다."""
+    for country in ("us", "fr", "uk"):
+        body = " ".join(blocks_for("country", country))
+        assert re.search(r"--hero-photo:\s*none", body), f"{country} must declare --hero-photo: none until its asset arrives"
+    kr = " ".join(blocks_for("country", "kr"))
+    assert re.search(r"--hero-photo:\s*(?:url|image-set)\(", kr), "kr is the country that actually has a licensed photo"
+    assert re.search(r"--skyline-display:\s*none", kr), "the CSS skyline is a fallback, not decoration on top of a photo"
+    referenced = set(re.findall(r'url\("\./assets/([^"]+)"\)', CSS))
+    on_disk = {p.name for p in (ROOT / "assets").iterdir() if p.is_file()}
+    assert referenced and referenced <= on_disk, f"CSS references assets that are not shipped: {sorted(referenced - on_disk)}"
 
 
 def test_prototype_directory_shape_is_independent() -> None:

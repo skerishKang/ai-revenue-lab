@@ -1,4 +1,4 @@
-# PADIEM Parliament AI — 시네마틱 디자인 프로토타입 (#5967 1차)
+# PADIEM Parliament AI — 시네마틱 디자인 프로토타입 (#5967)
 
 운영 의원3종(`/apps/council/`)을 **건드리지 않는** 독립 시각·동작 프로토타입입니다.
 대표가 선택한 "한국 국회의사당 + 석양" 콘셉트를 실제 브라우저에서 확인 가능한 화면으로
@@ -43,8 +43,10 @@ python -m http.server 8765     # http://127.0.0.1:8765/index.html
 
 ## 이미지에 관해 — 사실대로 기록
 
-- CENTRAL이 제공한 디자인 패키지 `PADIEM Parliament AI Design Concepts 20261027`
-  의 `04_korea_cinematic_home.png` **원본은 이 머신과 GitHub 어디에도 존재하지 않습니다.**
+- CENTRAL이 제공한 디자인 패키지 `PADIEM Parliament AI Design Concepts 20261027`의
+  `04_korea_cinematic_home.png` **원본은 이 머신과 GitHub 어디에도 존재하지 않습니다.**
+  v2에서 재확인한 범위: `C:\Users\limone\{Downloads,Documents,Pictures}`, `E:\`, `F:\`(DriveFS),
+  `G:\Ddrive\BatangD\task\workdiary`, 최근 4일 수신 파일 목록, #5967 본문·댓글 — 모두 없음.
   확인 위치: `C:\Users\limone\{Downloads,Documents,Pictures}`, `E:\`, `F:\`(DriveFS),
   `G:\Ddrive\BatangD\task\workdiary`, 그리고 #5967 본문·댓글(이미지 첨부 없음).
 - #5967 본문 자체가 "현재 GitHub 연결에서는 바이너리 이미지 업로드를 지원하지 않아
@@ -61,57 +63,55 @@ python -m http.server 8765     # http://127.0.0.1:8765/index.html
 - 축사·SNS·회의록·활동집의 기존 기능과 운영 CSS/HTML/JS는 수정되지 않았습니다.
 - 국가별 디자인을 별도 앱으로 복제하지 않습니다. 이 디렉터리는 1차 시안 검토용입니다.
 
-## 검증 (실제 브라우저 계측)
+## v2 — 실제 사진 히어로 (Visual Fidelity 1차 개선)
 
-Tabbit(실제 Chromium, 오너 프로필)으로 `http://127.0.0.1:8791/`을 1440·768·390에서 열고 계측했습니다.
-운영 주소는 사용하지 않았고, 페이지가 만든 요청은 문서+CSS+JS 3건이 전부입니다(외부 요청 0).
+1차(CSS/SVG로 그린 의사당 실루엣)는 CENTRAL 검토에서 **채택되지 않았습니다.** 피드백은
+① 히어로 사진, ② 건축물 구도, ③ 네이비/골드, ④ 빛의 대비, ⑤ 큰 타이포그래피, ⑥ 3카드 배치가
+우선순위였고, v2는 그 순서대로 다시 만들었습니다.
 
-| 항목 | 1440 | 768 | 390 |
+### 이미지 자산
+
+| | 상태 |
+| --- | --- |
+| CENTRAL 시안 `04_korea_cinematic_home.png` 외 3종 | **없음.** 이 머신(Downloads·Documents·Pictures·E:·F:·G:)과 GitHub(#5967 본문·댓글)에서 확인 실패. 대체 그림을 만들어 완성 처리하지 않았다. |
+| 한국 히어로 사진 | **실제 사진 확보·라이선스 확인.** `Dangsan Railway Bridge Night View.jpg` — 저작자 Tony, **CC BY 2.0**(ShareAlike 없음), Wikimedia Commons. 출처·사용 조건·표기 요건은 `assets/ATTRIBUTION.md`, 화면 하단에 저작 표기 노출. |
+| 미국·프랑스·영국 히어로 | **미확보.** 각 국가 블록이 `--hero-photo: none`을 명시해 코드로 기록하고, 그때만 CSS/SVG 백스톱 장면이 렌더된다. |
+
+사진 파일 자체는 리사이즈·재인코딩만 했고 크롭·색 보정을 하지 않았습니다. 건물 확대와 네이비/골드
+톤은 렌더 단계(`--hero-photo-size`, `--hero-photo-position`, 국가 음계 토)에서 결정됩니다.
+
+### 구성 요소별 구현 (1440 실측)
+
+| 요구 | v1 | v2 | 측정값 |
 | --- | --- | --- | --- |
-| 가로 오버플로 | 0px | 0px | 0px |
-| 업무 카드 열 | 3열 | 1열 | 1열 |
-| h1 크기 | 62px | 37.7px | 27px |
-| 히어로 장면 높이 | 638px | 340px | 338px |
-| 최소 터치 높이 | 46.0px | 46.0px | 45.8px |
-| 첫 로드 전송량 | 32,595B(CSS 21,401 + JS 11,194) | 캐시 재검증 ~300B | 캐시 재검증 ~300B |
-| DOMContentLoaded / load | 159ms / 253ms | — | — |
-| CLS | 0 (측정값) | 0 | 0 |
+| 히어로 사진 | CSS 그라디언트 + SVG | 실제 사진(2400/1200 image-set) | `background-size: 128%`, `position: 88% 66%`, 사진 요청 200 |
+| 건축물 구도 | 임의 실루엣 | 여의도·국회 의사당 돔과 주랑이 우측 1/3에 통째로 보이도록 앵커 | 장면 638px, 사진 층 1295×637 |
+| 네이비/골드 | 장미·호박 석양 | 딥 네이비 램프(`#060b18`→`#9db3d2`) + 골드 액센트(`#e8b45f`) | 국가 음계 8단 전부 교체, 스타일 축은 무변경 |
+| 빛의 대비 | 단조 그라디언트 | 사진 하이라이트 + 좌측/하단 스크림 2중 | 제목 최악 대비 15.85:1 |
+| 큰 타이포그래피 | 62px | 최대 82px 세리프, 자간 -0.035em | 실측 81.16px @1440 |
+| 3카드 배치 | 장면 아래 별도 단 | 장면을 32px 덮어쓰는 숫자 매김 카드(01·02·03) | 카드-히어로 겹침 32px, CTA 이격 17px |
 
-768에서 1열로 접히는 것은 실제 측정 결과입니다(뷰포트 768 − 스크롤바 ≤ 767 구간). 오버플로가 없고 카드가 전폭이라 그대로 두었습니다.
+### v2 계측
 
-### 명암비 — 캡처 PNG 픽셀을 표본으로 계산
+```text
+RESPONSIVE=PASS   1440/768/390 가로 오버플로 0 · 카드 3열@1440 · 390은 장면이 상단 배너(겹침 없음)
+ACCESSIBILITY=PASS 픽셀 표본(문자 뒤 가장 밝은 화소) 최악 대비:
+                  제목 15.85 · 리드 17.81 · 카드 제목 15.98 · 카드 설명 8.26 · gold 눈선 8.82 · CTA 9.92  → 전원 AA/AAA
+                  사진 없는 백스톱 장면에서도 muted 6.19:1 유지(네이비 램프 교체로 4.33:1 미달이 자동 해소)
+FUNCTION=PASS     카드→에디터 전환(home display none), 라벨-필드 8/8 연결, 첫 필드 포커스,
+                  초안 뼈대 채움 102자, Esc 홈 복귀+CTA 포커스, #/meeting 새로고침 복원, pageerror 0
+LOAD=PASS         요청 4건(문서·CSS·JS·사진), 외부 요청 0, 사진 2400px 326KB / 1200px 68KB(image-set)
+NOT_MEASURED      FCP(백그라운드 탭에서 Paint Timing 미발생), 시안 원본과의 픽셀 비교(원본 부재)
+```
 
-텍스트 색상 대비를 *렌더된 픽셀*에서 계산했습니다. 각 문단 상자의 배경 화소 중 **가장 밝은 2%**(= 가장 불리한 경우)와 비교한 값이라, 단색 대비표보다 보수적입니다.
-
-| 레이어 | 색상 | 최악 대비 | 1440 | 768 | 390 |
-| --- | --- | --- | --- | --- | --- |
-| 히어로 제목 | tone-8 | 14.14 ~ 16.09 : 1 | 14.14 | 15.74 | 16.09 |
-| 상단 눈선(gold) | tone-6 계통 | 8.20 : 1 | 8.20 | — | — |
-| 히어로 리드 | tone-8 | 12.28 : 1 | 12.28 | — | — |
-| 카드 제목 | tone-8 | 17.27 : 1 | 17.27 | — | — |
-| 카드 설명(muted) | tone-5 | 6.19 : 1 | 6.19 | — | — |
-| 메뉴 태그(muted) | tone-5 | 7.12 : 1 | 7.12 | — | — |
-
-모두 WCAG AA(4.5:1) 이상입니다. **첫 계측에서 카드 설명과 메뉴 태그가 4.33:1로 기준 미달이었고**, 원인(한국 음계의 5단이 본문 보조색을 못 받침)을 특정해 `--tone-5`를 `#bd5c3c` → `#d98a72`로 바꿔 재계측으로 통과를 확인했습니다.
-
-### 실브라우저 검증으로 잡은 결함 2건(모두 수정)
-
-1. `.pa-home { display: grid }`가 UA의 `[hidden]` 규칙을 이겨, 카드를 눌러도 홈이 숨지 않고 **두 화면이 동시에** 렌더됐습니다. 캡처에서 육안으로 확인한 뒤 `[hidden] { display: none !important }`로 고정하고, 이 오버라이드가 load-bearing임을 고정하는 테스트를 추가했습니다(제거 시 실패 확인).
-2. 390에서 히어로 텍스트·CTA·빌딩이 한 덩어리로 겹쳤습니다. 모바일은 장면을 흐름 안의 배너로 바꾸고(빌드 잔여 `padding-top: 108px` 제거) 재캡처로 겹침 0을 확인했습니다(`ctaOverBuilding: false`).
-
-### 확인하지 못한 것
-
-- **FCP(First Contentful Paint)**: 에이전트가 소유한 백그라운드 탭에서는 Paint Timing 항목이 생성되지 않아 **측정하지 못했습니다**(load 253ms와 리소스 duration으로 대체).
-- Tabbit의 `page.screenshot`은 무한 애니메이션 구간에서 30~100초 지연·타임아웃이 반복됐습니다. 캡처는 `prefers-reduced-motion` emulate + `clip`으로 확보했고, 실패한 시도는 결과에 포함하지 않았습니다.
-- 이미지 원본(`04_korea_cinematic_home.png`)과의 시각 비교: 원본이 없어 불가(#5967에 기록).
-
-### 재현
+### 검증 재현
 
 ```bash
-python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 19 passed
+python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 21 passed
 node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
 ```
 
-캡처: `docs/screenshots/5967/` — `home-kr-dark-{1440,768,390}.png`,
-`editor-speech-kr-dark-1440.png`, `editor-meeting-kr-dark-390.png`,
-테마 축 증명: `home-us-classic-1440.png`, `home-kr-minimal-1440.png`, `home-kr-light-390.png`.
+캡처: `docs/screenshots/5967/v2-*.png` — `v2-home-kr-dark-1440.png`, `v2-home-kr-dark-390.png`,
+`v2-editor-speech-kr-dark-1440.png`, `v2-editor-meeting-kr-dark-390.png`.
+v1 계열(`home-kr-dark-*.png`)은 검토 이력으로 남기고 채택 전 상태로 표시한다.
+
