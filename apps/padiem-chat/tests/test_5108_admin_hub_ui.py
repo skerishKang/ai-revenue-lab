@@ -112,7 +112,9 @@ def test_admin_pretty_urls_map_to_workers_assets_files():
         assert (BASE / "admin" / f"{product}.html").is_file()
     wrangler = read(REPO / "apps" / "padiem-chat" / "wrangler.toml")
     assert "[assets]" in wrangler
-    assert 'directory = "static"' in wrangler
+    # Assets are uploaded from the generated bundle, which is a byte-verified copy
+    # of these same files plus the staged app entries (wrangler.toml [assets]).
+    assert 'directory = ".b66-worker-src/static"' in wrangler
 
 
 def test_b66_navigation_origin_is_single_sourced_and_passes_the_origin_audit():
