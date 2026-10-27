@@ -57,9 +57,10 @@ body {
   padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 13px; letter-spacing: 0.04em;
 }
 
-/* Hero (#5972): the portrait is a plain <img> in its own column with the
-   copy beside it. The old full-bleed background portrait is gone — no dark
-   veil, no grain, no scale-up, and no text drawn over the photo. */
+/* Hero (#5972): the portrait is a plain <img> with the copy in the other
+   column, matching reference_01 (desktop: left copy, right portrait). The
+   old full-bleed background portrait is gone — no dark veil, no grain, no
+   scale-up, and no text drawn over the photo. */
 .hero {
   position: relative;
   display: flex; align-items: center;
@@ -72,12 +73,16 @@ body {
 .hero-inner {
   position: relative; z-index: 2;
   max-width: var(--maxw); margin: 0 auto; width: 100%;
-  display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
   gap: 72px; align-items: center;
 }
+.hero-copy { order: 1; }
 /* The source portrait is 311x399; the box keeps that ratio, so contain shows
-   the whole face and shoulders with no crop and no upscaling to fill. */
+   the whole face and shoulders with no crop and no upscaling to fill. Desktop
+   places it in the right column; the DOM order stays photo-first, so the
+   stacked mobile view keeps the photo above the copy. */
 .hero-photo {
+  order: 2;
   display: block; width: 100%; height: auto;
   aspect-ratio: 311 / 399; object-fit: contain;
   border-radius: var(--radius);
@@ -203,6 +208,7 @@ body {
   .top-nav { display: none; }
   .hero { min-height: auto; padding: 112px 24px 72px; }
   .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+  .hero-photo, .hero-copy { order: 0; }
   .hero-photo { max-width: 360px; margin: 0 auto; }
   .hero-facts { grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .activity-item { grid-template-columns: 1fr; gap: 6px; }
