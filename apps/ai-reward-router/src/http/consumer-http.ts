@@ -41,6 +41,9 @@ import {
   type GoogleFetch,
 } from '../identity/google.js';
 import { CredentialError } from '../identity/password.js';
+import { isB64SuperAdmin } from '../identity/admin.js';
+import { renderB64AdminConsole } from '../ops/admin-view.js';
+import type { B64OperationsSnapshot } from '../ops/operations-snapshot.js';
 import {
   AYET_S2S_CALLBACK_PATH,
   AYET_S2S_SECURITY_HASH_HEADER,
@@ -114,6 +117,14 @@ export interface ConsumerHttpDependencies {
   /** `B64_AYET_REWARDED_ADSLOT_ID`; empty means the adslot is not chosen yet. */
   readonly ayetRewardedAdslotId?: string | undefined;
   /**
+   * Operator authority (#6001). `B64_ADMIN_EMAIL` is the single administrator
+   * address, supplied as server configuration and never committed or logged;
+   * unset means nobody is an administrator. The snapshot reader is the only
+   * production data the console can see, and it is read-only by construction.
+   */
+  readonly adminEmail?: string | undefined;
+  readonly operationsSnapshot?: (() => Promise<B64OperationsSnapshot>) | undefined;
+  /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
    * prototype default exists for tests and local prototypes only.
@@ -162,6 +173,12 @@ const GOOGLE_PATHS: ReadonlySet<string> = Object.freeze(new Set([B64_GOOGLE_STAR
  * browser cookie, and is authenticated by the publisher signature alone — so it
  * is deliberately outside the identity paths, which are POST-only.
  */
+/**
+ * The operator's read-only status surface (#6001). GET only: it reports state
+ * and changes nothing, so it needs no CSRF token and no mutation path.
+ */
+const ADMIN_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/admin', '/admin/status']));
+
 const PROVIDER_CALLBACK_PATHS: ReadonlySet<string> = Object.freeze(new Set([AYET_S2S_CALLBACK_PATH]));
 
 const SECURITY_HEADERS = Object.freeze({
@@ -342,6 +359,7 @@ export function createConsumerHttpHandler(
     const isIdentity = IDENTITY_PATHS.has(url.pathname);
     const isGoogle = GOOGLE_PATHS.has(url.pathname);
     const isProviderCallback = PROVIDER_CALLBACK_PATHS.has(url.pathname);
+    const isAdmin = ADMIN_PATHS.has(url.pathname);
     if (request.method === 'POST' && !isIdentity && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
@@ -353,7 +371,7 @@ export function createConsumerHttpHandler(
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle && !isProviderCallback) {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle && !isProviderCallback && !isAdmin) {
       return notFound(request);
     }
 
@@ -537,6 +555,45 @@ export function createConsumerHttpHandler(
       return responseForMethod(request, outcome.body, {
         status: outcome.status,
         headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    if (isAdmin) {
+      const resolveAuth = dependencies.resolveAuth ?? defaultAuthResolver;
+      const auth = await resolveAuth(request);
+      if (!auth.authenticated || typeof auth.userId !== 'string') {
+        return jsonErrorResponse(request, 401, 'unauthenticated');
+      }
+      const { memberStore, adminEmail, operationsSnapshot } = dependencies;
+      if (!memberStore || !operationsSnapshot) {
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      let administrator = false;
+      try {
+        administrator = await isB64SuperAdmin({ adminEmail, members: memberStore, memberId: auth.userId });
+      } catch {
+        // "could not check" is reported as unavailable rather than quietly
+        // answered as a grant or a denial.
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      if (!administrator) {
+        return jsonErrorResponse(request, 403, 'admin_forbidden');
+      }
+      let snapshot: B64OperationsSnapshot;
+      try {
+        snapshot = await operationsSnapshot();
+      } catch {
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      if (url.pathname === '/admin/status') {
+        return responseForMethod(request, JSON.stringify(snapshot), {
+          status: 200,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        });
+      }
+      return responseForMethod(request, renderB64AdminConsole(snapshot, theme), {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
       });
     }
 
