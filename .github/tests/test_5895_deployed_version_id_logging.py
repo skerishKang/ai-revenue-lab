@@ -47,7 +47,7 @@ GATES = {
 
 def _regions(name: str) -> tuple[str, str]:
     path, (deploy_start, deploy_end), (rollback_start, rollback_end) = GATES[name]
-    text = (ROOT / path).read_text(encoding="utf-8", newline=None)
+    text = (ROOT / path).read_text(encoding="utf-8")
     yaml.safe_load(text)
     deploy = text[text.index(deploy_start):text.index(deploy_end)]
     start = text.index(rollback_start)
