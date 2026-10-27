@@ -131,6 +131,9 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         product_adapter.PC_QUERY_SCOPE,
         product_adapter.PC_LIST_FILES_SCOPE,
         product_adapter.PC_READ_FILE_SCOPE,
+        product_adapter.PC_WRITE_FILE_SCOPE,
+        product_adapter.PC_MOVE_FILE_SCOPE,
+        product_adapter.PC_DELETE_FILE_SCOPE,
     )
 
 
