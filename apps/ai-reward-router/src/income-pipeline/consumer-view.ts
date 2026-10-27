@@ -244,7 +244,7 @@ function renderShell(title: string, navItems: string, content: string, themeInfo
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="${theme}" />
-  <title>내 수익 관리 | PADIEM AI Reward Router</title>
+  <title>내 수익 관리 · B64 AI Reward Router</title>
   <style>
 ${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }
@@ -355,9 +355,9 @@ ${THEME_CSS_SHELL_INSET}
   <div class="shell" data-consumer-mode="INCOME_PIPELINE">
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="#top" aria-label="PADIEM AI Reward Router">
+        <a class="brand" href="#top" aria-label="B64 AI Reward Router">
           ${renderBrandMark('brand-mark')}
-          <span class="brand-wordmark">PADIEM</span>
+          <span class="brand-wordmark">B64</span>
           <span class="brand-divider" aria-hidden="true"></span>
           <span class="brand-product">AI Reward Router</span>
         </a>

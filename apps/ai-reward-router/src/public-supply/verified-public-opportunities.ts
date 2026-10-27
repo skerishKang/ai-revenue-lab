@@ -10,7 +10,7 @@ import {
  * source was read again, because the 7-day display window is what keeps a
  * consumer-facing claim honest. The 2026-10-27 pass read every source and
  * recorded the confirming wording (evidence in issue #987).
- * These records pay PADIEM nothing (monetizationRole NONE): they link users to
+ * These records earn B64 nothing (monetizationRole NONE): they link users to
  * official provider pages. They are NOT provider-approved B2B supply and must
  * never be promoted into LIVE_AUTHORIZED provider lanes.
  *

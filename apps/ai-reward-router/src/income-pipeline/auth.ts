@@ -6,9 +6,9 @@ export interface AuthResult {
 /**
  * Resolves the server-verified identity of one request. Synchronous resolvers
  * (e.g. `createTestAuthResolver`) keep working; asynchronous resolvers are
- * allowed because the real PADIEM session verification
- * (`padiem-session-auth.ts`) performs its constant-time HMAC comparison with
- * WebCrypto, which is promise-based.
+ * allowed because B64's own verification (`src/identity/auth.ts`) performs its
+ * constant-time HMAC comparison and session lookup with promise-based WebCrypto
+ * and D1 reads.
  */
 export type AuthResolver = (request: Request) => AuthResult | Promise<AuthResult>;
 
