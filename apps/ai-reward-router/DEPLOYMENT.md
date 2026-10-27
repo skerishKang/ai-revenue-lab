@@ -71,10 +71,16 @@ Required server-owned bindings on this Worker (all fail closed when absent):
 
 | Binding | Meaning | When missing |
 |---|---|---|
-| `PADIEM_SESSION_SECRET` (secret) | Same value as the chat product's `PADIEM_CHAT_SESSION_SECRET`; lets this Worker verify the session cookie with the B62 authority algorithm | No request is authenticated (pipeline stays anonymous) |
-| `PADIEM_CHAT_SERVICE` (service) | REQUIRED for the income path. Binding to the deployed chat product worker, declared like the existing reference bridge (`reference/business-66-padiem-quote-v1/_worker.js`). Forwards the session cookie to chat's revocation-aware `GET /api/auth/status` so logged-out/revoked canonical sessions are blocked | Cookie-authenticated access is DENIED (fail closed). The deployed B64 path never falls back to signature-only verification; that helper exists only for isolated tests |
+| `CONTROL_PLANE_IDENTITY` (service) | REQUIRED for the income path. Binding to the shared Control Plane identity authority (`padiem-control-plane-identity`, already bound by padiem-chat / padiem-ai-engine / padiem-voice-stt). Resolves the cookie's canonical session id server-side (`resolve_auth_session` → `resolve_product_user_for_subject`) so the verified `usr_…` user id comes from the authority — no signing secret held, no client claim trusted, revoked/expired sessions blocked | Cookie-authenticated access is DENIED (fail closed) |
 | `PADIEM_B64_PUBLIC_BASE_URL` (var) | Exact reviewed public origin of this deployment, e.g. `https://chat.padiem.net`; required by the cookie-authenticated mutation same-origin guard (#3476 policy) | Cookie-carrying POSTs are denied 503 `origin_guard_unavailable` |
 | `B64_INCOME_DB` (D1) | Cloudflare D1 database `padiem-b64` for user income records | Pipeline storage answers 503 `storage_unavailable`; the non-durable in-memory prototype is never used as a production fallback |
+| `PADIEM_CHAT_SERVICE` (service) | REQUIRED for the income path, as the signature-parity half. Declared like the existing reference bridge (`reference/business-66-padiem-quote-v1/_worker.js`): the cookie is forwarded to chat's revocation-aware `GET /api/auth/status`, where chat verifies its own signature. The authority proves a session id is live; this proves chat actually signed the cookie | Cookie-authenticated access is DENIED (fail closed). Without it the session id alone would be a transferable bearer credential |
+| `PADIEM_SESSION_SECRET` (secret) | NOT bound — deliberately removed. B64 verifies identity through the authority, never with the signing key (the offline verifier exists only in isolated tests) | n/a — the deployed path must not depend on it |
+
+`PADIEM_SESSION_SECRET_SOURCE` / the activation gate workflow (#5853) remain
+as a FALLBACK path only: they are not needed while the authority binding is
+the deployed authentication path, and dispatching them adds a signing-key
+copy that the authority-based path avoids.
 
 The repository contract (`UserIncomeRepository`) has no global "delete everything"
 operation by design: every production statement is scoped to one `user_id`, and
@@ -318,3 +324,46 @@ Decision tree (owner decision required — LOCAL executes none of these):
   added routes (record every `route_id` at add time). Because the routes
   only ADD new host paths, rollback restores the exact pre-change serving.
   The workers.dev fallback host remains enabled until live E2E passes.
+
+## Authentication wiring as deployed (2026-10-27, issue #5864 / #987)
+
+The income path answers two independent questions with two existing
+mechanisms, and holds no signing key:
+
+| Question | Answered by | Binding |
+|---|---|---|
+| Is this session real, active, and a b62 user? Which `usr_…` is it? | Control Plane identity authority (`resolve_auth_session` → `resolve_product_user_for_subject`) | `CONTROL_PLANE_IDENTITY` |
+| Did chat actually sign this cookie, and has chat revoked the session? | chat's own revocation-aware `GET /api/auth/status`, cookie forwarded unchanged | `PADIEM_CHAT_SERVICE` |
+
+Both must agree. The relay runs first, so a well-formed cookie carrying a
+genuine but stolen session id never reaches the authority: on its own that id
+is a transferable 128-bit bearer credential, and the authority lookup would
+happily confirm it. This is the delta CENTRAL's #5864 review named.
+
+`PADIEM_SESSION_SECRET` is therefore not part of the target binding set, and
+`.github/workflows/b64-session-secret-activation-gate.yml` is not on the path to
+a working login. Its earlier "Plan A" note stays as the record of why B64 must
+not identify users from chat's public payloads — the authority is what supplies
+identity, which is exactly the gap that note ruled out.
+
+### Order of operations for a working login (CENTRAL)
+
+1. Merge, then dispatch `.github/workflows/b64-cloudflare-worker-production-deploy-gate.yml`
+   with `target_sha=<merged main SHA>` and
+   `confirmation=DEPLOY_B64_AI_REWARD_ROUTER`. Its binding readback now requires
+   `CONTROL_PLANE_IDENTITY` to be live, and its parity step fails the run — and
+   rolls back — if the deployed revision is not what the public host answers.
+2. Read the zone route table with `b64-cloudflare-zone-route-readonly-probe.yml`
+   (GET-only). Abort if it reports a host wildcard or any B64 path already
+   assigned to `padiem-chat`.
+3. Add the six routes from the table above to `b64-ai-reward-router`, recording
+   each `route_id`. `/`, `/api/*` and `/healthz` stay on `padiem-chat`; taking
+   `/` would also make step 1's relay call itself.
+4. Confirm income storage is migrated on the existing database (read-only):
+   `wrangler d1 migrations list padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`.
+   Apply only if it lists a pending migration, and never recreate the database.
+5. Run the signed-session E2E in a real browser on `chat.padiem.net`: log in
+   through chat, save one record on `/pipeline`, reload and confirm it returns,
+   confirm the realised-income total stays `지급 확인 전` until the status is
+   `지급 완료`, then log out and confirm the same tab falls back to the login
+   prompt. Steps 1-4 passing is not this check; only this closes #5864.

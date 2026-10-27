@@ -1,9 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createConsumerHttpHandler } from '../src/http/consumer-http.js';
-import { createChatSessionStatusProbe, createPadiemSessionAuthResolver } from '../src/income-pipeline/padiem-session-auth.js';
+import { createAuthoritySessionAuthResolver } from '../src/income-pipeline/authority-session-auth.js';
+import {
+  PADIEM_SESSION_COOKIE_NAME,
+  extractCookieValue,
+  verifyPadiemSessionToken,
+  type SessionLivenessProbe,
+} from '../src/income-pipeline/padiem-session-auth.js';
 import { D1UserIncomeRepository } from '../src/income-pipeline/d1-user-income-repository.js';
-import { mintFixtureTokenSet } from './helpers/padiem-test-tokens.js';
+import { mintFixtureTokenSet, signTestSessionToken } from './helpers/padiem-test-tokens.js';
 import { createSqliteD1Binding } from './d1-binding-helper.js';
 
 /**
@@ -17,11 +23,33 @@ const FIXTURE_SECRET = 'b64-fixture-session-secret-0123456789abcdef';
 const ISSUED_AT = 3999999999;
 const MAX_AGE = 604800;
 const FIXTURES = await mintFixtureTokenSet(FIXTURE_SECRET, ISSUED_AT, MAX_AGE);
-const USER_A_TOKEN = FIXTURES.validToken;
-const USER_B_TOKEN = FIXTURES.validTokenWithSid;
+void FIXTURES;
 const USER_A = 'usr_fixture_user_0001';
 const USER_B = 'usr_fixture_user_0002';
+// Real chat sessions carry the canonical sid claim (auth.py mints it once the
+// identity authority is bound) — the journey tokens include it.
+const USER_A_TOKEN = await signTestSessionToken(
+  { v: 1, uid: USER_A, exp: 4000604799, sid: 'sess_journey0000000000000001' },
+  FIXTURE_SECRET,
+);
+const USER_B_TOKEN = await signTestSessionToken(
+  { v: 1, uid: USER_B, exp: 4000604799, sid: 'sess_journey0000000000000002' },
+  FIXTURE_SECRET,
+);
 const ORIGIN = 'https://chat.padiem.net';
+
+/**
+ * Stands in for the chat relay B64 uses in production
+ * (`PADIEM_CHAT_SERVICE` → `GET /api/auth/status`): chat holds the signing key
+ * and answers whether this cookie is genuinely its own. Verifying the fixture
+ * signature here keeps the journey honest about that half of the check — an
+ * unsigned cookie carrying a live sid must not reach the dashboard.
+ */
+const signatureRelay: SessionLivenessProbe = async (cookieHeader: string): Promise<void> => {
+  const token = extractCookieValue(cookieHeader, PADIEM_SESSION_COOKIE_NAME);
+  const verified = await verifyPadiemSessionToken(token, FIXTURE_SECRET);
+  if (verified === null) throw new Error('session_not_live');
+};
 
 function post(handler: (r: Request) => Promise<Response>, token: string, body: string, origin = ORIGIN) {
   return handler(new Request(`${ORIGIN}/pipeline`, {
@@ -34,22 +62,53 @@ function post(handler: (r: Request) => Promise<Response>, token: string, body: s
 test('flows 6-12: verified login, save, status progression, amounts, reload, isolation, revocation', async () => {
   const { binding } = createSqliteD1Binding();
   const repo = new D1UserIncomeRepository(binding);
+  // Fake Control Plane identity authority: each session maps to ITS OWN user
+  // (that is the whole point of the authority), and the session starts live
+  // but can be revoked (logged out) mid-journey — exactly what flow 12
+  // exercises.
   let sessionLive = true;
-  const chatService = {
-    async fetch(input: Request) {
-      assert.equal(new URL(input.url).pathname, '/api/auth/status');
-      return new Response(
-        JSON.stringify({ ready: true, authenticated: sessionLive, session_state: sessionLive ? 'signed_in' : 'expired' }),
-        { status: 200, headers: { 'content-type': 'application/json; charset=utf-8' } },
-      );
+  const sessionUsers: Record<string, string> = {
+    'sess_journey0000000000000001': USER_A,
+    'sess_journey0000000000000002': USER_B,
+  };
+  const sessionSubjects: Record<string, string> = {
+    'sess_journey0000000000000001': 'sub_journeycanonicalsubject_a',
+    'sess_journey0000000000000002': 'sub_journeycanonicalsubject_b',
+  };
+  const revoked: Record<string, boolean> = {};
+  const identityAuthority = {
+    async resolve_auth_session(payload: { session_id: string }) {
+      const user = sessionUsers[payload.session_id];
+      if (user === undefined || revoked[payload.session_id] || !sessionLive) {
+        return {
+          ok: false,
+          error: { code: 'canonical_auth_session_not_found', message: 'no live session for this id' },
+        };
+      }
+      return {
+        ok: true,
+        session: {
+          session_id: payload.session_id,
+          product_id: 'b62',
+          subject: { subject_type: 'user', subject_id: sessionSubjects[payload.session_id] },
+          issued_at: '2026-10-25T10:00:00.000Z',
+          expires_at: '2096-09-02T10:00:00.000Z',
+          state: 'active',
+          revision: 1,
+        },
+      };
+    },
+    async resolve_product_user_for_subject(payload: { product_id: string; canonical_subject_id: string }) {
+      const bySubject = Object.entries(sessionSubjects).find(([, s]) => s === payload.canonical_subject_id);
+      if (!bySubject || revoked[bySubject[0]] || !sessionLive) {
+        return { ok: false, error: { code: 'canonical_product_identity_link_not_active', message: 'link is not active' } };
+      }
+      return { ok: true, product_user_id: sessionUsers[bySubject[0]] };
     },
   };
   const handler = createConsumerHttpHandler({
     loadCandidates: () => [],
-    resolveAuth: createPadiemSessionAuthResolver({
-      sessionSecret: FIXTURE_SECRET,
-      sessionLivenessProbe: createChatSessionStatusProbe({ chatService }),
-    }),
+    resolveAuth: createAuthoritySessionAuthResolver({ identityAuthority, sessionSignatureProbe: signatureRelay }),
     incomeRepository: repo,
     expectedBrowserOrigin: ORIGIN,
   });
@@ -123,8 +182,9 @@ test('flows 6-12: verified login, save, status progression, amounts, reload, iso
   assert.equal(records.length, 1, "A record survives B's delete");
   assert.equal(records[0]!.status, 'PAID');
 
-  // flow 12: after logout/revocation the signed cookie no longer grants access
-  sessionLive = false;
+  // flow 12: after logout/revocation the cookie no longer grants access —
+  // the authority itself reports user A's canonical session revoked.
+  revoked['sess_journey0000000000000001'] = true;
   const afterLogout = await post(handler, USER_A_TOKEN, 'action=save&title=PostLogout&vendor=V&status=SAVED');
   assert.equal(afterLogout.status, 401, 'revoked session cannot save');
   const readAfterLogout = await handler(new Request(`${ORIGIN}/pipeline`, { headers: { cookie: `padiem_session=${USER_A_TOKEN}` } }));
