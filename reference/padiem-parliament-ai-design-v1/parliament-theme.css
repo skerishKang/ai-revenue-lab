@@ -1,0 +1,1106 @@
+/*
+ * PADIEM Parliament AI — 테마 프로토타입 (#5967)
+ *
+ * 두 개의 독립 축:
+ *   국가(data-country) = 음계(tone ramp)와 사진·장면 재료만 정의한다. "재료는 무엇인가".
+ *   스타일(data-style) = 역할(role)과 성격만 정의한다. "그 재료를 어디에 얼마나 쓰는가".
+ * 따라서 4국가 × 5스타일을 20개 조합으로 복제하지 않고 4 + 5 블록으로 끝낸다.
+ * 레이아웃·컴포넌트 계층(TOKENS 이후)에는 색 리터럴이 하나도 없고 토큰 참조만 있다.
+ *
+ * 배치는 CENTRAL 원본 시안 기준: 좌측 사이드바 · 상단 유틸리티 바 ·
+ * 왼쪽 텍스트/오른쪽 사진 히어로 · 업무 카드 3장 · 기능 스트립.
+ */
+
+/* ══ TOKENS ══════════════════════════════════════════════════════════════ */
+
+/* ══ 웹폰트 — 자체 호스팅 ══════════════════════════════════════════════════
+   이 프로토타입은 한때 폰트를 선언만 하고 파일을 배포하지 않아, 선언(Pretendard·
+   NanumMyeongjo)과 실제 렌더(Noto Sans KR·Batang)가 어긋났다. 그래서 파일을 같이 싣는다.
+   * src 는 상대 경로만 쓴다(원격 요청 0 — 테스트가 강제한다).
+   * 가중치는 이 저장소에 실제로 존재하는 파일 4종(400/500/600/700)에 맞춰 선언한다.
+     없는 가중치를 물리면 브라우저가 임의의 근사면을 고르므로, CSS의 650/750도 이 값으로 정규화했다.
+   * 라이선스: Pretendard = SIL OFL 1.1 (Reserved Font Name 'Pretendard'),
+     MaruBuri = 네이버 글꼴. 고지문은 assets/fonts/ 에 동봉했다.
+   ═════════════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Bold.woff2") format("woff2");
+}
+
+/* ==TOKENS-BEGIN== */
+:root {
+  /* 골격 — 색과 무관 */
+  --pa-shell: 1440px;
+  --pa-gap: clamp(14px, 2.2vw, 26px);
+  --pa-pad: clamp(16px, 3vw, 40px);
+  --pa-radius: 14px;
+  --pa-radius-lg: 20px;
+  --pa-hair: 1px;
+  --pa-target: 44px;
+  --pa-ease: cubic-bezier(.22, .61, .36, 1);
+  --pa-sun-op: 1;
+  --pa-haze-op: .5;
+  --pa-scene-op: 1;
+  --pa-glass-blur: 10px;
+  --pa-grade-op: 0;
+  /* 히어로 사진 층: 국가가 재료를 정하고, 없는 국가는 none을 명시한다(플레이스홀더 은폐 금지). */
+  --hero-photo: none;
+  --hero-photo-position: 50% 60%;
+  --hero-photo-zoom: 1;
+  --skyline-display: block;
+  /*
+   * 이미지 슬롯 — 대표가 AI 생성으로 제공한 4장(의사당 석양 · 연단 · SNS 스마트폰 · 회의 문서)을
+   * 역할별로 받는 자리다. 사진이 있는 국가는 자기 블록에서 이 4개를 바꾸고,
+   * 없는 국가는 none을 명시해 색 면만 남긴다(플레이스홀더를 완성처럼 보이지 않게).
+   * HTML 구조는 건드리지 않는다.
+   */
+  --hero-image: var(--hero-photo);
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-fit: cover;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: .92;
+}
+
+/* ── 축 1 · 국가 = 음계 ─────────────────────────────────────────────────── */
+html[data-country="kr"] {
+  /* 한국(04 시안): 전폭 석양 사진 + 그라파이트 좌측 오버레이 + 골드 보조 강조.
+     카드 3장 색은 원본 계측 코어값(남색 #062043 · 청록 #06322a · 보라 #352442). */
+  --tone-1: #14161c;
+  --tone-2: #1d2029;
+  --tone-3: #2c3140;
+  --tone-4: #4d5568;
+  --tone-5: #9aa3b8;
+  --tone-6: #e7b972;
+  --tone-7: #f4dcae;
+  --tone-8: #f7f4ee;
+  --accent: #e2ae5e;
+  --accent-contrast: #171319;
+  --accent-soft: rgba(226, 174, 94, .16);
+  --gold: #d9b26a;
+  --gold-soft: rgba(217, 178, 106, .14);
+  --danger: #c9584f;
+  --success: #4a9a72;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-3);
+  --sky-3: #6b3a4a;
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(244, 220, 174, .5);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(20, 22, 28, .72);
+  --reflection: rgba(231, 185, 114, .16);
+  --haze: rgba(44, 49, 64, .3);
+  --lit: rgba(244, 220, 174, .55);
+  --vignette: rgba(20, 22, 28, .55);
+  --hero-photo: url("./assets/parliament-hero.jpg");
+  /* 제공된 사진은 왼쪽(석양)이 밝고 오른쪽이 어둡다. 원본은 반대이므로
+     건물을 오른쪽으로 밀고 좌측 오버레이로 읽기를 보장한다. */
+  --hero-photo-position: 74% 44%;
+  --hero-photo-zoom: 1.06;
+  --pa-grade-op: 0;
+  --skyline-display: none;
+  --card-image-1: url("./assets/speech-card.jpg");
+  --card-image-2: url("./assets/sns-card.jpg");
+  --card-image-3: url("./assets/meeting-card.jpg");
+  --card-position-1: 64% 52%;
+  --card-position-2: 56% 50%;
+  --card-position-3: 42% 58%;
+  --card-photo-op: .92;
+  --work-1: #062043;
+  --work-2: #06322a;
+  --work-3: #352442;
+  /* B2 확정안: 제목은 마루부리(원본 04의 명조 결을 보존), 본문·메뉴·카드·에디터는 Pretendard.
+     두 패밀리 모두 이 페이지가 웹폰트로 직접 배포하므로, 보는 사람의 설치 여부와 무관하게 항상 해결된다. */
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", "Batang", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+html[data-country="us"] {
+  /* 미국(02 시안): 딥 네이비 레일 + 크림 본문 + 크림슨 액센트 */
+  --tone-1: #0d1b33;
+  --tone-2: #16264a;
+  --tone-3: #24365f;
+  --tone-4: #4a5f88;
+  --tone-5: #93a4c4;
+  --tone-6: #cfd8e8;
+  --tone-7: #eceae2;
+  --tone-8: #f8f6f0;
+  --accent: #a8232f;
+  --accent-contrast: #fdfbf7;
+  --accent-soft: rgba(168, 35, 47, .12);
+  --gold: #b99a5c;
+  --gold-soft: rgba(185, 154, 92, .12);
+  --danger: #b5303c;
+  --success: #3f8f68;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-4);
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-8);
+  --sun-glow: rgba(248, 246, 240, .45);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(13, 27, 51, .7);
+  --reflection: rgba(207, 216, 232, .18);
+  --haze: rgba(36, 54, 95, .32);
+  --lit: rgba(236, 234, 226, .5);
+  --vignette: rgba(13, 27, 51, .5);
+  --hero-photo: none;   /* 사진 미확보 — 대체 그림을 만들어 완성 처리하지 않는다 */
+  --hero-photo-position: 50% 60%;
+  --hero-photo-zoom: 1;
+  --pa-grade-op: 0;
+  --skyline-display: block;
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-7);
+  --work-2: var(--tone-1);
+  --work-3: var(--tone-7);
+  /* 해외 테마도 이 페이지가 배포한 두 면으로 확정한다(장비별 fallback 차이 제거).
+     Tail 의 의도 서체는 웹폰트가 실패한 환경에서만 쓰인다. */
+  --font-display: "MaruBuri", "Playfair Display", Georgia, serif;
+  --font-body: "Pretendard", Inter, "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, system-ui, sans-serif;
+}
+
+html[data-country="fr"] {
+  /* 프랑스(03 매트릭스): 돌빛 회벽 + 남색 + 와인 액센트 */
+  --tone-1: #14182b;
+  --tone-2: #222848;
+  --tone-3: #3d3f66;
+  --tone-4: #6d6a92;
+  --tone-5: #a99bbf;
+  --tone-6: #dcc9c8;
+  --tone-7: #efe3d6;
+  --tone-8: #f7f1e8;
+  --accent: #7c3550;
+  --accent-contrast: #f7f1e8;
+  --accent-soft: rgba(124, 53, 80, .12);
+  --gold: #c3a37a;
+  --gold-soft: rgba(195, 163, 122, .12);
+  --danger: #bf5b56;
+  --success: #46937a;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-4);
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(239, 227, 214, .42);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(20, 24, 43, .68);
+  --reflection: rgba(220, 201, 200, .18);
+  --haze: rgba(61, 63, 102, .3);
+  --lit: rgba(239, 227, 214, .5);
+  --vignette: rgba(20, 24, 43, .48);
+  --hero-photo: none;
+  --hero-photo-position: 50% 60%;
+  --hero-photo-zoom: 1;
+  --pa-grade-op: 0;
+  --skyline-display: block;
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-2);
+  --work-2: var(--tone-4);
+  --work-3: var(--tone-3);
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+html[data-country="uk"] {
+  /* 영국(01 시안): 웨스트민스터 딥 네이비 + 퍼치먼트 + 앤티크 골드 */
+  --tone-1: #0b1220;
+  --tone-2: #142039;
+  --tone-3: #24365c;
+  --tone-4: #4b5f86;
+  --tone-5: #8b9cb8;
+  --tone-6: #c6cede;
+  --tone-7: #e6ddc9;
+  --tone-8: #f4efe2;
+  --accent: #b8923a;
+  --accent-contrast: #0b1220;
+  --accent-soft: rgba(184, 146, 58, .16);
+  --gold: #c9ab5e;
+  --gold-soft: rgba(201, 171, 94, .13);
+  --danger: #c05a52;
+  --success: #4a937a;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-3);
+  --sky-4: var(--tone-5);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(230, 221, 201, .4);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(11, 18, 32, .72);
+  --reflection: rgba(198, 206, 222, .16);
+  --haze: rgba(36, 54, 92, .34);
+  --lit: rgba(230, 221, 201, .45);
+  --vignette: rgba(11, 18, 32, .52);
+  --hero-photo: none;
+  --hero-photo-position: 50% 60%;
+  --hero-photo-zoom: 1;
+  --pa-grade-op: 0;
+  --skyline-display: block;
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-8);
+  --work-2: var(--tone-7);
+  --work-3: var(--tone-8);
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+/* ── 축 2 · 스타일 = 역할 할당 ──────────────────────────────────────────── */
+/* 밝은 역할: 라이트·클래식·모던·미니멀은 재료를 밝게 쓰고, 성격 블록만 다르다.
+   시안대로 레일과 히어로 패널은 밝은 테마에서도 진하게 간다. */
+html[data-style="light"],
+html[data-style="classic"],
+html[data-style="modern"],
+html[data-style="minimal"] {
+  --bg: var(--tone-8);
+  --page-bg: var(--tone-8);
+  --panel: var(--tone-7);
+  --text: var(--tone-1);
+  --muted: var(--tone-4);
+  --line: var(--tone-6);
+  --paper: var(--tone-8);
+  --ink: var(--tone-1);
+  --ink-muted: var(--tone-4);
+  --glass: rgba(255, 255, 255, .74);
+  --shadow: 0 18px 44px rgba(0, 0, 0, .1);
+  --focus-ring: var(--accent-soft);
+  --rail: var(--tone-1);
+  --rail-text: var(--tone-8);
+  --rail-muted: var(--tone-5);
+  --rail-line: var(--tone-3);
+  --hero-panel: var(--tone-1);
+  --hero-panel-text: var(--tone-8);
+  --hero-text: var(--tone-8);
+  --hero-scrim: rgba(0, 0, 0, .3);
+  --pa-scene-op: 1;
+  /* 04 시안: 히어로 사진 왼쪽에 얹는 읽기용 오버레이, 업무 밴드와 흰 스트립 카드의 위계. */
+  --hero-scrim-strong: rgba(0, 0, 0, .92);
+  --topbar-text: var(--tone-8);
+  --works-bg: color-mix(in srgb, var(--tone-8) 94%, var(--tone-1));
+  --strip-bg: var(--tone-8);
+  --strip-line: color-mix(in srgb, var(--tone-6) 70%, var(--tone-8));
+}
+
+html[data-style="dark"] {
+  --bg: var(--tone-2);
+  --page-bg: var(--tone-2);
+  --panel: var(--tone-3);
+  --text: var(--tone-8);
+  --muted: var(--tone-5);
+  --line: var(--tone-3);
+  --paper: var(--tone-2);
+  --ink: var(--tone-8);
+  --ink-muted: var(--tone-5);
+  --glass: rgba(255, 255, 255, .06);
+  --shadow: 0 20px 52px rgba(0, 0, 0, .34);
+  --focus-ring: var(--accent-soft);
+  --rail: var(--tone-1);
+  --rail-text: var(--tone-8);
+  --rail-muted: var(--tone-5);
+  --rail-line: var(--tone-3);
+  --hero-panel: var(--tone-1);
+  --hero-panel-text: var(--tone-8);
+  --hero-text: var(--tone-8);
+  --hero-scrim: rgba(0, 0, 0, .22);
+  --pa-scene-op: 1;
+  --hero-scrim-strong: rgba(0, 0, 0, .74);
+  --topbar-text: var(--tone-8);
+  --works-bg: var(--tone-2);
+  --strip-bg: var(--tone-3);
+  --strip-line: var(--tone-4);
+}
+
+/* ── 축 2 · 스타일 = 성격 ──────────────────────────────────────────────── */
+html[data-style="classic"] {
+  --pa-radius: 8px;
+  --pa-radius-lg: 12px;
+  --pa-glass-blur: 6px;
+}
+
+html[data-style="modern"] {
+  --pa-radius: 16px;
+  --pa-radius-lg: 24px;
+  --pa-glass-blur: 14px;
+  --pa-sun-op: .88;
+}
+
+html[data-style="minimal"] {
+  --pa-sun-op: .3;
+  --pa-haze-op: .12;
+  --pa-glass-blur: 0px;
+  --card-photo-op: 0;
+  --glass: transparent;
+  --shadow: none;
+}
+
+html[data-style="light"] { --pa-sun-op: .82; }
+/* ==TOKENS-END== */
+
+/* ══ BASE ════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body.pa-body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, p, ul, figure { margin: 0; }
+ul { list-style: none; padding: 0; }
+button { font: inherit; color: inherit; }
+
+/* `hidden`은 클래스의 display에 이길 수 없다: 뷰 전환이 실제로 작동하려면 이 규칙이 필요하다. */
+[hidden] { display: none !important; }
+
+.pa-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pa-skip {
+  position: absolute;
+  left: var(--pa-pad);
+  top: -60px;
+  z-index: 40;
+  padding: 10px 16px;
+  border-radius: var(--pa-radius);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  text-decoration: none;
+  transition: top .18s var(--pa-ease);
+}
+.pa-skip:focus { top: 12px; }
+
+:where(a, button, select, textarea, input):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--pa-radius);
+}
+
+/* ══ 앱 셸: 좌측 레일 + 본문 ═════════════════════════════════════════════ */
+/* ══ 셸: 단일 컬럼 + 상단 수평 내비(04 시안) ════════════════════════════ */
+.pa-shell { display: block; min-height: 100svh; }
+.pa-main { position: relative; min-width: 0; display: grid; grid-template-rows: auto 1fr auto; background: var(--bg); min-height: 100svh; }
+.pa-main > * { min-width: 0; }
+
+.pa-brand { display: flex; align-items: center; gap: 10px; margin-right: 6px; min-width: 0; flex: 0 1 auto; }
+.pa-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  color: inherit;
+}
+.pa-brand-mark svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.pa-brand-text { display: flex; align-items: baseline; gap: 9px; line-height: 1.2; min-width: 0; white-space: nowrap; }
+.pa-brand-name { font-family: var(--font-body); font-size: 16.5px; font-weight: 700; letter-spacing: -0.01em; }
+.pa-brand-tag { font-family: var(--font-label); font-size: 10.5px; letter-spacing: .1em; opacity: .72; color: inherit; }
+
+.pa-nav { display: flex; align-items: center; gap: clamp(2px, .5vw, 8px); min-width: 0; flex: 0 1 auto; }
+.pa-nav-item {
+  position: relative;
+  min-height: var(--pa-target);
+  padding: 9px clamp(6px, .8vw, 13px);
+  border: 0;
+  border-radius: var(--pa-radius);
+  background: transparent;
+  color: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity .16s var(--pa-ease);
+}
+.pa-nav-item:hover { opacity: .78; }
+/* 시안은 활성 항목만 골드 밑줄로 표시한다(배경 알약 아님). */
+.pa-nav-item.is-current::after {
+  content: "";
+  position: absolute;
+  left: clamp(6px, .8vw, 13px);
+  right: clamp(6px, .8vw, 13px);
+  bottom: 8px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.pa-nav-item[aria-disabled="true"] { opacity: .78; cursor: not-allowed; font-weight: 500; }
+.pa-nav-sep { width: var(--pa-hair); height: 22px; margin: 0 4px; background: currentColor; opacity: .35; flex: 0 0 auto; }
+.pa-nav-note { font-family: var(--font-label); font-size: 10px; letter-spacing: .1em; opacity: .6; margin-right: 2px; white-space: nowrap; }
+
+/* ══ 상단 유틸리티 바 ═══════════════════════════════════════════════════ */
+/* 04 시안: 상단 바는 히어로 사진 위에 얹히는 한 줄(필드·구분선 없음). */
+.pa-topbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 18px);
+  flex-wrap: nowrap;
+  padding: 12px clamp(20px, 4.85vw, 70px);
+  background: transparent;
+  border-bottom: 0;
+  color: var(--topbar-text);
+}
+/* 에디터에서는 히어로가 사라지므로 필드를 깔고 내용을 바 아래로 밀는다. */
+.pa-main:has(#paEditor:not([hidden])) .pa-topbar {
+  background: var(--bg);
+  border-bottom: var(--pa-hair) solid var(--line);
+  color: var(--text);
+}
+.pa-main:has(#paEditor:not([hidden])) { padding-top: 70px; }
+
+.pa-search { order: 4; flex: 0 1 clamp(150px, 14.5vw, 210px); }
+.pa-topbar-actions { order: 5; margin-left: 0; }
+
+.pa-theme { order: 6; position: relative; flex: 0 0 auto; }
+/* 시안 헤더에는 이 통제가 없다. 두 축 전환은 우상단 아이콘 하나로, 눌리는 통제임을 visibly 드러낸다. */
+.pa-theme-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: var(--pa-target);
+  height: var(--pa-target);
+  padding: 0;
+  border: var(--pa-hair) solid color-mix(in srgb, var(--topbar-text) 34%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone-1) 30%, transparent);
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(var(--pa-glass-blur));
+}
+.pa-theme-trigger:hover { border-color: var(--accent); background: var(--accent-soft); }
+.pa-theme-trigger svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+/* 라벨은 스크린리더에만 남긴다(시안의 헤더에는 이름 없는 아이콘 통제다). */
+.pa-theme-value {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pa-theme-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  display: grid;
+  gap: 14px;
+  width: min(84vw, 344px);
+  padding: 16px;
+  background: var(--paper);
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--shadow);
+}
+.pa-theme-group { display: grid; gap: 6px; }
+.pa-theme-legend { font-family: var(--font-label); font-size: 11px; letter-spacing: .12em; color: var(--muted); }
+.pa-theme-group {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.pa-theme-group button {
+  min-height: var(--pa-target);
+  padding: 8px 12px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+.pa-theme-group button:hover { border-color: var(--accent); }
+.pa-theme-group button[aria-checked="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+/* 시안의 검색: 사진 위에 얹힌 반투명 알약, 안쪽 오른쪽에 확대경. */
+.pa-search { position: relative; min-width: 0; }
+.pa-search input {
+  width: 100%;
+  min-height: var(--pa-target);
+  padding: 10px 40px 10px 16px;
+  border: var(--pa-hair) solid color-mix(in srgb, var(--topbar-text) 26%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone-1) 34%, transparent);
+  color: var(--topbar-text);
+  font: inherit;
+  font-size: 14.5px;
+  backdrop-filter: blur(var(--pa-glass-blur));
+}
+.pa-search input::placeholder { color: color-mix(in srgb, var(--topbar-text) 78%, transparent); }
+.pa-search input:focus-visible { background: var(--paper); color: var(--text); }
+.pa-search input:focus-visible::placeholder { color: var(--muted); }
+.pa-search::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 13px; height: 13px;
+  margin-top: -9px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: var(--topbar-text);
+  opacity: .85;
+  pointer-events: none;
+}
+.pa-search::before {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 6px; height: 2px;
+  margin-top: 6px;
+  background: currentColor;
+  color: var(--topbar-text);
+  transform: rotate(45deg);
+  opacity: .85;
+  pointer-events: none;
+}
+.pa-topbar-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+/* ══ 히어로: 전폭 사진 + 왼쪽 읽기 오버레이 (04 시안) ══════════════════════ */
+.pa-home { display: grid; gap: 0; background: var(--works-bg); }
+
+.pa-hero {
+  position: relative;
+  display: grid;
+  align-content: center;
+  isolation: isolate;
+  min-height: clamp(400px, 52.2svh, 640px);
+  padding: clamp(78px, 10svh, 112px) 0 clamp(22px, 3.4svh, 44px);
+}
+.pa-hero-quote {
+  position: absolute;
+  top: clamp(78px, 10svh, 118px);
+  right: clamp(20px, 4.85vw, 70px);
+  z-index: 3;
+  display: grid;
+  gap: 10px;
+  max-width: 30ch;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.65;
+  color: var(--hero-text);
+  text-shadow: 0 1px 14px var(--hero-scrim-strong);
+  word-break: keep-all;
+}
+.pa-hero-quote small { font-family: var(--font-label); font-size: 10px; letter-spacing: .18em; opacity: .8; }
+.pa-hero-quote span { display: block; }
+/* 시안은 인용과 캡션 사이에 짧은 수평선을 깐다. */
+.pa-hero-quote small { border-top: var(--pa-hair) solid color-mix(in srgb, var(--hero-text) 40%, transparent); padding-top: 10px; }
+
+/* 히어로 카피: 사진 위 왼쪽. 시안 기준 텍스트 우측 edge = 51.4%W. */
+.pa-hero-copy {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: min(100%, 51.4%);
+  display: grid;
+  align-content: center;
+  gap: clamp(12px, 1.9svh, 22px);
+  padding: 0 0 0 clamp(20px, 5.65vw, 82px);
+  background: transparent;
+  color: var(--hero-text);
+}
+.pa-eyebrow {
+  font-family: var(--font-label);
+  font-size: 11.5px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.pa-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--hero-text);
+  text-wrap: balance;
+  word-break: keep-all;   /* 한글 단어를 쪼개지 않는다(Chrome은 overflow-wrap이 아니라 이것) */
+  hyphens: none;
+  /* 04 실측: 2줄 블록 114px, 2행 ink 542px(37.6%W). 44px/1.30이 두 조건을 동시에 맞춘다. */
+  font-size: clamp(28px, 3.06vw, 44px);
+  line-height: 1.30;
+}
+.pa-hero h1 em { font-style: normal; color: var(--gold); }
+.pa-hero-lead { font-size: clamp(14px, 1.11vw, 16px); line-height: 1.45; opacity: .9; word-break: keep-all; }
+.pa-hero-actions { margin-top: 10px; }
+
+.pa-cta {
+  min-height: var(--pa-target);
+  padding: 13px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--accent), var(--gold));
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform .18s var(--pa-ease), box-shadow .18s var(--pa-ease);
+}
+.pa-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+
+/* 장면은 히어로 전체에 깔린다. 카피와 인용은 그 위 z-index로 읽힌다. */
+.pa-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  min-height: 0;
+  overflow: hidden;
+  opacity: var(--pa-scene-op);
+  isolation: isolate;
+  pointer-events: none;
+}
+.pa-scene > * { position: absolute; inset: 0; display: block; }
+
+.pa-photo {
+  background-image: var(--hero-image);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: var(--hero-photo-position);
+  /* 배율을 background-size로 주면 세로가 짧게 깎인다. 층을 확대해 cover를 유지한다. */
+  transform: scale(var(--hero-photo-zoom));
+  transform-origin: var(--hero-photo-position);
+  filter: saturate(1.05) contrast(1.04);
+}
+/* 제공된 사진은 왼쪽이 밝다. 시안처럼 텍스트가 앉는 왼쪽을 먹색으로 눌러 대비를 만든다. */
+.pa-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-strong) 34%, var(--hero-scrim) 54%, transparent 76%),
+    linear-gradient(180deg, var(--hero-scrim) 0%, transparent 20%, transparent 52%, var(--vignette) 100%);
+}
+.pa-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(74% 70% at 100% 0%, var(--hero-scrim-strong) 0%, transparent 86%),
+    radial-gradient(120% 90% at 62% 22%, transparent 44%, var(--vignette) 100%);
+}
+/* 사진에 색을 입히는 층(강도 0이면 무보정). */
+.pa-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sky-4);
+  opacity: var(--pa-grade-op);
+  mix-blend-mode: color;
+}
+.pa-sky, .pa-sun, .pa-haze, .pa-skyline { display: var(--skyline-display); }
+
+.pa-sky { background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 38%, var(--sky-3) 66%, var(--sky-4) 100%); }
+
+.pa-sun {
+  background:
+    radial-gradient(circle 62px at 72% 76%, var(--sun) 0 91%, transparent 94%),
+    radial-gradient(40% 26% at 72% 78%, var(--sun-glow) 0%, transparent 72%),
+    radial-gradient(92% 44% at 50% 100%, var(--sun-glow) 0%, transparent 70%);
+  opacity: var(--pa-sun-op);
+  animation: pa-breathe 26s var(--pa-ease) infinite alternate;
+}
+
+.pa-haze {
+  background:
+    repeating-linear-gradient(180deg, var(--haze) 0 1.5px, transparent 1.5px 46px),
+    radial-gradient(72% 24% at 28% 58%, var(--haze) 0%, transparent 74%);
+  opacity: var(--pa-haze-op);
+  animation: pa-drift 46s linear infinite alternate;
+}
+
+.pa-skyline { inset: auto 0 0; height: 54%; width: 100%; }
+.pa-skyline-back path { fill: var(--skyline-back); }
+.pa-skyline-main path { fill: var(--skyline); }
+.pa-lit path { fill: var(--lit); }
+.pa-reflection path { fill: var(--reflection); }
+
+.pa-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  opacity: .05;
+  mix-blend-mode: overlay;
+}
+
+/* ══ 업무 밴드: 왼쪽 소개 컬럼 + 오른쪽 카드 3열 (04 시안) ════════════════ */
+.pa-works {
+  display: grid;
+  grid-template-columns: minmax(0, 15.8%) minmax(0, 1fr);
+  grid-template-areas: "head head" "note cards";
+  gap: 0 clamp(8px, .8vw, 12px);
+  align-items: start;
+  padding: clamp(16px, 2.7svh, 28px) clamp(20px, 3.35vw, 48px) 0;
+  max-width: var(--pa-shell);
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.pa-works-head { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--pa-gap); flex-wrap: wrap; }
+.pa-works-head h2 { font-family: var(--font-display); font-size: clamp(24px, 2.64vw, 38px); font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; line-height: 1.15; }
+.pa-works-note { grid-area: note; align-self: start; color: var(--muted); font-size: 14px; line-height: 1.6; margin: 6px 0 0; word-break: keep-all; }
+.pa-works-side { display: grid; gap: 4px; justify-items: end; text-align: right; font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--muted); }
+.pa-works-side::before { content: ""; width: 34px; height: var(--pa-hair); background: var(--line); margin-bottom: 6px; }
+.pa-works-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--pa-target);
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: not-allowed;
+}
+.pa-works-tools[aria-disabled="true"] { opacity: .5; }
+.pa-works-tools::after { content: "→"; }
+
+/* 카드 3열은 소개 컬럼 오른쪽 영역을 채운다(시안: 카드1 좌 edge 19.2%W). */
+.pa-work-list { grid-area: cards; display: grid; gap: clamp(8px, .8vw, 12px); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.pa-work {
+  --work-face: var(--work-1);
+  /* 카드 색을 왼쪽에서 무겁게 눌러 사진 위에서 텍스트를 읽게 한다(04 시안의 오버레이 방향).
+     이 그라데이션은 --work-face와 같은 요소에서 정의돼야 치환된다. :root에 두면 미해석된다. */
+  --work-scrim: linear-gradient(96deg, var(--work-face) 0%, var(--work-face) 40%, transparent 82%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(12px, 1.15vw, 17px);
+  background: var(--work-face);
+  border: 0;
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--shadow);
+  transition: transform .2s var(--pa-ease);
+}
+.pa-work:nth-child(2) { --work-face: var(--work-2); }
+.pa-work:nth-child(3) { --work-face: var(--work-3); }
+/* 아래 층: 카드 전용 사진. 위 층: 시안처럼 왼쪽으로 무거워지는 색 오버레이. */
+.pa-work::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--card-image-1);
+  background-size: var(--card-fit);
+  background-position: var(--card-position-1);
+  background-repeat: no-repeat;
+  opacity: var(--card-photo-op);
+}
+.pa-work:nth-child(2)::before { background-image: var(--card-image-2); background-position: var(--card-position-2); }
+.pa-work:nth-child(3)::before { background-image: var(--card-image-3); background-position: var(--card-position-3); }
+.pa-work::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--work-scrim);
+}
+.pa-work:hover { transform: translateY(-2px); }
+.pa-work.is-open { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 시안의 카드 아이콘: 칩 없이 흰색 선화만. */
+.pa-work-icon { display: grid; place-items: center; width: 30px; height: 30px; }
+.pa-work-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--hero-text); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pa-work-title { font-family: var(--font-body); font-size: clamp(17px, 1.39vw, 20px); font-weight: 700; letter-spacing: -0.02em; color: var(--hero-text); word-break: keep-all; margin: 2px 0 0; }
+.pa-work-desc { font-size: 13px; line-height: 1.5; color: color-mix(in srgb, var(--hero-text) 94%, transparent); word-break: keep-all; }
+.pa-work-foot { margin-top: auto; padding-top: 6px; }
+.pa-work-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--pa-target);
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--hero-text);
+  cursor: pointer;
+}
+/* 정본은 "바로 시작하기 →" 순서(화살표가 뒤). */
+.pa-work-select span::after { content: "→"; margin-left: 8px; color: var(--accent); }
+/* 시안의 원형 화살표는 카드 우하단 코너에 앉는다.
+   기준을 버튼이 아니라 카드로 잡아야 텍스트와 겹치지 않는다(.pa-work가 position:relative). */
+.pa-work-select::after {
+  content: "→";
+  position: absolute;
+  right: clamp(14px, 1.5vw, 20px);
+  bottom: clamp(14px, 1.5vw, 20px);
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--strip-bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+}
+.pa-work:hover .pa-work-select::after { background: var(--accent); color: var(--accent-contrast); }
+.pa-work-select:hover { color: var(--accent); }
+.pa-works-empty { grid-column: 1 / -1; color: var(--muted); font-size: 14px; }
+
+/* ══ 기능 스트립: 밝은 밴드 위의 흰 카드 + 구분선 + 라인 아이콘 ════════════ */
+.pa-strip {
+  margin: clamp(10px, 1.5svh, 16px) clamp(20px, 3.35vw, 48px) clamp(24px, 4svh, 44px);
+  padding: clamp(10px, 1.3vw, 14px) 0;
+  border: var(--pa-hair) solid var(--strip-line);
+  border-radius: var(--pa-radius-lg);
+  background: var(--strip-bg);
+  box-shadow: var(--shadow);
+}
+.pa-strip ul { display: grid; gap: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: var(--pa-shell); margin: 0 auto; padding: 0 clamp(8px, 1.2vw, 18px); list-style: none; }
+.pa-strip li { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: start; padding: 2px clamp(10px, 1.4vw, 20px); }
+.pa-strip li + li { border-left: var(--pa-hair) solid var(--strip-line); }
+.pa-strip-mark { grid-row: span 2; display: grid; place-items: center; width: 30px; height: 30px; color: var(--ink-muted); }
+.pa-strip-mark svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.pa-strip strong { font-size: 14.5px; font-weight: 700; color: var(--text); }
+.pa-strip small { grid-column: 2; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+
+/* ══ 문서 작업실 ════════════════════════════════════════════════════════ */
+.pa-editor {
+  width: 100%;
+  max-width: var(--pa-shell);
+  margin: 0 auto;
+  padding: clamp(14px, 2.4vw, 28px) var(--pa-pad) clamp(28px, 4vw, 56px);
+  animation: pa-rise .4s var(--pa-ease) both;
+}
+.pa-editor-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.pa-back {
+  min-height: var(--pa-target);
+  padding: 9px 16px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-weight: 600;
+  cursor: pointer;
+}
+.pa-back:hover { border-color: var(--accent); }
+.pa-editor-kicker { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 26px); font-weight: 700; }
+.pa-editor-note { font-family: var(--font-label); font-size: 12px; color: var(--muted); }
+
+.pa-editor-grid { display: grid; gap: var(--pa-gap); grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; }
+
+.pa-meta {
+  display: grid;
+  gap: 12px;
+  padding: clamp(14px, 1.8vw, 20px);
+  background: var(--panel);
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius-lg);
+}
+.pa-meta-fields { display: grid; gap: 11px; }
+.pa-meta label { display: grid; gap: 5px; font-family: var(--font-label); font-size: 12px; letter-spacing: .04em; color: var(--muted); }
+.pa-meta input,
+.pa-meta textarea,
+.pa-meta select {
+  min-height: var(--pa-target);
+  padding: 10px 12px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: normal;
+}
+.pa-meta textarea { min-height: 92px; resize: vertical; }
+.pa-draft {
+  min-height: var(--pa-target);
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pa-paper {
+  display: grid;
+  gap: 10px;
+  padding: clamp(16px, 2.4vw, 30px);
+  background: var(--paper);
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--shadow);
+}
+.pa-paper textarea {
+  min-height: clamp(320px, 54svh, 620px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  line-height: 1.85;
+  resize: vertical;
+}
+.pa-paper textarea::placeholder { color: var(--ink-muted); opacity: .8; }
+.pa-paper textarea:focus-visible { outline: 0; }
+.pa-paper:focus-within { border-color: var(--accent); }
+.pa-status { min-height: 22px; font-family: var(--font-label); font-size: 12.5px; color: var(--ink-muted); }
+
+/* ══ 하단 고지 ══════════════════════════════════════════════════════════ */
+.pa-foot { padding: 20px var(--pa-pad) 34px; border-top: var(--pa-hair) solid var(--line); color: var(--muted); font-size: 13px; }
+.pa-foot p { max-width: var(--pa-shell); margin: 0 auto; }
+.pa-foot p + p { margin-top: 8px; }
+.pa-credit { font-family: var(--font-label); font-size: 11.5px; opacity: .85; }
+.pa-credit a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.pa-foot code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 12px; }
+
+/* ══ 반응형: 1440 앵커 / 900 / 767 / 390 ══════════════════════════════════ */
+/* 1440×810 앵커: 헤더(오버레이) + 히어로 52.2% + 업무 밴드에 카드 3장까지 첫 화면. */
+@media (min-width: 1200px) {
+  .pa-hero { min-height: clamp(400px, 52.2svh, 470px); }
+}
+
+@media (max-width: 1100px) {
+  .pa-strip ul { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
+  .pa-strip li:nth-child(3) { border-left: 0; }
+}
+
+@media (max-width: 900px) {
+  /* 소개 컬럼을 접어 헤더 → 소개 → 카드로 쌓는다(원본 모바일이 없어 데스크톱 위계를 그대로 따른다). */
+  .pa-works { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "note" "cards"; gap: 10px 0; }
+  .pa-works-note { margin-top: 0; }
+  .pa-works-side { justify-items: start; text-align: left; }
+  .pa-work-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pa-hero-copy { width: 100%; }
+  .pa-hero h1 { font-size: clamp(28px, 6.4vw, 42px); }
+  .pa-hero-quote { display: none; }
+  .pa-editor-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .pa-topbar { position: absolute; flex-wrap: wrap; gap: 8px 10px; padding: 10px 20px; }
+  .pa-topbar > * { min-width: 0; }
+  .pa-nav { order: 6; width: 100%; min-width: 0; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: thin; }
+  .pa-nav-item { white-space: nowrap; }
+  .pa-search { order: 4; flex: 1 1 120px; }
+  .pa-theme { order: 5; }
+  .pa-theme-panel { left: 0; right: auto; width: min(92vw, 344px); }
+  /* 좁은 화면에서는 사진 전체가 바빠진다. 좌측 그라데이션 대신 전면 눌림으로 읽기를 보장한다. */
+  .pa-hero { padding-top: 150px; min-height: 520px; }
+  .pa-scene::before { background: linear-gradient(180deg, var(--hero-scrim-strong) 0%, var(--hero-scrim) 46%, var(--hero-scrim) 100%); }
+  .pa-hero-copy { padding-left: 20px; padding-right: 20px; }
+  .pa-work-list { grid-template-columns: minmax(0, 1fr); }
+  .pa-strip ul { grid-template-columns: minmax(0, 1fr); }
+  .pa-strip li + li { border-left: 0; border-top: var(--pa-hair) solid var(--strip-line); }
+}
+
+@media (max-width: 390px) {
+  body.pa-body { font-size: 15px; }
+  .pa-brand-tag { display: none; }
+  .pa-hero { padding-top: 158px; }
+  /* 마루부리는 30px에서 3줄로 꺾인다(실측: 2줄 유지 한계 = 28px). 원본 문구 그대로 2줄을 지킨다. */
+  .pa-hero h1 { font-size: 28px; }
+  .pa-cta, .pa-draft, .pa-back { width: 100%; justify-content: center; text-align: center; }
+  .pa-paper { padding: 14px; }
+  .pa-paper textarea { font-size: 16px; }
+}
+
+/* ══ 동작 ══════════════════════════════════════════════════════════════ */
+@keyframes pa-breathe { from { opacity: calc(var(--pa-sun-op) * .8); transform: translateY(4px) scale(1); } to { opacity: var(--pa-sun-op); transform: translateY(-4px) scale(1.03); } }
+@keyframes pa-drift { from { transform: translate3d(-2%, 0, 0); } to { transform: translate3d(2%, -1%, 0); } }
+@keyframes pa-rise { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-sun, .pa-haze, .pa-editor { animation: none; }
+  .pa-cta, .pa-work, .pa-nav-item, .pa-skip { transition: none; }
+}
+
+@media (prefers-contrast: more) {
+  .pa-work { outline: 1px solid var(--hero-text); }
+  .pa-meta, .pa-paper, .pa-strip { border-width: 2px; }
+}
