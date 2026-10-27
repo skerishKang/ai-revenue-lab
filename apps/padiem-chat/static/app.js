@@ -1675,6 +1675,9 @@
       }
       return;
     }
+    if (authHandoff && !authHandoff.value) {
+      authHandoff.value = loveTreeHandoffFromLocation();
+    }
     // #5481: a mailed one-time link opens the reset confirm view directly.
     const token = passwordResetTokenFromLocation();
     if (token) {
@@ -2100,6 +2103,20 @@
     if (!node) return;
     node.textContent = message;
     node.hidden = !message;
+  }
+
+  // A LoveTree sign-in that arrived here hands its pending ticket to the form the dialog
+  // already submits. Same shape and same caution as the reset-link read below: the app shell
+  // also loads inside curated VM harnesses without a location object, so this runs when the
+  // dialog opens, never at load time. No wording or layout changes.
+  function loveTreeHandoffFromLocation() {
+    try {
+      const raw = window.location.search || "";
+      const match = /[?&]handoff=([A-Za-z0-9_.-]{1,1024})(?:&|$)/.exec(raw);
+      return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
   }
 
   function passwordResetTokenFromLocation() {
@@ -3581,20 +3598,6 @@
     }
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
-  // A LoveTree sign-in that arrived here hands its pending ticket to the form it already
-  // uses; nothing about the dialog's content or wording changes. The query is read by hand
-  // because the app shell also loads inside curated VM harnesses that do not define the
-  // usual query-string helper.
-  if (authHandoff && passwordLoginForm) {
-    let pendingHandoff = "";
-    for (const part of window.location.search.slice(1).split("&")) {
-      if (part.startsWith("handoff=")) pendingHandoff = part.slice("handoff=".length);
-    }
-    if (pendingHandoff.length > 0 && pendingHandoff.length <= 1024) {
-      authHandoff.value = pendingHandoff;
-      openAuthDialog();
-    }
-  }
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   if (passwordResetOpen) {
     passwordResetOpen.addEventListener("click", openPasswordResetRequest);
