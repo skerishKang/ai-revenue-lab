@@ -36,6 +36,7 @@ def test_the_route_set_is_closed_and_methods_are_not_widened() -> None:
     paths = {path for _name, _methods, path in contract.PLATFORM_ROUTES}
     assert paths == {
         "/api/auth/status",
+        "/api/auth/password/login",
         "/api/chat",
         "/api/projects",
         "/api/projects/{project_id}/files",
@@ -44,6 +45,12 @@ def test_the_route_set_is_closed_and_methods_are_not_widened() -> None:
     }
     # A contract route an app may not call is one that is not registered at all.
     assert "PLATFORM_ROUTE_FILE_DETAIL_MISSING" not in contract.findings()
+    assert "PLATFORM_ROUTE_LOGIN_MISSING" not in contract.findings()
+    # The app may sign a visitor in; it may not register one, reset a password or
+    # end someone else's session. Those stay Chat's, not an app's.
+    for beyond in ("/api/auth/password/register", "/api/auth/password/reset/request",
+                   "/api/auth/logout", "/auth/google/callback"):
+        assert beyond not in paths, beyond
 
 
 def test_the_ai_lane_is_the_existing_chat_lane_not_a_second_router() -> None:

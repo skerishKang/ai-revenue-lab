@@ -1,36 +1,33 @@
 /*
  * PADIEM 의원3종 — council apps entry styles.
  *
- * Visual tokens follow the util surface family (util-menu.css) with this
- * app's own class names, so the entry looks like the product family without
- * importing or mutating any Chat asset.
+ * The palette, faces and radii are PADIEM Chat's own: /padiem-themes.css is
+ * linked by the entry page and every value below is an alias of one of its
+ * tokens, so a theme change upstream reaches this page with no edit here. No
+ * Chat colour, font or radius value is restated, and no Chat file is imported
+ * or copied (see apps/padiem-council-apps/tests/test_app_structure.py).
  */
 :root {
   color-scheme: light dark;
-  --council-bg: #f6f7fb;
-  --council-surface: #ffffff;
-  --council-text: #1c1e26;
-  --council-muted: #5b6070;
-  --council-border: #dfe2ec;
-  --council-accent: #3556c7;
-  --council-accent-soft: #e8edfb;
-}
-
-html[data-theme="dark"] {
-  --council-bg: #131417;
-  --council-surface: #1c1e24;
-  --council-text: #ecedf2;
-  --council-muted: #a3a8b8;
-  --council-border: #2c2f3a;
-  --council-accent: #8fa8ef;
-  --council-accent-soft: #232a41;
+  --council-bg: var(--page-bg, var(--bg));
+  --council-surface: var(--panel);
+  --council-text: var(--text);
+  --council-muted: var(--muted);
+  --council-border: var(--line);
+  --council-accent: var(--accent);
+  --council-accent-soft: var(--accent-soft);
+  --council-accent-ink: var(--accent-contrast);
+  --council-danger: var(--danger);
+  --council-radius: 10px;
+  --council-radius-card: var(--radius-md);
+  --council-face: var(--font-body);
 }
 
 * { box-sizing: border-box; }
 
 body.council-body {
   margin: 0;
-  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  font-family: var(--council-face);
   background: var(--council-bg);
   color: var(--council-text);
   line-height: 1.6;
@@ -45,17 +42,19 @@ body.council-body {
   top: 12px;
   background: var(--council-surface);
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--council-radius);
 }
 
 .council-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 22px;
+  gap: 12px;
+  padding: 12px 20px;
   border-bottom: 1px solid var(--council-border);
   background: var(--council-surface);
 }
+.council-topbar-actions { display: flex; align-items: center; gap: 10px; }
 .council-brand { display: flex; align-items: center; gap: 10px; }
 .council-brand-mark {
   display: inline-flex;
@@ -63,9 +62,9 @@ body.council-body {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--council-radius);
   background: var(--council-accent);
-  color: #fff;
+  color: var(--council-accent-ink);
   font-weight: 700;
 }
 .council-brand-name { font-weight: 700; }
@@ -76,49 +75,116 @@ body.council-body {
   border: 1px solid var(--council-border);
   color: var(--council-muted);
 }
+.council-badge-action {
+  font: inherit;
+  font-size: 13px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--council-radius);
+  border: 1px solid var(--council-border);
+  background: var(--council-accent-soft);
+  color: var(--council-accent);
+  font-weight: 650;
+  cursor: pointer;
+}
+.council-badge-action[hidden] { display: none; }
 
 #councilMain {
-  max-width: 1080px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 32px 22px 64px;
+  padding: 20px 20px 48px;
 }
-.council-kicker {
-  margin: 0 0 6px;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: var(--council-accent);
-  font-weight: 700;
-}
-.council-title { margin: 0 0 8px; font-size: 26px; }
-.council-lead { margin: 0 0 14px; color: var(--council-muted); max-width: 62ch; }
-.council-signin-note {
+.council-title { margin: 0 0 14px; font-size: 24px; }
+
+.council-auth {
+  display: grid;
+  gap: 12px;
   margin: 0 0 18px;
-  padding: 12px 16px;
+  padding: 16px;
   border: 1px solid var(--council-border);
-  border-radius: 12px;
+  border-radius: var(--council-radius-card);
   background: var(--council-surface);
 }
-.council-signin-note a { color: var(--council-accent); }
+.council-auth[hidden] { display: none; }
+.council-auth > h2 { margin: 0; font-size: 17px; }
+.council-auth-lead { margin: 0; color: var(--council-muted); font-size: 14px; max-width: 62ch; }
+.council-auth-form { gap: 10px; }
+.council-auth-alt { margin: 0; }
+.council-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--council-border);
+  border-radius: var(--council-radius);
+  color: var(--council-text);
+  text-decoration: none;
+  font-weight: 650;
+}
+.council-google:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
+.council-auth-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--council-radius);
+  background: var(--council-accent-soft);
+  color: var(--council-text);
+  font-size: 14px;
+}
+.council-auth-status[hidden] { display: none; }
 
 .council-menu {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 18px;
-  margin-top: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 0;
 }
 .council-card {
   background: var(--council-surface);
   border: 1px solid var(--council-border);
-  border-radius: 14px;
-  padding: 18px;
+  border-radius: var(--council-radius-card);
+  padding: 16px;
 }
-.council-card > h2 { margin: 0 0 6px; font-size: 18px; }
+.council-card.active {
+  border-color: var(--council-accent);
+  box-shadow: inset 3px 0 0 var(--council-accent);
+  /* The open tool needs the row, not its 297px column: an active card spans the
+     grid so a meeting textarea is the same measure as Chat's util view. */
+  grid-column: 1 / -1;
+}
+.council-card > h2 { margin: 0 0 6px; font-size: 17px; }
 .council-card > p { margin: 0 0 12px; color: var(--council-muted); font-size: 14px; }
+.council-card-select {
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 96px;
+  padding: 0 16px;
+  border: 1px solid var(--council-border);
+  border-radius: var(--council-radius);
+  background: var(--council-bg);
+  color: var(--council-accent);
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.council-card-select:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
+.council-card-select.active { background: var(--council-accent); border-color: var(--council-accent); color: var(--council-accent-ink); }
+.council-card-body { margin-top: 14px; }
+.council-card-body[hidden] { display: none; }
+.council-card:not(.active) .council-card-body { display: none; }
+
+:is(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, 0.24));
+  outline-offset: 2px;
+}
 
 .council-form { display: grid; gap: 12px; }
 .council-fieldset {
   border: 1px solid var(--council-border);
-  border-radius: 10px;
+  border-radius: var(--council-radius);
   padding: 12px;
   display: grid;
   gap: 10px;
@@ -134,30 +200,41 @@ body.council-body {
 .council-form textarea,
 .council-form select {
   font: inherit;
+  min-height: 44px;
   padding: 8px 10px;
   border: 1px solid var(--council-border);
-  border-radius: 8px;
+  border-radius: var(--council-radius);
   background: var(--council-bg);
   color: var(--council-text);
 }
-.council-form-actions { display: flex; gap: 10px; }
-.council-generate {
+.council-form textarea { min-height: 88px; }
+.council-form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.council-generate,
+.council-login {
+  font: inherit;
   background: var(--council-accent);
-  color: #fff;
+  color: var(--council-accent-ink);
   border: 0;
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-weight: 700;
+  border-radius: var(--council-radius);
+  min-height: 44px;
+  padding: 0 16px;
+  font-weight: 650;
   cursor: pointer;
 }
+.council-generate:disabled,
+.council-login:disabled { opacity: 0.6; cursor: progress; }
 .council-save {
+  font: inherit;
   background: var(--council-accent-soft);
   color: var(--council-accent);
   border: 1px solid var(--council-border);
-  border-radius: 8px;
-  padding: 9px 16px;
+  border-radius: var(--council-radius);
+  min-height: 44px;
+  padding: 0 16px;
+  font-weight: 650;
   cursor: pointer;
 }
+.council-save:hover { border-color: var(--council-accent); }
 .council-result {
   margin-top: 14px;
   display: grid;
@@ -167,22 +244,25 @@ body.council-body {
 .council-result textarea {
   width: 100%;
   font: inherit;
+  min-height: 160px;
   padding: 10px;
   border: 1px solid var(--council-border);
-  border-radius: 8px;
+  border-radius: var(--council-radius);
   background: var(--council-bg);
   color: var(--council-text);
 }
-.council-actions { display: flex; gap: 8px; }
+.council-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .council-actions button {
   font: inherit;
-  padding: 7px 12px;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--council-radius);
   border: 1px solid var(--council-border);
   background: var(--council-surface);
   color: var(--council-text);
   cursor: pointer;
 }
+.council-actions button:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
 .council-archive { margin-top: 16px; }
 .council-archive ul { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 6px; }
 .council-archive-item { display: flex; align-items: center; gap: 8px; }
@@ -287,10 +367,13 @@ body.council-body {
 }
 .council-sns-media-grid.insta img { height: 160px; }
 
-.council-sns-tabs { display: flex; gap: 8px; }
+.council-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
 .council-sns-tab {
   font: inherit;
-  padding: 6px 12px;
+  padding: 0 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   border-radius: 999px;
   border: 1px solid var(--council-border);
   background: var(--council-bg);
@@ -299,6 +382,64 @@ body.council-body {
 }
 .council-sns-tab.active {
   background: var(--council-accent);
-  color: #fff;
+  color: var(--council-accent-ink);
   border-color: var(--council-accent);
+}
+
+/*
+ * Touch, keyboard and width floor (#5942). Chat holds every control at 44px or
+ * more (util-menu.css .util-tab/.util-generate); the small app controls grew
+ * later than that rule, so the floor is stated once here and the page reflows at
+ * 390 / 768 / 1440 instead of only re-measuring the grid.
+ */
+.council-archive-item button,
+.council-saved-item .council-saved-open,
+.council-saved-item .council-speech-use-ref,
+.council-photo-add,
+.council-photo-controls button,
+.council-photo-pos-select,
+.council-result h3 {
+  min-height: 44px;
+}
+.council-archive-item button,
+.council-saved-item .council-saved-open,
+.council-saved-item .council-speech-use-ref,
+.council-photo-add,
+.council-photo-controls button,
+.council-photo-pos-select {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--council-radius);
+  font-size: 14px;
+}
+.council-photo-controls button { padding: 0 12px; }
+.council-result h3 { margin: 0; font-size: 15px; display: flex; align-items: center; }
+
+@media (max-width: 900px) {
+  .council-topbar { padding: 10px 14px; }
+  #councilMain { padding: 16px 14px 40px; }
+  .council-title { font-size: 21px; margin-bottom: 12px; }
+  .council-menu { grid-template-columns: 1fr; gap: 12px; }
+  .council-photo-item { flex-wrap: wrap; gap: 8px; }
+  .council-photo-controls { width: 100%; justify-content: flex-end; }
+}
+
+@media (max-width: 390px) {
+  .council-card,
+  .council-auth { padding: 14px; }
+  .council-card-select,
+  .council-google,
+  .council-login,
+  .council-generate,
+  .council-save { width: 100%; }
+  .council-photo-thumb { width: 56px; height: 42px; }
+}
+
+@media (min-width: 1200px) {
+  #councilMain { padding-bottom: 64px; }
+  .council-menu { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }

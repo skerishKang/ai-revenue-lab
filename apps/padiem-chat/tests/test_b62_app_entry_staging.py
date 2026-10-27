@@ -65,6 +65,20 @@ def test_no_app_file_is_duplicated_into_the_chat_static_tree() -> None:
     )
 
 
+def test_entry_page_root_absolute_chat_references_exist() -> None:
+    """The entry borrows Chat's design system by reference, so a Chat rename or
+    deletion must fail CI here rather than serve the app without its tokens."""
+    html = (COUNCIL_STATIC / "index.html").read_text(encoding="utf-8")
+    borrowed = re.findall(r'href="(/[^"?#]+\.(?:css|js))"', html)
+    assert borrowed, "the entry must borrow a Chat stylesheet rather than restate tokens"
+    for reference in borrowed:
+        assert (ROOT / "static" / reference.lstrip("/")).is_file(), reference
+    # The Google entry is the server's own route, not a static asset.
+    factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
+    for target in re.findall(r'href="(/auth/[^"]+)"', html):
+        assert f'Route("{target.split("?")[0]}"' in factory, target
+
+
 def test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree() -> None:
     html = (COUNCIL_STATIC / "index.html").read_text(encoding="utf-8")
     # Only the same-directory relative form matters: "/" would be a second

@@ -28,6 +28,7 @@ from .auth import (
     oauth_state_cookie_kwargs,
     session_cookie_kwargs,
     verify_oauth_state,
+    verified_oauth_return_target,
 )
 from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
 from .b66_signup_notifications import deliver_after_signup
@@ -284,7 +285,12 @@ async def google_start(request: Request) -> Response:
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     bridge_origin = _bridge_origin(request)
     try:
-        state, signed = create_oauth_state(settings)
+        # An app that signs in inside its own page asks to come back here. The
+        # value is accepted only when it is exactly one of the declared app
+        # entries, and it travels in the signed state, not in the provider URL.
+        state, signed = create_oauth_state(
+            settings, return_to=request.query_params.get("return_to")
+        )
         location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
@@ -522,7 +528,9 @@ async def google_callback(request: Request) -> Response:
             {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
             status_code=503,
         )
-    response = RedirectResponse("/", status_code=302)
+    response = RedirectResponse(
+        verified_oauth_return_target(settings, cookie_state), status_code=302
+    )
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response

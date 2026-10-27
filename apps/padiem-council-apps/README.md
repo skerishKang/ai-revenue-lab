@@ -29,7 +29,11 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
   저장 계약. 이 앱은 새 테이블·마이그레이션·D1·R2를 만들지 않는다.
 - **인증**: 세션 쿠키(`credentials: "include"`)와 `GET /api/auth/status`.
   인증 확인이 실패하면 도구를 열지 않는다(fail-closed). 인증 검증을
-  우회하지 않는다.
+  우회하지 않는다. 미로그인 방문자는 이 화면에서 로그인한다 — 기존
+  `POST /api/auth/password/login` 자격 계약과 (`서버가 허용할 때`) Google
+  링크를 쓰며, PADIEM Chat 홈페이지로 이동시키지 않는다(#5942). Google
+  왕복이 끝난 뒤의 복귀 지점은 이 Worker가 서명된 상태값의 허용 목록으로만
+  정한다(`app/auth.py` `OAUTH_RETURN_TARGETS`).
 
 ## Chat/Claw 운영 변경 없음
 
@@ -56,7 +60,8 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
   가드(Origin 검증)에 걸려 동작하지 않는다. 별도 도메인 제품은 자체
   Worker 라우트 경유 또는 B62 service binding/auth bridge 구현이
   선행되어야 하며, 그 전까지 독립 도메인의 인증·API는 **미연결** 상태다
-  (아래 실행 화면은 로그인 안내 fail-closed 상태만 보장). 이번 PR 범위에서
+  (로컬 단독 실행에서는 앱 안 로그인 폼만 뜨고, 백엔드가 없어 인증 확인과
+  제출은 실패한다 — fail-closed 상태가 그대로 보장된다). 이번 PR 범위에서
   Worker 분리·배포는 하지 않는다.
 - **Business 번호**: 신규 Business 번호는 임의로 확정하지 않았다.
   `BUSINESS_REGISTRY.md` 등록 절차가 필요한 미확정 항목이다.

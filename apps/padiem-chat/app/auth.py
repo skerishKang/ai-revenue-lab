@@ -21,6 +21,12 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 SESSION_COOKIE = "padiem_session"
 OAUTH_STATE_COOKIE = "padiem_oauth_state"
 OAUTH_STATE_MAX_AGE_SECONDS = 600
+#: The only same-origin surfaces a completed Google login may continue to. An app
+#: that logs in inside its own page needs the provider round trip to land back
+#: there, so the continuation is one of these exact values and never a
+#: caller-supplied URL: an origin, a scheme, a host, a prefix or a path under another
+#: product is refused. Anything else (including absent) keeps the Chat root.
+OAUTH_RETURN_TARGETS = frozenset({"/apps/council/"})
 MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
 # Android handoff states are signed with a distinct purpose so a normal
 # cookie-bound OAuth state can never be replayed as a handoff state or back.
@@ -149,17 +155,43 @@ def decode_session_token(settings: Settings, token: str | None, now: int | None 
     return claims.user_id if claims is not None else None
 
 
-def create_oauth_state(settings: Settings, now: int | None = None) -> tuple[str, str]:
+def oauth_return_target(value: object) -> str | None:
+    """The exact allowlisted continuation, or None. Never derived from a host."""
+    return value if isinstance(value, str) and value in OAUTH_RETURN_TARGETS else None
+
+
+def create_oauth_state(
+    settings: Settings, now: int | None = None, return_to: str | None = None
+) -> tuple[str, str]:
     if not settings.session_secret:
         raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     issued = int(time.time()) if now is None else now
     state = secrets.token_urlsafe(24)
+    payload: dict[str, Any] = {"v": 1, "state": state, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS}
+    target = oauth_return_target(return_to)
+    if target is not None:
+        payload["rt"] = target
     signed = _signed_token(
         settings.session_secret,
         "padiem-chat/oauth-state/v1",
-        {"v": 1, "state": state, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS},
+        payload,
     )
     return state, signed
+
+
+def verified_oauth_return_target(
+    settings: Settings, cookie_token: str | None, now: int | None = None
+) -> str:
+    """Where the verified login continues. The value only ever comes from this
+    Worker's own signed state cookie, so a request cannot aim the redirect."""
+    if not cookie_token or not settings.session_secret:
+        return "/"
+    payload = _verify_token(
+        settings.session_secret, "padiem-chat/oauth-state/v1", cookie_token, now=now
+    )
+    if not payload or payload.get("v") != 1:
+        return "/"
+    return oauth_return_target(payload.get("rt")) or "/"
 
 
 def verify_oauth_state(settings: Settings, query_state: str | None, cookie_token: str | None, now: int | None = None) -> bool:
