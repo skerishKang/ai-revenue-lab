@@ -565,17 +565,102 @@ const SCENARIOS = {
       bookOutput = find(session, "utilBookOutput").value;
     }
 
+    // #5608: record order — a second stored record must be reorderable, and
+    // the book prompt must carry the records in the arranged order.
+    field("title").value = "11월 마을 총회";
+    field("content").value = "마을 회관 리모델링 예산을 심의했습니다.";
+    await form.dispatch("submit");
+    await sleep(20);
+    const secondEdited = find(session, "utilMeetingOutput").value + "\n[편집: 총회 기록]";
+    find(session, "utilMeetingOutput").value = secondEdited;
+    await find(session, "utilMeetingSave").dispatch("click");
+    await sleep(40);
+
+    const archive2 = find(session, "utilMeetingArchive");
+    let rowNames = archive2.querySelectorAll(".util-record-move").map ? null : null;
+    const moveButtons = Array.from(archive2.querySelectorAll(".util-record-move"));
+    let orderBefore = null;
+    let orderAfter = null;
+    if (moveButtons.length >= 2) {
+      const rowNameAt = (i) => archive2.querySelectorAll(".util-book-check")[i].getAttribute("aria-label") || "";
+      orderBefore = archive2.querySelectorAll(".util-book-check").map ? null : null;
+      const namesBefore = Array.from(archive2.querySelectorAll(".util-book-check")).map((cb) => cb.getAttribute("aria-label"));
+      // move the first row down: 10월→11월 becomes 11월→10월
+      const firstRowDown = moveButtons.find((b) => b.dataset.move === "1" && !b.disabled);
+      if (firstRowDown) {
+        await firstRowDown.dispatch("click");
+        await sleep(20);
+      }
+      const namesAfter = Array.from(find(session, "utilMeetingArchive").querySelectorAll(".util-book-check")).map((cb) => cb.getAttribute("aria-label"));
+      orderBefore = namesBefore;
+      orderAfter = namesAfter;
+    }
+
+    // #5608: the arranged order must drive the book prompt's record sequence.
+    // Check both records and generate: the prompt must list 11월 first.
+    const archive3 = find(session, "utilMeetingArchive");
+    const checks2 = archive3.querySelectorAll(".util-book-check");
+    let bookOrderPrompt = null;
+    if (checks2.length >= 2) {
+      checks2.forEach((cb) => { cb.checked = true; });
+      const gen2 = session.root.querySelector("#utilBookGenerate");
+      await gen2.dispatch("click");
+      await sleep(40);
+      bookOrderPrompt = chatPayloads[chatPayloads.length - 1].messages[0].content;
+    }
+
+    // #5608: the book draft persists under its own name rule and reopens on
+    // re-entry — a fresh session lists the stored book and restores it.
+    const bookSaveBtn = session.root.querySelector("#utilBookSave");
+    let bookSavedName = null;
+    if (bookSaveBtn) {
+      const draft = find(session, "utilBookOutput").value;
+      if (draft && draft.indexOf("생성 실패") !== 0) {
+        await bookSaveBtn.dispatch("click");
+        await sleep(40);
+        const bookFile = storedFiles.filter((f) => f.name.indexOf("활동집 - ") === 0).pop() || null;
+        bookSavedName = bookFile ? bookFile.name : null;
+      }
+    }
+
+    const reentry = spawnSession();
+    await openTool(reentry, "meeting");
+    await sleep(40);
+    const reentryArchive = find(reentry, "utilMeetingArchive");
+    const reentryBookButtons = reentryArchive.querySelectorAll(".util-book-open");
+    let reentryBookRestored = null;
+    if (reentryBookButtons.length) {
+      await reentryBookButtons[0].dispatch("click");
+      await sleep(20);
+      reentryBookRestored = find(reentry, "utilBookOutput").value;
+    }
+    const reentryRecordButtons = Array.from(reentryArchive.querySelectorAll("button")).filter((b) => text(b).includes(".txt"));
+
+    // Per-name record bodies so the meeting-save contract stays checkable
+    // now that the scenario stores two records and one book.
+    const savedRecordBodies = {};
+    storedFiles.filter((f) => f.name.endsWith(".txt") && f.name.indexOf("활동집 - ") !== 0).forEach((f) => { savedRecordBodies[f.name] = f.content; });
+
     return {
       prompt,
       generated,
       edited,
       savedName: storedFiles.length ? storedFiles[storedFiles.length - 1].name : null,
       savedBody: storedFiles.length ? storedFiles[storedFiles.length - 1].content : null,
+      savedRecordNames: Object.keys(savedRecordBodies),
+      savedRecordBodies,
       archiveLabels: labels(archiveButtons),
       archiveHasCheckbox: checks.length > 0,
       reopened,
       bookPrompt,
       bookOutput,
+      orderBefore,
+      orderAfter,
+      bookOrderPromptCarriesArrangedOrder: bookOrderPrompt ? (bookOrderPrompt.indexOf("11월 마을 총회.txt") < bookOrderPrompt.indexOf("10월 주민 민원 회의.txt")) : null,
+      bookSavedName,
+      reentryBookListCount: reentryBookButtons.length,
+      reentryBookRestored,
+      reentryRecordCount: reentryRecordButtons.length,
       endpoints: endpointSet(),
       alerts,
       pageErrors,
