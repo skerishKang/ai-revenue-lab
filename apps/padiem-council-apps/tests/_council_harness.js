@@ -6,7 +6,7 @@
 // second API. The assertions live in the Python test modules.
 //
 // Usage: node _council_harness.js <council-app.js path> <scenario> [builder] [json]
-//   scenario = generate | errors | calendar_words | prompt
+//   scenario = generate | restore | errors | calendar_words | prompt
 const fs = require("node:fs");
 const vm = require("node:vm");
 
@@ -58,7 +58,14 @@ class N {
   removeEventListener() {}
   async dispatch(type, event) {
     const evt = Object.assign({ preventDefault() {}, target: this }, event || {});
-    for (const fn of (this._listeners[type] || []).slice()) await fn.call(this, evt);
+    // Event delegation (e.g. the photo list) relies on bubbling in a real
+    // browser; mirror that here so delegated handlers fire when a child is
+    // dispatched. The original target stays the dispatched node.
+    let cur = this;
+    while (cur) {
+      for (const fn of (cur._listeners[type] || []).slice()) await fn.call(cur, evt);
+      cur = cur.parentNode;
+    }
   }
   focus() {}
   click() { return this.dispatch("click"); }
@@ -120,18 +127,19 @@ function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
 }
 
-const stored = (name, textValue) => {
-  const file = { id: "f" + (++fileIdSeq), name, media_type: "text/plain", content_chars: String(textValue || "").length };
-  storedFiles.push(Object.assign({ text: textValue }, file));
+const stored = (name, textValue, mediaType, bytes) => {
+  const file = { id: "f" + (++fileIdSeq), name, media_type: mediaType || "text/plain", content_chars: String(textValue || "").length };
+  storedFiles.push(Object.assign({ text: textValue, bytes: bytes || null }, file));
   return file;
 };
 
 async function fetch(url, init) {
   const method = (init && init.method) || "GET";
+  const headers = (init && init.headers) || {};
   const options = {
     method,
     url: String(url),
-    headers: (init && init.headers) || {},
+    headers,
     credentials: (init && init.credentials) || null,
   };
   let body = null;
@@ -150,13 +158,40 @@ async function fetch(url, init) {
     return json({ project: { id: "p1", name: (body && body.name) || "" } });
   }
   const filesMatch = /^\/api\/projects\/([^/]+)\/files\/?([^/]*)$/.exec(String(url));
+  const originalMatch = /^\/api\/projects\/([^/]+)\/files\/([^/]+)\/original$/.exec(String(url));
+  if (originalMatch) {
+    const found = storedFiles.find((f) => f.id === originalMatch[2]);
+    if (!found) return json({ error: { code: "not_found" } }, 404);
+    return {
+      ok: true,
+      status: 200,
+      blob: async () => ({ __bytes: found.bytes || "original-bytes:" + found.name }),
+    };
+  }
   if (filesMatch) {
     if (method === "GET" && !filesMatch[2]) {
-      return json({ files: storedFiles.map(({ text, ...meta }) => meta) });
+      return json({ files: storedFiles.map(({ text, bytes, ...meta }) => meta) });
     }
     if (method === "POST") {
-      const file = stored((body && body.name) || "무제.txt", (body && body.text) || "");
+      const ct = String(headers["Content-Type"] || "");
+      if (ct === "application/octet-stream") {
+        // Binary original upload: the file name/media type ride the headers
+        // and the request body IS the picked file — keep its bytes so the
+        // restore flow reads back exactly what was uploaded.
+        const rawName = decodeURIComponent(headers["X-Padiem-Filename"] || "photo");
+        const mediaType = headers["X-Padiem-Media-Type"] || "application/octet-stream";
+        const uploaded = init && init.body;
+        const bytes = uploaded && uploaded.__bytes !== undefined ? uploaded.__bytes : "binary-bytes";
+        const file = stored(rawName, "", mediaType, bytes);
+        return json({ file });
+      }
+      const file = stored((body && body.name) || "무제.txt", (body && body.text) || "", (body && body.media_type) || "text/plain");
       return json({ file });
+    }
+    if (method === "DELETE" && filesMatch[2]) {
+      const idx = storedFiles.findIndex((f) => f.id === filesMatch[2]);
+      if (idx >= 0) storedFiles.splice(idx, 1);
+      return json({ ok: true });
     }
     if (method === "GET" && filesMatch[2]) {
       const found = storedFiles.find((f) => f.id === filesMatch[2]);
@@ -177,6 +212,20 @@ class FakeFormData {
     const field = this._form && this._form.querySelector(`[name=${key}]`);
     if (!field) return default_ === undefined ? null : default_;
     return field.value;
+  }
+}
+
+function FakeBlob() {}
+
+class FakeFileReader {
+  readAsDataURL(source) {
+    // Pick flow: source is the picked File-like ({name, __bytes}). Restore
+    // flow: source is the blob() of GET …/original ({__bytes}). Both encode
+    // the SAME original bytes, so a restored thumbnail is provably the
+    // stored original, not a resampled copy.
+    const raw = source && source.__bytes !== undefined ? source.__bytes : (source && source.name) || "";
+    this.result = "data:image/png;base64," + Buffer.from(String(raw), "utf8").toString("base64");
+    if (typeof this.onload === "function") this.onload();
   }
 }
 
@@ -215,7 +264,8 @@ function spawnSession(windowState = {}) {
     alert: (message) => alerts.push(String(message)),
     console,
     setTimeout: () => 0,
-    Blob: function Blob() {},
+    Blob: FakeBlob,
+    FileReader: FakeFileReader,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
   };
@@ -265,14 +315,48 @@ const SCENARIOS = {
     await find(session, "councilSpeechSave").dispatch("click");
     await sleep(20);
 
-    // sns: switch platform then generate
+    // #5731: the saved list must list the stored speech (re-entry included)
+    // and its 참고로 선택 action fills the style sample textarea.
+    const speechSaved = find(session, "councilSpeechSaved");
+    const refButton = speechSaved.querySelectorAll(".council-speech-use-ref")[0];
+    if (!refButton) throw new Error("speech reference action missing");
+    await refButton.dispatch("click");
+    await sleep(20);
+    const styleAfterRef = speechForm.querySelector("[name=style]").value;
+    const savedListLabels = speechSaved.querySelectorAll(".council-saved-open").map((b) => text(b));
+
+    // The generation that follows the 참고로 선택 must fence the picked
+    // manuscript as the style sample, like a pasted one (#5731).
+    const speechCallsAfterRef = chatPayloads.length;
+    await speechForm.dispatch("submit");
+    await sleep(20);
+    const speechPromptAfterRef = chatPayloads[speechCallsAfterRef];
+    const afterRefContent = speechPromptAfterRef && speechPromptAfterRef.messages
+      && speechPromptAfterRef.messages[0] && speechPromptAfterRef.messages[0].content;
+    const refPromptCarriesSample = typeof afterRefContent === "string"
+      && afterRefContent.includes("아래는 사용자의 기존 축사/인사말 샘플입니다.")
+      && afterRefContent.includes("---\n" + styleAfterRef + "\n---");
+
+    // sns: pick two photos (binary originals upload first, thumbnails read
+    // back through FileReader), switch platform, then generate
     const snsForm = find(session, "councilSnsForm");
     snsForm.querySelector("[name=event]").value = "주민 정원 사업 설명회";
     snsForm.querySelector("[name=whenwhere]").value = "10월 30일 오후 2시, 구청 소회의실";
     snsForm.querySelector("[name=content]").value = "정원 사업 신청 방법과 지원 금액 안내";
     snsForm.querySelector("[name=audience]").value = "구내 상인";
+    const photoInput = find(session, "councilSnsPhotoInput");
+    photoInput.files = [
+      { name: "현장1.png", type: "image/png", __bytes: "photo-bytes-1" },
+      { name: "현장2.jpg", type: "image/jpeg", __bytes: "photo-bytes-2" },
+    ];
+    await photoInput.dispatch("change");
+    await sleep(30);
+    // blog insertion position: first photo to 맨 앞
+    const posSelect = find(session, "councilSnsPhotoList").querySelector(".council-photo-pos-select");
+    if (posSelect) { posSelect.value = "0"; await posSelect.dispatch("change"); await sleep(20); }
     const instagramTab = snsForm.querySelectorAll(".council-sns-tab").find((b) => b.dataset.platform === "instagram");
     await instagramTab.dispatch("click");
+    await sleep(10);
     const snsCalls = chatPayloads.length;
     await snsForm.dispatch("submit");
     await sleep(20);
@@ -280,6 +364,10 @@ const SCENARIOS = {
     const snsPrompt = chatPayloads[snsCalls];
     await find(session, "councilSnsSave").dispatch("click");
     await sleep(20);
+    const photoCountText = text(find(session, "councilSnsPhotoCount"));
+    const rosterFile = storedFiles.find((f) => f.name === "SNS 사진 구성.json");
+    let roster = null;
+    if (rosterFile) { try { roster = JSON.parse(rosterFile.text); } catch (_) {} }
 
     // meeting: generate, save, reopen the record, build the book
     const meetingForm = find(session, "councilMeetingForm");
@@ -318,14 +406,149 @@ const SCENARIOS = {
     return {
       initSignedIn: initResult.signedIn,
       badge: text(find(session, "councilAuthBadge")),
-      speech: { prompt: speechPrompt, output: speechOutput },
-      sns: { prompt: snsPrompt, output: snsOutput, title: text(find(session, "councilSnsTitle")) },
+      speech: { prompt: speechPrompt, output: speechOutput,
+        savedListLabels, refSelected: styleAfterRef,
+        refSelectedMatchesSaved: styleAfterRef.includes("생성된 초안 본문입니다."),
+        refPromptCarriesSample },
+      sns: { prompt: snsPrompt, output: snsOutput, title: text(find(session, "councilSnsTitle")),
+        photoCountText, roster },
       meeting: { prompt: meetingPrompt, output: meetingOutput, reopened },
       book: { prompt: bookPrompt, output: bookOutput },
       savedCount: storedFiles.length,
       savedNames: storedFiles.map((f) => f.name),
       chatCredentials: requests.filter((r) => r.url === "/api/chat").map((r) => r.credentials),
       endpoints: endpointSet(),
+      alerts,
+      pageErrors,
+    };
+  },
+  async restore() {
+    // Session A composes the durable state: three photos in the three stored
+    // formats, a blog order + insertion positions, and a saved draft. Session
+    // B is the re-entry: the composition must come back once at build time,
+    // a removal must delete the stored original, and session C must then
+    // restore the surviving composition under the re-saved platform.
+    const expectedDataUrl = (bytes) => "data:image/png;base64," + Buffer.from(String(bytes), "utf8").toString("base64");
+
+    const A = spawnSession();
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(10);
+
+    // speech: one saved manuscript so the re-entry list has it to offer
+    const speechFormA = find(A, "councilSpeechForm");
+    speechFormA.querySelector("[name=event]").value = "재진입 복원 검증 행사";
+    speechFormA.querySelector("[name=audience]").value = "주민";
+    await speechFormA.dispatch("submit");
+    await sleep(20);
+    const speechDraftA = find(A, "councilSpeechOutput").value;
+    await find(A, "councilSpeechSave").dispatch("click");
+    await sleep(20);
+
+    // sns: three photos — image/png, image/jpeg, image/webp
+    const snsFormA = find(A, "councilSnsForm");
+    snsFormA.querySelector("[name=event]").value = "복원 검증 행사";
+    snsFormA.querySelector("[name=content]").value = "복원 검증용 본문";
+    const photoInputA = find(A, "councilSnsPhotoInput");
+    photoInputA.files = [
+      { name: "앞.png", type: "image/png", __bytes: "bytes-front" },
+      { name: "중간.jpg", type: "image/jpeg", __bytes: "bytes-middle" },
+      { name: "끝.webp", type: "image/webp", __bytes: "bytes-end" },
+    ];
+    await photoInputA.dispatch("change");
+    await sleep(40);
+
+    // order: [앞, 중간, 끝] → move 앞 down → [중간, 앞, 끝]
+    const photoListA = find(A, "councilSnsPhotoList");
+    const frontDown = photoListA.querySelectorAll(".council-photo-move")[1];
+    if (!frontDown || frontDown.dataset.move !== "1") throw new Error("move-down control missing");
+    await frontDown.dispatch("click");
+    await sleep(20);
+
+    // blog insertion positions: first row 맨 앞, last row 문단 끝
+    const selectsA = photoListA.querySelectorAll(".council-photo-pos-select");
+    if (selectsA.length !== 3) throw new Error("position selects missing: " + selectsA.length);
+    selectsA[0].value = "0";
+    await selectsA[0].dispatch("change");
+    await sleep(20);
+    selectsA[2].value = "end";
+    await selectsA[2].dispatch("change");
+    await sleep(20);
+
+    // generate on blog, then save the draft (blog platform)
+    await snsFormA.dispatch("submit");
+    await sleep(20);
+    const draftA = find(A, "councilSnsOutput").value;
+    await find(A, "councilSnsSave").dispatch("click");
+    await sleep(30);
+    const storedSnapshotA = storedFiles.map((f) => ({ id: f.id, name: f.name }));
+    const frontId = (storedSnapshotA.find((f) => f.name === "앞.png") || {}).id;
+    const middleId = (storedSnapshotA.find((f) => f.name === "중간.jpg") || {}).id;
+    if (!frontId || !middleId) throw new Error("stored photos missing: " + JSON.stringify(storedSnapshotA));
+
+    // ── session B: re-entry of the same account ──
+    const B = spawnSession();
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(60);
+
+    const speechSavedB = find(B, "councilSpeechSaved");
+    const speechLabelsB = speechSavedB.querySelectorAll(".council-saved-open").map((b) => text(b));
+    const speechRefCountB = speechSavedB.querySelectorAll(".council-speech-use-ref").length;
+
+    const photoCountB = text(find(B, "councilSnsPhotoCount"));
+    const photoNamesB = Array.from(find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-name")).map((n) => text(n));
+    const positionsB = Array.from(find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-pos-select")).map((s) => s.value);
+    const thumbsB = Array.from(find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-thumb")).map((img) => img.src);
+    const thumbsMatchOriginals = thumbsB.length === 3
+      && thumbsB[0] === expectedDataUrl("bytes-middle")
+      && thumbsB[1] === expectedDataUrl("bytes-front")
+      && thumbsB[2] === expectedDataUrl("bytes-end");
+    const draftB = find(B, "councilSnsOutput").value;
+    const titleB = text(find(B, "councilSnsTitle"));
+    const resultHiddenB = find(B, "councilSnsResult").hidden;
+    const previewShownB = !find(B, "councilSnsPreview").hidden;
+
+    // delete sync: removing a restored photo deletes the stored original
+    const removeButtonsB = find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-remove");
+    const removeTarget = removeButtonsB.find((b) => b.dataset.photoId === middleId);
+    if (!removeTarget) throw new Error("remove control for 중간.jpg missing");
+    await removeTarget.dispatch("click");
+    await sleep(30);
+    const deleteRequested = requests.some((r) => r.method === "DELETE" && r.url === "/api/projects/p1/files/" + middleId);
+    const middleStillStored = storedFiles.some((f) => f.id === middleId);
+    const rosterAfterDelete = (() => {
+      const rosterFile = storedFiles.find((f) => f.name === "SNS 사진 구성.json");
+      if (!rosterFile) return null;
+      try { return JSON.parse(rosterFile.text); } catch (_) { return null; }
+    })();
+
+    // re-save the draft under instagram: the roster's platform must follow
+    const instaB = find(B, "councilSnsForm").querySelectorAll(".council-sns-tab")
+      .find((b) => b.dataset.platform === "instagram");
+    await instaB.dispatch("click");
+    await sleep(10);
+    await find(B, "councilSnsSave").dispatch("click");
+    await sleep(30);
+
+    // ── session C: the surviving composition, under the re-saved platform ──
+    const C = spawnSession();
+    await C.ctx.window.PadiemCouncilApps.init();
+    await sleep(60);
+    const countC = text(find(C, "councilSnsPhotoCount"));
+    const namesC = Array.from(find(C, "councilSnsPhotoList").querySelectorAll(".council-photo-name")).map((n) => text(n));
+    const titleC = text(find(C, "councilSnsTitle"));
+    const draftC = find(C, "councilSnsOutput").value;
+
+     return {
+       speechDraftA,
+       snsDraftA: draftA,
+       restored: {
+         speechLabelsB, speechRefCountB,
+         photoCountB, photoNamesB, positionsB, thumbsMatchOriginals, thumbsB,
+         draftB, titleB, resultHiddenB, previewShownB,
+       },
+      afterDelete: { deleteRequested, middleStillStored, rosterAfterDelete },
+      sessionC: { countC, namesC, titleC, draftC },
+      storedCountA: storedSnapshotA.length,
       alerts,
       pageErrors,
     };
@@ -393,8 +616,8 @@ const SCENARIOS = {
     const api = session.ctx.window.PadiemCouncilApps;
     if (builder === "speech") return { prompt: api.speech.buildPrompt(toForm(payload)) };
     if (builder === "sns") {
-      const { platform, ...fields } = payload;
-      return { prompt: api.sns.buildPrompt(toForm(fields), platform) };
+      const { platform, photos, ...fields } = payload;
+      return { prompt: api.sns.buildPrompt(toForm(fields), platform, photos) };
     }
     if (builder === "meeting") return { prompt: api.meeting.buildPrompt(toForm(payload)) };
     if (builder === "book") return { prompt: api.meeting.buildBookPrompt(payload.contents || []) };

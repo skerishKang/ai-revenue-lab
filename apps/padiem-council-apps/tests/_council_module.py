@@ -47,7 +47,8 @@ class _Builders:
     @property
     def sns(self):
         class _Sns:
-            buildPrompt = lambda _, form, platform: self._call("sns", {**form, "platform": platform})  # noqa: E731
+            buildPrompt = lambda _, form, platform, photos=None: self._call(
+                "sns", {**form, "platform": platform, "photos": photos or []})  # noqa: E731
         return _Sns()
 
     @property
@@ -63,7 +64,7 @@ def load_council_module() -> _Builders:
     return _Builders()
 
 
-SCENARIOS = ("generate", "errors", "calendar_words")
+SCENARIOS = ("generate", "restore", "errors", "calendar_words")
 
 
 @lru_cache(maxsize=len(SCENARIOS))
