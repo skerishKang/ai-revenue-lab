@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'apps/lovetree-authority-caller/**'
+      - 'apps/lovetree-auth-caller/**'
       - '.github/workflows/lovetree-authority-caller-ci.yml'
   push:
     paths:
@@ -30,9 +31,9 @@ jobs:
         with:
           node-version: 22
 
-      # 이 중계 Worker는 의존성이 없는 순수 ESM이라 npm 설치 없이 실행한다.
-      # 파일 경로를 명시하고 통과 건 수를 세어, 11건이 건너뛰지 않고 도는지 확인한다.
-      - name: Run the caller worker tests
+      # 두 중계 Worker 모두 의존성이 없는 순수 ESM이라 npm 설치 없이 실행한다.
+      # 파일 경로를 명시하고 통과 건 수를 세어, 건너뛴 채 통과하는 일을 막는다.
+      - name: Run the read-only caller worker tests
         working-directory: apps/lovetree-authority-caller
         run: |
           node --test --test-reporter=tap test/worker.test.mjs > /tmp/caller.tap 2>&1 || { cat /tmp/caller.tap; exit 1; }
@@ -40,7 +41,20 @@ jobs:
           pass=$(awk '/^# pass /{print $3}' /tmp/caller.tap)
           fail=$(awk '/^# fail /{print $3}' /tmp/caller.tap)
           skipped=$(awk '/^# skipped /{print $3}' /tmp/caller.tap)
-          echo "pass=$pass fail=$fail skipped=$skipped"
-          [ "${fail:-1}" = "0" ] || { echo "실패: 중계 테스트 실패"; exit 1; }
-          [ "${skipped:-1}" = "0" ] || { echo "실패: 중계 테스트 skip"; exit 1; }
-          [ "${pass:-0}" -ge 11 ] || { echo "실패: 중계 테스트 11건 미만 실행"; exit 1; }
+          echo "read-only caller: pass=$pass fail=$fail skipped=$skipped"
+          [ "${fail:-1}" = "0" ] || { echo "실패: 읽기 전용 중계 테스트 실패"; exit 1; }
+          [ "${skipped:-1}" = "0" ] || { echo "실패: 읽기 전용 중계 테스트 skip"; exit 1; }
+          [ "${pass:-0}" -ge 11 ] || { echo "실패: 읽기 전용 중계 테스트 11건 미만 실행"; exit 1; }
+
+      - name: Run the revoke caller worker tests
+        working-directory: apps/lovetree-auth-caller
+        run: |
+          node --test --test-reporter=tap test/worker.test.mjs > /tmp/auth.tap 2>&1 || { cat /tmp/auth.tap; exit 1; }
+          cat /tmp/auth.tap
+          pass=$(awk '/^# pass /{print $3}' /tmp/auth.tap)
+          fail=$(awk '/^# fail /{print $3}' /tmp/auth.tap)
+          skipped=$(awk '/^# skipped /{print $3}' /tmp/auth.tap)
+          echo "revoke caller: pass=$pass fail=$fail skipped=$skipped"
+          [ "${fail:-1}" = "0" ] || { echo "실패: 폐기 중계 테스트 실패"; exit 1; }
+          [ "${skipped:-1}" = "0" ] || { echo "실패: 폐기 중계 테스트 skip"; exit 1; }
+          [ "${pass:-0}" -ge 4 ] || { echo "실패: 폐기 중계 테스트 4건 미만 실행"; exit 1; }
