@@ -132,7 +132,7 @@ def quote_write_spec() -> ToolSpec:
         id=RUNTIME_TOOL, title="Confirm exact Hark XLSX quote revision",
         description="Independent user confirmation of one immutable edit plan",
         owner="core", side_effect=ToolSideEffect.WRITE,
-        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
         auth_scope=(SCOPE,),
         input_schema={"type": "object", "additionalProperties": False,
                       "properties": props, "required": list(props)},
@@ -208,6 +208,9 @@ def build_web_quote_write_tool_binding(
     auth = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(SCOPE,),
+        # Owner decision 2026-10-28: pre-delegated with backup before write;
+        # verify_exact re-authorizes each invocation before the handler runs.
+        externally_authorized_tools=frozenset({RUNTIME_TOOL}),
     )
     return EngineToolBinding(
         app_id=APP_ID, tool_runtime=runtime, registry=registry,
