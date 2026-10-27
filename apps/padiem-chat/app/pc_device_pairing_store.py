@@ -28,7 +28,7 @@ import hashlib
 import json
 import re
 import secrets
-from typing import Any, Protocol
+from typing import Any, Mapping, Protocol
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
@@ -94,6 +94,10 @@ class PcPairingStore(Protocol):
     ) -> dict[str, Any]: ...
 
     async def revoke_link(self, *, user_id: str, link_id: str, now: datetime) -> bool: ...
+
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]: ...
 
     async def pause_link(
         self, *, user_id: str, link_id: str, now: datetime,
@@ -736,6 +740,45 @@ class D1PcPairingStore:
             moment=moment,
         )
 
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]:
+        """Name one linked PC, in the owner's own words.
+
+        A chat request picks a machine with a name ("the office PC's C drive"),
+        so a name has to exist before the second PC arrives. It is presentation
+        text the owner chooses, never an identity: the row's
+        `(user_id, mesh_node_id)` stays the only thing dispatch and revocation
+        decide from. Ownership is settled by the row exactly as pause settles
+        it, so another account's link is refused without saying whether it
+        exists.
+        """
+        owner = _user_id(user_id)
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        named = _label(label)
+        if named is None:
+            raise PcPairingError("link label invalid")
+        moment = _stamp(now)
+        row = await self._first(
+            "SELECT user_id, state FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        if not isinstance(row, dict) or not row.get("state"):
+            raise PcPairingError("link not found")
+        if row.get("user_id") != owner:
+            raise PcPairingError("link not yours")
+        if row.get("state") == _STATE_REVOKED:
+            raise PcPairingError("link not active")
+        await self._run(
+            "UPDATE pc_device_links SET label=?, updated_at=? "
+            "WHERE user_id=? AND link_id=? AND state!='revoked'",
+            named, moment, owner, link_id,
+        )
+        stored = await self._read_link(owner, link_id)
+        if stored is None or stored.get("label") != named:
+            raise PcPairingError("pairing link not stored")
+        return _public_link(stored)
+
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
         """Every link this account owns that may take work right now.
 
@@ -1092,6 +1135,35 @@ class D1PcPairingStore:
         )
 
 
+def link_named_in(text: Any, links: Any) -> str | None:
+    """The mesh node id of the one linked PC `text` names, or ``None``.
+
+    An account with several PCs has to be able to say which one it means - in
+    its own words, because it chose the name - and the answer is only allowed
+    when exactly one link matches. No match, two matches, or an unlabeled link
+    all answer ``None``, which leaves the caller's normal "which PC is this?"
+    judgement untouched rather than quietly picking the newest or the first.
+    """
+    if not isinstance(text, str) or not text.strip() or not isinstance(links, (list, tuple)):
+        return None
+    haystack = " ".join(text.casefold().split())
+    if not haystack:
+        return None
+    matched: list[str] = []
+    for link in links:
+        if not isinstance(link, Mapping):
+            continue
+        label = link.get("label")
+        node = link.get("mesh_node_id")
+        if not isinstance(label, str) or not label.strip():
+            continue
+        needle = " ".join(label.casefold().split())
+        if needle and needle in haystack and isinstance(node, str) and node:
+            if node not in matched:
+                matched.append(node)
+    return matched[0] if len(matched) == 1 else None
+
+
 __all__ = [
     "D1PcPairingStore",
     "MAX_ROOTS_JSON_CHARS",
@@ -1106,6 +1178,7 @@ __all__ = [
     "derive_install_tag",
     "drive_root",
     "drives_from_agent_name",
+    "link_named_in",
     "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",

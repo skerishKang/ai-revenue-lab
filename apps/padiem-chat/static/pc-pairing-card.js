@@ -21,6 +21,7 @@
   const PAIRINGS = "/api/pc/pairings";
   const INSTALL_FILE = "/api/pc/pairings/install-file";
   const INSTALL_FILENAME = "padiem-pc-connect.ps1";
+  const LABEL_SUFFIX = "/label";
   const MAX_RESPONSE_BYTES = 32768;
   const REQUEST_TIMEOUT_MS = 12000;
   const CARD_ID = "connectorComputerCard";
@@ -57,6 +58,9 @@
       rootLabel: "폴더",
       rootPath: "경로",
       rootAdd: "이 PC의 폴더 승인",
+      name: "PC 이름",
+      nameSave: "이름 저장",
+      renamed: "PC 이름을 저장했습니다. 채팅에서 그 이름으로 이 PC를 고를 수 있습니다.",
       rootPlaceholder: "C:\\Users\\내이름\\문서",
       revoke: "해제",
       folderRevoke: "승인 해제",
@@ -93,6 +97,9 @@
       rootLabel: "Folder",
       rootPath: "Path",
       rootAdd: "Approve a folder on this PC",
+      name: "PC name",
+      nameSave: "Save name",
+      renamed: "PC name saved. A chat request can choose this PC by that name.",
       rootPlaceholder: "C:\\Users\\me\\Documents",
       revoke: "Revoke",
       folderRevoke: "Revoke",
@@ -235,6 +242,18 @@
     const addButton = element("button", "pc-pairing-root-add", t.rootAdd);
     addButton.type = "button";
     addButton.addEventListener("click", () => actions.approveRoot(link, pathField.value));
+    // The owner's own name for this machine. Once a second PC is linked it is
+    // how a chat request says which one was meant, so the card has to be able
+    // to set it. It names nothing the server did not already prove about this
+    // row, and it changes no identity and no authority.
+    const nameField = element("input", "pc-pairing-name-input");
+    nameField.type = "text";
+    nameField.value = link.label || "";
+    nameField.maxLength = 128;
+    nameField.setAttribute("aria-label", t.name);
+    const nameButton = element("button", "pc-pairing-name-save", t.nameSave);
+    nameButton.type = "button";
+    nameButton.addEventListener("click", () => actions.renameLink(link, nameField.value));
     const pauseLinkButton = element("button", "pc-pairing-pause", t.pause);
     pauseLinkButton.type = "button";
     pauseLinkButton.addEventListener("click", () => actions.pauseLink(link));
@@ -244,7 +263,7 @@
     const dropLink = element("button", "pc-pairing-revoke", t.revoke);
     dropLink.type = "button";
     dropLink.addEventListener("click", () => actions.revokeLink(link));
-    row.append(roots, pathField, addButton, pauseLinkButton, resumeLinkButton, dropLink);
+    row.append(nameField, nameButton, roots, pathField, addButton, pauseLinkButton, resumeLinkButton, dropLink);
     return row;
   }
 
@@ -323,6 +342,27 @@
         const pairing = result.body?.pairing;
         await load();
         return pairing && typeof pairing.code === "string" ? pairing : null;
+      },
+      async renameLink(link, name) {
+        if (typeof name !== "string" || !name.trim()) {
+          say(false, t.refused);
+          return false;
+        }
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}${LABEL_SUFFIX}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ label: name.trim() }),
+          },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return false;
+        }
+        await load();
+        say(true, t.renamed);
+        return true;
       },
       async revokeLink(link) {
         const result = await request(`${PAIRINGS}/${encodeURIComponent(link.link_id)}`, {

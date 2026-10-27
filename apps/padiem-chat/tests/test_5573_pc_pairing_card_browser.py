@@ -54,10 +54,20 @@ def test_only_the_windows_install_sentence_is_offered():
 def test_the_pairing_surface_is_the_only_thing_this_card_calls():
     source = MODULE.read_text(encoding="utf-8")
     urls = set(re.findall(r'"(/[a-z0-9/_.-]+)"', source, re.IGNORECASE))
-    assert urls == {"/api/pc/pairings", "/api/pc/pairings/install-file"}
+    assert urls == {"/api/pc/pairings", "/api/pc/pairings/install-file", "/label"}
     # The code is a possession proof for the PC, never a URL token that lands in
     # history, referrer or a shared link.
     assert "code=" not in source
+    # #5573's own surface: the paired-PC card answers for every account that has
+    # a link, including the one where #5951 hides the old desktop handoff. It
+    # reads nothing from that projection, so hiding the desktop card can never
+    # hide "connect this PC" with it.
+    assert "local-access" not in source
+    html = INDEX.read_text(encoding="utf-8")
+    handoff_open = html.index('id="clawLocalHandoff"')
+    handoff_close = html.index("</section>", handoff_open)
+    card_host = html.index('id="connectorComputerCard"')
+    assert not handoff_open < card_host < handoff_close
 
 
 def test_the_harness_flow_passes_every_check():
@@ -65,7 +75,7 @@ def test_the_harness_flow_passes_every_check():
     output = result.stdout + result.stderr
     assert result.returncode == 0, output
     assert "PC_PAIRING_CARD=PASS" in output
-    assert output.count("PC_PAIRING_CARD_CHECK") == 21
+    assert output.count("PC_PAIRING_CARD_CHECK") == 22
     assert "FAIL" not in output
 
 

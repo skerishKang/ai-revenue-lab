@@ -224,6 +224,38 @@ def test_the_bare_node_reference_is_listed_too():
     assert [row["deviceId"] for row in data["devices"]] == [BARE_NODE_REF]
 
 
+def test_a_node_reference_carrying_a_dollar_is_listed_selected_and_read_back():
+    """MeshCentral's own node alphabet puts ``$`` in real ids.
+
+    A freshly installed PC is named by an id like this one, and the whole
+    pairing chain runs on it: the presence beat that carries its tag, the claim
+    that makes the link, the directory row the browser selects. Refusing the
+    character did not narrow anything - it dropped the device, which is how a
+    second PC installed on a real machine never appeared in any list.
+    """
+    dollar_ref = "O$SnVp94Lb7ltPM78IZukErNte93bqygxqDvjI1eVDck$tGY" + "@" + "meshdomain1"
+    assert is_pc_device_id(dollar_ref) is True
+    assert is_pc_device_id("node//" + dollar_ref) is True
+
+    app, settings = make_app(
+        mesh_row={**MESH_ROW, "device_id": dollar_ref, "node_ref": dollar_ref},
+    )
+    with _session_pair():
+        data = _get(app, settings).json()
+    assert [row["deviceId"] for row in data["devices"]] == [dollar_ref]
+    assert data["devices"][0]["selectable"] is True
+
+    store = SelectionStore()
+    app, settings = make_app(
+        mesh_row={**MESH_ROW, "device_id": dollar_ref, "node_ref": dollar_ref},
+        selection_store=store,
+    )
+    with _session_pair():
+        response = _post_select(app, settings, {"device_id": dollar_ref})
+    assert response.status_code == 200, response.text
+    assert store.saves == [(OWNER, WORKSPACE, dollar_ref)]
+
+
 # ── selection, save and readback ──────────────────────────────────────────
 
 
