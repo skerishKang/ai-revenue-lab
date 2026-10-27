@@ -279,37 +279,37 @@ jobs:
           # Each check names the merged work it proves, so a red run points at the
           # revision that failed to land rather than at a generic "500".
           home="$(fetch /)"
-          printf '%s' "${home}" | grep -q 'data-theme' || { echo 'B64_THEME_ATTRIBUTE=MISSING (#5822)'; false; }
-          printf '%s' "${home}" | grep -q 'theme-toggle' || { echo 'B64_THEME_TOGGLE=MISSING (#5822)'; false; }
-          printf '%s' "${home}" | grep -q '수익 기회 보기' || { echo 'B64_HOME_CTA=MISSING (#5830)'; false; }
+          printf '%s' "${home}" | grep 'data-theme' >/dev/null || { echo 'B64_THEME_ATTRIBUTE=MISSING (#5822)'; false; }
+          printf '%s' "${home}" | grep 'theme-toggle' >/dev/null || { echo 'B64_THEME_TOGGLE=MISSING (#5822)'; false; }
+          printf '%s' "${home}" | grep '수익 기회 보기' >/dev/null || { echo 'B64_HOME_CTA=MISSING (#5830)'; false; }
           echo 'B64_HOME=PASS (light default, theme toggle, CTA)'
 
           browse="$(fetch /browse)"
-          printf '%s' "${browse}" | grep -q '2026\.10\.' || { echo 'B64_PUBLIC_SUPPLY_DATES=MISSING (#5794)'; false; }
+          printf '%s' "${browse}" | grep '2026\.10\.' >/dev/null || { echo 'B64_PUBLIC_SUPPLY_DATES=MISSING (#5794)'; false; }
           echo 'B64_BROWSE=PASS (verified public supply rendered)'
 
-          printf '%s' "$(fetch /today)" | grep -q 'data-theme' || { echo 'B64_TODAY=DEGRADED'; false; }
-          fetch '/detail?id=pub-prolific-participate' | grep -q 'Prolific' \
+          printf '%s' "$(fetch /today)" | grep 'data-theme' >/dev/null || { echo 'B64_TODAY=DEGRADED'; false; }
+          fetch '/detail?id=pub-prolific-participate' | grep 'Prolific' >/dev/null \
             || { echo 'B64_DETAIL=DEGRADED (#5794 public detail)'; false; }
           echo 'B64_DETAIL=PASS'
 
           pipeline="$(fetch /pipeline)"
-          printf '%s' "${pipeline}" | grep -q 'INCOME_PIPELINE' \
+          printf '%s' "${pipeline}" | grep 'INCOME_PIPELINE' >/dev/null \
             || { echo 'B64_PIPELINE=MISSING (#5816)'; false; }
           income_status="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 20 "${B64_URL}/income")"
           test "${income_status}" = '200' || { echo "B64_INCOME_STATUS=${income_status}"; false; }
           echo 'B64_PIPELINE=PASS (/pipeline and /income serve the dashboard)'
 
           csp="$(curl -fsS --max-time 20 -D - -o /dev/null "${B64_URL}/" | grep -i '^content-security-policy:')"
-          printf '%s' "${csp}" | grep -q "form-action 'self'" \
+          printf '%s' "${csp}" | grep "form-action 'self'" >/dev/null \
             || { echo "B64_CSP_FORM_ACTION=WRONG (${csp}) — #5819 not live"; false; }
-          printf '%s' "${csp}" | grep -q "script-src 'none'" || { echo 'B64_CSP_SCRIPT=WRONG'; false; }
+          printf '%s' "${csp}" | grep "script-src 'none'" >/dev/null || { echo 'B64_CSP_SCRIPT=WRONG'; false; }
           echo 'B64_CSP=PASS (same-origin forms allowed, scripts still none)'
 
           # The unauthenticated dashboard must stay reachable and must not show
           # anyone's records: an anonymous visitor gets the login prompt.
           anon="$(fetch /pipeline)"
-          printf '%s' "${anon}" | grep -q 'PADIEM 계정 로그인 후 이용할 수 있습니다' \
+          printf '%s' "${anon}" | grep 'PADIEM 계정 로그인 후 이용할 수 있습니다' >/dev/null \
             || { echo 'B64_ANON_PIPELINE=UNEXPECTED'; false; }
           echo 'B64_ANON_PIPELINE=PASS (no user data without a session)'
           echo "B64_DEPLOYED_FROM_SHA=${TARGET_SHA}"
