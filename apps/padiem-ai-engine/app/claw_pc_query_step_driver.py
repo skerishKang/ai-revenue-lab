@@ -26,6 +26,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import re
 import time
 from typing import Any, Mapping
 
@@ -76,6 +77,10 @@ PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: Owner rules 2026-10-26: 20MB defensive read bound. Chat enforces its own
 #: bound; the 3/3 Chat slice must raise that bound before release verification.
 PC_FILES_READ_MAX_BYTES = 20_000_000
+#: One whole drive, in any spelling the model repeats back: `C:`, `C:\`, `C:/Users`.
+#: It became a granted root shape when the Owner made a connected PC work over its
+#: local drives by default (#5573).
+_DRIVE_ROOT_SHAPE = re.compile(r"([A-Za-z]:)(?:/(?P<rest>.*))?\Z")
 
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
@@ -293,17 +298,36 @@ def _validate_pc_file_arguments(arguments):
     return path
 
 
-def _pc_list_folder_prefix(list_path: str) -> str | None:
+def _pc_list_folder_prefix(
+    list_path: str, granted_drives: tuple[str, ...] = (),
+) -> str | None:
     """Normalize the listed folder the way the Chat PC-files endpoint does.
 
     The projection below may only hand the next step a path the endpoint will
     accept, so the segment rules here mirror ``_pc_files_relative_path`` in
     ``oracle_mesh_read_return_routes.py`` exactly. ``None`` means this folder
     shape is refused there, so no row may be given an invented path.
+
+    A whole drive became a granted root in #5573, so ``C:``, ``C:\\`` and
+    ``C:\\Users`` are one accepted shape — but only for a drive in
+    ``granted_drives``. Without that qualifier this layer would be accepting any
+    volume the model named, and the refusal the endpoint still owes them would
+    arrive too late to be trusted. Rows listed from a drive are bound to
+    ``C:/Name`` so a follow-up read names the same volume rather than guessing
+    which of the account's drives was meant.
     """
     text = str(list_path or "").strip().replace("\\", "/")
     if text in ("", "."):
         return ""
+    drive = _DRIVE_ROOT_SHAPE.fullmatch(text.rstrip("/"))
+    if drive is not None and drive.group(1).upper() in granted_drives:
+        rest = drive.group("rest") or ""
+        parts = [part for part in rest.split("/") if part]
+        if any(part in {".", ".."} or ":" in part for part in parts):
+            return None
+        if rest and (rest.startswith("/") or rest.endswith("/")):
+            return None
+        return drive.group(1).upper() + ("/" + "/".join(parts) + "/" if parts else "/")
     if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
         return None
     parts = text.split("/")
@@ -312,7 +336,43 @@ def _pc_list_folder_prefix(list_path: str) -> str | None:
     return "/".join(parts) + "/"
 
 
-def _pc_list_entries_with_paths(list_path: str, entries):
+def _pc_granted_drives(context: Any) -> tuple[str, ...]:
+    """The whole-drive roots this account holds, as ``C:`` labels."""
+    roots = context.get("roots") if isinstance(context, Mapping) else None
+    drives: list[str] = []
+    if isinstance(roots, list):
+        for row in roots:
+            label = row.get("label") if isinstance(row, Mapping) else row
+            match = _DRIVE_ROOT_SHAPE.fullmatch(str(label or "").strip().rstrip("/"))
+            if match is not None and not (match.group("rest") or ""):
+                # Only a bare drive is a whole-drive grant. `C:/app/data` names a
+                # folder on a drive, and treating it as the drive would widen the
+                # operator's grant to the volume.
+                drive = match.group(1).upper()
+                if drive not in drives:
+                    drives.append(drive)
+    return tuple(drives)
+
+
+def _pc_path_against_granted_drive(path: str, context: Any) -> str | None:
+    """Canonicalise a path that names a granted drive, or ``None``.
+
+    Only the drive-root spelling is rewritten here. Folder labels are left for the
+    endpoint to resolve, because an account with two approved folders must still
+    say which one it means.
+    """
+    match = _DRIVE_ROOT_SHAPE.fullmatch(
+        str(path or "").strip().replace("\\", "/").rstrip("/"))
+    if match is None:
+        return None
+    drive = match.group(1).upper()
+    if drive not in _pc_granted_drives(context):
+        return None
+    rest = (match.group("rest") or "").strip("/")
+    return drive + ("/" + rest if rest else "")
+
+
+def _pc_list_entries_with_paths(list_path: str, entries, granted_drives: tuple[str, ...] = ()):
     """Bind every listed row to the exact path string read_file accepts.
 
     The PC listing command returns Select-Object rows that carry only ``Name``,
@@ -321,7 +381,7 @@ def _pc_list_entries_with_paths(list_path: str, entries):
     both name that field. The read step then re-sent the folder root, which the
     Chat endpoint refuses, and no read dispatch was ever created.
     """
-    prefix = _pc_list_folder_prefix(list_path)
+    prefix = _pc_list_folder_prefix(list_path, granted_drives)
     rows = []
     for entry in entries:
         if not isinstance(entry, Mapping):
@@ -369,14 +429,19 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
         except ToolHandlerError:
             print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
             raise
+        granted: tuple[str, ...] = ()
         text = path.strip().replace("\\", "/")
         if text.startswith("/") or (len(text) >= 2 and text[1] == ":"):
             ctx = await _signed_files_call(
                 service=service, request_factory=request_factory, secret=secret,
                 owner=owner, mode="context", payload={},
             )
-            path = _pc_path_against_verified_roots(path, ctx)
-        if _pc_list_folder_prefix(path) is None:
+            granted = _pc_granted_drives(ctx)
+            drive = _pc_path_against_granted_drive(path, ctx)
+            # A granted drive is the root itself, in whatever spelling the model
+            # repeated; a granted folder keeps the existing absolute-prefix strip.
+            path = drive if drive is not None else _pc_path_against_verified_roots(path, ctx)
+        if _pc_list_folder_prefix(path, granted) is None:
             print("pc_files_chat_call mode=arguments stage=pc_file_arguments_invalid", flush=True)
             raise ToolHandlerError("pc_files_path_invalid", "A registered relative path is required")
         expected_kind = "read" if op == "read" else "command"
@@ -576,7 +641,7 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         {
                             "ok": True,
                             "path": path,
-                            "entries": _pc_list_entries_with_paths(path, entries),
+                            "entries": _pc_list_entries_with_paths(path, entries, granted),
                             "truncated": truncated,
                         },
                         ensure_ascii=False,

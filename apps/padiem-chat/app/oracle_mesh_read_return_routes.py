@@ -3230,10 +3230,16 @@ def _pc_files_pick_root(
         for root in roots
     ):
         return None
-    text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
-    if text is None:
-        return None
-    text = text.strip().replace("\\", "/")
+    if isinstance(value, str) and not value.strip():
+        # An empty path and "." are the same request: the granted root itself.
+        # With several grants the label rule below is what makes the owner name
+        # one of them, so nothing is ever chosen for them.
+        text = "."
+    else:
+        text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
+        if text is None:
+            return None
+        text = text.strip().replace("\\", "/")
     drive = _drive_reference(text)
     if drive is not None and any(root["path"].upper() == drive for root in roots):
         # A drive the account granted means that drive, the whole of it - not a
@@ -3251,7 +3257,7 @@ def _pc_files_pick_root(
         # names it gets the same folder either way.
         if separator and label == roots[0]["label"]:
             text = remainder
-        relative = _pc_files_relative_path(text)
+        relative = _pc_files_relative_path(text or ".")
         return None if relative is None else (roots[0]["path"], relative)
     label, separator, remainder = text.partition("/")
     if not separator:
@@ -3259,7 +3265,7 @@ def _pc_files_pick_root(
     named = [root for root in roots if root["label"] == label]
     if len(named) != 1:
         return None
-    relative = _pc_files_relative_path(remainder)
+    relative = _pc_files_relative_path(remainder or ".")
     return None if relative is None else (named[0]["path"], relative)
 
 

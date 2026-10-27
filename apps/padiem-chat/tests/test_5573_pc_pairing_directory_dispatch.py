@@ -243,6 +243,38 @@ def test_a_drive_reference_names_the_whole_drive_and_a_bare_letter_stays_a_path(
     assert routes._pc_files_pick_root(folder, "C") == (QUOTATION, "C")
 
 
+# -- a whole drive is a root, and it belongs to exactly one account --------
+
+def test_a_granted_drive_lists_the_drive_and_another_drives_path_is_refused(monkeypatch):
+    """#5573: the path argument may name the granted drive itself.
+
+    The operational failure was the Engine refusing `C:` as "not a relative path"
+    before any dispatch existed, so no command ever reached the PC. With a drive
+    granted, `.`, ``C:``, ``C:\\`` and ``C:\\Users`` all address that grant, and a
+    drive this account does not hold stays a refusal rather than a guess.
+    """
+    state = _state(monkeypatch, pairing_store=None, roots=("C:/",))
+
+    for path in (".", "C:", "C:\\", "C드라이브"):
+        status, body = lane._dispatch(state, lane._base_payload(path=path))
+        assert status == 200, (path, body)
+        row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+        assert row["node_ref"] == LINK_NODE
+        assert "-LiteralPath 'C:'" in row["command_text"], (path, row["command_text"])
+        state.history_store.rows.clear()
+
+    status, body = lane._dispatch(state, lane._base_payload(path="C:\\Users"))
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    assert "-LiteralPath 'C:/Users'" in row["command_text"], row["command_text"]
+    state.history_store.rows.clear()
+
+    refused, refused_body = lane._dispatch(state, lane._base_payload(path="D:\\secret"))
+    assert refused == 422, refused_body
+    assert refused_body["error"]["code"] == "oracle_mesh_file_path_invalid"
+    assert state.history_store.rows == {}
+
+
 def test_an_unapplied_migration_falls_back_to_the_map_unchanged(monkeypatch):
     state = lane._state(monkeypatch)
 
