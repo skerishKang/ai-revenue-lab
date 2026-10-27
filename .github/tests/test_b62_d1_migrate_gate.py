@@ -631,6 +631,61 @@ def test_an_import_stats_block_is_a_named_refusal_not_result_rows() -> None:
         )
 
 
+def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_path) -> None:
+    """The apply job creates `d1_migrations` before it classifies.
+
+    Production is exactly here now: the ledger table exists, it has zero rows,
+    and ten migrations have never been applied. The plan must come out what the
+    readonly run said — 61 recorded by object proof, 10 to apply — not stop at
+    B62_D1_GATE_LEDGER_RESPONSE_REQUIRED because a stale earlier value skipped
+    the ledger read.
+    """
+
+    pending = {
+        "006_orchestration_continuations.sql",
+        "016_claw_approval_handoff.sql",
+        "017_claw_approval_handoff_consumption.sql",
+        "020_claw_local_task_correlation.sql",
+        "024_auth_login_abuse.sql",
+        "036_claw_artifact_delivery_receipts.sql",
+        "055_claw_meetings.sql",
+        "056_claw_meeting_artifacts.sql",
+        "057_claw_meeting_actions.sql",
+        "064_chat_custom_provider_endpoints.sql",
+    }
+    db = sqlite3.connect(":memory:")
+    try:
+        for path in sorted(MIGRATIONS.glob("*.sql")):
+            if path.name not in pending:
+                db.executescript(path.read_text(encoding="utf-8"))
+        live = gate._schema(db)
+    finally:
+        db.close()
+    live["tables"].add(LEDGER)
+    inventory = gate.build_inventory("chat")
+    inventory_path = write(tmp_path / "inv.json", inventory)
+    detail_path, _tables = with_detail(
+        tmp_path,
+        inventory,
+        {"tables": live["tables"], "columns": live["columns"], "other": live["other"]},
+        name="detailfirst",
+    )
+    plan = tmp_path / "plan.json"
+    assert gate.main([
+        "classify", "--app", "chat", "--inventory", str(inventory_path),
+        "--snapshot", str(write(tmp_path / "snap.json", snapshot_payload(live))),
+        "--probe", str(write(tmp_path / "probe.json", probe_payload(True))),
+        "--ledger", str(write(tmp_path / "ledger.json", ledger_payload([]))),
+        "--detail", str(detail_path),
+        "--out", str(plan),
+    ]) == 0
+    result = json.loads(plan.read_text(encoding="utf-8"))
+    assert len(result["seed"]) == 61
+    assert sorted(result["apply"]) == sorted(pending)
+    assert result["drift"] == [] and result["refused_drop_guard"] == []
+    assert result["baseline_first_run"] is True
+
+
 def test_the_recovery_bookmark_reads_result_bookmark_and_names_keys_on_failure(tmp_path, capsys) -> None:
     """The first apply run stopped at the bookmark GET, so its parse is pinned.
 
