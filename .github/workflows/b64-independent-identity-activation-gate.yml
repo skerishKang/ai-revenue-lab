@@ -44,7 +44,6 @@ jobs:
           python3 - <<'PY'
           import json
           from pathlib import Path
-          cfg=json.loads(Path('apps/ai-reward-router/wrangler.jsonc').read_text().replace('// Issue #987:', '// Issue #987:')) if False else None
           # No lossy parsing of JSONC; only exact reviewed binding assertions.
           text=Path('apps/ai-reward-router/wrangler.jsonc').read_text()
           assert '"database_name": "padiem-b64"' in text
