@@ -112,6 +112,9 @@ def test_deploy_refuses_a_config_that_declares_routes_or_dns(workflow: dict) -> 
     # placeholder, or income storage fails closed on every request.
     assert "zero placeholder" in run
     assert "B64_INCOME_DB" in run
+    # Independence (owner decision 2026-10-27): B64 binds no other product.
+    assert "must declare no service bindings" in run
+    assert "B64_PUBLIC_BASE_URL" in run
 
 
 def test_deploy_builds_and_tests_the_exact_revision(workflow: dict) -> None:
@@ -170,7 +173,8 @@ def test_parity_checks_cover_every_merged_surface(workflow: dict) -> None:
         "/income",
         "/detail?id=pub-prolific-participate",
         "form-action 'self'",
-        "PADIEM 계정 로그인 후 이용할 수 있습니다",
+        "B64 계정으로 이용할 수 있습니다",
+        'action="/join"',
     ):
         assert marker in parity, f"the parity step must verify {marker}"
 
@@ -256,6 +260,10 @@ def test_binding_readback_fails_closed_on_declared_binding_drift(workflow: dict)
     )
     assert "BINDING_BASELINE=EVIDENCE_ONLY" in readback, (
         "section 8: the readback is evidence; the baseline amendment is its own reviewed PR"
+    )
+    assert "B64_SESSION_SECRET_BINDING=" in readback, (
+        "the owner-minted session key is not a wrangler-declared binding, so the "
+        "gate must name its status instead of leaving login silently unavailable"
     )
 
 

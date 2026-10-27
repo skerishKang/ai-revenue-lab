@@ -4,39 +4,32 @@
   "compatibility_date": "2026-08-30",
   "workers_dev": true,
   "preview_urls": true,
-  // Issue #987: the mutation-origin binding for cookie-authenticated pipeline
-  // POSTs (#3476 policy). This is the reviewed deployment origin and MUST be
-  // the real serving host — an unconfigured or wrong value denies
-  // cookie-carrying POSTs (fail closed), never bypasses the guard.
+  // Issue #987: the mutation-origin binding for cookie-authenticated account
+  // and pipeline POSTs (#3476 policy). It MUST be the real serving host — an
+  // unconfigured or wrong value denies cookie-carrying POSTs (fail closed) and
+  // never bypasses the guard.
+  //
+  // B64 is an independent business (owner decision 2026-10-27), so this names
+  // B64's own host rather than assuming another product's origin, and it no
+  // longer carries that product's name in the binding key. The value below is
+  // the host measured live today; when B64's own registered domain is confirmed
+  // by a read-only Cloudflare inventory, changing this one line and redeploying
+  // is the whole migration for this setting.
   "vars": {
-    "PADIEM_B64_PUBLIC_BASE_URL": "https://chat.padiem.net"
+    "B64_PUBLIC_BASE_URL": "https://b64-ai-reward-router.charliekant.workers.dev"
   },
-  // Issue #987: Control Plane identity authority — the existing shared
-  // identity authority already bound by padiem-chat, padiem-ai-engine and
-  // padiem-voice-stt. B64 resolves the incoming padiem_session cookie's
-  // canonical session id against it (resolve_auth_session ->
-  // resolve_product_user_for_subject) to obtain the server-verified user id
-  // WITHOUT possessing the session signing secret. Merely adding the binding
-  // does NOT change the authority's own routes, allowlist or data.
-  "services": [
-    {
-      "binding": "PADIEM_CHAT_SERVICE",
-      "service": "padiem-chat"
-    },
-    {
-      "binding": "CONTROL_PLANE_IDENTITY",
-      "service": "padiem-control-plane-identity"
-    }
-  ],
-  // Issue #987: durable storage for the user income pipeline.
-  // The `padiem-b64` database is created and migrations/d1/*.sql applied ONLY
-  // by the dispatch-only B64 D1 provision gate
-  // (.github/workflows/b64-d1-provision-gate.yml); app code never provisions
-  // schema and no migration has been executed yet. `database_id` below is a
-  // PLACEHOLDER: the provision gate prints the real id it created/reused, and
-  // an operator must replace this value with that id before the Worker can
-  // bind the database at deployment time. Merely adding the binding does NOT
-  // activate storage permissions or copy any data.
+  // No `services` block: B64 authenticates its own members against its own D1
+  // and holds its own session key. It binds no other product's Worker, so it
+  // cannot be reached through, or blocked by, another product's routes.
+  // Issue #987: durable storage for the income pipeline and B64 accounts.
+  // The database and migrations/d1/*.sql are created and applied ONLY by the
+  // dispatch-only B64 D1 provision gate
+  // (.github/workflows/b64-d1-provision-gate.yml); application code never
+  // provisions schema. `database_id` is the id that gate provisioned and
+  // printed (#5840); the all-zero value that used to sit here was a
+  // placeholder and is not acceptable at deploy time — the deploy gate refuses
+  // it. Renaming the database itself is a production mutation and is not part
+  // of this file's history.
   "d1_databases": [
     {
       "binding": "B64_INCOME_DB",

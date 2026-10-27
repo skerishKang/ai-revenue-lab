@@ -89,7 +89,7 @@ test('pipeline summary is status-centred with icons and a short login gate', asy
   assert.match(html, /summary-icon/);
 
   const anonymous = renderIncomePipelineWeb(buildIncomePipelineViewModel({ userId: null, records: [] }));
-  assert.match(anonymous, /PADIEM 계정 로그인 후 이용할 수 있습니다\./);
+  assert.match(anonymous, /수익 관리는 B64 계정으로 이용할 수 있습니다\./);
   assert.ok(!anonymous.includes('장황한'), '');
 });
 

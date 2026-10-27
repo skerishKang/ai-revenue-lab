@@ -206,6 +206,34 @@ function renderAvailableOpportunities(opportunities: readonly PublicOpportunity[
   </section>`;
 }
 
+/**
+ * B64's own account entry (#987, owner boundary decision 2026-10-27). Plain
+ * POST forms, because the consumer surface runs under `script-src 'none'`.
+ * These create a B64 member, not an account on another product, and the copy
+ * says so: a visitor must not be told to go sign in somewhere else.
+ */
+function renderAccountForms(): string {
+  const fields = (autocomplete: string, placeholder: string): string => `
+        <label>이메일 <input type="email" name="email" autocomplete="username" required placeholder="you@example.com" /></label>
+        <label>비밀번호 <input type="password" name="password" autocomplete="${autocomplete}" minlength="8" maxlength="128" required placeholder="${placeholder}" /></label>`;
+  return `<section class="account-panel" aria-labelledby="account-title">
+    <div class="section-head">
+      <h2 id="account-title">B64 계정</h2>
+    </div>
+    <p class="public-note">이 계정은 B64 단독 계정입니다. 저장한 수익 기록은 이 계정으로 로그인한 사람에게만 보입니다.</p>
+    <div class="account-forms">
+      <form method="POST" action="/join" class="account-form">
+        <h3>새로 가입</h3>${fields('new-password', '8자 이상')}
+        <button type="submit">가입하고 시작하기</button>
+      </form>
+      <form method="POST" action="/login" class="account-form">
+        <h3>이미 계정이 있다면</h3>${fields('current-password', '비밀번호')}
+        <button type="submit">로그인</button>
+      </form>
+    </div>
+  </section>`;
+}
+
 function renderShell(title: string, navItems: string, content: string, themeInfo: IncomePipelineRenderTheme = {}): string {
   const theme = themeInfo.theme ?? 'light';
   const toggleHref = themeInfo.themeToggleHref ?? '/pipeline?theme=toggle';
@@ -294,11 +322,25 @@ ${THEME_CSS_SHELL_INSET}
     .available-vendor { color: var(--muted); font-size: 12px; }
     .available-tier { font-size: 11px; color: var(--faint); }
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
+    .account-panel { margin-top: 20px; }
+    .account-forms { display: grid; gap: 12px; }
+    .account-form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--surface); }
+    .account-form h3 { margin: 0; font-size: 14px; color: var(--text); }
+    .account-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+    .account-form input { min-height: 44px; padding: 9px 12px; border-radius: var(--radius-btn); border: 1px solid var(--line-soft); background: var(--surface-strong); color: var(--text); font-size: 14px; }
+    .account-form button { min-height: 46px; border-radius: var(--radius-btn); border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 700; cursor: pointer; }
+    .account-form button:hover { background: var(--accent-strong); }
+    .account-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 8px; }
+    .account-bar__state { font-size: 12px; color: var(--faint); }
+    .account-bar button { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface); color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+    .account-bar button:hover { color: var(--text); border-color: var(--accent-border); }
+    .account-form input:focus-visible, .account-form button:focus-visible, .account-bar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .footer-note { margin: 40px auto 0; max-width: 560px; color: var(--faint); font-size: 11.5px; line-height: 1.65; text-align: center; }
     @media (min-width: 680px) {
       .summary-grid { grid-template-columns: repeat(3, 1fr); }
       .filter-bar { grid-template-columns: 1fr 1fr auto; }
       .filter-bar button { grid-column: auto; }
+      .account-forms { grid-template-columns: 1fr 1fr; }
     }
     @media (min-width: 1024px) {
       .summary-grid { grid-template-columns: repeat(5, 1fr); }
@@ -375,11 +417,18 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel, them
   const navItems = renderPrimaryNav('PIPELINE');
 
   if (viewModel.emptyState === 'NO_USER') {
-    const content = renderEmptyState('PADIEM 계정 로그인 후 이용할 수 있습니다.');
+    const content = `${renderEmptyState('수익 관리는 B64 계정으로 이용할 수 있습니다.')}\n${renderAccountForms()}`;
     return renderShell('내 수익 관리', navItems, content, themeInfo);
   }
 
   const summaryHtml = viewModel.summary ? renderSummary(viewModel.summary) : '';
+  // Logout has to be reachable without script, so it is a form. Revoking the
+  // session row is what makes the next request anonymous even if the cookie
+  // survives in a copied header.
+  const accountBarHtml = viewModel.userId ? `<form method="POST" action="/logout" class="account-bar">
+    <span class="account-bar__state">로그인됨</span>
+    <button type="submit">로그아웃</button>
+  </form>` : '';
   const filterHtml = renderStatusFilter(viewModel.filters);
 
   const recordsHtml = viewModel.filteredRecords.length > 0
@@ -414,6 +463,7 @@ export function renderIncomePipelineWeb(viewModel: IncomePipelineViewModel, them
     </section>` : '';
 
   const content = `
+    ${accountBarHtml}
     ${summaryHtml}
     ${filterHtml}
     <section class="pipeline-records" aria-labelledby="records-title">
