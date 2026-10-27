@@ -1697,19 +1697,6 @@ jobs:
           echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
           echo "ROLLBACK_EFFECT=EXECUTED"
 
-      # #5895 item 4: one ordinary free-grade chat on the version that was just
-      # promoted, through the route a visitor uses. /health and the binding
-      # readback above never proved that a turn actually completes.
-      # This step sits AFTER the auto-rollback step on purpose: a failed real
-      # chat reddens the gate for a person to read and never triggers a silent
-      # rollback. It names no model, carries no credential and logs no answer
-      # text; a provider-side 429/503 is a marked pass, anything else fails.
-      - name: Post-deploy real chat
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 .github/scripts/post_deploy_real_chat_smoke.py --lane chat
-
       - name: Publish bounded deploy evidence
         if: always()
         shell: bash
@@ -1725,6 +1712,19 @@ jobs:
             echo "- auto-rollback armed on any failed step: yes, for every step above it"
             echo "- post-deploy real chat proof: after that guard, so a failed proof is never rolled back"
           } >> "${GITHUB_STEP_SUMMARY}"
+
+      # #5895 item 4: one ordinary free-grade chat on the version that was just
+      # promoted, through the route a visitor uses. /health and the binding
+      # readback above never proved that a turn actually completes.
+      # This step sits AFTER the auto-rollback step on purpose: a failed real
+      # chat reddens the gate for a person to read and never triggers a silent
+      # rollback. It names no model, carries no credential and logs no answer
+      # text; a provider-side 429/503 is a marked pass, anything else fails.
+      - name: Post-deploy real chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_real_chat_smoke.py --lane chat
 
   rollback-production-code:
     needs: [source-contract, cloudflare-readonly]
