@@ -425,6 +425,10 @@ jobs:
           fi
           echo "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
           echo "POST_DEPLOY_SERVED_VERSION_ID=${active_version}"
+          # #5895: stdout and the step summary both name the promoted version,
+          # so a run log says which Engine version is serving without opening
+          # the evidence artifact. The id is not a secret.
+          echo "DEPLOYED_VERSION_ID=${active_version}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo 'SERVED_VERSION_CHANGED_BY_CODE_DEPLOY=YES'
           echo "POST_DEPLOY_CONVERGENCE_READS=${convergence_reads}"
           echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS'
@@ -773,6 +777,7 @@ jobs:
           printf '%s\n' "${final_out}"
           served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
           echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo "DEPLOYED_VERSION_ID=${served_version}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
           echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
           echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
