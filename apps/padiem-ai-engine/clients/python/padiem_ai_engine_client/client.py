@@ -145,6 +145,13 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: the Engine is told not to read; the Engine still refuses ``read_file``
     #: for this hint. The table stays closed: any other shape is refused.
     "files_list": (("list_files", "claw.pc.list_files"),),
+    #: #4434: the write lane. Its own shape, so a plan that may change a file is
+    #: never also a plan that may read one.
+    "files_write": (
+        ("write_file", "claw.pc.write_file"),
+        ("move_file", "claw.pc.move_file"),
+        ("delete_file", "claw.pc.delete_file"),
+    ),
 })
 #: Canonical PC device identity grammar (#5172). This client package has no
 #: runtime dependency, so the two patterns are copied verbatim from
