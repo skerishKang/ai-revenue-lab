@@ -174,10 +174,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # #987: the Google entry needs B64's OWN OAuth client. Creating it is
-          # a Google Cloud + owner action, so this gate reports what is bound
-          # and mints nothing. Names and types only — a value is never read back
-          # (secret_text cannot be read) and never printed.
+          # #987: the Google entry needs B64's OWN OAuth client. This step reads
+          # the state BEFORE the binding step below, so a run shows both the
+          # starting point and the result. Names and types only — a value is
+          # never read back (secret_text cannot be read) and never printed.
           code="$(curl -sS --max-time 30 -o "$RUNNER_TEMP/b64-settings-google.json" -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/b64-ai-reward-router/settings")"
@@ -190,10 +190,62 @@ jobs:
           for name in ('B64_GOOGLE_CLIENT_ID','B64_GOOGLE_CLIENT_SECRET'):
               matches=[b for b in bindings if b.get('name')==name]
               if not matches:
-                  print(f'B64_GOOGLE_BINDING {name}: ABSENT (Google login stays fail-closed 503 until it is set)')
+                  print(f'B64_GOOGLE_BINDING_BEFORE {name}: ABSENT (Google login stays fail-closed 503 until it is set)')
               else:
-                  print(f'B64_GOOGLE_BINDING {name}: PRESENT type={matches[0].get("type")}')
+                  print(f'B64_GOOGLE_BINDING_BEFORE {name}: PRESENT type={matches[0].get("type")}')
           print('B64_GOOGLE_OAUTH_CLIENT_CREATED_BY_THIS_GATE=NO')
+          PY
+      - name: Bind B64 Google OAuth client from production environment secrets
+        shell: bash
+        env:
+          GOOGLE_CLIENT_ID_VALUE: ${{ secrets.B64_GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET_VALUE: ${{ secrets.B64_GOOGLE_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          # #987: this is the reviewed path for putting a credential on this
+          # Worker — the same one the B64_SESSION_SECRET step above uses. A value
+          # travels only as a step env var piped through stdin, so it never enters
+          # argv (the runner echoes commands), never a file in the workspace, and
+          # never an echo.
+          #
+          # Both bindings are written as secret_text on purpose. That keeps
+          # wrangler.jsonc and .github/binding_baselines/ untouched: deploy run
+          # 40578410849 read B64_SESSION_SECRET back as a live secret_text binding
+          # even though no config file declares it, which proves an out-of-band
+          # secret survives the reviewed deploy path. The application reads
+          # env.B64_GOOGLE_CLIENT_ID as a plain string either way.
+          missing=''
+          if [ -z "${GOOGLE_CLIENT_ID_VALUE}" ]; then missing="${missing} B64_GOOGLE_CLIENT_ID"; fi
+          if [ -z "${GOOGLE_CLIENT_SECRET_VALUE}" ]; then missing="${missing} B64_GOOGLE_CLIENT_SECRET"; fi
+          if [ -n "${missing}" ]; then
+            # Half a configuration is worse than none: a client id without its
+            # secret renders the entry and then fails mid-round-trip. Write
+            # nothing and say so.
+            echo "B64_GOOGLE_BINDING=SKIPPED (production environment secrets missing:${missing})"
+            echo 'B64_GOOGLE_LOGIN_STATE=FAIL_CLOSED_503 (nothing half-configured was written)'
+            exit 0
+          fi
+          printf '%s' "${GOOGLE_CLIENT_ID_VALUE}" \
+            | npx --yes wrangler@4 secret put B64_GOOGLE_CLIENT_ID --name b64-ai-reward-router \
+            > "${RUNNER_TEMP}/b64-google-client-id-put.log"
+          printf '%s' "${GOOGLE_CLIENT_SECRET_VALUE}" \
+            | npx --yes wrangler@4 secret put B64_GOOGLE_CLIENT_SECRET --name b64-ai-reward-router \
+            > "${RUNNER_TEMP}/b64-google-client-secret-put.log"
+          echo 'B64_GOOGLE_BINDING=PUT (values reached Cloudflare over stdin and were never printed)'
+          code="$(curl -sS --max-time 30 -o "$RUNNER_TEMP/b64-settings-bound.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/b64-ai-reward-router/settings")"
+          test "$code" = 200 || { echo "B64_BINDING_READ_STATUS=$code"; exit 1; }
+          python3 - "$RUNNER_TEMP/b64-settings-bound.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data.get('success') is True, 'settings response unsuccessful'
+          bindings=data.get('result',{}).get('bindings',[])
+          for name in ('B64_GOOGLE_CLIENT_ID','B64_GOOGLE_CLIENT_SECRET'):
+              matches=[b for b in bindings if b.get('name')==name]
+              assert len(matches)==1 and matches[0].get('type')=='secret_text', f'{name} is not bound as a single secret_text binding'
+              print(f'B64_GOOGLE_BINDING_AFTER {name}: secret_text CONFIRMED')
+          print('B64_GOOGLE_BINDING_VERIFIED=YES')
           PY
       - name: Explicit completion boundary
         run: |
@@ -201,5 +253,7 @@ jobs:
           echo 'B64_WORKER_REVISION_DEPLOYED_BY_THIS_GATE=NO'
           echo 'B64_PUBLIC_LOGIN_E2E=NOT_RUN'
           echo 'B64_DNS_OR_ROUTES_CHANGED=NO'
-          echo 'B64_GOOGLE_OAUTH_CLIENT_CREATED=NO (owner action in Google Cloud; the redirect URI must be <B64_PUBLIC_BASE_URL>/auth/google/callback)'
+          echo 'B64_GOOGLE_OAUTH_CLIENT_CREATED_BY_THIS_GATE=NO (the client already exists in the existing Google Cloud project; this gate only binds its values)'
+          echo 'B64_GOOGLE_SECRET_VALUES_PRINTED=NO (stdin only; the put logs are written to RUNNER_TEMP and never echoed)'
+          echo 'B64_GOOGLE_BINDINGS_ARE_SECRET_TEXT=YES (wrangler.jsonc and the binding baseline stay untouched)'
           echo 'B64_D1_DESTRUCTIVE_MIGRATION=NO (0003 adds b64_member_google only)'
