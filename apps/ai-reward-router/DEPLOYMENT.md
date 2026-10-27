@@ -578,8 +578,15 @@ named, never shown. It is deliberately separate from `src/admin-console/`, which
 is an opportunity review workflow over its own fixture state; pointing that at
 production would mean building a mutation surface this task does not ask for.
 
-Owner action to use it: register `B64_ADMIN_EMAIL` on the Worker as a var
-alongside the existing bindings, then sign in with the Google account whose
-verified address matches. The address designated by the owner is
-`charliekant@gmail.com`, recorded here as the setting to register rather than as
-a value in source.
+How to bind it, without putting the address in source: register it as the
+repository's `production` environment secret `B64_ADMIN_EMAIL`, then dispatch
+`.github/workflows/b64-independent-identity-activation-gate.yml`. That gate pipes
+the secret through stdin into `wrangler secret put B64_ADMIN_EMAIL` and reads the
+binding back as `secret_text` — the same reviewed path as
+`B64_SESSION_SECRET` and the Google client pair. The address is never an argv
+entry (the runner echoes commands), never a workspace file, never an echo, and
+never a committed or publicly readable var. With the secret unregistered the gate
+writes nothing and says so, and `/admin` stays closed to every member.
+
+Owner action to use it: bind the address as above, then sign in with the Google
+account whose verified address matches it and open `/admin`.
