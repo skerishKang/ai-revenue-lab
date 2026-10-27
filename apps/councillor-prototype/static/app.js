@@ -101,7 +101,7 @@ function renderMedia() {
     tile.target = "_blank";
     tile.rel = "noopener";
     tile.setAttribute("tabindex", "0");
-    tile.innerHTML = `<img class="tile-thumb" src="${m.thumb}" alt="${m.title}" loading="lazy" /><div class="tile-kind">${m.kind}</div><div class="tile-title">${m.title}</div><ul class="tile-notes">${(m.notes||[]).map(n=>`<li>${n}</li>`).join("")}</ul>`;
+    tile.innerHTML = `<img class="tile-thumb" src="${m.thumb}" alt="${m.title}" loading="lazy" onerror="this.style.display='none'" /><div class="tile-kind">${m.kind}</div><div class="tile-title">${m.title}</div><ul class="tile-notes">${(m.notes||[]).map(n=>`<li>${n}</li>`).join("")}</ul>`;
     grid.appendChild(tile);
   });
 }
