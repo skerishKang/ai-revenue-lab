@@ -1,0 +1,17 @@
+-- #5573 follow-up: pause one PC link without un-pairing it.
+--
+-- An owner who wants their PC to stop taking work for a while had one lever:
+-- DELETE /api/pc/pairings/{link_id}, which revokes the link and drops every
+-- folder approved under it with it. Pausing is a different question — "not right
+-- now" — so it must not cost the grants.
+--
+-- `state` cannot carry this: 072 pins it to
+-- ('pending_verification','active','revoked'), and widening that CHECK means
+-- rebuilding a table that production rows already live in. One nullable column
+-- is the additive shape. A link is paused exactly when `paused_at` names the
+-- instant it was paused, and resume clears it back to NULL. `state` keeps its
+-- original meaning: whether this pair exists at all.
+--
+-- No table is rebuilt, no row is rewritten, no index changes. `paused_at` is
+-- unread by any revision before this one, so applying it first is always safe.
+ALTER TABLE pc_device_links ADD COLUMN paused_at TEXT;

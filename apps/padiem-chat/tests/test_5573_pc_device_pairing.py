@@ -43,6 +43,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "072_pc_device_pairing.sql"
 MIGRATIONS = MIGRATION.parent
+#: Both pairing migrations are one unapplied set: 073 ALTERs the table 072
+#: creates, so "before the pairing migration" has to leave 073 out too or the
+#: replay itself, not the code under test, is what fails.
+PAIRING_MIGRATION_NUMBERS = {MIGRATION.name[:3], "073"}
 OWNER = "usr_" + "a" * 32
 OTHER = "usr_" + "b" * 32
 NODE = "node//mesh-pc-01"
@@ -88,7 +92,7 @@ def database(*, with_072: bool = True) -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:", isolation_level=None)
     conn.row_factory = sqlite3.Row
     for path in sorted(MIGRATIONS.glob("*.sql")):
-        if not with_072 and path.name == MIGRATION.name:
+        if not with_072 and path.name[:3] in PAIRING_MIGRATION_NUMBERS:
             continue
         conn.executescript(path.read_text(encoding="utf-8"))
     return conn

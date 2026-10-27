@@ -120,6 +120,11 @@ async function main() {
   const listed = makeDom({
     "GET *": { status: 200, body: { ok: true, links: [LINK], codes: [] } },
     [`DELETE /api/pc/pairings/${LINK.link_id}`]: { status: 200, body: { ok: true, revoked: true } },
+    [`POST /api/pc/pairings/${LINK.link_id}/pause`]: { status: 200,
+      body: { ok: true, link: { ...LINK, paused: true,
+        paused_at: "2026-10-27T01:30:00Z" } } },
+    [`POST /api/pc/pairings/${LINK.link_id}/resume`]: { status: 200,
+      body: { ok: true, link: { ...LINK, paused: false, paused_at: null } } },
     [`POST /api/pc/pairings/${LINK.link_id}/roots`]: { status: 201, body: { ok: true,
       root: { root_ref: "pcroot_ffff0000ffff0000", label: "경리", path: "C:/Users/me/경리",
               state: "active", approved_at: "2026-10-27T01:20:00Z" } } },
@@ -144,6 +149,26 @@ async function main() {
     listed.calls.some((call) => call.method === "POST"
       && call.url === "/api/pc/pairings/" + LINK.link_id + "/roots"
       && JSON.parse(call.body).path === "C:/Users/me/경리"), JSON.stringify(listed.calls));
+
+  // Re-read the row after the re-render the two calls above caused, then use the
+  // pause controls the owner sees on every connected PC.
+  const pauseButton = shown.ids().find((n) => (n.className || "") === "pc-pairing-pause");
+  const resumeButton = shown.ids().find((n) => (n.className || "") === "pc-pairing-resume");
+  const liveRevoke = shown.ids().find((n) => (n.className || "") === "pc-pairing-revoke");
+  check("each linked PC carries pause, resume and disconnect controls",
+    Boolean(pauseButton && resumeButton && liveRevoke), shown.allText());
+  pauseButton.click();
+  await settle();
+  check("pause posts to that link's pause route",
+    listed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/" + LINK.link_id + "/pause"),
+    JSON.stringify(listed.calls));
+  resumeButton.click();
+  await settle();
+  check("resume posts to that link's resume route",
+    listed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/" + LINK.link_id + "/resume"),
+    JSON.stringify(listed.calls));
 
   const notReady = makeDom({
     "GET *": { status: 503, body: { ok: false, error: { code: "pc_pairing_not_ready" } } },

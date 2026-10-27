@@ -47,6 +47,10 @@ PC_PAIRING_ADOPT_PATH = "/api/pc/pairings/adopt"
 PC_PAIRING_LINK_PATH = "/api/pc/pairings/{link_id}"
 PC_PAIRING_ROOTS_PATH = "/api/pc/pairings/{link_id}/roots"
 PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
+#: Pause and resume are two states of the same link, not two kinds of unlink:
+#: revoke stays the only path that drops the folder approvals.
+PC_PAIRING_PAUSE_PATH = "/api/pc/pairings/{link_id}/pause"
+PC_PAIRING_RESUME_PATH = "/api/pc/pairings/{link_id}/resume"
 
 _MAX_BODY_BYTES = 2048
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
@@ -74,6 +78,9 @@ _MESSAGES = {
     "pc_pairing_not_admin": "이 PC를 채택할 수 있는 권한이 없습니다.",
     "pc_pairing_device_unmapped": "이 배포에서 확인할 수 없는 PC입니다.",
     "pc_pairing_link_not_active": "이 PC 연결은 아직 사용 대기 중이거나 해제되었습니다.",
+    #: The link row exists under another account. This is a permission answer,
+    # not a missing row, and it names no value either way.
+    "pc_pairing_link_forbidden": "이 PC 연결을 바꿀 권한이 없습니다.",
 }
 
 #: Store reason -> route code. The store deliberately never names a value.
@@ -94,6 +101,7 @@ _REASONS = {
     "link id invalid": "pc_pairing_link_not_found",
     "link not found": "pc_pairing_link_not_found",
     "link not active": "pc_pairing_link_not_active",
+    "link not yours": "pc_pairing_link_forbidden",
     "link label invalid": "pc_pairing_body_invalid",
     "link label too long": "pc_pairing_body_invalid",
     "link not stored": "pc_pairing_unavailable",
@@ -120,6 +128,8 @@ def _refused(exc: PcPairingError) -> JSONResponse:
         status = 403
     elif code == "unauthorized":
         status = 401
+    elif code == "pc_pairing_link_forbidden":
+        status = 403
     elif code in {"pc_pairing_link_not_found", "pc_pairing_root_not_found"}:
         status = 404
     elif code in {"pc_pairing_link_not_active", "pc_pairing_root_label_taken"}:
@@ -240,6 +250,45 @@ async def pc_pairing_revoke(request: Request) -> JSONResponse:
     if not revoked:
         return _error(404, "pc_pairing_link_not_found")
     return _json({"ok": True, "revoked": True}, 200)
+
+
+async def pc_pairing_pause(request: Request) -> JSONResponse:
+    """Stop this account's PC from taking work, keeping every folder approval.
+
+    POST with no body and no confirmation token: pausing is the owner saying
+    "not right now" about a link they already own, and the card is the whole
+    intent. A link already paused returns the same answer it gave the first time.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    link, refused = await _await_store(
+        store.pause_link, user_id=user_id,
+        link_id=request.path_params.get("link_id"), now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "link": link}, 200)
+
+
+async def pc_pairing_resume(request: Request) -> JSONResponse:
+    """Put a paused PC link back in front of dispatch."""
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    link, refused = await _await_store(
+        store.resume_link, user_id=user_id,
+        link_id=request.path_params.get("link_id"), now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "link": link}, 200)
 
 
 def install_url_from_config(value: Any) -> str | None:
