@@ -38,6 +38,11 @@
       notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
       unavailable: "PC 연결을 현재 처리할 수 없습니다.",
       revokedLink: "연결을 해제했습니다. 이 PC의 폴더 승인도 함께 사라집니다.",
+      pausedLink: "이 PC를 잠시 멈췄습니다. 다시 시작할 때까지 작업이 전달되지 않습니다.",
+      resumedLink: "이 PC를 다시 시작했습니다.",
+      pause: "일시 중지",
+      resume: "다시 시작",
+      paused: "일시 중지됨",
       revokedRoot: "폴더 승인을 해제했습니다.",
       approved: "폴더를 승인했습니다.",
       refused: "서버가 이 요청을 받아들이지 않았습니다.",
@@ -71,6 +76,11 @@
       notReady: "PC pairing is not ready yet. Please try again shortly.",
       unavailable: "PC pairing cannot be handled right now.",
       revokedLink: "Link revoked. Its folder approvals are gone with it.",
+      pausedLink: "PC paused. No work is sent to it until you resume it.",
+      resumedLink: "PC resumed.",
+      pause: "Pause",
+      resume: "Resume",
+      paused: "Paused",
       revokedRoot: "Folder approval revoked.",
       approved: "Folder approved.",
       refused: "The server refused this request.",
@@ -189,9 +199,12 @@
     const name = element(
       "strong", "pc-pairing-name", link.label || link.mesh_node_id || t.node,
     );
+    const paused = link.paused === true;
     const state = element("span", "pc-pairing-state",
-      t.linkState[link.state] || link.state || "");
-    state.dataset.state = String(link.state || "");
+      paused ? t.paused : (t.linkState[link.state] || link.state || ""));
+    // A paused link is still connected: the pause is reported on top of the
+    // link's own state, never by rewriting it.
+    state.dataset.state = paused ? "paused" : String(link.state || "");
     row.append(name, state);
     if (link.mesh_node_id) {
       row.append(element("small", "pc-pairing-node", `${t.node}: ${link.mesh_node_id}`));
@@ -218,10 +231,16 @@
     const addButton = element("button", "pc-pairing-root-add", t.rootAdd);
     addButton.type = "button";
     addButton.addEventListener("click", () => actions.approveRoot(link, pathField.value));
+    const pauseLinkButton = element("button", "pc-pairing-pause", t.pause);
+    pauseLinkButton.type = "button";
+    pauseLinkButton.addEventListener("click", () => actions.pauseLink(link));
+    const resumeLinkButton = element("button", "pc-pairing-resume", t.resume);
+    resumeLinkButton.type = "button";
+    resumeLinkButton.addEventListener("click", () => actions.resumeLink(link));
     const dropLink = element("button", "pc-pairing-revoke", t.revoke);
     dropLink.type = "button";
     dropLink.addEventListener("click", () => actions.revokeLink(link));
-    row.append(roots, pathField, addButton, dropLink);
+    row.append(roots, pathField, addButton, pauseLinkButton, resumeLinkButton, dropLink);
     return row;
   }
 
@@ -306,6 +325,30 @@
         }
         await load();
         say(true, t.revokedLink);
+      },
+      async pauseLink(link) {
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}/pause`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        await load();
+        say(true, t.pausedLink);
+      },
+      async resumeLink(link) {
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}/resume`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        await load();
+        say(true, t.resumedLink);
       },
       async revokeRoot(link, root) {
         const result = await request(

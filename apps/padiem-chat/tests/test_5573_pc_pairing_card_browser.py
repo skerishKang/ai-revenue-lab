@@ -61,7 +61,7 @@ def test_the_harness_flow_passes_every_check():
     output = result.stdout + result.stderr
     assert result.returncode == 0, output
     assert "PC_PAIRING_CARD=PASS" in output
-    assert output.count("PC_PAIRING_CARD_CHECK") == 13
+    assert output.count("PC_PAIRING_CARD_CHECK") == 16
     assert "FAIL" not in output
 
 

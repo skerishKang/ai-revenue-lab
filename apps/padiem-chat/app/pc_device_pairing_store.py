@@ -90,6 +90,14 @@ class PcPairingStore(Protocol):
 
     async def revoke_link(self, *, user_id: str, link_id: str, now: datetime) -> bool: ...
 
+    async def pause_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
+    async def resume_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
         label: str | None = None,
@@ -299,6 +307,11 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
         "mesh_node_id": row["mesh_node_id"],
         "label": row.get("label"),
         "state": row["state"],
+        # A paused link still exists and keeps its folder grants; 073 says when
+        # the pause began, and the projection keeps both so a card can show the
+        # pause without asking the database again.
+        "paused": bool(row.get("paused_at")),
+        "paused_at": row.get("paused_at"),
         "roots": [
             {
                 "root_ref": root["root_ref"],
@@ -587,17 +600,19 @@ class D1PcPairingStore:
         )
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
-        """Every active link this account owns, with its granted folders.
+        """Every link this account owns that may take work right now.
 
         The dispatch lane reads this: an empty list is the answer to "this
         account has no PC connected", and more than one link is a choice the
-        caller must narrow, never something to guess.
+        caller must narrow, never something to guess. A paused link is dropped
+        here rather than filtered by each caller, because the Owner's pause has
+        to hold even against a consumer that forgets to look at it.
         """
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links WHERE user_id=? "
-            "AND state='active' ORDER BY created_at DESC LIMIT 100",
+            "created_at, updated_at, paused_at FROM pc_device_links WHERE user_id=? "
+            "AND state='active' AND paused_at IS NULL ORDER BY created_at DESC LIMIT 100",
             owner,
         )
         links: list[dict[str, Any]] = []
@@ -623,7 +638,7 @@ class D1PcPairingStore:
         """
         owner = _user_id(user_id)
         node = _mesh_node_id(mesh_node_id)
-        existing = await self.link_for(user_id=owner, mesh_node_id=node)
+        existing = await self._link_row_for_node(owner, node)
         if existing is not None:
             # Adoption that already happened is a read. Nothing is written, so
             # the link keeps its timestamps and, more importantly, keeps the
@@ -665,7 +680,8 @@ class D1PcPairingStore:
         """Who owns a reported Mesh identity, from the link directory only.
 
         A presence beat is keyed by the identity the server named, so an entry
-        is accepted only when an active link names exactly that node. The
+        is accepted only when a link that is active and not paused names exactly
+        that node. The
         accounts behind a shared PC are returned as a set: one account resolves
         a Broker credential generation, several do not, and the receipt is still
         recorded as Mesh-only (#5553 requirement 6).
@@ -674,7 +690,7 @@ class D1PcPairingStore:
             return None
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id FROM pc_device_links "
-            "WHERE mesh_node_id=? AND state='active' LIMIT 100",
+            "WHERE mesh_node_id=? AND state='active' AND paused_at IS NULL LIMIT 100",
             device_id,
         )
         accounts = {
@@ -690,7 +706,7 @@ class D1PcPairingStore:
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "pairing_code_id, created_at, updated_at, revoked_at "
+            "pairing_code_id, created_at, updated_at, revoked_at, paused_at "
             "FROM pc_device_links WHERE user_id=? AND link_id=?",
             user_id, link_id,
         )
@@ -703,7 +719,7 @@ class D1PcPairingStore:
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links WHERE user_id=? "
+            "created_at, updated_at, paused_at FROM pc_device_links WHERE user_id=? "
             "AND state!='revoked' ORDER BY created_at DESC LIMIT 100",
             owner,
         )
@@ -720,8 +736,9 @@ class D1PcPairingStore:
         node = _mesh_node_id(mesh_node_id)
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links "
-            "WHERE user_id=? AND mesh_node_id=? AND state='active'",
+            "created_at, updated_at, paused_at FROM pc_device_links "
+            "WHERE user_id=? AND mesh_node_id=? AND state='active' "
+            "AND paused_at IS NULL",
             owner, node,
         )
         if not isinstance(row, dict) or not row.get("link_id"):
@@ -746,6 +763,72 @@ class D1PcPairingStore:
         )
         row = await self._read_link(owner, link_id)
         return row is not None and row["state"] == "revoked" and row["roots"] == []
+
+    async def _link_row_for_node(self, owner: str, node: str) -> dict[str, Any] | None:
+        """The live (not revoked) link for one node, pause aside.
+
+        Adoption asks this instead of ``link_for``: a paused pair is still the
+        pair that account owns, and treating it as absent would let an adoption
+        rewrite the folders of a link the owner deliberately stopped.
+        """
+        row = await self._first(
+            "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
+            "created_at, updated_at, paused_at FROM pc_device_links "
+            "WHERE user_id=? AND mesh_node_id=? AND state='active'",
+            owner, node,
+        )
+        if not isinstance(row, dict) or not row.get("link_id"):
+            return None
+        row["roots"] = _active(_roots(row.get("roots_json")))
+        return row
+
+    async def _set_pause(
+        self, *, user_id: str, link_id: str, now: datetime, paused: bool,
+    ) -> dict[str, Any]:
+        owner = _user_id(user_id)
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        moment = _stamp(now)
+        # Ownership is settled by the row, not by the caller's claim: the same
+        # statement answers "no such link" and "not your link" differently, and
+        # only one of the two is a permission failure.
+        row = await self._first(
+            "SELECT user_id, state FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        if not isinstance(row, dict) or not row.get("state"):
+            raise PcPairingError("link not found")
+        if row.get("user_id") != owner:
+            raise PcPairingError("link not yours")
+        if row.get("state") != _STATE_ACTIVE:
+            raise PcPairingError("link not active")
+        await self._run(
+            "UPDATE pc_device_links SET paused_at=?, updated_at=? "
+            "WHERE user_id=? AND link_id=? AND state='active'",
+            moment if paused else None, moment, owner, link_id,
+        )
+        stored = await self._read_link(owner, link_id)
+        if stored is None:
+            raise PcPairingError("pairing link not stored")
+        if bool(stored.get("paused_at")) is not paused:
+            raise PcPairingError("pairing link not stored")
+        return _public_link(stored)
+
+    async def pause_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Stop one link from taking work, keeping its folder approvals.
+
+        Idempotent by design: an owner who taps twice, or a retry after a lost
+        response, lands on the same single pause stamp rather than an error the
+        card would have to explain.
+        """
+        return await self._set_pause(user_id=user_id, link_id=link_id, now=now, paused=True)
+
+    async def resume_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Put one paused link back in front of dispatch."""
+        return await self._set_pause(user_id=user_id, link_id=link_id, now=now, paused=False)
 
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
