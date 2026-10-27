@@ -12,6 +12,59 @@
  */
 
 /* ══ TOKENS ══════════════════════════════════════════════════════════════ */
+
+/* ══ 웹폰트 — 자체 호스팅 ══════════════════════════════════════════════════
+   이 프로토타입은 한때 폰트를 선언만 하고 파일을 배포하지 않아, 선언(Pretendard·
+   NanumMyeongjo)과 실제 렌더(Noto Sans KR·Batang)가 어긋났다. 그래서 파일을 같이 싣는다.
+   * src 는 상대 경로만 쓴다(원격 요청 0 — 테스트가 강제한다).
+   * 가중치는 이 저장소에 실제로 존재하는 파일 4종(400/500/600/700)에 맞춰 선언한다.
+     없는 가중치를 물리면 브라우저가 임의의 근사면을 고르므로, CSS의 650/750도 이 값으로 정규화했다.
+   * 라이선스: Pretendard = SIL OFL 1.1 (Reserved Font Name 'Pretendard'),
+     MaruBuri = 네이버 글꼴. 고지문은 assets/fonts/ 에 동봉했다.
+   ═════════════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Bold.woff2") format("woff2");
+}
+
 /* ==TOKENS-BEGIN== */
 :root {
   /* 골격 — 색과 무관 */
@@ -98,9 +151,11 @@ html[data-country="kr"] {
   --work-1: #062043;
   --work-2: #06322a;
   --work-3: #352442;
-  --font-display: "NanumMyeongjo", "Noto Serif KR", "Batang", Georgia, serif;
-  --font-body: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-label: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  /* B2 확정안: 제목은 마루부리(원본 04의 명조 결을 보존), 본문·메뉴·카드·에디터는 Pretendard.
+     두 패밀리 모두 이 페이지가 웹폰트로 직접 배포하므로, 보는 사람의 설치 여부와 무관하게 항상 해결된다. */
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", "Batang", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
 }
 
 html[data-country="us"] {
@@ -486,7 +541,7 @@ button { font: inherit; color: inherit; }
   background: color-mix(in srgb, var(--tone-1) 30%, transparent);
   color: inherit;
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(var(--pa-glass-blur));
 }
@@ -535,7 +590,7 @@ button { font: inherit; color: inherit; }
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--text);
-  font-weight: 750;
+  font-weight: 700;
 }
 /* 시안의 검색: 사진 위에 얹힌 반투명 알약, 안쪽 오른쪽에 확대경. */
 .pa-search { position: relative; min-width: 0; }
@@ -695,7 +750,7 @@ button { font: inherit; color: inherit; }
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(90deg, var(--hero-scrim-strong) 0%, var(--hero-scrim) 42%, transparent 68%),
+    linear-gradient(90deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-strong) 34%, var(--hero-scrim) 54%, transparent 76%),
     linear-gradient(180deg, var(--hero-scrim) 0%, transparent 20%, transparent 52%, var(--vignette) 100%);
 }
 .pa-scene::after {
@@ -905,7 +960,7 @@ button { font: inherit; color: inherit; }
   border: var(--pa-hair) solid var(--line);
   border-radius: 999px;
   background: var(--panel);
-  font-weight: 650;
+  font-weight: 600;
   cursor: pointer;
 }
 .pa-back:hover { border-color: var(--accent); }
@@ -1026,7 +1081,8 @@ button { font: inherit; color: inherit; }
   body.pa-body { font-size: 15px; }
   .pa-brand-tag { display: none; }
   .pa-hero { padding-top: 158px; }
-  .pa-hero h1 { font-size: 30px; }
+  /* 마루부리는 30px에서 3줄로 꺾인다(실측: 2줄 유지 한계 = 28px). 원본 문구 그대로 2줄을 지킨다. */
+  .pa-hero h1 { font-size: 28px; }
   .pa-cta, .pa-draft, .pa-back { width: 100%; justify-content: center; text-align: center; }
   .pa-paper { padding: 14px; }
   .pa-paper textarea { font-size: 16px; }

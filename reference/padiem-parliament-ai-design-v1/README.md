@@ -139,10 +139,54 @@ THEME_AXIS     20조합 페인트 서명 16종 고유 — 페이지 배경 8종�
 LOAD           요청 호스트 1곳(자신) · pageerror 0 · HTTP>=400 0 · 외부 요청 0
 ```
 
+### v6 — 타이포그래피 (B2 확정: 마루부리 제목 + Pretendard 본문)
+
+3차 배치 구현 후에도 **선언한 폰트와 실제 렌더가 달랐다.** 이 프로토타입은 웹폰트 파일을
+하나도 싣지 않았기 때문에, `--font-body: Pretendard…`는 `Noto Sans KR`로,
+`--font-display: NanumMyeongjo…`는 `Batang`으로 해결됐다. `document.fonts.check()`는
+fallback을 허용하면 참을 주므로 판별력이 없고, 존재하지 않는 패밀리와 캔버스 폭을 견주는
+차등법으로만 알 수 있었다.
+
+| 슬롯 | 확정 | 배포 파일 | 근거 |
+|---|---|---|---|
+| `--font-display` | MaruBuri 400·700 | `assets/fonts/MaruBuri-{Regular,Bold}.woff2` | 원본 04의 히어로 제목이 명조 계열이라 그 결을 보존 |
+| `--font-body` / `--font-label` | Pretendard 400·500·600·700 | `assets/fonts/Pretendard-{Regular,Medium,SemiBold,Bold}.woff2` | 메뉴·본문·카드·에디터 가독성 통일 |
+
+- 마루부리는 공식 TTF를 **WOFF2 컨테이너로만** 변환했다(fontTools). 변환 전후
+  `glyph 12466 / cmap 12398 / family·style·unitsPerEm` 동일을 대조 확인했고,
+  Regular 3.12→0.41 MB, Bold 3.20→0.43 MB가 됐다. 글자 모양·전진폭은 그대로이므로 이름을 바꾸지 않았다.
+- Pretendard는 공식 subset 빌드를 그대로 사용(가중치당 ≈261 KB). 6종 합계 **≈1.87 MB**, 원격 CDN 요청 0.
+- `@font-face`는 `font-display: swap`, `src`는 상대 경로만 쓴다.
+- **면이 없는 가중치는 쓰지 않는다.** 기존 CSS의 650·750을 600·700으로 정규화해,
+  선언한 가중치가 곧 실재하는 파일이 되도록 맞췄다(테스트가 강제).
+- 라이선스: Pretendard = SIL OFL 1.1(Reserved Font Name 'Pretendard'),
+  마루부리 = 네이버 글꼴. 고지문 두 종을 `assets/fonts/`에 글꼴과 함께 둔다.
+  OFL의 RFN 조항에 따라 **직접 서브셋을 추가 생성하면 'Pretendard' 이름을 쓸 수 없다.**
+
+### 타이포 적용 후 실측 (1440×810 / 390×844, innerWidth·dpr 병기)
+
+```text
+DECLARED==RENDERED  10/10  (h1·업무 h2·인용·편집기 kicker = MaruBuri / body·nav·카드 제목·설명·스트립·eyebrow = Pretendard)
+FACES LOADED        6/6    MaruBuri 400·700, Pretendard 400·500·600·700   원격 폰트 요청 0
+HEADLINE @1440      2줄 · 블록 114px · 2행 ink 517px   (원본 목표: 2줄 · 114px · 542px)
+TOPBAR              1줄 · h 69px                      카드 3열 · 첫 화면 안(511..715)
+HEADLINE @390       2줄 · 블록 73px  ← 마루부리는 30px에서 3줄(실측 한계 28px), 그래서 28px로 고정
+OVERFLOW_X          0 (1440 · 390)                    44px 미만 타깃 0건
+CONTRAST            26개 요소 전부 AA 통과 — 글자 화소마다 '잉크를 메운 뒤 국소 중간값'으로 추정한
+                    그 자리 배경과 견운 값. 1행 19.0 · 2행(골드) 10.5 · lead 19.0 · 인용 17.9 ·
+                    카드 제목 18.5+ · 카드 설명 18.5+ · 스트립 설명 6.03 · 업무 소개 4.60
+```
+
+대비 지표는 세 번 고쳤다. ①영역 전체의 brightest-2%는 텍스트 없는 밝은 배경을 끌어들여 과소평가를,
+②글자마다 22px 고리는 마루부리처럼 획이 빽빽한 서체에서 **이웃 획**을 배경으로 오인해 허위 실패를,
+③스크림을 진하게 하면 꼬리 표본이 줄어 오히려 수치가 나빠지는 역설을 냈다.
+잉크 화소를 영역 중간값으로 메운 뒤 국소 중간값 필터로 배경제를 만드는 방식으로 최종 확정했고,
+그때 단색 카드 위 텍스트는 worst==median(6.03)이 되어 지표가 물리에 맞는다.
+
 ### 재현
 
 ```bash
-python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 31 passed
+python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 35 passed
 node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
 python -m http.server 8801 --directory reference/padiem-parliament-ai-design-v1
 ```

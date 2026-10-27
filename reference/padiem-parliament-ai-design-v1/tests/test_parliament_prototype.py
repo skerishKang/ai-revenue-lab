@@ -242,7 +242,7 @@ def test_image_slots_are_a_css_only_swap_and_every_referenced_file_exists() -> N
         assert name in CSS, f"{name} has arrived but no slot points at it"
         assert name in (ROOT / "assets" / "IMAGE-SLOTS.md").read_text(encoding="utf-8"), f"{name} is not documented"
     on_disk = {p.name for p in (ROOT / "assets").iterdir() if p.is_file()}
-    referenced = set(re.findall(r'url\("\./assets/([^"]+)"\)', CSS))
+    referenced = local_asset_refs(CSS) - font_refs(CSS)
     assert referenced == set(applied), f"the screen must load exactly the four provided roles: {sorted(referenced)}"
     assert referenced <= on_disk, sorted(referenced - on_disk)
 
@@ -272,6 +272,18 @@ def test_the_api_notice_is_not_repeated_on_the_main_screen() -> None:
 
 
 # ── 2차 해석표가 지시한 배치 불일치 4건이 되살아나지 않도록 못박는다 ──────────
+ASSET_URL = re.compile(r'url\("\./assets/([^"]+)"\)')
+
+
+def local_asset_refs(text: str) -> set[str]:
+    """CSS가 상대 경로로 읽는 자산 전부(이미지 + 폰트)."""
+    return set(ASSET_URL.findall(text))
+
+
+def font_refs(text: str) -> set[str]:
+    return {r for r in local_asset_refs(text) if r.startswith("fonts/")}
+
+
 def rule_body(selector: str) -> str:
     """첫 번째 규칙 = 기본 규칙. 뒤에 오는 @media 덮어쓰기는 이 판정에 개입시키지 않는다."""
     found = [body for sel, body in rules(CSS) if sel == selector]
@@ -375,9 +387,71 @@ def test_countries_without_a_photo_say_so_explicitly() -> None:
     kr = " ".join(blocks_for("country", "kr"))
     assert re.search(r"--hero-photo:\s*(?:url|image-set)\(", kr), "kr is the country that actually has a licensed photo"
     assert re.search(r"--skyline-display:\s*none", kr), "the CSS skyline is a fallback, not decoration on top of a photo"
-    referenced = set(re.findall(r'url\("\./assets/([^"]+)"\)', CSS))
-    on_disk = {p.name for p in (ROOT / "assets").iterdir() if p.is_file()}
+    referenced = local_asset_refs(CSS)
+    on_disk = {p.relative_to(ROOT / "assets").as_posix() for p in (ROOT / "assets").rglob("*") if p.is_file()}
     assert referenced and referenced <= on_disk, f"CSS references assets that are not shipped: {sorted(referenced - on_disk)}"
+
+
+def test_the_shipped_fonts_are_the_ones_the_css_declares() -> None:
+    """한때 이 프로토타입은 폰트 이름만 선언하고 파일을 싣지 않아, 선언(Pretendard)과
+    실제 렌더(Noto Sans KR)가 달랐다. 그래서 '선언한 면은 실재하는 면'을 계약으로 못박는다.
+    """
+    faces = re.findall(r"@font-face\s*\{([^}]*)\}", COMMENT.sub("", CSS), re.S)
+    assert len(faces) == 6, f"Pretendard 400/500/600/700 + MaruBuri 400/700: got {len(faces)}"
+    declared: dict[str, set[str]] = {}
+    for body in faces:
+        fam = re.search(r'font-family:\s*"([^"]+)"', body)
+        wgt = re.search(r"font-weight:\s*(\d+)", body)
+        src = re.search(r'src:\s*url\("([^"]+)"\)', body)
+        assert fam and wgt and src, f"@font-face is incomplete: {body[:80]}"
+        assert src.group(1).startswith("./assets/fonts/"), f"font must be self-hosted: {src.group(1)}"
+        assert "format(\"woff2\")" in body, f"font must be woff2: {src.group(1)}"
+        declared.setdefault(fam.group(1), set()).add(wgt.group(1))
+        assert (ROOT / src.group(1).lstrip("./")).is_file(), f"declared font file is missing: {src.group(1)}"
+    assert declared.get("Pretendard") == {"400", "500", "600", "700"}, declared
+    assert declared.get("MaruBuri") == {"400", "700"}, declared
+
+    # kr 블록이 선언하는 앞의 두 패밀리는 방금 확인한 @font-face와 같아야 한다.
+    kr = " ".join(blocks_for("country", "kr"))
+    assert '--font-display: "MaruBuri"' in kr, "the adopted B2 pairing must actually be wired into the Korean theme"
+    assert '--font-body: "Pretendard"' in kr and '--font-label: "Pretendard"' in kr
+
+
+def test_css_never_asks_for_a_weight_that_has_no_file() -> None:
+    """650/750처럼 면이 없는 가중치를 물리면 브라우저가 임의 근사면을 고른다.
+    '선언 == 실재'를 유지하려면 쓰는 가중치가 배포된 4종 안에 있어야 한다.
+    """
+    shipped = {"400", "500", "600", "700"}
+    used = set(re.findall(r"font-weight:\s*(\d+)", COMMENT.sub("", CSS)))
+    assert used <= shipped, f"weights with no @font-face file: {sorted(used - shipped)}"
+
+
+def test_no_remote_font_is_loaded_and_licences_travel_with_the_files() -> None:
+    """원격 웹폰트 CDN은 요청·감사 범위를 저장소 밖으로 내보낸다. 로컬 파일만 허용한다."""
+    assert not re.search(r"@import|url\(\s*[\"']?(?:https?:)?//", CSS), "no remote stylesheet or remote font URL"
+    fonts = sorted(p.name for p in (ROOT / "assets" / "fonts").iterdir() if p.is_file())
+    assert sum(1 for f in fonts if f.endswith(".woff2")) == 6, fonts
+    licences = [f for f in fonts if f.startswith("LICENSE-")]
+    assert any("Pretendard" in f and "OFL" in f for f in licences), f"Pretendard OFL text must ship: {licences}"
+    assert any("MaruBuri" in f or "NAVER" in f for f in licences), f"Naver font notice must ship: {licences}"
+    ofl = next((ROOT / "assets" / "fonts" / f).read_text(encoding="utf-8") for f in licences if "Pretendard" in f)
+    assert "SIL OPEN FONT LICENSE" in ofl and "Reserved Font Name" in ofl
+    naver = next((ROOT / "assets" / "fonts" / f).read_text(encoding="utf-8") for f in licences if "MaruBuri" in f)
+    for probe in ("NAVER", "hangeul.pstatic.net", "commercial use", "상업"):
+        assert probe in naver, f"the Naver notice must record {probe}"
+    attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
+    for fam in ("Pretendard", "MaruBuri"):
+        assert fam in attribution, f"{fam} is shipped but not recorded in ATTRIBUTION.md"
+
+
+def test_mobile_headline_is_sized_for_two_lines() -> None:
+    """마루부리는 390에서 30px면 3줄로 꺾인다(실측 한계 28px). 원본 문구를 2줄로 유지한다."""
+    block = re.search(r"@media \(max-width: 390px\)\s*\{(.*?)\n\}", COMMENT.sub("", CSS), re.S)
+    assert block, "the 390 breakpoint block must exist"
+    head = re.search(r"\.pa-hero h1\s*\{([^}]*)\}", block.group(1))
+    assert head, "the 390 block must size the headline"
+    assert re.search(r"font-size:\s*28px", head.group(1)), (
+        "28px is the measured ceiling at which MaruBuri still sets the hero headline in two lines at 390")
 
 
 def test_prototype_directory_shape_is_independent() -> None:
