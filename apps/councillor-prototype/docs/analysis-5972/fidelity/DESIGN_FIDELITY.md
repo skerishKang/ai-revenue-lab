@@ -84,7 +84,25 @@ HEAD=이 문서를 포함한 커밋
 - 문서 높이 1478 → **1381px**, 카드 249.1 → **207.3px**, 모바일 히어로 434.8px(마스크 없음), 모바일 문서 3338 → **3244px**.
 - 모바일 인물 마스크: `mask-image`를 **제거**했고, 인물이 밴드 하단 경계에 붙어 잘린 단면이 보이지 않습니다.
 
-## 6. 보고 형식
+## 6. 최종 검증 (커밋 후 · 미리보기 실측)
+
+작업 트리는 clean이며, 아래는 **HEAD 커밋 `b1f1fe859`** 기준으로 로컬 서버와
+미리보기 배포본에서 각각 다시 측정한 값입니다.
+
+| 항목 | 방법 | 결과 |
+|---|---|---|
+| HEAD | `git rev-parse HEAD` / 작업 트리 | `b1f1fe85949e11d6dd0218cd9c7266d303db6a61`, `git status` clean |
+| 미리보기 대조 | 웹서버 응답 vs 로컬 파일 **바이트 대조**(9개 파일: 5페이지 + CSS·home.js·app.js·miraen.json, 개행 정규화) | **9/9 MATCH** |
+| 페이지 응답 | 미리보기 5개 경로 | 200 / 200 / 200 / 200 / 200 |
+| 기능 회귀(미리보기) | 실브라우저 42항목 | **42/42 PASS**, pageErrors 0건 |
+| 4xx·5xx | 5페이지 로드 중 관찰 | **0건** |
+| 폰트(미리보기) | 실렌더 `document.fonts` | `@font-face` 93개 선언, 페이지당 9~12개 loaded, 제목 MaruBuri / 본문 Pretendard Variable |
+| 외부 폰트 호스트 | 요청 URL 필터 | **0건** |
+
+미리보기 URL: `https://feat-5972-councillor-v2.councillor-prototype-v2.pages.dev`
+(이 커밋으로 재배포, 별칭이 이 배포를 가리킴)
+
+## 7. 보고 형식
 
 ```text
 DESIGN_SOURCE=reference/issue-5972-councillor-v2/reference_01_cinematic.png (1448x1086)
@@ -93,9 +111,11 @@ REFERENCE_ANALYSIS=READY
 REFERENCE_DEVIATIONS=히어로 파노라마/누끼/인용문 미적용(자산·문구 필요), 카드 +24·3열 +132px(기록 정보 유지), 아이콘 단일 색상
 ASSET_MAPPING=PARTIAL — 히어로 파노라마 없음, 나머지 자산은 원본과 대응 확인
 VISUAL_VERIFIED=PARTIAL — 상단바·히어로·섹션 헤드·남색 밴드 일치, 카드·아이콘·모바일 경계 보정 완료, 히어로 배경 미완
-FUNCTION_TESTS=42/42
-CI=아래 보고 참조
-PREVIEW=URL 및 검증 HEAD는 보고 참조
+HEAD=b1f1fe85949e11d6dd0218cd9c7266d303db6a61
+FUNCTION_TESTS=42/42 (미리보기 실브라우저, pageErrors 0)
+FONT_VERIFIED=MaruBuri/Pretendard Variable, 외부 폰트 호스트 0건
+PREVIEW=feat-5972-councillor-v2.councillor-prototype-v2.pages.dev — HEAD와 9/9 바이트 일치, 5페이지 200
+CI=이 브랜치에 적용되는 앱 전용 워크플로 없음(해당 없음). PR #5979 = OPEN / MERGEABLE / CLEAN
 PRODUCTION=UNCHANGED
 REMAINING=히어로 파노라마·고해상도 인물·확인된 인용문, 3열 밴드 밀도
 ```
