@@ -9,8 +9,15 @@
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
   <header class="topbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">임</span><span class="brand-name">임미란 의원</span></div>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">임</span>
+      <span class="brand-text">
+        <span class="brand-name">임미란 의원</span>
+        <span class="brand-tagline">전남광주통합특별시의회 · 남구 제1선거구</span>
+      </span>
+    </div>
     <nav class="top-nav" aria-label="주요 메뉴">
       <a href="./index.html" class="active">홈</a>
       <a href="./about.html">의원 소개</a>
@@ -18,74 +25,144 @@
       <a href="./policy.html">정책자료</a>
       <a href="./media.html">미디어</a>
     </nav>
-    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
+    <div class="top-actions">
+      <button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button>
+      <a class="top-cta" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
+    </div>
   </header>
 
   <main id="main">
-    <!-- Hero (#5972): portrait left, copy right — no full-bleed background, no text over the photo -->
+    <!-- Cinematic hero (reference_01): light photographic band, copy left, portrait right.
+         The band background is its own layer, so swapping in a real city/river panorama
+         is a one-line change (--hero-image in styles.css) with no layout change. -->
     <section class="hero" aria-labelledby="heroName">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <img class="hero-portrait"
+           src="https://assem.jeonnam-gwangju.go.kr/data/6130000/fileupload/memberPicture/2026/06/10/%EB%82%A8%EA%B5%AC1_%EB%AF%BC%EC%A3%BC%EB%8B%B9_%EC%9E%84%EB%AF%B8%EB%9E%80.png"
+           alt="임미란 의원 프로필 사진" width="500" height="641" decoding="async"
+           onerror="this.onerror=null;this.src='https://council.gwangju.go.kr/images/lawmaker/sub/9imr.jpg';" />
       <div class="hero-inner">
-        <img class="hero-photo" src="https://council.gwangju.go.kr/images/lawmaker/sub/9imr.jpg" alt="임미란 의원 프로필 사진" width="311" height="399" onerror="this.src='https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg'" />
         <div class="hero-copy">
           <p class="hero-eyebrow">전남광주통합특별시의회 · 남구 제1선거구</p>
-          <h1 class="hero-name" id="heroName">임미란</h1>
-          <p class="hero-lead">시민의 일상을 바꾸는 의정활동.<br />남구에서 전남광주통합특별시까지, 의원이 걸어온 길과 최근 활동을 한 곳에서 보실 수 있습니다.</p>
+          <h1 class="hero-name" id="heroName">
+            <span class="hero-name-line">시민의 일상을 바꾸는</span>
+            <span class="hero-name-sub">임미란의 의정활동</span>
+          </h1>
+          <p class="hero-lead">남구에서 전남광주통합특별시까지. 의원이 걸어온 길과 최근 의정활동 기록을 한 곳에서 보실 수 있습니다.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="./activity.html">의정활동 보기</a>
-            <a class="btn secondary" href="./about.html">의원 소개</a>
+            <a class="btn primary" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
+            <a class="btn secondary" href="./about.html">의원 소개 <span aria-hidden="true">→</span></a>
           </div>
-          <ul class="hero-facts">
-            <li><span class="fact-label">현직</span><span class="fact-value">전남광주통합특별시의회의원</span></li>
-            <li><span class="fact-label">지역구</span><span class="fact-value">남구 제1선거구</span></li>
-            <li><span class="fact-label">상임위</span><span class="fact-value">보건복지위원회 위원</span></li>
-            <li><span class="fact-label">소속</span><span class="fact-value">더불어민주당</span></li>
-          </ul>
         </div>
       </div>
     </section>
 
-    <!-- Key activities (2-3) -->
+    <!-- 3-item guide strip under the band (reference y 417..500) -->
+    <div class="hero-strip">
+      <div class="hero-strip-inner">
+        <div class="strip-item">
+          <span class="strip-icon" aria-hidden="true">1</span>
+          <div>
+            <p class="strip-title">의정활동 기록</p>
+            <p class="strip-desc">본회의·위원회·기념식 참석 기록과 원문 링크</p>
+          </div>
+        </div>
+        <div class="strip-item">
+          <span class="strip-icon" aria-hidden="true">2</span>
+          <div>
+            <p class="strip-title">의원 소개</p>
+            <p class="strip-desc">프로필·학력·경력·당선 기록</p>
+          </div>
+        </div>
+        <div class="strip-item">
+          <span class="strip-icon" aria-hidden="true">3</span>
+          <div>
+            <p class="strip-title">정책자료</p>
+            <p class="strip-desc">공개된 정책 자료와 발언 정리</p>
+          </div>
+        </div>
+        <a class="strip-link" href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지 →</a>
+      </div>
+    </div>
+
+    <!-- Recent activity: 3 verified records + 1 grounded summary card (reference: 4 cards) -->
     <section class="section" aria-labelledby="keyActTitle">
       <div class="section-inner">
-        <p class="section-eyebrow">Recent Activity</p>
-        <h2 class="section-title" id="keyActTitle">주요 의정활동</h2>
-        <p class="section-lead">최근 의정활동 일부입니다. 전체 목록은 의정활동 페이지에서 확인하세요.</p>
+        <div class="section-head">
+          <div>
+            <p class="section-eyebrow">Recent Activity</p>
+            <h2 class="section-title" id="keyActTitle">주요 의정활동</h2>
+            <p class="section-lead">의회 공개 자료로 확인한 최근 기록입니다. 각 카드를 누르면 상세 내용을 볼 수 있습니다.</p>
+          </div>
+          <a class="section-more" href="./activity.html">전체 의정활동 →</a>
+        </div>
         <div class="key-activity-grid" id="keyActivities"></div>
-        <div style="margin-top:24px;">
-          <a class="btn secondary" href="./activity.html">전체 의정활동 보기 →</a>
-        </div>
       </div>
     </section>
 
-    <!-- Quick links -->
-    <section class="section" style="padding-top:40px;">
+    <!-- Navy info band (reference y 736..860) — counts of material on this page, not achievements -->
+    <section class="stat-band" aria-labelledby="statTitle">
+      <div class="stat-band-inner">
+        <div>
+          <h2 class="stat-band-title" id="statTitle">이 페이지에 정리한 자료</h2>
+          <p class="stat-band-lead">공개 자료에서 확인한 항목 수입니다. 성과나 평가 지표가 아닙니다.</p>
+        </div>
+        <ul class="stat-list" id="statList"></ul>
+      </div>
+    </section>
+
+    <!-- 3-column news / media / links (reference y 860..1035) -->
+    <section class="section" aria-labelledby="colsTitle">
       <div class="section-inner">
-        <div class="quick-links">
-          <a class="quick-link" href="./about.html">
-            <span class="ql-label">About</span>
-            <span class="ql-title">의원 소개</span>
-            <span class="ql-desc">프로필·학력·경력</span>
-          </a>
-          <a class="quick-link" href="./policy.html">
-            <span class="ql-label">Policy</span>
-            <span class="ql-title">정책자료</span>
-            <span class="ql-desc">보고서·예산·발언</span>
-          </a>
-          <a class="quick-link" href="./media.html">
-            <span class="ql-label">Media</span>
-            <span class="ql-title">미디어</span>
-            <span class="ql-desc">사진·영상·채널</span>
-          </a>
+        <div class="section-head">
+          <div>
+            <p class="section-eyebrow">More</p>
+            <h2 class="section-title" id="colsTitle">소식 · 미디어 · 자료</h2>
+            <p class="section-lead">의회가 공개한 소식과 자료를 모았습니다.</p>
+          </div>
+        </div>
+        <div class="col-grid">
+          <div>
+            <div class="col-head"><h3 class="col-title">의정소식</h3></div>
+            <ul class="col-list" id="homeNews"></ul>
+          </div>
+          <div>
+            <div class="col-head">
+              <h3 class="col-title">미디어</h3>
+              <a class="section-more" href="./media.html">전체 →</a>
+            </div>
+            <ul class="col-list" id="homeMedia"></ul>
+          </div>
+          <div>
+            <div class="col-head">
+              <h3 class="col-title">바로가기</h3>
+              <a class="section-more" href="./policy.html">정책자료 →</a>
+            </div>
+            <div class="col-tile-grid" id="homeLinks"></div>
+          </div>
         </div>
       </div>
     </section>
-
-    <footer class="site-footer">
-      <p>이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.</p>
-      <p>자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
-    </footer>
   </main>
 
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong>임미란 의원</strong>
+        <span>전남광주통합특별시의회 · 남구 제1선거구</span>
+      </div>
+      <nav class="footer-nav" aria-label="바닥글 메뉴">
+        <a href="./about.html">의원 소개</a>
+        <a href="./activity.html">의정활동</a>
+        <a href="./policy.html">정책자료</a>
+        <a href="./media.html">미디어</a>
+        <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
+      </nav>
+      <p class="footer-note">이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.<br />자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+    </div>
+  </footer>
+
   <script src="./static/app.js"></script>
+  <script src="./static/home.js"></script>
 </body>
 </html>
