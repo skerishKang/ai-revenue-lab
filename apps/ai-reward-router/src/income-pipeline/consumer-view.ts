@@ -1,7 +1,7 @@
 import type { UserIncomeRecord, UserIncomeSummary, IncomePipelineStatus } from './domain.js';
 import { INCOME_PIPELINE_STATUS_LABELS, INCOME_PIPELINE_STATUSES, formatCurrencyAmount, formatIncomeDate, filterUserIncomeRecords, sortUserIncomeRecords, buildUserIncomeSummary } from './domain.js';
 import type { PublicOpportunity } from '../public-supply/domain.js';
-import { toPublicOpportunityCard, isPublicOpportunityDisplayable } from '../public-supply/domain.js';
+import { displayablePublicOpportunityCards } from '../public-supply/domain.js';
 import {
   CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
@@ -145,7 +145,11 @@ function renderStatusFilter(filters: IncomePipelineFilterState): string {
 function renderRecordCard(record: UserIncomeRecord): string {
   const statusLabel = INCOME_PIPELINE_STATUS_LABELS[record.status];
   const expectedStr = formatCurrencyAmount(record.expectedAmount, record.expectedCurrency);
-  const actualStr = formatCurrencyAmount(record.actualAmount, record.actualCurrency);
+  // A recorded amount is not a received payment: only the PAID status may
+  // present the figure as 실제 지급 (#987 consumer-honesty rule).
+  const actualStr = record.status === 'PAID'
+    ? formatCurrencyAmount(record.actualAmount, record.actualCurrency)
+    : '지급 확인 전';
   const detailHref = record.opportunityId ? `/detail?id=${escapeHtml(record.opportunityId)}` : null;
   return `<article class="pipeline-card" data-record-id="${escapeHtml(record.id)}">
     <div class="pipeline-card__topline">
@@ -184,7 +188,7 @@ function renderRecordCard(record: UserIncomeRecord): string {
 }
 
 function renderAvailableOpportunities(opportunities: readonly PublicOpportunity[]): string {
-  const displayable = opportunities.filter((opp) => isPublicOpportunityDisplayable(opp)).map(toPublicOpportunityCard);
+  const displayable = displayablePublicOpportunityCards(opportunities);
   if (displayable.length === 0) return '';
   return `<section class="pipeline-available" aria-labelledby="available-title">
     <div class="section-head">
@@ -293,6 +297,8 @@ ${THEME_CSS_SHELL_INSET}
     .footer-note { margin: 40px auto 0; max-width: 560px; color: var(--faint); font-size: 11.5px; line-height: 1.65; text-align: center; }
     @media (min-width: 680px) {
       .summary-grid { grid-template-columns: repeat(3, 1fr); }
+      .filter-bar { grid-template-columns: 1fr 1fr auto; }
+      .filter-bar button { grid-column: auto; }
     }
     @media (min-width: 1024px) {
       .summary-grid { grid-template-columns: repeat(5, 1fr); }

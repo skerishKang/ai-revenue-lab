@@ -4,8 +4,8 @@ import {
   type AdClickConsumerCard,
 } from './consumer-card.js';
 import {
+  displayablePublicOpportunityCards,
   isPublicOpportunityDisplayable,
-  toPublicOpportunityCard,
   toPublicOpportunityDetail,
   type PublicOpportunity,
   type PublicOpportunityCard,
@@ -124,7 +124,7 @@ export function buildAdClickFirstConsumerHome(
   options: BuildAdClickFirstConsumerHomeOptions = {},
 ): AdClickFirstConsumerHomeViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   return Object.freeze({
     mode: 'AD_CLICK_FIRST' as const,
     issueNumber: 1112 as const,
@@ -166,7 +166,7 @@ export function buildAdClickFirstTodayRoute(
   options: BuildAdClickFirstTodayRouteOptions = {},
 ): AdClickFirstTodayRouteViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   const publicImmediateCards = Object.freeze(
     publicCards
       .filter((card) => card.todayTier === 'IMMEDIATE')
@@ -217,14 +217,6 @@ export interface BuildAdClickFirstOpportunityDetailOptions {
   readonly publicOpportunities?: readonly PublicOpportunity[];
 }
 
-export function displayablePublicCards(opportunities: readonly PublicOpportunity[]): readonly PublicOpportunityCard[] {
-  return Object.freeze(
-    opportunities
-      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity))
-      .map(toPublicOpportunityCard),
-  );
-}
-
 function publicCardMatchesQuery(card: PublicOpportunityCard, lowerQuery: string): boolean {
   return (
     card.titleKo.toLowerCase().includes(lowerQuery) ||
@@ -257,7 +249,7 @@ export function buildAdClickFirstBrowse(
 
   // Public lane: verified public opportunities only. The ad-click lane activation
   // policy is untouched; public categories become active with real verified supply.
-  const allPublicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const allPublicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   let publicCards: readonly PublicOpportunityCard[];
   if (selectedCategory === 'ALL') {
     publicCards = allPublicCards;
