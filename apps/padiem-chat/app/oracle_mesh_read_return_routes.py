@@ -394,6 +394,31 @@ class OracleMeshReturnSource:
             "account_ref": next(iter(accounts)),
         }
 
+    def adopted_roots_for_device(self, *, device_id: Any) -> list[str]:
+        """The folders this deployment's map already pins for one device.
+
+        Administrator adoption (#5573 PR-4e) copies them onto the new link so an
+        adopted PC can be used at once. An unknown device yields no roots, which
+        the route reads as "not in the map" - it never invents a folder, and it
+        never hands out another account's pin to somebody the map does not list.
+        """
+        if not is_pc_device_id(device_id):
+            return []
+        roots: list[str] = []
+        for row in self._rows:
+            if row.get("device_id") != device_id and row.get("node_ref") != device_id:
+                continue
+            root = _pc_files_approved_root(row.get("file_path"))
+            if root is not None and root not in roots:
+                roots.append(root)
+        return roots
+
+    def names_device(self, *, device_id: Any) -> bool:
+        return bool(self.adopted_roots_for_device(device_id=device_id)) or any(
+            row.get("device_id") == device_id or row.get("node_ref") == device_id
+            for row in self._rows
+        )
+
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
         if not isinstance(presented, str) or not presented:
