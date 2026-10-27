@@ -3582,12 +3582,17 @@
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
   // A LoveTree sign-in that arrived here hands its pending ticket to the form it already
-  // uses; nothing about the dialog's content or wording changes.
+  // uses; nothing about the dialog's content or wording changes. The query is read by hand
+  // because the app shell also loads inside curated VM harnesses that do not define the
+  // usual query-string helper.
   if (authHandoff && passwordLoginForm) {
-    const pendingHandoff = new URLSearchParams(window.location.search).get("handoff") || "";
-    if (pendingHandoff.length <= 1024) {
+    let pendingHandoff = "";
+    for (const part of window.location.search.slice(1).split("&")) {
+      if (part.startsWith("handoff=")) pendingHandoff = part.slice("handoff=".length);
+    }
+    if (pendingHandoff.length > 0 && pendingHandoff.length <= 1024) {
       authHandoff.value = pendingHandoff;
-      if (pendingHandoff) openAuthDialog();
+      openAuthDialog();
     }
   }
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
