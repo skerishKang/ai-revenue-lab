@@ -302,15 +302,16 @@ def _active(roots: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _public_link(row: dict[str, Any]) -> dict[str, Any]:
+    paused = bool(row.get("paused_at"))
     return {
         "link_id": row["link_id"],
         "mesh_node_id": row["mesh_node_id"],
         "label": row.get("label"),
-        "state": row["state"],
-        # A paused link still exists and keeps its folder grants; 073 says when
-        # the pause began, and the projection keeps both so a card can show the
-        # pause without asking the database again.
-        "paused": bool(row.get("paused_at")),
+        # A paused link still exists and keeps its folder grants, so the listing
+        # names the state the owner is actually looking at. The execution reads
+        # (`links_for_owner`, `device_scope`, `link_for`) drop the row instead.
+        "state": "paused" if paused else row["state"],
+        "paused": paused,
         "paused_at": row.get("paused_at"),
         "roots": [
             {

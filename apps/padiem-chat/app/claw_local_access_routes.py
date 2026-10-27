@@ -141,9 +141,15 @@ async def _owner_has_linked_pc(request: Request, owner_id: str) -> bool:
     One read-only question to the pairing directory the same deployment already
     composed. No store, an unapplied 072 migration or a failed read all answer
     ``False``, which leaves the panel exactly as it behaved before links.
+
+    The card asks "does this account have a PC", not "may work be sent to it
+    now", so a paused link still counts: pausing stops dispatch and must not
+    bring the desktop panel back. ``list_links`` answers that (everything except
+    a revoked pair); the execution-facing reader is the fallback for a store that
+    composes only that one method.
     """
     store = getattr(request.app.state, "pc_device_pairing_store", None)
-    reader = getattr(store, "links_for_owner", None)
+    reader = getattr(store, "list_links", None) or getattr(store, "links_for_owner", None)
     if not callable(reader):
         return False
     try:

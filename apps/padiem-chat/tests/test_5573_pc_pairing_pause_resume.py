@@ -20,6 +20,7 @@ These checks cover exactly that:
 from __future__ import annotations
 
 import sys
+import types
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -155,6 +156,55 @@ def test_another_accounts_pause_attempt_is_403_and_an_unknown_link_is_404() -> N
     code, pause_status, resume_status, unknown_status = pairing.run(journey())
     assert (code, pause_status, resume_status) == ("pc_pairing_link_forbidden", 403, 403)
     assert unknown_status == 404
+
+
+def test_a_paused_link_stays_on_the_card_as_paused_and_resumes() -> None:
+    """The listing is the owner's inventory, not the dispatch queue.
+
+    A stopped PC must still be visible with its folders, with the resume control
+    next to it; only the execution reads drop it.
+    """
+    async def journey():
+        store = pairing.store()
+        link_id = await _adopt(store)
+        app = pairing.app_with(store)
+        async with pairing.client(app) as session:
+            await session.post(f"/api/pc/pairings/{link_id}/pause")
+            while_paused = await session.get("/api/pc/pairings")
+            resumed = await session.post(f"/api/pc/pairings/{link_id}/resume")
+            after = await session.get("/api/pc/pairings")
+        return while_paused.json(), resumed.json(), after.json()
+
+    while_paused, resumed, after = pairing.run(journey())
+    listed = while_paused["links"]
+    assert len(listed) == 1, "a paused link must not vanish from the card"
+    assert listed[0]["state"] == "paused" and listed[0]["paused"] is True
+    assert len(listed[0]["roots"]) == 1, "and it must not lose its folder"
+    assert resumed["link"]["state"] == "active" and resumed["link"]["paused"] is False
+    assert after["links"][0]["state"] == "active"
+
+
+def test_a_paused_pc_still_counts_as_a_linked_pc_for_the_desktop_card() -> None:
+    """#5951's judge asks "does this account have a PC", not "may we send work"."""
+    from app.claw_local_access_routes import _owner_has_linked_pc
+
+    async def journey():
+        store = pairing.store()
+        link_id = await _adopt(store)
+        request = types.SimpleNamespace(
+            app=types.SimpleNamespace(
+                state=types.SimpleNamespace(pc_device_pairing_store=store)
+            )
+        )
+        before = await _owner_has_linked_pc(request, pairing.OWNER)
+        await store.pause_link(user_id=pairing.OWNER, link_id=link_id, now=pairing._now())
+        paused = await _owner_has_linked_pc(request, pairing.OWNER)
+        await store.revoke_link(user_id=pairing.OWNER, link_id=link_id, now=pairing._now())
+        revoked = await _owner_has_linked_pc(request, pairing.OWNER)
+        return before, paused, revoked
+
+    before, paused, revoked = pairing.run(journey())
+    assert (before, paused, revoked) == (True, True, False)
 
 
 def test_the_two_routes_are_registered_and_ask_for_no_confirmation_value() -> None:

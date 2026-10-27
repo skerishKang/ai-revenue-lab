@@ -42,7 +42,6 @@
       resumedLink: "이 PC를 다시 시작했습니다.",
       pause: "일시 중지",
       resume: "다시 시작",
-      paused: "일시 중지됨",
       revokedRoot: "폴더 승인을 해제했습니다.",
       approved: "폴더를 승인했습니다.",
       refused: "서버가 이 요청을 받아들이지 않았습니다.",
@@ -50,6 +49,7 @@
         active: "연결됨",
         pending_verification: "서버 확인 대기 중",
         revoked: "연결 해제",
+        paused: "일시 중지됨",
       },
       rootLabel: "폴더",
       rootPath: "경로",
@@ -80,7 +80,6 @@
       resumedLink: "PC resumed.",
       pause: "Pause",
       resume: "Resume",
-      paused: "Paused",
       revokedRoot: "Folder approval revoked.",
       approved: "Folder approved.",
       refused: "The server refused this request.",
@@ -88,6 +87,7 @@
         active: "Connected",
         pending_verification: "Waiting for server confirmation",
         revoked: "Revoked",
+        paused: "Paused",
       },
       rootLabel: "Folder",
       rootPath: "Path",
@@ -199,12 +199,11 @@
     const name = element(
       "strong", "pc-pairing-name", link.label || link.mesh_node_id || t.node,
     );
-    const paused = link.paused === true;
     const state = element("span", "pc-pairing-state",
-      paused ? t.paused : (t.linkState[link.state] || link.state || ""));
-    // A paused link is still connected: the pause is reported on top of the
-    // link's own state, never by rewriting it.
-    state.dataset.state = paused ? "paused" : String(link.state || "");
+      t.linkState[link.state] || link.state || "");
+    // A paused link arrives with state "paused": it is still connected, and the
+    // server's own word is the only source of what the row says.
+    state.dataset.state = String(link.state || "");
     row.append(name, state);
     if (link.mesh_node_id) {
       row.append(element("small", "pc-pairing-node", `${t.node}: ${link.mesh_node_id}`));
