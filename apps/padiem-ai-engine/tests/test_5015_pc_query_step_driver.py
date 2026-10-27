@@ -11,9 +11,15 @@ from app.claw_pc_query_step_driver import (
     CLAW_ENGINE_PC_DRIVE_URL,
     PC_DRIVES_CANONICAL_TOOL_ID,
     PC_DRIVES_TOOL_ID,
+    PC_DELETE_FILE_CANONICAL_TOOL_ID,
     PC_LIST_FILES_CANONICAL_TOOL_ID,
+    PC_MOVE_FILE_CANONICAL_TOOL_ID,
     PC_LIST_FILES_SCOPE,
     PC_LIST_FILES_TOOL_ID,
+    PC_DELETE_FILE_TOOL_ID,
+    PC_MOVE_FILE_TOOL_ID,
+    PC_WRITE_FILE_CANONICAL_TOOL_ID,
+    PC_WRITE_FILE_TOOL_ID,
     PC_QUERY_SCOPE,
     PC_READ_FILE_CANONICAL_TOOL_ID,
     PC_READ_FILE_SCOPE,
@@ -229,9 +235,13 @@ def test_drive_binding_registers_core_toolruntime_contract():
         PC_DRIVES_CANONICAL_TOOL_ID,
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
+        PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_MOVE_FILE_CANONICAL_TOOL_ID,
+        PC_DELETE_FILE_CANONICAL_TOOL_ID,
     }
     assert set(binding.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+        PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
     }
 
 
@@ -247,9 +257,13 @@ def test_chat_binding_shares_contract_under_chat_product_only():
         PC_DRIVES_CANONICAL_TOOL_ID,
         PC_LIST_FILES_CANONICAL_TOOL_ID,
         PC_READ_FILE_CANONICAL_TOOL_ID,
+        PC_WRITE_FILE_CANONICAL_TOOL_ID,
+        PC_MOVE_FILE_CANONICAL_TOOL_ID,
+        PC_DELETE_FILE_CANONICAL_TOOL_ID,
     }
     assert set(chat.tool_runtime.registered_tool_ids) == set(claw.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+        PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
     }
     # Distinct product authority: Chat binding never carries the Claw app or
     # agent identity, and Claw never carries the Chat one.

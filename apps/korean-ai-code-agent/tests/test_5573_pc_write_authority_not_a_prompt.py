@@ -27,6 +27,13 @@ from kagent.pc_query_adapter import (
     pc_write_file_tool_spec,
 )
 
+
+def _contract():
+    return build_pc_query_product_contract(
+        app_id=CHAT_APP_ID, agent_id=CHAT_PC_QUERY_AGENT_ID,
+    )
+
+
 WRITE_SPECS = (
     (PC_WRITE_FILE_TOOL_ID, pc_write_file_tool_spec),
     (PC_MOVE_FILE_TOOL_ID, pc_move_file_tool_spec),
@@ -43,6 +50,18 @@ def test_write_tools_declare_the_authority_instead_of_a_user_prompt():
         # No time ceiling: #5995 removed the arbitrary cap, and the write lane
         # adds none of its own back.
         assert spec.timeout_seconds is None, tool_id
+
+
+def test_no_pc_tool_declares_a_deadline_of_its_own():
+    """#5995 lifted the caps; this lane declares none, read or write.
+
+    The read specs still carried the 300 seconds they were written with before
+    that decision, which is a ceiling on how long a PC may take to answer.
+    """
+    specs = [entry.runtime_spec for entry in _contract().registry_entries]
+    assert {spec.timeout_seconds for spec in specs} == {None}, [
+        (spec.id, spec.timeout_seconds) for spec in specs
+    ]
 
 
 def test_the_paired_link_already_authorizes_every_write_tool():

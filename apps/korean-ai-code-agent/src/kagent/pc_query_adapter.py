@@ -352,7 +352,7 @@ def pc_drives_tool_spec() -> ToolSpec:
         auth_scope=(PC_QUERY_SCOPE,), input_schema={"type":"object","properties":{
             "device_id":{"type":"string","pattern":PC_DEVICE_ID_PATTERN},
         },"additionalProperties":False},
-        output_contract={"type":"object"}, timeout_seconds=300.0)
+        output_contract={"type":"object"}, timeout_seconds=None)
 
 
 def pc_list_files_tool_spec() -> ToolSpec:
@@ -362,7 +362,7 @@ def pc_list_files_tool_spec() -> ToolSpec:
         auth_scope=(PC_LIST_FILES_SCOPE,),
         input_schema={"type":"object","properties":{"path":{"type":"string","minLength":1,"maxLength":2048}},
                       "required":["path"],"additionalProperties":False},
-        output_contract={"type":"object"}, timeout_seconds=300.0)
+        output_contract={"type":"object"}, timeout_seconds=None)
 
 
 def pc_read_file_tool_spec() -> ToolSpec:
@@ -372,7 +372,7 @@ def pc_read_file_tool_spec() -> ToolSpec:
         auth_scope=(PC_READ_FILE_SCOPE,),
         input_schema={"type":"object","properties":{"path":{"type":"string","minLength":1,"maxLength":2048}},
                       "required":["path"],"additionalProperties":False},
-        output_contract={"type":"object"}, timeout_seconds=300.0)
+        output_contract={"type":"object"}, timeout_seconds=None)
 
 
 def _pc_file_tool_spec(
@@ -404,11 +404,12 @@ def _pc_file_tool_spec(
         auth_scope=(scope,),
         input_schema={"type": "object", "properties": properties, "required": required,
                       "additionalProperties": False},
-        # Reads keep the bound they have always declared. A write names none: the
-        # PC may run as long as the change takes, and #5995 removed the cap it
-        # used to inherit.
+        # No per-tool deadline is declared for this lane. #5995 lifted the
+        # arbitrary ToolSpec cap, and the read tools still carried the 300 seconds
+        # they inherited from before that decision: a PC that takes longer to
+        # answer must not be cut off by a number this contract never justified.
         output_contract={"type": "object"},
-        timeout_seconds=300.0 if reading else None)
+        timeout_seconds=None)
 
 
 def _pc_path_property() -> dict[str, Any]:
