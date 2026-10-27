@@ -93,8 +93,9 @@
   }
 
   function applyTheme(country, style) {
-    const safeCountry = COUNTRIES.indexOf(country) >= 0 ? country : "kr";
-    const safeStyle = STYLES.indexOf(style) >= 0 ? style : "dark";
+    // 저장된 선호가 없으면 마크업이 정한 기본(04 시안: 한국 · 밝은 작업 밴드)을 지킨다.
+    const safeCountry = COUNTRIES.indexOf(country) >= 0 ? country : (root.dataset.country || "kr");
+    const safeStyle = STYLES.indexOf(style) >= 0 ? style : (root.dataset.style || "light");
     root.dataset.country = safeCountry;
     root.dataset.style = safeStyle;
     countrySelect.value = safeCountry;
@@ -171,6 +172,13 @@
     document.querySelectorAll(".pa-work-select").forEach((button) => {
       button.setAttribute("aria-expanded", button.dataset.work === work ? "true" : "false");
     });
+    document.querySelectorAll(".pa-work").forEach((card) => {
+      card.classList.toggle("is-open", card.dataset.work === work);
+    });
+    document.querySelectorAll(".pa-nav-item").forEach((item) => {
+      const target = item.dataset.nav;
+      item.classList.toggle("is-current", target === (work || "home"));
+    });
   }
 
   function openWork(work, moveFocus) {
@@ -220,6 +228,33 @@
     const first = document.querySelector(".pa-work-select");
     if (first && typeof first.focus === "function") first.focus();
   });
+
+  // 사이드바 메뉴: 시안의 영구 탐색. 미구현 항목은 눌리지 않는다는 표시만 남긴다.
+  document.querySelectorAll(".pa-nav-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const target = item.dataset.nav;
+      if (item.getAttribute("aria-disabled") === "true") {
+        announce("준비 중인 메뉴입니다 — 이 프로토타입에서는 동작하지 않습니다.");
+        return;
+      }
+      if (target === "home") goHome();
+      else openWork(target);
+    });
+  });
+
+  // 상단 검색: 시안의 검색창 모양이지만 죽은 통제가 아니라 카드 필터로 실제로 동작한다.
+  document.getElementById("paSearch").addEventListener("input", (event) => {
+    const query = String(event.target.value || "").trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll(".pa-work").forEach((card) => {
+      const haystack = (card.textContent || "").toLowerCase();
+      const shown = !query || haystack.indexOf(query) >= 0;
+      card.hidden = !shown;
+      if (shown) visible += 1;
+    });
+    document.getElementById("paWorksEmpty").hidden = visible !== 0;
+  });
+  document.getElementById("paSearchForm").addEventListener("submit", (event) => event.preventDefault());
 
   document.getElementById("paBack").addEventListener("click", goHome);
 

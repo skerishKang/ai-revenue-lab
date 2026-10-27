@@ -63,55 +63,61 @@ python -m http.server 8765     # http://127.0.0.1:8765/index.html
 - 축사·SNS·회의록·활동집의 기존 기능과 운영 CSS/HTML/JS는 수정되지 않았습니다.
 - 국가별 디자인을 별도 앱으로 복제하지 않습니다. 이 디렉터리는 1차 시안 검토용입니다.
 
-## v2 — 실제 사진 히어로 (Visual Fidelity 1차 개선)
+## v3 — 원본 시안과 대조한 최종 배치 (#5967 자산 전달 후)
 
-1차(CSS/SVG로 그린 의사당 실루엣)는 CENTRAL 검토에서 **채택되지 않았습니다.** 피드백은
-① 히어로 사진, ② 건축물 구도, ③ 네이비/골드, ④ 빛의 대비, ⑤ 큰 타이포그래피, ⑥ 3카드 배치가
-우선순위였고, v2는 그 순서대로 다시 만들었습니다.
+CENTRAL이 `reference/design-assets/`에 시안 4종 + ZIP을 전달했고, SHA-256 6/6을 이 머신에서
+다시 계산해 확인했다. `04_korea_cinematic_home.png`를 한국 기본 시안으로 삼아 배치를 다시 잡았다.
 
-### 이미지 자산
+### 시안이 요구한 구조와 실제 구현
 
-| | 상태 |
-| --- | --- |
-| CENTRAL 시안 `04_korea_cinematic_home.png` 외 3종 | **없음.** 이 머신(Downloads·Documents·Pictures·E:·F:·G:)과 GitHub(#5967 본문·댓글)에서 확인 실패. 대체 그림을 만들어 완성 처리하지 않았다. |
-| 한국 히어로 사진 | **실제 사진 확보·라이선스 확인.** `Dangsan Railway Bridge Night View.jpg` — 저작자 Tony, **CC BY 2.0**(ShareAlike 없음), Wikimedia Commons. 출처·사용 조건·표기 요건은 `assets/ATTRIBUTION.md`, 화면 하단에 저작 표기 노출. |
-| 미국·프랑스·영국 히어로 | **미확보.** 각 국가 블록이 `--hero-photo: none`을 명시해 코드로 기록하고, 그때만 CSS/SVG 백스톱 장면이 렌더된다. |
+| 시안 요소 | 구현 | 1440 CSS px 실측 |
+| --- | --- | --- |
+| 상단 수평 내비(브랜드 · 메뉴 · 검색 · 계정) | `.pa-topbar` 안에 브랜드 · 6개 메뉴 · 검색 · 상태 칩 · 테마 전환 | 내비 한 줄 높이 64px, 메뉴 4개 활성 + 2개 `aria-disabled` |
+| 왼쪽 텍스트 / 오른쪽 사진 히어로 | `.pa-hero` 46% / 54% 분할, 왼쪽은 `--hero-panel`(그라파이트) | 히어로 469px, h1 48px, 골드 CTA 255×52 |
+| 사진 위 우측 인용 | `.pa-hero-quote`를 사진 층 위에 절대 배치 | 768 이하에서는 사진에 가려 숨김 |
+| AI WORK TOOLS 밴드(밝은 배경) | 기본 `data-style="light"` → 페이지는 밝고 히어로 패널만 어둡게 | 본문 배경 `rgb(247,244,238)` |
+| 카드 3장(사진 + 색 오버레이 + 번호 + 원형 화살표) | `--work-1/2/3`(남·초록·보라) 위에 같은 사진을 자른 위치로 얹음, opacity .58 | 카드 431×285, 3열, 겹침 없음 |
+| 기능 스트립 4항 | `.pa-strip` | 4열 @1440 · 2열 @1100 · 1열 @767 |
 
-사진 파일 자체는 리사이즈·재인코딩만 했고 크롭·색 보정을 하지 않았습니다. 건물 확대와 네이비/골드
-톤은 렌더 단계(`--hero-photo-size`, `--hero-photo-position`, 국가 음계 토)에서 결정됩니다.
+### 좌우 비교
 
-### 구성 요소별 구현 (1440 실측)
+`docs/screenshots/5967/compare-kr-1440.png` — 위쪽 히어로 밴드, 아래쪽 카드 밴드를 같은 폭으로
+맞춰 왼쪽은 원본 시안, 오른쪽은 실제 웹 캡처다.
 
-| 요구 | v1 | v2 | 측정값 |
-| --- | --- | --- | --- |
-| 히어로 사진 | CSS 그라디언트 + SVG | 실제 사진(2400/1200 image-set) | `background-size: 128%`, `position: 88% 66%`, 사진 요청 200 |
-| 건축물 구도 | 임의 실루엣 | 여의도·국회 의사당 돔과 주랑이 우측 1/3에 통째로 보이도록 앵커 | 장면 638px, 사진 층 1295×637 |
-| 네이비/골드 | 장미·호박 석양 | 딥 네이비 램프(`#060b18`→`#9db3d2`) + 골드 액센트(`#e8b45f`) | 국가 음계 8단 전부 교체, 스타일 축은 무변경 |
-| 빛의 대비 | 단조 그라디언트 | 사진 하이라이트 + 좌측/하단 스크림 2중 | 제목 최악 대비 15.85:1 |
-| 큰 타이포그래피 | 62px | 최대 82px 세리프, 자간 -0.035em | 실측 81.16px @1440 |
-| 3카드 배치 | 장면 아래 별도 단 | 장면을 32px 덮어쓰는 숫자 매김 카드(01·02·03) | 카드-히어로 겹침 32px, CTA 이격 17px |
+### 남아 있는 차이 (원인을 명시)
 
-### v2 계측
+1. **석양 톤.** 시안은 주황 석양, 보유 자산은 같은 건물의 **밤** 사진(CC BY 2.0)이다. 파일에 손을 대지
+   않고 `--pa-grade-op`(0.42)의 `mix-blend-mode: color`로 색만 입혔다. 완전히 맞추려면 석양 사진
+   자산이 필요하다 — 임의로 생성한 배경으로 대체하지 않는다.
+2. **카드 사진.** 시안은 카드마다 서로 다른 소재(연단·스마트폰·보고서)를 쓴다. 지금은 같은 라이선스
+   사진을 위치만 바꿔 깔았다. 소재별 사진 3장이 추가 자산으로 필요하다.
+3. **상단 바 2행.** 시안에는 없는 국가/스타일 전환기와 `API 미연결` 배지를 프로토타입이 갖고 있어
+   1426px에서 한 줄로 정리되지 않는다. 전환기를 설정 팝업으로 옮길지는 대표 판단이다.
+4. **건물 크기.** 사진 안에서 의사당이 차지하는 비중이 시안보다 작다. `--hero-photo-zoom`(1.34)과
+   `--hero-photo-position`(88% 60%)으로 조정 가능한 값으로 노출해 뒀다.
+
+### v3 계측 (Tabbit 실제 Chromium · 로컬 서버 · 운영 주소 미사용)
 
 ```text
-RESPONSIVE=PASS   1440/768/390 가로 오버플로 0 · 카드 3열@1440 · 390은 장면이 상단 배너(겹침 없음)
-ACCESSIBILITY=PASS 픽셀 표본(문자 뒤 가장 밝은 화소) 최악 대비:
-                  제목 15.85 · 리드 17.81 · 카드 제목 15.98 · 카드 설명 8.26 · gold 눈선 8.82 · CTA 9.92  → 전원 AA/AAA
-                  사진 없는 백스톱 장면에서도 muted 6.19:1 유지(네이비 램프 교체로 4.33:1 미달이 자동 해소)
-FUNCTION=PASS     카드→에디터 전환(home display none), 라벨-필드 8/8 연결, 첫 필드 포커스,
-                  초안 뼈대 채움 102자, Esc 홈 복귀+CTA 포커스, #/meeting 새로고침 복원, pageerror 0
-LOAD=PASS         요청 4건(문서·CSS·JS·사진), 외부 요청 0, 사진 2400px 326KB / 1200px 68KB(image-set)
-NOT_MEASURED      FCP(백그라운드 탭에서 Paint Timing 미발생), 시안 원본과의 픽셀 비교(원본 부재)
+BROWSER_NOTE     이 브라우저는 dpr 1.1(Windows 110% 배율)이라 뷰포트 1440 지정 시 CSS 폭이 1295였다.
+                 최종 캡처는 1584×990 디바이스 px로 잡아 innerWidth 1440 / clientWidth 1426을 확인하고 촬영했다.
+RESPONSIVE=PASS  1440: 카드 3열·가로 오버플로 0 · 390: 카드 1열·가로 오버플로 0 (pageerror 0)
+FUNCTION=PASS    카드→에디터(home display none) · 라벨-필드 8/8 · 첫 필드 포커스 · Esc 복귀+CTA 포커스 ·
+                 사이드 상단 메뉴로 업무 직접 열기(SNS) · 미구현 메뉴는 "준비 중" 안내 ·
+                 검색 필터: "회의"→카드 1건, "zzz"→빈 안내, 해제→3건 복원
+THEME_AXIS=PASS  국가 4×스타일 5를 같은 마크업에서 전환, 사진 없는 국가는 --hero-photo: none + CSS 백스톱
+LOAD=PASS        요청 4종(문서·CSS·JS·사진), 외부 요청 0, 사진 image-set 1200(68KB)/2400(326KB)
+NOT_MEASURED     FCP(백그라운드 탭에서 Paint Timing 미발생)
 ```
 
-### 검증 재현
+### 재현
 
 ```bash
 python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 21 passed
 node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
 ```
 
-캡처: `docs/screenshots/5967/v2-*.png` — `v2-home-kr-dark-1440.png`, `v2-home-kr-dark-390.png`,
-`v2-editor-speech-kr-dark-1440.png`, `v2-editor-meeting-kr-dark-390.png`.
-v1 계열(`home-kr-dark-*.png`)은 검토 이력으로 남기고 채택 전 상태로 표시한다.
-
+캡처: `docs/screenshots/5967/final-home-kr-1440.png`, `final-home-kr-390.png`,
+`final-editor-sns-kr-light-1440.png`, `compare-kr-1440.png`.
+v1(CSS/SVG 렌더)·v2(단일 사진 히어로) 계열 캡처는 검토 이력에서 제치고 저장소 추적에서 제외했다
+(채택되지 않은 상태의 이미지가 리뷰를 어지럽히지 않도록).

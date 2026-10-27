@@ -25,7 +25,10 @@ STYLES = ("classic", "modern", "dark", "light", "minimal")
 RAMP = frozenset(f"--tone-{n}" for n in range(1, 9))
 SCENE = frozenset({"--sky-1", "--sky-2", "--sky-3", "--sky-4", "--sun", "--sun-glow", "--skyline", "--skyline-back", "--reflection", "--haze", "--lit", "--vignette"})
 # 사진 층은 국가가 재료를 정한다. 없는 국가는 `none`을 명시해 미확보 상태를 코드에 남긴다.
-PHOTO = frozenset({"--hero-photo", "--hero-photo-position", "--hero-photo-size", "--skyline-display"})
+PHOTO = frozenset({"--hero-photo", "--hero-photo-position", "--hero-photo-zoom", "--pa-grade-op", "--skyline-display"})
+# 밤 사진에 시안 톤을 입히는 층: 국가마다 강도를 정한다(0이면 무보정).
+# 시안의 3카드 분할 색: 국가마다 자기 음계에서 3개를 배정한다.
+WORK = frozenset({"--work-1", "--work-2", "--work-3"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op"})
 
@@ -111,7 +114,7 @@ def test_each_country_declares_exactly_one_ramp_block() -> None:
     for country in COUNTRIES:
         declaring = [b for b in blocks_for("country", country) if re.search(r"--[a-z0-9-]+\s*:", b)]
         assert len(declaring) == 1, f"{country} declares its ramp in {len(declaring)} places"
-        assert props_of(*declaring) == RAMP | SCENE | PHOTO | IDENTITY, country
+        assert props_of(*declaring) == RAMP | SCENE | PHOTO | WORK | IDENTITY, country
 
 
 def test_countries_share_the_identical_token_contract() -> None:
@@ -167,7 +170,10 @@ def test_screen_composition_is_limited_as_ordered() -> None:
     assert HTML.count("<h1") == 1
     assert HTML.count('class="pa-work"') == 3, "exactly three work cards"
     assert HTML.count('class="pa-work-select"') == 3
-    assert HTML.count("<nav") == 1, "one navigation only: the three work cards"
+    # 시안은 영구 사이드바 메뉴와 업무 카드 목록이라는 서로 다른 두 개의 탐색을 쓴다.
+    assert HTML.count("<nav") == 2, "rail menu + work list, and nothing more"
+    assert HTML.count('class="pa-nav-item"') + HTML.count('class="pa-nav-item is-current"') == 6
+    assert HTML.count('aria-disabled="true"') == 2, "미구현 메뉴는 죽은 통제처럼 보여선 안 된다"
     assert HTML.count("<footer") == 1
     for fragment in ('class="pa-topbar"', 'class="pa-hero"', 'class="pa-scene"', 'class="pa-editor"'):
         assert fragment in HTML, fragment
@@ -191,7 +197,7 @@ def test_accessibility_invariants_in_markup() -> None:
     assert 'role="status"' in HTML and 'aria-live="polite"' in HTML
     assert re.search(r'<label[^>]*for="paDocument"', HTML)
     assert re.search(r'<select name="country" id="paCountry"', HTML)
-    assert re.search(r'<label>\s*<span>국가</span>', HTML)
+    assert re.search(r'<label>국가\s*<select', HTML), "each select needs its wrapping label"
     assert 'aria-hidden="true"' in HTML
 
 
