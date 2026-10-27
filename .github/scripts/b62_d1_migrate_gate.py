@@ -44,6 +44,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sqlite3
@@ -626,6 +627,27 @@ def cmd_classify(argv: argparse.Namespace) -> int:
     print(f"B62_D1_PLAN_SEED={len(result['seed'])}")
     print(f"B62_D1_PLAN_APPLY={len(result['apply'])}")
     print(f"B62_D1_PLAN_BASELINE_FIRST_RUN={'YES' if result['baseline_first_run'] else 'NO'}")
+    # The plan by name, before any refusal: an operator reading the run needs
+    # the file list, not only the counts. Names only — never SQL text. The wide
+    # keyword scan here is report-only; the drop guard's own classification
+    # above is what gates execution.
+    migrations = Path(_app(argv.app)["migrations"])
+    wide_destructive = []
+    for name in result["apply"]:
+        text = strip_comments((migrations / name).read_text(encoding="utf-8")).upper()
+        if any(re.search(rf"\b{token}\b", text) for token in ("DROP", "ALTER", "DELETE", "UPDATE")):
+            wide_destructive.append(name)
+    report_lines = [
+        "B62_D1_PLAN_APPLY_FILES=" + ",".join(result["apply"]),
+        "B62_D1_PLAN_SEED_FILES=" + ",".join(result["seed"]),
+        "B62_D1_PLAN_APPLY_DESTRUCTIVE=" + ",".join(wide_destructive),
+    ]
+    for line in report_lines:
+        print(line)
+    step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if step_summary:
+        with open(step_summary, "a", encoding="utf-8") as handle:
+            handle.write("\n".join(report_lines) + "\n")
     if result["seed_without_object_proof"]:
         print("B62_D1_SEED_WITHOUT_OBJECT_PROOF=" + ",".join(result["seed_without_object_proof"]))
     for key, marker in (

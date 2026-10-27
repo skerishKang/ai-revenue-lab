@@ -631,6 +631,51 @@ def test_an_import_stats_block_is_a_named_refusal_not_result_rows() -> None:
         )
 
 
+def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys, monkeypatch) -> None:
+    """Counts alone cannot answer "which files", so the plan names them.
+
+    The wide keyword scan (DROP/ALTER/DELETE/UPDATE) is report-only and runs on
+    file names; SQL text never reaches the output, and the execution gate above
+    it is still the narrow drop guard.
+    """
+
+    create_clean = "CREATE TABLE b62_report_clean (id INTEGER PRIMARY KEY);\n"
+    create_and_update = (
+        "CREATE TABLE b62_report_data (id INTEGER PRIMARY KEY, v TEXT);\n"
+        "UPDATE b62_report_data SET v = lower(v);\n"
+    )
+    original = use_migrations(tmp_path, create_clean, name="073_report_clean.sql")
+    (tmp_path / "migrations" / "074_report_update.sql").write_text(create_and_update, encoding="utf-8")
+    try:
+        live = replayed_schema()
+        inventory = gate.build_inventory("chat")
+        inventory_path = write(tmp_path / "inv.json", inventory)
+        detail_path, _tables = with_detail(tmp_path, inventory, live, name="detailplan")
+        summary = tmp_path / "step-summary.md"
+        monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+        plan = tmp_path / "plan.json"
+        assert gate.main([
+            "classify", "--app", "chat", "--inventory", str(inventory_path),
+            "--snapshot", str(write(tmp_path / "snap.json", snapshot_payload(live))),
+            "--probe", str(write(tmp_path / "probe.json", probe_payload(False))),
+            "--detail", str(detail_path),
+            "--up-to", "074", "--out", str(plan),
+        ]) == 0
+        out = capsys.readouterr().out
+        assert "B62_D1_PLAN_APPLY_FILES=073_report_clean.sql,074_report_update.sql" in out
+        assert "B62_D1_PLAN_APPLY_DESTRUCTIVE=074_report_update.sql" in out
+        seed_line = next(line for line in out.splitlines() if line.startswith("B62_D1_PLAN_SEED_FILES="))
+        seed_names = seed_line.split("=", 1)[1].split(",")
+        assert len(seed_names) == len(inventory) - 2
+        assert "073_report_clean.sql" not in seed_names and "074_report_update.sql" not in seed_names
+        assert "CREATE TABLE" not in out and "UPDATE b62" not in out
+        summary_text = summary.read_text(encoding="utf-8")
+        assert "B62_D1_PLAN_APPLY_FILES=073_report_clean.sql,074_report_update.sql" in summary_text
+        assert "B62_D1_PLAN_APPLY_DESTRUCTIVE=074_report_update.sql" in summary_text
+    finally:
+        gate.APPS["chat"]["migrations"] = original
+
+
 def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> None:
     delta = gate.schema_diff(
         {"tables": {"users"}, "columns": {"users.id"}, "other": set()},
