@@ -27,7 +27,12 @@ class El {
   replaceChildren(...nodes) { this.children = []; this.text = ""; this.append(...nodes); }
   setAttribute(name, value) { this.attrs[name] = String(value); }
   addEventListener(name, handler) { (this.listeners[name] ||= []).push(handler); }
-  click() { for (const h of this.listeners.click || []) h({}); }
+  click() {
+    // An anchor with a download attribute is the browser's own file hand-off:
+    // the harness records what was handed over instead of navigating.
+    if (this.download) (globalThis.downloads ||= []).push({ name: this.download, url: this.href });
+    for (const h of this.listeners.click || []) h({});
+  }
   allText() { return [this.text, ...this.children.map((c) => c.allText())].join(" "); }
   ids() { return [this, ...this.children.flatMap((c) => c.ids())]; }
 }
@@ -38,6 +43,7 @@ function makeDom(responses) {
   const root = new El("html");
   root.lang = "ko";
   const calls = [];
+  const downloads = [];
   const byId = { connectorComputerCard: card };
   const document = {
     documentElement: root,
@@ -50,6 +56,10 @@ function makeDom(responses) {
     calls.push({ url, method: options?.method || "GET", body: options?.body });
     const reply = (responses[`${(options?.method || "GET")} ${url}`]
       || responses[`${(options?.method || "GET")} *`] || { status: 500, body: {} });
+    // A reply may carry `text` instead of a JSON body: the install file is a
+    // file, and the card must treat it as one.
+    const payload = typeof reply.text === "string"
+      ? reply.text : JSON.stringify(reply.body ?? {});
     return {
       ok: reply.status >= 200 && reply.status < 300,
       status: reply.status,
@@ -58,7 +68,7 @@ function makeDom(responses) {
           let sent = false;
           return {
             read: async () => (sent ? { done: true }
-              : (sent = true, { done: false, value: new TextEncoder().encode(JSON.stringify(reply.body)) })),
+              : (sent = true, { done: false, value: new TextEncoder().encode(payload) })),
             cancel: async () => {},
           };
         },
@@ -66,16 +76,24 @@ function makeDom(responses) {
     };
   };
   const window = {addEventListener: () => {}, padiemPcPairing: undefined};
+  let objectUrls = 0;
   const sandbox = {
     document, window, fetch: fetchImpl, calls,
     AbortController, TextDecoder, TextEncoder, setTimeout, clearTimeout,
+    Blob: class { constructor(parts) { this.parts = parts; } },
+    URL: {
+      createObjectURL: (blob) => { objectUrls += 1; (globalThis.blobs ||= {})[`blob:${objectUrls}`] = blob; return `blob:${objectUrls}`; },
+      revokeObjectURL: () => {},
+    },
     MutationObserver: class { observe() {} },
     console, JSON, Object, Array, Promise, String, Number, Math, encodeURIComponent,
   };
+  globalThis.downloads = downloads;
+  globalThis.blobs = {};
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(script, sandbox);
-  return { card, calls, sandbox, document };
+  return { card, calls, downloads, blobs: globalThis.blobs, sandbox, document };
 }
 
 const LINK = {
@@ -98,20 +116,38 @@ function check(name, condition, detail) {
 }
 
 async function main() {
+  const scriptText = "# PADIEM PC 자동 연결\n$PairingTag = 'pd-1234abcd'\n";
   const issued = {
     "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
     "POST /api/pc/pairings": { status: 201, body: { ok: true, pairing: {
       code_id: "pcpair_abc", code: "K7QM2XTR9F4B", install_tag: "pd-1234abcd",
       expires_at: "2026-10-27T01:10:00Z" } } },
+    "POST /api/pc/pairings/install-file": { status: 200, text: scriptText },
   };
   const first = makeDom(issued);
-  await first.sandbox.window.padiemPcPairing.issue();
   const section = first.card.ids().find((n) => n.attrs.id === "pcPairingSection");
   check("section mounted inside the existing computer card", section);
-  check("the code is rendered", section.allText().includes("K7QM2XTR9F4B"), section.allText());
-  check("one install sentence only",
-    (section.allText().match(/Windows/g) || []).length === 1, section.allText());
+  check("the primary offer is connect-this-PC",
+    section.allText().includes("이 PC 연결") && section.allText().includes("Windows"),
+    section.allText());
   check("no macOS or Linux copy", !/macOS|Mac\b|Linux/i.test(section.allText()), section.allText());
+  const paired = await first.sandbox.window.padiemPcPairing.issue();
+  check("the code path still works as a function",
+    paired && paired.code === "K7QM2XTR9F4B", JSON.stringify(paired));
+  check("the code is never rendered", !section.allText().includes("K7QM2XTR9F4B"),
+    section.allText());
+  check("the code button is kept and hidden",
+    section.ids().some((n) => (n.className || "") === "pc-pairing-issue" && n.hidden === true),
+    JSON.stringify(section.ids().map((n) => n.className)));
+  check("one click hands the install file to the browser",
+    await first.sandbox.window.padiemPcPairing.connect() === true
+    && first.downloads.length === 1
+    && first.downloads[0].name === "padiem-pc-connect.ps1"
+    && (first.blobs[first.downloads[0].url]?.parts || [""])[0] === scriptText,
+    JSON.stringify(first.downloads));
+  check("the download is said, not the code",
+    section.allText().includes("설치 파일을 내려받았습니다")
+    && !section.allText().includes("K7QM2XTR9F4B"), section.allText());
   check("the code never reaches a URL",
     first.calls.every((call) => !call.url.includes("K7QM2XTR9F4B")), JSON.stringify(first.calls));
   check("every call is the pairing surface",
@@ -192,6 +228,18 @@ async function main() {
     (refusedSection.status || refusedSection).allText().length > 0
     && refused.calls.some((call) => call.method === "DELETE"),
     JSON.stringify(refused.calls));
+
+  const noFile = makeDom({
+    "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
+    "POST /api/pc/pairings/install-file": { status: 503,
+      body: { ok: false, error: { code: "pc_pairing_install_url_missing" } } },
+  });
+  await settle();
+  const waitingFile = noFile.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  check("an unconfigured install link reads as 준비 중",
+    await noFile.sandbox.window.padiemPcPairing.connect() === false
+    && waitingFile.allText().includes("아직 준비 중")
+    && noFile.downloads.length === 0, waitingFile.allText());
 
   const failures = results.filter((row) => !row.ok);
   for (const row of results) {

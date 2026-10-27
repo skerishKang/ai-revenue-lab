@@ -30,7 +30,7 @@
 param(
   [string] $ChatOrigin = "",
   [string] $Code = "",
-  [string] $AgentInstallerArgs = "/S",
+  [string[]] $AgentInstallerArgs = @("-fullinstall"),
   [string] $AgentInstallDir = "${env:ProgramFiles(x86)}\Mesh Services",
   [switch] $DryRun
 )
@@ -131,15 +131,16 @@ function Read-PadiemCode {
 }
 
 function Start-PadiemInstall {
-  param([string] $Url, [string] $Arguments, [switch] $Simulate)
+  param([string] $Url, [string[]] $Arguments, [switch] $Simulate)
   if ($Simulate) { return $false }
   # The installer itself is downloaded to a temp path and removed after the
-  # attempt, so the pairing information never persists in a file.
+  # attempt, so the pairing information never persists in a file. Arguments are
+  # passed as a list, not split from one string: the agent name this script
+  # hands over carries spaces.
   $target = Join-Path $env:TEMP ("padiem-agent-" + [guid]::NewGuid().ToString('N') + ".exe")
   try {
     Invoke-WebRequest -Uri $Url -OutFile $target -UseBasicParsing -TimeoutSec 120
-    $switches = $Arguments -split ' ' | Where-Object { $_ }
-    Start-Process -FilePath $target -ArgumentList $switches -Wait
+    Start-Process -FilePath $target -ArgumentList @($Arguments) -Wait
     return $true
   } finally {
     Remove-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
@@ -182,11 +183,28 @@ if ($installed) {
   exit 0
 }
 
+function Format-PadiemAgentName {
+  param([string] $Tag, [string[]] $Drives)
+  # The name the agent reports to the server is what completes the pairing: the
+  # tag inside it decides the account, and the drive letters after it are the
+  # same self-report a claiming PC posts. Anything that is not one bare letter
+  # is dropped rather than guessed at.
+  $letters = @($Drives |
+    ForEach-Object { (($_ -replace ':', '')).ToUpperInvariant() } |
+    Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
+  if ($letters.Count -eq 0) { return $Tag }
+  return $Tag + ' [' + ($letters -join ' ') + ']'
+}
+
 if ($DryRun) {
   Write-Host ("{0} -> {1} ({2})" -f $Copy.Installed, $agentUrl, $Copy.DryRunNote)
   exit 0
 }
 
-Start-PadiemInstall -Url $agentUrl -Arguments $AgentInstallerArgs | Out-Null
+$nameParts = @($AgentInstallerArgs)
+if ($tag) {
+  $nameParts += ('--agentName="' + (Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)) + '"')
+}
+Start-PadiemInstall -Url $agentUrl -Arguments $nameParts | Out-Null
 Write-Host $Copy.Installed
 Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag)

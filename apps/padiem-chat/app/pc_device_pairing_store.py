@@ -63,6 +63,9 @@ _AGENT_TAG_RE = re.compile(
     r"(?<![0-9A-Za-z])" + re.escape(PAIRING_TAG_PREFIX) + r"[0-9a-f]{8}(?![0-9A-Za-z])",
     re.IGNORECASE,
 )
+#: The drive list an installing PC writes after its tag in the agent name:
+#: single letters inside one bracketed group.
+_NAME_DRIVES_RE = re.compile(r"\[\s*([A-Za-z](?:[ \t]+[A-Za-z])*)\s*\]")
 _STATE_ACTIVE = "active"
 _STATE_PENDING_VERIFICATION = "pending_verification"
 _STATE_REVOKED = "revoked"
@@ -350,6 +353,38 @@ def tag_from_agent_name(value: Any) -> str | None:
     return found[0]
 
 
+def drives_from_agent_name(value: Any) -> list[str]:
+    """The drive letters one installing PC named beside its tag, or nothing.
+
+    A self-installing PC has no session and no code to post with, so the channel
+    that carries its own drive list is the same one that carries the tag: the
+    agent name the server observes. The install file writes `[C D]` after the
+    tag, and this reads it back as whole-drive grants.
+
+    Deliberately narrow, because the value is free text a machine wrote about
+    itself: one bracketed group of single letters, each turned into the same
+    `C:` shape a claiming PC posts through `drive_root`. Anything else - no
+    brackets, a second group, a folder hiding inside a letter - yields no drives,
+    which leaves the link with nothing granted rather than guessing a scope.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= 256:
+        return []
+    found = _NAME_DRIVES_RE.findall(value)
+    if len(found) != 1:
+        return []
+    letters = found[0].split()
+    if not 1 <= len(letters) <= 26:
+        return []
+    drives: list[str] = []
+    for letter in letters:
+        single = drive_root(letter + ":")
+        if single is None:
+            return []
+        if single not in drives:
+            drives.append(single)
+    return drives
+
+
 def _hash(secret: str) -> str:
     return hashlib.sha256(secret.encode("utf-8")).hexdigest()
 
@@ -559,20 +594,30 @@ class D1PcPairingStore:
             owner=owner, node=node, label=label, code_id=row["code_id"],
             moment=moment, verified=verified,
         )
-        if drives:
-            granted = [entry["path"] for entry in link["roots"]]
-            missing = [path for path in drives if path not in granted]
-            if missing:
-                # Only a link that just came into being gains from the PC's own
-                # report. An already-granted link keeps exactly what its owner
-                # left on it.
-                await self._write_roots(
-                    owner, link["link_id"],
-                    _merge_roots(link["roots"], missing, moment), moment,
-                )
-                stored = await self._read_link(owner, link["link_id"])
-                if stored is not None:
-                    link = stored
+        return await self._seed_drives(owner=owner, link=link, drives=drives, moment=moment)
+
+    async def _seed_drives(
+        self, *, owner: str, link: dict[str, Any], drives: list[str] | None, moment: str,
+    ) -> dict[str, Any]:
+        """Put the drives a PC named for itself onto the link it just claimed.
+
+        The Owner's default scope is a whole drive, so a fresh link starts
+        granted instead of starting empty and waiting for a hand. An existing
+        grant is never widened here: a re-claim must not resurrect a drive the
+        owner has since withdrawn.
+        """
+        if not drives:
+            return link
+        granted = [entry["path"] for entry in link["roots"]]
+        missing = [path for path in drives if path not in granted]
+        if missing:
+            await self._write_roots(
+                owner, link["link_id"],
+                _merge_roots(link["roots"], missing, moment), moment,
+            )
+            stored = await self._read_link(owner, link["link_id"])
+            if stored is not None:
+                link = stored
         return link
 
     async def _claim_link(
@@ -631,7 +676,9 @@ class D1PcPairingStore:
         tag into the agent's name, the existing presence beat carries that name
         here, and the tag — which only ever existed inside one unexpired
         one-time code — decides the owner. Nothing is asked of the PC beyond the
-        code it was handed.
+        code it was handed, and the drives it names beside its tag are the same
+        list a claiming PC reports through `redeem_code` — a PC may say which
+        drives it has, it may not name folders through this channel.
 
         Returns ``None`` when the name carries no pairing tag: ordinary devices
         keep reporting presence untouched. A name that does carry one is a
@@ -679,9 +726,14 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
-        return await self._claim_link(
-            owner=owner, node=node, label=None, code_id=row["code_id"],
-            moment=moment, verified=True,
+        return await self._seed_drives(
+            owner=owner,
+            link=await self._claim_link(
+                owner=owner, node=node, label=None, code_id=row["code_id"],
+                moment=moment, verified=True,
+            ),
+            drives=drives_from_agent_name(agent_name),
+            moment=moment,
         )
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
@@ -1053,6 +1105,7 @@ __all__ = [
     "default_root_label",
     "derive_install_tag",
     "drive_root",
+    "drives_from_agent_name",
     "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",

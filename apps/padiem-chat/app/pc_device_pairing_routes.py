@@ -21,7 +21,7 @@ import re
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -41,6 +41,10 @@ PC_PAIRING_CLAIM_PATH = "/api/pc/pairings/claim"
 #: What the code entitles its holder to download. One path, one Windows link,
 #: and the URL is never assembled from anything the request says.
 PC_PAIRING_HANDOFF_PATH = "/api/pc/pairings/handoff"
+#: The one-click install file: the signed-in account's own tag, already inside
+#: the file, so nothing on the PC has to be typed.
+PC_PAIRING_INSTALL_FILE_PATH = "/api/pc/pairings/install-file"
+PC_PAIRING_INSTALL_FILENAME = "padiem-pc-connect.ps1"
 #: Administrator adoption: the Owner links a device this deployment already
 #: knows about to their own account, without waiting for somebody else's PC to
 #: run an installer.
@@ -76,6 +80,10 @@ _MESSAGES = {
     #: live D1 binding that has no pairing tables. This is the sentence the
     #: browser sees until the Owner applies the migration.
     "pc_pairing_not_ready": "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
+    #: The deployment has not handed Chat the agent download link yet, so there
+    #: is no file to give this account's PC. Same 준비 중 shape as an unapplied
+    #: migration: nothing is refused about the account, and nothing is guessed.
+    "pc_pairing_install_url_missing": "PC 설치 파일은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
     "pc_pairing_body_invalid": "PC 연결 요청 형식이 올바르지 않습니다.",
     "pc_pairing_code_unknown": "연결 코드를 확인할 수 없습니다. 새 코드로 다시 시도해 주세요.",
     "pc_pairing_code_used": "이 연결 코드는 이미 사용되었습니다. 새 코드를 발급해 주세요.",
@@ -376,6 +384,147 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
     }, 200)
 
 
+_INSTALL_TAG_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+_SCRIPT_VALUE_MAX_CHARS = 2048
+
+
+def _script_quote(value: str) -> str:
+    """One PowerShell single-quoted literal, or ``None`` for anything unsafe.
+
+    The two interpolated values are a derived tag and a reviewed deployment URL,
+    so this is a wall rather than an escape routine: a single quote is doubled
+    the way PowerShell says, and a value carrying a control character or a line
+    break is refused outright. A downloaded installer runs whatever this file
+    says next, so the shape of what may be written is fixed here.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= _SCRIPT_VALUE_MAX_CHARS:
+        return None
+    if any(ord(ch) < 33 or ord(ch) == 127 for ch in value):
+        return None
+    return "'" + value.replace("'", "''") + "'"
+
+
+def render_install_script(*, install_tag: Any, agent_url: Any) -> str | None:
+    """The Windows install file one click hands out, or ``None`` when it cannot.
+
+    What makes it one click: the account's pairing tag is already inside the
+    file, so the PC is never asked to type anything, and the agent it downloads
+    is the deployment's own - the file carries no server address the browser
+    chose. The PC reports its fixed drives next to the tag in the name the agent
+    gives the server, which is how the link arrives with whole drives granted
+    instead of empty.
+
+    Refused rather than improvised when either value is unusable: an installer
+    with a guessed host, or with no tag, is a file that connects a PC to the
+    wrong place or to nowhere.
+    """
+    if not isinstance(install_tag, str) or _INSTALL_TAG_RE.fullmatch(install_tag) is None:
+        return None
+    url = install_url_from_config(agent_url)
+    if url is None:
+        return None
+    quoted_tag = _script_quote(install_tag)
+    quoted_url = _script_quote(url)
+    if quoted_tag is None or quoted_url is None:
+        return None
+    return _INSTALL_SCRIPT_TEMPLATE % {"tag": quoted_tag, "url": quoted_url}
+
+
+#: UTF-8 with a byte-order mark: Windows PowerShell 5.1 reads a file without one
+#: in the machine's own code page, which turns Korean prose into unreadable
+#: bytes and, in this deployment's experience, is exactly what breaks a reply.
+_INSTALL_SCRIPT_TEMPLATE = (
+    "\ufeff"
+    "# PADIEM PC 자동 연결 (#5573)\n"
+    "#\n"
+    "# 로그인한 계정의 연결 표식이 이미 이 파일 안에 있습니다. 코드를 입력하지 않습니다.\n"
+    "# 실행: 파일에서 우클릭 -> PowerShell로 실행. 관리자 권한을 물으면 예라고 답하세요.\n"
+    "$ErrorActionPreference = \"Stop\"\n"
+    "$PairingTag = %(tag)s\n"
+    "$AgentInstallerUrl = %(url)s\n"
+    "\n"
+    "function Get-PadiemDriveLetters {\n"
+    "  # The PC names the fixed drives it actually has. Network drives carry a\n"
+    "  # DisplayRoot and stay out; a failed query reports nothing at all.\n"
+    "  try {\n"
+    "    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |\n"
+    "      Where-Object { $null -eq $_.DisplayRoot } |\n"
+    "      ForEach-Object { $_.Name.ToUpperInvariant() } | Sort-Object -Unique)\n"
+    "  } catch {\n"
+    "    return @()\n"
+    "  }\n"
+    "}\n"
+    "\n"
+    "$work = Join-Path $env:TEMP (\"padiem-pc-\" + [guid]::NewGuid().ToString(\"N\"))\n"
+    "New-Item -ItemType Directory -Path $work | Out-Null\n"
+    "try {\n"
+    "  $agent = Join-Path $work \"padiem-agent.exe\"\n"
+    "  Invoke-WebRequest -Uri $AgentInstallerUrl -OutFile $agent -UseBasicParsing -TimeoutSec 180\n"
+    "  $reported = $PairingTag\n"
+    "  $letters = @(Get-PadiemDriveLetters)\n"
+    "  if ($letters.Count -gt 0) {\n"
+    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"]\"\n"
+    "  }\n"
+    "  try {\n"
+    "    Start-Process -FilePath $agent -Wait -Verb RunAs `\n"
+    "      -ArgumentList @(\"-fullinstall\", \"--agentName=`\"\" + $reported + \"`\"\")\n"
+    "  } catch [System.ComponentModel.Win32Exception] {\n"
+    "    Write-Host \"설치 권한이 거부되었습니다. 이 파일을 관리자 권한으로 다시 실행해 주세요.\"\n"
+    "    exit 5\n"
+    "  } catch {\n"
+    "    Write-Host \"PC 연결 프로그램을 실행하지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"
+    "    exit 6\n"
+    "  }\n"
+    "  Write-Host \"연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM PC 목록에 자동으로 나타납니다.\"\n"
+    "} finally {\n"
+    "  Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue\n"
+    "}\n"
+)
+
+
+async def pc_pairing_install_file(request: Request) -> Response:
+    """One click: the install file that binds this PC to the signed-in account.
+
+    Session-authenticated and owner-scoped like the rest of this surface: the
+    account is the verified session's user id, a fresh 10-minute code is issued
+    for it, and what comes back is the file the PC runs. The code itself never
+    leaves the server - only the tag derived from it, which is what the agent
+    name carries back for the claim to complete. Nothing here consumes the code,
+    so a download that dies halfway can be clicked again.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    # Read the deployment's link before minting anything: a click on a
+    # deployment that cannot name a download must not leave a code behind that
+    # nothing can ever hand out.
+    agent_url = install_url_from_config(
+        getattr(request.app.state, "pc_pairing_install_url", None),
+    )
+    if agent_url is None:
+        return _error(503, "pc_pairing_install_url_missing")
+    body = await _body(request)
+    if body is None or set(body) != set():
+        return _error(400, "pc_pairing_body_invalid")
+    issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
+    if refused is not None:
+        return refused
+    script = render_install_script(install_tag=issued["install_tag"], agent_url=agent_url)
+    if script is None:
+        return _error(503, "pc_pairing_install_url_missing")
+    return Response(
+        content=script,
+        media_type="text/plain; charset=utf-8",
+        headers={
+            **_NO_STORE,
+            "Content-Disposition": f'attachment; filename="{PC_PAIRING_INSTALL_FILENAME}"',
+        },
+    )
+
+
 async def pc_pairing_claim(request: Request) -> JSONResponse:
     """One PC redeems the code it was given (R2, R3).
 
@@ -627,6 +776,8 @@ __all__ = [
     "PC_PAIRING_CLAIM_PATH",
     "PC_PAIRING_ADOPT_PATH",
     "PC_PAIRING_HANDOFF_PATH",
+    "PC_PAIRING_INSTALL_FILE_PATH",
+    "PC_PAIRING_INSTALL_FILENAME",
     "PC_PAIRING_LINK_PATH",
     "PC_PAIRING_PATH",
     "PC_PAIRING_ROOTS_PATH",
@@ -635,7 +786,9 @@ __all__ = [
     "pc_pairing_claim",
     "pc_pairing_handoff",
     "pc_pairing_adopt",
+    "pc_pairing_install_file",
     "install_url_from_config",
+    "render_install_script",
     "pc_pairing_issue",
     "pc_pairing_list",
     "pc_pairing_revoke",
