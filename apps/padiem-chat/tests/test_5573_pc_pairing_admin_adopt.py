@@ -194,7 +194,7 @@ def test_a_folder_the_owner_revoked_does_not_come_back_on_re_adopt():
 
 def test_a_target_account_can_be_named_by_id_or_by_email():
     store, conn = _store_with_users()
-    app = _app(store_value=store)
+    app = _app(store_value=store, seen=(MESH_NODE, OTHER_MESH_NODE))
     try:
         by_id = _adopt(app, {"device_id": MESH_NODE, "target": CUSTOMER_ID, "drives": DRIVES})
         assert by_id.status_code == 200, by_id.text
