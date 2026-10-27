@@ -30,6 +30,7 @@ def test_the_script_parses_and_carries_only_the_two_pairing_endpoints():
 
 def test_the_code_is_prompted_and_never_written_anywhere():
     assert "Read-Host" in SOURCE and "-AsSecureString" in SOURCE
+    assert "Write-Host $Copy.LinkPending" in SOURCE
     for forbidden in ("Set-Content", "Out-File", "Add-Content", "AppendAllText",
                       "WriteAllText", "Export-Csv", "| Out-Host"):
         assert forbidden not in SOURCE, forbidden
@@ -37,6 +38,15 @@ def test_the_code_is_prompted_and_never_written_anywhere():
     # installer file is deleted in the same function that created it.
     assert "code = $PairingCode" in SOURCE
     assert SOURCE.count("Remove-Item -LiteralPath $target") == 1
+
+
+def test_a_missing_link_stops_only_the_install_and_never_the_installed_path():
+    # The link is checked after the agent is recognised, so a PC that already
+    # has an agent submits its pairing without ever needing a download target.
+    installed_check = SOURCE.index("if ($installed) {")
+    link_check = SOURCE.index('if (-not $agentUrl -and -not $installed) {')
+    assert installed_check > link_check
+    assert SOURCE.index("Start-PadiemInstall -Url") > installed_check
 
 
 def test_nothing_is_installed_when_the_config_or_code_is_wrong():
@@ -58,11 +68,17 @@ def test_the_installer_is_fetched_over_https_only():
 
 
 def test_the_already_installed_path_submits_the_code_and_installs_nothing():
-    already = SOURCE.index("if (Test-PadiemAgentInstalled -Directory $AgentInstallDir) {")
-    second_install = SOURCE.rindex("Start-PadiemInstall -Url")
-    assert already < second_install or SOURCE.count("Start-PadiemInstall -Url") == 1
+    installed = SOURCE.index("if ($installed) {")
+    link_pending = SOURCE.index("if (-not $agentUrl -and -not $installed) {")
+    install = SOURCE.index("Start-PadiemInstall -Url")
+    # The link is asked for after the agent is recognised, so an installed PC
+    # reaches the claim path with no download target at all, and the installer
+    # is invoked from exactly one place, after both.
+    assert link_pending < installed < install
+    assert SOURCE.count("Start-PadiemInstall -Url") == 1
     assert "PADIEM에서 표시한 12자리" in SOURCE
     assert "서버 확인 대기 중" in SOURCE
+    assert "에이전트가 아직 없고" in SOURCE
 
 
 def test_the_two_refusal_paths_execute_and_refuse():
