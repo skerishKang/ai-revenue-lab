@@ -71,9 +71,11 @@ def test_deploy_job_requires_exact_confirmation_phrase() -> None:
 def test_premutation_assertions_are_fail_closed_and_non_interactive() -> None:
     text = _workflow_text()
     assert "set -euo pipefail" in text
-    # HEAD == TARGET_SHA, origin/main == TARGET_SHA, account id pinned.
+    # HEAD == TARGET_SHA, origin/main == TARGET_SHA (or, since #5895, an
+    # ancestor of it whose B14 paths did not move), account id pinned.
     assert re.search(r'test "\$\(git rev-parse HEAD\)" = "\$\{\{ github\.event\.inputs\.target_sha \}\}"', text)
     assert re.search(r'test "\$\(git rev-parse origin/main\)" = "\$\{\{ github\.event\.inputs\.target_sha \}\}"', text)
+    assert '.github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/korean-ai-platform' in text
     assert "9be14bb7b8974e65d0afba647ab16932" in text
     # No interactive constructs in the gate.
     assert "workflow_dispatch" in text

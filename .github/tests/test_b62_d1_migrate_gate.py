@@ -150,7 +150,10 @@ def test_one_workflow_with_the_four_dispatch_inputs_and_no_deploy() -> None:
     ):
         assert forbidden not in text
     secrets = set(re.findall(r"secrets\.([A-Z0-9_]+)", text))
-    assert secrets == {"CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"}, secrets
+    # #5895: the main-currency guard reads main history with the job's own
+    # ephemeral GITHUB_TOKEN (contents: read). It is not a stored credential, so
+    # it joins the two Cloudflare read-only names this set has always allowed.
+    assert secrets == {"CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "GITHUB_TOKEN"}, secrets
     assert "PRODUCTION_MUTATION" in text
 
     # The workflow and the script are one contract: every verb and flag the
@@ -173,6 +176,8 @@ def test_exact_main_live_binding_and_readonly_precede_any_mutation() -> None:
         "PREMUTATION_HEAD_MATCHES_TARGET=PASS",
         'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"',
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
+        # #5895: the fallback when main moved ahead of the target.
+        '.github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}"',
         "PREMUTATION_EXACT_MAIN_SHA=PASS",
         "PADIEM_CHAT_DB",
         "::add-mask::",

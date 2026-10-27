@@ -873,14 +873,27 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      # #5895: a pull request merged while this run was starting used to break
+      # it, even when nothing in Chat had moved. The target now has to be
+      # current for the paths this gate ships: an ancestor of main whose
+      # apps/padiem-chat content is unchanged. A moved app path still fails.
       - name: Reconfirm exact main immediately before mutation
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           test "${GITHUB_SHA}" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            # #5895: main moved ahead while this run was starting. A target that
+            # is an ancestor of main still ships, as long as nothing under
+            # apps/padiem-chat moved between the two -- that directory is the whole
+            # surface this gate deploys. A moved path stops the run exactly as an
+            # unequal SHA did before, so a stale release is never waved through.
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path apps/padiem-chat
+          fi
           echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
 
       - name: Set up Node
