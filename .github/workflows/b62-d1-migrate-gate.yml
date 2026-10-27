@@ -191,12 +191,14 @@ jobs:
         run: |
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
+          # One statement per --command execute: the --file path runs as an
+          # import and answers with run statistics, not with the result rows.
           python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
             --out /tmp/b62-d1-gate-snapshot.sql --probe-out /tmp/b62-d1-gate-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-snapshot.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-snapshot.sql)" > /tmp/b62-d1-gate-snapshot.json
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-probe.sql > /tmp/b62-d1-gate-probe.json
+            --command="$(cat /tmp/b62-d1-gate-probe.sql)" > /tmp/b62-d1-gate-probe.json
           echo 'B62_D1_SNAPSHOT_READ=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -216,7 +218,7 @@ jobs:
           if [ "${LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql --out /tmp/b62-d1-gate-ledger.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           fi
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
@@ -225,8 +227,18 @@ jobs:
             --up-to "${UP_TO}" \
             --out /tmp/b62-d1-gate-detail.sql
           if [ -s /tmp/b62-d1-gate-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-detail.sql > /tmp/b62-d1-gate-detail.json
+            rm -rf /tmp/b62-d1-gate-detail-parts
+            mkdir -p /tmp/b62-d1-gate-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-detail-parts --out /tmp/b62-d1-gate-detail.json
+            rm -rf /tmp/b62-d1-gate-detail-parts
             DETAIL_ARGS=(--detail /tmp/b62-d1-gate-detail.json)
           else
             DETAIL_ARGS=()
@@ -346,17 +358,27 @@ jobs:
           python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
             --out /tmp/b62-d1-gate-before.sql --probe-out /tmp/b62-d1-gate-before-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-before.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-before.json
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-before-probe.json
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-before-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-before.json \
             --up-to "${READONLY_UP_TO}" \
             --out /tmp/b62-d1-gate-before-detail.sql
           if [ -s /tmp/b62-d1-gate-before-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before-detail.sql > /tmp/b62-d1-gate-before-detail.json
+            rm -rf /tmp/b62-d1-gate-before-detail-parts
+            mkdir -p /tmp/b62-d1-gate-before-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-before-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-before-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-before-detail-parts --out /tmp/b62-d1-gate-before-detail.json
+            rm -rf /tmp/b62-d1-gate-before-detail-parts
           else
             printf '[]\n' > /tmp/b62-d1-gate-before-detail.json
           fi
@@ -399,7 +421,7 @@ jobs:
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --command \
               "CREATE TABLE IF NOT EXISTS \"d1_migrations\"(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);"
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-ledger-check.json
+              --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-ledger-check.json
             test "$(python .github/scripts/b62_d1_migrate_gate.py probe \
               --probe /tmp/b62-d1-gate-ledger-check.json)" = "yes"
             echo 'B62_D1_LEDGER_TABLE=CREATED'
@@ -415,16 +437,16 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-snapshot.json
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-probe.json
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-probe.json
           DROP_ARGS=()
           if [ "${ALLOW_TABLE_DROP}" = "true" ]; then DROP_ARGS=(--allow-table-drop); fi
           if [ "${READONLY_LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql \
               --out /tmp/b62-d1-gate-ledger-query.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger-query.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger-query.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           else
             LEDGER_ARGS=()
@@ -482,9 +504,9 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-after.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-after.json
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-after-probe.json
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-after-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-after.json \
@@ -492,8 +514,18 @@ jobs:
             --plan /tmp/b62-d1-gate-plan.json \
             --out /tmp/b62-d1-gate-after-detail.sql
           if [ -s /tmp/b62-d1-gate-after-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-after-detail.sql > /tmp/b62-d1-gate-after-detail.json
+            rm -rf /tmp/b62-d1-gate-after-detail-parts
+            mkdir -p /tmp/b62-d1-gate-after-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-after-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-after-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-after-detail-parts --out /tmp/b62-d1-gate-after-detail.json
+            rm -rf /tmp/b62-d1-gate-after-detail-parts
           else
             printf '[]\n' > /tmp/b62-d1-gate-after-detail.json
           fi

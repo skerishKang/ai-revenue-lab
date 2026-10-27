@@ -607,6 +607,30 @@ def test_the_split_snapshot_parses_every_real_wrangler_response_shape() -> None:
         )
 
 
+def test_an_import_stats_block_is_a_named_refusal_not_result_rows() -> None:
+    """The `--file` path answers with run statistics, and reading that as rows
+    would plan against a schema of zero tables and a ledger that exists.
+
+    wrangler v4 `d1 execute --remote --file` runs an import: its one block
+    carries the counters row, not query results. Every envelope form must
+    refuse it by name.
+    """
+
+    stats_block = {
+        "success": True,
+        "meta": {},
+        "results": [{"Timing": 26, "Total queries executed": 2, "Total rows read": 0}],
+    }
+    for payload in (stats_block, [stats_block], {"success": True, "result": [stats_block]}):
+        with pytest.raises(gate.GateError, match="IMPORT_STATS_NOT_ROWS"):
+            gate.snapshot_rows(payload, probe_payload(True))
+    with pytest.raises(gate.GateError, match="IMPORT_STATS_NOT_ROWS"):
+        gate.snapshot_rows(
+            [{"success": True, "results": [{"type": "table", "name": "users", "tbl_name": "users"}]}],
+            stats_block,
+        )
+
+
 def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> None:
     delta = gate.schema_diff(
         {"tables": {"users"}, "columns": {"users.id"}, "other": set()},

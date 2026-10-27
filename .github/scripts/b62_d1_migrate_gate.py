@@ -278,29 +278,33 @@ def binding_id(settings: Any, name: str) -> str:
     return database_id
 
 
-def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
+def _rows(payload: Any, expect: str) -> list[list[dict[str, Any]]]:
     """Unwrap a `wrangler d1 execute --json` envelope into statement result blocks.
 
     Accepted shapes: the list-of-blocks wrangler prints, a single block, or the
-    Cloudflare `/query` result the older gates used.
+    Cloudflare `/query` result the older gates used. A block whose rows are
+    import statistics rather than query results is refused by name: the
+    `--file` path runs an import and answers with a count of statements, and
+    that would read as a schema with zero tables.
     """
 
     if isinstance(payload, dict) and isinstance(payload.get("result"), list):
         payload = payload["result"]
     if isinstance(payload, dict) and isinstance(payload.get("results"), list):
-        return [
-            [{str(key).lower(): value for key, value in row.items()}
-             for row in payload["results"]]
-        ]
+        payload = [payload]
     if not isinstance(payload, list):
         raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
     blocks = []
     for item in payload:
         if not isinstance(item, dict) or not isinstance(item.get("results"), list):
             raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
-        blocks.append(
-            [{str(key).lower(): value for key, value in row.items()} for row in item["results"]]
-        )
+        rows = [
+            {str(key).lower(): value for key, value in row.items()} for row in item["results"]
+        ]
+        for row in rows:
+            if any("queries executed" in key for key in row):
+                raise GateError("B62_D1_GATE_IMPORT_STATS_NOT_ROWS")
+        blocks.append(rows)
     return blocks
 
 
@@ -567,6 +571,26 @@ def cmd_detail_sql(argv: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_detail_merge(argv: argparse.Namespace) -> int:
+    """Join one-block-per-execute detail answers into the block list detail_rows reads.
+
+    Every detail statement runs as its own `--command` execute, so each part
+    file answers with exactly one block. Ordering is by the numeric part name
+    the workflow wrote, and a missing part is a refusal rather than a short
+    block list.
+    """
+
+    directory = Path(argv.dir)
+    parts = sorted(directory.glob("*.json"), key=lambda path: int(path.stem))
+    if not parts:
+        raise GateError("B62_D1_GATE_DETAIL_PARTS_MISSING")
+    blocks = [{"results": _single_block(read_json(path), "DETAIL")} for path in parts]
+    Path(argv.out).write_text(json.dumps(blocks, ensure_ascii=False), encoding="utf-8")
+    print(f"B62_D1_DETAIL_MERGED={len(blocks)}")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def cmd_classify(argv: argparse.Namespace) -> int:
     inventory = read_json(argv.inventory)
     up_to = resolve_up_to(inventory, argv.up_to)
@@ -732,6 +756,7 @@ COMMANDS = {
     "snapshot-sql": cmd_snapshot_sql,
     "ledger-sql": cmd_ledger_sql,
     "detail-sql": cmd_detail_sql,
+    "detail-merge": cmd_detail_merge,
     "classify": cmd_classify,
     "seed-sql": cmd_seed_sql,
     "window": cmd_window,
@@ -770,6 +795,10 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--snapshot", required=True)
     handle.add_argument("--up-to", default="")
     handle.add_argument("--plan")
+
+    handle = add("detail-merge")
+    handle.add_argument("--dir", required=True)
+    handle.add_argument("--out", required=True)
 
     handle = add("classify")
     handle.add_argument("--app", required=True, choices=sorted(APPS))
