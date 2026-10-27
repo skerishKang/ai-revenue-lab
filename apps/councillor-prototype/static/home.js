@@ -41,7 +41,6 @@
           '<span class="ka-date">' + a.date + " · " + a.tag + "</span>" +
           '<p class="ka-title">' + a.title + "</p>" +
           '<p class="ka-desc">' + (a.body || "") + "</p>" +
-          '<span class="ka-foot">자세히 보기 →</span>' +
         "</div>";
       grid.appendChild(card);
     });
@@ -103,7 +102,7 @@
     const list = document.getElementById("homeMedia");
     if (!list) return;
     const video = MEDIA.filter(m => m.kind === "영상")[0];
-    const picks = [MEDIA[1], MEDIA[2], MEDIA[3], video].filter(Boolean);
+    const picks = [MEDIA[1], MEDIA[2], video].filter(Boolean);
     list.innerHTML = picks.map(m =>
       "<li>" +
         '<a class="col-item" href="' + m.url + '" target="_blank" rel="noopener">' +
