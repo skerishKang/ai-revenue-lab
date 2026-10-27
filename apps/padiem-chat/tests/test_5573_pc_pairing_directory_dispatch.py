@@ -164,10 +164,11 @@ WRITE_CEILING = {
 }
 
 
-def _write(state, *, path="견적/2026-10.txt", content="합계 1,200,000원"):
+def _write(state):
     """One real signed write dispatch under the write ceiling."""
     payload = lane._base_payload(
-        op="write", path=path, content=content, tool_call_ref=WRITE_CALL,
+        op="write", path="견적/2026-10.txt", content="합계 1,200,000원",
+        tool_call_ref=WRITE_CALL,
     )
     response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(
         lane._SignedRequest(state, payload, scope=WRITE_CEILING),
@@ -204,7 +205,6 @@ def test_a_write_from_an_account_with_no_link_is_refused_and_writes_nothing(monk
     assert status == 403, body
     assert body["error"]["code"] == "oracle_mesh_device_unverified"
     assert state.history_store.rows == {}
-    assert not any("Set-Content" in str(row) for row in state.history_store.rows.values())
 
 
 def test_a_suspended_link_is_refused_for_a_write_and_queues_nothing(monkeypatch):
