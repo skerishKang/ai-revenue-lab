@@ -1,0 +1,125 @@
+name: B64 Independent Identity Activation Gate
+
+# Owner decision #987 (2026-10-27): B64 is an independent business.
+# Dispatch-only; changes ONLY b64-ai-reward-router secret binding and existing padiem-b64 D1 schema.
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA'
+        required: true
+      confirmation:
+        description: 'Type ACTIVATE_B64_INDEPENDENT_IDENTITY'
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: b64-independent-identity-activation
+  cancel-in-progress: false
+jobs:
+  activate:
+    if: ${{ github.event.inputs.confirmation == 'ACTIVATE_B64_INDEPENDENT_IDENTITY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify exact main, designated account, existing D1 binding
+        shell: bash
+        env:
+          TARGET_SHA: ${{ github.event.inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test "$(git rev-parse origin/main)" = "$TARGET_SHA"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "$CLOUDFLARE_API_TOKEN"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          cfg=json.loads(Path('apps/ai-reward-router/wrangler.jsonc').read_text().replace('// Issue #987:', '// Issue #987:')) if False else None
+          # No lossy parsing of JSONC; only exact reviewed binding assertions.
+          text=Path('apps/ai-reward-router/wrangler.jsonc').read_text()
+          assert '"database_name": "padiem-b64"' in text
+          assert '"binding": "B64_INCOME_DB"' in text
+          assert '"database_id": "b7f7bbd7-442c-4bc6-bc0d-b1026b0d459a"' in text
+          assert '"services"' not in text
+          assert '"B64_PUBLIC_BASE_URL"' in text
+          print('B64_TARGET_CONFIG=PASS')
+          PY
+          echo 'B64_PREMUTATION=PASS'
+      - name: Confirm existing D1 database, no creation or deletion
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 list --json > "$RUNNER_TEMP/b64-d1-list.json"
+          python3 - "$RUNNER_TEMP/b64-d1-list.json" <<'PY'
+          import json,sys
+          rows=json.load(open(sys.argv[1]))
+          matches=[r for r in rows if r.get('name')=='padiem-b64' and r.get('uuid')=='b7f7bbd7-442c-4bc6-bc0d-b1026b0d459a']
+          assert len(matches)==1, 'existing B64 database absent or mismatched'
+          print('B64_EXISTING_D1=PASS')
+          PY
+      - name: Apply additive B64 member and session schema on existing D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute padiem-b64 --remote --file=apps/ai-reward-router/migrations/d1/0002_b64_member.sql
+          npx --yes wrangler@4 d1 execute padiem-b64 --remote --json --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('b64_user_income','b64_member','b64_session')" > "$RUNNER_TEMP/b64-schema.json"
+          python3 - "$RUNNER_TEMP/b64-schema.json" <<'PY'
+          import json,sys
+          payload=json.load(open(sys.argv[1]))
+          rows=payload[0]['results'] if isinstance(payload,list) else payload['results']
+          names={x['name'] for x in rows}
+          assert {'b64_user_income','b64_member','b64_session'} <= names, 'B64 schema incomplete'
+          print('B64_EXISTING_INCOME_AND_MEMBER_SCHEMA=PASS')
+          PY
+      - name: Create B64-only signing key if absent; never rotate existing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          code="$(curl -sS --max-time 30 -o "$RUNNER_TEMP/b64-settings.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/b64-ai-reward-router/settings")"
+          test "$code" = 200 || { echo "B64_BINDING_READ_STATUS=$code"; exit 1; }
+          present="$(python3 - "$RUNNER_TEMP/b64-settings.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data.get('success') is True, 'settings response unsuccessful'
+          bindings=data.get('result',{}).get('bindings',[])
+          matches=[b for b in bindings if b.get('name')=='B64_SESSION_SECRET']
+          assert not matches or (len(matches)==1 and matches[0].get('type')=='secret_text'), 'unexpected B64 session binding type'
+          print('yes' if matches else 'no')
+          PY
+          )"
+          if [ "$present" = yes ]; then
+            echo 'B64_SESSION_SECRET=ALREADY_PRESENT_NOT_ROTATED'
+          else
+            # Generated on the GitHub runner, sent directly to Cloudflare stdin, never output/stored.
+            openssl rand -hex 48 | npx --yes wrangler@4 secret put B64_SESSION_SECRET --name b64-ai-reward-router > "$RUNNER_TEMP/b64-secret-result.txt"
+            echo 'B64_SESSION_SECRET=CREATED'
+          fi
+          code="$(curl -sS --max-time 30 -o "$RUNNER_TEMP/b64-settings-after.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/b64-ai-reward-router/settings")"
+          test "$code" = 200
+          python3 - "$RUNNER_TEMP/b64-settings-after.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data.get('success') is True
+          assert any(x.get('name')=='B64_SESSION_SECRET' and x.get('type')=='secret_text' for x in data['result']['bindings'])
+          print('B64_SESSION_SECRET_BINDING=PASS')
+          PY
+      - name: Explicit completion boundary
+        run: |
+          echo 'B64_INDEPENDENT_IDENTITY_ACTIVATION=PASS'
+          echo 'B64_WORKER_REVISION_DEPLOYED_BY_THIS_GATE=NO'
+          echo 'B64_PUBLIC_LOGIN_E2E=NOT_RUN'
+          echo 'B64_DNS_OR_ROUTES_CHANGED=NO'
