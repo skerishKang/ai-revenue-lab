@@ -475,3 +475,43 @@ value never belongs in a reviewed config file, and both are delivered as
   runs under `script-src 'none'`, so the login is a server-side redirect and one
   plain link.
 
+
+## ayeT reward postback connected to the Worker and D1 (2026-10-28, issue #987)
+
+The verification and the state rules already existed as pure functions —
+`ayet-s2s-postback.ts` (signature and field contract) and `reward-events.ts`
+(`applyProviderRewardEvent`: idempotency, orphan reversal, identity mismatch).
+What was missing was a transport, a member link and a place to write, so a
+provider could not report anything. This section records the connection, not a
+new engine.
+
+| Piece | Value |
+|---|---|
+| Route | `GET /callbacks/ayet/s2s` — no cookie, no browser, signature-authenticated |
+| Signature | `X-Ayetstudios-Security-Hash` header, HMAC-SHA256 over the other query parameters (ayeT documents the hash as optional; B64 requires it) |
+| Member link | a signed B64 subject in `external_identifier`, purpose `b64-reward/ayet-subject/v1`, ≤128 chars for the provider's own limit |
+| Storage | `b64_reward_event` (`0004`, additive), keyed by `(provider_id, provider_transaction_id)` |
+| Ack | `200 OK` body `OK`; refusals answer 400/403/409 and write nothing |
+| Closed state | `B64_AYET_MODE` absent or `DISABLED` → 503 and the rest of the site is unaffected |
+
+A confirmed provider event is **not** money: it never writes `b64_user_income`,
+and `applyProviderRewardEvent` keeps `cashCustodyAction: 'NONE'`. The income
+pipeline still counts only its own `PAID` records.
+
+### Still owner/provider work before any ad runs
+
+- `B64_AYET_MODE`, `B64_AYET_PUBLISHER_ID`, `B64_AYET_PLACEMENT_ID`,
+  `B64_AYET_REWARDED_ADSLOT_ID`, `B64_AYET_OWNER_AUTHORIZED` and the
+  `B64_AYET_PUBLISHER_API_KEY` secret are **not registered anywhere**. Their
+  names are fixed by `provider-runtime-config.ts`; their values do not exist
+  until the publisher account, placement and ad slot do. Nothing was guessed.
+- Two provider-contract details must be confirmed against ayeT's own callback
+  documentation with a real account before `LIVE_AUTHORIZED`: the exact
+  canonicalization the `security_hash` is computed over, and the response body
+  the provider expects. The in-repo canonicalization is the previously reviewed
+  one and carries a fixed test vector; `OK` is what this code answers today.
+- **Showing** a rewarded video still needs the ayeT JavaScript SDK, and the
+  consumer surface runs under `script-src 'none'`. This PR does not open that
+  hole: the postback route is reachable and testable on its own, and no ad
+  inventory is enabled by it. A CSP exception for `cdn.ayet.io` is a separate,
+  explicitly reviewed decision.
