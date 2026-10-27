@@ -511,6 +511,87 @@ const SCENARIOS = {
     snap("switch_to_sns");
     return { steps, endpoints: endpointSet(), pageErrors };
   },
+  async book() {
+    // #5942: the book is a product, so it must survive a page refresh. One
+    // session generates and edits it, presses save twice, and a second session
+    // reopens it from the stored list. The lists must also stay separated.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    loginOutcome = null;
+
+    const A = spawnSession();
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(20);
+
+    const meetingFormA = find(A, "councilMeetingForm");
+    meetingFormA.querySelector("[name=title]").value = "10월 주민 안전 회의";
+    meetingFormA.querySelector("[name=content]").value = "도로 보수 일정과 야간 조명 예산을 논의했습니다.";
+    await meetingFormA.dispatch("submit");
+    await sleep(30);
+    await find(A, "councilMeetingSave").dispatch("click");
+    await sleep(50);
+
+    const checksA = find(A, "councilMeetingArchive").querySelectorAll(".council-book-check");
+    checksA.forEach((cb) => { cb.checked = true; });
+    await find(A, "councilBookGenerate").dispatch("click");
+    await sleep(60);
+    const generated = find(A, "councilBookOutput").value;
+    find(A, "councilBookOutput").value = "주민 안전 활동집\n\n" + generated;
+
+    const beforeSave = requests.length;
+    void find(A, "councilBookSave").dispatch("click");
+    void find(A, "councilBookSave").dispatch("click");
+    await sleep(120);
+    const saveRequests = requests.slice(beforeSave).filter((r) => r.method === "POST")
+      .map((r) => r.method + " " + r.url);
+    const bookNamesA = storedFiles.filter((f) => f.name.startsWith("활동집 - ")).map((f) => f.name);
+
+    const B = spawnSession();
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(80);
+    const archiveB = find(B, "councilMeetingArchive");
+    const openLabels = archiveB.querySelectorAll(".council-book-open").map((b) => text(b));
+    const recordChecks = archiveB.querySelectorAll(".council-book-check").length;
+    const recordLabels = archiveB.querySelectorAll("li button")
+      .map((b) => text(b)).filter((value) => value.indexOf("활동집 - ") !== 0);
+    const speechLabelsB = find(B, "councilSpeechSaved").querySelectorAll(".council-saved-open")
+      .map((b) => text(b));
+
+    let reopened = null;
+    let resultHiddenAfterOpen = null;
+    if (openLabels.length) {
+      await archiveB.querySelectorAll(".council-book-open")[0].dispatch("click");
+      await sleep(60);
+      reopened = find(B, "councilBookOutput").value;
+      resultHiddenAfterOpen = find(B, "councilBookResult").hidden;
+    }
+
+    // Re-saving the reopened draft with an edited title writes under the new name.
+    find(B, "councilBookOutput").value = "여름 활동 보고\n\n" + reopened;
+    await find(B, "councilBookSave").dispatch("click");
+    await sleep(120);
+    const C = spawnSession();
+    await C.ctx.window.PadiemCouncilApps.init();
+    await sleep(80);
+    const openLabelsC = find(C, "councilMeetingArchive").querySelectorAll(".council-book-open")
+      .map((b) => text(b));
+
+    return {
+      generatedChars: generated.length,
+      saveRequests,
+      bookNamesA,
+      openLabels,
+      recordChecks,
+      recordLabels,
+      speechLabelsB,
+      reopenedHead: reopened === null ? null : reopened.slice(0, 20).replace(/\s+/g, " "),
+      reopenedMatchesEdit: reopened === null ? false : reopened.startsWith("주민 안전 활동집"),
+      resultHiddenAfterOpen,
+      openLabelsC,
+      endpoints: endpointSet(),
+      alerts,
+      pageErrors,
+    };
+  },
   async generate() {
     const session = spawnSession();
     const api = session.ctx.window.PadiemCouncilApps;
