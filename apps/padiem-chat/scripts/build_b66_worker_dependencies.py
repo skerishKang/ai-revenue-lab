@@ -23,8 +23,75 @@ import tomllib
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = APP_ROOT.parents[1]
 RUNTIME_DIRECTORY = ".b66-worker-src"
 RUNTIME_MARKER = ".b66-generated.json"
+
+#: Independent apps keep their own static directory as the only source of truth.
+#: The deploy assembles it into the Assets upload here, so no app file is copied
+#: into apps/padiem-chat/** and every rebuild refreshes from the app itself.
+#:
+#: `prefix` is the URL directory the entry is served under, and the layout mirrors
+#: the app's own routes (`app/app_factory.py`: entry at "/", everything else under
+#: "/static/*"), which is what makes the entry page's relative ./static/...
+#: references resolve. `required` fails the build closed if the app stops shipping
+#: the files the entry needs.
+APP_ENTRY_BUNDLES = (
+    {
+        "app": "padiem-council-apps",
+        "source": REPO_ROOT / "apps/padiem-council-apps/static",
+        "prefix": "apps/council",
+        "entry": "index.html",
+        "required": ("index.html", "council-app.js", "council-app.css"),
+    },
+)
+
+
+def _is_reparse(path: Path) -> bool:
+    return path.is_symlink() or bool(
+        getattr(path.stat(), "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    )
+
+
+def app_entry_files(
+    source: Path, prefix: str, entry: str, required: Iterable[str]
+) -> dict[str, Path]:
+    """Map every app static file to its generated assets path, relative to output."""
+    if not source.is_dir():
+        raise ValueError("App entry source directory is missing: " + str(source))
+    missing = [name for name in required if not (source / name).is_file()]
+    if missing:
+        raise ValueError("App entry source is incomplete: " + ", ".join(missing))
+    mapped: dict[str, Path] = {}
+    for path in sorted(p for p in source.rglob("*") if p.is_file()):
+        if _is_reparse(path):
+            raise ValueError("App entry source must not contain symlinks or junctions")
+        relative = path.relative_to(source).as_posix()
+        served = relative if relative == entry else f"static/{relative}"
+        destination = f"{prefix}/{served}"
+        if destination in mapped:
+            raise ValueError("Duplicate app entry destination: " + destination)
+        mapped[destination] = path
+    return mapped
+
+
+def stage_app_entries(runtime_output: Path) -> dict[str, Path]:
+    """Copy each declared app entry into the generated Assets tree."""
+    staged: dict[str, Path] = {}
+    for bundle in APP_ENTRY_BUNDLES:
+        mapping = app_entry_files(
+            Path(bundle["source"]), bundle["prefix"], bundle["entry"], bundle["required"]
+        )
+        for destination, source in mapping.items():
+            relative = "static/" + destination
+            target = runtime_output / relative
+            if target.exists():
+                raise ValueError("App entry must not overwrite a Chat asset: " + destination)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+            staged[relative] = source
+    return staged
+
 
 def normalize(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
@@ -117,16 +184,23 @@ def generate_runtime(app_root: Path = APP_ROOT) -> dict:
     # binding, but the generated Python moduleRoot must retain this canonical
     # directory so version validation does not fail before the Worker starts.
     shutil.copytree(app_root / "static", output / "static")
+    staged_entries = stage_app_entries(output)
     hashes = {}
     for path in output.rglob("*"):
         if path.is_file():
             relative = path.relative_to(output)
+            canonical = staged_entries.get(relative.as_posix(), app_root / relative)
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
-            if digest != hashlib.sha256((app_root / relative).read_bytes()).hexdigest():
+            if digest != hashlib.sha256(canonical.read_bytes()).hexdigest():
                 raise ValueError("Generated runtime differs from canonical source")
             hashes[relative.as_posix()] = digest
     (output / RUNTIME_MARKER).write_text(json.dumps({"owner": "b66-worker-src-v1", "files": hashes}, indent=2))
-    return {"runtime": str(output), "byte_identical": True, "source_file_count": len(hashes)}
+    return {
+        "runtime": str(output),
+        "byte_identical": True,
+        "source_file_count": len(hashes),
+        "app_entry_paths": sorted(staged_entries),
+    }
 
 
 def stage_local_packages(lock_path: Path, staging: Path) -> Path:
