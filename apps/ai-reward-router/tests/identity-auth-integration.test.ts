@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createConsumerHttpHandler } from '../src/http/consumer-http.js';
 import { createB64AuthResolver } from '../src/identity/auth.js';
 import { D1B64MemberStore, UnboundB64MemberStore } from '../src/identity/member-store.js';
+import { D1UserIncomeRepository } from '../src/income-pipeline/d1-user-income-repository.js';
 import {
   createIdentityHarness,
   getWithCookie,
@@ -158,6 +159,35 @@ test('without the account store the endpoints refuse instead of faking accounts'
   const unavailable = await noSecret(postForm('/join', { email: 'nodb@example.com', password: 'longenoughpassword' }));
   assert.equal(unavailable.status, 503);
   assert.equal((await unavailable.json() as { error: string }).error, 'identity_unavailable');
+});
+
+test('a mid-request income storage failure answers 503, never a false 303', async () => {
+  const { handler, binding } = createIdentityHarness();
+  const cookie = await joinMember(handler, 'flaky@example.com', 'long enough password');
+  const members = new D1B64MemberStore(binding);
+  let failNext = false;
+  const flaky = {
+    prepare(sql: string) {
+      if (failNext) throw new Error('d1 connection reset');
+      return binding.prepare(sql);
+    },
+  };
+  // Identity stays available; only the income write fails, which is the case
+  // that used to be able to answer 303 while nothing was stored.
+  const rewired = createConsumerHttpHandler({
+    loadCandidates: () => [],
+    resolveAuth: createB64AuthResolver({ sessionSecret: TEST_SESSION_SECRET, members }),
+    memberStore: members,
+    sessionSecret: TEST_SESSION_SECRET,
+    incomeRepository: new D1UserIncomeRepository(flaky),
+    expectedBrowserOrigin: TEST_ORIGIN,
+  });
+  const ok = await rewired(postForm('/pipeline', { action: 'save', title: 'Before failure', vendor: 'V', status: 'SAVED' }, cookie));
+  assert.equal(ok.status, 303);
+  failNext = true;
+  const failed = await rewired(postForm('/pipeline', { action: 'delete', recordId: 'nonexistent' }, cookie));
+  assert.equal(failed.status, 503, 'a storage failure is never reported as a completed write');
+  assert.equal((await failed.json() as { error: string }).error, 'storage_unavailable');
 });
 
 test('members cannot read or write each other records', async () => {
