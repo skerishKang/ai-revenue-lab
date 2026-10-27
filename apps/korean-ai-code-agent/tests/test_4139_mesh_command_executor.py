@@ -6,15 +6,17 @@ and the exact transcript parsing that decides whether an exit code was observed.
 """
 from __future__ import annotations
 
+import base64
 import io
+import re
 import subprocess
 import unittest
 from contextlib import redirect_stderr
 from unittest.mock import patch
 
 from kagent.local_agent_meshcentral_command_port import (
-    EXIT_SENTINEL, MeshCentralCliCommandPort, MeshCentralCommandRefused,
-    parse_transcript,
+    ENVELOPE_PREFIX, EXIT_SENTINEL, MeshCentralCliCommandPort,
+    MeshCentralCommandRefused, _wrap, parse_transcript,
 )
 from kagent.local_agent_oracle_mesh_executor import (
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
@@ -24,6 +26,22 @@ SECRET = "deployment-channel-secret-value-261017"
 PASSWORD = "op3rator-meshtr0ll-secret"
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
 MESHCTRL = "/opt/meshcentral/meshctrl.js"
+
+#: The command inside the PowerShell script block the wrapper builds.
+_INNER = re.compile(r"& \{ (?P<body>.*) \} 2>&1", re.S)
+
+
+def _transcript(body: str, code: str = "0") -> bytes:
+    """One reply transcript, exactly as the wrapped script prints it."""
+    return (
+        ENVELOPE_PREFIX + base64.b64encode(body.encode("utf-8")).decode("ascii")
+        + "\n" + EXIT_SENTINEL + code + "\n"
+    ).encode("utf-8")
+
+
+def _inner(wrapped: str) -> str:
+    """The caller's command as it reaches the PC."""
+    return _INNER.search(wrapped).group("body")
 
 
 class _Completed:
@@ -51,8 +69,26 @@ def _port(completed=None, *, calls=None, password=PASSWORD, exc=None):
 
 
 class TranscriptParsingTests(unittest.TestCase):
+    def test_korean_and_emoji_names_survive_the_reply_envelope(self):
+        """The whole point of the envelope: cp949-era names come back intact.
+
+        A 한국어 folder listing with an emoji file name is the exact reply that
+        used to be destroyed as an invalid WebSocket frame, so the round trip is
+        asserted here rather than inferred from a green transcript.
+        """
+        body = (
+            '[{"Name":"견적서 🧾 3분기.txt","Length":4096,"PSIsContainer":false},'
+            '{"Name":"보고서(최종).hwp","Length":81920,"PSIsContainer":false}]\r\n'
+        )
+        transcript = _transcript(body)
+        # Only Base64 characters and the sentinel cross the wire on the way back.
+        self.assertTrue(transcript.isascii())
+        termination, exit_code, output = parse_transcript(transcript)
+        self.assertEqual((termination, exit_code), ("exited", 0))
+        self.assertEqual(output.decode("utf-8"), body)
+
     def test_crlf_output_is_preserved_and_the_sentinel_is_removed(self):
-        raw = ("Padiem-Command-Center\r\n" + EXIT_SENTINEL + "0\r\n\n").encode("utf-8")
+        raw = _transcript("Padiem-Command-Center\r\n")
         termination, exit_code, output = parse_transcript(raw)
         self.assertEqual(termination, "exited")
         self.assertEqual(exit_code, 0)
@@ -60,10 +96,26 @@ class TranscriptParsingTests(unittest.TestCase):
         self.assertEqual(output, b"Padiem-Command-Center\r\n")
 
     def test_nonzero_exit_is_the_pc_value(self):
-        raw = ("Access is denied.\r\n" + EXIT_SENTINEL + "5\r\n\n").encode("utf-8")
+        raw = _transcript("Access is denied.\r\n", "5")
         termination, exit_code, output = parse_transcript(raw)
         self.assertEqual((termination, exit_code), ("exited", 5))
         self.assertEqual(output, b"Access is denied.\r\n")
+
+    def test_a_reply_without_the_envelope_is_not_presented_as_pc_output(self):
+        """The console answered, but in a shape this protocol never writes."""
+        termination, exit_code, output = parse_transcript(
+            ("plain console text\r\n" + EXIT_SENTINEL + "0\r\n\n").encode())
+        self.assertEqual((termination, exit_code), ("bad_reply", 0))
+        self.assertEqual(output, b"")
+
+    def test_a_malformed_envelope_is_an_explicit_error_not_mangled_text(self):
+        for broken in (
+            (ENVELOPE_PREFIX + "not@@base64@@\n" + EXIT_SENTINEL + "0\n").encode(),
+            (ENVELOPE_PREFIX + base64.b64encode(b"\xff\xfe").decode("ascii")
+             + "\n" + EXIT_SENTINEL + "0\n").encode(),
+        ):
+            termination, exit_code, output = parse_transcript(broken)
+            self.assertEqual((termination, exit_code, output), ("bad_reply", 0, b""))
 
     def test_missing_sentinel_is_no_reply_not_success(self):
         termination, exit_code, output = parse_transcript(b"partial output\n")
@@ -90,7 +142,7 @@ class TranscriptParsingTests(unittest.TestCase):
 class CommandPortTests(unittest.TestCase):
     def test_command_runs_through_the_official_client_with_the_sentinel(self):
         calls = []
-        port = _port(_Completed(0, ("ok\r\n" + EXIT_SENTINEL + "0\r\n\n").encode()), calls=calls)
+        port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
         outcome = port.run_command(node_ref=NODE, command="hostname.exe", timeout_seconds=45)
         self.assertEqual(outcome.termination, "exited")
         self.assertEqual(outcome.exit_code, 0)
@@ -102,8 +154,12 @@ class CommandPortTests(unittest.TestCase):
         self.assertIn("--reply", argv)
         self.assertEqual(argv[argv.index("--id") + 1], NODE)
         run_arg = argv[argv.index("--run") + 1]
-        self.assertTrue(run_arg.startswith("hostname.exe"))
+        # The command reaches the PC as written, and the answer it is asked to
+        # print is wrapped in the envelope with the exit sentinel.
+        self.assertEqual(_inner(run_arg), "hostname.exe")
+        self.assertIn(ENVELOPE_PREFIX, run_arg)
         self.assertIn(EXIT_SENTINEL, run_arg)
+        self.assertIn("[Console]::OutputEncoding=[Text.Encoding]::UTF8", run_arg)
         # The operator credential never reaches the OS command line.
         self.assertNotIn(PASSWORD, argv)
         self.assertEqual(argv[argv.index("--loginpass") + 1],
@@ -193,15 +249,16 @@ class CommandPortTests(unittest.TestCase):
 
     def test_command_accepts_utf8_and_several_lines(self):
         calls = []
-        port = _port(_Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n\n").encode()), calls=calls)
+        port = _port(_Completed(0, _transcript("ok\n")), calls=calls)
         korean_path = 'type "C:\\사용자\\보고서.txt"'
         outcome = port.run_command(node_ref=NODE, command=korean_path, timeout_seconds=45)
         self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
         run_arg = calls[0][0][calls[0][0].index("--run") + 1]
-        self.assertTrue(run_arg.startswith(korean_path))
-        # A multi-line command keeps its newlines and still gets the sentinel.
+        # Korean is ordinary command text: it reaches the PC unchanged.
+        self.assertEqual(_inner(run_arg), korean_path)
+        # A multi-line command keeps its newlines and still gets the envelope.
         multi = "echo one\necho two"
-        port = _port(_Completed(0, ("one\ntwo\n" + EXIT_SENTINEL + "0\n\n").encode()))
+        port = _port(_Completed(0, _transcript("one\ntwo\n")))
         outcome = port.run_command(node_ref=NODE, command=multi, timeout_seconds=45)
         self.assertEqual((outcome.termination, outcome.exit_code), ("exited", 0))
         self.assertEqual(outcome.output, b"one\ntwo\n")
@@ -218,18 +275,17 @@ class CommandPortTests(unittest.TestCase):
     def test_long_multiline_utf8_command_reaches_the_client_verbatim(self):
         calls = []
         port = _port(
-            _Completed(0, ("ok\n" + EXIT_SENTINEL + "0\n").encode()), calls=calls,
+            _Completed(0, _transcript("ok\n")), calls=calls,
         )
         command = "Write-Output '보고서'\n" + ("Get-Item 'C:\\temp\\a.txt'\n" * 4000)
         port.run_command(node_ref=NODE, command=command, timeout_seconds=45)
         argv = calls[0][0]
         sent = argv[argv.index("--run") + 1]
-        # Only the trailing whitespace is dropped (so the appended sentinel
-        # statement cannot be swallowed by an unterminated line); every
+        # Only the trailing whitespace is dropped (so the appended envelope and
+        # sentinel statements cannot be swallowed by an unterminated line); every
         # interior line of the script travels to the client unchanged.
         expected = command.rstrip(" \t\r\n")
-        self.assertTrue(sent.startswith(expected))
-        self.assertEqual(sent.count("\n"), expected.count("\n"))
+        self.assertEqual(_inner(sent), expected)
         self.assertIn(EXIT_SENTINEL, sent)
 
     def test_command_over_the_os_argument_limit_is_refused_by_name(self):
@@ -248,7 +304,7 @@ class CommandPortTests(unittest.TestCase):
     def test_command_far_above_the_old_trial_cap_still_runs(self):
         calls = []
         port = _port(
-            _Completed(0, ("done\n" + EXIT_SENTINEL + "0\n").encode()), calls=calls,
+            _Completed(0, _transcript("done\n")), calls=calls,
         )
         outcome = port.run_command(
             node_ref=NODE, command="Get-Content 'C:\\a.txt'\n" * 5_000,
@@ -264,7 +320,7 @@ class CommandPortTests(unittest.TestCase):
         is a different observation from a console that never answered, and is
         never a 0.
         """
-        transcript = ("line one\nline two\n" + EXIT_SENTINEL + "\n").encode()
+        transcript = _transcript("line one\nline two\n", code="")
         termination, code, output = parse_transcript(transcript)
         self.assertEqual((termination, code), ("no_exit_code", None))
         self.assertEqual(output, b"line one\nline two\n")

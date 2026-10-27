@@ -2038,6 +2038,18 @@ def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]
         # that as "콘솔 응답 없음" would blame a console that was never asked.
         lines.append("종료 상태: 실행되지 않음 (실행 경계에서 거부됨)")
         lines.append("종료 코드: 확인되지 않음")
+    elif termination == "bad_reply":
+        # The console answered and its envelope could not be read. Calling that
+        # "응답 없음" would blame a console that did reply, and printing the raw
+        # bytes would present mangled text as though the PC had printed it.
+        lines.append("종료 상태: PC 응답을 해석하지 못했습니다 (인코딩 오류)")
+        lines.append(
+            "종료 코드: " + (
+                str(wire["exit_code"])
+                if isinstance(wire["exit_code"], int)
+                else "확인되지 않음"
+            )
+        )
     elif termination == "no_exit_code":
         # The console answered and the shell reached the statement this lane
         # appends, but PowerShell only records $LASTEXITCODE for a native program
@@ -3730,13 +3742,13 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     exit_code = dispatch.get("exit_code")
     if termination not in (
         "exited", "no_exit_code", "output_too_large", "not_executed",
-        "timed_out", "cancelled", "no_reply",
+        "timed_out", "cancelled", "no_reply", "bad_reply",
     ):
         return _error(503, "oracle_mesh_original_unavailable")
     if exit_code is None:
         if termination not in (
             "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "output_too_large", "cancelled",
+            "output_too_large", "cancelled", "bad_reply",
         ):
             return _error(503, "oracle_mesh_original_unavailable")
     elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
@@ -3933,13 +3945,13 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             exit_code = dispatch.get("exit_code")
             if termination not in (
                 "exited", "no_exit_code", "output_too_large", "not_executed",
-                "timed_out", "cancelled", "no_reply",
+                "timed_out", "cancelled", "no_reply", "bad_reply",
             ):
                 return _error(503, "oracle_mesh_original_unavailable")
             if exit_code is None:
                 if termination not in (
                     "timed_out", "no_reply", "no_exit_code", "not_executed",
-                    "output_too_large", "cancelled",
+                    "output_too_large", "cancelled", "bad_reply",
                 ):
                     return _error(503, "oracle_mesh_original_unavailable")
             elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
@@ -4090,13 +4102,13 @@ async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
             exit_code = dispatch.get("exit_code")
             if termination not in (
                 "exited", "no_exit_code", "output_too_large", "not_executed",
-                "timed_out", "cancelled", "no_reply",
+                "timed_out", "cancelled", "no_reply", "bad_reply",
             ):
                 return _error(503, "oracle_mesh_original_unavailable")
             if exit_code is None:
                 if termination not in (
                     "timed_out", "no_reply", "no_exit_code", "not_executed",
-                    "output_too_large", "cancelled",
+                    "output_too_large", "cancelled", "bad_reply",
                 ):
                     return _error(503, "oracle_mesh_original_unavailable")
             elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
