@@ -26,6 +26,7 @@ const NEWS = [
 
 function renderActivities(filter = "all", query = "") {
   const list = document.getElementById("activityList");
+  if (!list) return;
   const detail = document.getElementById("activityDetail");
   if (detail) detail.hidden = true;
   list.hidden = false;
@@ -53,6 +54,19 @@ function renderActivities(filter = "all", query = "") {
     li.addEventListener("click", open);
     li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
     list.appendChild(li);
+  });
+}
+
+function renderKeyActivities() {
+  const grid = document.getElementById("keyActivities");
+  if (!grid) return;
+  grid.innerHTML = "";
+  ACTIVITIES.slice(0, 3).forEach(a => {
+    const card = document.createElement("a");
+    card.className = "key-activity-card";
+    card.href = "./activity.html";
+    card.innerHTML = `<div class="ka-date">${a.date} · ${a.tag}</div><div class="ka-title">${a.title}</div>`;
+    grid.appendChild(card);
   });
 }
 
@@ -116,6 +130,7 @@ function initTheme() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderActivities();
+  renderKeyActivities();
   renderMedia();
   renderNews();
   initTheme();
