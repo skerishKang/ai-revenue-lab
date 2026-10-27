@@ -17,7 +17,7 @@ import asyncio
 
 import pytest
 
-from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect
+from padiem_ai_core.contracts import ApprovalPolicy, RunStatus, ToolSideEffect
 
 from kagent.pc_query_adapter import (
     CHAT_APP_ID,
@@ -100,7 +100,11 @@ def test_a_write_step_reaches_the_handler_without_an_approval_pause():
             contract.compiled.runtime_profile,
             ungranted,
         ))
-    assert "tool_external_authorization_required" in str(refused.value)
+    error = refused.value
+    assert error.code == "tool_external_authorization_required", (
+        type(error).__name__, str(error),
+    )
+    assert error.event.status is RunStatus.POLICY_BLOCKED
 
 
 def test_no_pc_tool_declares_a_deadline_of_its_own():
