@@ -97,7 +97,8 @@ class _HistoryStore:
 
     async def upsert_google_user(self, subject, email, name, picture):
         # 스텁 화면이 고른 계정별로 서로 다른 회원 행을 돌려준다(A/B 격리 판정용).
-        profile_id = self.profile_id if subject == _env("CHAIN_GOOGLE_SUBJECT") else f"usr_{subject.rsplit('-', 1)[-1]}"
+        default_subject = _env("CHAIN_GOOGLE_SUBJECT")
+        profile_id = self.profile_id if subject == default_subject else f"usr_{subject.removeprefix('stub-google-subject-')}"
         self.google_upserts.append((subject, email, name, picture))
         return _Profile(profile_id)
 
@@ -140,7 +141,8 @@ def _google_transport(subject: str, email: str) -> httpx.MockTransport:
             from urllib.parse import parse_qs
 
             code = (parse_qs(request.content.decode()).get("code") or [""])[0]
-            chosen = f"stub-google-subject-{code}" if code and code != "chain-code" else subject
+            # 스텁 화면의 member-* 계정만 두 번째 신원이 된다. 그 외 code는 기본 신원 그대로다.
+            chosen = f"stub-google-subject-{code}" if code.startswith("member-") else subject
             return httpx.Response(
                 200,
                 json={"access_token": f"chain-at-{chosen}", "token_type": "Bearer", "expires_in": 3600, "subject": chosen},
