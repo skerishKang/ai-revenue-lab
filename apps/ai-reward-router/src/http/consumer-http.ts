@@ -41,6 +41,20 @@ import {
   type GoogleFetch,
 } from '../identity/google.js';
 import { CredentialError } from '../identity/password.js';
+import {
+  AYET_S2S_CALLBACK_PATH,
+  AYET_S2S_SECURITY_HASH_HEADER,
+  ayetS2SParametersFromUrl,
+  AyetCallbackDisabled,
+  AyetCallbackUnconfigured,
+  handleAyetS2SCallback,
+} from '../ad-click-first/ayet-callback.js';
+import {
+  RewardEventStorageError,
+  UnboundRewardEventStore,
+  type RewardEventStore,
+} from '../ad-click-first/reward-event-store.js';
+import type { ProviderRuntimeMode } from '../ad-click-first/provider-runtime-config.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
@@ -88,6 +102,16 @@ export interface ConsumerHttpDependencies {
   /** Provider transport seam. Production uses the runtime fetch; tests pin it. */
   readonly googleFetch?: GoogleFetch;
   /**
+   * ayeT server-to-server reward postback (#987). The verification and state
+   * rules already existed as pure functions; these three are the connection.
+   * With no store, no key or a `DISABLED` mode the callback answers 503 and
+   * writes nothing, so the product keeps booting before any provider account
+   * exists.
+   */
+  readonly rewardEvents?: RewardEventStore | undefined;
+  readonly ayetMode?: ProviderRuntimeMode | undefined;
+  readonly ayetPublisherApiKey?: string | undefined;
+  /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
    * prototype default exists for tests and local prototypes only.
@@ -129,6 +153,14 @@ const IDENTITY_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/join', '/lo
  * refused 405 by the method rule below.
  */
 const GOOGLE_PATHS: ReadonlySet<string> = Object.freeze(new Set([B64_GOOGLE_START_PATH, B64_GOOGLE_CALLBACK_PATH]));
+
+/**
+ * The provider's own inbound reward callback. It is GET-only (ayeT calls it
+ * server-to-server with query parameters and a signature header), carries no
+ * browser cookie, and is authenticated by the publisher signature alone — so it
+ * is deliberately outside the identity paths, which are POST-only.
+ */
+const PROVIDER_CALLBACK_PATHS: ReadonlySet<string> = Object.freeze(new Set([AYET_S2S_CALLBACK_PATH]));
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
@@ -307,6 +339,7 @@ export function createConsumerHttpHandler(
 
     const isIdentity = IDENTITY_PATHS.has(url.pathname);
     const isGoogle = GOOGLE_PATHS.has(url.pathname);
+    const isProviderCallback = PROVIDER_CALLBACK_PATHS.has(url.pathname);
     if (request.method === 'POST' && !isIdentity && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
@@ -318,7 +351,7 @@ export function createConsumerHttpHandler(
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle) {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle && !isProviderCallback) {
       return notFound(request);
     }
 
@@ -471,6 +504,37 @@ export function createConsumerHttpHandler(
         }
         return googleCallbackErrorResponse(request, 503, 'storage_unavailable');
       }
+    }
+
+    if (isProviderCallback) {
+      // The provider authenticates itself with its signature; there is no
+      // cookie and no browser here. Storage and configuration failures answer
+      // 503 so the provider retries instead of silently losing an event.
+      const outcome = await handleAyetS2SCallback(
+        {
+          mode: dependencies.ayetMode ?? 'DISABLED',
+          publisherApiKey: dependencies.ayetPublisherApiKey,
+          signingSecret: dependencies.sessionSecret,
+          rewardEvents: dependencies.rewardEvents ?? new UnboundRewardEventStore('B64_INCOME_DB'),
+        },
+        {
+          parameters: ayetS2SParametersFromUrl(url),
+          securityHash: request.headers.get(AYET_S2S_SECURITY_HASH_HEADER),
+          observedAt: new Date().toISOString(),
+        },
+      ).catch((error: unknown) => {
+        if (error instanceof AyetCallbackDisabled || error instanceof AyetCallbackUnconfigured) {
+          return { status: 503, body: '', decision: 'PROVIDER_UNAVAILABLE' } as const;
+        }
+        if (error instanceof RewardEventStorageError) {
+          return { status: 503, body: '', decision: 'STORAGE_UNAVAILABLE' } as const;
+        }
+        throw error;
+      });
+      return responseForMethod(request, outcome.body, {
+        status: outcome.status,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
     }
 
     let candidates: readonly AdClickConsumerCandidate[];

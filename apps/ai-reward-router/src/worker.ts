@@ -3,6 +3,11 @@ import { loadVerifiedPublicOpportunities } from './public-supply/verified-public
 import { createB64AuthResolver } from './identity/auth.js';
 import { D1B64MemberStore, UnboundB64MemberStore } from './identity/member-store.js';
 import {
+  PROVIDER_RUNTIME_MODES,
+  type ProviderRuntimeMode,
+} from './ad-click-first/provider-runtime-config.js';
+import { D1RewardEventStore, UnboundRewardEventStore } from './ad-click-first/reward-event-store.js';
+import {
   D1UserIncomeRepository,
   UnboundUserIncomeRepository,
   type D1DatabaseLike,
@@ -41,9 +46,26 @@ export interface B64WorkerEnv {
   readonly B64_PUBLIC_BASE_URL?: string;
   readonly B64_GOOGLE_CLIENT_ID?: string;
   readonly B64_GOOGLE_CLIENT_SECRET?: string;
+  /**
+   * ayeT reward postback (#987). Names are already fixed by
+   * `provider-runtime-config.ts`; only the values are missing, so nothing is
+   * guessed here. An absent or unrecognised `B64_AYET_MODE` is treated as
+   * DISABLED rather than throwing at boot: a typo in a production variable must
+   * fail closed, and a crashing isolate would take the whole consumer site
+   * down with it.
+   */
+  readonly B64_AYET_MODE?: string;
+  readonly B64_AYET_PUBLISHER_API_KEY?: string;
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
+
+function ayetMode(value: string | undefined): ProviderRuntimeMode {
+  const trimmed = (value ?? '').trim();
+  return PROVIDER_RUNTIME_MODES.includes(trimmed as ProviderRuntimeMode)
+    ? trimmed as ProviderRuntimeMode
+    : 'DISABLED';
+}
 
 /** Reviewed origins only: a non-https or unparseable value is ignored so the
  * same-origin guard fails closed instead of trusting a sloppy expectation. */
@@ -93,6 +115,11 @@ export default {
         ? new D1UserIncomeRepository(env.B64_INCOME_DB)
         : new UnboundUserIncomeRepository(INCOME_D1_BINDING_NAME),
       expectedBrowserOrigin: reviewedBrowserOrigin(env.B64_PUBLIC_BASE_URL),
+      rewardEvents: env.B64_INCOME_DB
+        ? new D1RewardEventStore(env.B64_INCOME_DB)
+        : new UnboundRewardEventStore(INCOME_D1_BINDING_NAME),
+      ayetMode: ayetMode(env.B64_AYET_MODE),
+      ayetPublisherApiKey: env.B64_AYET_PUBLISHER_API_KEY,
     });
     return handler(request);
   },

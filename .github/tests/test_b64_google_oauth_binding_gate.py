@@ -115,12 +115,17 @@ def test_d1_half_stays_additive_and_measurable(workflow_text: str, steps: list[d
         "income rows are owner data"
     )
     applied = "\n".join(step["run"] for step in steps if step.get("run"))
-    assert "0002_b64_member.sql" in applied and "0003_b64_google_identity.sql" in applied
-    assert "b64_member_google" in applied, "the Google identity table must be verified to exist"
+    for migration in ("0002_b64_member.sql", "0003_b64_google_identity.sql", "0004_b64_reward_event.sql"):
+        assert migration in applied, f"{migration} must be applied by this gate"
+    for table in ("b64_member_google", "b64_reward_event"):
+        assert table in applied, f"the gate must verify {table} exists"
     assert "B64_D1_ROWS_PRESERVED" in applied, (
         "the gate must prove the additive migration removed no row, not assert it"
     )
     assert applied.count("b64-rowcount-before.json") >= 2, "the count is taken before and compared after"
+    assert "B64_AYET_PROVIDER_ENABLED=NO" in applied, (
+        "creating the table is not enabling the provider; the mode stays DISABLED"
+    )
 
 
 def test_google_values_enter_only_through_an_env_mapping(steps: list[dict]) -> None:
