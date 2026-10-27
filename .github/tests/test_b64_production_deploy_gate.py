@@ -187,7 +187,6 @@ def test_secret_values_are_never_read_or_printed(workflow_text: str) -> None:
     )
     assert "names and types only" in readback.lower()
     assert "LIVE_BINDING_NAMES" in workflow_text
-    assert "SESSION_SECRET_BINDING=PENDING_OWNER_ACTIVATION" in workflow_text
 
 
 def test_every_cloudflare_calling_step_declares_its_own_credentials(workflow: dict) -> None:
@@ -246,11 +245,15 @@ def test_every_step_script_is_shell_valid(workflow: dict) -> None:
 def test_binding_readback_fails_closed_on_declared_binding_drift(workflow: dict) -> None:
     steps = workflow["jobs"]["deploy-production-b64"]["steps"]
     readback = next(s for s in steps if "Read back live bindings" in s.get("name", ""))["run"]
-    assert "hard = [n for n in missing if n != 'PADIEM_SESSION_SECRET']" in readback, (
-        "the session secret is a separate owner activation, so its absence is "
-        "reported rather than repaired — every other declared binding must be live"
+    assert "B64_BINDING_PARITY=" in readback
+    assert "sys.exit(1)" in readback, "a binding the baseline declares must not go missing silently"
+    assert "if missing:" in readback, (
+        "every declared binding is load-bearing for authentication or storage, so "
+        "none of them may be excused at readback time"
     )
-    assert "sys.exit(1)" in readback, "a binding the config declares must not go missing silently"
+    assert "PADIEM_SESSION_SECRET" not in readback, (
+        "B64 holds no signing secret; a stale exception would hide a real gap"
+    )
     assert "BINDING_BASELINE=EVIDENCE_ONLY" in readback, (
         "section 8: the readback is evidence; the baseline amendment is its own reviewed PR"
     )

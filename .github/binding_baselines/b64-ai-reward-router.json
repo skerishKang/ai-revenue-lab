@@ -1,8 +1,8 @@
 {
   "worker": "b64-ai-reward-router",
-  "reviewed_utc": "2026-10-26",
-  "source_served_version": "PENDING_FIRST_INTEGRATION_DEPLOY (the live worker is still the 2026-10-23 P0 shell; this baseline records the REVIEWED target binding set of the integrated code and must be re-read from the live worker at first deploy)",
-  "decision_record": "PADIEM_SESSION_SECRET registration is a section-8 D3 change \u2014 owner decision and this baseline PR travel together (issue #987, PR #5853)",
+  "reviewed_utc": "2026-10-27",
+  "source_served_version": "cf25ac1d-4ae2-40b1-937f-9b2a77fa34b6 (read back by deploy run 40456209084 from the integrated main revision; CONTROL_PLANE_IDENTITY is a target-set addition that becomes live at the next deploy of this branch)",
+  "decision_record": "Authentication switches to the shared Control Plane identity authority plus the existing chat liveness relay (issue #5864, #987). PADIEM_SESSION_SECRET is deliberately NOT in the target set: B64 holds no copy of another product's signing key, so the secret_text entry and the #5853 activation path are dropped rather than kept as a fallback.",
   "bindings": [
     {
       "name": "B64_INCOME_DB",
@@ -17,8 +17,8 @@
       "type": "service"
     },
     {
-      "name": "PADIEM_SESSION_SECRET",
-      "type": "secret_text"
+      "name": "CONTROL_PLANE_IDENTITY",
+      "type": "service"
     }
   ]
 }

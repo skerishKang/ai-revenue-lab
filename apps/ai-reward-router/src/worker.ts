@@ -1,9 +1,13 @@
 import { createConsumerHttpHandler } from './http/consumer-http.js';
 import { loadVerifiedPublicOpportunities } from './public-supply/verified-public-opportunities.js';
 import {
-  createPadiemSessionAuthResolver,
+  createAuthoritySessionAuthResolver,
+  type ControlPlaneIdentityAuthority,
+} from './income-pipeline/authority-session-auth.js';
+import {
   createChatSessionStatusProbe,
   createUnconfiguredLivenessProbe,
+  type ServiceBindingLike,
 } from './income-pipeline/padiem-session-auth.js';
 import {
   D1UserIncomeRepository,
@@ -16,19 +20,22 @@ import {
  * optional in the type so a deployment without them keeps failing closed
  * instead of crashing the isolate:
  *
- * - `PADIEM_SESSION_SECRET`: the same session secret value the B62 chat
- *   product uses (`PADIEM_CHAT_SESSION_SECRET`). It lets this Worker verify
- *   the signed `padiem_session` cookie with the exact B62 authority
- *   algorithm. Without it no request is authenticated.
- * - `PADIEM_CHAT_SERVICE`: service binding to the deployed chat product
- *   worker, declared exactly like the existing reference bridge
- *   (`reference/business-66-padiem-quote-v1/_worker.js`). REQUIRED for the
- *   income path: the liveness of every verified session is confirmed
- *   through chat's existing revocation-aware `GET /api/auth/status`, so
- *   logged-out or revoked canonical sessions are blocked. When the binding
- *   is absent every cookie-authenticated request is denied (fail closed) —
- *   the deployed B64 path never falls back to signature-only verification.
- *   Signature-only checking exists only in isolated test helpers.
+ * - `CONTROL_PLANE_IDENTITY`: service binding to the shared Control Plane
+ *   identity authority (`padiem-control-plane-identity`), already bound by
+ *   padiem-chat, padiem-ai-engine and padiem-voice-stt. REQUIRED for the
+ *   income path: B64 resolves the incoming `padiem_session` cookie's
+ *   canonical session id against it and uses ONLY the server-verified
+ *   identity (`resolve_auth_session` → `resolve_product_user_for_subject`),
+ *   so logged-out, revoked, expired or forged sessions are all blocked and
+ *   no client-supplied claim is trusted. When the binding is absent every
+ *   cookie-authenticated request is denied (fail closed).
+ * - `PADIEM_CHAT_SERVICE`: service binding to the deployed chat product,
+ *   reused exactly as the existing second-product session bridge already uses
+ *   it. REQUIRED for the income path as the signature-parity check: chat
+ *   verifies its own HMAC and consults its revocation guard at
+ *   `GET /api/auth/status`, which is what stops B64 from treating the session
+ *   id alone as a bearer credential. Without it every cookie-authenticated
+ *   request is denied.
  * - `PADIEM_B64_PUBLIC_BASE_URL`: reviewed public origin of this deployment
  *   (e.g. `https://chat.padiem.net` when B64 is served under the chat
  *   origin). Required for cookie-authenticated pipeline mutations to pass
@@ -36,10 +43,14 @@ import {
  * - `B64_INCOME_DB`: Cloudflare D1 database binding for durable user income
  *   records. Without it pipeline storage answers 503 instead of silently
  *   using the non-durable in-memory prototype.
+ *
+ * The chat session signing secret is deliberately NOT bound: B64 never holds a
+ * copy of another product's key. It asks chat to verify its own signature over
+ * the existing service binding and takes identity from the shared authority.
  */
 export interface B64WorkerEnv {
-  readonly PADIEM_SESSION_SECRET?: string;
-  readonly PADIEM_CHAT_SERVICE?: { fetch(input: Request): Promise<Response> };
+  readonly CONTROL_PLANE_IDENTITY?: ControlPlaneIdentityAuthority;
+  readonly PADIEM_CHAT_SERVICE?: ServiceBindingLike;
   readonly PADIEM_B64_PUBLIC_BASE_URL?: string;
   readonly B64_INCOME_DB?: D1DatabaseLike;
 }
@@ -72,23 +83,31 @@ function reviewedBrowserOrigin(value: string | undefined): string | undefined {
  * provider pages, pay PADIEM nothing, and never grant provider authority.
  *
  * The income pipeline lane authenticates through the existing PADIEM session
- * cookie (verified server-side) and persists user income records to the
- * deployment's D1 binding. Both dependencies fail closed when absent.
+ * cookie resolved against the Control Plane identity authority and persists
+ * user income records to the deployment's D1 binding. Both dependencies fail
+ * closed when absent.
  */
 export default {
   async fetch(request: Request, env: B64WorkerEnv = {}): Promise<Response> {
-    // The deployed income path requires canonical-session liveness: with the
-    // binding, probe chat's revocation-aware /api/auth/status; without it,
-    // fail closed so a revoked session can never pass on its signature alone.
-    const livenessProbe = env.PADIEM_CHAT_SERVICE
+    // The deployed income path requires server-verified identity: with the
+    // binding, resolve the cookie's canonical session against the authority
+    // (session → subject → product user id). Without it, fail closed so no
+    // client-supplied claim can ever select the user. The resolver itself
+    // denies everything when the authority is absent.
+    //
+    // The chat relay is the second, non-optional half: it answers whether chat
+    // itself signed this cookie and has not revoked it. With no binding the
+    // probe denies everything, so a well-formed cookie carrying a live session
+    // id cannot pass on the id alone.
+    const signatureProbe = env.PADIEM_CHAT_SERVICE
       ? createChatSessionStatusProbe({ chatService: env.PADIEM_CHAT_SERVICE })
       : createUnconfiguredLivenessProbe(INCOME_CHAT_BINDING_NAME);
     const handler = createConsumerHttpHandler({
       loadCandidates: () => [],
       loadPublicOpportunities: loadVerifiedPublicOpportunities,
-      resolveAuth: createPadiemSessionAuthResolver({
-        sessionSecret: env.PADIEM_SESSION_SECRET,
-        sessionLivenessProbe: livenessProbe,
+      resolveAuth: createAuthoritySessionAuthResolver({
+        identityAuthority: env.CONTROL_PLANE_IDENTITY,
+        sessionSignatureProbe: signatureProbe,
       }),
       incomeRepository: env.B64_INCOME_DB
         ? new D1UserIncomeRepository(env.B64_INCOME_DB)

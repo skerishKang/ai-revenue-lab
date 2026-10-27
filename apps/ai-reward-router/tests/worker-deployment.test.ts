@@ -68,8 +68,12 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
   assert.equal(binding.migrations_dir, 'migrations/d1');
 
   const chatService = config.services?.find((svc) => svc.binding === 'PADIEM_CHAT_SERVICE');
-  assert.ok(chatService, 'wrangler.jsonc must declare the PADIEM_CHAT_SERVICE liveness relay binding');
+  assert.ok(chatService, 'wrangler.jsonc must declare the PADIEM_CHAT_SERVICE relay binding');
   assert.equal(chatService.service, 'padiem-chat');
+
+  const identityAuthority = config.services?.find((svc) => svc.binding === 'CONTROL_PLANE_IDENTITY');
+  assert.ok(identityAuthority, 'wrangler.jsonc must declare the CONTROL_PLANE_IDENTITY authority binding');
+  assert.equal(identityAuthority.service, 'padiem-control-plane-identity');
 
   const vars = config.vars as Record<string, string> | undefined;
   assert.equal(
@@ -87,11 +91,43 @@ test('B64 Worker config declares the income D1 binding matching the worker env c
   const workerUrl = new URL('../../src/worker.ts', import.meta.url);
   const workerSource = fs.readFileSync(workerUrl, 'utf8');
   assert.ok(workerSource.includes('B64_INCOME_DB'), 'worker.ts must read the B64_INCOME_DB binding');
-  assert.ok(workerSource.includes('PADIEM_SESSION_SECRET'), 'worker.ts must read the PADIEM_SESSION_SECRET secret');
+  assert.ok(workerSource.includes('CONTROL_PLANE_IDENTITY'), 'worker.ts must read the identity authority binding');
   assert.ok(workerSource.includes('PADIEM_B64_PUBLIC_BASE_URL'), 'worker.ts must read the reviewed public origin');
-  assert.ok(workerSource.includes('PADIEM_CHAT_SERVICE'), 'worker.ts must read the liveness relay binding');
+  assert.ok(!workerSource.includes('PADIEM_SESSION_SECRET'), 'the deployed path must not depend on the session signing secret');
 
   const storeUrl = new URL('../../src/income-pipeline/store.ts', import.meta.url);
   const storeSource = fs.readFileSync(storeUrl, 'utf8');
   assert.ok(!storeSource.includes('DELETE FROM'), 'the repository contract must not carry a wipe-everything path');
+});
+
+test('the B64 route set never claims the chat origin root or its API (#5864)', async () => {
+  const probeUrl = new URL(
+    '../../../../.github/workflows/b64-cloudflare-zone-route-readonly-probe.yml',
+    import.meta.url,
+  );
+  const probe = fs.readFileSync(probeUrl, 'utf8');
+  const declared = probe.match(/b64_paths = \[([^\]]*)\]/);
+  assert.ok(declared, 'the read-only route probe must name the B64 path set');
+  const paths = declared[1]!
+    .split(',')
+    .map((entry) => entry.trim().replace(/^['"]|['"]$/g, ''))
+    .filter((entry) => entry.length > 0);
+
+  assert.deepEqual(paths, ['/earn', '/today', '/browse', '/detail', '/pipeline', '/income']);
+  // chat.padiem.net owns its own root and the session relay lives under /api.
+  // Routing either to B64 would take the chat product down, and a root route
+  // would also make B64's PADIEM_CHAT_SERVICE relay call itself.
+  assert.ok(!paths.includes('/'), 'B64 must never take the chat origin root');
+  assert.ok(paths.every((path) => !path.startsWith('/api')), 'B64 must never shadow a chat /api route');
+
+  // The reviewed paths must be the ones the consumer surface actually serves,
+  // or CENTRAL would be creating routes to a 404.
+  for (const path of paths.filter((entry) => entry !== '/detail')) {
+    const response = await worker.fetch(new Request(`https://chat.padiem.net${path}`));
+    assert.notEqual(response.status, 404, `${path} is in the route set but not served`);
+  }
+  const detail = await worker.fetch(
+    new Request('https://chat.padiem.net/detail?id=pub-prolific-participate'),
+  );
+  assert.equal(detail.status, 200, '/detail needs its id query to answer');
 });

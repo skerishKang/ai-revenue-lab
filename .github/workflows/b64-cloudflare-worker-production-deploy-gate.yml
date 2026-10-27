@@ -353,20 +353,13 @@ jobs:
                   print(f'BINDING {name}: {got} MATCHES_BASELINE')
 
           print('LIVE_BINDING_NAMES=' + ','.join(sorted(live)))
-          # PADIEM_SESSION_SECRET is registered by its own activation gate on an
-          # owner decision (#5853), and #5864 proposes replacing that need with
-          # the Control Plane authority. Its absence is therefore reported, never
-          # repaired here — but it must be named, because without it every
-          # cookie-authenticated /pipeline request fails closed.
-          if 'PADIEM_SESSION_SECRET' in missing:
-              print('SESSION_SECRET_BINDING=PENDING_OWNER_ACTIVATION (income POST stays fail-closed)')
-          hard = [n for n in missing if n != 'PADIEM_SESSION_SECRET']
-          print('B64_BINDING_PARITY=' + ('PASS' if not hard else 'INCOMPLETE:' + ','.join(hard)))
-          # A binding the reviewed wrangler.jsonc declares must not be missing
-          # from the worker this gate just deployed: that means the deployment
-          # did not take, and income storage or the liveness relay would fail
-          # closed in front of a user.
-          if hard:
+          # Every binding the reviewed baseline declares is required: the income
+          # path denies all authentication when the authority or the chat relay
+          # is missing, and answers 503 for storage without the D1. A missing
+          # entry means the deployment did not take, so it fails the gate rather
+          # than being reported as a note.
+          print('B64_BINDING_PARITY=' + ('PASS' if not missing else 'INCOMPLETE:' + ','.join(missing)))
+          if missing:
               sys.exit(1)
           # Binding-baseline contract (docs/operations/
           # CLOUDFLARE_CREDENTIAL_OPERATIONS.md section 8): this readback is
