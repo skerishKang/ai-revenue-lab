@@ -50,6 +50,7 @@ assume anything else:
 
 ```text
 GET    /api/auth/status
+POST   /api/auth/password/login
 POST   /api/chat
 GET    /api/projects
 GET    /api/projects/{project_id}/files
@@ -58,6 +59,14 @@ GET    /api/projects/{project_id}/files/{file_id}
 DELETE /api/projects/{project_id}/files/{file_id}
 GET    /api/projects/{project_id}/files/{file_id}/original
 ```
+
+- **Sign-in inside the app.** `POST /api/auth/password/login` is the same credential route Chat
+  uses (`{identifier, password}`, one non-disclosing `401`), added so a signed-out visitor signs in
+  inside the app's own page instead of being routed to the Chat home (#5942). It is not a new
+  authority: registration, password reset and logout stay Chat's, and the checker refuses if the
+  route disappears. A Google round trip returns to the app only through the Worker's signed state
+  and one exact allowlist (`app/auth.py` `OAUTH_RETURN_TARGETS`); a caller-supplied URL never aims
+  the redirect, and the Chat default stays `/`.
 
 - **Work identifiers.** `speech`, `sns`, `meeting` today. A declaration makes the request skip the
   native-calendar branch; it grants no identity, tier, entitlement or tool scope, and an unknown
@@ -208,6 +217,8 @@ python .github/scripts/padiem_apps_integration_contract.py check     → PADIEM_
 python .github/scripts/padiem_apps_integration_contract.py describe  → the machine-readable surface
 python -m pytest .github/tests/test_padiem_apps_integration_contract.py
 python -m pytest apps/padiem-chat/tests/test_b62_app_entry_staging.py  → the /apps/council/ staging
+python -m pytest apps/padiem-chat/tests/test_5942_oauth_return_target.py  → the signed OAuth continuation
+python -m pytest apps/padiem-council-apps/tests  → the entry's own behaviour, incl. in-page sign-in
 ```
 
 The tests are refusal tests: a widened work-scope set, a removed refusal, a softened calendar
