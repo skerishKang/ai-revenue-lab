@@ -139,6 +139,48 @@
     };
   }
 
+  // #5728 binary photo upload — the SAME project-file channel as text
+  // drafts (original bytes, owner/project scoped). Ported from the merged
+  // #5924 contract so the council app's SNS composition stores real files,
+  // not copies of LOCAL 1 code paths.
+  async function uploadProjectImage(pid, file) {
+    const res = await fetch("/api/projects/" + pid + "/files", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Padiem-Filename": encodeURIComponent(file.name),
+        "X-Padiem-Media-Type": file.type,
+      },
+      body: file,
+    });
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && data.file ? data.file : null;
+  }
+
+  async function deleteProjectFile(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId), {
+      method: "DELETE",
+      credentials: "include",
+    });
+    return res.ok || res.status === 404;
+  }
+
+  async function fetchOriginalDataUrl(pid, fileId) {
+    const res = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(fileId) + "/original", {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   // ── speech module (prompt template ported verbatim from util-menu.js) ────
 
   function buildSpeechPrompt(form) {
@@ -275,6 +317,65 @@
       result.appendChild(actions);
       host.appendChild(result);
 
+      // #5731 contract: the stored speech history is listed on tool re-entry
+      // too (not only right after a save), and each row carries a “참고로
+      // 선택” action that fills the style sample textarea with the stored
+      // body — the next generation fences it as the sample, like a pasted
+      // one. Reuse of the existing owner/project files, no second store.
+      const savedList = el("div", "council-saved-list");
+      savedList.id = "councilSpeechSaved";
+      host.appendChild(savedList);
+
+      async function refreshSpeechList() {
+        const pid = await projects.ensure();
+        if (!pid) return;
+        const files = await listProjectFiles(pid);
+         const speechFiles = files.filter((f) => (f.name || "").endsWith(".txt") && !(f.name || "").endsWith("게시글.txt"));
+        savedList.replaceChildren();
+        savedList.appendChild(el("h3", null, "저장된 축사 원고"));
+        if (!speechFiles.length) {
+          savedList.appendChild(el("p", "council-empty", "저장된 축사가 없습니다."));
+          return;
+        }
+        const ul = document.createElement("ul");
+        speechFiles.forEach((f) => {
+          const li = document.createElement("li");
+          li.className = "council-saved-item";
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "council-saved-open";
+          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.addEventListener("click", async () => {
+            const content = await fetchProjectFile(pid, f.id);
+            if (typeof content === "string") {
+              output.value = content;
+              result.hidden = false;
+            } else {
+              alert("저장된 축사의 본문을 읽을 수 없습니다.");
+            }
+          });
+          li.appendChild(btn);
+          const useAsRef = document.createElement("button");
+          useAsRef.type = "button";
+          useAsRef.className = "council-speech-use-ref";
+          useAsRef.dataset.fileId = f.id;
+          useAsRef.textContent = "참고로 선택";
+          useAsRef.addEventListener("click", async () => {
+            const styleField = form.querySelector("[name=style]");
+            if (!styleField) { alert("참고 원고 필드를 찾을 수 없습니다."); return; }
+            const res = await fetch("/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
+            if (!res.ok) { alert("참고 원고를 불러오지 못했습니다."); return; }
+            const data = await res.json().catch(() => null);
+            const content = data && data.file && (data.file.content || data.file.text);
+            if (typeof content !== "string" || !content.trim()) { alert("참고 원고의 본문을 읽을 수 없습니다."); return; }
+            styleField.value = content;
+          });
+          li.appendChild(useAsRef);
+          ul.appendChild(li);
+        });
+        savedList.appendChild(ul);
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         result.hidden = false;
@@ -296,22 +397,27 @@
         if (file) {
           saveBtn.textContent = "저장됨";
           setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          await refreshSpeechList();
         } else {
           alert("저장 실패");
         }
       });
+      // Re-entry lists the stored history too (#5731).
+      refreshSpeechList();
     }
 
     return { build(host) { buildForm(host); }, buildPrompt: buildSpeechPrompt };
   })();
 
   // ── sns module (prompt template ported verbatim from util-menu.js) ───────
-  // Text composition only in this base app. The stored-photo composition
-  // contract (#5728, LOCAL 1, already merged to main via PR #5924) is
-  // deliberately NOT copied here; connecting it through an adapter is
-  // separate follow-up work — see the README boundary note.
+  // Photo composition connected through the merged #5728/#5924 contract:
+  // binary originals upload via the SAME project-file channel as text
+  // drafts, one version-2 roster JSON carries the order/positions/saved
+  // draft/platform, and re-entry restores the composition ONCE at build
+  // time. No LOCAL 1 code is copied — the storage contract is the shipped
+  // PADIEM one, re-stated against this app's own DOM.
 
-  function buildSnsPrompt(form, platform) {
+  function buildSnsPrompt(form, platform, photos) {
     const d = new FormData(form);
     const event = (d.get("event") || "").trim();
     const whenwhere = (d.get("whenwhere") || "").trim();
@@ -329,6 +435,13 @@
     prompt += `행사명: ${event}\n`;
     if (whenwhere) prompt += `날짜·장소: ${whenwhere}\n`;
     prompt += `주요 내용: ${content}\n`;
+    if (photos && photos.length) {
+      const names = photos.map((ph) => ph.name).join(", ");
+      prompt += `첨부 사진: ${photos.length}장 (${names})\n`;
+      prompt += platform === "blog"
+        ? "사진은 본문 문단 사이에 삽입됩니다. 각 사진이 어느 내용과 이어지는지 참고해서 문단을 구성해 주세요.\n"
+        : "사진은 본문과 구분된 게시물 미디어로 첨부됩니다. 본문에 이미지 위치 설명은 넣지 마세요.\n";
+    }
     if (memo) prompt += `메모: ${memo}\n`;
     if (audience) prompt += `대상 독자: ${audience}\n`;
     prompt += `문체: ${toneMap[tone]}\n`;
@@ -389,10 +502,224 @@
           b.classList.add("active");
           platform = key;
           title.textContent = tabNames[key] + " 게시글";
+          renderPhotoList();
+          renderPreview();
         });
         tabDiv.appendChild(b);
       });
       form.appendChild(tabDiv);
+
+      // #5728: photo composition replaces the old direct photo-URL field.
+      // Photos are picked locally (multiple, image/*), previewed as
+      // thumbnails, removable and re-orderable. Blog places each photo
+      // between chosen paragraphs; facebook/instagram treat them as
+      // separate post media. Photos survive platform switches.
+      const photos = [];
+      let photoSeq = 0;
+      const photoBox = el("div", "council-photos");
+      photoBox.id = "councilSnsPhotoBox";
+      const photoHead = el("div", "council-photos-head");
+      const photoTitle = el("span", "council-photos-title", "사진");
+      const photoAdd = el("button", "council-photo-add", "사진 추가");
+      photoAdd.type = "button";
+      photoAdd.id = "councilSnsPhotoAdd";
+      const photoInput = document.createElement("input");
+      photoInput.type = "file";
+      photoInput.accept = "image/png,image/jpeg,image/webp";
+      photoInput.multiple = true;
+      photoInput.hidden = true;
+      photoInput.id = "councilSnsPhotoInput";
+      const photoCount = el("span", "council-photos-count", "0장");
+      photoCount.id = "councilSnsPhotoCount";
+      photoHead.append(photoTitle, photoAdd, photoInput, photoCount);
+      const photoList = el("ul", "council-photo-list");
+      photoList.id = "councilSnsPhotoList";
+      const photoNote = el("p", "council-photo-note");
+      photoNote.id = "councilSnsPhotoNote";
+      photoBox.append(photoHead, photoList, photoNote);
+      form.appendChild(photoBox);
+
+      function photoNoteText() {
+        if (platform === "blog") return "블로그는 각 사진을 본문 문단 사이에 삽입합니다. 미리보기에서 위치를 확인하세요.";
+        if (platform === "instagram") return "인스타그램은 사진을 별도 미디어로 첨부합니다(이미지 중심 미리보기).";
+        return "페이스북은 사진을 본문과 구분된 게시물 미디어로 첨부합니다.";
+      }
+
+      function readPhotoFile(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto" });
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // #5728: the roster is one small JSON file that carries the whole
+      // persisted composition — the photo order, the blog insertion
+      // positions, the saved draft text and the platform it was written
+      // for (version 2). The photo originals themselves are already stored
+      // (each add uploaded them). Rewrites replace the previous roster in
+      // place, so a stale roster can never resurrect a photo the owner
+      // deleted.
+      const PHOTO_ROSTER_NAME = "SNS 사진 구성.json";
+      // The last explicitly saved draft rides every roster rewrite, so a
+      // later photo change never silently drops the saved text.
+      let lastSavedDraft = null;
+      // Roster writes serialize: two changes landing together must never
+      // leave two roster files behind (an older one would win a name lookup
+      // and silently revert the newer order or position).
+      let rosterWriteChain = Promise.resolve();
+      function writePhotoRoster(pid, savedDraft) {
+        if (!pid) return;
+        const carriedDraft = savedDraft === undefined ? lastSavedDraft : savedDraft;
+        rosterWriteChain = rosterWriteChain.then(async () => {
+          const roster = { version: 2, photos: photos
+            .map((p) => ({ fileId: String(p.id), name: p.name, position: p.position })) };
+          // The saved draft rides with the roster so re-entry restores the
+          // text too; the last explicit 저장 wins.
+          if (carriedDraft && carriedDraft.text) {
+            roster.draft = { text: carriedDraft.text, platform: carriedDraft.platform || platform };
+          }
+          const existing = await listProjectFiles(pid);
+          const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (previous) await deleteProjectFile(pid, previous.id);
+          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster), "application/json");
+        }).catch(() => { /* the composition keeps working; the roster stays last-known */ });
+        return rosterWriteChain;
+      }
+
+      function renderPhotoList() {
+        photoCount.textContent = photos.length + "장";
+        photoNote.textContent = photoNoteText();
+        photoList.replaceChildren();
+        photos.forEach((item) => {
+          const li = el("li", "council-photo-item");
+          const img = document.createElement("img");
+          img.className = "council-photo-thumb";
+          img.src = item.dataUrl;
+          img.alt = item.name;
+          const nameSpan = el("span", "council-photo-name", item.name);
+          const controls = el("div", "council-photo-controls");
+          if (platform === "blog") {
+            const posLabel = el("label", "council-photo-pos", "삽입 위치 ");
+            const sel = document.createElement("select");
+            sel.className = "council-photo-pos-select";
+            sel.dataset.photoId = String(item.id);
+            const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
+            opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
+             sel.value = item.position;
+             sel.addEventListener("change", async () => { item.position = sel.value; renderPreview(); await writePhotoRoster(projects.get()); });
+            posLabel.appendChild(sel);
+            controls.appendChild(posLabel);
+          }
+          const up = el("button", "council-photo-move", "↑"); up.type = "button"; up.dataset.move = "-1"; up.dataset.photoId = String(item.id);
+          const down = el("button", "council-photo-move", "↓"); down.type = "button"; down.dataset.move = "1"; down.dataset.photoId = String(item.id);
+          const del = el("button", "council-photo-remove", "삭제"); del.type = "button"; del.dataset.photoId = String(item.id); del.dataset.action = "remove";
+          controls.append(up, down, del);
+          li.append(img, nameSpan, controls);
+          photoList.appendChild(li);
+        });
+      }
+
+      photoList.addEventListener("click", async (ev) => {
+        const target = ev.target;
+        if (!target || !target.dataset) return;
+        // Stored photos carry server ids like "file_<hex>"; local-only rows
+        // carry numeric ids. Compare as strings so both resolve.
+        const id = String(target.dataset.photoId);
+        const index = photos.findIndex((p) => String(p.id) === id);
+        if (index < 0) return;
+        if (target.dataset.move) {
+          const to = index + Number(target.dataset.move);
+          if (to < 0 || to >= photos.length) return;
+          const [moved] = photos.splice(index, 1);
+          photos.splice(to, 0, moved);
+        } else if (target.dataset.action === "remove") {
+          const pid = projects.get();
+          if (photos[index].id && pid) {
+            const gone = await deleteProjectFile(pid, photos[index].id);
+            if (!gone) { alert("사진 삭제 실패: " + photos[index].name); return; }
+          }
+          photos.splice(index, 1);
+        } else {
+          return;
+        }
+         renderPhotoList();
+         renderPreview();
+         // Every durable composition change (reorder and removal here,
+         // insertion positions on the selects) rewrites the roster file, so
+         // the order and the blog insertion positions outlive the session.
+         await writePhotoRoster(projects.get());
+       });
+
+      photoAdd.addEventListener("click", () => photoInput.click());
+      photoInput.addEventListener("change", async () => {
+        const files = Array.from(photoInput.files || []);
+        const failed = [];
+        for (const file of files) {
+          if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
+          // A photo joins the composition only once the project-file upload
+          // succeeded — the thumbnail and the stored original are the same
+          // bytes, and a failed upload never looks "saved".
+          const pid = await projects.ensure();
+          if (!pid) { failed.push(file.name); continue; }
+          const stored = await uploadProjectImage(pid, file);
+          if (!stored) { failed.push(file.name); continue; }
+          const item = await readPhotoFile(file);
+          if (item) { item.id = stored.id; photos.push(item); }
+        }
+        if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
+        photoInput.value = "";
+        renderPhotoList();
+        renderPreview();
+        // An added photo is part of the durable composition as soon as its
+        // upload landed — the roster records it right away.
+        if (!failed.length) await writePhotoRoster(projects.get());
+      });
+
+      function blogParagraphs(text) {
+        return String(text || "").split(new RegExp("\\n\\s*\\n")).filter((p) => p.trim());
+      }
+
+      function interleaveBlog(text) {
+        const parts = blogParagraphs(text);
+        if (!photos.length) return parts.map((p) => ({ type: "text", value: p }));
+        const out = [];
+        if (photos.some((p) => p.position === "0")) {
+          photos.filter((p) => p.position === "0").forEach((p) => out.push({ type: "photo", value: p }));
+        }
+        parts.forEach((para, i) => {
+          out.push({ type: "text", value: para });
+          photos.forEach((p) => {
+            if (p.position === "auto") { if (i === Math.min(photos.indexOf(p), Math.max(parts.length - 1, 0))) out.push({ type: "photo", value: p }); }
+            else if (p.position === "end") { if (i === parts.length - 1) out.push({ type: "photo", value: p }); }
+            else if (String(i + 1) === String(p.position)) { out.push({ type: "photo", value: p }); }
+          });
+        });
+        return out;
+      }
+
+      function renderPreview() {
+        const box = previewBox;
+        if (!box || box.hidden) return;
+        box.replaceChildren();
+        const text = output.value || "";
+        if (platform === "blog") {
+          interleaveBlog(text).forEach((seg) => {
+            if (seg.type === "text") { const p = el("p", "council-preview-para", seg.value); box.appendChild(p); }
+            else { const im = document.createElement("img"); im.className = "council-preview-photo"; im.src = seg.value.dataUrl; im.alt = seg.value.name; box.appendChild(im); }
+          });
+        } else {
+          if (text.trim()) { const p = el("p", "council-preview-para", text); box.appendChild(p); }
+          const grid = el("div", "council-sns-media-grid" + (platform === "instagram" ? " insta" : ""));
+          photos.forEach((ph) => { const im = document.createElement("img"); im.src = ph.dataUrl; im.alt = ph.name; grid.appendChild(im); });
+          box.appendChild(grid);
+        }
+        const note = el("p", "council-photo-note", "미리보기는 초안 구성 확인용입니다. 실제 SNS 자동 게시 기능이 아닙니다.");
+        box.appendChild(note);
+      }
+
+      renderPhotoList();
 
       const formActions = el("div", "council-form-actions");
       const submitBtn = el("button", "council-generate", "생성");
@@ -411,6 +738,9 @@
       const output = document.createElement("textarea");
       output.id = "councilSnsOutput";
       output.rows = 12;
+      const previewBox = el("div", "council-sns-preview");
+      previewBox.id = "councilSnsPreview";
+      previewBox.hidden = true;
       const actions = el("div", "council-actions");
       const copyB = el("button", null, "복사");
       copyB.type = "button";
@@ -419,16 +749,92 @@
       dlB.type = "button";
       dlB.id = "councilSnsDownload";
       actions.append(copyB, dlB);
-      result.append(title, output, actions);
+      result.append(title, output, previewBox, actions);
 
       host.replaceChildren(form, result);
+
+      // #5728: re-entry restores the persisted composition ONCE, at build
+      // time — before any interaction with the photo list. The stored image
+      // files are the originals; when the roster file exists it fixes the
+      // order and the blog insertion positions, and photos it does not
+      // mention still surface after it so nothing the owner stored
+      // vanishes. A roster that carries a saved draft (version 2) also
+      // restores the draft text and switches to the platform it was saved
+      // under.
+      (async () => {
+        try {
+          const pid = await projects.ensure();
+          if (!pid) return;
+          const files = await listProjectFiles(pid);
+          const imageFiles = files.filter((f) => f.media_type === "image/png"
+            || f.media_type === "image/jpeg" || f.media_type === "image/webp");
+          let order = null;
+          let savedDraft = null;
+          const rosterFile = files.find((f) => f.name === PHOTO_ROSTER_NAME);
+          if (rosterFile) {
+            const detailRes = await fetch("/api/projects/" + pid + "/files/" + encodeURIComponent(rosterFile.id), { credentials: "include" });
+            if (detailRes.ok) {
+              const detail = await detailRes.json().catch(() => null);
+              try {
+                const roster = JSON.parse(String((detail && detail.file && detail.file.content) || ""));
+                if (roster && Array.isArray(roster.photos)) order = roster.photos;
+                // A saved draft is part of the same roster record; a v1
+                // roster (photos only) leaves the draft area untouched.
+                if (roster && roster.draft && typeof roster.draft.text === "string" && roster.draft.text.trim()) {
+                  savedDraft = roster.draft;
+                }
+              } catch (_) { /* unreadable roster falls back to the stored order */ }
+            }
+          }
+          if (savedDraft) {
+            // The draft comes back with the platform it was written for;
+            // photos restore after this so the preview is coherent. It also
+            // rides future roster rewrites, so a later photo change never
+            // silently drops the saved text.
+            lastSavedDraft = savedDraft;
+            result.hidden = false;
+            output.value = savedDraft.text;
+            previewBox.hidden = false;
+            if (savedDraft.platform && savedDraft.platform !== platform) {
+              const targetTab = Array.from(tabDiv.querySelectorAll(".council-sns-tab")).find((t) => t.dataset.platform === savedDraft.platform);
+              if (targetTab) targetTab.click();
+              else { platform = savedDraft.platform; title.textContent = ({ blog: "블로그", facebook: "페이스북", instagram: "인스타그램" })[savedDraft.platform] + " 게시글"; }
+            }
+          }
+          if (photos.length || !imageFiles.length) {
+            if (savedDraft) renderPreview();
+            return;
+          }
+          const ordered = [];
+          if (order && order.length) {
+            order.forEach((entry) => {
+              const meta = imageFiles.find((f) => f.id === (entry && entry.fileId));
+              if (meta) ordered.push({ meta: meta, position: entry && typeof entry.position === "string" && entry.position ? entry.position : "auto" });
+            });
+            imageFiles.forEach((meta) => {
+              if (!ordered.some((o) => o.meta.id === meta.id)) ordered.push({ meta: meta, position: "auto" });
+            });
+          } else {
+            imageFiles.forEach((meta) => ordered.push({ meta: meta, position: "auto" }));
+          }
+          for (const entry of ordered) {
+            const dataUrl = await fetchOriginalDataUrl(pid, entry.meta.id);
+            if (!dataUrl) continue;
+            photos.push({ id: entry.meta.id, name: entry.meta.name, dataUrl: dataUrl, position: entry.position });
+          }
+          renderPhotoList();
+          renderPreview();
+        } catch (_) { /* restore is best effort; an empty composition stays honest */ }
+      })();
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(buildSnsPrompt(form, platform), "sns"); }
+        try { output.value = await apiChat(buildSnsPrompt(form, platform, photos), "sns"); }
         catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
+        previewBox.hidden = false;
+        renderPreview();
       });
       copyB.addEventListener("click", async () => {
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
@@ -439,11 +845,15 @@
         if (!text) return;
         const pid = await projects.ensure();
         if (!pid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-        const name = "sns-" + platform + ".txt";
+        const name = (title.textContent || "sns").trim() + ".txt";
         const file = await saveProjectFile(pid, name, text);
         if (file) {
           saveBtn.textContent = "저장됨";
           setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          // The saved draft rides in the roster so re-entry restores the
+          // text and its platform, not only the photos.
+           lastSavedDraft = { text: text, platform: platform };
+           await writePhotoRoster(pid, lastSavedDraft);
         } else {
           alert("저장 실패");
         }
