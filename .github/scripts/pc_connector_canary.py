@@ -168,20 +168,22 @@ def pending_result_verdict(payload: Any) -> tuple[str, str, int, str]:
     return "FAIL", "pc_run_" + safe, 0, "none"
 
 
-def wait_for_result(opener, run_id: str, *, clock=time.monotonic, sleep=time.sleep) -> dict:
+def wait_for_result(opener, run_id: str, *, started: float | None = None,
+                    clock=time.monotonic, sleep=time.sleep) -> dict:
     """Poll the owner's own durable run result until the server calls it terminal.
 
     No deadline and no attempt count is chosen here. The wait ends on the server's
     terminal status, on a named refusal that no retry can change, or on the runner's
     own job ceiling — which is why the caller prints the run id before entering.
+    `started` lets the caller measure the whole turn, the stream included.
     """
 
-    started = clock()
+    started_at = clock() if started is None else started
     path = PENDING_RESULT_PATH.format(run_id=run_id)
     while True:
         status, body = bounded_call(opener, path)
         state, code, entries, source = pending_result_verdict(body)
-        elapsed = max(0, int(round(clock() - started)))
+        elapsed = max(0, int(round(clock() - started_at)))
         if state != "WAIT":
             return {"verdict": state, "code": code, "entries": entries,
                     "answer_source": source, "elapsed_seconds": elapsed}
@@ -367,7 +369,7 @@ def run() -> int:
         # lane, so there is no durable PC result that could ever arrive for it.
         return _fail(opener, conversation_id, "pc_lane_not_offered", pc_state=pc_state)
     try:
-        outcome = wait_for_result(opener, run_id)
+        outcome = wait_for_result(opener, run_id, started=started)
     except CanaryError as exc:
         return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
     print(summary_line(outcome["verdict"], entries=outcome["entries"],

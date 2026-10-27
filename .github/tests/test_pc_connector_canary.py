@@ -157,6 +157,17 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
         self.assertEqual(seen, [f"/api/claw/runs/{RUN_ID}/pending-result"] * 3)
         self.assertEqual(slept, [canary.POLL_INTERVAL_SECONDS, canary.POLL_INTERVAL_SECONDS])
 
+    def test_the_reported_time_covers_the_whole_turn_including_the_stream(self) -> None:
+        import unittest.mock as mock
+
+        answers = iter([(200, result(status="completed", answer_source="pc_command_result",
+                                     answer="A\n"))])
+        with mock.patch.object(canary, "bounded_call",
+                               lambda opener, path, **kwargs: next(answers)):
+            outcome = canary.wait_for_result(object(), RUN_ID, started=10.0,
+                                            clock=lambda: 40.0, sleep=lambda _s: None)
+        self.assertEqual(outcome["elapsed_seconds"], 30)
+
     def test_a_read_that_cannot_see_the_run_ends_the_wait_with_a_name(self) -> None:
         import unittest.mock as mock
 
