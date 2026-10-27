@@ -71,7 +71,7 @@ export interface ConsumerHttpDependencies {
   /**
    * Exact reviewed browser origin (scheme + host + port) cookie-authenticated
    * pipeline mutations must come from, mirroring the repository's single
-   * reviewed origin-isolation policy (#3476) for the `padiem_session` cookie.
+   * reviewed origin-isolation policy (#3476) for the `b64_session` cookie.
    * Derived from server configuration only — never from the request's own
    * Host/Origin. When a pipeline mutation carries the session cookie and this
    * is not configured, the request is denied 503 (fail closed).
@@ -80,7 +80,7 @@ export interface ConsumerHttpDependencies {
   /**
    * Optional public-supply lane: manually curated, publicly verified opportunities.
    * The public lane never grants provider authority; it only links users to
-   * official provider pages and pays PADIEM nothing.
+   * official provider pages and earns B64 nothing.
    */
   readonly loadPublicOpportunities?: PublicOpportunityLoader;
   /**

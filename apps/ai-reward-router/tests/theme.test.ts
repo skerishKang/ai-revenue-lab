@@ -146,7 +146,7 @@ test('existing dark design values are preserved for the dark override', async ()
   const res = await handler(new Request('https://b64.example/', { headers: { cookie: `${THEME_COOKIE_NAME}=dark` } }));
   const html = await res.text();
   assert.match(html, /--bg: #06080d;/, 'the original dark background stays');
-  assert.match(html, /--accent: #88c9ff;/, 'the original dark PADIEM accent stays');
+  assert.match(html, /--accent: #88c9ff;/, 'the original dark accent palette is preserved');
   assert.match(html, /--gold: #efc984;/, 'the original dark gold stays');
   assert.match(html, /--on-accent: #06080d;/, 'dark buttons keep dark-on-accent text');
 });

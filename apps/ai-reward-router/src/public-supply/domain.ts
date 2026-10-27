@@ -42,10 +42,10 @@ export interface PublicOpportunity {
   /**
    * Deterministic user-value score (0-10), computed from verified attributes only:
    * base 4 + reward confirmed (+2) + IMMEDIATE tier (+2) + Korea confirmed (+2).
-   * It never mixes in PADIEM monetization value.
+   * It never mixes in B64 monetization value.
    */
   readonly userValueScore: number;
-  /** Public supply pays PADIEM nothing; monetization stays separated and zero. */
+  /** Public supply earns B64 nothing; monetization stays separated and zero. */
   readonly monetizationRole: 'NONE';
 }
 
