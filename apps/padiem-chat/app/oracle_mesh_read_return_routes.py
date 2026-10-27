@@ -419,6 +419,28 @@ class OracleMeshReturnSource:
             for row in self._rows
         )
 
+    def mesh_node_ref_for_device(self, *, device_id: Any) -> str | None:
+        """The Mesh reference this deployment addresses one device identity by.
+
+        A pairing link names its PC; it does not necessarily say what the Mesh
+        client has to run against. A PC's own claim records the node the agent
+        reported for itself, while an administrator adopts the identity the
+        ownership map pins the device by, and those two are different strings.
+        The row that names this device supplies the reference the lane already
+        used before any link existed - never a second device's, and never a
+        guess when the map names more than one.
+        """
+        if not is_pc_device_id(device_id):
+            return None
+        nodes = {
+            row.get("node_ref") for row in self._rows
+            if row.get("device_id") == device_id or row.get("node_ref") == device_id
+        }
+        if len(nodes) != 1:
+            return None
+        node_ref = next(iter(nodes))
+        return node_ref if is_pc_device_id(node_ref) else None
+
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
         if not isinstance(presented, str) or not presented:
@@ -3407,6 +3429,16 @@ async def _engine_pc_files_target(
         request, user_id=user_id, selected_device_id=selected_device_id,
     )
     if kind == "link":
+        node_ref = linked["node_ref"]
+        # The link decides which PC and which folders. What the Mesh client is
+        # run against stays the deployment's own answer: a row that names this
+        # device supplies the reference it already used, so an adopted identity
+        # can never become a command sent to a node nobody listens to. A PC the
+        # map does not name at all keeps the node it reported for itself.
+        address_of = getattr(source, "mesh_node_ref_for_device", None)
+        addressed = address_of(device_id=node_ref) if callable(address_of) else None
+        if addressed is not None and addressed != node_ref:
+            linked = {**linked, "node_ref": addressed}
         return {
             "authorized": True,
             "target": linked,
