@@ -6,6 +6,7 @@ a device the map does not name cannot be adopted into existence, and adopting
 twice returns the same link rather than a second or wider grant.
 """
 from __future__ import annotations
+from datetime import timedelta
 from pathlib import Path
 import sys
 
@@ -89,3 +90,49 @@ def test_adopting_grants_the_same_authority_as_a_claim_and_is_idempotent():
     assert len(run(store.links_for_owner(user_id=pairing.OWNER))) == 1
     # An adoption is not a code: no pairing code was created or consumed.
     assert run(store.list_codes(user_id=pairing.OWNER, now=pairing._now())) == []
+
+
+def test_a_second_adoption_later_in_time_writes_nothing():
+    """Idempotence as a property of the store, not of a fast clock.
+
+    The second call is given a clearly later receipt time. If it wrote anything,
+    `updated_at` would move; the point of the short circuit is that a repeat
+    adoption is a read.
+    """
+    store = pairing.store()
+    _app(store_value=store)
+    assert _adopt(_app(store_value=store), MAP_NODE).status_code == 200
+
+    earlier = pairing._now()
+    seen = run(store.adopt_link(
+        user_id=pairing.OWNER, mesh_node_id=MAP_NODE, root_paths=[lane.ROOT], now=earlier,
+    ))
+    later = run(store.adopt_link(
+        user_id=pairing.OWNER, mesh_node_id=MAP_NODE, root_paths=["C:/Windows/System32"],
+        now=earlier + timedelta(minutes=5),
+    ))
+    assert seen["link_id"] == later["link_id"]
+    assert seen["updated_at"] == later["updated_at"]
+    # A repeat adoption cannot smuggle in a different folder either.
+    assert [root["path"] for root in later["roots"] if root["state"] == "active"] == [lane.ROOT]
+
+
+def test_a_folder_the_owner_revoked_does_not_come_back_on_re_adopt():
+    store = pairing.store()
+    _app(store_value=store)
+    link = run(store.adopt_link(
+        user_id=pairing.OWNER, mesh_node_id=MAP_NODE, root_paths=[lane.ROOT], now=pairing._now(),
+    ))
+    root_ref = link["roots"][0]["root_ref"]
+    assert run(store.revoke_root(
+        user_id=pairing.OWNER, link_id=link["link_id"], root_ref=root_ref, now=pairing._now(),
+    )) is True
+    assert run(store.link_for(user_id=pairing.OWNER, mesh_node_id=MAP_NODE))["roots"] == []
+
+    again = run(store.adopt_link(
+        user_id=pairing.OWNER, mesh_node_id=MAP_NODE, root_paths=[lane.ROOT],
+        now=pairing._now() + timedelta(minutes=3),
+    ))
+    assert again["link_id"] == link["link_id"]
+    # Re-adoption is not a route back to a grant the owner withdrew.
+    assert run(store.link_for(user_id=pairing.OWNER, mesh_node_id=MAP_NODE))["roots"] == []

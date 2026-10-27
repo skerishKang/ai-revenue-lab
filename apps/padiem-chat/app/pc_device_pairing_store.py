@@ -623,6 +623,13 @@ class D1PcPairingStore:
         """
         owner = _user_id(user_id)
         node = _mesh_node_id(mesh_node_id)
+        existing = await self.link_for(user_id=owner, mesh_node_id=node)
+        if existing is not None:
+            # Adoption that already happened is a read. Nothing is written, so
+            # the link keeps its timestamps and, more importantly, keeps the
+            # folders the owner has since withdrawn - re-adopting must not be a
+            # way to resurrect a revoked grant.
+            return existing
         moment = _stamp(now)
         roots: list[dict[str, Any]] = []
         for path in root_paths:
