@@ -96,8 +96,10 @@ class _HistoryStore:
         self.google_upserts: list[tuple] = []
 
     async def upsert_google_user(self, subject, email, name, picture):
+        # 스텁 화면이 고른 계정별로 서로 다른 회원 행을 돌려준다(A/B 격리 판정용).
+        profile_id = self.profile_id if subject == _env("CHAIN_GOOGLE_SUBJECT") else f"usr_{subject.rsplit('-', 1)[-1]}"
         self.google_upserts.append((subject, email, name, picture))
-        return _Profile(self.profile_id)
+        return _Profile(profile_id)
 
     async def find_password_credential(self, identifier):
         if identifier != self.email:
@@ -127,15 +129,28 @@ class _HistoryStore:
 
 
 def _google_transport(subject: str, email: str) -> httpx.MockTransport:
-    """Google's two HTTP calls only. Everything above them is the real client."""
+    """Google's two HTTP calls only. Everything above them is the real client.
+
+    The stub authorize page sends its account name as the OAuth code, so a real browser can
+    sign in as two different members and the isolation of their records is observable.
+    """
 
     async def handler(request: httpx.Request) -> httpx.Response:
         if str(request.url) == GOOGLE_TOKEN_URL:
-            return httpx.Response(200, json={"access_token": "chain-at", "token_type": "Bearer", "expires_in": 3600})
-        if str(request.url) == GOOGLE_USERINFO_URL:
+            from urllib.parse import parse_qs
+
+            code = (parse_qs(request.content.decode()).get("code") or [""])[0]
+            chosen = f"stub-google-subject-{code}" if code and code != "chain-code" else subject
             return httpx.Response(
                 200,
-                json={"id": subject, "email": email, "verified_email": True, "name": "Chain User", "picture": ""},
+                json={"access_token": f"chain-at-{chosen}", "token_type": "Bearer", "expires_in": 3600, "subject": chosen},
+            )
+        if str(request.url) == GOOGLE_USERINFO_URL:
+            token = (request.headers.get("authorization") or "").split()[-1]
+            chosen = token.removeprefix("chain-at-") if token.startswith("chain-at-") else subject
+            return httpx.Response(
+                200,
+                json={"id": chosen, "email": email, "verified_email": True, "name": "Chain User", "picture": ""},
             )
         raise AssertionError(f"unexpected outbound call: {request.url}")
 
@@ -231,6 +246,19 @@ def build():
         else:
             await send_json(send, 404, {"ok": False, "error": {"code": "not_found"}})
             return
+
+        # 브라우저 판정용 국소 스텁: Google authorize 원본을 로컬 페이지로 바꾼다.
+        # 제품 코드가 아니라 하네스가 응답 헤더만 고쳐 쓰고, state·redirect_uri는 그대로 간다.
+        prefix = os.environ.get("CHAIN_GOOGLE_AUTHORIZE_PREFIX", "")
+        if prefix and response.status_code == 302:
+            location = dict(response.raw_headers).get(b"location", b"").decode()
+            if location.startswith("https://accounts.google.com"):
+                rewritten = prefix + location[len("https://accounts.google.com"):]
+                response.headers["location"] = rewritten
+                response.raw_headers = [
+                    (b"location", rewritten.encode()) if key == b"location" else (key, value)
+                    for key, value in response.raw_headers
+                ]
 
         payload = getattr(response, "body", None)
         if payload is None:
