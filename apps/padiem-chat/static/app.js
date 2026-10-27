@@ -63,6 +63,7 @@
   const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
+  const authHandoff = document.getElementById("authHandoff");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
   const passwordLoginPassword = document.getElementById("passwordLoginPassword");
   const passwordLoginError = document.getElementById("passwordLoginError");
@@ -2043,10 +2044,17 @@
     setAuthFormError(passwordLoginError);
     passwordLoginSubmit.disabled = true;
     try {
-      await passwordAuthRequest("/api/auth/password/login", {
+      const result = await passwordAuthRequest("/api/auth/password/login", {
         identifier: passwordLoginIdentifier.value,
         password: passwordLoginPassword.value,
+        // A pending LoveTree sign-in travels back exactly as it arrived. The server
+        // binds it only after a verified login and answers with the hop it owns.
+        ...(authHandoff && authHandoff.value ? { handoff: authHandoff.value } : {}),
       });
+      if (result && typeof result.handoff_return === "string" && /^https?:\/\//.test(result.handoff_return)) {
+        window.location.assign(result.handoff_return);
+        return;
+      }
       passwordLoginPassword.value = "";
       closeAuthDialog();
       await loadAuthStatus();
@@ -3573,6 +3581,15 @@
     }
   });
   if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
+  // A LoveTree sign-in that arrived here hands its pending ticket to the form it already
+  // uses; nothing about the dialog's content or wording changes.
+  if (authHandoff && passwordLoginForm) {
+    const pendingHandoff = new URLSearchParams(window.location.search).get("handoff") || "";
+    if (pendingHandoff.length <= 1024) {
+      authHandoff.value = pendingHandoff;
+      if (pendingHandoff) openAuthDialog();
+    }
+  }
   if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   if (passwordResetOpen) {
     passwordResetOpen.addEventListener("click", openPasswordResetRequest);

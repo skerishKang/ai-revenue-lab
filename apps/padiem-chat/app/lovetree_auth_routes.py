@@ -42,6 +42,7 @@ from app.lovetree_auth_store import (
     LoveTreeLoginHandoffStore,
     checked_origin,
     handoff_digest,
+    is_loopback_origin,
 )
 
 LOVETREE_HANDOFF_TTL_SECONDS = 120
@@ -103,7 +104,17 @@ def _new_ticket_id() -> str:
 
 
 def allowed_return_origin(value: object) -> str | None:
-    if not isinstance(value, str) or value not in _LOVETREE_RETURN_ORIGINS:
+    """The recorded return address: an explicitly reviewed origin, or a loopback test one.
+
+    A test harness binds an ephemeral port, so loopback http is accepted by shape (same
+    rule the table's CHECK and the LoveTree service use). Anywhere else has to be named
+    here — a request never chooses a host.
+    """
+    if not isinstance(value, str):
+        return None
+    if is_loopback_origin(value):
+        return checked_origin(value)
+    if value not in _LOVETREE_RETURN_ORIGINS:
         return None
     try:
         return checked_origin(value)
@@ -113,10 +124,9 @@ def allowed_return_origin(value: object) -> str | None:
 
 async def lovetree_handoff_start(request: Request) -> Response:
     store = _store(request)
-    oauth = getattr(request.app.state, "google_oauth", None)
-    if store is None or not isinstance(oauth, GoogleOAuthClient):
-        return _unavailable()
     settings: Settings = _settings(request)
+    if store is None:
+        return _unavailable()
 
     login_request = request.query_params.get("state")
     if not is_lovetree_login_request(login_request):
@@ -136,15 +146,38 @@ async def lovetree_handoff_start(request: Request) -> Response:
             expires_at_iso=_iso(now + timedelta(seconds=LOVETREE_HANDOFF_TTL_SECONDS)),
         )
         signed = create_lovetree_handoff_state(settings, ticket_id, login_request)
-        location = oauth.authorization_url(signed, bridge_origin=_bridge_origin(request))
+        location = await _sign_in_entry(request, settings, signed)
     except AuthError as exc:
         return _error(exc.status_code, exc.code, exc.user_message)
     except Exception:
         # A row that could not be created must not turn into a half-started login.
         return _unavailable()
+    if location is None:
+        return _unavailable()
     # No cookie: this browser is authenticating in order to hand a ticket to LoveTree, and
     # it never receives a PADIEM session from these routes.
     return RedirectResponse(location, status_code=302)
+
+
+async def _sign_in_entry(request: Request, settings: Settings, signed: str) -> str | None:
+    """Where an unfinished login goes: the existing Google flow, or the existing dialog.
+
+    Both are deployment-owned addresses. A Google run keeps using the canonical Chat
+    callback (one registered redirect_uri, no new OAuth surface); a password-only
+    deployment lands on the page that already hosts the login dialog, which passes the
+    signed value back through the form it already submits.
+    """
+    if settings.auth_mode in {"google", "hybrid"}:
+        oauth = getattr(request.app.state, "google_oauth", None)
+        if not isinstance(oauth, GoogleOAuthClient):
+            return None
+        return oauth.authorization_url(signed, bridge_origin=_bridge_origin(request))
+    if settings.auth_mode == "password":
+        base = (settings.public_base_url or "").rstrip("/")
+        if not base:
+            return None
+        return f"{base}/?{urlencode({'handoff': signed})}"
+    return None
 
 
 async def load_lovetree_handoff_for_callback(
@@ -198,19 +231,75 @@ async def bind_lovetree_handoff(
     )
 
 
+def handoff_return_url(record: LoveTreeHandoffRecord, login_request: str) -> str | None:
+    """The only address a finished handoff may go to: the origin the row recorded.
+
+    A request never supplies a host here. The stored origin is re-checked against the
+    same allowlist and the same login-request digest the row was created with.
+    """
+    origin = allowed_return_origin(record.return_origin)
+    if origin is None or record.state_sha256 != handoff_digest(login_request):
+        return None
+    query = urlencode({"code": record.ticket_id, "state": login_request})
+    return f"{origin}{LOVETREE_HANDOFF_CALLBACK_PATH}?{query}"
+
+
 async def return_to_lovetree(request: Request, pending: PendingLoveTreeHandoff) -> Response:
     """Hand the ticket back to the origin the row recorded, with that row's login request."""
     store = _store(request)
     record = await store.get(pending.record.ticket_id) if store is not None else None
-    if record is None or record.status != "ready" or record.state_sha256 != handoff_digest(pending.login_request):
+    if record is None or record.status != "ready":
         return not_ready()
-    origin = allowed_return_origin(record.return_origin)
-    if origin is None:
+    location = handoff_return_url(record, pending.login_request)
+    if location is None:
         return not_ready()
-    query = urlencode({"code": record.ticket_id, "state": pending.login_request})
-    response = RedirectResponse(f"{origin}{LOVETREE_HANDOFF_CALLBACK_PATH}?{query}", status_code=302)
+    response = RedirectResponse(location, status_code=302)
     response.headers["cache-control"] = "no-store"
     return response
+
+
+async def bind_after_verified_login(
+    request: Request,
+    handoff_value: object,
+    *,
+    user_id: str,
+    auth_provider: str,
+    provider_subject: str,
+) -> str | None:
+    """Bind a handoff to an identity this Worker just verified, and return the hop URL.
+
+    Used by the password leg, where the browser finishes sign-in inside the existing
+    dialog and the answer comes back as JSON. Returns None whenever there is no claimable
+    handoff — including a handoff that is forged, expired, already used, or bound to a
+    different login request — so a failed or unrelated login never produces one.
+    """
+    settings: Settings = _settings(request)
+    verified = verify_lovetree_handoff_state(settings, handoff_value if isinstance(handoff_value, str) else None)
+    if verified is None:
+        return None
+    ticket_id, login_request = verified
+    store = _store(request)
+    if store is None:
+        return None
+    record = await store.get(ticket_id)
+    if record is None or record.status != "awaiting_login" or not record.is_live(_iso(_now())):
+        return None
+    if record.state_sha256 != handoff_digest(login_request):
+        return None
+    bound = await store.bind_verified_identity(
+        ticket_id,
+        user_id=user_id,
+        auth_provider=auth_provider,
+        provider_subject=provider_subject,
+        state_sha256=record.state_sha256,
+        now_iso=_iso(_now()),
+    )
+    if not bound:
+        return None
+    fresh = await store.get(ticket_id)
+    if fresh is None or fresh.status != "ready":
+        return None
+    return handoff_return_url(fresh, login_request)
 
 
 __all__ = [
@@ -218,8 +307,11 @@ __all__ = [
     "LOVETREE_HANDOFF_TTL_SECONDS",
     "PendingLoveTreeHandoff",
     "allowed_return_origin",
+    "bind_after_verified_login",
     "bind_lovetree_handoff",
+    "handoff_return_url",
     "load_lovetree_handoff_for_callback",
     "lovetree_handoff_start",
+    "not_ready",
     "return_to_lovetree",
 ]

@@ -17,6 +17,7 @@ from .android_auth_routes import (
 )
 from .android_auth_store import HANDOFF_STATUS_AWAITING_CONFIRMATION
 from .lovetree_auth_routes import (
+    bind_after_verified_login,
     bind_lovetree_handoff,
     load_lovetree_handoff_for_callback,
     not_ready as lovetree_handoff_not_ready,
@@ -700,11 +701,16 @@ def _display_name_fallback(login_identifier: str) -> str:
     return login_identifier.partition("@")[0] or login_identifier
 
 
-def _session_response(settings: Settings, profile, *, canonical_session_id: str | None = None) -> JSONResponse:
+def _session_response(
+    settings: Settings, profile, *, canonical_session_id: str | None = None, extra: dict | None = None
+) -> JSONResponse:
     session = create_session_token(
         settings, profile.id, canonical_session_id=canonical_session_id
     )
-    response = JSONResponse({"ok": True, "user": profile.public_dict()})
+    payload = {"ok": True, "user": profile.public_dict()}
+    if extra:
+        payload.update(extra)
+    response = JSONResponse(payload)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     return response
 
@@ -896,8 +902,20 @@ async def password_login(request: Request) -> JSONResponse:
     # B54-scoped consumer resolves it. #2963 Step 3 is that consumer and remains a
     # separately authorized gate, so nothing here projects it to the browser.
     await establish_b54_canonical_session_after_login(request, credential)
+    # LoveTree handoff, password leg. Reached only past the verified credential above, so a
+    # wrong password, a lock, or an unknown identifier can never bind or return a ticket.
+    handoff_return = await bind_after_verified_login(
+        request,
+        data.get("handoff"),
+        user_id=credential.user.id,
+        auth_provider="password",
+        provider_subject=credential.username,
+    )
     return _session_response(
-        settings, credential.user, canonical_session_id=canonical_session_id
+        settings,
+        credential.user,
+        canonical_session_id=canonical_session_id,
+        extra={"handoff_return": handoff_return} if handoff_return else None,
     )
 
 

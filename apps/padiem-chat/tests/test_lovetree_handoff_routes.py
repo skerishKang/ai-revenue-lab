@@ -43,6 +43,7 @@ from app.lovetree_auth_routes import (
     lovetree_handoff_start,
     return_to_lovetree,
 )
+from app.password_auth import hash_password, normalize_email
 from app.lovetree_auth_store import (
     HANDOFF_STATUS_AWAITING_LOGIN,
     HANDOFF_STATUS_READY,
@@ -140,6 +141,7 @@ def shadowless(monkeypatch):
 
     monkeypatch.setattr(auth_routes, "_write_identity_shadow_after_login", _noop)
     monkeypatch.setattr(auth_routes, "establish_b54_canonical_session_after_google_login", _noop)
+    monkeypatch.setattr(auth_routes, "establish_b54_canonical_session_after_login", _noop)
     monkeypatch.setattr(auth_routes, "deliver_after_signup", _noop)
 
 
@@ -321,3 +323,174 @@ async def test_expired_row_is_refused_at_the_callback(shadowless) -> None:
     )
     assert refused.status_code == 400
     assert payload(refused)["error"]["code"] == "lovetree_handoff_expired"
+
+class _User:
+    id = PROFILE_ID
+
+    def public_dict(self):
+        return {"id": PROFILE_ID, "name": "LoveTree User"}
+
+
+class _PasswordStore:
+    """The six callables the password routes insist on, with one real credential."""
+
+    def __init__(self, *, password: str, identifier: str, user=_User()) -> None:
+        self.username = normalize_email(identifier)
+        self.user = user
+        self.failures: list[str] = []
+        self.resets = 0
+        self.password_hash = hash_password(password)
+
+    async def find_password_credential(self, identifier):
+        if identifier != self.username:
+            return None
+        return types.SimpleNamespace(
+            user=self.user,
+            username=self.username,
+            password_hash=self.password_hash,
+            failed_attempts=0,
+            locked_until=None,
+        )
+
+    async def find_password_credential_by_user_id(self, user_id):
+        return None
+
+    async def register_password_user(self, *args, **kwargs):
+        raise AssertionError("not used by login")
+
+    async def update_password_credential(self, *args, **kwargs):
+        raise AssertionError("not used by login")
+
+    async def record_password_failure(self, user_id, failures, lock_until):
+        self.failures.append(str(user_id))
+
+    async def reset_password_failures(self, user_id):
+        self.resets += 1
+
+    async def upsert_google_user(self, subject, email, name, picture):
+        self.calls.append((subject, email, name, picture))
+        return _Profile()
+
+
+PASSWORD = "a-verified-password-1234"
+IDENTIFIER = "lovetree@example.test"
+
+
+def _password_app(store, *, settings=None):
+    made = settings or Settings(
+        runtime_mode="test", auth_mode="password", public_base_url=CHAT_ORIGIN, session_secret=SECRET
+    )
+    return _app(store=store, oauth=None, settings=made, history=_PasswordStore(password=PASSWORD, identifier=IDENTIFIER))
+
+
+def _post(app, path: str, payload: dict):
+    from starlette.requests import Request
+
+    body = json.dumps(payload).encode("utf-8")
+    scope = {
+        "type": "http", "method": "POST", "path": path, "raw_path": path.encode(),
+        "query_string": b"", "scheme": "https", "app": app,
+        "headers": [
+            (b"host", CHAT_ORIGIN.split("//")[1].encode()),
+            (b"content-type", b"application/json"),
+            (b"content-length", str(len(body)).encode()),
+        ],
+    }
+    async def receive():
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    return Request(scope, receive)
+
+
+async def _password_handoff(app) -> tuple[str, str]:
+    """Start a LoveTree login on a password-only deployment and return (signed, ticket)."""
+    status, headers, _ = await _start(app)
+    assert status == 302
+    # 화면도 문구도 아닌, 기존 로그인 페이지로만 보낸다.
+    location = headers["location"]
+    assert location.startswith(f"{CHAT_ORIGIN}/?")
+    signed = parse_qs(urlparse(location).query)["handoff"][0]
+    return signed, list(app.state.lovetree_handoff_store.records)[0]
+
+
+@pytest.mark.asyncio
+async def test_verified_password_login_binds_the_handoff_and_returns_the_hop(shadowless) -> None:
+    store = InMemoryLoveTreeLoginHandoffStore()
+    app = _password_app(store)
+    signed, ticket = await _password_handoff(app)
+
+    back = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
+    }))
+
+    assert back.status_code == 200
+    body = payload(back)
+    assert body["ok"] is True
+    location = urlparse(body["handoff_return"])
+    assert f"{location.scheme}://{location.netloc}" == LOVETREE_ORIGIN
+    assert location.path == LOVETREE_HANDOFF_CALLBACK_PATH
+    assert parse_qs(location.query) == {"code": [ticket], "state": [LOGIN_REQUEST]}
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_READY
+    assert (record.auth_provider, record.pending_user_id, record.provider_subject) == (
+        "password", PROFILE_ID, normalize_email(IDENTIFIER)
+    )
+    assert any("padiem_session=" in value for key, value in back.headers.items() if key.lower() == "set-cookie")
+
+
+@pytest.mark.asyncio
+async def test_a_failed_password_login_never_binds_or_returns_a_ticket(shadowless) -> None:
+    store = InMemoryLoveTreeLoginHandoffStore()
+    app = _password_app(store)
+    signed, ticket = await _password_handoff(app)
+
+    for body_payload in (
+        {"identifier": IDENTIFIER, "password": "wrong-password", "handoff": signed},
+        {"identifier": "nobody@example.test", "password": PASSWORD, "handoff": signed},
+        {"identifier": IDENTIFIER, "password": "", "handoff": signed},
+    ):
+        refused = await auth_routes.password_login(_post(app, "/api/auth/password/login", body_payload))
+        assert refused.status_code == 401
+        assert "handoff_return" not in payload(refused)
+
+    record = await store.get(ticket)
+    assert record.status == HANDOFF_STATUS_AWAITING_LOGIN, "실패한 로그인은 행을 진행시키지 않는다"
+    assert record.pending_user_id is None
+
+    # 표가 남아 있으므로 실제 성공 로그인은 그 뒤에도 견착된다.
+    ok = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
+    }))
+    assert payload(ok)["handoff_return"].startswith(LOVETREE_ORIGIN)
+
+
+@pytest.mark.asyncio
+async def test_password_handoff_refusals_and_unchanged_login(shadowless) -> None:
+    store = InMemoryLoveTreeLoginHandoffStore()
+    app = _password_app(store)
+    signed, ticket = await _password_handoff(app)
+
+    # 로그인 창을 그냥 쓴 사용자는 전과 동일한 응답을 받는다.
+    plain = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD
+    }))
+    assert plain.status_code == 200
+    assert "handoff_return" not in payload(plain)
+    assert (await store.get(ticket)).status == HANDOFF_STATUS_AWAITING_LOGIN
+
+    # 위조·남의 요청·이미 사용·행 없는 값은 모두 견착 없이 로그인만 성립한다.
+    for junk in ("not-signed", signed[:-2], "lovt_" + "z" * 20):
+        again = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+            "identifier": IDENTIFIER, "password": PASSWORD, "handoff": junk
+        }))
+        assert again.status_code == 200
+        assert "handoff_return" not in payload(again)
+
+    used = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
+    }))
+    assert "handoff_return" in payload(used)
+    replay = await auth_routes.password_login(_post(app, "/api/auth/password/login", {
+        "identifier": IDENTIFIER, "password": PASSWORD, "handoff": signed
+    }))
+    assert "handoff_return" not in payload(replay), "한 번 쓰인 표는 다시 견착되지 않는다"
