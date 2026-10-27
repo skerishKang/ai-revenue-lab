@@ -115,6 +115,10 @@ class PcPairingStore(Protocol):
         now: datetime, label: str | None = None, drives: list[str] | None = None,
     ) -> dict[str, Any]: ...
 
+    async def resolve_account_ref(self, *, target: str) -> str | None: ...
+
+    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]: ...
+
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
     ) -> bool: ...
@@ -743,6 +747,51 @@ class D1PcPairingStore:
         if stored is None:
             raise PcPairingError("pairing link not stored")
         return stored
+
+    async def resolve_account_ref(self, *, target: str) -> str | None:
+        """The account a target address names, or ``None`` when nothing does.
+
+        Adoption may name a customer by the id this deployment already uses or by
+        the address they sign in with. Both are answered from the account table
+        the same D1 binding holds, and an id is tried before an email so no rule
+        about what an address "looks like" decides the outcome. The caller cannot
+        name an account that does not exist: a link written against a made-up id
+        would be a PC nobody can use.
+        """
+        value = target.strip() if isinstance(target, str) else ""
+        if not value or len(value) > 320:
+            raise PcPairingError("adopt target invalid")
+        row = await self._first("SELECT id FROM users WHERE id=? LIMIT 1", value)
+        if not isinstance(row, dict) or not row.get("id"):
+            row = await self._first(
+                "SELECT id FROM users WHERE lower(email)=lower(?) LIMIT 1", value,
+            )
+        if not isinstance(row, dict) or not row.get("id"):
+            return None
+        return _user_id(row["id"])
+
+    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]:
+        """The whole-drive roots another link already records for this PC.
+
+        A claiming PC reports its own fixed drives, and #5981 made those drives
+        the default scope. Adoption puts a second account on the same machine, so
+        it takes the letters the PC itself reported instead of a folder list
+        somebody typed: one authority for what a PC's drives are.
+        """
+        node = _mesh_node_id(mesh_node_id)
+        rows = await self._all(
+            "SELECT roots_json FROM pc_device_links WHERE mesh_node_id=? LIMIT 100",
+            node,
+        )
+        drives: list[str] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            for root in _roots(row.get("roots_json")):
+                single = drive_root(root["path"])
+                if single is not None and single not in drives:
+                    drives.append(single)
+        return drives
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.

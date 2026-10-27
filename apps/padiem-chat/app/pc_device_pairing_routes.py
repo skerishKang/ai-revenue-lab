@@ -15,6 +15,7 @@ link that nothing has yet observed on the Mesh is created as
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import inspect
 import json
 import re
 from typing import Any
@@ -52,6 +53,16 @@ PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
 PC_PAIRING_PAUSE_PATH = "/api/pc/pairings/{link_id}/pause"
 PC_PAIRING_RESUME_PATH = "/api/pc/pairings/{link_id}/resume"
 
+#: What one adoption call may carry. `device_id` names the PC; `target` names the
+#: account it belongs to (omitted: the caller's own); `drives` reports the PC's
+#: fixed drives when nobody has reported them yet.
+_ADOPT_BODY_KEYS = frozenset({
+    frozenset({"device_id"}),
+    frozenset({"device_id", "drives"}),
+    frozenset({"device_id", "target"}),
+    frozenset({"device_id", "drives", "target"}),
+})
+
 _MAX_BODY_BYTES = 2048
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 
@@ -76,7 +87,12 @@ _MESSAGES = {
     "pc_pairing_root_limit": "이 PC 연결에 승인할 수 있는 폴더 한계에 도달했습니다.",
     "pc_pairing_link_not_found": "연결을 찾을 수 없습니다.",
     "pc_pairing_not_admin": "이 PC를 채택할 수 있는 권한이 없습니다.",
-    "pc_pairing_device_unmapped": "이 배포에서 확인할 수 없는 PC입니다.",
+    #: Adoption names an account and a device. Both answers are 404s with
+    #: different work behind them: no such account, a machine the Mesh lane has
+    #: never reported, or a reported machine whose drive scope nobody has stated.
+    "pc_pairing_target_unknown": "지정된 계정을 찾을 수 없습니다.",
+    "pc_pairing_device_unseen": "MeshCentral에 연결된 기록이 없는 PC입니다.",
+    "pc_pairing_device_unscoped": "이 PC의 드라이브를 아직 알 수 없습니다. PC를 먼저 연결해 주세요.",
     "pc_pairing_link_not_active": "이 PC 연결은 아직 사용 대기 중이거나 해제되었습니다.",
     #: The link row exists under another account. This is a permission answer,
     # not a missing row, and it names no value either way.
@@ -99,6 +115,7 @@ _REASONS = {
     "link roots too large": "pc_pairing_root_limit",
     "link roots unreadable": "pc_pairing_unavailable",
     "link id invalid": "pc_pairing_link_not_found",
+    "adopt target invalid": "pc_pairing_body_invalid",
     "link not found": "pc_pairing_link_not_found",
     "link not active": "pc_pairing_link_not_active",
     "link not yours": "pc_pairing_link_forbidden",
@@ -433,16 +450,27 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
 
 
 async def pc_pairing_adopt(request: Request) -> JSONResponse:
-    """Adopt a mapped PC into the calling administrator's own account (PR-4e).
+    """Adopt a real PC onto the account the administrator names (PR-4e).
 
-    Three rules carry the whole design. Only a platform administrator may call
-    this — the guard is the existing central-admin one, and it runs before
-    anything is read out of the deployment map, so a refused call learns nothing
-    about which devices exist. A device the map does not name is a 404, because
-    inventing a target from a request is exactly what this lane must never do.
-    And adoption produces the same authority a normal claim does: an active link
-    with that device's approved folders, usable by the file lane and idempotent,
-    so a second click returns the same link instead of widening anything.
+    The Owner installs the agent on a customer's machine and then attaches that
+    machine to the customer's own account, so the account is a parameter rather
+    than always the caller: `target` names it by the id this deployment already
+    uses or by the address that account signs in with, and no `target` means the
+    caller's account exactly as before. Only a platform administrator may call
+    this, and that guard still runs before anything is read, so a refused call
+    learns nothing about which devices exist.
+
+    The device is verified against what the Mesh lane actually reported —
+    `mesh_device_presence`, written by the executor's own receipts — instead of a
+    deployment ownership map an operator had to edit first. A PC whose executor
+    has been seen can be adopted; a device that never reported one cannot be
+    adopted into existence.
+
+    The scope is #5981's default: the whole fixed drives the PC itself reported,
+    read back from any link that already names this node, plus any the caller
+    names on this call. Adoption stays idempotent — the same target account and
+    the same device return the same link — and one machine may serve several
+    accounts, because the table is keyed by the pair.
     """
     user_id = current_user_id(request)
     if not user_id:
@@ -451,10 +479,13 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or set(body) not in ({"device_id"}, {"device_id", "drives"}):
+    if body is None or frozenset(body) not in _ADOPT_BODY_KEYS:
         return _error(400, "pc_pairing_body_invalid")
     device_id = body.get("device_id")
     if not isinstance(device_id, str) or not device_id:
+        return _error(400, "pc_pairing_body_invalid")
+    target = body.get("target")
+    if target is not None and (not isinstance(target, str) or not target.strip()):
         return _error(400, "pc_pairing_body_invalid")
     reported = body.get("drives")
     drives: list[str] = []
@@ -475,24 +506,41 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         admin = False
     if admin is not True:
         return _error(403, "pc_pairing_not_admin")
-    source = getattr(request.app.state, "oracle_mesh_return_source", None)
-    if source is None or getattr(source, "configured", False) is not True:
+    account_id = user_id
+    if target is not None:
+        resolved, refused = await _await_store(store.resolve_account_ref, target=target)
+        if refused is not None:
+            return refused
+        if not resolved:
+            return _error(404, "pc_pairing_target_unknown")
+        account_id = resolved
+    presence = getattr(request.app.state, "mesh_device_presence_store", None)
+    if presence is None or not callable(getattr(presence, "load", None)):
+        # No receipt port is a deployment that cannot answer the question, not a
+        # device that failed it.
         return _error(503, "pc_pairing_unavailable")
     try:
-        mapped = source.names_device(device_id=device_id)
-        roots = source.adopted_roots_for_device(device_id=device_id)
+        record = presence.load(device_id=device_id)
+        if inspect.isawaitable(record):
+            record = await record
     except Exception:
         return _error(503, "pc_pairing_unavailable")
-    if not mapped:
-        return _error(404, "pc_pairing_device_unmapped")
-    if not roots and not drives:
-        # Nothing is grantable: the map names the device but pins no folder, and
-        # no drive was reported. Adopting it would create a link the owner cannot
-        # use, so it is refused instead.
-        return _error(404, "pc_pairing_device_unmapped")
+    if not isinstance(record, dict) or not record.get("device_id"):
+        return _error(404, "pc_pairing_device_unseen")
+    known, refused = await _await_store(store.drive_roots_for_node, mesh_node_id=device_id)
+    if refused is not None:
+        return refused
+    for single in known or []:
+        if single not in drives:
+            drives.append(single)
+    if not drives:
+        # Nothing is grantable: the PC exists but has never reported the drives
+        # #5981 made the default scope, and this call named none. Adopting it
+        # would create a link the account cannot use.
+        return _error(404, "pc_pairing_device_unscoped")
     adopted, refused = await _await_store(
-        store.adopt_link, user_id=user_id, mesh_node_id=device_id,
-        root_paths=roots, now=_now(), drives=drives,
+        store.adopt_link, user_id=account_id, mesh_node_id=device_id,
+        root_paths=[], now=_now(), drives=drives,
     )
     if refused is not None:
         return refused
@@ -502,6 +550,7 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         "link": {
             "link_id": adopted["link_id"],
             "mesh_node_id": adopted["mesh_node_id"],
+            "user_id": adopted["user_id"],
             "label": adopted.get("label"),
             "state": adopted["state"],
             "roots": [
@@ -519,10 +568,11 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         },
         # Same vocabulary as the claim: an adopted link that carries no drive was
         # not given the Owner's default scope, and that has to be visible rather
-        # than looking like a PC with no drives.
+        # than looking like a PC with no drives. Adoption cannot report
+        # `lookup_failed`: it refuses before it gets here when no drive is known.
         "drives_status": (
             "seeded" if any(drive_root(root["path"]) is not None for root in granted)
-            else ("lookup_failed" if not drives else "not_applied")
+            else "not_applied"
         ),
     }, 200)
 
