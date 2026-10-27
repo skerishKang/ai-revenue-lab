@@ -1,0 +1,46 @@
+name: LoveTree Authority Caller CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/lovetree-authority-caller/**'
+      - '.github/workflows/lovetree-authority-caller-ci.yml'
+  push:
+    paths:
+      - 'apps/lovetree-authority-caller/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lovetree-authority-caller-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  caller-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 이 중계 Worker는 의존성이 없는 순수 ESM이라 npm 설치 없이 실행한다.
+      # 파일 경로를 명시하고 통과 건 수를 세어, 11건이 건너뛰지 않고 도는지 확인한다.
+      - name: Run the caller worker tests
+        working-directory: apps/lovetree-authority-caller
+        run: |
+          node --test --test-reporter=tap test/worker.test.mjs > /tmp/caller.tap 2>&1 || { cat /tmp/caller.tap; exit 1; }
+          cat /tmp/caller.tap
+          pass=$(awk '/^# pass /{print $3}' /tmp/caller.tap)
+          fail=$(awk '/^# fail /{print $3}' /tmp/caller.tap)
+          skipped=$(awk '/^# skipped /{print $3}' /tmp/caller.tap)
+          echo "pass=$pass fail=$fail skipped=$skipped"
+          [ "${fail:-1}" = "0" ] || { echo "실패: 중계 테스트 실패"; exit 1; }
+          [ "${skipped:-1}" = "0" ] || { echo "실패: 중계 테스트 skip"; exit 1; }
+          [ "${pass:-0}" -ge 11 ] || { echo "실패: 중계 테스트 11건 미만 실행"; exit 1; }

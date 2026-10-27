@@ -69,7 +69,7 @@ test('a verified LoveTree session returns only the bounded identity', async () =
   const made = authority();
   const response = await handleRequest(post(RESOLVE_SESSION_PATH, { body: { session_id: SID }, token: SECRET }), { LOVETREE_CALLER_SECRET: SECRET, IDENTITY_AUTHORITY: made });
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { ok: true, identity: { product_id: LOVETREE_PRODUCT_ID, subject_id: 'sub_1', expires_at: '2999-01-01T00:00:00.000Z' } });
+  assert.deepEqual(await response.json(), { ok: true, identity: { session_id: SID, product_id: LOVETREE_PRODUCT_ID, subject_id: 'sub_1', expires_at: '2999-01-01T00:00:00.000Z' } });
   assert.deepEqual(made.calls.map(c => c[0]), ['resolve_auth_session', 'resolve_product_user_for_subject']);
   assert.equal(response.headers.get('cache-control'), 'no-store');
 });

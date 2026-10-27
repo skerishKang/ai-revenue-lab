@@ -108,7 +108,7 @@ export async function resolveIdentity(authority, { sessionId, now = () => Date.n
   if (linkAnswer?.ok !== true || typeof linkAnswer.product_user_id !== "string") {
     return { ok: false, status: 401, code: "unauthenticated" };
   }
-  return { ok: true, identity: { product_id: LOVETREE_PRODUCT_ID, subject_id: subjectId, expires_at: session.expires_at } };
+  return { ok: true, identity: { session_id: sessionId, product_id: LOVETREE_PRODUCT_ID, subject_id: subjectId, expires_at: session.expires_at } };
 }
 
 export async function handleRequest(request, env) {
