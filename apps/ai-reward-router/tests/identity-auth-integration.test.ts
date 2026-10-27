@@ -34,7 +34,7 @@ test('join creates a member, opens a session and refuses a second account for th
 
   const stored = await members.findByEmail('member@example.com');
   assert.ok(stored, 'the address is stored normalized');
-  assert.ok(stored!.passwordHash.startsWith('pbkdf2_sha512$220000$'), 'the reviewed KDF format is stored');
+  assert.ok(stored!.passwordHash.startsWith('pbkdf2_sha512$100000$'), 'the reviewed KDF shape is stored at the platform cost');
   assert.ok(!stored!.passwordHash.includes('correct horse battery'), 'the password itself is never stored');
 
   const duplicate = await handler(postForm('/join', { email: 'member@example.com', password: 'another password 12' }));

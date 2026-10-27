@@ -27,7 +27,7 @@ interface MemberFixture {
   readonly createdAt: string;
 }
 
-const STORE_HASH = 'pbkdf2_sha512$220000$c2FsdHNhbHRzYWx0c2ExMg==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+const STORE_HASH = 'pbkdf2_sha512$100000$c2FsdHNhbHRzYWx0c2ExMg==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
 
 function member(email = 'store-user@example.com'): MemberFixture {
   return {

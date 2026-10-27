@@ -1,9 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { hashPassword, verifyPassword, normalizeEmail, validatePassword, CredentialError } from '../src/identity/password.js';
+import {
+  PASSWORD_KDF_ITERATIONS,
+  WORKERS_PBKDF2_MAX_ITERATIONS,
+  hashPassword,
+  verifyPassword,
+  normalizeEmail,
+  validatePassword,
+  CredentialError,
+  PasswordHashingUnavailableError,
+} from '../src/identity/password.js';
 import {
   B64_SESSION_COOKIE_NAME,
   b64SessionCookieValue,
@@ -14,78 +20,75 @@ import {
 } from '../src/identity/session.js';
 
 /**
- * B64's own credential and session primitives (#987). The password format is
- * the repository's reviewed one, so the cross-language check below is the load
- * bearing proof: a hash produced by the real Python authority must verify here
- * and vice versa.
- */
-
-// The compiled test runs from apps/ai-reward-router/dist/tests, so the
-// repository root is four levels up.
-const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
-const CHAT_APP = path.join(REPO_ROOT, 'apps', 'padiem-chat');
-
-/**
- * Node's spawn does not resolve the `python3` shell alias on Windows, so both
- * spellings are tried. The first that imports the chat password module wins.
+ * B64's own credential primitives (#987).
  *
- * PYTHONDONTWRITEBYTECODE keeps the probe from writing __pycache__: `npm test`
- * runs test files as parallel processes, and concurrent bytecode caching of the
- * same module intermittently failed the spawn.
+ * Issue #5978 is why the platform-ceiling tests below exist: the KDF cost was
+ * copied from another product at 220,000 iterations, the hosted Workers runtime
+ * caps PBKDF2 at 100,000 and throws before doing any work, and the local
+ * runtime does not enforce the cap — so CI was green while every live signup
+ * failed.
  */
-let lastPythonError = 'not attempted';
 
-function runPython(args: readonly string[]): string | null {
-  for (const executable of ['python3', 'python']) {
-    const probe = spawnSync(executable, args, {
-      cwd: CHAT_APP,
-      encoding: 'utf8',
-      env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
-    });
-    if (probe.status === 0) return probe.stdout.trim();
-    lastPythonError = probe.error
-      ? `${probe.error.message}`
-      : `status=${probe.status} stderr=${(probe.stderr ?? '').trim().slice(0, 200)}`;
-  }
-  return null;
-}
-
-function pythonPasswordHash(password: string): string | null {
-  return runPython([
-    '-c', 'import sys; from app.password_auth import hash_password; print(hash_password(sys.argv[1]))', password,
-  ]);
-}
-
-function pythonVerifies(password: string, encoded: string): boolean | null {
-  const answer = runPython([
-    '-c',
-    'import sys; from app.password_auth import verify_password; print("YES" if verify_password(sys.argv[1], sys.argv[2]) else "NO")',
-    password,
-    encoded,
-  ]);
-  return answer === null ? null : answer === 'YES';
-}
-
-// One probe decides whether the cross-language legs can run at all. They are
-// reported as skipped when the chat app's environment is absent, never as
-// passed.
-const PYTHON_AVAILABLE = pythonPasswordHash('probe-probe-123') !== null;
-
-test('a B64 hash is accepted by the reviewed Python verifier', { skip: PYTHON_AVAILABLE ? false : 'python with app.password_auth is unavailable on this host' }, async () => {
-  const password = 'correct horse battery staple';
-  const tsHash = await hashPassword(password);
-  // Standard base64 fields (A-Za-z0-9+/ with = padding), so a digest that
-  // happens to contain + or / still matches.
-  assert.match(tsHash, /^pbkdf2_sha512\$220000\$[A-Za-z0-9+/]+={0,2}\$[A-Za-z0-9+/]+={0,2}$/);
-  assert.equal(pythonVerifies(password, tsHash), true, `the TS KDF output must satisfy the Python verifier (${lastPythonError})`);
-  assert.equal(pythonVerifies('wrong password entirely', tsHash), false);
+test('the KDF cost stays inside the ceiling the Workers runtime enforces (#5978)', () => {
+  assert.ok(
+    PASSWORD_KDF_ITERATIONS <= WORKERS_PBKDF2_MAX_ITERATIONS,
+    `PBKDF2 cost ${PASSWORD_KDF_ITERATIONS} exceeds the ${WORKERS_PBKDF2_MAX_ITERATIONS} hosted Workers allows — signup fails live while CI stays green`,
+  );
+  assert.equal(PASSWORD_KDF_ITERATIONS, WORKERS_PBKDF2_MAX_ITERATIONS,
+    'B64 runs at the platform maximum; lowering it further is a security decision, not a default');
 });
 
-test('a Python-produced hash verifies in B64', { skip: PYTHON_AVAILABLE ? false : 'python with app.password_auth is unavailable on this host' }, async () => {
-  const password = 'cross-language journey';
-  const pyHash = pythonPasswordHash(password)!;
-  assert.equal(await verifyPassword(password, pyHash), true,
-    'the same stored credential works in both implementations');
+test('a stored hash above the platform ceiling is refused, never retried at a weaker cost', async () => {
+  const foreignCost = 'pbkdf2_sha512$220000$YjY0LWR1bW15LXNhbHQwMQ==$KWtPj698O4tdOcmcUqYAEre8G3O3XSGNDwoYVqcC5k0=';
+  await assert.rejects(
+    () => verifyPassword('anything at all 123', foreignCost),
+    PasswordHashingUnavailableError,
+    'an out-of-range cost must surface rather than be quietly re-derived',
+  );
+});
+
+test('when the runtime refuses PBKDF2 the failure is named, not reported as storage', async () => {
+  const original = crypto.subtle.deriveBits.bind(crypto.subtle);
+  // Exactly what hosted workerd does above its cap.
+  (crypto.subtle as { deriveBits: unknown }).deriveBits = async () => {
+    throw new Error('iteration counts above 100000 are not supported');
+  };
+  try {
+    await assert.rejects(() => hashPassword('a real password 12'), PasswordHashingUnavailableError);
+    const { createConsumerHttpHandler } = await import('../src/http/consumer-http.js');
+    const { InMemoryB64MemberStore } = await import('../src/identity/member-store.js');
+    const handler = createConsumerHttpHandler({
+      loadCandidates: () => [],
+      memberStore: new InMemoryB64MemberStore(),
+      sessionSecret: 'test-secret-value-0123456789abcdef',
+      expectedBrowserOrigin: 'https://b64.example.test',
+    });
+    const response = await handler(new Request('https://b64.example.test/join', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        origin: 'https://b64.example.test',
+      },
+      body: new URLSearchParams({ email: 'kdf-probe@example.test', password: 'a real password 12' }).toString(),
+    }));
+    assert.equal(response.status, 503);
+    assert.equal((await response.json() as { error: string }).error, 'kdf_unsupported',
+      '#5978: a refused KDF reported as storage_unavailable sent the investigation to D1');
+  } finally {
+    (crypto.subtle as { deriveBits: unknown }).deriveBits = original;
+  }
+});
+
+test('the stored credential shape stays the reviewed one at the platform cost', async () => {
+  const hash = await hashPassword('correct horse battery staple');
+  assert.equal(
+    hash,
+    hash.replace(/^pbkdf2_sha512\$\d+\$/, `pbkdf2_sha512$${PASSWORD_KDF_ITERATIONS}$`),
+    'the embedded cost is the cost B64 uses',
+  );
+  assert.match(hash, /^pbkdf2_sha512\$100000\$[A-Za-z0-9+/]+={0,2}\$[A-Za-z0-9+/]+={0,2}$/);
+  assert.equal(await verifyPassword('correct horse battery staple', hash), true);
+  assert.equal(await verifyPassword('wrong password entirely', hash), false);
 });
 
 test('verifyPassword rejects a wrong password and a tampered hash', async () => {

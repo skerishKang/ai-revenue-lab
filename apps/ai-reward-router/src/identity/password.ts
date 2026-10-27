@@ -2,20 +2,30 @@
  * B64 product-local password credentials (issue #987, owner boundary decision
  * 2026-10-27: B64 members are not PADIEM Chat accounts).
  *
- * This is a port of the repository's already-proven password contract, not a
- * new design: `apps/padiem-chat/app/password_auth.py` stores
- * `pbkdf2_sha512$<iterations>$<base64 salt>$<base64 derived>` with
- * PBKDF2-HMAC-SHA512, 220000 iterations, a 16-byte salt and a 32-byte derived
- * key. Keeping the same format means one reviewed KDF and one reviewed stored
- * credential shape across the products, and it lets a credential be re-read by
- * either implementation if the businesses ever share an account store.
+ * The stored shape follows the repository's reviewed convention —
+ * `pbkdf2_sha512$<iterations>$<base64 salt>$<base64 derived>` with a 16-byte
+ * salt and a 32-byte key — but the ITERATION COUNT is B64's own and is capped
+ * by the platform, not chosen freely (issue #5978):
  *
- * What is deliberately NOT reused is any PADIEM secret, table or session: this
- * module never talks to another product, and B64's own signing key stays
- * product-local.
+ *   The Cloudflare Workers runtime rejects PBKDF2 iteration counts above
+ *   `WORKERS_PBKDF2_MAX_ITERATIONS` before doing any work
+ *   (cloudflare/workerd#1346). Node and the local `workerd` dev server do NOT
+ *   enforce that ceiling, which is why CI passed while every live signup and
+ *   every live sign-in returned 503.
+ *
+ * Consequence the owner must keep in view: 100,000 SHA-512 rounds is below the
+ * current OWASP PBKDF2-SHA-512 guidance (~210,000). It is the maximum this
+ * runtime allows, not a relaxed target. Raising B64's real strength means
+ * adopting a memory-hard KDF (argon2id/scrypt via WASM) — no iteration count
+ * inside PBKDF2 will reach the guidance here. There are no live members yet, so
+ * that swap has no legacy hashes to migrate.
  */
 
-const PBKDF2_ITERATIONS = 220_000;
+/** The ceiling the hosted Workers runtime enforces on one PBKDF2 call. */
+export const WORKERS_PBKDF2_MAX_ITERATIONS = 100_000;
+
+/** The cost B64 actually uses. Exported so CI can assert it against the ceiling. */
+export const PASSWORD_KDF_ITERATIONS = WORKERS_PBKDF2_MAX_ITERATIONS;
 const PBKDF2_SALT_BYTES = 16;
 const PBKDF2_DKLEN_BYTES = 32;
 const PASSWORD_HASH_PREFIX = 'pbkdf2_sha512';
@@ -30,10 +40,26 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * A fixed, non-secret verifier so a sign-in for an address that is not
  * registered still costs one full KDF. Without it, response time tells an
  * attacker which addresses exist — the same equalization the reviewed Python
- * path applies.
+ * path applies. Its cost matches `PASSWORD_KDF_ITERATIONS`, because a higher-cost
+ * dummy would throw on the platform instead of equalizing.
  */
 const DUMMY_HASH =
-  'pbkdf2_sha512$220000$cGFkaWVtLWR1bW15LXNhbHQtMDE=$RsPCZ1wcH0+GxN9zW+zqsNlwPiylbJdzVeHjLxWd7Yw=';
+  'pbkdf2_sha512$100000$YjY0LWR1bW15LXNhbHQwMQ==$HAC39CpyVD0BkNqW0FWrneIvr6psCXKoWgTyMIge4nQ=';
+
+/**
+ * The credential machinery itself is unavailable — the runtime refused the KDF.
+ * Distinct from a storage failure on purpose: #5978 hid a rejected iteration
+ * count behind `storage_unavailable`, which sent the investigation to D1 while
+ * no D1 statement had run yet.
+ */
+export class PasswordHashingUnavailableError extends Error {
+  readonly code = 'kdf_unsupported';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'PasswordHashingUnavailableError';
+  }
+}
 
 export class CredentialError extends Error {
   readonly code: string;
@@ -85,22 +111,39 @@ function fromBase64(text: string): Uint8Array {
 }
 
 async function derive(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
+  // Checked here so an out-of-range cost is named as what it is. The hosted
+  // runtime refuses above its ceiling before doing any work, so a stored hash
+  // with a foreign cost must never be retried hoping the platform allows it.
+  if (iterations > WORKERS_PBKDF2_MAX_ITERATIONS) {
+    throw new PasswordHashingUnavailableError(
+      `PBKDF2 cost ${iterations} exceeds the ${WORKERS_PBKDF2_MAX_ITERATIONS} the Workers runtime allows`,
+    );
+  }
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, [
     'deriveBits',
   ]);
-  const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: salt as unknown as ArrayBuffer, iterations, hash: 'SHA-512' },
-    key,
-    PBKDF2_DKLEN_BYTES * 8,
-  );
+  let bits: ArrayBuffer;
+  try {
+    bits = await crypto.subtle.deriveBits(
+      { name: 'PBKDF2', salt: salt as unknown as ArrayBuffer, iterations, hash: 'SHA-512' },
+      key,
+      PBKDF2_DKLEN_BYTES * 8,
+    );
+  } catch (error) {
+    // The runtime said no. Report it as credential machinery being
+    // unavailable — never as storage, and never by retrying at a weaker cost.
+    throw new PasswordHashingUnavailableError(
+      `PBKDF2 derive failed at cost ${iterations}: ${error instanceof Error ? error.message : 'unknown'}`,
+    );
+  }
   return new Uint8Array(bits);
 }
 
 export async function hashPassword(password: string): Promise<string> {
   validatePassword(password);
   const salt = crypto.getRandomValues(new Uint8Array(PBKDF2_SALT_BYTES));
-  const derived = await derive(password, salt, PBKDF2_ITERATIONS);
-  return `${PASSWORD_HASH_PREFIX}$${PBKDF2_ITERATIONS}$${toBase64(salt)}$${toBase64(derived)}`;
+  const derived = await derive(password, salt, PASSWORD_KDF_ITERATIONS);
+  return `${PASSWORD_HASH_PREFIX}$${PASSWORD_KDF_ITERATIONS}$${toBase64(salt)}$${toBase64(derived)}`;
 }
 
 function timingSafeEqualBytes(left: Uint8Array, right: Uint8Array): boolean {
@@ -119,7 +162,7 @@ export async function verifyPassword(password: string, encoded: string | null): 
   const candidate = typeof encoded === 'string' && encoded.length > 0 ? encoded : DUMMY_HASH;
   let salt: Uint8Array;
   let expected: Uint8Array;
-  let iterations = PBKDF2_ITERATIONS;
+  let iterations = PASSWORD_KDF_ITERATIONS;
   let shapeAccepted = true;
   try {
     const [prefix, iterationsRaw, saltRaw, digestRaw] = candidate.split('$', 4);
