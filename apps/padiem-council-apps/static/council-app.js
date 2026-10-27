@@ -1135,9 +1135,19 @@
             alert("활동집 저장 실패");
             return;
           }
-          bookSave.textContent = "저장됨";
-          setTimeout(() => { bookSave.textContent = "활동집 저장"; }, 1500);
+          // The list is refreshed from the server, which rebuilds the archive -
+          // including this editor - so the draft the user just saved is written
+          // back and the confirmation lands on the node that is actually on screen.
           await refreshArchive(arc);
+          const current = document.getElementById("councilBookOutput");
+          const currentResult = document.getElementById("councilBookResult");
+          const currentSave = document.getElementById("councilBookSave") || bookSave;
+          if (current && currentResult) {
+            current.value = text;
+            currentResult.hidden = false;
+          }
+          currentSave.textContent = "저장됨";
+          setTimeout(() => { currentSave.textContent = "활동집 저장"; }, 1500);
           const opened = (arc.querySelectorAll(".council-book-open") || [])
             .find((b) => String(b.textContent).indexOf(saved.name) === 0);
           if (opened) opened.setAttribute("aria-current", "true");

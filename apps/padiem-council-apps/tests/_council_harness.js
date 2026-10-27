@@ -544,6 +544,13 @@ const SCENARIOS = {
     const saveRequests = requests.slice(beforeSave).filter((r) => r.method === "POST")
       .map((r) => r.method + " " + r.url);
     const bookNamesA = storedFiles.filter((f) => f.name.startsWith("활동집 - ")).map((f) => f.name);
+    // Right after a save the archive is re-read, so the draft and the
+    // confirmation must be on the nodes that are actually on screen.
+    const keptInA = {
+      draftHead: find(A, "councilBookOutput").value.slice(0, 12).replace(/\s+/g, " "),
+      resultHidden: find(A, "councilBookResult").hidden,
+      saveLabel: find(A, "councilBookSave").textContent,
+    };
 
     const B = spawnSession();
     await B.ctx.window.PadiemCouncilApps.init();
@@ -578,6 +585,7 @@ const SCENARIOS = {
     return {
       generatedChars: generated.length,
       saveRequests,
+      keptInA,
       bookNamesA,
       openLabels,
       recordChecks,

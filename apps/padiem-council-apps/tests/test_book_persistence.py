@@ -25,6 +25,13 @@ def test_a_press_saves_one_book_even_when_clicked_twice() -> None:
     assert OBSERVATION["alerts"] == []
 
 
+def test_the_draft_and_its_confirmation_survive_the_list_refresh_after_saving() -> None:
+    kept = OBSERVATION["keptInA"]
+    assert kept["draftHead"].strip().startswith("주민 안전 활동집")
+    assert kept["resultHidden"] is False
+    assert kept["saveLabel"] == "저장됨"
+
+
 def test_a_reentry_lists_the_book_and_reopens_the_edited_body() -> None:
     assert OBSERVATION["openLabels"] == [BOOK_PREFIX + "주민 안전 활동집.txt (37자)"]
     # What the user typed into the draft, not the raw model answer, is what comes back.
