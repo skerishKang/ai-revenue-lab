@@ -72,7 +72,7 @@ MAX_STORED_CONTENT_CHARS = 40_000
 #: needs its own canonical product id must change that allowlist and its
 #: Production environment together; recording the current set here is what keeps
 #: an app from quietly assuming such an id exists.
-IDENTITY_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})
+IDENTITY_PRODUCTS = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
 
 #: Restated in the contract document; kept here so a reader cannot mistake an
 #: app-side convenience for a new authority.

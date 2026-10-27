@@ -131,8 +131,8 @@ def test_the_storage_ceilings_and_media_are_the_existing_ones(tmp_path, monkeypa
 
 def test_a_new_canonical_product_id_cannot_be_assumed(tmp_path, monkeypatch) -> None:
     real = contract._read(contract.IDENTITY_AUTHORITY)
-    widened = real.replace('frozenset({"b62", "b54-padiem-claw"})',
-                           'frozenset({"b62", "b54-padiem-claw", "b72"})')
+    widened = real.replace('frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})',
+                           'frozenset({"b62", "b54-padiem-claw", "lovetree-4-0", "b72"})')
     assert widened != real
     swap(monkeypatch, "IDENTITY_AUTHORITY", widened, tmp_path)
     assert "IDENTITY_PRODUCT_ALLOWLIST_DRIFT" in contract.findings()

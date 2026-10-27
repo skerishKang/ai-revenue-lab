@@ -39,20 +39,21 @@ NOW = datetime(2026, 10, 27, 6, 0, tzinfo=timezone.utc)
 
 
 class _FakeResponse:
-    def __init__(self, body="", status=200, headers=None) -> None:
+    def __init__(self, body="", *, status=200, headers=None):
         self.body = body
         self.status = status
         self.headers = headers or {}
 
 
-class _FakeDurableObject:
-    def __init__(self, ctx=None, env=None) -> None:
-        pass
-
-
 class _FakeWorkerEntrypoint:
-    def __init__(self, *args, **kwargs) -> None:
-        pass
+    def __init__(self, env=None):
+        self.env = env
+
+
+class _FakeDurableObject:
+    def __init__(self, ctx, env):
+        self.ctx = ctx
+        self.env = env
 
 
 _workers = types.ModuleType("workers")
