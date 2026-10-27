@@ -415,17 +415,18 @@ no password to guess.
 
 Required configuration, all fail closed when absent:
 
-| Binding | Kind | When missing |
+| Binding | Kind on the Worker | When missing |
 |---|---|---|
-| `B64_GOOGLE_CLIENT_ID` | var | No `Google 로그인` entry is rendered; `/auth/google/*` answers 503 `auth_unavailable` |
-| `B64_GOOGLE_CLIENT_SECRET` | secret | same |
+| `B64_GOOGLE_CLIENT_ID` | secret_text | No `Google 로그인` entry is rendered; `/auth/google/*` answers 503 `auth_unavailable` |
+| `B64_GOOGLE_CLIENT_SECRET` | secret_text | same |
 | `B64_SESSION_SECRET` | secret | same (it signs the state as well as the session) |
 | `B64_INCOME_DB` | D1 | the state is signed and Google is reached, but the login completes 503 `storage_unavailable` and the state is spent |
 | `B64_PUBLIC_BASE_URL` | var | same — there is no origin to name as the redirect URI |
 
 Neither Google binding is declared in `wrangler.jsonc`, and
-`.github/binding_baselines/b64-ai-reward-router.json` is unchanged: an owner
-value that does not exist yet must not be guessed into a reviewed config.
+`.github/binding_baselines/b64-ai-reward-router.json` is unchanged: a credential
+value never belongs in a reviewed config file, and both are delivered as
+`secret_text` by the activation gate below.
 
 ### Order of operations for a working Google login (CENTRAL / OWNER)
 
@@ -433,16 +434,28 @@ value that does not exist yet must not be guessed into a reviewed config.
    Authorized redirect URI: `https://b64-ai-reward-router.charliekant.workers.dev/auth/google/callback`
    — exactly the value `B64_PUBLIC_BASE_URL` plus the callback path, and a new
    client entry is required whenever that origin changes.
-2. Register both on the worker, from `apps/ai-reward-router`, without ever
-   printing the values:
-   `npx wrangler@4 secret put B64_GOOGLE_CLIENT_SECRET --name b64-ai-reward-router`
-   and the client id as a var at deploy time.
-3. Apply the additive schema by dispatching
-   `.github/workflows/b64-independent-identity-activation-gate.yml`. It now runs
+2. Register the client's two values as **`production` environment secrets** on
+   this repository, named exactly `B64_GOOGLE_CLIENT_ID` and
+   `B64_GOOGLE_CLIENT_SECRET`. A value is never pasted into a terminal, an
+   Issue, a PR or this file; the environment store is the only place it lives.
+3. Apply the schema **and** bind the credentials by dispatching
+   `.github/workflows/b64-independent-identity-activation-gate.yml`. It runs
    `0003_b64_google_identity.sql` after `0002`, counts
    `b64_user_income` / `b64_member` / `b64_session` rows before and after and
-   fails if any decreased, and reports the two Google bindings by name and type
-   only. It mints no OAuth client, rotates no key and deploys no Worker.
+   fails if any decreased, then pipes each environment secret through stdin into
+   `wrangler secret put` and reads both bindings back as `secret_text`. If one
+   of the two secrets is missing it writes **nothing** and says so, because a
+   client id without its secret would render the entry and then fail
+   mid-round-trip. It mints no OAuth client, rotates no key and deploys no
+   Worker revision.
+   Registering the GitHub secrets alone binds nothing — this step is what
+   reaches the Worker. Both values are `secret_text` rather than a config `var`
+   on purpose: `wrangler.jsonc` and
+   `.github/binding_baselines/b64-ai-reward-router.json` stay untouched, and
+   deploy run 40578410849 proved an out-of-band secret binding
+   (`B64_SESSION_SECRET`, absent from the config file) survives a later
+   `wrangler deploy`. The application reads `env.B64_GOOGLE_CLIENT_ID` as a
+   plain string either way.
 4. Deploy through `b64-cloudflare-worker-production-deploy-gate.yml`.
 5. Live E2E, which is the only proof that the client is correct: `/pipeline` →
    `Google 로그인` → choose an account → back on `/pipeline` as a member → save
