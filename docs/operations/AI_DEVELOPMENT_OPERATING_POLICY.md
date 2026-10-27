@@ -13,6 +13,43 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+## 1쪽 요약 — #5895 (2026-10-27)
+
+본문(§0~§18)의 운영 규칙을 한 쪽으로 정리했다. 판단이 막힐 때 먼저 읽고, 근거는 각 절을 본다. 이 요약은 새 규칙을 만들지 않고 본문을 대체하지도 않는다.
+
+**목표**
+- 현재 단계는 MVP/베타 완성이다. 범위는 채팅·클로만: 일반 채팅, PC 레인, 첨부 문서, 자동화.
+- Util·SNS·B66는 장애 수정만 한다. 범위를 넓힐 때는 보류 목록(#5882)부터 다시 연다.
+
+**역할**
+- Owner가 결정한다: 모델, 공급자, 비용, 제품 범위.
+- CTO가 결정한다: 머지, 배포, 롤백, D1 적용 같은 운영. 설정된 보호장치와 이미 기록된 승인을 반복해서 묻지 않는다.
+
+**배포**
+- 공식 게이트 1회만 쓴다. 게이트 밖 수동 배포나 별도 Preview 경로를 만들지 않는다.
+- 게이트는 배포하는 앱 경로를 기준으로 main 최신인지 본다. 무관한 레인의 머지가 배포를 세우지 않는다.
+- 배포 후 점검은 일반 채팅 1회, PC 레인 코드가 바뀐 배포에만 PC 목록 1회를 더한다.
+- 점검 실패는 게이트를 빨강으로 남긴다. 자동 롤백은 하지 않고 사람이 읽게 둔다. 롤백은 일반 채팅이 아예 동작하지 않을 때 쓰는 별도 판단이다.
+
+**유지하는 규칙**
+- 비밀 값, 고객 데이터, 공급자 응답 원문을 로그·PR·보고에 남기지 않는다.
+- 요청자 권한은 서버에서 검사한다. 브라우저가 보낸 등급·역할·SHA 선택은 그 자체로 권한이 아니다.
+- 운영 바인딩을 몰래 제거하지 않는다. 바인딩 정본은 `wrangler.toml`이고, 변경 PR은 CTO 검토 대상이다.
+- 파괴적 SQL은 차단한다.
+- 배포와 롤백은 게이트에서 1회 기록한다.
+
+**없앤 규칙 — 이제 기준으로 쓰지 않는다 (#5895)**
+- 라이브 현재 바인딩이 정답이라는 권위: `wrangler.toml` 선언과 diff로 본다.
+- 마이그레이션마다 만들던 별도 게이트 워크플로: 범용 D1 마이그레이션 게이트로 본다.
+- Core 파일 SHA 고정 canary: 동작 테스트로 본다.
+- 금지 단어 소스 검사: 주석 문구를 이유로 CI를 세우지 않는다.
+- 공급자 응답 엄격 파싱과 폴백 금지: #5885의 규칙으로 본다.
+- 정확 main 문자열 동일성 확인: 대상 앱 경로 기준 최신 확인으로 본다(#5957).
+
+**새 고정 제한**
+- 바이트·초·개수의 새 고정 제한은 추가하지 않는다. 정말 필요하면 Owner에게 묻고, 결정받은 뒤 그 자리에 적는다.
+
+
 ## 0. Public technical development context — consult local business-governance stage
 
 **Public engineering context:** the repository is maintained with limited development capacity. Actual business stage, customer-facing defaults and deployment priorities must be read from the non-public local Governance directory referenced below. Production URLs and actual operator/customer data require evidence, regardless of engineering stage. Technical access controls and configured platform protections remain facts to verify; an unresolved conflict with the business policy is referred to the Owner for a decision.
