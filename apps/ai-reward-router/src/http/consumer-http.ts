@@ -111,6 +111,8 @@ export interface ConsumerHttpDependencies {
   readonly rewardEvents?: RewardEventStore | undefined;
   readonly ayetMode?: ProviderRuntimeMode | undefined;
   readonly ayetPublisherApiKey?: string | undefined;
+  /** `B64_AYET_REWARDED_ADSLOT_ID`; empty means the adslot is not chosen yet. */
+  readonly ayetRewardedAdslotId?: string | undefined;
   /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
@@ -514,6 +516,7 @@ export function createConsumerHttpHandler(
         {
           mode: dependencies.ayetMode ?? 'DISABLED',
           publisherApiKey: dependencies.ayetPublisherApiKey,
+          rewardedAdslotId: dependencies.ayetRewardedAdslotId,
           signingSecret: dependencies.sessionSecret,
           rewardEvents: dependencies.rewardEvents ?? new UnboundRewardEventStore('B64_INCOME_DB'),
         },

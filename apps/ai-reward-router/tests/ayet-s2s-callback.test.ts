@@ -5,7 +5,11 @@ import { D1B64MemberStore } from '../src/identity/member-store.js';
 import { D1UserIncomeRepository } from '../src/income-pipeline/d1-user-income-repository.js';
 import { newB64MemberId } from '../src/identity/session.js';
 import { mintB64RewardSubject, readB64RewardSubject } from '../src/identity/reward-subject.js';
-import { expectedAyetS2SSecurityHash, type AyetS2SParameters } from '../src/ad-click-first/ayet-s2s-postback.js';
+import {
+  expectedAyetS2SSecurityHash,
+  normalizeVerifiedAyetS2SRewardPostback,
+  type AyetS2SParameters,
+} from '../src/ad-click-first/ayet-s2s-postback.js';
 import {
   AYET_S2S_CALLBACK_PATH,
   AYET_S2S_SECURITY_HASH_HEADER,
@@ -23,15 +27,23 @@ import { TEST_ORIGIN, TEST_SESSION_SECRET } from './helpers/b64-identity-harness
  * The ayeT server-to-server reward postback, end to end through the real HTTP
  * handler and a real SQLite D1 binding (#987).
  *
- * The signature and the state rules were already reviewed pure functions; what
- * these tests cover is the connection: the header the provider actually sends
- * the signature in, the signed subject that resolves a callback to one member,
- * the provider transaction key that makes a retry harmless, and the fact that
- * none of this touches an income record or a balance.
+ * The signature and the state rules were already reviewed pure functions; these
+ * tests cover the connection and the provider's own transport contract, taken
+ * from docs.ayetstudios.com rather than assumed: the signature arrives in the
+ * `X-Ayetstudios-Security-Hash` header, the server must answer HTTP 200 or the
+ * postback is resent twelve times over an hour, `{transaction_id}` is the
+ * duplicate check, `{adslot_id}` must be validated when one URL serves several
+ * adslots, and the rewarded-video macro table has no `callback_type`.
+ *
+ * Status codes here are transport policy; the row is the reward decision. A
+ * refusal that a retry can never fix is acknowledged with 200 and writes
+ * nothing, so a forged or misrouted callback cannot burn the provider's retry
+ * budget, and a genuinely recoverable one is answered 503 so ayeT resends it.
  */
 
 const PUBLISHER_API_KEY = 'ayet-test-publisher-api-key';
 const PROVIDER_ID = 'SRC-AYET';
+const ADSLOT_ID = '16';
 
 interface Harness {
   readonly handler: (request: Request) => Promise<Response>;
@@ -63,29 +75,40 @@ async function subjectFor(memberId: string): Promise<string> {
   return mintB64RewardSubject({ signingSecret: TEST_SESSION_SECRET, memberId });
 }
 
-function conversionParams(subject: string, transactionId: string, amount = '100'): AyetS2SParameters {
+/**
+ * The shape ayeT actually sends for a rewarded video: the macros from the
+ * rewarded-video callback table, no callback_type.
+ */
+function conversionParams(subject: string, transactionId: string, amount = '10'): AyetS2SParameters {
   return Object.freeze({
-    callback_type: 'conversion',
-    currency_amount: amount,
-    currency_identifier: 'KRW_POINTS',
-    external_identifier: subject,
-    is_chargeback: '0',
+    network: 'ayetstudios',
     transaction_id: transactionId,
+    external_identifier: subject,
+    currency_amount: amount,
+    currency_identifier: 'B64_COINS',
+    adslot_id: ADSLOT_ID,
+    payout_usd: '0.007',
   });
 }
 
+/** The offerwall-style chargeback macros, applied to the same transaction. */
 function chargebackParams(subject: string, transactionId: string): AyetS2SParameters {
   return Object.freeze({
-    callback_type: 'chargeback',
-    currency_amount: '-100',
-    currency_identifier: 'KRW_POINTS',
-    external_identifier: subject,
-    is_chargeback: '1',
+    network: 'ayetstudios',
     transaction_id: `r-${transactionId}`,
+    external_identifier: subject,
+    currency_amount: '-10',
+    currency_identifier: 'B64_COINS',
+    adslot_id: ADSLOT_ID,
+    is_chargeback: '1',
   });
 }
 
-/** Mirrors the provider: signature in the header, every field in the query. */
+function signed(parameters: AyetS2SParameters, style: 'php' | 'urlsearchparams' = 'php'): string {
+  return expectedAyetS2SSecurityHash(parameters, PUBLISHER_API_KEY, style);
+}
+
+/** The signature goes in the header only; every field goes in the query. */
 async function postback(
   handler: (request: Request) => Promise<Response>,
   parameters: AyetS2SParameters,
@@ -94,16 +117,14 @@ async function postback(
   const query = new URLSearchParams(
     Object.entries(parameters).map(([key, value]) => [key, String(value)]),
   );
-  // The provider also appends security_hash to the URL; it must not leak into
-  // the canonical string the signature is computed over.
-  if (securityHash !== null) query.set('security_hash', securityHash);
   const headers: Record<string, string> = {};
   if (securityHash !== null) headers[AYET_S2S_SECURITY_HASH_HEADER] = securityHash;
   return handler(new Request(`${TEST_ORIGIN}${AYET_S2S_CALLBACK_PATH}?${query.toString()}`, { headers }));
 }
 
-function signed(parameters: AyetS2SParameters): string {
-  return expectedAyetS2SSecurityHash(parameters, PUBLISHER_API_KEY);
+async function rowCount(binding: ReturnType<typeof createSqliteD1Binding>['binding']): Promise<number> {
+  const row = await binding.prepare('SELECT COUNT(*) AS n FROM b64_reward_event').first<{ n: number }>();
+  return row!.n;
 }
 
 /* --------------------------------- the subject -------------------------------- */
@@ -111,52 +132,100 @@ function signed(parameters: AyetS2SParameters): string {
 test('the reward subject is B64-signed, member-bound and fits the provider limit', async () => {
   const memberId = newB64MemberId();
   const subject = await subjectFor(memberId);
-  assert.ok(subject.length <= 128, `provider caps externalIdentifier at 128, got ${subject.length}`);
+  assert.ok(subject.length <= 128, `the provider caps externalIdentifier at 128, got ${subject.length}`);
   assert.equal(await readB64RewardSubject(subject, TEST_SESSION_SECRET), memberId);
   assert.equal(await readB64RewardSubject(subject, 'another-products-own-secret-0123456789'), null,
     'a subject signed elsewhere resolves to nobody');
   assert.equal(await readB64RewardSubject('not-a-subject-at-all', TEST_SESSION_SECRET), null);
-  const notMine = await mintB64RewardSubject({ signingSecret: TEST_SESSION_SECRET, memberId: newB64MemberId() });
-  assert.equal(await readB64RewardSubject(`${notMine.slice(0, -4)}aaaa`, TEST_SESSION_SECRET), null,
+  const other = await subjectFor(newB64MemberId());
+  assert.equal(await readB64RewardSubject(`${other.slice(0, -4)}aaaa`, TEST_SESSION_SECRET), null,
     'a tampered subject fails the signature');
 });
 
-/* -------------------------------- the callback -------------------------------- */
+/* ------------------------- the documented callback shape --------------------- */
 
-test('a signed conversion postback stores one confirmed event for its member', async () => {
+test('a rewarded-video callback without callback_type is accepted and stored', async () => {
   const { handler, events } = createCallbackHarness();
   const memberId = newB64MemberId();
   const subject = await subjectFor(memberId);
-  const parameters = conversionParams(subject, 'tx-1001');
+  const parameters = conversionParams(subject, 'tx-rv');
+  assert.equal(stringParamOf(parameters, 'callback_type'), undefined, 'the rewarded-video table lists no callback_type');
 
   const response = await postback(handler, parameters, signed(parameters));
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'OK');
 
-  const stored = await events.load(PROVIDER_ID, 'tx-1001');
+  const stored = await events.load(PROVIDER_ID, 'tx-rv');
   assert.ok(stored);
-  assert.equal(stored!.memberId, memberId, 'the row belongs to the member the subject names');
+  assert.equal(stored!.memberId, memberId);
   assert.equal(stored!.state, 'CONFIRMED');
-  assert.equal(stored!.amount, 100);
-  assert.equal(stored!.unit, 'KRW_POINTS');
-  assert.equal(stored!.cashCustodyAction, 'NONE');
-  assert.ok(stored!.confirmedAt, 'the confirmation time is recorded');
-  assert.equal(stored!.reversedAt, null);
+  assert.equal(stored!.amount, 10);
+  assert.equal(stored!.unit, 'B64_COINS');
 });
+
+test('a chargeback carrying only is_chargeback reverses the named transaction', async () => {
+  const { handler, events } = createCallbackHarness();
+  const subject = await subjectFor(newB64MemberId());
+  const conversion = conversionParams(subject, 'tx-cb');
+  await postback(handler, conversion, signed(conversion)).then((r) => r.text());
+
+  const chargeback = chargebackParams(subject, 'tx-cb');
+  assert.equal((await postback(handler, chargeback, signed(chargeback))).status, 200);
+
+  const stored = await events.load(PROVIDER_ID, 'tx-cb');
+  assert.equal(stored!.state, 'REVERSED');
+  assert.ok(stored!.reversedAt, 'the cancellation time is recorded');
+});
+
+test('a non-reward callback_type ayeT documents for other integrations is not credited', async () => {
+  const { handler, binding } = createCallbackHarness();
+  const subject = await subjectFor(newB64MemberId());
+  for (const type of ['installation', 'optional', 'iap', 'iaa', 'survey']) {
+    const parameters = Object.freeze({ ...conversionParams(subject, `tx-${type}`), callback_type: type });
+    const response = await postback(handler, parameters, signed(parameters));
+    assert.equal(response.status, 200, `${type} is acknowledged so ayeT stops resending it`);
+    await response.text();
+  }
+  assert.equal(await rowCount(binding), 0, 'none of them became a reward');
+});
+
+test('the same parameters verify under either canonicalization the docs publish', async () => {
+  const { handler, events } = createCallbackHarness();
+  const subject = await subjectFor(newB64MemberId());
+  // `*` is the one character the PHP and JavaScript recipes disagree on.
+  const parameters = Object.freeze({ ...conversionParams(subject, 'tx*star'), currency_identifier: 'B64*COINS' });
+
+  assert.notEqual(signed(parameters, 'php'), signed(parameters, 'urlsearchparams'),
+    'the two documented recipes really differ for *');
+  assert.equal((await postback(handler, parameters, signed(parameters, 'php'))).status, 200);
+  const first = await events.load(PROVIDER_ID, 'tx*star');
+  assert.ok(first, 'the PHP reference verifies');
+
+  const otherSubject = await subjectFor(newB64MemberId());
+  const second = Object.freeze({ ...parameters, external_identifier: otherSubject, transaction_id: 'tx*star2' });
+  assert.equal((await postback(handler, second, signed(second, 'urlsearchparams'))).status, 200);
+  assert.ok(await events.load(PROVIDER_ID, 'tx*star2'), 'the JavaScript reference verifies too');
+
+  const forged = Object.freeze({ ...parameters, transaction_id: 'tx*star3' });
+  assert.equal((await postback(handler, forged, expectedAyetS2SSecurityHash(forged, 'nope', 'php'))).status, 200);
+  assert.equal(await events.load(PROVIDER_ID, 'tx*star3'), null, 'and neither accepts a wrong key');
+});
+
+/* ----------------------------- idempotency and state ------------------------- */
 
 test('a retried postback for the same provider transaction credits nothing twice', async () => {
   const { handler, events, binding } = createCallbackHarness();
-  const subject = await subjectFor(newB64MemberId());
+  const memberId = newB64MemberId();
+  const subject = await subjectFor(memberId);
   const parameters = conversionParams(subject, 'tx-retry');
 
   assert.equal((await postback(handler, parameters, signed(parameters))).status, 200);
   const second = await postback(handler, parameters, signed(parameters));
-  assert.equal(second.status, 200, 'an idempotent duplicate is acknowledged, not an error');
+  assert.equal(second.status, 200, 'a duplicate is acknowledged, not an error worth retrying');
   await second.text();
 
-  const rows = await binding.prepare('SELECT COUNT(*) AS n FROM b64_reward_event').first<{ n: number }>();
-  assert.equal(rows!.n, 1, 'one provider transaction is one row');
-  assert.equal((await events.listForMember((await events.load(PROVIDER_ID, 'tx-retry'))!.memberId)).length, 1);
+  assert.equal(await rowCount(binding), 1, 'one provider transaction is one row');
+  assert.equal((await events.listForMember(memberId)).length, 1);
 });
 
 test('a confirmed postback advances a provisional event and records the time', async () => {
@@ -168,7 +237,7 @@ test('a confirmed postback advances a provisional event and records the time', a
     providerTransactionId: 'tx-pending',
     externalUserId: subject,
     amount: 55,
-    unit: 'KRW_POINTS',
+    unit: 'B64_COINS',
     state: 'PENDING_PROVIDER_CONFIRMATION',
     firstObservedAt: '2026-10-27T00:00:00.000Z',
     lastObservedAt: '2026-10-27T00:00:00.000Z',
@@ -185,84 +254,48 @@ test('a confirmed postback advances a provisional event and records the time', a
   assert.equal(stored!.firstObservedAt, provisional.firstObservedAt, 'the original observation is kept');
 });
 
-test('a chargeback reverses the event it names and stamps the reversal', async () => {
-  const { handler, events } = createCallbackHarness();
-  const subject = await subjectFor(newB64MemberId());
-  const conversion = conversionParams(subject, 'tx-rev');
-  await postback(handler, conversion, signed(conversion)).then((r) => r.text());
+/* ------------------------------ refusals: no retry -------------------------- */
 
-  const chargeback = chargebackParams(subject, 'tx-rev');
-  assert.equal((await postback(handler, chargeback, signed(chargeback))).status, 200);
-
-  const stored = await events.load(PROVIDER_ID, 'tx-rev');
-  assert.equal(stored!.state, 'REVERSED');
-  assert.ok(stored!.reversedAt, 'the cancellation time is recorded');
-});
-
-test('a reversal with no matching conversion is refused and stores nothing', async () => {
-  const { handler, events, binding } = createCallbackHarness();
-  const subject = await subjectFor(newB64MemberId());
-  const parameters = chargebackParams(subject, 'tx-never');
-  const response = await postback(handler, parameters, signed(parameters));
-  assert.equal(response.status, 409);
-  assert.equal(await events.load(PROVIDER_ID, 'tx-never'), null);
-  const rows = await binding.prepare('SELECT COUNT(*) AS n FROM b64_reward_event').first<{ n: number }>();
-  assert.equal(rows!.n, 0, 'an orphan reversal never creates a row');
-});
-
-/* ------------------------------ forgery and refusal ---------------------------- */
-
-test('an unsigned or wrongly signed callback is refused before anything is read', async () => {
+test('a missing or wrong signature is acknowledged and stores nothing', async () => {
   const { handler, events, binding } = createCallbackHarness();
   const subject = await subjectFor(newB64MemberId());
   const parameters = conversionParams(subject, 'tx-forged');
 
-  const missing = await postback(handler, parameters, null);
-  assert.equal(missing.status, 403, 'the provider hash is optional upstream and mandatory here');
-  await missing.text();
-
-  const wrong = await postback(handler, parameters, signed({ ...parameters, currency_amount: '999999' }));
-  assert.equal(wrong.status, 403);
-  await wrong.text();
-
-  const notHex = await postback(handler, parameters, 'zzzz');
-  assert.equal(notHex.status, 403);
-  await notHex.text();
-
+  for (const hash of [null, signed({ ...parameters, currency_amount: '999999' }), 'zzzz', '0'.repeat(64)]) {
+    const response = await postback(handler, parameters, hash);
+    assert.equal(response.status, 200, 'a retry cannot fix a bad signature, so do not burn twelve of them');
+    await response.text();
+  }
   assert.equal(await events.load(PROVIDER_ID, 'tx-forged'), null);
-  const rows = await binding.prepare('SELECT COUNT(*) AS n FROM b64_reward_event').first<{ n: number }>();
-  assert.equal(rows!.n, 0);
+  assert.equal(await rowCount(binding), 0);
 });
 
-test('a callback naming a subject this Worker never signed is refused', async () => {
-  const { handler } = createCallbackHarness();
+test('a callback naming a subject this Worker never signed is acknowledged and refused', async () => {
+  const { handler, binding } = createCallbackHarness();
   const foreign = await mintB64RewardSubject({
     signingSecret: 'another-products-own-secret-0123456789',
     memberId: newB64MemberId(),
   });
   const parameters = conversionParams(foreign, 'tx-foreign');
   const response = await postback(handler, parameters, signed(parameters));
-  assert.equal(response.status, 403, 'a well-signed provider request still needs a B64 subject');
-  assert.ok((await response.text()) === '');
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'OK');
+  assert.equal(await rowCount(binding), 0, 'a well-signed provider request still needs a B64 subject');
 });
 
 test('one provider transaction cannot be re-pointed at another member', async () => {
   const { handler, events } = createCallbackHarness();
   const ownerA = newB64MemberId();
   const intruderB = newB64MemberId();
-  const subjectA = await subjectFor(ownerA);
-  const subjectB = await subjectFor(intruderB);
-
-  const first = conversionParams(subjectA, 'tx-steal');
+  const first = conversionParams(await subjectFor(ownerA), 'tx-steal');
   assert.equal((await postback(handler, first, signed(first))).status, 200);
 
-  const replay = conversionParams(subjectB, 'tx-steal');
+  const replay = conversionParams(await subjectFor(intruderB), 'tx-steal');
   const response = await postback(handler, replay, signed(replay));
-  assert.equal(response.status, 409, 'the same transaction for a different member is a review case');
+  assert.equal(response.status, 200, 'permanent: acknowledged, never credited');
   await response.text();
 
-  const stored = await events.load(PROVIDER_ID, 'tx-steal');
-  assert.equal(stored!.memberId, ownerA, 'the row keeps its original owner');
+  assert.equal((await events.load(PROVIDER_ID, 'tx-steal'))!.memberId, ownerA, 'the row keeps its owner');
   assert.equal((await events.listForMember(intruderB)).length, 0, 'the intruder gains nothing');
 });
 
@@ -274,29 +307,65 @@ test('a changed amount on an existing transaction does not silently rewrite the 
 
   const inflated = conversionParams(subject, 'tx-value', '5000');
   const response = await postback(handler, inflated, signed(inflated));
-  assert.equal(response.status, 409);
+  assert.equal(response.status, 200);
   await response.text();
-  assert.equal((await events.load(PROVIDER_ID, 'tx-value'))!.amount, 100);
+  assert.equal((await events.load(PROVIDER_ID, 'tx-value'))!.amount, 10);
 });
 
-/* -------------------------------- fail closed --------------------------------- */
+/* ------------------------- adslot scoping, per the docs ---------------------- */
 
-test('the callback is closed until the provider is configured, and the site still answers', async () => {
+test('an adslot B64 did not ask for is refused once the adslot is configured', async () => {
+  const scoped = createCallbackHarness({ ayetRewardedAdslotId: ADSLOT_ID });
+  const subject = await subjectFor(newB64MemberId());
+
+  const other = Object.freeze({ ...conversionParams(subject, 'tx-other-slot'), adslot_id: '99' });
+  assert.equal((await postback(scoped.handler, other, signed(other))).status, 200);
+  assert.equal(await scoped.events.load(PROVIDER_ID, 'tx-other-slot'), null);
+
+  const missing: AyetS2SParameters = Object.freeze({
+    network: 'ayetstudios', transaction_id: 'tx-no-slot', external_identifier: subject,
+    currency_amount: '10', currency_identifier: 'B64_COINS', payout_usd: '0.007',
+  });
+  assert.equal((await postback(scoped.handler, missing, signed(missing))).status, 200);
+  assert.equal(await scoped.events.load(PROVIDER_ID, 'tx-no-slot'), null);
+
+  const mine = conversionParams(subject, 'tx-right-slot');
+  assert.equal((await postback(scoped.handler, mine, signed(mine))).status, 200);
+  assert.ok(await scoped.events.load(PROVIDER_ID, 'tx-right-slot'), 'the configured adslot is accepted');
+});
+
+test('with no adslot configured the callback is not gated on it', async () => {
+  const { handler, events } = createCallbackHarness();
+  const subject = await subjectFor(newB64MemberId());
+  const parameters = Object.freeze({ ...conversionParams(subject, 'tx-anyslot'), adslot_id: '77' });
+  assert.equal((await postback(handler, parameters, signed(parameters))).status, 200);
+  assert.ok(await events.load(PROVIDER_ID, 'tx-anyslot'));
+});
+
+/* --------------------------- retryable: answer 503 --------------------------- */
+
+test('a reversal that arrives before its conversion is retried, not dropped', async () => {
+  const { handler, binding } = createCallbackHarness();
+  const subject = await subjectFor(newB64MemberId());
+  const parameters = chargebackParams(subject, 'tx-early');
+  const response = await postback(handler, parameters, signed(parameters));
+  assert.equal(response.status, 503, 'ayeT resends for an hour, which is the recovery path here');
+  assert.equal(await response.text(), '');
+  assert.equal(await rowCount(binding), 0);
+});
+
+test('the callback stays closed while the provider is unconfigured, and the site answers', async () => {
   const disabled = createCallbackHarness({ ayetMode: 'DISABLED' });
   const subject = await subjectFor(newB64MemberId());
   const parameters = conversionParams(subject, 'tx-disabled');
-  const response = await postback(disabled.handler, parameters, signed(parameters));
-  assert.equal(response.status, 503);
-  assert.equal(await response.text(), '');
-
-  const noKey = createCallbackHarness({ ayetPublisherApiKey: undefined });
-  assert.equal((await postback(noKey.handler, parameters, signed(parameters))).status, 503);
+  assert.equal((await postback(disabled.handler, parameters, signed(parameters))).status, 503);
+  assert.equal((await postback(createCallbackHarness({ ayetPublisherApiKey: undefined }).handler, parameters, signed(parameters))).status, 503);
 
   const pipeline = await (await disabled.handler(new Request(`${TEST_ORIGIN}/pipeline`))).text();
   assert.ok(pipeline.includes('action="/join"'), 'a disabled provider must not break the consumer site');
 });
 
-test('without the D1 binding the callback is refused rather than answered OK', async () => {
+test('without the D1 binding the callback is refused for retry rather than answered OK', async () => {
   const handler = createConsumerHttpHandler({
     loadCandidates: () => [],
     sessionSecret: TEST_SESSION_SECRET,
@@ -306,14 +375,12 @@ test('without the D1 binding the callback is refused rather than answered OK', a
   });
   const subject = await subjectFor(newB64MemberId());
   const parameters = conversionParams(subject, 'tx-nostore');
-  const response = await postback(handler, parameters, signed(parameters));
-  assert.equal(response.status, 503);
+  assert.equal((await postback(handler, parameters, signed(parameters))).status, 503);
 });
 
 test('the callback is a GET route and keeps the consumer CSP', async () => {
   const { handler } = createCallbackHarness();
-  const post = await handler(new Request(`${TEST_ORIGIN}${AYET_S2S_CALLBACK_PATH}`, { method: 'POST' }));
-  assert.equal(post.status, 405);
+  assert.equal((await handler(new Request(`${TEST_ORIGIN}${AYET_S2S_CALLBACK_PATH}`, { method: 'POST' }))).status, 405);
 
   const subject = await subjectFor(newB64MemberId());
   const parameters = conversionParams(subject, 'tx-csp');
@@ -322,7 +389,7 @@ test('the callback is a GET route and keeps the consumer CSP', async () => {
   assert.equal(response.headers.get('cache-control'), 'no-store');
 });
 
-/* ------------------------- the honesty boundary and schema -------------------- */
+/* ------------------------- the honesty boundary and schema ------------------- */
 
 test('a confirmed provider reward never becomes income or a payable balance', async () => {
   const { handler, income } = createCallbackHarness();
@@ -332,7 +399,7 @@ test('a confirmed provider reward never becomes income or a payable balance', as
   await postback(handler, parameters, signed(parameters)).then((r) => r.text());
 
   assert.equal((await income.getByUser(memberId)).length, 0,
-    'provider reporting is not a B64 income record and not money');
+    "provider reporting is not a B64 income record and not money");
 });
 
 test('0004 is additive and replay-safe next to the live schema', () => {
@@ -350,22 +417,35 @@ test('0004 is additive and replay-safe next to the live schema', () => {
 
 test('the store refuses a row that is not linked to a B64 member', async () => {
   const { binding } = createSqliteD1Binding();
-  const store = new UnboundRewardEventStore('B64_INCOME_DB');
-  await assert.rejects(store.load(PROVIDER_ID, 'x'), /not configured/);
-  const subject = await subjectFor(newB64MemberId());
+  await assert.rejects(new UnboundRewardEventStore('B64_INCOME_DB').load(PROVIDER_ID, 'x'), /not configured/);
   const transition = applyProviderRewardEvent(null, {
     providerId: PROVIDER_ID,
     providerTransactionId: 'tx-bad',
-    externalUserId: subject,
+    externalUserId: await subjectFor(newB64MemberId()),
     eventType: 'CONFIRMED',
     amount: 10,
-    unit: 'KRW_POINTS',
+    unit: 'B64_COINS',
     observedAt: '2026-10-28T00:00:00.000Z',
   });
-  const record = buildStoredRewardEvent(transition.next!, 'pm_chat_user_1');
   await assert.rejects(
-    new D1RewardEventStore(binding).insert(record),
+    new D1RewardEventStore(binding).insert(buildStoredRewardEvent(transition.next!, 'pm_chat_user_1')),
     /linked to a B64 member/,
     'a PADIEM Chat user id cannot name a B64 reward row',
   );
 });
+
+test('the normalizer still refuses a chargeback whose explicit type is another integration', () => {
+  const result = normalizeVerifiedAyetS2SRewardPostback({
+    parameters: Object.freeze({ ...chargebackParams('whatever', 'tx-x'), callback_type: 'survey' }),
+    securityHash: '0'.repeat(64),
+    publisherApiKey: PUBLISHER_API_KEY,
+    observedAt: '2026-10-28T00:00:00.000Z',
+  });
+  assert.equal(result.accepted, false);
+  assert.equal(result.decision, 'REJECT_INVALID_SIGNATURE');
+});
+
+function stringParamOf(parameters: AyetS2SParameters, key: string): string | undefined {
+  const value = parameters[key];
+  return value === undefined ? undefined : String(value);
+}
