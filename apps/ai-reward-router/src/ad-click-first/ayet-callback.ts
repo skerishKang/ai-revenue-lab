@@ -48,6 +48,12 @@ export interface AyetCallbackDependencies {
   readonly publisherApiKey: string | undefined;
   readonly signingSecret: string | undefined;
   readonly rewardEvents: RewardEventStore;
+  /**
+   * `B64_AYET_REWARDED_ADSLOT_ID`. ayeT warns that a single callback URL shared
+   * by several adslots must pass and validate `{adslot_id}`; when B64 names its
+   * rewarded-video adslot, a callback from any other adslot is refused.
+   */
+  readonly rewardedAdslotId?: string | undefined;
 }
 
 function outcome(status: number, decision: string, body = ''): AyetCallbackOutcome {
@@ -55,16 +61,36 @@ function outcome(status: number, decision: string, body = ''): AyetCallbackOutco
 }
 
 /**
- * Every query parameter except `security_hash` participates in the canonical
- * string, matching the reviewed canonicalization. The signature itself comes
- * from the header, so it must not be folded into its own input.
+ * Acknowledged without crediting. ayeT resends any postback that is not
+ * answered HTTP 200, twelve times over an hour, so this is the answer for
+ * outcomes a retry can never change: a bad signature, a subject this Worker
+ * never signed, a transaction that already belongs to someone else. The
+ * acknowledgement says "received"; the reward decision is the row, and no row
+ * is written here.
+ */
+function permanent(decision: string): AyetCallbackOutcome {
+  return outcome(200, decision, AYET_S2S_ACK_BODY);
+}
+
+/**
+ * Retried. ayeT's own resend behaviour is the recovery mechanism, so it is used
+ * deliberately for the cases where another attempt can genuinely land: storage
+ * is down, the provider is not configured yet, a reversal arrived before the
+ * conversion it refers to, or a concurrent writer is mid-transition.
+ */
+function retryLater(status: number, decision: string): AyetCallbackOutcome {
+  return outcome(status, decision);
+}
+
+/**
+ * Every query parameter participates in the canonical string, which is what the
+ * provider's own recipe says ("get all request parameters"). The signature
+ * itself travels in the `X-Ayetstudios-Security-Hash` header, so it is never
+ * part of the URL and needs no special case here.
  */
 export function ayetS2SParametersFromUrl(url: URL): AyetS2SParameters {
   const parameters: Record<string, string> = {};
-  for (const [key, value] of url.searchParams) {
-    if (key === 'security_hash') continue;
-    parameters[key] = value;
-  }
+  for (const [key, value] of url.searchParams) parameters[key] = value;
   return parameters;
 }
 
@@ -83,9 +109,11 @@ function asStateRecord(row: StoredRewardEvent): RewardStateRecord {
 }
 
 /**
- * Handles one postback. Never throws for a request the provider could plausibly
- * send: a rejected callback is an answer, not a crash. A storage failure is
- * re-thrown so the HTTP layer can answer 503 and the provider retries.
+ * Handles one postback. Nothing here throws for a request the provider could
+ * plausibly send: ayeT resends anything it is not answered HTTP 200, so the
+ * status code is transport policy and the stored row is the reward decision.
+ * A storage failure is the one case re-thrown, so the HTTP layer can answer 503
+ * and the provider's retry window can recover the event.
  */
 export async function handleAyetS2SCallback(
   deps: AyetCallbackDependencies,
@@ -95,7 +123,7 @@ export async function handleAyetS2SCallback(
   if (!deps.publisherApiKey || !deps.signingSecret) throw new AyetCallbackUnconfigured();
 
   const securityHash = (context.securityHash ?? '').trim();
-  if (!securityHash) return outcome(403, 'REJECT_MISSING_SIGNATURE');
+  if (!securityHash) return permanent('REJECT_MISSING_SIGNATURE');
 
   const normalized = normalizeVerifiedAyetS2SRewardPostback({
     parameters: context.parameters,
@@ -104,18 +132,28 @@ export async function handleAyetS2SCallback(
     observedAt: context.observedAt,
   });
   if (!normalized.accepted || normalized.rewardEvent === null) {
-    return outcome(normalized.decision === 'REJECT_INVALID_SIGNATURE' ? 403 : 400, normalized.decision);
+    return permanent(normalized.decision);
   }
 
   const event = normalized.rewardEvent;
+  const configuredAdslot = (deps.rewardedAdslotId ?? '').trim();
+  if (configuredAdslot) {
+    const reportedAdslot = String(context.parameters['adslot_id'] ?? '').trim();
+    if (reportedAdslot !== configuredAdslot) {
+      // A callback from an adslot B64 did not ask for is not B64's rewarded
+      // video, and the row is not written for it.
+      return permanent('REJECT_AD_SLOT_MISMATCH');
+    }
+  }
+
   const memberId = await readB64RewardSubject(event.externalUserId, deps.signingSecret);
-  if (memberId === null) return outcome(403, 'REJECT_UNVERIFIED_SUBJECT');
+  if (memberId === null) return permanent('REJECT_UNVERIFIED_SUBJECT');
 
   const existing = await deps.rewardEvents.load(event.providerId, event.providerTransactionId);
   if (existing !== null && existing.memberId !== memberId) {
     // The same provider transaction reported for a different B64 member. The
     // row keeps its owner and nothing moves; this needs a human, not a retry.
-    return outcome(409, 'REJECT_SUBJECT_MEMBER_MISMATCH');
+    return permanent('REJECT_SUBJECT_MEMBER_MISMATCH');
   }
 
   const transition = applyProviderRewardEvent(existing === null ? null : asStateRecord(existing), event);
@@ -123,24 +161,27 @@ export async function handleAyetS2SCallback(
   if (transition.decision === 'IGNORE_IDEMPOTENT_DUPLICATE') {
     return outcome(200, transition.decision, AYET_S2S_ACK_BODY);
   }
+  if (transition.decision === 'REJECT_ORPHAN_REVERSAL') {
+    return retryLater(503, transition.decision);
+  }
   if (transition.next === null) {
-    return outcome(transition.decision === 'REJECT_INVALID_EVENT' ? 400 : 409, transition.decision);
+    return permanent(transition.decision);
   }
   if (transition.decision === 'REVIEW_IDENTITY_OR_VALUE_MISMATCH'
     || transition.decision === 'REVIEW_REOPEN_AFTER_REVERSAL') {
-    return outcome(409, transition.decision);
+    return permanent(transition.decision);
   }
 
   const record = buildStoredRewardEvent(transition.next, memberId);
   if (transition.decision === 'CREATE_PENDING' || transition.decision === 'CREATE_CONFIRMED') {
     const written = await deps.rewardEvents.insert(record);
-    if (written === 'CONFLICT') return outcome(409, 'CONFLICT_CONCURRENT_CREATE');
+    if (written === 'CONFLICT') return retryLater(503, 'CONFLICT_CONCURRENT_CREATE');
     return outcome(200, transition.decision, AYET_S2S_ACK_BODY);
   }
 
-  if (existing === null) return outcome(409, 'REJECT_ORPHAN_TRANSITION');
+  if (existing === null) return retryLater(503, 'REJECT_ORPHAN_TRANSITION');
   const written = await deps.rewardEvents.transition(record, existing.state);
-  if (written === 'CONFLICT') return outcome(409, 'CONFLICT_CONCURRENT_TRANSITION');
+  if (written === 'CONFLICT') return retryLater(503, 'CONFLICT_CONCURRENT_TRANSITION');
   return outcome(200, transition.decision, AYET_S2S_ACK_BODY);
 }
 

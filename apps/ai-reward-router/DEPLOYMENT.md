@@ -505,13 +505,47 @@ pipeline still counts only its own `PAID` records.
   `B64_AYET_PUBLISHER_API_KEY` secret are **not registered anywhere**. Their
   names are fixed by `provider-runtime-config.ts`; their values do not exist
   until the publisher account, placement and ad slot do. Nothing was guessed.
-- Two provider-contract details must be confirmed against ayeT's own callback
-  documentation with a real account before `LIVE_AUTHORIZED`: the exact
-  canonicalization the `security_hash` is computed over, and the response body
-  the provider expects. The in-repo canonicalization is the previously reviewed
-  one and carries a fixed test vector; `OK` is what this code answers today.
-- **Showing** a rewarded video still needs the ayeT JavaScript SDK, and the
-  consumer surface runs under `script-src 'none'`. This PR does not open that
-  hole: the postback route is reachable and testable on its own, and no ad
-  inventory is enabled by it. A CSP exception for `cdn.ayet.io` is a separate,
-  explicitly reviewed decision.
+- **Callback URL to set in the ayeT Placement** (D12, from the official callback
+  documentation — the macro names below are exactly what this code reads):
+
+  ```text
+  https://b64-ai-reward-router.charliekant.workers.dev/callbacks/ayet/s2s
+    ?transaction_id={transaction_id}
+    &external_identifier={external_identifier}
+    &currency_amount={currency_amount}
+    &currency_identifier={currency_identifier}
+    &adslot_id={adslot_id}
+    &is_chargeback={is_chargeback}
+  ```
+
+  `{transaction_id}` is the duplicate check the docs require, and `{adslot_id}`
+  is the field the docs say to validate when one callback URL serves several
+  adslots: once `B64_AYET_REWARDED_ADSLOT_ID` is set, a callback from any other
+  adslot is refused. `callback_type` is deliberately absent — the
+  rewarded-video macro table does not list it, so B64 classifies the callback
+  from `{currency_amount}` and `{is_chargeback}`, and still honours an explicit
+  `callback_type` when a template carries one. The signature is not a template
+  field: it arrives in the `X-Ayetstudios-Security-Hash` header.
+- **Response policy follows the provider's retry rule** ("your server must
+  always reply with an HTTP 200 status code to our postbacks, otherwise we will
+  resend the postback 12 times over a span of one hour"). A refusal a retry can
+  never fix — bad or missing signature, a subject B64 never signed, a
+  transaction re-pointed at another member, a changed amount, a non-reward
+  callback type, a foreign adslot — is answered `200 OK` and writes nothing.
+  Only genuinely recoverable cases answer 503 and let ayeT retry: storage
+  failure, provider not configured, a reversal arriving before its conversion,
+  and a concurrent write on the same transaction. The acknowledgement is
+  transport only; the stored row is the reward decision.
+- Both documented canonicalizations are accepted for the signature. The PHP
+  reference (`ksort(SORT_STRING)` + `http_build_query`) escapes `*` and the
+  JavaScript reference (`URLSearchParams.toString()`) does not; every other
+  character encodes identically, measured. A publisher cannot tell which one the
+  sending server used, and guessing wrong costs a real reward. The API key is
+  secret either way, so accepting the provider's own two documented recipes
+  widens no authority.
+- **Showing** a rewarded video still needs the ayeT JavaScript SDK
+  (`AyetVideoSdk.init(...)`), and the consumer surface runs under
+  `script-src 'none'`. This PR does not open that hole: the postback route is
+  reachable and testable on its own, and no ad inventory is enabled by it. The
+  CSP exception for the SDK origin, plus the "Send S2S Callbacks" toggle on the
+  AdSlot, is a separate reviewed decision taken with the account.

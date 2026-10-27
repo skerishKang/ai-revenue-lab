@@ -56,6 +56,7 @@ export interface B64WorkerEnv {
    */
   readonly B64_AYET_MODE?: string;
   readonly B64_AYET_PUBLISHER_API_KEY?: string;
+  readonly B64_AYET_REWARDED_ADSLOT_ID?: string;
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
@@ -120,6 +121,7 @@ export default {
         : new UnboundRewardEventStore(INCOME_D1_BINDING_NAME),
       ayetMode: ayetMode(env.B64_AYET_MODE),
       ayetPublisherApiKey: env.B64_AYET_PUBLISHER_API_KEY,
+      ayetRewardedAdslotId: env.B64_AYET_REWARDED_ADSLOT_ID,
     });
     return handler(request);
   },
