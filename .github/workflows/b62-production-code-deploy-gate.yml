@@ -344,6 +344,23 @@ jobs:
         run: |
           set -euo pipefail
           python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          # The repository declaration against the reviewed baseline, printed once
+          # and named as repo-vs-baseline: this is not a production diff. No Cloudflare
+          # call, no binding value, name and type only.
+          python - <<'PY'
+          import json, sys, tomllib
+          from pathlib import Path
+          sys.path.insert(0, ".github/scripts")
+          from b62_binding_baseline import load_baseline
+          from b62_repo_binding_authority import inventory
+          repo = inventory(tomllib.loads(Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")))
+          declared = {name: {"name": name, "type": entry["type"]} for name, entry in repo.items()}
+          base = {name: {"name": name, "type": kind} for name, kind in load_baseline("padiem-chat").items()}
+          added = sorted(declared.keys() - base.keys())
+          removed = sorted(base.keys() - declared.keys())
+          changed = sorted(n for n in base.keys() & declared.keys() if base[n]["type"] != declared[n]["type"])
+          print("B62_REPO_VS_BASELINE_DIFF_COUNTS=" + json.dumps({"added": len(added), "changed": len(changed), "removed": len(removed)}, sort_keys=True))
+          PY
           echo "CONNECTOR_BROKER_PRESERVATION_SOURCE=PASS"
           echo "PRODUCTION_MUTATION=0"
 
