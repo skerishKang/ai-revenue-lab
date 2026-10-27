@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>임미란 의원 — 의정활동 정보</title>
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">임</span>
+      <span class="brand-name">임미란 의원</span>
+    </div>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a href="#intro">소개</a>
+      <a href="#activity">의정활동</a>
+      <a href="#policy">정책자료</a>
+      <a href="#media">미디어</a>
+      <a href="#news">소식</a>
+    </nav>
+    <div class="top-actions">
+      <button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="hero" aria-labelledby="heroName">
+      <div class="hero-media" aria-hidden="true">
+        <div class="hero-veil"></div>
+        <img class="hero-poster" src="https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg" alt="" />
+      </div>
+      <div class="hero-inner">
+        <p class="hero-eyebrow">전남광주통합특별시의회 · 남구 제1선거구</p>
+        <h1 class="hero-name" id="heroName">임미란</h1>
+        <p class="hero-lead">시민의 일상을 바꾸는 의정활동. 남구에서 전남광주통합특별시까지, 의원이 걸어온 길과 최근 활동, 영상과 사진을 한 곳에서 보실 수 있습니다.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#activity">의정활동 보기</a>
+          <a class="btn secondary" href="#media">소개 영상 보기</a>
+        </div>
+        <ul class="hero-facts">
+          <li><span class="fact-label">현직</span><span class="fact-value">전남광주통합특별시의회의원</span></li>
+          <li><span class="fact-label">지역구</span><span class="fact-value">남구 제1선거구</span></li>
+          <li><span class="fact-label">상임위</span><span class="fact-value">보건복지위원회 위원</span></li>
+          <li><span class="fact-label">소속</span><span class="fact-value">더불어민주당</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Intro -->
+    <section class="section" id="intro" aria-labelledby="introTitle">
+      <div class="section-inner">
+        <h2 class="section-title" id="introTitle">의원 소개</h2>
+        <div class="intro-grid">
+          <div class="intro-bio">
+            <p>임미란 의원은 조선대학교에서 디자인을, 홍익대학교와 조선대학교 대학원에서 건축도시와 디자인경영을 공부하고 디자인경영학 박사 학위를 받았습니다. 기업과 여성경제 단체, 대학에서 쌓은 현장 경험을 바탕으로 제8대 광주광역시의회의원에 당선된 뒤 제9대를 거쳐, 2026년 6월 3일 제9회 전국동시지방선거에서 남구 제1선거구 의원으로 다시 당선되었습니다.</p>
+            <p>2026년 7월 1일 개원한 전남광주통합특별시의회 제1대 의원으로 보건복지위원회와 예산결산특별위원회에서 활동하고 있습니다.</p>
+          </div>
+          <dl class="profile-list">
+            <div><dt>현직</dt><dd>전남광주통합특별시의회의원 (제1대) · 남구 제1선거구</dd></div>
+            <div><dt>상임위원회</dt><dd>보건복지위원회 위원</dd></div>
+            <div><dt>특별위원회</dt><dd>전남광주통합특별시청 예산결산특별위원회 위원</dd></div>
+            <div><dt>당선</dt><dd>2026년 6월 3일 제9회 전국동시지방선거 · 12,844표(17.99%)</dd></div>
+            <div><dt>소속 정당</dt><dd>더불어민주당</dd></div>
+            <div><dt>출생</dt><dd>1965년 8월 6일</dd></div>
+            <div><dt>학력</dt><dd>해남여자고등학교 · 조선대학교 산업디자인학과 · 홍익대학교 건축도시디자인대학원(석사) · 조선대학교 대학원 디자인경영학과(박사)</dd></div>
+            <div><dt>의원실</dt><dd>062-613-5133</dd></div>
+          </dl>
+        </div>
+        <p class="source-note">자료 출처: 전남광주통합특별시의회·광주광역시의회 공식 페이지, 중앙선거관리위원회 공개 자료 (2026-10-25 확인)</p>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section class="section" id="activity" aria-labelledby="activityTitle">
+      <div class="section-inner">
+        <h2 class="section-title" id="activityTitle">의정활동</h2>
+        <div class="activity-toolbar">
+          <input type="search" id="activitySearch" placeholder="활동 검색..." aria-label="의정활동 검색" />
+          <select id="activityFilter" aria-label="분류 필터">
+            <option value="all">전체</option>
+            <option value="의회">의회</option>
+            <option value="본회의">본회의</option>
+            <option value="위원회">위원회</option>
+            <option value="당선">당선</option>
+            <option value="기념식">기념식</option>
+          </select>
+        </div>
+        <ul class="activity-list" id="activityList" aria-live="polite"></ul>
+        <div class="activity-detail" id="activityDetail" hidden>
+          <button class="back-btn" id="activityBack" type="button">← 목록으로</button>
+          <h3 id="detailTitle"></h3>
+          <p class="detail-date" id="detailDate"></p>
+          <p class="detail-body" id="detailBody"></p>
+          <a class="detail-link" id="detailLink" href="#" target="_blank" rel="noopener">공식 페이지 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Policy -->
+    <section class="section" id="policy" aria-labelledby="policyTitle">
+      <div class="section-inner">
+        <h2 class="section-title" id="policyTitle">정책자료</h2>
+        <div class="card-grid">
+          <article class="info-card">
+            <h3>의정 보고서</h3>
+            <p>의회 공식 페이지에서 발행하는 의정 보고서와 활동 자료를 확인하실 수 있습니다.</p>
+            <a class="card-link" href="https://council.gwangju.go.kr/9imr/index.do?PID=014" target="_blank" rel="noopener">바로가기</a>
+          </article>
+          <article class="info-card">
+            <h3>예산·결산</h3>
+            <p>예산결산특별위원회 활동 및 관련 자료입니다.</p>
+            <a class="card-link" href="https://council.gwangju.go.kr/9imr/index.do?PID=014" target="_blank" rel="noopener">바로가기</a>
+          </article>
+          <article class="info-card">
+            <h3>5분 발언</h3>
+            <p>본회의 5분 자유발언 영상 모음입니다.</p>
+            <a class="card-link" href="https://www.youtube.com/watch?v=rc87So2Dgcs" target="_blank" rel="noopener">유튜브 보기</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Media -->
+    <section class="section" id="media" aria-labelledby="mediaTitle">
+      <div class="section-inner">
+        <h2 class="section-title" id="mediaTitle">미디어</h2>
+        <div class="media-grid" id="mediaGrid"></div>
+        <p class="source-note">본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- News -->
+    <section class="section" id="news" aria-labelledby="newsTitle">
+      <div class="section-inner">
+        <h2 class="section-title" id="newsTitle">소식</h2>
+        <ul class="news-list" id="newsList"></ul>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.</p>
+      <p>자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+    </footer>
+  </main>
+
+  <script src="./static/app.js"></script>
+</body>
+</html>
