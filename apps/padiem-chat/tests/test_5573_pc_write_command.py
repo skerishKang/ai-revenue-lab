@@ -121,7 +121,8 @@ def test_customer_characters_reach_the_pc_as_data_never_as_syntax():
 
 def test_every_step_prints_one_account_line_and_no_confirmation_prompt():
     for op, kwargs in (
-        ("write", {"target": "C:" + BS + "a.txt", "relative": "a.txt", "content": "x"}),
+        ("write", {"target": "C:" + BS + "a.txt", "relative": "a.txt",
+                   "content_b64": base64.b64encode("x".encode("utf-8")).decode("ascii")}),
         ("move", {"target": "C:" + BS + "a.txt", "relative": "a.txt",
                   "destination": "C:/b.txt"}),
         ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),

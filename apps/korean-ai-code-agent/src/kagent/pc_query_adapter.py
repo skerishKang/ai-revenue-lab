@@ -381,17 +381,26 @@ def _pc_file_tool_spec(
 ) -> ToolSpec:
     """One PC file tool. The read tools are READ; the write lane is WRITE.
 
-    `approval_policy` stays NOT_REQUIRED by the Owner's decision on #4434: a
-    paired PC is written without a per-task approval button, and what carries the
-    risk instead is the backup taken before the change and the path it is
-    recorded at. No size, count or time ceiling is declared here either — the
-    transport that already exists bounds what one command can carry.
+    No approval button appears in the conversation, per the Owner's decision on
+    #4434, and Core refuses a WRITE tool that declares no approval policy at all.
+    That invariant is a real protection, not an obstacle: a change to a customer's
+    machine needs an authority behind it, and this lane already has one — the
+    pairing link that binds this account to this PC, plus the folder roots that
+    link granted. The write tools therefore carry EXTERNAL_AUTHORIZATION, the same
+    shape the desktop lane uses for owner-scoped execution, while the reads stay
+    NOT_REQUIRED. What carries the risk on top of the authority is the backup
+    taken before the change and the path it is recorded at. No size, count or time
+    ceiling is declared here either: the transport that already exists bounds what
+    one command can carry.
     """
-    side_effect = (
-        ToolSideEffect.READ if tool_id in PC_FILE_TOOL_IDS else ToolSideEffect.WRITE
+    reading = tool_id in PC_FILE_TOOL_IDS
+    side_effect = ToolSideEffect.READ if reading else ToolSideEffect.WRITE
+    approval = (
+        ApprovalPolicy.NOT_REQUIRED if reading
+        else ApprovalPolicy.EXTERNAL_AUTHORIZATION
     )
     return ToolSpec(id=tool_id, title=title, description=description,
-        owner="core", side_effect=side_effect, approval_policy=ApprovalPolicy.NOT_REQUIRED,
+        owner="core", side_effect=side_effect, approval_policy=approval,
         auth_scope=(scope,),
         input_schema={"type": "object", "properties": properties, "required": required,
                       "additionalProperties": False},
