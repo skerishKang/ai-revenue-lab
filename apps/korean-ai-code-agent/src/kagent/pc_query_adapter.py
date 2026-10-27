@@ -723,10 +723,14 @@ class StructuredPCQueryStepDriver:
                     )
                 path = arguments.get("path")
                 intent = arguments.get("intent")
-                if "intent" in arguments and intent not in (
-                    frozenset({"list", "read"}) if tool_id in PC_FILE_TOOL_IDS
-                    else PC_FILE_TOOL_INTENTS[tool_id]
-                ):
+                # A tuple, not a set: a model that sends a list or an object as
+                # `intent` must be refused, and membership in a set would raise
+                # TypeError on an unhashable value instead.
+                allowed_intents = (
+                    ("list", "read") if tool_id in PC_FILE_TOOL_IDS
+                    else tuple(sorted(PC_FILE_TOOL_INTENTS[tool_id]))
+                )
+                if "intent" in arguments and intent not in allowed_intents:
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
