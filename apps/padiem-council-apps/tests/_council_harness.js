@@ -119,9 +119,14 @@ function simpleMatch(node, part) {
 // ── recording fake backend (the EXISTING endpoints) ────────────────────────
 const requests = [];
 const chatPayloads = [];
+const loginAttempts = [];
 const storedFiles = [];
 let fileIdSeq = 0;
 let chatResponseOverride = null;
+// #5942: the same-origin session contract the entry page uses. A scenario flips
+// these to walk signed-out → in-page login → expiry without any second authority.
+let authState = { authenticated: true, user: { name: "테스트 사용자" } };
+let loginOutcome = null;
 
 function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
@@ -152,7 +157,12 @@ async function fetch(url, init) {
     if (chatResponseOverride) return chatResponseOverride;
     return json({ answer: "생성된 초안 본문입니다.\n\n두 번째 문단입니다." });
   }
-  if (String(url) === "/api/auth/status") return json({ authenticated: true, user: { name: "테스트 사용자" } });
+  if (String(url) === "/api/auth/status") return json(authState);
+  if (method === "POST" && String(url) === "/api/auth/password/login") {
+    loginAttempts.push(body);
+    if (loginOutcome) return loginOutcome;
+    return json({ ok: true, user: { name: "테스트 사용자" } });
+  }
   if (String(url) === "/api/projects") {
     if (method === "GET") return json({ projects: [{ id: "p1", name: "내 프로젝트" }] });
     return json({ project: { id: "p1", name: (body && body.name) || "" } });
@@ -242,10 +252,46 @@ function spawnSession(windowState = {}) {
   const speechBody = mk("div", "councilSpeechBody");
   const snsBody = mk("div", "councilSnsBody");
   const meetingBody = mk("div", "councilMeetingBody");
+  speechBody.hidden = true;
+  snsBody.hidden = true;
+  meetingBody.hidden = true;
   root.append(speechBody, snsBody, meetingBody);
   const badge = mk("span", "councilAuthBadge");
   const note = mk("p", "councilSigninNote");
   root.append(badge, note);
+
+  // The #5942 entry surface: three selectable cards and the in-page login panel,
+  // mirroring static/index.html so the shipped module is driven against the markup
+  // it actually runs on.
+  const panel = mk("section", "councilAuthPanel", "council-auth");
+  panel.hidden = true;
+  const authStatus = mk("p", "councilAuthStatus", "council-auth-status");
+  authStatus.hidden = true;
+  const googleRow = mk("p", "councilGoogleRow", "council-auth-alt");
+  googleRow.hidden = true;
+  const loginForm = mk("form", "councilLoginForm", "council-form");
+  const identifier = mk("input", null, null);
+  identifier.name = "identifier";
+  const password = mk("input", null, null);
+  password.name = "password";
+  const submit = mk("button", null, "council-login");
+  submit.type = "submit";
+  loginForm.append(identifier, password, submit);
+  panel.append(loginForm, authStatus, googleRow);
+  const action = mk("button", "councilAuthAction", "council-badge-action");
+  action.hidden = true;
+  root.append(panel, action);
+
+  ["speech", "sns", "meeting"].forEach((tool) => {
+    const section = mk("section", "council-" + tool, "council-card");
+    section.dataset.tool = tool;
+    const button = mk("button", null, "council-card-select");
+    button.type = "button";
+    button.dataset.tool = tool;
+    button.setAttribute("aria-expanded", "false");
+    section.append(button);
+    root.append(section);
+  });
 
   const ctx = {
     document: {
@@ -289,6 +335,182 @@ function endpointSet() {
 
 // ── scenarios ──────────────────────────────────────────────────────────────
 const SCENARIOS = {
+  async auth() {
+    // #5942: the whole in-page sign-in path on one real execution of the shipped
+    // module — signed-out visit, choosing a tool, a failed credential, a successful
+    // login that continues into the chosen tool, then a session that lapses mid-use.
+    const phases = [];
+    const snapshot = () => requests.map((r) => r.method + " " + r.url);
+    const card = (tool) => s0.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === tool);
+    const formOf = (root, id) => root._descendants().find((n) => n.id === id) || null;
+
+    authState = {
+      authenticated: false,
+      methods: { google: true, password: true },
+      session_state: "guest",
+    };
+    loginOutcome = null;
+    const s0 = spawnSession();
+    const api = s0.ctx.window.PadiemCouncilApps;
+    const first = await api.init();
+    await sleep(20);
+    phases.push({
+      name: "signed_out",
+      initSignedIn: first.signedIn,
+      state: api.state(),
+      badge: text(find(s0, "councilAuthBadge")),
+      panelHidden: find(s0, "councilAuthPanel").hidden,
+      actionHidden: find(s0, "councilAuthAction").hidden,
+      googleHidden: find(s0, "councilGoogleRow").hidden,
+      anyToolBuilt: Boolean(formOf(s0.root, "councilSpeechForm")),
+      requests: snapshot(),
+    });
+
+    await card("sns").dispatch("click");
+    await sleep(20);
+    phases.push({
+      name: "pick_while_signed_out",
+      state: api.state(),
+      panelHidden: find(s0, "councilAuthPanel").hidden,
+      status: text(find(s0, "councilAuthStatus")),
+      snsBodyHidden: find(s0, "councilSnsBody").hidden,
+      anyToolBuilt: Boolean(formOf(s0.root, "councilSnsForm")),
+      requests: snapshot(),
+    });
+
+    const loginForm = find(s0, "councilLoginForm");
+    loginForm.querySelector("[name=identifier]").value = "council@example.test";
+    loginForm.querySelector("[name=password]").value = "wrong-password";
+    loginOutcome = json(
+      { error: { code: "invalid_credentials", message: "이메일 또는 비밀번호가 올바르지 않습니다." } },
+      401,
+    );
+    await loginForm.dispatch("submit");
+    await sleep(40);
+    phases.push({
+      name: "failed_login",
+      state: api.state(),
+      status: text(find(s0, "councilAuthStatus")),
+      passwordCleared: loginForm.querySelector("[name=password]").value === "",
+      panelHidden: find(s0, "councilAuthPanel").hidden,
+      anyToolBuilt: Boolean(formOf(s0.root, "councilSnsForm")),
+      requests: snapshot(),
+    });
+
+    loginOutcome = null;
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    loginForm.querySelector("[name=password]").value = "right-password";
+    await loginForm.dispatch("submit");
+    await sleep(60);
+    phases.push({
+      name: "signed_in_continues",
+      state: api.state(),
+      badge: text(find(s0, "councilAuthBadge")),
+      panelHidden: find(s0, "councilAuthPanel").hidden,
+      status: text(find(s0, "councilAuthStatus")),
+      toolsBuilt: ["councilSpeechForm", "councilSnsForm", "councilMeetingForm"]
+        .map((id) => (formOf(s0.root, id) ? 1 : 0)).join(""),
+      selectedHidden: find(s0, "councilSnsBody").hidden,
+      otherHidden: find(s0, "councilSpeechBody").hidden,
+      ariaExpanded: card("sns").getAttribute("aria-expanded"),
+      activeClass: card("sns").classList.contains("active"),
+      otherActiveClass: card("speech").classList.contains("active"),
+      requests: snapshot(),
+    });
+
+    authState = { authenticated: false, methods: { google: true, password: true } };
+    chatResponseOverride = json(
+      { error: { code: "authentication_required", message: "로그인이 필요합니다." } },
+      401,
+    );
+    await formOf(s0.root, "councilSnsForm").dispatch("submit");
+    await sleep(60);
+    chatResponseOverride = null;
+    phases.push({
+      name: "session_lapsed",
+      state: api.state(),
+      badge: text(find(s0, "councilAuthBadge")),
+      panelHidden: find(s0, "councilAuthPanel").hidden,
+      status: text(find(s0, "councilAuthStatus")),
+      draftKept: (formOf(s0.root, "councilSnsOutput") || {}).value || "",
+      requests: snapshot(),
+    });
+
+    const outcomes = loginAttempts.map((body) => Object.keys(body || {}).sort());
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    return {
+      phases,
+      loginAttemptKeys: outcomes,
+      endpoints: endpointSet(),
+      alerts,
+      pageErrors,
+    };
+  },
+  async auth_routing() {
+    // URL and host-storage selection: a refresh or a provider round trip must land
+    // back on the tool the user had opened, without any authority in the value.
+    const results = [];
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    for (const [label, windowState] of [
+      ["hash", { location: { hash: "#/meeting" } }],
+      ["bare_hash", { location: { hash: "#sns" } }],
+      ["unknown_hash", { location: { hash: "#/../../etc" } }],
+      ["remembered", { localStorage: { getItem: () => "speech", setItem: () => {} } }],
+      ["hostile_stored", { localStorage: { getItem: () => "https://evil.example", setItem: () => {} } }],
+    ]) {
+      const session = spawnSession(windowState);
+      const api = session.ctx.window.PadiemCouncilApps;
+      await api.init();
+      await sleep(20);
+      results.push({
+        label,
+        selected: api.state().selected,
+        openBody: ["councilSnsBody", "councilMeetingBody", "councilSpeechBody"]
+          .filter((id) => !find(session, id).hidden).join("|"),
+      });
+    }
+    return { results, pageErrors };
+  },
+  async selection() {
+    // One click must open exactly one tool, and the next click must close it.
+    // A listener bound twice would toggle twice in one click and land nowhere,
+    // so the listener count is part of the observation.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const session = spawnSession();
+    const api = session.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(20);
+    const card = (tool) => session.root.querySelectorAll(".council-card-select")
+      .find((b) => b.dataset.tool === tool);
+    const steps = [];
+    const snap = (label) => {
+      const state = api.state();
+      state.label = label;
+      state.speechHidden = find(session, "councilSpeechBody").hidden;
+      state.snsHidden = find(session, "councilSnsBody").hidden;
+      state.meetingHidden = find(session, "councilMeetingBody").hidden;
+      state.speechExpanded = card("speech").getAttribute("aria-expanded");
+      state.speechClickHandlers = card("speech")._listeners.click.length;
+      state.activeCards = session.root.querySelectorAll(".council-card")
+        .filter((node) => node.classList.contains("active")).length;
+      steps.push(state);
+    };
+    snap("init");
+    await card("speech").dispatch("click");
+    await sleep(20);
+    snap("open_speech");
+    await card("speech").dispatch("click");
+    await sleep(20);
+    snap("close_speech");
+    await card("meeting").dispatch("click");
+    await sleep(20);
+    snap("open_meeting");
+    await card("sns").dispatch("click");
+    await sleep(20);
+    snap("switch_to_sns");
+    return { steps, endpoints: endpointSet(), pageErrors };
+  },
   async generate() {
     const session = spawnSession();
     const api = session.ctx.window.PadiemCouncilApps;
