@@ -3115,7 +3115,9 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         claim = json.loads(encoded)
     except (ValueError, TypeError):
         return None, _error(422, "pc_scope_claim_invalid")
-    scopes = {"files_list": ["list"], "files": ["list", "read"], "query_drives": ["drives"], "none": []}
+    scopes = {"files_list": ["list"], "files": ["list", "read"],
+              "files_write": ["write", "move", "delete"],
+              "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
         or set(claim) != {"version", "requested", "admitted", "source", "ops", "app_id"}
@@ -3274,6 +3276,132 @@ def _pc_files_powershell_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
+#: The closed operation set this lane serves: two readers, three writers.
+_PC_FILES_OPS = ("list", "read", "write", "move", "delete")
+_PC_WRITE_OPS = ("write", "move", "delete")
+#: Hidden per-drive backup folder. The original is copied here before anything
+#: changes, so a rollback never depends on somebody remembering a path.
+PC_BACKUP_FOLDER = ".padiem-backup"
+#: The PC answers one write step with this line: the JSON account, base64 encoded
+#: so no console code page or quoting rule can change what it says.
+PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
+
+
+def _pc_backup_dir(root: str, day: str) -> str:
+    """The hidden backup folder on the drive one granted root sits on."""
+    drive = (str(root).strip().rstrip(":\\/") or "C")[:1].upper()
+    return drive + ":\\" + PC_BACKUP_FOLDER + "\\" + day
+
+
+def _pc_ps_literal(value: str) -> str:
+    """One single-quoted PowerShell literal; the only escape is a doubled quote."""
+    return _pc_files_powershell_literal(value)
+
+
+def _pc_write_command(
+    *, op: str, target: str, backup_dir: str, relative: str,
+    destination: str | None = None, content_b64: str | None = None,
+) -> str:
+    """Build one write, move or delete step for the paired PC.
+
+    Three rules hold across all three operations. The original is copied to the
+    hidden backup folder on the same drive *before* anything changes, and a
+    backup that fails stops the step there, so no change is made that cannot be
+    undone. The step prints exactly one account line saying what happened and
+    where the original landed - including when it refused. And there is no
+    confirmation anywhere in it: the change happens when the account says it did.
+
+    The command is cmdlet and .NET calls only, like the listing command: no
+    native program runs, so the PC reports no exit code and the existing result
+    lane stays truthful.
+    """
+    lines = [
+        "$ErrorActionPreference = 'Stop'",
+        "$ok = $false",
+        "$reason = 'failed'",
+        "$bytes = 0",
+        "$op = " + _pc_ps_literal(op),
+        "$target = " + _pc_ps_literal(target),
+        "$backupDir = " + _pc_ps_literal(backup_dir),
+        "$backup = $null",
+        "$stamp = (Get-Date -Format 'yyyyMMddHHmmss') + '-' + "
+        "([Guid]::NewGuid().ToString('N')).Substring(0,8)",
+    ]
+    if content_b64 is not None:
+        lines.append("$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")")
+    if destination is not None:
+        lines.append("$destination = " + _pc_ps_literal(destination))
+
+    back_up = (
+        "  New-Item -ItemType Directory -Force -Path $backupDir | Out-Null\n"
+        "  $backup = Join-Path $backupDir ($stamp + '-' + (" + _pc_ps_literal(relative)
+        + " -replace '[^\\w.-]','_'))\n"
+        "  try {\n"
+        "    Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force\n"
+        "  } catch {\n"
+        "    $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed'\n"
+        "  }\n"
+    )
+    missing = (
+        "  if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {\n"
+        "    $reason = 'path_invalid'; throw 'padiem target missing'\n"
+        "  }\n"
+    )
+    tail = (
+        "  $ok = $true; $reason = $null\n"
+        "} catch {\n"
+        "  if ($reason -eq 'failed') { $reason = 'path_invalid' }\n"
+        "}\n"
+    )
+
+    if op == "write":
+        body = (
+            "try {\n"
+            "  if (Test-Path -LiteralPath $target -PathType Leaf) {\n"
+            + back_up.replace("$source_to_keep", "$target")
+            + "  } elseif (-not (Test-Path -LiteralPath (Split-Path -LiteralPath $target "
+              "-Parent))) {\n"
+            "    $reason = 'path_invalid'; throw 'padiem parent missing'\n"
+            "  }\n"
+            "  $temp = $target + '.padiem-write'\n"
+            "  [IO.File]::WriteAllBytes($temp, $payload)\n"
+            "  Move-Item -LiteralPath $temp -Destination $target -Force\n"
+            "  $bytes = $payload.Length\n"
+            + tail
+        )
+    elif op == "move":
+        body = (
+            "try {\n"
+            "  $source_to_keep = $target\n"
+            + missing
+            + "  if (Test-Path -LiteralPath $destination) {\n"
+            + back_up.replace("$source_to_keep", "$destination")
+            + "  }\n"
+            "  Move-Item -LiteralPath $target -Destination $destination -Force\n"
+            "  $target = $destination\n"
+            + tail
+        )
+    else:
+        body = (
+            "try {\n"
+            "  $source_to_keep = $target\n"
+            + missing
+            + back_up
+            + "  Remove-Item -LiteralPath $target -Force\n"
+            + tail
+        )
+
+    account = (
+        "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
+        "backup=$backup; bytes=$bytes}\n"
+        "  $json = ConvertTo-Json -InputObject $account -Compress\n"
+        "  $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))\n"
+        "  Write-Output '" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded"
+    )
+    return "\n".join(lines) + "\n" + body + account
+
+
+
 def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     """Build the one command this server will execute for a file tool call.
 
@@ -3287,7 +3415,7 @@ def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     stays truthful.
     """
     if op != "list":
-        raise ValueError("only list uses the PowerShell command lane")
+        raise ValueError("only list uses the read-only command builder")
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
     # A plain pipeline: no nested hashtables or calculated properties.
@@ -3545,6 +3673,12 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "subject_id", "run_id", "device_id", "op", "path",
             "tool_call_ref", "mode",
         }
+        # A write names its bytes and a move names where the file lands. Nothing
+        # else may add a field, and the operation itself is validated below.
+        extra_fields = {"write": {"content"}, "move": {"destination"}}
+        named = payload.get("op")
+        if isinstance(named, str) and named in extra_fields:
+            expected = expected | extra_fields[named]
     elif mode in ("command_status", "result"):
         expected = {"subject_id", "run_id", "dispatch_id", "mode"}
     else:
@@ -3670,7 +3804,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
 
     if mode == "dispatch":
         op = payload.get("op")
-        if op not in ("list", "read"):
+        if op not in _PC_FILES_OPS:
             return _error(422, "oracle_mesh_file_op_invalid")
         # The independently signed ceiling is enforced before either dispatch
         # constructor. The existing owner/path/size/idempotency checks follow.
@@ -3694,6 +3828,51 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             return _error(503, "oracle_mesh_workspace_unavailable")
         if not command_workspace:
             return _error(503, "oracle_mesh_workspace_unavailable")
+        if op in _PC_WRITE_OPS:
+            # One write step, one account. The path the PC will change is built
+            # the way the listing builds its folder - the root the server picked
+            # plus the relative path the caller named - so a request never
+            # carries an absolute target of its own.
+            resolved = root.rstrip("/") + ("/" + relative if relative else "")
+            content_b64 = None
+            if op == "write":
+                content = payload.get("content")
+                if not isinstance(content, str):
+                    return _error(422, "oracle_mesh_file_content_invalid")
+                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
+            destination_path = None
+            if op == "move":
+                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
+                if picked_destination is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                destination_root, destination_relative = picked_destination
+                if destination_root != root or not destination_relative:
+                    # A move stays inside the folder this link was granted, and
+                    # never onto the granted root itself: replacing a whole
+                    # folder is not what moving one file means.
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                destination_path = destination_root.rstrip("/") + "/" + destination_relative
+            command = _pc_write_command(
+                op=op,
+                target=resolved,
+                backup_dir=_pc_backup_dir(
+                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                ),
+                relative=relative,
+                destination=destination_path,
+                content_b64=content_b64,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+            )
         if op == "read":
             # #5015: the read reuses the existing kind="read" MeshCentral
             # download lane. No shell command is built for it.

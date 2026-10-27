@@ -17,6 +17,7 @@ The map fallback itself is the whole of ``test_5015_pc_read_dispatch.py``: those
 tests run with no pairing store composed and must stay green.
 """
 from __future__ import annotations
+import asyncio
 import json
 from pathlib import Path
 import sys
@@ -152,6 +153,74 @@ def test_revoking_the_link_leaves_only_what_the_map_still_pins(monkeypatch):
     row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
     assert row["node_ref"] == lane.NODE != LINK_NODE
     assert QUOTATION not in row["command_text"] and lane.ROOT in row["command_text"]
+
+
+# -- a write needs an authority of its own, and nothing else supplies one ----
+
+WRITE_CALL = lane.RUN + ":write_file:" + "d" * 24
+WRITE_CEILING = {
+    "version": 1, "requested": "files_write", "admitted": "files_write",
+    "source": "decision", "ops": ["write", "move", "delete"], "app_id": "padiem-chat",
+}
+
+
+def _write(state):
+    """One real signed write dispatch under the write ceiling."""
+    payload = lane._base_payload(
+        op="write", path="견적/2026-10.txt", content="합계 1,200,000원",
+        tool_call_ref=WRITE_CALL,
+    )
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(
+        lane._SignedRequest(state, payload, scope=WRITE_CEILING),
+    ))
+    return response.status_code, json.loads(response.body)
+
+
+def _no_map_for_this_account(state):
+    """Pin the deployment map to another account.
+
+    The transitional fallback lets a link-less account keep using its map row,
+    so the claim under test — that a write needs an authority of its own — can
+    only be observed once the map stops naming this account.
+    """
+    state.oracle_mesh_return_source = routes.build_oracle_mesh_return_source(
+        [{**lane._mapping()[0], "account_ref": "someone-else"}],
+        lane.CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,
+    )
+    return state
+
+
+def test_a_write_from_an_account_with_no_link_is_refused_and_writes_nothing(monkeypatch):
+    """The write ceiling is a permission to write, not a permission to any PC.
+
+    The ceiling is signed and correct here; what is missing is the link. So the
+    refusal must come from the account having no PC of its own, and it must come
+    before any dispatch row exists — a write that was refused cannot have queued
+    a command for the connector to run.
+    """
+    state = _no_map_for_this_account(_state(monkeypatch, pairing_store=pairing.store()))
+
+    status, body = _write(state)
+
+    assert status == 403, body
+    assert body["error"]["code"] == "oracle_mesh_device_unverified"
+    assert state.history_store.rows == {}
+
+
+def test_a_suspended_link_is_refused_for_a_write_and_queues_nothing(monkeypatch):
+    """A link the owner withdrew is gone for writes, not merely hidden.
+
+    The same account, the same folder it used to be granted, a valid write
+    ceiling. The revocation is what stands between the request and the PC, and
+    the lane answers by writing nothing at all.
+    """
+    state = _no_map_for_this_account(_state(monkeypatch, revoke=True))
+
+    status, body = _write(state)
+
+    assert status == 403, body
+    assert body["error"]["code"] == "oracle_mesh_device_unverified"
+    assert state.history_store.rows == {}
 
 
 # -- two approved folders: the label is the namespace ----------------------

@@ -21,7 +21,7 @@ from padiem_ai_core.tool_channel import ToolDefinition
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from app.service import ServiceContractError
 
-SCOPES = ("query_drives", "files_list", "files")
+SCOPES = ("query_drives", "files_list", "files", "files_write")
 
 
 def parse_pc_tools(payload: Mapping[str, Any]) -> dict[str, Any] | None:
@@ -60,6 +60,8 @@ def definitions(context):
         "query_drives": "Inspect the user's PC drives when the user requests drive inventory.",
         "files_list": "List PC file names only. Choose this for a listing request; never read file contents.",
         "files": "Read the requested PC file contents only when the user's turn asks for contents.",
+        "files_write": ("Create, replace, move or delete one PC file. Every change keeps the "
+                        "original in a backup on the same drive and reports where it went."),
     }
     return tuple(ToolDefinition(
         name=name, description=descriptions[name],
@@ -212,8 +214,15 @@ class PcToolsTurnRuntime:
         )
         if scope == "files":
             steps.append({"step_id": "read_file", "tool_id": "claw.pc.read_file", "objective": "Read requested file"})
+        if scope == "files_write":
+            steps.extend((
+                {"step_id": "write_file", "tool_id": "claw.pc.write_file", "objective": "Write requested file"},
+                {"step_id": "move_file", "tool_id": "claw.pc.move_file", "objective": "Move requested file"},
+                {"step_id": "delete_file", "tool_id": "claw.pc.delete_file", "objective": "Delete requested file"},
+            ))
         tool_id = {
-            "query_drives": "claw.pc.query_drives", "files_list": "claw.pc.list_files", "files": "claw.pc.read_file",
+            "query_drives": "claw.pc.query_drives", "files_list": "claw.pc.list_files",
+            "files": "claw.pc.read_file", "files_write": "claw.pc.write_file",
         }[scope]
         initial = {"action": "tool", "tool_id": tool_id, "arguments": args}
         child = dict(self.payload)
