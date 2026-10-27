@@ -231,3 +231,6 @@ body {
   .key-activity-grid { grid-template-columns: 1fr; }
   .quick-links { grid-template-columns: 1fr; }
 }
+
+.tile-thumb { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background: var(--navy-soft); }
+[data-theme="light"] .tile-thumb { background: var(--bg-soft); }

@@ -8,15 +8,22 @@ const ACTIVITIES = [
 ];
 
 const MEDIA = [
-  { kind: "포토", title: "의정활동 사진 자료실", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", notes: ["제8·9대 광주광역시의회 의정활동 사진", "새 의회 기록은 의회 의원 소개 페이지에서 확인됩니다"] },
-  { kind: "영상", title: "의정활동영상 · 영상인사말", url: "https://council.gwangju.go.kr/9imr/index.do?PID=017", notes: ["본회의 발언·현장 기록 영상", "첫 화면과 소개 영상과 같은 출처의 공식 기록"] },
-  { kind: "포토", title: "의정스케치", url: "https://council.gwangju.go.kr/9imr/index.do?PID=010", notes: ["의정활동 스케치 사진"] },
-  { kind: "영상", title: "영상인사말", url: "https://council.gwangju.go.kr/9imr/index.do?PID=029", notes: ["영상 인사말"] },
-  { kind: "본회의", title: "제316회 교육행정질문", url: "https://www.youtube.com/watch?v=8vdllvPwRAY", notes: ["유튜브"] },
-  { kind: "본회의", title: "제325회 제1차 정례회 시정질문", url: "https://www.youtube.com/watch?v=8QYTXpxW6pA", notes: ["유튜브"] },
-  { kind: "5분발언", title: "제327회 교육행정 5분자유발언", url: "https://www.youtube.com/watch?v=rc87So2Dgcs", notes: ["유튜브"] },
-  { kind: "채널", title: "광주광역시의회 유튜브", url: "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw", notes: ["공식 채널"] },
-  { kind: "의회", title: "전남광주통합특별시의회 의원 소개", url: "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList", notes: ["공식 페이지"] }
+  { kind: "프로필", title: "임미란 의원 공식 프로필 사진", url: "https://council.gwangju.go.kr/9imr/index.do?PID=003", thumb: "https://council.gwangju.go.kr/images/lawmaker/sub/9imr.jpg", notes: ["광주광역시의회 공식 페이지 제공", "출처: council.gwangju.go.kr"] },
+  { kind: "포토", title: "의정활동 사진 1", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/065fd00c569698e4fdaeeff940d56064t.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 2", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/67be8e27a73ef9e637d0afd43dca98bbt.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 3", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/6ff19762dcce4baefb738da6599dab22t.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 4", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 5", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/9de8f1efa6b02b433b1d5905ae104c69t.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 6", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/a08722e94721047ed3b75b1f4055af58t.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 7", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/d0f9aea03a53fc5b64b4ce1f34de077ft.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "포토", title: "의정활동 사진 8", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/feef46e2ccabce286ed6e0c81f1a05det.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "영상", title: "의정활동영상", url: "https://council.gwangju.go.kr/9imr/index.do?PID=017", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["본회의 발언 및 현장 기록 영상"] },
+  { kind: "영상", title: "영상인사말", url: "https://council.gwangju.go.kr/9imr/index.do?PID=029", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["영상 인사말"] },
+  { kind: "본회의", title: "제316회 교육행정질문", url: "https://www.youtube.com/watch?v=8vdllvPwRAY", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["유튜브"] },
+  { kind: "본회의", title: "제325회 제1차 정례회 시정질문", url: "https://www.youtube.com/watch?v=8QYTXpxW6pA", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["유튜브"] },
+  { kind: "5분발언", title: "제327회 교육행정 5분자유발언", url: "https://www.youtube.com/watch?v=rc87So2Dgcs", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["유튜브"] },
+  { kind: "채널", title: "광주광역시의회 유튜브", url: "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["공식 채널"] },
+  { kind: "의회", title: "전남광주통합특별시의회 의원 소개", url: "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["공식 페이지"] }
 ];
 
 const NEWS = [
@@ -88,14 +95,13 @@ function renderMedia() {
   if (!grid) return;
   grid.innerHTML = "";
   MEDIA.forEach(m => {
-    const tile = document.createElement("div");
+    const tile = document.createElement("a");
     tile.className = "media-tile";
+    tile.href = m.url;
+    tile.target = "_blank";
+    tile.rel = "noopener";
     tile.setAttribute("tabindex", "0");
-    tile.setAttribute("role", "link");
-    tile.innerHTML = `<div class="tile-kind">${m.kind}</div><div class="tile-title">${m.title}</div><ul class="tile-notes">${(m.notes||[]).map(n=>`<li>${n}</li>`).join("")}</ul>`;
-    const open = () => window.open(m.url, "_blank", "noopener");
-    tile.addEventListener("click", open);
-    tile.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+    tile.innerHTML = `<img class="tile-thumb" src="${m.thumb}" alt="${m.title}" loading="lazy" /><div class="tile-kind">${m.kind}</div><div class="tile-title">${m.title}</div><ul class="tile-notes">${(m.notes||[]).map(n=>`<li>${n}</li>`).join("")}</ul>`;
     grid.appendChild(tile);
   });
 }
