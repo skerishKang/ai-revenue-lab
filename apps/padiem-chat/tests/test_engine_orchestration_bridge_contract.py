@@ -572,7 +572,10 @@ async def test_cut_pc_stream_hands_the_run_to_pending_recovery_instead_of_failin
     assert final["run_id"] == run and final["conversation_id"] == pending["conversation_id"]
     assert completions == []
     # A run that really ended without any opened run still fails closed.
-    text, _ = await _pc_sse([{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}])
+    text, _ = await _pc_sse(
+        [{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}],
+        final_records=[],
+    )
     assert "event: error" in text and "event: done" not in text
 
 
