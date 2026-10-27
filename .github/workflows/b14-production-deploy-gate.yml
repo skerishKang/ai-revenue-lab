@@ -329,6 +329,18 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      # #5895 ④: the promoted version has to finish one real request, not only
+      # answer /health and match the registry. The declared grade routing picks the
+      # model, so this step names none and carries no credential of its own. A
+      # provider-side limit is a marked pass; anything else reddens the gate. It is
+      # placed after the evidence publish and has no rollback wired to it, because a
+      # failed post-deploy proof must be seen, not silently undone.
+      - name: Post-deploy real model call
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/b14_real_model_call_smoke.py
+
   # #1933 S2-c: one-shot removal of the dead Worker secret OPENROUTER_API_KEY.
   # After S2-b no code path reads this key; the value is inert. Separate
   # confirmation token: deploying or rolling back never removes a secret.

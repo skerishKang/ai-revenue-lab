@@ -13,6 +13,14 @@ on:
       - ".github/workflows/b54-engine-production-deploy-gate.yml"
       - ".github/workflows/b54-engine-production-smoke-only-gate.yml"
       - ".github/workflows/b54-engine-deploy-gate-contract-tests.yml"
+      # #5895 item 4: one real chat after every Chat or Engine deploy. The proof is
+      # one shared script used by both gates, so a change to either gate, to the
+      # script, or to the canary transport it reuses re-runs these tests.
+      - ".github/workflows/b62-production-code-deploy-gate.yml"
+      - ".github/scripts/post_deploy_real_chat_smoke.py"
+      - ".github/scripts/b62_live_long_context_canary.py"
+      - ".github/tests/test_post_deploy_real_chat_smoke.py"
+      - ".github/tests/test_5895_post_deploy_real_chat_gates.py"
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
       - ".github/tests/test_4194_engine_binding_rollout.py"
       - ".github/scripts/b62_binding_state_guard.py"
@@ -64,7 +72,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest -e packages/padiem-ai-core
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_4194_engine_binding_rollout.py .github/tests/test_b54_engine_a7_cp_admission_activation.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_b54_engine_pre_deploy_anchor_gate.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_4194_engine_binding_rollout.py .github/tests/test_b54_engine_a7_cp_admission_activation.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_b54_engine_pre_deploy_anchor_gate.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py .github/tests/test_post_deploy_real_chat_smoke.py .github/tests/test_5895_post_deploy_real_chat_gates.py
 
       - name: Record no deploy performed
         run: |
