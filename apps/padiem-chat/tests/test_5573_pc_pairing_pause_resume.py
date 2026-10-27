@@ -2,14 +2,14 @@
 
 The Owner's rule is that the connected PC is used at full-drive scope and that
 work is not gated behind a per-task approval. Pause is therefore a state the
-account chooses once, not a confirmation step: it has to hold against every read
-the dispatch lane makes, it must not cost the folder approvals, and it must not
-add a second way to fail.
+account chooses once, not a confirmation step it repeats: it has to hold against
+every read the dispatch lane makes, it must not cost the folder approvals, and it
+must not add a second way to fail.
 
 These checks cover exactly that:
 
   * a paused link disappears from all three dispatch reads at once;
-  * resume restores it, and pause is idempotent;
+  * resume restores it, and pausing twice is the same answer rather than an error;
   * the two new routes answer a plain POST with no body and no confirmation
     field, because a pause is not a privilege escalation;
   * another account's link is refused as a permission failure (403), an unknown
@@ -31,15 +31,18 @@ from app.pc_device_pairing_routes import (  # noqa: E402
 )
 
 ROOT = "C:\\Users\\owner\\Documents"
-PAUSE_PATH = PC_PAIRING_PAUSE_PATH
-RESUME_PATH = PC_PAIRING_RESUME_PATH
 
 
-def _adopted(store, *, user_id: str = pairing.OWNER, node: str = pairing.NODE) -> str:
-    link = pairing.run(store.adopt_link(
+async def _adopt(store, *, user_id: str = pairing.OWNER, node: str = pairing.NODE) -> str:
+    link = await store.adopt_link(
         user_id=user_id, mesh_node_id=node, root_paths=[ROOT], now=pairing._now(),
-    ))
+    )
     return str(link["link_id"])
+
+
+def _adopted(store, **values) -> str:
+    """The sync wrapper, for the tests that drive the store without HTTP."""
+    return pairing.run(_adopt(store, **values))
 
 
 def test_pause_clears_the_link_from_every_dispatch_read() -> None:
@@ -117,7 +120,7 @@ def test_a_revoked_link_cannot_be_paused_and_a_foreign_one_is_refused() -> None:
 def test_the_pause_and_resume_routes_take_a_plain_post_and_move_the_card() -> None:
     async def journey():
         store = pairing.store()
-        link_id = _adopted(store)
+        link_id = await _adopt(store)
         app = pairing.app_with(store)
         async with pairing.client(app) as session:
             paused = await session.post(f"/api/pc/pairings/{link_id}/pause")
@@ -135,7 +138,7 @@ def test_the_pause_and_resume_routes_take_a_plain_post_and_move_the_card() -> No
 def test_another_accounts_pause_attempt_is_403_and_an_unknown_link_is_404() -> None:
     async def journey():
         store = pairing.store()
-        link_id = _adopted(store)
+        link_id = await _adopt(store)
         app = pairing.app_with(store)
         async with pairing.client(app, user_id=pairing.OTHER) as stranger:
             foreign_pause = await stranger.post(f"/api/pc/pairings/{link_id}/pause")
@@ -156,9 +159,12 @@ def test_another_accounts_pause_attempt_is_403_and_an_unknown_link_is_404() -> N
 
 def test_the_two_routes_are_registered_and_ask_for_no_confirmation_value() -> None:
     app = pairing.app_with(pairing.store())
-    paths = {
-        (getattr(route, "path", None), getattr(route, "methods", None))
-        for route in app.routes
+    methods_by_path: dict[str, list[str]] = {}
+    for route in app.routes:
+        path = getattr(route, "path", None)
+        if path in {PC_PAIRING_PAUSE_PATH, PC_PAIRING_RESUME_PATH}:
+            methods_by_path[path] = sorted(getattr(route, "methods", None) or ())
+    assert methods_by_path == {
+        PC_PAIRING_PAUSE_PATH: ["POST"],
+        PC_PAIRING_RESUME_PATH: ["POST"],
     }
-    assert (PAUSE_PATH, {"POST"}) in paths
-    assert (RESUME_PATH, {"POST"}) in paths
