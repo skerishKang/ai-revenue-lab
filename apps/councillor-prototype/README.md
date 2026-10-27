@@ -11,6 +11,7 @@ python -m http.server 8792 --directory apps/councillor-prototype
 ## 구조
 - `index.html` — 단일 페이지, 5개 섹션(소개·의정활동·정책자료·미디어·소식)
 - `static/styles.css` — 디자인 토큰 기반 반응형 스타일
+- `static/fonts/` — 자체 호스팅 웹폰트 (제목 마루부리 Bold · 본문 Pretendard), 라이선스 고지 포함
 - `static/app.js` — 의정활동 목록→상세, 검색·분류, 미디어 갤러리, 소식
 - `static/miraen.json` — 기존 브랜드 데이터 재사용
 

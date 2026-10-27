@@ -31,8 +31,10 @@
   --radius-sm: 8px;
   --maxw: 1280px;
   --gutter: 40px;
-  --font: "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
-  --font-serif: "Noto Serif KR", "Nanum Myeongjo", serif;
+  /* Both families are self-hosted (static/fonts/). The webfont family is named
+     first so a locally installed copy can never take over the rendering. */
+  --font: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --font-serif: "MaruBuri", "Noto Serif KR", "Nanum Myeongjo", serif;
   /* Hero background layer. Drop a real city / river / sky panorama here:
      --hero-image: url("./hero-panorama.jpg");   — one line, no layout change. */
   --hero-image: none;
@@ -78,7 +80,7 @@ body {
   display: inline-flex; align-items: center; justify-content: center;
   width: 30px; height: 30px; border-radius: 50%;
   background: var(--accent); color: #fff;
-  font-weight: 800; font-family: var(--font-serif); font-size: 14px;
+  font-weight: 700; font-family: var(--font-serif); font-size: 14px;
   flex: none;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }

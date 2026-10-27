@@ -1,0 +1,577 @@
+{
+  "base": "https://feat-5972-councillor-v2.councillor-prototype-v2.pages.dev",
+  "tag": "before",
+  "at": "2026-10-27T22:45:41.671Z",
+  "pages": {
+    "index.html@desktop": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".hero-name": {
+          "label": "hero headline (MaruBuri)",
+          "fonts": [
+            "Batang (20 glyphs)"
+          ]
+        },
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (7 glyphs)"
+          ]
+        },
+        ".ka-title": {
+          "label": "activity card title (MaruBuri)",
+          "fonts": [
+            "Noto Sans KR (41 glyphs)"
+          ]
+        },
+        ".stat-band-title": {
+          "label": "band heading (MaruBuri)",
+          "fonts": [
+            "Batang (13 glyphs)"
+          ]
+        },
+        ".hero-lead": {
+          "label": "hero body (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (57 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (1 glyphs)"
+          ]
+        },
+        ".btn.primary": {
+          "label": "primary button (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (8 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        },
+        ".ka-date": {
+          "label": "card meta (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (15 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": "\"Noto Serif KR\", \"Nanum Myeongjo\", serif",
+        "cssBodyFamily": "Pretendard, \"Noto Sans KR\", \"Malgun Gothic\", system-ui, sans-serif",
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 1478,
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "overflowX": false,
+        "heroHeight": 361.4,
+        "cardHeights": [
+          249.1,
+          249.1,
+          249.1,
+          249.1
+        ],
+        "stripHeight": 66,
+        "widestOffender": null,
+        "heroTitleLines": {
+          "total": 2,
+          "spans": [
+            {
+              "text": "시민의 일상을 바꾸는",
+              "lines": 1,
+              "textWidth": 620
+            },
+            {
+              "text": "임미란의 의정활동",
+              "lines": 1,
+              "textWidth": 620
+            }
+          ],
+          "fontSize": "51.84px",
+          "lineHeight": "60.1344px"
+        },
+        "sectionTitleLines": {
+          "total": 1,
+          "spans": [],
+          "fontSize": "34px",
+          "lineHeight": "57.8px"
+        }
+      },
+      "screenshot": "C:/tmp/qa/font-before-index-1440x900.png"
+    },
+    "about.html@desktop": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (5 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (1 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 1735,
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-about-1440x900.png"
+    },
+    "activity.html@desktop": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (4 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (1 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 900,
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-activity-1440x900.png"
+    },
+    "policy.html@desktop": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (4 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (1 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 900,
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-policy-1440x900.png"
+    },
+    "media.html@desktop": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (3 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (1 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 3838,
+        "scrollWidth": 1440,
+        "viewportWidth": 1440,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-media-1440x900.png"
+    },
+    "index.html@mobile": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".hero-name": {
+          "label": "hero headline (MaruBuri)",
+          "fonts": [
+            "Batang (20 glyphs)"
+          ]
+        },
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (7 glyphs)"
+          ]
+        },
+        ".ka-title": {
+          "label": "activity card title (MaruBuri)",
+          "fonts": [
+            "Noto Sans KR (41 glyphs)"
+          ]
+        },
+        ".stat-band-title": {
+          "label": "band heading (MaruBuri)",
+          "fonts": [
+            "Batang (13 glyphs)"
+          ]
+        },
+        ".hero-lead": {
+          "label": "hero body (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (57 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": []
+        },
+        ".btn.primary": {
+          "label": "primary button (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (8 glyphs)"
+          ]
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        },
+        ".ka-date": {
+          "label": "card meta (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (15 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": "\"Noto Serif KR\", \"Nanum Myeongjo\", serif",
+        "cssBodyFamily": "Pretendard, \"Noto Sans KR\", \"Malgun Gothic\", system-ui, sans-serif",
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 3455,
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "overflowX": false,
+        "heroHeight": 430.8,
+        "cardHeights": [
+          267.5,
+          247.9,
+          247.9,
+          171.3
+        ],
+        "stripHeight": 214.1,
+        "widestOffender": null,
+        "heroTitleLines": {
+          "total": 2,
+          "spans": [
+            {
+              "text": "시민의 일상을 바꾸는",
+              "lines": 1,
+              "textWidth": 350
+            },
+            {
+              "text": "임미란의 의정활동",
+              "lines": 1,
+              "textWidth": 350
+            }
+          ],
+          "fontSize": "27px",
+          "lineHeight": "31.32px"
+        },
+        "sectionTitleLines": {
+          "total": 1,
+          "spans": [],
+          "fontSize": "24px",
+          "lineHeight": "40.8px"
+        }
+      },
+      "screenshot": "C:/tmp/qa/font-before-index-390x844.png"
+    },
+    "about.html@mobile": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (5 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": []
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 1883,
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-about-390x844.png"
+    },
+    "activity.html@mobile": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (4 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": []
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 1029,
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-activity-390x844.png"
+    },
+    "policy.html@mobile": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (4 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": []
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 1115,
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-policy-390x844.png"
+    },
+    "media.html@mobile": {
+      "fontRequests": [],
+      "fontRequestCount": 0,
+      "fontRequestsOk": true,
+      "externalFontRequests": [],
+      "rendered": {
+        ".section-title": {
+          "label": "section heading (MaruBuri)",
+          "fonts": [
+            "Batang (3 glyphs)"
+          ]
+        },
+        ".top-nav a": {
+          "label": "menu item (Pretendard)",
+          "fonts": []
+        },
+        ".brand-name": {
+          "label": "brand (Pretendard)",
+          "fonts": [
+            "Noto Sans KR (6 glyphs)"
+          ]
+        }
+      },
+      "declared": {
+        "cssHeroFamily": null,
+        "cssBodyFamily": null,
+        "checkMaruBuriBold": true,
+        "checkPretendard400": true,
+        "loadedFrom": [],
+        "totalFaces": 0
+      },
+      "layout": {
+        "docHeight": 6885,
+        "scrollWidth": 390,
+        "viewportWidth": 390,
+        "overflowX": false,
+        "heroHeight": null,
+        "cardHeights": [],
+        "stripHeight": null,
+        "widestOffender": null
+      },
+      "screenshot": "C:/tmp/qa/font-before-media-390x844.png"
+    }
+  },
+  "hosts": {},
+  "failures": []
+}
