@@ -78,7 +78,13 @@ def test_resume_reads_the_owner_history_and_reopens_the_same_conversation():
     assert "resolvedPcRuns.has(unfinished.run_id)" in resume
     assert "resolvedPcRuns.add(unfinished.run_id);" in resume
     assert "await openSavedConversation(conversationId);" in resume
-    assert 'if (result.kind !== "completed" || result.conversationId !== conversationId) return;' in resume
+    # Only an answer re-opens the thread, and any terminal verdict releases the
+    # waiting line instead of claiming work that has already stopped.
+    assert 'if (result.kind === "pending") return;' in resume
+    assert 'if (result.kind === "completed" && result.conversationId === conversationId) {' in resume
+    assert "setNote(idleNote());" in resume
+    assert "renderStreamError" not in resume
+    assert 'if (result.kind !== "completed" || result.conversationId !== conversationId) return;' not in resume
 
     # The only call site is the restored conversation itself, after its saved
     # messages are rendered and before the motion resume. It is fire-and-forget:

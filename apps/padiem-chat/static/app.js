@@ -2809,12 +2809,16 @@
       // The read was cancelled or the tab moved on; the run keeps running.
       return;
     }
-    if (result.kind !== "completed" || result.conversationId !== conversationId) return;
-    // A history read that still lists the finished run must not restart the
-    // wait after the answer already landed, so the run joins the same set the
-    // live recovery path uses.
+    if (result.kind === "pending") return;
+    // This tab will not read that run again. A completed answer lands in the
+    // thread; any other verdict only stops this screen from claiming that work
+    // is still happening, because the client cannot see its outcome and is not
+    // the one that decides what a finished PC run said.
     resolvedPcRuns.add(unfinished.run_id);
-    await openSavedConversation(conversationId);
+    setNote(idleNote());
+    if (result.kind === "completed" && result.conversationId === conversationId) {
+      await openSavedConversation(conversationId);
+    }
   }
 
   function renderStoredPcAnswer(article, result, outboundMessages, contextSnapshot) {

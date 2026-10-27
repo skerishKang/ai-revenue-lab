@@ -27,6 +27,9 @@ const CONVERSATION_ID = "chat_" + "c".repeat(32);
 const STARTED = Date.UTC(2026, 9, 27, 8, 0, 0);
 const NOW = STARTED + 221_000;
 const ELAPSED = "03:41";
+// The composer's own resting line. app.js builds it from the attachment
+// capabilities and the active project, so the harness hands in a fixed value.
+const IDLE_NOTE = "idle";
 
 function blockEnd(source, openIndex) {
   let depth = 0;
@@ -104,6 +107,7 @@ function appHarness(options) {
   const sandbox = {
     fetch: fetchImpl,
     setNote: (text, state) => { notes.push({ text, state }); },
+    idleNote: () => IDLE_NOTE,
     uiT: (key, variables) => localeText(key, variables),
     resolvedPcRuns: options.resolvedPcRuns || new Set(),
     pcResultRecovery: {
@@ -206,6 +210,8 @@ test("the stored answer lands in the same conversation and is not waited on twic
   await harness.resume();
   assert.deepEqual(harness.reopened, [CONVERSATION_ID]);
   assert.equal(harness.resolvedPcRuns.has(RUN_ID), true);
+  // The waiting line is released with the wait: the answer is in the thread.
+  assert.deepEqual(harness.notes.map((note) => note.text), [localeText("pc-elapsed-note", { elapsed: ELAPSED }), IDLE_NOTE]);
 
   // The history read can still list the run as running while the stored answer
   // is already completed; that must not restart the wait after it landed.
@@ -218,6 +224,20 @@ test("the stored answer lands in the same conversation and is not waited on twic
   await again.resume();
   assert.equal(again.handles.length, 1);
   assert.deepEqual(again.reopened, [CONVERSATION_ID]);
+});
+
+test("a terminal verdict that is not an answer stops claiming work is running", async () => {
+  for (const verdict of [
+    { kind: "failed", conversationId: CONVERSATION_ID, status: "failed" },
+    { kind: "rejected" },
+    { kind: "unavailable", status: 503 },
+  ]) {
+    const harness = appHarness({ runs: [runRow()], result: verdict });
+    await harness.resume();
+    assert.deepEqual(harness.notes.map((note) => note.text), [localeText("pc-elapsed-note", { elapsed: ELAPSED }), IDLE_NOTE], verdict.kind);
+    assert.deepEqual(harness.reopened, [], verdict.kind);
+    assert.equal(harness.resolvedPcRuns.has(RUN_ID), true, verdict.kind);
+  }
 });
 
 test("a finished, foreign or non-PC run continues nothing", async () => {
