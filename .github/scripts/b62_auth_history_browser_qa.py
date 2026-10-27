@@ -219,12 +219,21 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
             return
         await _fulfill_json(route, {"error": {"code": "not_found"}}, status=404)
 
+    async def no_runs(route: Route) -> None:
+        # #5895: opening a saved conversation also reads the owner's run history
+        # once, to continue a PC turn that is still running server-side. Left
+        # unmocked it becomes a real request to the local server on every
+        # conversation open, competing for the same connections the PC card
+        # reads. An account with no runs has nothing to continue.
+        await _fulfill_json(route, {"ok": True, "runs": []})
+
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/pc/pairings**", no_paired_pc)
     await page.route("**/api/auth/logout", logout)
     await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)
     await page.route("**/api/conversations/*", conversation_detail)
+    await page.route("**/api/claw/runs**", no_runs)
     await page.route("**/api/chat/stream", stream)
 
 

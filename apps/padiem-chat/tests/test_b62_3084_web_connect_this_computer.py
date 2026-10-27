@@ -867,6 +867,12 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/claw/automation/rules",
     # #4139: owner-scoped, run-specific GET; no new POST or PC dispatch.
     "/api/claw/runs/",
+    # #5895: the same existing #2317 owner-scoped run-history GET, now also read
+    # when a saved conversation opens so an unfinished PC run can be continued.
+    # It is the route `fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`)`
+    # already calls; the plain form simply lets the server pick the page size.
+    # No new route, no new write.
+    "/api/claw/runs",
     # #5434: the self-service password change of the signed-in account. A POST
     # that resolves the account from the signed session, verifies the current
     # password and replaces only that account's credential row.
