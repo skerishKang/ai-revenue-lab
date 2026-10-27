@@ -15,7 +15,7 @@
 
 ## 1쪽 요약 — #5895 (2026-10-27)
 
-본문과 충돌하면 이 요약이 우선한다. 충돌 절: §0F-13, §0D, §12, §16 (정리는 #5895에서).
+본문과 충돌하면 이 요약이 우선한다. 충돌 절 정리 완료(#5964).
 
 본문(§0~§18)의 운영 규칙을 한 쪽으로 정리했다. 판단이 막힐 때 먼저 읽고, 근거는 각 절을 본다. 이 요약은 새 규칙을 만들지 않고 본문을 대체하지도 않는다.
 
@@ -82,7 +82,9 @@ Move to **pilot/customer acceptance** when the Owner names actual external test 
 
 ### 0D. New ChatGPT/agent conversation continuity
 
-Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents and fresh `main` once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
+Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
+
+fresh `main` 문자열 동일성 확인: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 
 ### 0E. Push and CI economy
 
@@ -115,8 +117,7 @@ Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this re
     근거 사례: 목록·읽기 성공 뒤에도 드라이브 503이 남았으므로 드라이브(c)를 독립 수용 항목으로 둔다(#5573).
 12. 새 진입점은 공용 장부·공용 엔드포인트의 **계약 테스트를 같은 PR에** 포함한다. admit → 멱등 등록 → dispatch → 결과·복구가 기존 경로와 같은 행을 사용하는지 증명하며, 운영 DB 직접 SQL로 계약 누락을 메우지 않는다.
     근거 사례: Chat 도구 턴의 드라이브 503은 공용 `claw_runs` 계약을 함께 검증해야 함을 보였고, D1 직접 SQL 사례(#5790·#5796)는 코드·정식 게이트 대신 운영 상태를 손보는 절차로 삼지 않는다.
-13. 규칙은 단일 정의를 재사용한다. 패키지 경계 때문에 복사가 불가피하면 동일성 테스트를 두고, canary pin 갱신은 원본 변경 PR·변경 이유·동일성 검증을 함께 기록한다.
-    근거 사례: device_id 로컬 패턴의 `@`·`+` 누락(#5855)과 문서 정규화 canary pin 갱신(#5815·#5837)은 복제된 규칙·증빙의 드리프트를 드러냈다.
+13. 파일 SHA 고정 canary: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 14. 모든 거부는 **코드 포함 로그 + 사용자 문장**으로 끝낸다. 거부 경계·안전한 코드로 원인을 구분하고 스트림 최종 오류 또는 거부 관찰을 남긴다. 비밀값·기기 ID·경로·본문은 로그에 넣지 않는다.
     근거 사례: 드라이브의 schema 거부와 downstream 503을 구분할 진단이 없으면 같은 준비 중 화면으로 보였다(#5855·#5573).
 15. 테스트 픽스처는 운영의 실제 형태를 대표한다. 정식 기기 ID 문법(`@`·`+` 포함), 새 경로의 pending/admit/등록 상태와 실제 응답 모양을 합성 데이터로 재현하고, 거부·복구도 검증한다.
@@ -668,19 +669,7 @@ Use the evidence type that matches the claim. A red external security/compliance
 
 ## 12. Revision invalidation
 
-Evidence belongs to the exact tested revision. A new commit affecting the judged behavior/surface may invalidate prior evidence.
-
-Before merge, re-read:
-
-- current `main`;
-- PR exact head;
-- changed files/diff;
-- CI/checks;
-- comments/review threads;
-- required visual/UX/runtime/security evidence;
-- applicable anchor/archetype/full-surface status.
-
-Use expected-head protection where available.
+정확 리비전 증거·머지 전 current main 재확인 절차: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 
 ## 13. Safety and scope rules
 
@@ -761,7 +750,7 @@ For P0/P1 or otherwise critical PRs, the final review also records the exact-hea
 A merge may be executed by the Implementation Worker only under explicit owner delegation. Delegation must be:
 
 - single-purpose (one named PR/revision),
-- head-SHA-pinned (invalidated by any new commit),
+- head-SHA-pinned 무효화: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 - condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 
 ## 17. Historical records
