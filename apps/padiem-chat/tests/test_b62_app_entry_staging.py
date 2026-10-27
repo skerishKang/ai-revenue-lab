@@ -18,6 +18,7 @@ from functools import lru_cache
 import importlib.util
 from pathlib import Path
 import re
+import shutil
 
 from starlette.applications import Starlette
 from starlette.staticfiles import StaticFiles
@@ -75,6 +76,11 @@ def test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree(
         served = reference[len("./"):]
         assert f"{ENTRY_PREFIX}/{served}" in destinations, (
             f"{reference} is referenced by the page but staged nowhere, so it would 404")
+    # Measured live 2026-10-27: href="../" on this page resolved to /apps/ (404),
+    # because the entry sits two levels down. Navigation out of the entry must be
+    # root-absolute to stay depth-independent.
+    escaping = re.findall(r'(?:src|href)="(\.\./[^"]*)"', html)
+    assert escaping == [], f"references leaving the entry directory: {escaping}"
 
 
 def test_generated_bundle_stages_the_app_byte_for_byte(tmp_path) -> None:
@@ -165,16 +171,58 @@ def test_incomplete_or_missing_app_source_fails_the_build(tmp_path, monkeypatch)
         raise AssertionError("an absent app source must fail the build closed")
 
 
-def test_entry_is_served_by_assets_only_and_never_by_a_second_asgi_path() -> None:
+def test_entry_is_never_mounted_as_a_second_asgi_path() -> None:
     """The Chat Worker keeps a runtime StaticFiles mount for its own directory,
     but an app prefix mounted there would resolve differently locally and in the
     deployed bundle. Assets is the only serving path for the entry."""
     factory = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
     assert "padiem-council-apps" not in factory
     assert f'Mount("/{ENTRY_PREFIX}"' not in factory
-    wrangler = (ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    assert 'base_dir = ".b66-worker-src"' in wrangler
-    assert 'directory = "static"' in wrangler
+
+
+def test_assets_are_uploaded_from_the_generated_bundle() -> None:
+    """The pairing that lets the entry reach Production at all.
+
+    `base_dir` is applied to `main` but NOT to `[assets] directory`: measured on the
+    2026-10-27 deploy, `directory = "static"` made wrangler read
+    `apps/padiem-chat/static` (162 entries = 158 files + 4 directories), so a file the
+    build staged into the generated bundle was uploaded neither as an Asset nor as a
+    Python module (that bundle carries .html only). The two paths must name the same
+    tree, resolved the way wrangler resolves it.
+    """
+    import tomllib
+
+    config = tomllib.loads((ROOT / "wrangler.toml").read_text(encoding="utf-8"))
+    assert config["base_dir"] == builder.RUNTIME_DIRECTORY
+    assert config["assets"]["directory"] == f"{builder.RUNTIME_DIRECTORY}/static"
+    assert config["assets"]["binding"] == "ASSETS"
+    assert (ROOT / config["assets"]["directory"]).as_posix().endswith(
+        f"{builder.RUNTIME_DIRECTORY}/static")
+
+
+def test_generated_bundle_is_a_superset_of_the_source_assets(tmp_path) -> None:
+    """Pointing Assets at the bundle may not drop one existing Chat asset: every file
+    under apps/padiem-chat/static must reach the bundle byte for byte, entry included."""
+    import hashlib
+
+    def listing(root: Path) -> dict[str, str]:
+        return {
+            path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob("*") if path.is_file()
+        }
+
+    source_static = ROOT / "static"
+    app_root = tmp_path / "chat"
+    (app_root / "app").mkdir(parents=True)
+    (app_root / "worker.py").write_bytes(b"worker\n")
+    shutil.copytree(source_static, app_root / "static")
+
+    runtime = Path(builder.generate_runtime(app_root)["runtime"])
+    source, generated = listing(source_static), listing(runtime / "static")
+    assert source, "the Chat assets must be enumerable"
+    assert set(source) <= set(generated), sorted(set(source) - set(generated))
+    assert all(generated[name] == digest for name, digest in source.items())
+    assert set(generated) - set(source) == STAGED_PATHS
 
 
 def test_the_staged_tree_serves_the_entry_page_at_its_ordered_path(tmp_path) -> None:

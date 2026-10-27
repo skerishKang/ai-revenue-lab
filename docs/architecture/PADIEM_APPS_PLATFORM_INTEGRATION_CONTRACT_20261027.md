@@ -108,29 +108,46 @@ rejected by §6.
 
 ### 4.4 The shipped same-origin entry: `/apps/council/`
 
-`#5937` serves the council app from the Chat Worker's own Assets upload. The app directory stays
-the only copy of its files: `apps/padiem-chat/scripts/build_b66_worker_dependencies.py`
-(`generate_runtime` → `stage_app_entries`) assembles `apps/padiem-council-apps/static/` into the
-generated `.b66-worker-src/static/apps/council/` tree at deploy-build time, which is the directory
-`[assets] directory = "static"` uploads. Nothing is committed under `apps/padiem-chat/**`, no
-`wrangler.toml` key changes, and the Chat ASGI app grows no route — so the entry cannot drift from
-the app, and a rebuild always refreshes from it.
+The council app keeps its own static directory as the only copy of its files.
+`apps/padiem-chat/scripts/build_b66_worker_dependencies.py` (`generate_runtime` →
+`stage_app_entries`) assembles `apps/padiem-council-apps/static/` into the generated bundle at
+deploy-build time, and the Chat ASGI app grows no route. Nothing app-owned is committed under
+`apps/padiem-chat/**`, so the entry cannot drift from the app and a rebuild always refreshes from it.
 
-The staged layout mirrors `apps/padiem-council-apps/app/app_factory.py` (entry at `/`, everything
-else under `/static/*`) because that is what makes the entry page's own relative `./static/…`
-references resolve:
+The staged layout mirrors `apps/padiem-council-apps/app/app_factory.py` (entry at `/`, everything else
+under `/static/*`) because that is what makes the entry page's own relative `./static/…` references
+resolve:
 
-| Request | Result | Measured from |
-| --- | --- | --- |
-| `GET /apps/council/` | `200` — `index.html` | directory-index rule confirmed on a deployed Cloudflare static-asset host (`/staging/` → `200`, `/staging` → `308` → `/staging/`, `/staging/index.html` → `308` → `/staging/`); the same rule is what serves Chat's own `/` from `static/index.html` today (`/index.html` → `307` → `/`) |
-| `GET /apps/council` | redirect to `/apps/council/` | same |
-| `GET /apps/council/static/council-app.{css,js}` | `200` | the relative form the page itself uses |
+| Staged into the bundle | Served at |
+| --- | --- |
+| `static/apps/council/index.html` | `/apps/council/` |
+| `static/apps/council/static/council-app.css` | `/apps/council/static/council-app.css` |
+| `static/apps/council/static/council-app.js` | `/apps/council/static/council-app.js` |
 
-Two facts the entry inherits from the existing surface, recorded rather than fixed here: static
-asset responses come from the Assets binding and therefore do **not** pass through
+**The deploy-contract fact this entry turned on.** `base_dir` is applied to `main`, and **not** to
+`[assets] directory`, which wrangler resolves against the config file's directory. Measured on the
+first attempt (RUN `40433130415`): with `directory = "static"` the packaging step logged
+`Read 162 files from the assets directory …/apps/padiem-chat/static` — 158 files + 4 directories —
+and the staged entry never reached the Assets set. The generated tree is what the release must
+upload, so `[assets] directory` is now `.b66-worker-src/static`. Switching it is loss-free: the
+bundle's static tree is `copytree` of the source static plus the entry, and
+`test_generated_bundle_is_a_superset_of_the_source_assets` refuses any dropped or altered
+pre-existing Chat asset, while `test_assets_are_uploaded_from_the_generated_bundle` refuses the two
+paths naming different trees. The Python module bundle cannot substitute: it carries `.html` files
+only (measured in the same log), which is why the first attempt served the entry HTML through the
+Worker — CSP and `charset=utf-8` on the response, no `CF-Cache-Status` — and answered 404 for the
+stylesheet and script.
+
+Two facts the entry inherits from the existing surface, recorded rather than fixed here: static asset
+responses come from the Assets binding and therefore do **not** pass through
 `response_headers_for_path`, so they carry no `Content-Security-Policy` (measured on `/` and
-`/styles.css`, and already true for `static/councillor/`); and the entry HTML itself is public,
-with the app gating every tool on `GET /api/auth/status` before it attaches a builder.
+`/styles.css`, and already true for `static/councillor/`); and the entry HTML itself is public, with
+the app gating every tool on `GET /api/auth/status` before it attaches a builder.
+
+Navigation out of the entry is root-absolute. `href="../"` measured to `https://chat.padiem.net/apps/`
+(404) from this two-level path, and `test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree`
+now refuses any `../` reference in the entry page. Live HTTP codes for the served entry are recorded
+on #5937 rather than claimed here.
 
 ## 5. Reserved prerequisites — not closable inside an app PR
 

@@ -43,7 +43,13 @@ binding = "BROWSER"
 command = "uv run python scripts/build_b66_worker_dependencies.py"
 
 [assets]
-directory = "static"
+# The release uploads the bundle the [build] hook generates under base_dir, not the
+# source directory: base_dir applies to `main` but is NOT applied to [assets], so the
+# path is written from this config file's directory. Measured on the 2026-10-27
+# deploy: with `directory = "static"` wrangler read 162 entries (158 files + 4
+# directories) from apps/padiem-chat/static and an app entry staged into the
+# generated bundle never reached the Assets set.
+directory = ".b66-worker-src/static"
 binding = "ASSETS"
 
 # #3252 source declaration: the served Worker exposes its own version provenance
