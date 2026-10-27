@@ -275,7 +275,6 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_DB_FINGERPRINT: ${{ needs.readonly.outputs.db_fingerprint }}
-      READONLY_LEDGER_PRESENT: ${{ needs.readonly.outputs.ledger_present }}
       READONLY_UP_TO: ${{ needs.readonly.outputs.plan_up_to }}
     steps:
       - name: Require the explicit authorization phrase
@@ -443,14 +442,17 @@ jobs:
             --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-probe.json
           DROP_ARGS=()
           if [ "${ALLOW_TABLE_DROP}" = "true" ]; then DROP_ARGS=(--allow-table-drop); fi
-          if [ "${READONLY_LEDGER_PRESENT}" = "yes" ]; then
+          # The ledger is fetched by what the live probe answers NOW, not by the
+          # readonly output: this very job may have just created the table, and
+          # classify re-probes the same file and would demand the ledger.
+          LEDGER_ARGS=()
+          if [ "$(python .github/scripts/b62_d1_migrate_gate.py probe \
+              --probe /tmp/b62-d1-gate-probe.json)" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql \
               --out /tmp/b62-d1-gate-ledger-query.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
               --command="$(cat /tmp/b62-d1-gate-ledger-query.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
-          else
-            LEDGER_ARGS=()
           fi
           python .github/scripts/b62_d1_migrate_gate.py classify \
             --app "$GATE_APP" \
