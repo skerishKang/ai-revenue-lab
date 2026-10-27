@@ -195,6 +195,31 @@ def test_exact_main_live_binding_and_readonly_precede_any_mutation() -> None:
     assert "D1_BINDING_CHANGED_AFTER_READONLY" in apply_section
 
 
+def test_the_apply_classify_passes_the_same_arguments_the_readonly_classify_does() -> None:
+    """The DETAIL_REQUIRED stop was a missing argument, not the database.
+
+    Both classify calls must hand the gate the same evidence: the inventory,
+    the split snapshot pair, whatever the fresh probe says about the ledger,
+    the column detail the window can demand, and the drop flag. The apply job
+    may not reuse a readonly-time value for a live decision either.
+    """
+
+    text = WORKFLOW.read_text(encoding="utf-8")
+    joined = re.sub(r"\\\n\s*", " ", text)
+    calls = re.findall(
+        r"python \.github/scripts/b62_d1_migrate_gate\.py classify ([^\n]+)", joined
+    )
+    assert len(calls) == 2, calls
+    readonly_call, apply_call = calls
+    for flag in (
+        "--app", "--inventory", "--snapshot", "--probe", "--up-to", "--out",
+        '"${LEDGER_ARGS[@]}"', '"${DETAIL_ARGS[@]}"', '"${DROP_ARGS[@]}"',
+    ):
+        assert flag in readonly_call, ("readonly", flag)
+        assert flag in apply_call, ("apply", flag)
+    assert "READONLY_LEDGER_PRESENT" not in text
+
+
 # --- inventory and representatives -------------------------------------------------
 
 
@@ -786,3 +811,99 @@ def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> 
     assert "B62_D1_SCHEMA_TABLES_ADDED=" in out
     assert "B62_D1_ROW_COUNT conversations=7->7" in out
     assert "B62_D1_REPORT_ROWS=read_count_metadata_only" in out
+
+
+def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_path) -> None:
+    """Create the ledger → re-probe → 0-row ledger → detail → classify → seed → window.
+
+    Every wrangler answer is synthesized from the replayed schema the gate
+    expects to meet in Production now: everything applied except the ten
+    pending files, and the empty ledger table this very job created. Running
+    the real verbs in the job's order is what proves the argument sets fit
+    together; the earlier stop was the classify call missing its detail.
+    """
+
+    pending = {
+        "006_orchestration_continuations.sql",
+        "016_claw_approval_handoff.sql",
+        "017_claw_approval_handoff_consumption.sql",
+        "020_claw_local_task_correlation.sql",
+        "024_auth_login_abuse.sql",
+        "036_claw_artifact_delivery_receipts.sql",
+        "055_claw_meetings.sql",
+        "056_claw_meeting_artifacts.sql",
+        "057_claw_meeting_actions.sql",
+        "064_chat_custom_provider_endpoints.sql",
+    }
+    db = sqlite3.connect(":memory:")
+    try:
+        for path in sorted(MIGRATIONS.glob("*.sql")):
+            if path.name not in pending:
+                db.executescript(path.read_text(encoding="utf-8"))
+        live = gate._schema(db)
+    finally:
+        db.close()
+    live["tables"].add(LEDGER)  # the apply job's own CREATE step ran first
+
+    inventory_path = tmp_path / "inv.json"
+    assert gate.main(["inventory", "--app", "chat", "--out", str(inventory_path)]) == 0
+    snapshot_path = write(tmp_path / "snap.json", snapshot_payload(live))
+    probe_path = write(tmp_path / "probe.json", probe_payload(True))
+    ledger_path = write(tmp_path / "ledger.json", ledger_payload([]))
+
+    detail_sql = tmp_path / "detail.sql"
+    assert gate.main([
+        "detail-sql", "--out", str(detail_sql), "--inventory", str(inventory_path),
+        "--snapshot", str(snapshot_path),
+    ]) == 0
+    parts = tmp_path / "parts"
+    parts.mkdir()
+    for index, statement in enumerate(
+        (line.strip() for line in detail_sql.read_text(encoding="utf-8").splitlines()), start=1
+    ):
+        if not statement:
+            continue
+        if statement.upper().startswith("PRAGMA"):
+            table = statement.split("(", 1)[1].strip(' "\");')
+            rows = [
+                {"cid": position, "name": column.split(".", 1)[1]}
+                for position, column in enumerate(
+                    sorted(
+                        name for name in live["columns"] if name.split(".", 1)[0] == table
+                    )
+                )
+            ]
+        else:
+            table = statement.split("'")[1]
+            rows = [{"table_name": table, "row_count": 7}]
+        (parts / f"{index}.json").write_text(
+            json.dumps({"success": True, "results": rows}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    detail_json = tmp_path / "detail.json"
+    assert gate.main(["detail-merge", "--dir", str(parts), "--out", str(detail_json)]) == 0
+
+    plan_path = tmp_path / "plan.json"
+    assert gate.main([
+        "classify", "--app", "chat", "--inventory", str(inventory_path),
+        "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+        "--ledger", str(ledger_path), "--detail", str(detail_json),
+        "--out", str(plan_path),
+    ]) == 0
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert len(plan["seed"]) == 61
+    assert sorted(plan["apply"]) == sorted(pending)
+
+    seed_sql = tmp_path / "seed.sql"
+    assert gate.main([
+        "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
+        "--out", str(seed_sql),
+    ]) == 0
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 61
+
+    window_dir = tmp_path / "window"
+    assert gate.main([
+        "window", "--app", "chat", "--plan", str(plan_path),
+        "--inventory", str(inventory_path), "--dir", str(window_dir),
+    ]) == 0
+    assert {path.name for path in window_dir.iterdir()} == pending
