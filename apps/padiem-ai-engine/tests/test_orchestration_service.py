@@ -1187,7 +1187,45 @@ async def test_pc_stream_heartbeat_does_not_extend_the_real_idle_watchdog(monkey
 
 
 @pytest.mark.asyncio
-async def test_non_pc_ndjson_and_legacy_json_bytes_are_unchanged(monkeypatch):
+async def test_long_silent_gap_on_a_non_opt_in_stream_completes_without_error(monkeypatch):
+    """#5895: a turn that waits must not be reported as a failure.
+
+    Before the liveness fix a stream without the PC opt-in produced no record at
+    all while the run thought, so a silent connection could be dropped and Chat
+    relayed that drop as invalid_engine_stream while the Engine went on to finish
+    and store the answer. The same stream now stays warm on the existing
+    heartbeat window and still ends with the verified result line.
+    """
+    import app.orchestration_service as module
+    from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
+    first = OrchestrationEvent(
+        event_id="evt_gap", run_id="run_gap", trace_id="tr_gap", app_id="b62",
+        kind=OrchestrationEventKind.RUN_STARTED, sequence=1,
+        timestamp_iso="2026-10-27T00:00:00Z",
+    )
+
+    async def slow_result():
+        await asyncio.sleep(0.02)
+        return object()
+
+    async def project(*_a, **_kw):
+        return {"execution": {"answer": "long wait answer"}}
+
+    service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
+    monkeypatch.setattr(service, "_orchestration_body", project)
+    monkeypatch.setattr(module, "PC_STREAM_HEARTBEAT_SECONDS", 0.002)
+    prepared = PreparedOrchestrationStream(
+        first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(slow_result()),
+        app_id="b62",
+    )
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert any("heartbeat" in record for record in records)
+    assert not any(record.get("ok") is False for record in records)
+    assert records[-1]["orchestration"]["execution"]["answer"] == "long wait answer"
+
+
+@pytest.mark.asyncio
+async def test_non_pc_stream_gains_liveness_and_legacy_json_bytes_are_unchanged(monkeypatch):
     import app.orchestration_service as module
     from padiem_ai_core.orchestration_events import OrchestrationEvent, OrchestrationEventKind
     first = OrchestrationEvent(
@@ -1207,10 +1245,13 @@ async def test_non_pc_ndjson_and_legacy_json_bytes_are_unchanged(monkeypatch):
     prepared = PreparedOrchestrationStream(
         first_event=first, queue=asyncio.Queue(), task=asyncio.create_task(result()), app_id="b62",
     )
-    actual = "".join([line async for line in service.iter_ndjson(prepared)])
-    expected = json.dumps({"ok": True, "event": first.to_public_dict()}, ensure_ascii=False, separators=(",", ":"))+"\n"
-    expected += '{"ok":true,"orchestration":{"execution":{"answer":"legacy"}}}\n'
-    assert actual.encode() == expected.encode()
+    records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    # #5895: the first and terminal lines stay byte-exact for a non-PC stream;
+    # what may now sit between them is liveness only. Heartbeat records are
+    # presentation and never counted as execution progress.
+    assert records[0]["event"]["event_id"] == "evt_legacy"
+    assert records[-1] == {"ok": True, "orchestration": {"execution": {"answer": "legacy"}}}
+    assert all("heartbeat" in item for item in records[1:-1])
     payload = make_valid_payload()
     response = await OrchestrationEngineService(
         runtime_factory=lambda _: MockEngineRuntime(), b14_service_bound=True,
@@ -2202,7 +2243,8 @@ async def test_pc_turn_classification_keeps_heartbeat_opt_in(monkeypatch, pc_pro
         app_id="padiem-chat", pc_progress=pc_progress, pc_turn=True)
     service = OrchestrationEngineService(runtime_factory=lambda _: object(), b14_service_bound=True)
     records = [json.loads(line) async for line in service.iter_ndjson(prepared)]
-    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS if pc_progress else None]
+    # #5895: the wait is bounded on every stream, not only the PC opt-in one.
+    assert timeouts == [module.PC_STREAM_HEARTBEAT_SECONDS]
     assert records[-1]["error"]["metadata"]["stage"] == "pc_stream_run"
 
 

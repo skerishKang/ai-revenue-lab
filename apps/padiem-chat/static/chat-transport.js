@@ -13,6 +13,16 @@
     return error;
   }
 
+  // #5895: these two codes are produced when an Engine stream stops without a
+  // verified result — the run itself keeps going and its answer is stored. A
+  // refusal (authorization, tier, cancellation, execution failure) never uses
+  // them, so only these may hand the turn to the pending-result recovery.
+  const STREAM_LOSS_CODES = new Set(["invalid_engine_stream", "invalid_engine_stream_event"]);
+
+  function isStreamLoss(data) {
+    return STREAM_LOSS_CODES.has(data?.error?.code);
+  }
+
   function streamErrorMessage(data) {
     const code = data?.error?.code;
     if (code === "upstream_timeout") return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
@@ -381,6 +391,7 @@
     createChatPcRunId,
     errorFor,
     streamErrorMessage,
+    isStreamLoss,
     parseSseFrame,
     readSseEvents,
     requestCompleted,
