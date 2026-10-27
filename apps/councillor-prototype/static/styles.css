@@ -57,64 +57,51 @@ body {
   padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 13px; letter-spacing: 0.04em;
 }
 
+/* Hero (#5972): the portrait is a plain <img> in its own column with the
+   copy beside it. The old full-bleed background portrait is gone — no dark
+   veil, no grain, no scale-up, and no text drawn over the photo. */
 .hero {
-  position: relative; min-height: 100vh;
+  position: relative;
   display: flex; align-items: center;
-  overflow: hidden;
+  min-height: 100vh;
   background: var(--navy);
+  padding: 132px 40px 88px;
+  overflow: hidden;
 }
-.hero-media { position: absolute; inset: 0; }
-.hero-media img {
-  width: 100%; height: 100%; object-fit: cover; object-position: center 15%;
-  filter: contrast(1.08) saturate(0.85) brightness(0.9);
-  transform: scale(1.02);
-}
-.hero-veil {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(100deg, rgba(11,26,46,0.92) 0%, rgba(11,26,46,0.6) 35%, rgba(11,26,46,0.15) 70%),
-    linear-gradient(180deg, rgba(11,26,46,0.1) 0%, rgba(11,26,46,0.85) 100%);
-}
-.hero-grain {
-  position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.hero-inner { position: relative; z-index: 2; max-width: var(--maxw); margin: 0 auto; padding: 0 48px; width: 100%; }
-.hero-eyebrow { color: var(--gold); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 24px; font-weight: 600; }
-.hero-name {
-  font-family: var(--font-serif);
-  font-size: clamp(72px, 12vw, 168px);
-  font-weight: 700; margin: 0 0 28px;
-  letter-spacing: -0.02em; line-height: 0.9;
-  text-shadow: 0 8px 60px rgba(0,0,0,0.5);
-}
-.hero-lead {
-  font-size: clamp(17px, 1.8vw, 22px); color: var(--ivory-soft);
-  max-width: 520px; margin: 0 0 40px; font-weight: 300; line-height: 1.6;
-}
-.hero-actions { display: flex; gap: 16px; margin-bottom: 56px; }
-.hero-facts {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; grid-template-columns: repeat(4, auto); gap: 48px;
-  border-top: 1px solid var(--border); padding-top: 28px; max-width: 720px;
-}
+[data-theme="light"] .hero { background: var(--ivory); }
 .hero-inner {
   position: relative; z-index: 2;
-  max-width: var(--maxw); margin: 0 auto; padding: 0 40px 80px; width: 100%;
+  max-width: var(--maxw); margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 72px; align-items: center;
 }
-.hero-eyebrow { color: var(--gold); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 20px; font-weight: 600; }
+/* The source portrait is 311x399; the box keeps that ratio, so contain shows
+   the whole face and shoulders with no crop and no upscaling to fill. */
+.hero-photo {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 311 / 399; object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--navy-soft);
+}
+[data-theme="light"] .hero-photo { background: var(--ivory-soft); box-shadow: 0 24px 60px rgba(11,26,46,0.14); }
+.hero-eyebrow { color: var(--gold); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; margin: 0 0 20px; font-weight: 600; }
 .hero-name {
   font-family: var(--font-serif);
-  font-size: clamp(64px, 11vw, 148px);
-  font-weight: 700; margin: 0 0 24px;
-  letter-spacing: -0.01em; line-height: 0.95;
-  text-shadow: 0 4px 40px rgba(0,0,0,0.4);
+  font-size: clamp(48px, 5vw, 76px);
+  font-weight: 700; margin: 0 0 20px;
+  letter-spacing: -0.01em; line-height: 1.05;
+  color: var(--text);
 }
 .hero-lead {
-  font-size: clamp(16px, 1.6vw, 20px); color: var(--muted);
-  max-width: 580px; margin: 0 0 36px; font-weight: 300;
+  font-size: clamp(16px, 1.4vw, 19px); color: var(--muted);
+  max-width: 46ch; margin: 0 0 32px; font-weight: 300; line-height: 1.7;
 }
-.hero-actions { display: flex; gap: 14px; margin-bottom: 48px; }
+.hero-actions { display: flex; gap: 14px; margin-bottom: 40px; flex-wrap: wrap; }
+.hero-facts {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 32px;
+  border-top: 1px solid var(--border); padding-top: 24px;
+}
 .btn {
   display: inline-block; padding: 14px 28px; border-radius: 999px;
   text-decoration: none; font-weight: 600; font-size: 14px;
@@ -124,12 +111,6 @@ body {
 .btn:hover { transform: translateY(-2px); }
 .btn.primary { background: var(--gold); color: var(--navy); }
 .btn.secondary { background: transparent; border-color: var(--border); color: var(--text); }
-.hero-facts {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; grid-template-columns: repeat(4, auto); gap: 40px;
-  border-top: 1px solid var(--border); padding-top: 24px;
-}
-.hero-facts li { }
 .fact-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
 .fact-value { font-size: 15px; font-weight: 600; }
 
@@ -220,12 +201,16 @@ body {
   .policy-grid { grid-template-columns: 1fr; }
   .media-grid { grid-template-columns: 1fr 1fr; }
   .top-nav { display: none; }
+  .hero { min-height: auto; padding: 112px 24px 72px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+  .hero-photo { max-width: 360px; margin: 0 auto; }
   .hero-facts { grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .activity-item { grid-template-columns: 1fr; gap: 6px; }
   .news-item { grid-template-columns: 1fr; gap: 8px; }
 }
 @media (max-width: 600px) {
   .media-grid { grid-template-columns: 1fr; }
+  .hero { padding: 100px 20px 56px; }
   .hero-name { font-size: 48px; }
   .section { padding: 64px 20px; }
   .topbar { padding: 14px 20px; }
@@ -267,10 +252,3 @@ body {
 
 .ka-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; margin-bottom: 12px; background: var(--navy-soft); }
 [data-theme="light"] .ka-thumb { background: var(--bg-soft); }
-
-[data-theme="light"] .hero-veil {
-  background:
-    linear-gradient(100deg, rgba(245,241,232,0.92) 0%, rgba(245,241,232,0.6) 35%, rgba(245,241,232,0.15) 70%),
-    linear-gradient(180deg, rgba(245,241,232,0.1) 0%, rgba(245,241,232,0.85) 100%);
-}
-[data-theme="light"] .hero-media img { filter: contrast(1.05) saturate(0.9) brightness(1.05); }
