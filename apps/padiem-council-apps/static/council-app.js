@@ -186,6 +186,35 @@
     });
   }
 
+  // ── one file-name rule for the four stored document families (#5942) ──────
+  // A book is a derived product, not a meeting record, and a draft SNS post is
+  // not a speech manuscript. The prefixes below are the ones the Chat util
+  // already writes (#5608), so a book saved from either surface lists in both;
+  // no new store, table or media type is introduced.
+  const BOOK_PREFIX = "활동집 - ";
+  const SNS_POST_SUFFIX = "게시글.txt";
+  const SNS_ROSTER_NAME = "SNS 사진 구성.json";
+
+  function storedName(file) { return String((file && file.name) || ""); }
+  function isStoredBook(file) { return storedName(file).startsWith(BOOK_PREFIX); }
+  function isSnsPostFile(file) {
+    const name = storedName(file);
+    return name.endsWith(SNS_POST_SUFFIX) && !isStoredBook(file);
+  }
+  function isSnsRosterFile(file) { return storedName(file) === SNS_ROSTER_NAME; }
+  /** Plain manuscripts: neither a book, an SNS post draft nor the photo roster. */
+  function isManuscriptFile(file) {
+    const name = storedName(file);
+    return name.endsWith(".txt") && !isStoredBook(file) && !isSnsPostFile(file);
+  }
+  /** The book file name comes from the draft's own first line, so an edited
+   *  title re-saves under the edited name; unsafe characters are dropped. */
+  function bookFileName(text) {
+    const firstLine = String(text || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
+    const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
+    return BOOK_PREFIX + (safe || "제목 미정") + ".txt";
+  }
+
   // ── speech module (prompt template ported verbatim from util-menu.js) ────
 
   function buildSpeechPrompt(form) {
@@ -335,7 +364,7 @@
         const pid = await projects.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
-         const speechFiles = files.filter((f) => (f.name || "").endsWith(".txt") && !(f.name || "").endsWith("게시글.txt"));
+         const speechFiles = files.filter(isManuscriptFile);
         savedList.replaceChildren();
         savedList.appendChild(el("h3", null, "저장된 축사 원고"));
         if (!speechFiles.length) {
@@ -989,45 +1018,13 @@
         const pid = await projects.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
-        const meetingFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
-        arc.replaceChildren();
-        arc.appendChild(el("h3", null, "활동 기록"));
-        if (!meetingFiles.length) {
-          arc.appendChild(el("p", "council-empty", "저장된 회의 기록이 없습니다."));
-          return;
-        }
-        const bookBtn = el("button", "council-generate", "선택 기록으로 책/활동집 초안 생성");
-        bookBtn.type = "button";
-        bookBtn.id = "councilBookGenerate";
-        arc.appendChild(bookBtn);
+        // A book is not one of its own source records, and an SNS draft or the
+        // photo roster never belongs here either.
+        const meetingFiles = files.filter(isManuscriptFile);
+        const bookFiles = files.filter(isStoredBook);
 
-        const ul = document.createElement("ul");
-        meetingFiles.forEach((f) => {
-          const li = document.createElement("li");
-          li.className = "council-archive-item";
-          const cb = document.createElement("input");
-          cb.type = "checkbox";
-          cb.value = f.id;
-          cb.className = "council-book-check";
-          cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
-          li.appendChild(cb);
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
-          btn.addEventListener("click", async () => {
-            const content = await fetchProjectFile(pid, f.id);
-            if (typeof content === "string") {
-              output.value = content;
-              result.hidden = false;
-            } else {
-              alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
-            }
-          });
-          li.appendChild(btn);
-          ul.appendChild(li);
-        });
-        arc.appendChild(ul);
-
+        // The book editor is built before the lists are drawn: a stored book has
+        // to reopen into it even when no record exists in this project yet.
         const bookResult = el("div", "council-result");
         bookResult.id = "councilBookResult";
         bookResult.hidden = true;
@@ -1041,8 +1038,49 @@
         bookCopy.type = "button";
         const bookDl = el("button", null, "TXT 다운로드");
         bookDl.type = "button";
-        bookActions.append(bookCopy, bookDl);
+        const bookSave = el("button", "council-save", "활동집 저장");
+        bookSave.type = "button";
+        bookSave.id = "councilBookSave";
+        bookActions.append(bookCopy, bookDl, bookSave);
         bookResult.appendChild(bookActions);
+
+        const bookBtn = el("button", "council-generate", "선택 기록으로 책/활동집 초안 생성");
+        bookBtn.type = "button";
+        bookBtn.id = "councilBookGenerate";
+
+        arc.replaceChildren();
+        arc.appendChild(el("h3", null, "활동 기록"));
+        if (!meetingFiles.length) {
+          arc.appendChild(el("p", "council-empty", "저장된 회의 기록이 없습니다."));
+        } else {
+          arc.appendChild(bookBtn);
+          const ul = document.createElement("ul");
+          meetingFiles.forEach((f) => {
+            const li = document.createElement("li");
+            li.className = "council-archive-item";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = f.id;
+            cb.className = "council-book-check";
+            cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
+            li.appendChild(cb);
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            btn.addEventListener("click", async () => {
+              const content = await fetchProjectFile(pid, f.id);
+              if (typeof content === "string") {
+                output.value = content;
+                result.hidden = false;
+              } else {
+                alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
+              }
+            });
+            li.appendChild(btn);
+            ul.appendChild(li);
+          });
+          arc.appendChild(ul);
+        }
         arc.appendChild(bookResult);
 
         bookBtn.addEventListener("click", async () => {
@@ -1073,7 +1111,71 @@
           try { await navigator.clipboard.writeText(bookOutput.value); bookCopy.textContent = "복사됨"; setTimeout(() => { bookCopy.textContent = "복사"; }, 1500); } catch (_) {}
         });
         bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book.txt"); });
+
+        // The draft is a product, not scratch: it persists through the same
+        // project-file channel under the book name rule. One press must never
+        // create two copies, so the button is armed only while nothing is in
+        // flight and the list is refreshed from the server afterwards.
+        let bookSaving = false;
+        bookSave.addEventListener("click", async () => {
+          const text = bookOutput.value.trim();
+          if (!text || bookSaving) return;
+          bookSaving = true;
+          bookSave.disabled = true;
+          bookSave.textContent = "저장 중…";
+          let saved = null;
+          try {
+            saved = await saveProjectFile(pid, bookFileName(text), text);
+          } finally {
+            bookSaving = false;
+            bookSave.disabled = false;
+          }
+          if (!saved) {
+            bookSave.textContent = "활동집 저장";
+            alert("활동집 저장 실패");
+            return;
+          }
+          bookSave.textContent = "저장됨";
+          setTimeout(() => { bookSave.textContent = "활동집 저장"; }, 1500);
+          await refreshArchive(arc);
+          const opened = (arc.querySelectorAll(".council-book-open") || [])
+            .find((b) => String(b.textContent).indexOf(saved.name) === 0);
+          if (opened) opened.setAttribute("aria-current", "true");
+        });
+
+        if (bookFiles.length) {
+          const bookSec = el("div", "council-book-list");
+          bookSec.appendChild(el("h3", null, "저장된 활동집"));
+          const bookUl = document.createElement("ul");
+          bookFiles.forEach((f) => {
+            const li = document.createElement("li");
+            li.className = "council-archive-item";
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "council-book-open";
+            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            btn.addEventListener("click", async () => {
+              const content = await fetchProjectFile(pid, f.id);
+              if (typeof content !== "string") {
+                alert("저장된 활동집의 본문을 읽을 수 없습니다.");
+                return;
+              }
+              bookResult.hidden = false;
+              bookOutput.value = content;
+              if (typeof bookOutput.focus === "function") bookOutput.focus();
+            });
+            li.appendChild(btn);
+            bookUl.appendChild(li);
+          });
+          bookSec.appendChild(bookUl);
+          arc.appendChild(bookSec);
+        }
       }
+
+      // The archive and the stored-book list load when the tool opens, the same
+      // way the speech list does and the way util-menu.js does it: a re-entry
+      // must show what is already stored before anything is saved again.
+      refreshArchive(archive);
 
       return { refreshArchive };
     }
