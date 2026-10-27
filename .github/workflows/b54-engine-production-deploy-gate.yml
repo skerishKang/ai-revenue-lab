@@ -488,6 +488,24 @@ jobs:
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 
+      # #5895 item 4: one ordinary chat turn that the promoted Engine actually
+      # answers. The health smoke above never dispatches a model, so a person
+      # used to send a message by hand after this deploy. The signed-in
+      # composer lane (Chat /api/orchestration -> Engine, #4469) is the route
+      # the browser tries first, so it is the Engine's own proof. It reuses the
+      # QA identity the long-context canary already signs in with: no new
+      # credential is created, and only the names below are referenced. No
+      # model is named or checked. This job has no failure()-based rollback
+      # and none is added here, so a failed proof leaves the gate red to read.
+      - name: Post-deploy real chat
+        shell: bash
+        env:
+          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_real_chat_smoke.py --lane engine
+
       # #3758 round 2 (CENTRAL review): publish the bounded run-outcome
       # evidence. `if: always()` is the #3704/#3742 precedent -- a run that
       # stopped before deploying is exactly the case the anchor is needed

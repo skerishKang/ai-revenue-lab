@@ -405,6 +405,12 @@ jobs:
           assert "authentication_required" in workflow
           assert "connector_ticket_origin_rejected" in workflow
           assert "B62_PRODUCTION_SMOKE=PASS" in workflow
+          # #5895 item 4: one real chat turn on the promoted version, and it stays
+          # AFTER the auto-rollback guard so a failed proof cannot roll back.
+          assert "Post-deploy real chat" in workflow
+          assert ".github/scripts/post_deploy_real_chat_smoke.py --lane chat" in workflow
+          assert workflow.rindex("Auto-rollback to recorded version on any failed step") < \
+              workflow.rindex("Post-deploy real chat")
           assert "PRODUCTION_MUTATION=0" in workflow
           assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow or \
               "B62_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow
@@ -1691,6 +1697,19 @@ jobs:
           echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
           echo "ROLLBACK_EFFECT=EXECUTED"
 
+      # #5895 item 4: one ordinary free-grade chat on the version that was just
+      # promoted, through the route a visitor uses. /health and the binding
+      # readback above never proved that a turn actually completes.
+      # This step sits AFTER the auto-rollback step on purpose: a failed real
+      # chat reddens the gate for a person to read and never triggers a silent
+      # rollback. It names no model, carries no credential and logs no answer
+      # text; a provider-side 429/503 is a marked pass, anything else fails.
+      - name: Post-deploy real chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_real_chat_smoke.py --lane chat
+
       - name: Publish bounded deploy evidence
         if: always()
         shell: bash
@@ -1703,7 +1722,8 @@ jobs:
             echo "- deployed version: \`${DEPLOYED_VERSION_ID:-none}\`"
             echo "- public origin: \`${B62_PUBLIC_BASE_URL}\`"
             echo "- secret values printed: never"
-            echo "- auto-rollback armed on any failed step: yes"
+            echo "- auto-rollback armed on any failed step: yes, for every step above it"
+            echo "- post-deploy real chat proof: after that guard, so a failed proof is never rolled back"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   rollback-production-code:
