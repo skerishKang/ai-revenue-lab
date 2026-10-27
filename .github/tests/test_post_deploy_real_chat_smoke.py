@@ -211,3 +211,28 @@ def test_a_credential_value_never_reaches_the_output(monkeypatch, capsys) -> Non
     captured = capsys.readouterr()
     assert "synthetic-qa-user" not in captured.out + captured.err
     assert "synthetic-qa-password" not in captured.out + captured.err
+
+
+def test_a_refused_login_prints_status_and_code_name_but_never_a_value(monkeypatch, capsys) -> None:
+    """qa_login_refused alone cannot tell a lock from a wrong password.
+
+    The projection is identical by design (#3501/#3508), so the smoke prints
+    the HTTP status and the server's error code NAME before failing — and never
+    the response body, an identifier, or a password. The verdict is unchanged.
+    """
+
+    secret_value = "synthetic-password-never-print"
+    _install(monkeypatch, {
+        ("POST", smoke.LOGIN): (401, {
+            "error": {"code": "invalid_credentials"},
+            "detail": secret_value,
+        }),
+    })
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-qa")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, secret_value)
+    assert smoke.run("engine") == 1
+    out = capsys.readouterr().out
+    assert "QA_LOGIN_DIAGNOSTIC login_http_status=401 server_error_code=invalid_credentials" in out
+    assert "REAL_CHAT=FAIL lane=engine code=qa_login_refused" in out
+    assert secret_value not in out
+    assert "synthetic-qa" not in out
