@@ -7,10 +7,10 @@
   app itself is on `main` as of `544e8d163` (PR #5929); the items it recorded as not yet connected
   are the ones this contract fixes or names.
 - Entry decision (CENTRAL, 2026-10-27): the first 의원3종 release is served from a
-  **same-origin path on `chat.padiem.net`** (example `/apps/council/`, path pending a collision
-  check). It reuses the existing host-only session, Origin rule, B14 lane and file store. No auth
-  bridge for another host, no relaxation of the cookie `Domain`, no second session and no
-  forwarded API `Origin` is to be implemented.
+  **same-origin path on `chat.padiem.net`** — `#5937` ships it at `/apps/council/` after the
+  collision check came back empty. It reuses the existing host-only session, Origin rule, B14 lane
+  and file store. No auth bridge for another host, no relaxation of the cookie `Domain`, no second
+  session and no forwarded API `Origin` is to be implemented.
 - Machine-checked by: `.github/scripts/padiem_apps_integration_contract.py` and
   `.github/tests/test_padiem_apps_integration_contract.py`, run in
   `.github/workflows/padiem-apps-integration-contract-ci.yml`.
@@ -106,6 +106,32 @@ the CSRF boundary that exists precisely because `SameSite` is a *site* boundary,
 boundary; the second duplicates two working bridges and creates a second authority. Both are
 rejected by §6.
 
+### 4.4 The shipped same-origin entry: `/apps/council/`
+
+`#5937` serves the council app from the Chat Worker's own Assets upload. The app directory stays
+the only copy of its files: `apps/padiem-chat/scripts/build_b66_worker_dependencies.py`
+(`generate_runtime` → `stage_app_entries`) assembles `apps/padiem-council-apps/static/` into the
+generated `.b66-worker-src/static/apps/council/` tree at deploy-build time, which is the directory
+`[assets] directory = "static"` uploads. Nothing is committed under `apps/padiem-chat/**`, no
+`wrangler.toml` key changes, and the Chat ASGI app grows no route — so the entry cannot drift from
+the app, and a rebuild always refreshes from it.
+
+The staged layout mirrors `apps/padiem-council-apps/app/app_factory.py` (entry at `/`, everything
+else under `/static/*`) because that is what makes the entry page's own relative `./static/…`
+references resolve:
+
+| Request | Result | Measured from |
+| --- | --- | --- |
+| `GET /apps/council/` | `200` — `index.html` | directory-index rule confirmed on a deployed Cloudflare static-asset host (`/staging/` → `200`, `/staging` → `308` → `/staging/`, `/staging/index.html` → `308` → `/staging/`); the same rule is what serves Chat's own `/` from `static/index.html` today (`/index.html` → `307` → `/`) |
+| `GET /apps/council` | redirect to `/apps/council/` | same |
+| `GET /apps/council/static/council-app.{css,js}` | `200` | the relative form the page itself uses |
+
+Two facts the entry inherits from the existing surface, recorded rather than fixed here: static
+asset responses come from the Assets binding and therefore do **not** pass through
+`response_headers_for_path`, so they carry no `Content-Security-Policy` (measured on `/` and
+`/styles.css`, and already true for `static/councillor/`); and the entry HTML itself is public,
+with the app gating every tool on `GET /api/auth/status` before it attaches a builder.
+
 ## 5. Reserved prerequisites — not closable inside an app PR
 
 Recorded as open work with their owners, not as this contract being incomplete:
@@ -164,10 +190,14 @@ cannot disagree about the accepted set.
 python .github/scripts/padiem_apps_integration_contract.py check     → PADIEM_APPS_CONTRACT=EXACT
 python .github/scripts/padiem_apps_integration_contract.py describe  → the machine-readable surface
 python -m pytest .github/tests/test_padiem_apps_integration_contract.py
+python -m pytest apps/padiem-chat/tests/test_b62_app_entry_staging.py  → the /apps/council/ staging
 ```
 
 The tests are refusal tests: a widened work-scope set, a removed refusal, a softened calendar
 guard, an origin expectation read from the request, a session projection that starts carrying a
 user id, a changed storage ceiling or media set, a missing platform route, and an enlarged identity
-allowlist each make CI fail. Nothing in this contract is exercised against a live provider or
-Production surface, and this document claims no live verification.
+allowlist each make CI fail. `test_b62_app_entry_staging.py` adds the §4.4 entry to the same shape:
+a staging level that no longer matches the entry page's own `./static/…` references, an app file
+that would overwrite a Chat asset, an app source that stops shipping a required file, and a copy
+committed under `apps/padiem-chat/**` each fail the build. Nothing in this contract is exercised
+against a live provider or Production surface, and this document claims no live verification.
