@@ -202,9 +202,11 @@ html[data-country="us"] {
   --work-1: var(--tone-7);
   --work-2: var(--tone-1);
   --work-3: var(--tone-7);
-  --font-display: "Playfair Display", "Noto Serif KR", Georgia, serif;
-  --font-body: Inter, Pretendard, "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
-  --font-label: Inter, system-ui, sans-serif;
+  /* 해외 테마도 이 페이지가 배포한 두 면으로 확정한다(장비별 fallback 차이 제거).
+     Tail 의 의도 서체는 웹폰트가 실패한 환경에서만 쓰인다. */
+  --font-display: "MaruBuri", "Playfair Display", Georgia, serif;
+  --font-body: "Pretendard", Inter, "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, system-ui, sans-serif;
 }
 
 html[data-country="fr"] {
@@ -251,9 +253,9 @@ html[data-country="fr"] {
   --work-1: var(--tone-2);
   --work-2: var(--tone-4);
   --work-3: var(--tone-3);
-  --font-display: "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
-  --font-body: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-label: Inter, "Noto Sans KR", system-ui, sans-serif;
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
 }
 
 html[data-country="uk"] {
@@ -300,9 +302,9 @@ html[data-country="uk"] {
   --work-1: var(--tone-8);
   --work-2: var(--tone-7);
   --work-3: var(--tone-8);
-  --font-display: "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
-  --font-body: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-label: Inter, "Noto Sans KR", system-ui, sans-serif;
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
 }
 
 /* ── 축 2 · 스타일 = 역할 할당 ──────────────────────────────────────────── */

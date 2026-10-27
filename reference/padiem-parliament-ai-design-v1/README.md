@@ -183,10 +183,43 @@ CONTRAST            26개 요소 전부 AA 통과 — 글자 화소마다 '잉�
 잉크 화소를 영역 중간값으로 메운 뒤 국소 중간값 필터로 배경제를 만드는 방식으로 최종 확정했고,
 그때 단색 카드 위 텍스트는 worst==median(6.03)이 되어 지표가 물리에 맞는다.
 
+### v7 — 해외 3개 국가의 fallback 차이 제거 (배포된 두 면으로 확정)
+
+v6 직후 남은 유일한 불일치였다. 4개국 × 5스타일 20조합에서 선언 첫 패밀리와 실제로 그린 면을
+폭 차등으로 대조한 결과:
+
+```text
+kr      h1 선언 MaruBuri          -> 렌더 MaruBuri          일치
+us      h1 선언 Playfair Display  -> 렌더 Georgia           불일치
+fr / uk h1 선언 NanumMyeongjo     -> 렌더 Georgia           불일치
+본문    us/fr/uk 1순위 Inter      -> 이 머신에서만 일치      Inter 도 배포하지 않은 면이었다
+```
+
+`Georgia`·`Inter` 모두 이 검사 장비에 설치돼 있어 우연히 맞아떨어졌을 뿐, 다른 운영체제에서는
+다른 면으로 렌더되는 상태였다.
+
+**조치:** 새 폰트를 받지 않고 이미 배포한 두 면으로 4개국을 통일했다. 각 국가 블록의
+`--font-display` 1순위를 `MaruBuri`, `--font-body`·`--font-label` 1순위를 `Pretendard`로 두고,
+`Playfair Display`·`NanumMyeongjo`는 웹폰트 로드 실패 때의 의도된 대체로 스택 뒤쪽에 남긴다.
+
+```text
+SLOT CHECKS        140/140  선언 == 렌더, fallback 0   (20조합 × 7슬롯)
+DISPLAY / BODY     MaruBuri / Pretendard — 4개국 공통
+LAYOUT @1440x810   h1 2줄·114px, h2 1줄, 헤더 1줄, 카드 3열(y 511..715), ovfX 0 — 20조합 동일
+LAYOUT @390x844    h1 2줄·73px, 카드 1열, ovfX 0 — 20조합 동일
+THEME_AXIS         20조합 고유 페인트 서명 16종 유지 (페이지 배경 8·카드색 4·스트립 8·반지름 3·사진층 2)
+```
+
+**대가:** 국가 축의 '제목 서체' 변별력이 사라졌다(서명 3종 → 1종). 이 저장소가 배포하는 세리프는
+마루부리 한 종이다. 원본 매트릭스 03은 미국·영국·프랑스 제목을 고대비 라틴 세리프
+(`A STRONGER COMMUNITY`, `Des idées pour des citoyens plus forts`)로 보여주지만, 그 서체를 싣는
+결정은 '재사용' 범위 밖이므로 하지 않았다. 라틴 디스플레이 서체 배포가 승인되면 복원한다.
+국가는 이제 팔레트·사진·반지름으로 구분된다.
+
 ### 재현
 
 ```bash
-python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 35 passed
+python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 36 passed
 node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
 python -m http.server 8801 --directory reference/padiem-parliament-ai-design-v1
 ```

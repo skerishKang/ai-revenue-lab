@@ -417,6 +417,25 @@ def test_the_shipped_fonts_are_the_ones_the_css_declares() -> None:
     assert '--font-body: "Pretendard"' in kr and '--font-label: "Pretendard"' in kr
 
 
+def test_every_country_leads_with_a_shipped_face() -> None:
+    """장비 설치 폰트에 화면을 맡기지 않는다.
+
+    4개국 모두의 --font-display/--font-body/--font-label 은 이 저장소가 실제로 배포하는
+    @font-face 패밀리로 시작해야 한다. 뒤에 남는 이름(Playfair Display·NanumMyeongjo 등)은
+    웹폰트 로드 실패 시의 의도된 대체일 뿐이며, 그 자체가 1순위가 되면 안 된다.
+    """
+    shipped = set(re.findall(r'@font-face\s*\{[^}]*font-family:\s*"([^"]+)"', COMMENT.sub("", CSS), re.S))
+    assert shipped == {"Pretendard", "MaruBuri"}, shipped
+    for country in COUNTRIES:
+        body = " ".join(blocks_for("country", country))
+        for role in ("--font-display", "--font-body", "--font-label"):
+            m = re.search(re.escape(role) + r":\s*\"([^\"]+)\"", body)
+            assert m, f"{country} does not declare {role}"
+            assert m.group(1) in shipped, (
+                f'{country} {role} leads with "{m.group(1)}", which is not shipped -> the render '
+                "depends on the viewer's installed fonts")
+
+
 def test_css_never_asks_for_a_weight_that_has_no_file() -> None:
     """650/750처럼 면이 없는 가중치를 물리면 브라우저가 임의 근사면을 고른다.
     '선언 == 실재'를 유지하려면 쓰는 가중치가 배포된 4종 안에 있어야 한다.
