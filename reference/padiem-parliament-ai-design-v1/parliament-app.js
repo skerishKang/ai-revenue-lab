@@ -78,8 +78,9 @@
   const documentBox = document.getElementById("paDocument");
   const status = document.getElementById("paStatus");
   const scene = document.querySelector(".pa-scene");
-  const countrySelect = document.getElementById("paCountry");
-  const styleSelect = document.getElementById("paStyle");
+  const themeButton = document.getElementById("paThemeButton");
+  const themePanel = document.getElementById("paThemePanel");
+  const themeValue = document.getElementById("paThemeValue");
   const root = document.documentElement;
 
   const state = { work: null };
@@ -92,14 +93,28 @@
     try { return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (_) { return false; }
   }
 
+  const THEME_NAMES = { kr: "한국", us: "미국", fr: "프랑스", uk: "영국" };
+  const STYLE_NAMES = { classic: "클래식", modern: "모던", dark: "다크", light: "라이트", minimal: "미니멀" };
+
+  function syncThemeUI(country, style) {
+    document.querySelectorAll("#paCountryGroup [data-country]").forEach((b) => {
+      b.setAttribute("aria-checked", b.dataset.country === country ? "true" : "false");
+      b.tabIndex = b.dataset.country === country ? 0 : -1;
+    });
+    document.querySelectorAll("#paStyleGroup [data-style]").forEach((b) => {
+      b.setAttribute("aria-checked", b.dataset.style === style ? "true" : "false");
+      b.tabIndex = b.dataset.style === style ? 0 : -1;
+    });
+    themeValue.textContent = THEME_NAMES[country] + " · " + STYLE_NAMES[style];
+  }
+
   function applyTheme(country, style) {
     // 저장된 선호가 없으면 마크업이 정한 기본(04 시안: 한국 · 밝은 작업 밴드)을 지킨다.
     const safeCountry = COUNTRIES.indexOf(country) >= 0 ? country : (root.dataset.country || "kr");
     const safeStyle = STYLES.indexOf(style) >= 0 ? style : (root.dataset.style || "light");
     root.dataset.country = safeCountry;
     root.dataset.style = safeStyle;
-    countrySelect.value = safeCountry;
-    styleSelect.value = safeStyle;
+    syncThemeUI(safeCountry, safeStyle);
     try {
       const kept = store();
       if (kept) kept.setItem(THEME_KEY, JSON.stringify({ country: safeCountry, style: safeStyle }));
@@ -177,7 +192,8 @@
     });
     document.querySelectorAll(".pa-nav-item").forEach((item) => {
       const target = item.dataset.nav;
-      item.classList.toggle("is-current", target === (work || "home"));
+      const current = work ? "tools" : "home";
+      item.classList.toggle("is-current", target === current);
     });
   }
 
@@ -220,16 +236,18 @@
     });
   });
 
-  document.getElementById("paHomeCta").addEventListener("click", () => {
+  function showWorks() {
     const works = document.querySelector(".pa-works");
     if (works && typeof works.scrollIntoView === "function") {
       works.scrollIntoView({ behavior: prefersReduced() ? "auto" : "smooth", block: "start" });
     }
     const first = document.querySelector(".pa-work-select");
     if (first && typeof first.focus === "function") first.focus();
-  });
+  }
 
-  // 사이드바 메뉴: 시안의 영구 탐색. 미구현 항목은 눌리지 않는다는 표시만 남긴다.
+  document.getElementById("paHomeCta").addEventListener("click", showWorks);
+
+  // 상단 메뉴: 시안의 5개 라벨. 실제 화면이 있는 항목만 눌리고, 나머지는 죽은 통제처럼 보이지 않게 알린다.
   document.querySelectorAll(".pa-nav-item").forEach((item) => {
     item.addEventListener("click", () => {
       const target = item.dataset.nav;
@@ -238,7 +256,7 @@
         return;
       }
       if (target === "home") goHome();
-      else openWork(target);
+      else if (target === "tools") showWorks();
     });
   });
 
@@ -268,24 +286,52 @@
   documentBox.addEventListener("input", () => announce(countText()));
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !editor.hidden) goHome();
+    if (event.key !== "Escape") return;
+    if (!themePanel.hidden) { openThemePanel(false); return; }
+    if (!editor.hidden) goHome();
   });
 
-  [countrySelect, styleSelect].forEach((select) => {
-    select.addEventListener("change", () => applyTheme(countrySelect.value, styleSelect.value));
-  });
-
-  // 히어로 시차: 한 속성(transform)만, rAF로 묶고 감소 동작에서는 완전히 끄는다.
-  let queued = false;
-  function paintParallax() {
-    queued = false;
-    if (!scene || prefersReduced()) { return; }
-    const offset = Math.min(window.scrollY || 0, 640) * 0.18;
-    scene.style.transform = "translate3d(0," + offset.toFixed(1) + "px,0)";
+  function openThemePanel(open) {
+    themePanel.hidden = !open;
+    themeButton.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) {
+      const chosen = themePanel.querySelector('[aria-checked="true"]');
+      if (chosen && typeof chosen.focus === "function") chosen.focus();
+    } else if (typeof themeButton.focus === "function") {
+      themeButton.focus();
+    }
   }
-  window.addEventListener("scroll", () => {
-    if (!queued) { queued = true; window.requestAnimationFrame(paintParallax); }
-  }, { passive: true });
+
+  themeButton.addEventListener("click", () => openThemePanel(themePanel.hidden));
+  document.addEventListener("click", (event) => {
+    if (!themePanel.hidden && !themePanel.contains(event.target) && event.target !== themeButton && !themeButton.contains(event.target)) {
+      openThemePanel(false);
+    }
+  });
+
+  function choose(attr, value) {
+    if (attr === "country") applyTheme(value, root.dataset.style);
+    else applyTheme(root.dataset.country, value);
+  }
+
+  function bindGroup(group, attr) {
+    const buttons = Array.from(group.querySelectorAll("[data-" + attr + "]"));
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => choose(attr, button.dataset[attr]));
+      button.addEventListener("keydown", (event) => {
+        const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1
+          : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+        if (!step) return;
+        event.preventDefault();
+        const list = buttons.map((b) => b.dataset[attr]);
+        const next = list[(list.indexOf(root.dataset[attr]) + step + list.length) % list.length];
+        choose(attr, next);
+        group.querySelector('[aria-checked="true"]').focus();
+      });
+    });
+  }
+  bindGroup(document.getElementById("paCountryGroup"), "country");
+  bindGroup(document.getElementById("paStyleGroup"), "style");
 
   const saved = readTheme();
   applyTheme(saved.country, saved.style);
@@ -297,6 +343,7 @@
     state: () => ({ work: state.work, country: root.dataset.country, style: root.dataset.style }),
     open: (work) => openWork(work),
     home: goHome,
-    theme: () => ({ countries: COUNTRIES.slice(), styles: STYLES.slice() })
+    theme: () => ({ countries: COUNTRIES.slice(), styles: STYLES.slice(), names: { countries: THEME_NAMES, styles: STYLE_NAMES } }),
+    themeOpen: (open) => openThemePanel(open)
   };
 })();

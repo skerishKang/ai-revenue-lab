@@ -1,27 +1,53 @@
-# 이미지 자산 출처와 사용 조건
+# 화면 자산 출처 (ATTRIBUTION)
 
-## `assembly-night-2400.jpg` / `assembly-night-1200.jpg`
+이 프로토타입이 실제로 내보내는 이미지 4장의 출처·변형·사용 조건 기록.
+`tests/test_parliament_prototype.py`가 이 파일을 읽어, 자산마다 출처가 적혀 있는지 확인한다.
 
-| 항목 | 값 |
-| --- | --- |
-| 원본 파일 | `Dangsan Railway Bridge Night View.jpg` (6056×4034) |
-| 원본 URL | https://upload.wikimedia.org/wikipedia/commons/9/99/Dangsan_Railway_Bridge_Night_View.jpg |
-| 설명 페이지 | https://commons.wikimedia.org/wiki/File:Dangsan_Railway_Bridge_Night_View.jpg |
-| 저작자 | Tony |
-| 라이선스 | CC BY 2.0 — https://creativecommons.org/licenses/by/2.0/ |
-| 공개 좌표 | 약 37.5275°N, 126.9320°E (여의도·당산철교 방면) |
-| 확인 방법 | Wikimedia Commons `imageinfo` API의 `extmetadata`(Artist / LicenseShortName / UsageTerms)를 2026-10-27에 조회 |
-| 받은 날짜 | 2026-10-27 |
-| 이 저장소에 넣은 변형 | 리사이즈(2400px·1200px) + JPEG progressive 재인코딩·최적화만 적용. 크롭·회전·색 보정·그리딩은 파일에 적용하지 않았다. 화면의 네이비/골드 톤과 스크림은 CSS 렌더 단계에서 얹는다. |
-| 표기 요건 | CC BY 2.0은 저작자 표기를 요구한다 → `index.html` 하단 `pa-credit`에 저작자·원본 링크·라이선스를 화면에 노출한다. 이 표기는 삭제하면 안 된다. |
+## 제공자와 소유
 
-**사용 조건 확인 결과:** CC BY 2.0은 표시(attribution)만 충족하면 재배포·개작·상업적 이용이 허용되고, ShareAlike 조항이 없다. 저장소의 다른 자산과 달리 이 사진은 저장소 라이선스에 흡수되지 않으므로, 위 표를 파일과 함께 유지한다.
+네 장 모두 **PADIEM 대표가 AI 생성으로 만들어 LOCAL 0에게 전달**한 파일이다.
+외부에서 내려받거나 스크랩한 이미지는 없다. 따라서 제3자 라이선스·표기 의무는 발생하지 않고,
+공개 여부와 제품 사용은 대표의 소유 판단 범위다.
 
-## 아직 없는 자산
+- 수신 위치(COM1 로컬, **비공개**): `E:\wt-5967-design-261027\reference\generated-assets\`
+- 수신 일시: 2026-10-28 (ZIP `PADIEM_Parliament_AI_Design_Concepts_20261027.zip` 경유, SHA 4/4 확인)
+- 원본 4장의 크기: 각 1672 × 941 px, aspect 1.777
 
-- CENTRAL 제공 시안 패키지 `PADIEM Parliament AI Design Concepts 20261027`의
-  `01_uk_classic.png` · `02_us_cinematic.png` · `03_global_theme_matrix.png` · `04_korea_cinematic_home.png`
-  — **이 머신과 GitHub 어디에도 존재하지 않는다** (#5967에 부재 기록함).
-- 미국·프랑스·영국 히어로는 현재 CSS/SVG 플레이스홀더이며, 각 국가 블록이
-  `--hero-photo: none`을 명시해 "사진 미확보" 상태를 코드로 드러낸다. 대체 그림을 임의로 만들어
-  완성 처리하지 않는다.
+## 저장소에 들어가는 파생본
+
+| 파일 | 역할 | 원본 파일명 | 변형 | 화면 슬롯 |
+|---|---|---|---|---|
+| `parliament-hero.jpg` | 히어로 전폭 사진 | `3bcde80e-e4e3-47a5-907c-adf78ab9962d.png` | 리사이즈 없음(1672×941) · JPEG q84 재인코딩 | `--hero-photo` |
+| `speech-card.jpg` | 카드 1 축사·인사말 | `5360d400-6432-4642-a19a-6e6ae57c8826.png` | 1120×630으로 축소(LANCZOS) · JPEG q84 | `--card-image-1` |
+| `sns-card.jpg` | 카드 2 SNS 홍보 | `af6afe47-19bc-47cc-93b8-4ea3e89a4319.png` | 1120×630으로 축소 · JPEG q84 | `--card-image-2` |
+| `meeting-card.jpg` | 카드 3 회의정리·활동집 | `af090a8b-6a91-4858-88e0-d8445c608fa7.png` | 1120×630으로 축소 · JPEG q84 | `--card-image-3` |
+
+변형은 **리사이즈와 재인코딩만** 적용했다. 크롭·회전·색 보정은 파일에 구워 넣지 않고
+렌더 단계(`background-size` / `background-position` / 오버레이 그라데이션)에서 결정한다.
+어떤 파일에도 업스케일을 쓰지 않았다(파생본 폭 ≤ 원본 폭).
+
+## 이미지별 실제 내용과 배치 근거
+
+수신한 파일을 직접 열어 확인한 내용과, 시안 04에서 관찰한 구도:
+
+| 자산 | 실제 내용 | 시안 04의 대응 요소 | 명도 계측(평균 luminance) | 배치 결정 |
+|---|---|---|---|---|
+| `parliament-hero.jpg` | 의사당 정면 + 중앙 돔 + 왼쪽으로 지는 석양 + 도시 스카이라인 | 히어로 오른쪽에 건물, 왼쪽은 먹색 기둥 | 좌측 반 122 / 우측 반 98 → **시안과 좌우가 반대** | `--hero-photo-position: 74% 44%`로 건물을 오른쪽에 두고, `.pa-scene::before`의 좌측 그라데이션(`--hero-scrim-strong`)으로 읽기를 보장 |
+| `speech-card.jpg` | 본회의장 연단과 마이크 2본, 뒤로 의석 | 카드 1의 연단·마이크 사진 | x 3분위 67 / 85 / 56 → 중앙이 밝음 | `--card-position-1: 64% 52%`로 연단을 오른쪽에 두고 왼쪽은 색 오버레이 |
+| `sns-card.jpg` | 책상 위 스마트폰, 화면에 사진 격자 | 카드 2의 스마트폰 사진 | x 3분위 39 / 60 / 37, 평균 45(4장 중 가장 어둡고 저채도) | `--card-position-2: 56% 50%`. 저채도이므로 카드 색(청록) 오버레이가 톤을 지배한다 |
+| `meeting-card.jpg` | 회의 테이블 위의 인쇄 문서 + 네이비 노트 + 펜, 보라 톤 저녁실내 | 카드 3의 의정활동 보고서 | x 3분위 88 / 63 / 56 → **문서가 왼쪽** (시안은 오른쪽) | `--card-position-3: 42% 58%`로 문서를 가운데-오른쪽으로 밀고 카드 3 그라데이션으로 왼쪽을 누름 |
+
+시안의 3개 카드는 서로 다른 소재를 쓰므로, 같은 사진 한 장을 위치만 바꿔 세 번 깔지 않는다.
+
+## 제거한 자산
+
+`assembly-night-1200.jpg` / `assembly-night-2400.jpg`(Wikimedia Commons “Dangsan Railway Bridge Night View”,
+저작자 Tony, CC BY 2.0)는 **이 저장소에서 삭제**했다. 당산철교 야경은 시안의 의사당과 주제가 다르고,
+대표가 역할별 생성본 4장을 전달했으므로 대체 이유가 사라졌다. 삭제와 동시에 화면 하단의 CC BY 표기도
+제거해 크레딧이 실제 사용과 일치하도록 정리했다. 라이선스 자체는 표기 의무만 있어 재배포 없이 삭제로 끝난다.
+
+## 비공개로 남기는 것
+
+- `reference/design-assets/`의 시안 PNG 4종(01~04)과 그 픽셀을 축소한 비교 원판 → **추적 제외**.
+  공개 커밋 여부는 대표의 별도 결정이다.
+- `reference/generated-assets/`의 수신 원본 PNG 4장 → 화면에 필요한 파생본만 `assets/`에 넣었다.
