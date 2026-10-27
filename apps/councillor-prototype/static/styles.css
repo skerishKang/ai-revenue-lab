@@ -2,12 +2,12 @@
  * 임미란 의원 홈페이지 (#5972) — layout reproduced from reference_01_cinematic.png.
  *
  * Measured on the 1448x1086 mockup, scaled to 1440:
- *   topbar      53px, light ground, hairline rule
- *   hero band  362px (25.1vw), photographic panorama
+ *   topbar      52px, light ground, hairline rule
+ *   hero band  363px (25.2vw), photographic panorama
  *   headline   ~52px serif, 2 lines — line 1 #00183c, line 2 #00609c
  *   body       ~16px #546078
  *   CTA        navy fill #004884 + white/outline, 8px radius
- *   sections   near-white ground, navy headings
+ *   sections   near-white ground, navy headings, tight heading leading
  *
  * Colour note: the mockup's accent is BLUE (#004884 / #00609c), not gold.
  * The palette below follows the measured mockup.
@@ -65,12 +65,12 @@ body {
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
 
-/* ── top bar: 53px light bar with hairline (reference y 0..53) ─────────── */
+/* ── top bar: 52px light bar with hairline (reference y 0..52) ─────────── */
 .topbar {
   position: sticky; top: 0; z-index: 60;
   display: flex; align-items: center; justify-content: space-between;
   gap: 24px;
-  height: 56px; padding: 0 var(--gutter);
+  height: 52px; padding: 0 var(--gutter);
   background: var(--paper);
   border-bottom: 1px solid rgba(11, 26, 46, 0.10);
 }
@@ -244,12 +244,14 @@ body {
 /* inner pages place .section-lead directly under .section-inner */
 .section-inner > .section-lead { margin: 0 0 28px; }
 .section-eyebrow {
-  margin: 0 0 8px; font-size: 11px; font-weight: 700;
+  margin: 0 0 8px; font-size: 11px; font-weight: 700; line-height: 1.2;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-2);
 }
+/* Headings must not inherit the body's 1.7 leading — the mockup's titles sit in a
+   tight box (its 4-card heading measured 59px tall, ours was 84.5px). */
 .section-title {
   margin: 0 0 6px; font-family: var(--font-serif);
-  font-size: clamp(24px, 2.4vw, 34px); font-weight: 700;
+  font-size: clamp(24px, 2.4vw, 34px); font-weight: 700; line-height: 1.22;
   letter-spacing: -0.01em; color: var(--text);
 }
 .section-lead { margin: 0; font-size: 13.5px; color: var(--muted); max-width: 62ch; }
@@ -268,7 +270,7 @@ body {
 [data-theme="dark"] .key-activity-card { background: var(--navy-soft); border-color: var(--border); }
 .key-activity-card:hover { border-color: var(--accent-2); transform: translateY(-3px); box-shadow: 0 12px 28px rgba(11, 26, 46, 0.08); }
 .ka-media { position: relative; }
-.ka-thumb { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; background: var(--bg-soft); }
+.ka-thumb { display: block; width: 100%; aspect-ratio: 16 / 6; object-fit: cover; background: var(--bg-soft); }
 [data-theme="light"] .ka-thumb { background: var(--ivory-soft); }
 .ka-badge {
   position: absolute; left: 10px; bottom: -13px;
@@ -301,7 +303,7 @@ body {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
   gap: 32px; align-items: center;
 }
-.stat-band-title { margin: 0 0 4px; font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); font-weight: 700; }
+.stat-band-title { margin: 0 0 4px; font-family: var(--font-serif); font-size: clamp(18px, 1.6vw, 22px); font-weight: 700; line-height: 1.25; }
 .stat-band-lead { margin: 0; font-size: 12.5px; color: rgba(245, 241, 232, 0.72); }
 .stat-list {
   list-style: none; margin: 0; padding: 0;
@@ -322,7 +324,7 @@ body {
 /* ── 3-column news / media / links (reference y 860..1035) ────────────── */
 .col-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
 .col-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.col-title { margin: 0; font-size: 15px; font-weight: 700; color: var(--text); }
+.col-title { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--text); }
 .col-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .col-item { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: var(--text); }
 .col-item:hover .col-item-title { color: var(--accent-2); }
