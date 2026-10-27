@@ -71,15 +71,30 @@ def replayed_schema(extra: str = "") -> dict[str, set[str]]:
         db.close()
 
 
-def snapshot_payload(schema: dict[str, set[str]], *, ledger_present: bool) -> list[dict]:
+def snapshot_payload(schema: dict[str, set[str]]) -> list[dict]:
+    """One execute, one statement: the schema block only."""
+
     return [
         {
+            "success": True,
+            "meta": {"duration": 1},
             "results": [
                 {"type": "table", "name": name, "tbl_name": name}
                 for name in sorted(schema["tables"])
-            ]
-        },
-        {"results": [{"name": LEDGER}] if ledger_present else []},
+            ],
+        }
+    ]
+
+
+def probe_payload(ledger_present: bool) -> list[dict]:
+    """The ledger-table probe: zero rows when the table does not exist."""
+
+    return [
+        {
+            "success": True,
+            "meta": {"duration": 1},
+            "results": [{"name": LEDGER}] if ledger_present else [],
+        }
     ]
 
 
@@ -219,12 +234,14 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
     detail_path, detail_tables = with_detail(tmp_path, inventory_items, schema)
     assert detail_tables
     snapshot_path = write(
-        tmp_path / "snapshot.json", snapshot_payload(schema, ledger_present=False)
+        tmp_path / "snapshot.json", snapshot_payload(schema)
     )
+    probe_path = write(tmp_path / "probe.json", probe_payload(False))
     plan_path = tmp_path / "plan.json"
     assert gate.main([
         "classify", "--app", "chat", "--inventory", str(inventory_path),
-        "--snapshot", str(snapshot_path), "--detail", str(detail_path),
+        "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+        "--detail", str(detail_path),
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
@@ -255,8 +272,8 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
     second_plan = tmp_path / "plan2.json"
     assert gate.main([
         "classify", "--app", "chat", "--inventory", str(inventory_path),
-        "--snapshot", str(write(tmp_path / "snapshot2.json",
-                               snapshot_payload(schema, ledger_present=True))),
+        "--snapshot", str(write(tmp_path / "snapshot2.json", snapshot_payload(schema))),
+        "--probe", str(write(tmp_path / "probe2.json", probe_payload(True))),
         "--ledger", str(write(tmp_path / "ledger2.json", ledger_payload(recorded))),
         "--detail", str(detail_path),
         "--out", str(second_plan),
@@ -298,15 +315,15 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
         live = replayed_schema()
         inventory_path = write(tmp_path / "inv.json", fresh)
         detail_path, _tables = with_detail(tmp_path, fresh, live, name="detail73")
-        snapshot_path = write(
-            tmp_path / "snap.json", snapshot_payload(live, ledger_present=True)
-        )
+        snapshot_path = write(tmp_path / "snap.json", snapshot_payload(live))
+        probe_path = write(tmp_path / "probe.json", probe_payload(True))
         ledger_path = write(tmp_path / "ledger.json", ledger_payload(recorded))
 
         plan_73 = tmp_path / "plan73.json"
         assert gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
-            "--snapshot", str(snapshot_path), "--ledger", str(ledger_path),
+            "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+            "--ledger", str(ledger_path),
             "--detail", str(detail_path),
             "--up-to", "073", "--out", str(plan_73),
         ]) == 0
@@ -325,7 +342,8 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
         plan_72 = tmp_path / "plan72.json"
         assert gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
-            "--snapshot", str(snapshot_path), "--ledger", str(ledger_path),
+            "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+            "--ledger", str(ledger_path),
             "--detail", str(detail_path),
             "--up-to", "072", "--out", str(plan_72),
         ]) == 0
@@ -371,21 +389,22 @@ def test_drop_guard_blocks_an_executed_rebuild_until_the_flag_is_given(tmp_path)
         )
         inventory_path = write(tmp_path / "inv.json", fresh)
         detail_path, _tables = with_detail(tmp_path, fresh, schema, name="detail")
-        snapshot_path = write(
-            tmp_path / "snap.json", snapshot_payload(schema, ledger_present=True)
-        )
+        snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema))
+        probe_path = write(tmp_path / "probe.json", probe_payload(True))
         ledger_path = write(tmp_path / "ledger.json", ledger_payload(recorded))
         plan = tmp_path / "plan.json"
         with pytest.raises(gate.GateError, match="DROP_GUARD_REFUSED"):
             gate.main([
                 "classify", "--app", "chat", "--inventory", str(inventory_path),
-                "--snapshot", str(snapshot_path), "--ledger", str(ledger_path),
+                "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+                "--ledger", str(ledger_path),
                 "--detail", str(detail_path),
                 "--up-to", "073", "--out", str(plan),
             ])
         assert gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
-            "--snapshot", str(snapshot_path), "--ledger", str(ledger_path),
+            "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+            "--ledger", str(ledger_path),
             "--detail", str(detail_path),
             "--up-to", "073", "--allow-table-drop", "--out", str(plan),
         ]) == 0
@@ -425,13 +444,13 @@ def test_classify_demands_the_ledger_and_column_evidence_it_cannot_guess(tmp_pat
     schema = replayed_schema()
     inventory_path = tmp_path / "inv.json"
     gate.main(["inventory", "--app", "chat", "--out", str(inventory_path)])
-    snapshot_path = write(
-        tmp_path / "snap.json", snapshot_payload(schema, ledger_present=True)
-    )
+    snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema))
+    probe_path = write(tmp_path / "probe.json", probe_payload(True))
     with pytest.raises(gate.GateError, match="LEDGER_RESPONSE_REQUIRED"):
         gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
-            "--snapshot", str(snapshot_path), "--out", str(tmp_path / "plan.json"),
+            "--snapshot", str(snapshot_path), "--probe", str(probe_path),
+            "--out", str(tmp_path / "plan.json"),
         ])
     # The ledger is there, but a column indicator cannot be proven from
     # sqlite_master: without the PRAGMA response an applied ALTER would look
@@ -439,7 +458,7 @@ def test_classify_demands_the_ledger_and_column_evidence_it_cannot_guess(tmp_pat
     with pytest.raises(gate.GateError, match="DETAIL_REQUIRED"):
         gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
-            "--snapshot", str(snapshot_path),
+            "--snapshot", str(snapshot_path), "--probe", str(probe_path),
             "--ledger", str(write(tmp_path / "ledger.json", ledger_payload([]))),
             "--out", str(tmp_path / "plan.json"),
         ])
@@ -455,19 +474,21 @@ def test_the_read_only_surface_selects_metadata_and_counts_only(tmp_path, capsys
     gate.main(["inventory", "--app", "chat", "--out", str(inventory_path)])
 
     snapshot_sql = tmp_path / "snapshot.sql"
-    assert gate.main(["snapshot-sql", "--out", str(snapshot_sql)]) == 0
+    probe_sql = tmp_path / "probe.sql"
+    assert gate.main([
+        "snapshot-sql", "--out", str(snapshot_sql), "--probe-out", str(probe_sql),
+    ]) == 0
     ledger_sql = tmp_path / "ledger.sql"
     assert gate.main(["ledger-sql", "--out", str(ledger_sql)]) == 0
     detail_sql = tmp_path / "detail.sql"
-    snapshot_json = write(
-        tmp_path / "snap.json", snapshot_payload(schema, ledger_present=True)
-    )
+    snapshot_json = write(tmp_path / "snap.json", snapshot_payload(schema))
     assert gate.main([
         "detail-sql", "--out", str(detail_sql), "--inventory", str(inventory_path),
         "--snapshot", str(snapshot_json),
     ]) == 0
 
     blob = (snapshot_sql.read_text(encoding="utf-8")
+            + probe_sql.read_text(encoding="utf-8")
             + ledger_sql.read_text(encoding="utf-8")
             + detail_sql.read_text(encoding="utf-8"))
     for statement in blob.split(";"):
@@ -476,8 +497,12 @@ def test_the_read_only_surface_selects_metadata_and_counts_only(tmp_path, capsys
             continue
         assert gate.READ_ONLY_RE.match(text), text[:80]
     assert "SELECT *" not in blob.upper()
+    # one statement per file: the schema answer carries no second query
     assert "sqlite_master" in snapshot_sql.read_text(encoding="utf-8")
-    assert f"'{LEDGER}'" in snapshot_sql.read_text(encoding="utf-8")
+    assert snapshot_sql.read_text(encoding="utf-8").count(";") == 1
+    assert probe_sql.read_text(encoding="utf-8").count(";") == 1
+    assert f"'{LEDGER}'" in probe_sql.read_text(encoding="utf-8")
+    assert f"'{LEDGER}'" not in snapshot_sql.read_text(encoding="utf-8")
     assert f'FROM "{LEDGER}"' in ledger_sql.read_text(encoding="utf-8")
 
     inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
@@ -505,7 +530,7 @@ def test_a_wrangler_response_is_parsed_around_its_banner(tmp_path) -> None:
     """
 
     schema = replayed_schema()
-    payload = json.dumps(snapshot_payload(schema, ledger_present=False), ensure_ascii=False)
+    payload = json.dumps(snapshot_payload(schema), ensure_ascii=False)
     bannered = (
         "\u26c5\ufe0f wrangler 4.130.0\n\n"
         "⛅️ wrangler: Routing ... executed 18 statements\n" + payload + "\n"
@@ -513,12 +538,15 @@ def test_a_wrangler_response_is_parsed_around_its_banner(tmp_path) -> None:
     )
     path = tmp_path / "snapshot.json"
     path.write_text(bannered, encoding="utf-8")
-    tables, _columns, _other, ledger_present = gate.snapshot_rows(gate.read_json(path))
+    probe_path = write(tmp_path / "probe.json", probe_payload(False))
+    tables, _columns, _other, ledger_present = gate.snapshot_rows(
+        gate.read_json(path), gate.read_json(probe_path)
+    )
     assert "users" in tables and ledger_present is False
 
     plain = tmp_path / "plain.json"
     plain.write_text(payload, encoding="utf-8")
-    assert gate.snapshot_rows(gate.read_json(plain)) == (
+    assert gate.snapshot_rows(gate.read_json(plain), gate.read_json(probe_path)) == (
         tables, _columns, _other, ledger_present,
     )
 
@@ -526,6 +554,57 @@ def test_a_wrangler_response_is_parsed_around_its_banner(tmp_path) -> None:
     noise.write_text("wrangler failed: unauthorized\n", encoding="utf-8")
     with pytest.raises(gate.GateError, match="RESPONSE_NOT_JSON"):
         gate.read_json(noise)
+
+
+def test_the_split_snapshot_parses_every_real_wrangler_response_shape() -> None:
+    """The Production readonly run died on the envelope, so every real shape is pinned.
+
+    `wrangler d1 execute --remote --json` has shipped three shapes: the list of
+    per-statement blocks, one block dict on its own, and the `/query`-style
+    {"result": [...]} wrapper the older gates saw. One statement per execute
+    means each answer carries exactly one block, and a probe with zero rows —
+    the ledger table does not exist yet — is an answer, not a parse failure.
+    """
+
+    schema = replayed_schema()
+    rows = [
+        {"type": "table", "name": name, "tbl_name": name}
+        for name in sorted(schema["tables"])
+    ]
+    probe_row = [{"type": "table", "name": LEDGER, "tbl_name": LEDGER}]
+    shapes = {
+        "block_list": lambda r: [{"success": True, "meta": {"duration": 1}, "results": r}],
+        "single_block": lambda r: {"success": True, "meta": {"duration": 1}, "results": r},
+        "result_wrapper": lambda r: {"success": True, "result": [{"results": r}]},
+    }
+
+    for name, wrap in shapes.items():
+        tables, columns, other, present = gate.snapshot_rows(wrap(rows), wrap(probe_row))
+        assert "users" in tables, name
+        assert columns == set(), name
+        assert present is True, name
+
+    # ledger table absent: the probe answers zero rows, which plans a baseline
+    for name, wrap in shapes.items():
+        tables, _c, _o, present = gate.snapshot_rows(wrap(rows), wrap([]))
+        assert "users" in tables and present is False, name
+
+    # shapes may also be mixed between the two executes
+    tables, _c, _o, present = gate.snapshot_rows(
+        shapes["single_block"](rows), shapes["block_list"](probe_row)
+    )
+    assert "users" in tables and present is True
+
+    # a schema answer with two blocks is the run's own bug, not a real shape
+    with pytest.raises(gate.GateError, match="SNAPSHOT_BLOCKS_UNEXPECTED"):
+        gate.snapshot_rows(
+            shapes["block_list"](rows) + shapes["block_list"](rows),
+            shapes["single_block"](probe_row),
+        )
+    with pytest.raises(gate.GateError, match="PROBE_BLOCKS_UNEXPECTED"):
+        gate.snapshot_rows(
+            shapes["single_block"](rows), shapes["block_list"](probe_row) + shapes["block_list"](probe_row)
+        )
 
 
 def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> None:
@@ -542,11 +621,13 @@ def test_schema_report_names_objects_and_never_row_content(tmp_path, capsys) -> 
     schema = replayed_schema()
     inventory = gate.build_inventory("chat")
     inventory_path = write(tmp_path / "inv.json", inventory)
-    snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema, ledger_present=True))
+    snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema))
+    probe_path = write(tmp_path / "probe.json", probe_payload(True))
     detail_path, tables = with_detail(tmp_path, inventory, schema)
     assert gate.main([
         "report",
-        "--before", str(snapshot_path), "--after", str(snapshot_path),
+        "--before", str(snapshot_path), "--before-probe", str(probe_path),
+        "--after", str(snapshot_path), "--after-probe", str(probe_path),
         "--detail-before", str(detail_path), "--detail-after", str(detail_path),
         "--inventory", str(inventory_path),
     ]) == 0

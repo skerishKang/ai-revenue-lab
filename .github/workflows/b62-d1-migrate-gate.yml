@@ -191,9 +191,12 @@ jobs:
         run: |
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
-          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-snapshot.sql
+          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
+            --out /tmp/b62-d1-gate-snapshot.sql --probe-out /tmp/b62-d1-gate-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
             --file=/tmp/b62-d1-gate-snapshot.sql > /tmp/b62-d1-gate-snapshot.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --file=/tmp/b62-d1-gate-probe.sql > /tmp/b62-d1-gate-probe.json
           echo 'B62_D1_SNAPSHOT_READ=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -209,7 +212,7 @@ jobs:
             --out /tmp/b62-d1-gate-inventory.json
           LEDGER_ARGS=()
           LEDGER_PRESENT="$(python .github/scripts/b62_d1_migrate_gate.py probe \
-            --snapshot /tmp/b62-d1-gate-snapshot.json)"
+            --probe /tmp/b62-d1-gate-probe.json)"
           if [ "${LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql --out /tmp/b62-d1-gate-ledger.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
@@ -234,6 +237,7 @@ jobs:
             --app "$GATE_APP" \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-snapshot.json \
+            --probe /tmp/b62-d1-gate-probe.json \
             "${LEDGER_ARGS[@]}" "${DETAIL_ARGS[@]}" "${DROP_ARGS[@]}" \
             --up-to "${UP_TO}" --out /tmp/b62-d1-gate-plan.json
           {
@@ -339,9 +343,12 @@ jobs:
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           python .github/scripts/b62_d1_migrate_gate.py inventory --app "$GATE_APP" \
             --out /tmp/b62-d1-gate-inventory.json
-          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-before.sql
+          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
+            --out /tmp/b62-d1-gate-before.sql --probe-out /tmp/b62-d1-gate-before-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
             --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-before.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-before-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-before.json \
@@ -388,13 +395,13 @@ jobs:
           # a single name into it. An empty migrations dir is never handed to
           # `migrations apply`, which refuses a directory with nothing in it.
           if [ "$(python .github/scripts/b62_d1_migrate_gate.py probe \
-              --snapshot /tmp/b62-d1-gate-before.json)" != "yes" ]; then
+              --probe /tmp/b62-d1-gate-before-probe.json)" != "yes" ]; then
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --command \
               "CREATE TABLE IF NOT EXISTS \"d1_migrations\"(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);"
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-ledger-check.json
+              --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-ledger-check.json
             test "$(python .github/scripts/b62_d1_migrate_gate.py probe \
-              --snapshot /tmp/b62-d1-gate-ledger-check.json)" = "yes"
+              --probe /tmp/b62-d1-gate-ledger-check.json)" = "yes"
             echo 'B62_D1_LEDGER_TABLE=CREATED'
           else
             echo 'B62_D1_LEDGER_TABLE=ALREADY_PRESENT'
@@ -409,6 +416,8 @@ jobs:
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
             --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-snapshot.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-probe.json
           DROP_ARGS=()
           if [ "${ALLOW_TABLE_DROP}" = "true" ]; then DROP_ARGS=(--allow-table-drop); fi
           if [ "${READONLY_LEDGER_PRESENT}" = "yes" ]; then
@@ -424,6 +433,7 @@ jobs:
             --app "$GATE_APP" \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-snapshot.json \
+            --probe /tmp/b62-d1-gate-probe.json \
             "${LEDGER_ARGS[@]}" "${DROP_ARGS[@]}" \
             --up-to "${READONLY_UP_TO}" --out /tmp/b62-d1-gate-plan.json
           SEED_COUNT="$(python -c 'import json;print(len(json.load(open("/tmp/b62-d1-gate-plan.json"))["seed"]))')"
@@ -473,6 +483,8 @@ jobs:
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
             --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-after.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --file=/tmp/b62-d1-gate-before-probe.sql > /tmp/b62-d1-gate-after-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-after.json \
@@ -487,7 +499,9 @@ jobs:
           fi
           python .github/scripts/b62_d1_migrate_gate.py report \
             --before /tmp/b62-d1-gate-before.json \
+            --before-probe /tmp/b62-d1-gate-before-probe.json \
             --after /tmp/b62-d1-gate-after.json \
+            --after-probe /tmp/b62-d1-gate-after-probe.json \
             --detail-before /tmp/b62-d1-gate-before-detail.json \
             --detail-after /tmp/b62-d1-gate-after-detail.json \
             --inventory /tmp/b62-d1-gate-inventory.json \

@@ -288,8 +288,10 @@ def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
     if isinstance(payload, dict) and isinstance(payload.get("result"), list):
         payload = payload["result"]
     if isinstance(payload, dict) and isinstance(payload.get("results"), list):
-        return [{str(key).lower(): value for key, value in row.items()}
-                for row in payload["results"]]
+        return [
+            [{str(key).lower(): value for key, value in row.items()}
+             for row in payload["results"]]
+        ]
     if not isinstance(payload, list):
         raise GateError(f"B62_D1_GATE_{expect}_ENVELOPE_UNEXPECTED")
     blocks = []
@@ -302,25 +304,44 @@ def _rows(payload: Any, expect: str) -> list[dict[str, Any]]:
     return blocks
 
 
-def snapshot_rows(payload: Any) -> tuple[set[str], set[str], set[str], bool]:
-    """(tables, columns, other, ledger_present) from one snapshot response."""
+def _single_block(payload: Any, expect: str) -> list[dict[str, Any]]:
+    """One statement per execute: the response must carry exactly one block.
 
-    blocks = _rows(payload, "SNAPSHOT")
-    if len(blocks) < 2:
-        raise GateError("B62_D1_GATE_SNAPSHOT_BLOCKS_UNEXPECTED")
-    schema, probe = blocks[0], blocks[1]
+    The first Production run proved that a two-statement file does not come
+    back as two blocks, so every read now sends one query and unwraps one
+    block here instead of guessing where a statement boundary fell.
+    """
+
+    blocks = _rows(payload, expect)
+    if len(blocks) != 1:
+        raise GateError(f"B62_D1_GATE_{expect}_BLOCKS_UNEXPECTED")
+    return blocks[0]
+
+
+def _schema_sets(schema_payload: Any) -> tuple[set[str], set[str], set[str]]:
     tables: set[str] = set()
     columns: set[str] = set()
     other: set[str] = set()
-    for row in schema:
-        kind, name, table = row.get("type"), row.get("name"), row.get("tbl_name")
+    for row in _single_block(schema_payload, "SNAPSHOT"):
+        kind, name = row.get("type"), row.get("name")
         if kind == "table":
             tables.add(str(name))
         elif kind == "index":
             other.add(str(name))
         elif kind in ("view", "trigger"):
             other.add(f"{kind}:{name}")
-    return tables, columns, other, len(probe) == 1
+    return tables, columns, other
+
+
+def snapshot_rows(schema_payload: Any, probe_payload: Any) -> tuple[set[str], set[str], set[str], bool]:
+    """(tables, columns, other, ledger_present) from the two split responses."""
+
+    tables, columns, other = _schema_sets(schema_payload)
+    return tables, columns, other, len(_single_block(probe_payload, "PROBE")) == 1
+
+
+def snapshot_tables(schema_payload: Any) -> set[str]:
+    return _schema_sets(schema_payload)[0]
 
 
 def ledger_rows(payload: Any) -> list[dict[str, Any]]:
@@ -473,7 +494,7 @@ def cmd_binding_id(argv: argparse.Namespace) -> int:
 
 
 def cmd_probe(argv: argparse.Namespace) -> int:
-    present = snapshot_rows(read_json(argv.snapshot))[3]
+    present = len(_single_block(read_json(argv.probe), "PROBE")) == 1
     print("yes" if present else "no")
     return 0
 
@@ -494,16 +515,20 @@ def cmd_inventory(argv: argparse.Namespace) -> int:
 
 
 def cmd_snapshot_sql(argv: argparse.Namespace) -> int:
-    # Two statements, both safe on a database with no ledger yet: the probe is
-    # what decides whether the ledger query may run at all, so a read-only pass
-    # never asks wrangler to create anything.
-    sql = (
+    # Two files, one statement each. Both are safe on a database with no ledger
+    # yet: the probe is what decides whether the ledger query may run at all, so
+    # a read-only pass never asks wrangler to create anything. One statement per
+    # execute because a two-statement file does not come back as two blocks.
+    schema_sql = (
         "SELECT type, name, tbl_name FROM sqlite_master "
         "WHERE type IN ('table','index','view','trigger') AND name NOT LIKE 'sqlite_%' "
         "ORDER BY type, name;\n"
+    )
+    probe_sql = (
         f"SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{LEDGER_TABLE}';\n"
     )
-    Path(argv.out).write_text(sql, encoding="utf-8")
+    Path(argv.out).write_text(schema_sql, encoding="utf-8")
+    Path(argv.probe_out).write_text(probe_sql, encoding="utf-8")
     print("B62_D1_SNAPSHOT_QUERY=SCHEMA_AND_LEDGER_PROBE")
     print("PRODUCTION_MUTATION=0")
     return 0
@@ -519,7 +544,7 @@ def cmd_ledger_sql(argv: argparse.Namespace) -> int:
 
 def cmd_detail_sql(argv: argparse.Namespace) -> int:
     inventory = read_json(argv.inventory)
-    live_tables = snapshot_rows(read_json(argv.snapshot))[0]
+    live_tables = snapshot_tables(read_json(argv.snapshot))
     up_to = resolve_up_to(inventory, argv.up_to)
     extra = tuple(json.loads(Path(argv.plan).read_text(encoding="utf-8"))["apply"]) if argv.plan else ()
     tables = [
@@ -545,7 +570,9 @@ def cmd_detail_sql(argv: argparse.Namespace) -> int:
 def cmd_classify(argv: argparse.Namespace) -> int:
     inventory = read_json(argv.inventory)
     up_to = resolve_up_to(inventory, argv.up_to)
-    tables, columns, _, ledger_present = snapshot_rows(read_json(argv.snapshot))
+    tables, columns, _, ledger_present = snapshot_rows(
+        read_json(argv.snapshot), read_json(argv.probe)
+    )
     if ledger_present:
         if not argv.ledger:
             # Reading the ledger is the whole point of a recorded run; a missing
@@ -649,10 +676,10 @@ def cmd_window(argv: argparse.Namespace) -> int:
 
 def cmd_report(argv: argparse.Namespace) -> int:
     before_tables, before_columns, before_other, before_ledger_present = snapshot_rows(
-        read_json(argv.before)
+        read_json(argv.before), read_json(argv.before_probe)
     )
     after_tables, after_columns, after_other, after_ledger_present = snapshot_rows(
-        read_json(argv.after)
+        read_json(argv.after), read_json(argv.after_probe)
     )
     delta = schema_diff(
         {"tables": before_tables, "columns": before_columns, "other": before_other},
@@ -728,10 +755,11 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--binding", required=True)
 
     handle = add("probe")
-    handle.add_argument("--snapshot", required=True)
+    handle.add_argument("--probe", required=True)
 
     handle = add("snapshot-sql")
     handle.add_argument("--out", required=True)
+    handle.add_argument("--probe-out", required=True)
 
     handle = add("ledger-sql")
     handle.add_argument("--out", required=True)
@@ -747,6 +775,7 @@ def build_parser() -> argparse.ArgumentParser:
     handle.add_argument("--app", required=True, choices=sorted(APPS))
     handle.add_argument("--inventory", required=True)
     handle.add_argument("--snapshot", required=True)
+    handle.add_argument("--probe", required=True)
     handle.add_argument("--ledger")
     handle.add_argument("--detail")
     handle.add_argument("--up-to", default="", help="empty means the newest file in this checkout")
@@ -767,7 +796,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     handle = add("report")
     handle.add_argument("--before", required=True)
+    handle.add_argument("--before-probe", required=True)
     handle.add_argument("--after", required=True)
+    handle.add_argument("--after-probe", required=True)
     handle.add_argument("--detail-before")
     handle.add_argument("--detail-after")
     handle.add_argument("--inventory")
