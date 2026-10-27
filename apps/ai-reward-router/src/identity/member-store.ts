@@ -45,6 +45,12 @@ export interface B64GoogleMember {
   readonly linkedAt: string;
 }
 
+/** The Google side of a member, read back for authority decisions. */
+export interface B64GoogleLink {
+  readonly googleSub: string;
+  readonly email: string;
+}
+
 export class B64MemberStorageError extends Error {
   constructor(message: string) {
     super(message);
@@ -69,6 +75,12 @@ export interface B64MemberStore {
   /** The member a Google subject was linked to, or null. Email is never consulted here. */
   findMemberIdByGoogleSub(googleSub: string): Promise<string | null>;
   linkGoogleMember(record: B64GoogleMember): Promise<void>;
+  /**
+   * The Google side of one member, for the authority decision that asks "was
+   * this account proven by Google, and to which address". A member who only
+   * ever used a password has no row and returns null.
+   */
+  findGoogleLinkByMemberId(memberId: string): Promise<B64GoogleLink | null>;
 }
 
 function assertMemberShape(member: B64Member): void {
@@ -101,6 +113,11 @@ interface MemberRow {
 
 interface GoogleRow {
   member_id: string;
+}
+
+interface GoogleLinkRow {
+  google_sub: string;
+  email: string;
 }
 
 interface SessionRow {
@@ -187,6 +204,19 @@ export class D1B64MemberStore implements B64MemberStore {
       .run();
     if (result.success === false) throw new B64MemberStorageError('google link failed');
   }
+
+  async findGoogleLinkByMemberId(memberId: string): Promise<B64GoogleLink | null> {
+    if (!isB64MemberId(memberId)) throw new B64MemberStorageError('member id is not a B64 member id');
+    const row = await this.db
+      .prepare('SELECT google_sub, email FROM b64_member_google WHERE member_id = ?')
+      .bind(memberId)
+      .first<GoogleLinkRow>();
+    if (!row) return null;
+    if (!isB64GoogleSubject(row.google_sub) || !row.email) {
+      throw new B64MemberStorageError('google link row is not a usable identity');
+    }
+    return Object.freeze({ googleSub: row.google_sub, email: row.email });
+  }
 }
 
 /** Fail-closed stand-in for a deployment without the D1 binding. */
@@ -206,6 +236,7 @@ export class UnboundB64MemberStore implements B64MemberStore {
   async revokeSession(_sessionId: string): Promise<void> { this.fail(); }
   async findMemberIdByGoogleSub(_googleSub: string): Promise<string | null> { this.fail(); }
   async linkGoogleMember(_record: B64GoogleMember): Promise<void> { this.fail(); }
+  async findGoogleLinkByMemberId(_memberId: string): Promise<B64GoogleLink | null> { this.fail(); }
 }
 
 /** Test/local-prototype store. Never injected as a production fallback. */
@@ -213,6 +244,7 @@ export class InMemoryB64MemberStore implements B64MemberStore {
   private readonly membersByEmail = new Map<string, B64Member>();
   private readonly sessions = new Map<string, B64Session>();
   private readonly membersByGoogleSub = new Map<string, string>();
+  private readonly linksByMemberId = new Map<string, B64GoogleLink>();
 
   async createMember(member: B64Member): Promise<void> {
     assertMemberShape(member);
@@ -250,5 +282,11 @@ export class InMemoryB64MemberStore implements B64MemberStore {
     assertGoogleShape(record);
     if (this.membersByGoogleSub.has(record.googleSub)) throw new B64MemberStorageError('google link failed');
     this.membersByGoogleSub.set(record.googleSub, record.memberId);
+    this.linksByMemberId.set(record.memberId, Object.freeze({ googleSub: record.googleSub, email: record.email }));
+  }
+
+  async findGoogleLinkByMemberId(memberId: string): Promise<B64GoogleLink | null> {
+    if (!isB64MemberId(memberId)) throw new B64MemberStorageError('member id is not a B64 member id');
+    return this.linksByMemberId.get(memberId) ?? null;
   }
 }
