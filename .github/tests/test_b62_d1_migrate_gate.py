@@ -631,6 +631,33 @@ def test_an_import_stats_block_is_a_named_refusal_not_result_rows() -> None:
         )
 
 
+def test_the_recovery_bookmark_reads_result_bookmark_and_names_keys_on_failure(tmp_path, capsys) -> None:
+    """The first apply run stopped at the bookmark GET, so its parse is pinned.
+
+    The Production answer is `result.bookmark` with a four-group hyphenated
+    value; the older shape used `result.id`. A refusal that cannot find either
+    prints the key names of the top level and of `result` — and never a value.
+    """
+
+    bookmark = "00000085-0000024c-00004c6d-1a2b3c4d5e6f7a8b"
+    path = write(tmp_path / "bm.json", {"success": True, "result": {"bookmark": bookmark}})
+    assert gate.main(["bookmark", "--response", str(path)]) == 0
+    out = capsys.readouterr().out
+    assert "B62_D1_GATE_BOOKMARK=VALID_SHAPE" in out
+    assert bookmark not in out
+
+    path = write(tmp_path / "bm-old.json", {"success": True, "result": {"id": bookmark}})
+    assert gate.main(["bookmark", "--response", str(path)]) == 0
+    assert "VALID_SHAPE" in capsys.readouterr().out
+
+    path = write(tmp_path / "bm-bad.json", {"success": True, "result": {"at": "2026-10-27T05:51:46Z"}})
+    with pytest.raises(gate.GateError, match="TIME_TRAVEL_BOOKMARK_UNAVAILABLE"):
+        gate.main(["bookmark", "--response", str(path)])
+    err = capsys.readouterr().err
+    assert "top=result,success" in err and "result=at" in err
+    assert "2026-10-27" not in err
+
+
 def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys, monkeypatch) -> None:
     """Counts alone cannot answer "which files", so the plan names them.
 

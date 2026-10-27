@@ -279,6 +279,44 @@ def binding_id(settings: Any, name: str) -> str:
     return database_id
 
 
+BOOKMARK_RE = re.compile(r"\A[A-Za-z0-9_-]{12,130}\Z")
+
+
+def bookmark_value(payload: Any) -> str:
+    """The time-travel bookmark from the Cloudflare GET .../time_travel/bookmark.
+
+    The real answer carries it under `result.bookmark`; the older shape used
+    `result.id`. A refusal prints only the key NAMES of the top level and of
+    `result` — never the bookmark, never a token value. The name pattern
+    includes hyphens (the Production form is four hyphen-separated groups).
+    """
+
+    if not isinstance(payload, dict):
+        raise GateError("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
+    result = payload.get("result")
+    candidate = ""
+    if isinstance(result, dict):
+        candidate = str(result.get("bookmark") or result.get("id") or "")
+    if not BOOKMARK_RE.fullmatch(candidate):
+        top_keys = ",".join(sorted(str(key) for key in payload))
+        result_keys = (
+            ",".join(sorted(str(key) for key in result)) if isinstance(result, dict) else "-"
+        )
+        print(
+            f"B62_D1_GATE_BOOKMARK_KEYS top={top_keys} result={result_keys}",
+            file=sys.stderr,
+        )
+        raise GateError("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
+    return candidate
+
+
+def cmd_bookmark(argv: argparse.Namespace) -> int:
+    bookmark_value(read_json(argv.response))
+    print("B62_D1_GATE_BOOKMARK=VALID_SHAPE")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def _rows(payload: Any, expect: str) -> list[list[dict[str, Any]]]:
     """Unwrap a `wrangler d1 execute --json` envelope into statement result blocks.
 
@@ -774,6 +812,7 @@ def cmd_report(argv: argparse.Namespace) -> int:
 COMMANDS = {
     "inventory": cmd_inventory,
     "binding-id": cmd_binding_id,
+    "bookmark": cmd_bookmark,
     "probe": cmd_probe,
     "snapshot-sql": cmd_snapshot_sql,
     "ledger-sql": cmd_ledger_sql,
@@ -800,6 +839,9 @@ def build_parser() -> argparse.ArgumentParser:
     handle = add("binding-id")
     handle.add_argument("--settings", required=True)
     handle.add_argument("--binding", required=True)
+
+    handle = add("bookmark")
+    handle.add_argument("--response", required=True)
 
     handle = add("probe")
     handle.add_argument("--probe", required=True)

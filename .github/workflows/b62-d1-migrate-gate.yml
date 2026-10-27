@@ -334,16 +334,17 @@ jobs:
         run: |
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
+          resp=/tmp/b62-d1-gate-bookmark.json
           # GET only: POST on this endpoint CREATES a recovery bookmark.
-          mark="$(curl -fsS \
+          curl -fsS \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/time_travel/bookmark" \
-            | python -c 'import json,sys; print(json.load(sys.stdin).get("result",{}).get("id",""))')"
-          python - "${mark}" <<'PY'
-          import re, sys
-          if not re.fullmatch(r"[A-Za-z0-9_-]{12,130}", sys.argv[1] or ""):
-              raise SystemExit("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
-          PY
+            -o "${resp}"
+          # The answer carries the bookmark under result.bookmark (older shape:
+          # result.id). The script validates its name shape and, on refusal,
+          # prints key names only — never the value.
+          python .github/scripts/b62_d1_migrate_gate.py bookmark --response "${resp}"
+          rm -f "${resp}"
           echo 'B62_D1_TIME_TRAVEL_BOOKMARK=AVAILABLE'
 
       - name: Measure the pre-mutation schema and row counts
