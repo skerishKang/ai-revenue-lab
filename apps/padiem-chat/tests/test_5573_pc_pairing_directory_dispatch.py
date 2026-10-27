@@ -218,6 +218,31 @@ def test_one_folder_accepts_the_label_or_a_bare_relative_path_alike(monkeypatch)
 
 # -- the map still answers when there is no directory to ask --------------
 
+def test_a_drive_reference_names_the_whole_drive_and_a_bare_letter_stays_a_path():
+    """#5573: "C드라이브" is the volume, while `C` as text is still a file name.
+
+    A drive reference resolves only onto a drive the account actually granted, so
+    the lane never walks onto a volume nobody approved. Everything else keeps the
+    (A) rule: one grant means a plain relative path, two grants require a label.
+    """
+    drives = [
+        {"root_ref": None, "label": "C:", "path": "C:"},
+        {"root_ref": None, "label": "D:", "path": "D:"},
+    ]
+    assert routes._pc_files_pick_root(drives, "C드라이브") == ("C:", "")
+    assert routes._pc_files_pick_root(drives, "c:") == ("C:", "")
+    assert routes._pc_files_pick_root(drives, "D 드라이브") == ("D:", "")
+    assert routes._pc_files_pick_root(drives, "C:/Users") == ("C:", "Users")
+    # An ungranted volume is a refusal, never a guess.
+    assert routes._pc_files_pick_root(drives, "F:") is None
+    # Several grants and no name stays ambiguous.
+    assert routes._pc_files_pick_root(drives, "여기") is None
+    assert routes._pc_files_pick_root([{"root_ref": None, "label": "견적", "path": QUOTATION}], "여기") == (QUOTATION, "")
+    # A file genuinely called `C` is still reachable inside the granted folder.
+    folder = [{"root_ref": None, "label": "견적", "path": QUOTATION}]
+    assert routes._pc_files_pick_root(folder, "C") == (QUOTATION, "C")
+
+
 def test_an_unapplied_migration_falls_back_to_the_map_unchanged(monkeypatch):
     state = lane._state(monkeypatch)
 

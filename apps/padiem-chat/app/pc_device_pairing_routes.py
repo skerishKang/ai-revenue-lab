@@ -26,6 +26,7 @@ from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .pc_device_pairing_store import (
     PcPairingError,
+    drive_root,
     normalize_root_label,
     normalize_root_path,
 )
@@ -95,7 +96,6 @@ _REASONS = {
     "root reference invalid": "pc_pairing_root_invalid",
     "root label invalid": "pc_pairing_root_invalid",
     "root label exists": "pc_pairing_root_label_taken",
-    "too many approved roots": "pc_pairing_root_limit",
     "link roots too large": "pc_pairing_root_limit",
     "link roots unreadable": "pc_pairing_unavailable",
     "link id invalid": "pc_pairing_link_not_found",
@@ -366,12 +366,19 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     is the whole proof, and it is consumed exactly once. `mesh_node_id` is the
     composed MeshCentral identity the installing agent already knows for itself,
     validated against the same grammar every other PC boundary uses.
+
+    `drives` is the installing PC's own list of fixed local drives. The Owner's
+    default scope is a whole drive, so a fresh link starts granted. Only drive
+    roots are accepted from this call - a PC may say which drives it has, it may
+    not name folders through the channel that has no owner approval behind it.
     """
     store = _store(request)
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or set(body) not in ({"code", "mesh_node_id"}, {"code", "mesh_node_id", "label"}):
+    shapes = ({"code", "mesh_node_id"}, {"code", "mesh_node_id", "label"},
+              {"code", "mesh_node_id", "drives"}, {"code", "mesh_node_id", "label", "drives"})
+    if body is None or set(body) not in shapes:
         return _error(400, "pc_pairing_body_invalid")
     code = body.get("code")
     mesh_node_id = body.get("mesh_node_id")
@@ -380,6 +387,17 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
         return _error(400, "pc_pairing_body_invalid")
     if label is not None and not isinstance(label, str):
         return _error(400, "pc_pairing_body_invalid")
+    reported = body.get("drives")
+    drives: list[str] = []
+    if reported is not None:
+        if not isinstance(reported, list) or len(reported) > 26:
+            return _error(400, "pc_pairing_body_invalid")
+        for entry in reported:
+            single = drive_root(entry)
+            if single is None:
+                return _error(400, "pc_pairing_body_invalid")
+            if single not in drives:
+                drives.append(single)
     # The Mesh observation that proves a node exists is PR-2's directory. Without
     # it a link is recorded and stays `pending_verification`: a claimed code must
     # never become an executable target on the strength of the claim alone.
@@ -392,18 +410,25 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
             verified = False
     link, refused = await _await_store(
         store.redeem_code, code=code, mesh_node_id=mesh_node_id, label=label,
-        now=_now(), verified=verified,
+        now=_now(), verified=verified, drives=drives,
     )
     if refused is not None:
         return refused
+    granted = [root for root in link["roots"] if root["state"] == "active"]
     return _json({
         "ok": True,
         "link": {
             "link_id": link["link_id"],
             "mesh_node_id": link["mesh_node_id"],
             "state": link["state"],
-            "roots": [],
+            "roots": [{"label": root["label"]} for root in granted],
         },
+        # A link whose drive query failed is said out loud. Silently empty would
+        # read as "this PC has no drives", which is the wrong thing to tell an
+        # owner who then finds nothing to click.
+        "drives_status": "seeded" if granted else (
+            "lookup_failed" if not drives else "not_applied"
+        ),
     }, 201 if link["state"] == "active" else 202)
 
 
@@ -426,11 +451,22 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "pc_pairing_unavailable")
     body = await _body(request)
-    if body is None or set(body) != {"device_id"}:
+    if body is None or set(body) not in ({"device_id"}, {"device_id", "drives"}):
         return _error(400, "pc_pairing_body_invalid")
     device_id = body.get("device_id")
     if not isinstance(device_id, str) or not device_id:
         return _error(400, "pc_pairing_body_invalid")
+    reported = body.get("drives")
+    drives: list[str] = []
+    if reported is not None:
+        if not isinstance(reported, list) or len(reported) > 26:
+            return _error(400, "pc_pairing_body_invalid")
+        for entry in reported:
+            single = drive_root(entry)
+            if single is None:
+                return _error(400, "pc_pairing_body_invalid")
+            if single not in drives:
+                drives.append(single)
     from .platform_admin_authority import platform_authority_for
     authority = platform_authority_for(request)
     try:
@@ -449,16 +485,18 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
         return _error(503, "pc_pairing_unavailable")
     if not mapped:
         return _error(404, "pc_pairing_device_unmapped")
-    if not roots:
-        # The map names the device but pins no usable folder: adopting it would
-        # create a link that cannot be used, so it is refused instead.
+    if not roots and not drives:
+        # Nothing is grantable: the map names the device but pins no folder, and
+        # no drive was reported. Adopting it would create a link the owner cannot
+        # use, so it is refused instead.
         return _error(404, "pc_pairing_device_unmapped")
     adopted, refused = await _await_store(
         store.adopt_link, user_id=user_id, mesh_node_id=device_id,
-        root_paths=roots, now=_now(),
+        root_paths=roots, now=_now(), drives=drives,
     )
     if refused is not None:
         return refused
+    granted = [root for root in adopted["roots"] if root["state"] == "active"]
     return _json({
         "ok": True,
         "link": {
@@ -474,12 +512,18 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
                     "state": root["state"],
                     "approved_at": root["approved_at"],
                 }
-                for root in adopted["roots"]
-                if root["state"] == "active"
+                for root in granted
             ],
             "created_at": adopted["created_at"],
             "updated_at": adopted["updated_at"],
         },
+        # Same vocabulary as the claim: an adopted link that carries no drive was
+        # not given the Owner's default scope, and that has to be visible rather
+        # than looking like a PC with no drives.
+        "drives_status": (
+            "seeded" if any(drive_root(root["path"]) is not None for root in granted)
+            else ("lookup_failed" if not drives else "not_applied")
+        ),
     }, 200)
 
 
