@@ -62,16 +62,9 @@ jobs:
           echo "login handoff caller: pass=$pass fail=$fail skipped=$skipped"
           [ "${fail:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 실패"; exit 1; }
           [ "${skipped:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 skip"; exit 1; }
-          [ "${pass:-0}" -ge 9 ] || { echo "실패: 발급 중계 테스트 9건 미만 실행"; exit 1; }
+          [ "${pass:-0}" -ge 10 ] || { echo "실패: 발급 중계 테스트 10건 미만 실행"; exit 1; }
 
-      # migration 073과 상태 전이는 이 lane에서 sqlite3로 실제로 검증한다.
-      # --noconftest: 이 파일은 app.lovetree_auth_store(표준 라이브러리만 사용)과 sqlite3만 필요하므로
-      # Chat 전체 의존성을 설치하지 않는다. 전체 회귀는 apps/padiem-chat 경로를 보는 B62 CI lane이 separately 돈다.
-      - name: Run the login handoff store tests against real SQL
-        working-directory: apps/padiem-chat
-        run: |
-          python3 -m venv /tmp/handoff-venv
-          /tmp/handoff-venv/bin/pip install --quiet pytest pytest-asyncio
-          /tmp/handoff-venv/bin/python -m pytest --noconftest -q tests/test_lovetree_login_handoff.py > /tmp/handoff.log 2>&1 || { cat /tmp/handoff.log; exit 1; }
-          cat /tmp/handoff.log
-          grep -qE "6 passed" /tmp/handoff.log || { echo "실패: handoff 저장 검증 6건이 실행되지 않았습니다"; exit 1; }
+      # migration 073의 SQL·CHECK과 저장소 전이 규칙은 이 lane에서 텍스트 계약으로 묶고(drift guard),
+      # 실제 SQL 실행 검증은 apps/padiem-chat/tests/test_lovetree_login_handoff.py가 B62 Chat CI lane에서
+      # sqlite3로 한다. 이 lane은 Chat 의존성(httpx·starlette·padiem_control_plane)을 제공하지 않으므로
+      # 여기서 Chat 테스트를 수집하지 않는다(CROSS_LANE_DEPENDENCY_GUARD 규칙).

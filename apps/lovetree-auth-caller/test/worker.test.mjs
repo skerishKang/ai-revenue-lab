@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { handleRequest, REVOKE_PATH, MINT_PATH, LOVETREE_PRODUCT_ID, LOVETREE_HANDOFF_RECIPIENT } from '../worker.mjs';
 
 const SECRET = 'caller-secret-value';
@@ -288,3 +289,34 @@ test('health and auth-check describe the durable handoff mint without leaking th
   assert.equal(JSON.stringify(body).includes(SECRET), false);
   assert.equal((await handleRequest(post('/whatever', {}, SECRET), env)).status, 404);
 });
+
+// migration 073과 저장소(app/lovetree_auth_store.py)가 이 중계가 쓰는 표·상태·고정값과
+// 같은지 이 lane에서 묶는다. 실제 SQL 실행 검증은 B62 Chat CI lane의
+// tests/test_lovetree_login_handoff.py가 sqlite3로 한다 — 이 lane은 Chat 의존성이 없다.
+test('the table contract and the store still match what this relay claims', async () => {
+  const migration = await readFile(new URL('../../padiem-chat/migrations/073_lovetree_login_handoff.sql', import.meta.url), 'utf8');
+  const store = await readFile(new URL('../../padiem-chat/app/lovetree_auth_store.py', import.meta.url), 'utf8');
+
+  for (const fragment of [
+    'CREATE TABLE IF NOT EXISTS lovetree_login_handoffs',
+    `CHECK (product_id = '${LOVETREE_PRODUCT_ID}')`,
+    `CHECK (recipient = '${LOVETREE_HANDOFF_RECIPIENT}')`,
+    "CHECK (status IN ('awaiting_login', 'ready', 'claimed'))",
+    'state_sha256 TEXT NOT NULL CHECK (length(state_sha256) = 64)'
+  ]) {
+    assert.ok(migration.includes(fragment), fragment);
+  }
+
+  for (const fragment of [
+    'lovetree_login_handoffs',
+    "status='ready'",
+    "status='claimed'",
+    'expires_at > ?',
+    'RETURNING',
+    LOVETREE_PRODUCT_ID,
+    LOVETREE_HANDOFF_RECIPIENT
+  ]) {
+    assert.ok(store.includes(fragment), fragment);
+  }
+});
+
