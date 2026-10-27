@@ -276,11 +276,13 @@ async def pc_pairing_handoff(request: Request) -> JSONResponse:
     store = _store(request)
     if store is None:
         return _error(503, "pc_pairing_unavailable")
+    # An unset installer link is not a refusal: a PC whose agent is already
+    # installed needs only the tag, and the account with no agent yet is told to
+    # wait for the link by the wrapper, not by an HTTP error on a code that is
+    # still perfectly good. The code is validated either way, below.
     agent_url = install_url_from_config(
         getattr(request.app.state, "pc_pairing_install_url", None),
     )
-    if agent_url is None:
-        return _error(503, "pc_pairing_not_ready")
     body = await _body(request)
     if body is None or set(body) != {"code"}:
         return _error(400, "pc_pairing_body_invalid")

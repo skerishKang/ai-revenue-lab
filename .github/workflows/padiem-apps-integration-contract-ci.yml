@@ -1,0 +1,105 @@
+name: PADIEM Apps Integration Contract CI
+
+# Focused lane for the app ↔ platform contract (issue #5927 follow-up).
+#
+# It proves only what it executes: that the routes an independent PADIEM app may
+# call, the work identifiers the AI lane accepts, the same-origin and session
+# reading rules, and the storage ceilings still match the implementation the
+# contract pins. `paths` enumerates those pinned authorities explicitly rather
+# than globbing a package, following `erp-item-master-ci.yml`.
+#
+# No deploy job, no model provider, no Cloudflare access, no Production surface.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/scripts/padiem_apps_integration_contract.py'
+      - '.github/tests/test_padiem_apps_integration_contract.py'
+      - '.github/workflows/padiem-apps-integration-contract-ci.yml'
+      - 'docs/architecture/PADIEM_APPS_PLATFORM_INTEGRATION_CONTRACT_20261027.md'
+      - 'apps/padiem-chat/app/app_factory.py'
+      - 'apps/padiem-chat/app/request_contract.py'
+      - 'apps/padiem-chat/app/chat_routes.py'
+      - 'apps/padiem-chat/app/same_origin_guard.py'
+      - 'apps/padiem-chat/app/history.py'
+      - 'apps/padiem-chat/app/auth.py'
+      - 'apps/padiem-chat/app/project_files.py'
+      - 'apps/padiem-chat/app/project_file_routes.py'
+      - 'apps/padiem-chat/app/b14_service_proof.py'
+      - 'apps/padiem-chat/wrangler.toml'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-control-plane/identity_authority_worker.py'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/scripts/padiem_apps_integration_contract.py'
+      - '.github/tests/test_padiem_apps_integration_contract.py'
+      - '.github/workflows/padiem-apps-integration-contract-ci.yml'
+      - 'docs/architecture/PADIEM_APPS_PLATFORM_INTEGRATION_CONTRACT_20261027.md'
+      - 'apps/padiem-chat/app/app_factory.py'
+      - 'apps/padiem-chat/app/request_contract.py'
+      - 'apps/padiem-chat/app/chat_routes.py'
+      - 'apps/padiem-chat/app/same_origin_guard.py'
+      - 'apps/padiem-chat/app/history.py'
+      - 'apps/padiem-chat/app/auth.py'
+      - 'apps/padiem-chat/app/project_files.py'
+      - 'apps/padiem-chat/app/project_file_routes.py'
+      - 'apps/padiem-chat/app/b14_service_proof.py'
+      - 'apps/padiem-chat/wrangler.toml'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-control-plane/identity_authority_worker.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-apps-integration-contract-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  integration-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$expected" = "$actual"
+          echo "EXACT_HEAD=$actual"
+
+      - name: Verify the app-to-platform contract against the pinned authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/padiem_apps_integration_contract.py check
+          python .github/scripts/padiem_apps_integration_contract.py describe > /dev/null
+          echo "PADIEM_APPS_CONTRACT_STEP=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Run the contract refusal tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+          python -m pytest .github/tests/test_padiem_apps_integration_contract.py -q
+          echo "PADIEM_APPS_CONTRACT_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"

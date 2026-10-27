@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padiem-council-apps"
+version = "0.1.0"
+description = "PADIEM council apps (의원3종) independent entry: speech / SNS / meeting, reusing the existing PADIEM chat, storage and session contracts"
+requires-python = ">=3.11"
+dependencies = [
+  "starlette>=0.37,<1",
+  "httpx>=0.27,<1",
+  "uvicorn>=0.30,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<10",
+]
+
+[project.scripts]
+padiem-council-apps = "app.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

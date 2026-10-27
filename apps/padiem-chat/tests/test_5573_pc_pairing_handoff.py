@@ -52,7 +52,28 @@ def test_only_a_plain_https_installer_url_is_handed_out():
         assert install_url_from_config(unusable) is None, unusable
 
 
-def test_an_unconfigured_deployment_says_it_is_not_ready(monkeypatch):
+def test_the_tag_is_issued_even_when_no_installer_link_is_configured():
+    """An installed agent needs the tag and nothing else (PR-4d).
+
+    The link is the only thing a deployment may not have yet, so the handoff
+    answers with the tag and `agent_url: null` instead of refusing a code that
+    is still perfectly good - and still does not consume it.
+    """
+    store = pairing.store()
+    app = pairing.app_with(store)                    # no install URL configured
+    issued = run(store.issue_code(user_id=pairing.OWNER, issued_at=pairing._now()))
+
+    status, body = _handoff(app, issued["code"])
+    assert status == 200, body
+    assert body["handoff"]["agent_url"] is None
+    assert body["handoff"]["install_tag"] == derive_install_tag(issued["code"])
+    row = store.db.conn.execute(
+        "SELECT state FROM pc_pairing_codes WHERE code_id=?", (issued["code_id"],),
+    ).fetchone()
+    assert row["state"] == "pending"
+
+
+def test_an_unconfigured_link_does_not_turn_a_bad_code_into_a_success():
     app = pairing.app_with(pairing.store())          # no install URL at all
 
     async def once():
@@ -62,8 +83,12 @@ def test_an_unconfigured_deployment_says_it_is_not_ready(monkeypatch):
         return issued["code"]
 
     code = run(once())
-    status, body = _handoff(app, code)
-    assert status == 503 and body["error"]["code"] == "pc_pairing_not_ready"
+    # A code that does not exist is refused exactly as it would be with a link:
+    # the missing configuration changes what is handed out, never who is proved.
+    status, body = _handoff(app, "NOSUCHCODE1234")
+    assert status == 403 and body["error"]["code"] == "pc_pairing_code_unknown"
+    used = _handoff(app, code)
+    assert used[0] == 200 and used[1]["handoff"]["agent_url"] is None
 
 
 def test_the_request_cannot_name_the_installer_it_gets():
