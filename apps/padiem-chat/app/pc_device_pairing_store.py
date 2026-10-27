@@ -100,6 +100,11 @@ class PcPairingStore(Protocol):
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
+    async def adopt_link(
+        self, *, user_id: str, mesh_node_id: str, root_paths: list[str],
+        now: datetime, label: str | None = None,
+    ) -> dict[str, Any]: ...
+
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
     ) -> bool: ...
@@ -602,6 +607,52 @@ class D1PcPairingStore:
             row["roots"] = _active(_roots(row.get("roots_json")))
             links.append(row)
         return links
+
+    async def adopt_link(
+        self, *, user_id: str, mesh_node_id: str, root_paths: list[str], now: datetime,
+        label: str | None = None,
+    ) -> dict[str, Any]:
+        """Create the link an administrator adopted, with the folders the map already pinned.
+
+        Adoption is a claim the Owner makes for a device this deployment already
+        knows about, so it ends in exactly the shape a PC's own claim produces:
+        an active `(user, node)` link carrying that device's approved folders. It
+        is not a display record - the file lane reads the same table - and it is
+        idempotent, because an owner who clicks twice must not end up with two
+        grants or a widened one.
+        """
+        owner = _user_id(user_id)
+        node = _mesh_node_id(mesh_node_id)
+        moment = _stamp(now)
+        roots: list[dict[str, Any]] = []
+        for path in root_paths:
+            normalized = normalize_root_path(path)
+            if normalized is None:
+                raise PcPairingError("root path invalid")
+            if any(existing["path"] == normalized for existing in roots):
+                continue
+            roots.append({
+                "root_ref": root_ref_for(normalized),
+                "label": default_root_label(normalized),
+                "path": normalized,
+                "state": _STATE_ACTIVE,
+                "approved_at": moment,
+                "revoked_at": None,
+            })
+            if len(roots) >= MAX_ROOTS_PER_LINK:
+                break
+        link = await self._claim_link(
+            owner=owner, node=node, label=label, code_id=None, moment=moment,
+            verified=True,
+        )
+        # The folders travel with the adoption: an adopted PC with no approved
+        # folder would be a link the owner cannot use, and re-adding them by hand
+        # is exactly the manual step this surface replaces.
+        await self._write_roots(owner, link["link_id"], roots, moment)
+        stored = await self._read_link(owner, link["link_id"])
+        if stored is None:
+            raise PcPairingError("pairing link not stored")
+        return stored
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.
