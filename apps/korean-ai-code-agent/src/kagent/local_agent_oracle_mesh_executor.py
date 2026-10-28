@@ -37,6 +37,20 @@ CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: here is a time ceiling: the command runs until the console answers.
 LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
 RENEW_INTERVAL_SECONDS = 20
+#: A channel request may never own the loop indefinitely. One host met a half-dead
+#: TCP path on a single poll and blocked for 5 h 36 m with no log line at all (last
+#: send and last receive 20,125 s apart, 1,971 of 3,099 bytes retransmitted), so no
+#: dispatch was claimable on any PC meanwhile. This is a transport deadline on the
+#: socket only - a command still runs until the console answers, by owner decision.
+CHANNEL_SOCKET_TIMEOUT_SECONDS = 90
+#: How long without a completed channel round means the loop itself is stuck. Only
+#: the loop is watched, because while a command runs the renewer answers every
+#: RENEW_INTERVAL_SECONDS and the console is the thing with no ceiling by design.
+CHANNEL_STALL_SECONDS = 300
+CHANNEL_WATCHDOG_INTERVAL_SECONDS = 15
+#: systemd Restart=always brings the process back in RestartSec=10; exiting is the
+#: only reliable way to drop a socket this process cannot see inside of.
+EXIT_STALLED_CHANNEL = 87
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -173,6 +187,7 @@ class OracleMeshExecutor:
         command_port: Any = None,
         desktop_port: Any = None,
         timeout_seconds: int | None = None,
+        channel_timeout_seconds: int = CHANNEL_SOCKET_TIMEOUT_SECONDS,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
         claim_gate: Optional[Callable[[], bool]] = None,
@@ -199,12 +214,24 @@ class OracleMeshExecutor:
             getattr(desktop_port, "run_desktop_op", None)
         ):
             raise ContractError("a MeshCentral desktop port must expose run_desktop_op")
+        if (
+            not isinstance(channel_timeout_seconds, int)
+            or isinstance(channel_timeout_seconds, bool)
+            or not 1 <= channel_timeout_seconds <= 900
+        ):
+            raise ContractError("the channel socket deadline must be 1..900 seconds")
         self._origin = chat_origin
         self._secret = channel_secret
         self._read_port = read_port
         self._command_port = command_port
         self._desktop_port = desktop_port
         self._timeout = timeout_seconds
+        self._channel_timeout = channel_timeout_seconds
+        #: When the last channel round reached an answer or a classified failure.
+        #: Only the watchdog reads it, and a round that fails counts: the stall this
+        #: guards is a loop that stopped asking at all, not a channel that answers
+        #: badly.
+        self._last_round_at = time.monotonic()
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
         self._rejections = 0
@@ -270,7 +297,7 @@ class OracleMeshExecutor:
         # silently moved to another origin, so redirects are refused outright.
         opener = urllib.request.build_opener(_NoRedirect())
         try:
-            with opener.open(request, timeout=self._timeout) as response:
+            with opener.open(request, timeout=self._channel_timeout) as response:
                 # One extra byte is the overflow detector, never content: a
                 # poll response carries the command it wants run, so reading a
                 # fixed 64 KiB used to truncate a long command's JSON and make
@@ -285,6 +312,8 @@ class OracleMeshExecutor:
             raise
         except Exception as exc:  # transport refused/unreachable
             raise OracleMeshChannelRefused("chat channel transport refused") from exc
+        finally:
+            self._last_round_at = time.monotonic()
         try:
             decoded = json.loads(raw.decode("utf-8")) if raw else {}
         except (UnicodeDecodeError, json.JSONDecodeError):
@@ -1354,9 +1383,52 @@ class OracleMeshExecutor:
         thread.start()
         return stop
 
+    # ---- watchdog ------------------------------------------------------
+    def channel_stalled(self, now: float | None = None) -> bool:
+        """True when no channel round has finished for CHANNEL_STALL_SECONDS."""
+
+        moment = time.monotonic() if now is None else now
+        return (moment - self._last_round_at) > CHANNEL_STALL_SECONDS
+
+    def watchdog_tick(self) -> bool:
+        """One watchdog decision. True means this process must stop and restart.
+
+        The socket deadline bounds a single request; this bounds the loop. A round
+        that answers badly already logs a refusal, so the only thing left to catch is
+        a loop that stopped asking at all - and the one thing that fixes a socket this
+        process cannot see inside of is a new process.
+        """
+
+        if not self.channel_stalled():
+            return False
+        print(
+            "oracle-mesh-executor watchdog: no channel round for %s s; "
+            "exiting for a supervised restart" % CHANNEL_STALL_SECONDS,
+            file=sys.stderr, flush=True,
+        )
+        return True
+
+    def start_channel_watchdog(self) -> threading.Thread:
+        """Watch the loop, not the command: a running command has no ceiling by design."""
+
+        def loop() -> None:
+            import os
+
+            while not self.watchdog_tick():
+                time.sleep(CHANNEL_WATCHDOG_INTERVAL_SECONDS)
+            os._exit(EXIT_STALLED_CHANNEL)
+
+        thread = threading.Thread(
+            target=loop, name="oracle-mesh-channel-watchdog", daemon=True,
+        )
+        thread.start()
+        return thread
+
 
 __all__ = [
     "CHANNEL_HEADER",
+    "CHANNEL_SOCKET_TIMEOUT_SECONDS",
+    "CHANNEL_STALL_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
@@ -1383,6 +1455,7 @@ def make_oracle_mesh_executor(
     mesh_url: str = "wss://127.0.0.1:4443",
     work_dir: str | None = None,
     timeout_seconds: int | None = None,
+    channel_timeout_seconds: int = CHANNEL_SOCKET_TIMEOUT_SECONDS,
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,
@@ -1463,6 +1536,7 @@ def make_oracle_mesh_executor(
         command_port=command_port,
         desktop_port=desktop_port,
         timeout_seconds=timeout_seconds,
+        channel_timeout_seconds=channel_timeout_seconds,
         pending_dir=work_dir,
         claim_gate=claim_gate,
         presence_provider=presence_provider,
@@ -1607,6 +1681,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                   file=sys.stderr)
     except OSError as exc:
         print(f"oracle-mesh-executor pending restore refused: {exc}", file=sys.stderr)
+
+    # The loop, never the command: a channel that stopped completing rounds cannot be
+    # revived from inside the round that is stuck.
+    executor.start_channel_watchdog()
 
     while True:
         try:

@@ -453,3 +453,91 @@ def test_the_program_refuses_a_link_with_credentials_even_from_a_hand_edited_fil
     assert lines["CONNECT_EXE_CHECK_TAG"] == "pd-1234abcd", done.stdout
     assert lines["CONNECT_EXE_CHECK_URL_PRESENT"] == "0", done.stdout
     assert lines["CONNECT_EXE_CHECK"] == "URL_UNUSABLE", done.stdout
+
+
+# -- 4. the .ps1 lanes run the same measured install as the program -----------
+
+
+def test_the_rendered_script_installs_the_measured_way() -> None:
+    """The server lane runs the program's own sequence, from the one definition.
+
+    ``-fullinstall`` is the switch that exited 0 and registered nothing on the
+    2026-10-28 tagged agent, so the rendered file may not carry it as a switch.
+    The walk it must carry is the program's: stop through the recorded binary,
+    copy into the product's own folder under Program Files, ``-install`` the one
+    service from there, start it, and read the service status back.
+    """
+    from app.pc_pairing_agent_install import render_agent_install_block
+
+    script = render_install_script(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    assert script is not None
+    assert '"-fullinstall"' not in script
+    block = render_agent_install_block()
+    assert block in script
+    copy_at = script.index("Copy-Item -LiteralPath $SourceExe -Destination $PadiemAgentDurableExe")
+    install_at = script.index('"-install"')
+    start_at = script.index('"-start"')
+    status_at = script.index("Get-Service -Name $PadiemAgentServiceName")
+    assert copy_at < install_at < start_at < status_at
+    assert 'Join-Path $env:ProgramFiles "PADIEM"' in script
+    assert "MeshAgent.exe" in script
+    # The name rides as one quoted argument, exactly the way the program passes it.
+    assert """('--agentName="' + $AgentName + '"')""" in script
+
+
+def test_the_rendered_script_asks_for_one_elevation_before_anything_privileged() -> None:
+    """One approval covers the walk, and a refused approval keeps its own exit."""
+    script = render_install_script(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    assert script is not None
+    check = script.index("IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)")
+    download = script.index("Invoke-WebRequest -Uri $AgentInstallerUrl")
+    assert check < download
+    assert "catch [System.ComponentModel.Win32Exception]" in script
+    assert script.count("exit 5") == 1
+
+
+def test_both_ps1_lanes_embed_the_same_install_block() -> None:
+    """One definition, two copies, and the copies may not drift apart.
+
+    The wrapper script carries the block verbatim beside the rendered one: a
+    lane edited on its own is a failure here rather than a quietly different
+    install on somebody's PC.
+    """
+    from app.pc_pairing_agent_install import render_agent_install_block
+
+    block = render_agent_install_block()
+    wrapper = (REPO / "scripts/pc_pairing/install-padiem-pc.ps1").read_text(
+        encoding="utf-8-sig")
+    assert block in wrapper
+    script = render_install_script(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    assert script is not None
+    assert block in script
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="the lanes are Windows scripts")
+def test_the_two_lanes_both_parse(tmp_path: Path) -> None:
+    """A lane this PC is asked to run has to at least read as PowerShell."""
+    import subprocess
+
+    def parse(path: Path) -> None:
+        command = (
+            "$t=$null;$e=$null;"
+            "[void][System.Management.Automation.Language.Parser]::ParseFile("
+            "'" + str(path) + "',[ref]$t,[ref]$e);"
+            "if($e.Count -gt 0){$e | ForEach-Object {Write-Output $_.Message}; exit 1}"
+            "else {Write-Output PARSE_OK; exit 0}"
+        )
+        done = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-Command", command],
+            capture_output=True, timeout=120, check=False,
+        )
+        text = (done.stdout + done.stderr).decode("utf-8", errors="replace")
+        assert done.returncode == 0, text[:400]
+        assert "PARSE_OK" in done.stdout.decode("utf-8", errors="replace"), text[:400]
+
+    parse(REPO / "scripts/pc_pairing/install-padiem-pc.ps1")
+    script = render_install_script(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    assert script is not None
+    script_path = tmp_path / PC_PAIRING_INSTALL_FILENAME
+    script_path.write_bytes(script.encode("utf-8"))
+    parse(script_path)

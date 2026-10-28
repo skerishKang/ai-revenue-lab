@@ -204,6 +204,13 @@ html[data-theme="padiem-glass"] .side-item .side-chevron { color: rgba(255, 255,
 @media (min-width: 700px) {
   .util-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
   .util-form label:has(textarea) { grid-column: 1 / -1; }
+  /* #5895 beta UX: the form's section rows are not fields — the 참고 글 block,
+   * the platform switcher, the photo composer and the action row own the full
+   * lane so they never land in one cell beside a field. */
+  .util-form > .util-fieldset,
+  .util-form > .util-sns-tabs,
+  .util-form > .util-photos,
+  .util-form > .util-form-actions { grid-column: 1 / -1; }
   /* #5799: the speech sections keep the same two-lane rhythm inside each
    * fieldset, and the action row owns a full-width lane at the bottom so it
    * never lands in a cell stretched to a tall section's height. */

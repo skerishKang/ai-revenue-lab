@@ -5,6 +5,11 @@
   border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
   border-radius: 18px;
   background: var(--panel, #11151d);
+  /* The glass theme's --panel is 46% alpha for cards that sit on the app's
+     own blurred backdrop. A modal dialog hovers the raw page instead, so it
+     carries its own blur — the hero text must not read through the form. */
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
   color: inherit;
 }
 .b66-quote-dialog::backdrop {
