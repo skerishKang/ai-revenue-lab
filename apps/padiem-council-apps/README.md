@@ -210,6 +210,41 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
 - 근거 캡처: `docs/6065/s4-sign-in-1440-before-after.png`,
   `docs/6065/s4-record-list-1440-before-after.png`, `docs/6065/s4-record-list-320-before-after.png`
 
+## 배포 특정·라이브 검증 규칙 (#6065 S5, 2026-10-29)
+
+S5는 코드 단계가 아니라 **배포 단계**다. 운영 릴리스는 릴리스 오너(LOCAL0/CENTRAL) 권한이고, 여기는
+검증 도구만 추가한다 — `tools/council_s5_live_verify.py`는 읽기 전용(로그인·생성·저장을 하지 않는다).
+운영 화면을 고친 diff는 이 PR에 없다.
+
+**운영이 실제로 서빙 중인 커밋을 특정했다.** `DRIFT`만으로는 "뭔가 다르다"일 뿐이라, 서빙 바이트를
+git blob으로 `main` 이력과 대조해 세 애셋이 모두 일치하는 가장 최근 커밋을 돌려준다.
+
+| 확인 | 실측 (2026-10-29, `main` = `b884ab7b9`) |
+| --- | --- |
+| 서빙 커밋 | `71a74dee2` (#6082, 2026-10-28 21:00 +0900) — main이 **26커밋** 앞 |
+| 배포 근거 | `B62 Production Code Deploy Gate` run `40684361588` (2026-10-28T12:00:43Z, success) |
+| index.html | 5733b (cf-injected 367b) → `9026d1cd…` vs main `754318cb…` = DRIFT |
+| council-app.css | 14873b → `43793ed8…` vs main `5606458…` = DRIFT |
+| council-app.js | 70711b → `cabb44af…` vs main `8711a15…` = DRIFT |
+| 라이브 마커 | S0만 라이브 (320/390/768 `flex-wrap: wrap`, 1440 `nowrap`, 브랜드 16px·28px 마크, 카드 아이콘 없음, 필드 8px, 인증 패널 16px) |
+| 라이브 지오메트리 | 320/390/768/1440 가로 넘침 0 · 오버플로 요소 0 · 44px 미만 0 · 언어 4종 · 로그아웃에서 로그인 패널 표시 |
+
+따라서 **S1–S4는 병합됐지만 운영에 없다. `LIVE_VERIFIED=NO`.** 릴리스 후 이 도구를 다시 돌려
+`DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES` 세 개가 동시에 YES가 되면 그때
+`LIVE_VERIFIED=YES`다 (아니면 exit 1).
+
+readback이 거짓말하는 다섯 가지 경우를 각각 막았고, 변형 테스트로 확인했다:
+
+1. 빈 응답은 절대 MATCH가 될 수 없다 — 빈 본문 두 개는 해시가 같으므로 해시 비교 전에 비어있지 않음을 본다.
+2. 서빙 HTML은 소스 HTML과 **처음부터 같을 수 없다** — Cloudflare가 웹 애널리틱스 `<script>` 하나를 삽입한다(실측 366바이트, 자기 줄을 갖고 오므로 줄바꿈까지 367). 정규화 패턴은 태그+그 줄바꿈만 지우고 **앞줄 줄바꿈은 절대 먹지 않는다** — 앞 `\s*`로 썼을 때 완전 일치 배포가 영구 1바이트 부족으로 DRIFT났다.
+3. drift는 보고가 아니라 **특정**으로 바꿔준다 (`SERVING=<sha>`).
+4. skip 링크는 포커스 전까지 `left:-9999px`에 주차돼 있다 — 이를 오버플로/터치 집계에 넣으면 깨끗한 화면이 영원히 실패한다.
+5. 마커 하니스는 `#councilAuthPanel`에서 `hidden`이 벗겨지는 상태를 기다린다(고정 sleep이 아님) — 700ms sleep은 `/api/auth/status`와 경주해서, 아무 문제없는 화면에서 390만 "로그인 패널 숨음"으로 보고했다.
+
+변형 검출(각 변형은 하나만 적용한 뒤 스냅샷과 바이트 비교로 되돌렸다): beacon이 앞 줄바꿈까지 먹음 → 1건 실패, beacon 뒤 줄바꿈을 지우지 않음 → 2건 실패, 빈 응답 분기 삭제 → 1건 실패, skip 제외 삭제 → 1건 실패, settle 대기 삭제 → 1건 실패, settle sleep을 500ms 초과로 늘림 → 1건 실패.
+**부하가 걸리지 않는 두 개는 감추지 않는다.** MATCH에서 `length_equal` 조건을 빼도 초록이다 — 전체 SHA-256 비교가 이미 바이트 길이까지 함께 보장하므로, CENTRAL이 요구한 "빈 응답 오검출 금지"를 두 번째 독립 진술로 명시적으로 남긴 것이다. 또 오버플로 루프의 skip 제외 `continue`는 오늘의 DOM에서 값이 안 변한다 — 같은 루프 조건에 `!parked(el)`가 이미 왼쪽 주차를 걸러내고 있기 때문이다. 터치 루프 쪽 `continue`는 실제 화면에서 부하가 걸린다(44px 미만 집계 1 → 0, 4폭 모두).
+- 계약 테스트 8건 신규(`test_6065_s5_readback_rules.py`) — `readback()` 자체를 합성 응답으로 구동한다(도구 소스를 grep하는 테스트는 가드를 꺼도 통과하므로). 92 passed.
+
 ## 실행
 
 ```bash
