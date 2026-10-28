@@ -51,6 +51,16 @@ test('B64 Worker config is independent and declares no DNS or production route m
   assert.equal('route' in config, false);
   assert.equal('custom_domains' in config, false);
   assert.equal('account_id' in config, false);
+  // #6077: the self-hosted Pretendard slices are served as Worker assets. The
+  // declaration must point at a directory that exists, and it must stay
+  // binding-free — an `assets.binding` would add a live binding the reviewed
+  // baseline does not carry, and nothing in the Worker reads the files.
+  const assets = config.assets as { directory?: string; binding?: string } | undefined;
+  assert.ok(assets, 'wrangler.jsonc must declare the static assets directory that carries the fonts');
+  assert.equal(assets.directory, './public');
+  assert.equal('binding' in assets, false, 'the assets binding must stay unexposed to Worker code');
+  assert.ok(fs.existsSync(new URL('../../public/fonts/pretendard/pretendard-variable-dynamic-subset.css', import.meta.url)),
+    'the declared asset directory must actually contain the fonts');
 });
 
 test('B64 Worker config declares the income D1 binding matching the worker env contract', () => {

@@ -8,6 +8,7 @@ import type { AdClickConsumerCard } from './consumer-card.js';
 import type { PublicOpportunityCard, PublicOpportunityDetail } from '../public-supply/domain.js';
 import { koreaEligibilityLabel, publicRewardNote } from '../public-supply/domain.js';
 import {
+  B64_FONT_STYLESHEET_HREF,
   CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
@@ -240,6 +241,7 @@ function renderShell(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="${theme}" />
   <title>B64 AI Reward Router</title>
+  <link rel="stylesheet" href="${B64_FONT_STYLESHEET_HREF}" />
   <style>
 ${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }

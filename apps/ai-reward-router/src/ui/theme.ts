@@ -22,6 +22,18 @@ export const THEME_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 export const DEFAULT_THEME: B64Theme = 'light';
 
+/**
+ * Self-hosted Pretendard (issue #6077). The design tokens already name
+ * Pretendard first, but the Worker shipped no `@font-face`, so the typeface
+ * only appeared on machines that happened to have it installed.
+ *
+ * It is a linked stylesheet rather than inlined CSS because the official
+ * dynamic-subset declaration carries ~90 `unicode-range` slices (~55 KB);
+ * inlining it would add that to every HTML response, while linking lets the
+ * browser cache it once and download only the slices a page actually needs.
+ */
+export const B64_FONT_STYLESHEET_HREF = '/fonts/pretendard/pretendard-variable-dynamic-subset.css';
+
 export function isB64Theme(value: unknown): value is B64Theme {
   return value === 'light' || value === 'dark';
 }

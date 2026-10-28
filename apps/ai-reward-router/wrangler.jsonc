@@ -4,6 +4,16 @@
   "compatibility_date": "2026-08-30",
   "workers_dev": true,
   "preview_urls": true,
+  // Issue #6077: B64's design tokens name Pretendard, but the Worker shipped no
+  // @font-face, so the typeface only appeared on machines that already had it
+  // installed. These are the same official SIL OFL 1.1 assets the reviewed
+  // councillor prototype already carries — the dynamic-subset slices mean a
+  // Korean page downloads only the ranges it needs instead of the 3.1 MB set.
+  // No `binding` is declared: nothing in the Worker reads the files, so this
+  // adds no new live binding for the deploy gate's parity readback to track.
+  "assets": {
+    "directory": "./public"
+  },
   // Issue #987: the mutation-origin binding for cookie-authenticated account
   // and pipeline POSTs (#3476 policy). It MUST be the real serving host — an
   // unconfigured or wrong value denies cookie-carrying POSTs (fail closed) and
