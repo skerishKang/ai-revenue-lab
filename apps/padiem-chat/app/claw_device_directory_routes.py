@@ -377,6 +377,54 @@ async def _read_device_directory(
             if online and not mesh_row["revoked"] and not mesh_row["expired"]:
                 mesh_row.update(state="CONNECTED", usable=True)
             mesh_row["selectable"] = mesh_row["usable"] is True
+    # #5573: a PC this account linked is this account's own device, so the
+    # directory names it and the browser can select it. The link is the
+    # ownership proof - it was made by a code only this account could issue -
+    # and liveness still comes from the server's own receipt: a linked PC
+    # nothing has observed is listed as not usable, never as online. Without
+    # these rows a second PC had no selectable device at all, and choosing it
+    # answered 403 as if it belonged to somebody else.
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
+    links_reader = getattr(pairing, "links_for_owner", None)
+    if callable(links_reader):
+        try:
+            linked = await links_reader(user_id=uid)
+        except Exception:
+            linked = None
+        if isinstance(linked, list):
+            known = {row["deviceId"] for row in safe}
+            for link in linked:
+                if len(safe) >= _DEVICE_LIMIT:
+                    break
+                if not isinstance(link, Mapping):
+                    continue
+                node_ref = link.get("mesh_node_id")
+                if not is_pc_device_id(node_ref) or node_ref in known:
+                    continue
+                known.add(node_ref)
+                label = link.get("label")
+                receipt = None
+                presence_store = getattr(
+                    request.app.state, "mesh_device_presence_store", None,
+                )
+                if callable(getattr(presence_store, "load", None)):
+                    try:
+                        receipt = presence_store.load(node_ref)
+                        if inspect.isawaitable(receipt):
+                            receipt = await receipt
+                    except Exception:
+                        receipt = None
+                online = mesh_presence_online(
+                    receipt, device_id=node_ref, now=datetime.now(timezone.utc),
+                )
+                safe.append({
+                    "deviceId": node_ref,
+                    "deviceName": label if isinstance(label, str) and label else None,
+                    "platform": None,
+                    "state": "CONNECTED" if online else "ACTION_REQUIRED",
+                    "usable": online, "revoked": False, "expired": False,
+                    "executable": True, "selectable": True,
+                })
     if broker_reason and not safe:
         return _response({
             "ok": True, "available": False, "reason": broker_reason,

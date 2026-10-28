@@ -2101,7 +2101,7 @@ async def test_drives_decision_invokes_real_handler_and_finishes(
                      for stage, state in stages]
         assert positions == sorted(positions), output
         assert "state=enter guard_injected=false" in output
-        assert "stage=handler_wait_for tool=claw.pc.query_drives state=enter timeout=300.0" in output
+        assert "stage=handler_wait_for tool=claw.pc.query_drives state=enter timeout=None" in output
         outer = next(line for line in output.splitlines() if "stage=tool_runtime_wait_for" in line and "state=enter" in line)
         assert " timeout=" in outer
         assert device_id not in output

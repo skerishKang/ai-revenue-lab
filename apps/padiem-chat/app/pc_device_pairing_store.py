@@ -28,7 +28,7 @@ import hashlib
 import json
 import re
 import secrets
-from typing import Any, Protocol
+from typing import Any, Mapping, Protocol
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
@@ -63,6 +63,9 @@ _AGENT_TAG_RE = re.compile(
     r"(?<![0-9A-Za-z])" + re.escape(PAIRING_TAG_PREFIX) + r"[0-9a-f]{8}(?![0-9A-Za-z])",
     re.IGNORECASE,
 )
+#: A link carries up to two names of one machine in one bounded sentence: the
+#: name Windows gave the PC, then the alias its owner chose. Both choose the PC.
+_NAME_SEPARATOR = " · "
 #: The drive list an installing PC writes after its tag in the agent name:
 #: single letters inside one bracketed group.
 _NAME_DRIVES_RE = re.compile(r"\[\s*([A-Za-z](?:[ \t]+[A-Za-z])*)\s*\]")
@@ -94,6 +97,10 @@ class PcPairingStore(Protocol):
     ) -> dict[str, Any]: ...
 
     async def revoke_link(self, *, user_id: str, link_id: str, now: datetime) -> bool: ...
+
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]: ...
 
     async def pause_link(
         self, *, user_id: str, link_id: str, now: datetime,
@@ -684,9 +691,10 @@ class D1PcPairingStore:
         keep reporting presence untouched. A name that does carry one is a
         claim attempt, and a failed attempt is refused rather than ignored,
         because silently dropping it would leave an owner staring at a card that
-        never resolves. The agent name itself is never stored — the link already
-        holds the node identity, and a Mesh device name can be renamed by its
-        owner at any time.
+        never resolves. What is kept from the name is the single word the machine
+        called itself, and only as this account's own label for the link; the
+        tag - the proof - is never written down, and neither is a name the owner
+        has already replaced with their own.
         """
         tag = tag_from_agent_name(agent_name)
         if tag is None:
@@ -726,15 +734,76 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
+        link = await self._claim_link(
+            owner=owner, node=node, label=None, code_id=row["code_id"],
+            moment=moment, verified=True,
+        )
+        # A PC that named itself keeps that name; an owner who already renamed
+        # it is never overwritten, and a name that was only decoration is no
+        # name at all.
+        machine = pc_name_from_agent_name(agent_name)
+        if machine and not link.get("label"):
+            await self._run(
+                "UPDATE pc_device_links SET label=?, updated_at=? "
+                "WHERE user_id=? AND link_id=? "
+                "AND (label IS NULL OR label='')",
+                machine, moment, owner, link["link_id"],
+            )
+            stored = await self._read_link(owner, link["link_id"])
+            if stored is not None:
+                link = stored
         return await self._seed_drives(
-            owner=owner,
-            link=await self._claim_link(
-                owner=owner, node=node, label=None, code_id=row["code_id"],
-                moment=moment, verified=True,
-            ),
+            owner=owner, link=link,
             drives=drives_from_agent_name(agent_name),
             moment=moment,
         )
+
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]:
+        """Name one linked PC, in the owner's own words.
+
+        A chat request picks a machine with a name ("the office PC's C drive"),
+        so a name has to exist before the second PC arrives. It is presentation
+        text the owner chooses, never an identity: the row's
+        `(user_id, mesh_node_id)` stays the only thing dispatch and revocation
+        decide from. Ownership is settled by the row exactly as pause settles
+        it, so another account's link is refused without saying whether it
+        exists.
+        """
+        owner = _user_id(user_id)
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        current = await self._first(
+            "SELECT label FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        named = canonical_label(
+            current.get("label") if isinstance(current, dict) else None, label,
+        )
+        if named is None:
+            raise PcPairingError("link label invalid")
+        named = _label(named)
+        if named is None:
+            raise PcPairingError("link label invalid")
+        moment = _stamp(now)
+        row = await self._first(
+            "SELECT user_id, state FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        if not isinstance(row, dict) or not row.get("state"):
+            raise PcPairingError("link not found")
+        if row.get("user_id") != owner:
+            raise PcPairingError("link not yours")
+        if row.get("state") == _STATE_REVOKED:
+            raise PcPairingError("link not active")
+        await self._run(
+            "UPDATE pc_device_links SET label=?, updated_at=? "
+            "WHERE user_id=? AND link_id=? AND state!='revoked'",
+            named, moment, owner, link_id,
+        )
+        stored = await self._read_link(owner, link_id)
+        if stored is None or stored.get("label") != named:
+            raise PcPairingError("pairing link not stored")
+        return _public_link(stored)
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
         """Every link this account owns that may take work right now.
@@ -1092,6 +1161,107 @@ class D1PcPairingStore:
         )
 
 
+def pc_name_from_agent_name(value: Any) -> str | None:
+    """The Windows machine name inside an observed agent name, or ``None``.
+
+    An agent reports its own machine name, and the pairing lane decorates that
+    name on the way in: the tag that decides the owner, and the drive letters
+    the PC declares. Removing both decorations leaves the name Windows chose,
+    which is the label a linked PC gets before the owner ever renames it. A name
+    that is nothing but decoration has no machine name, and is answered as
+    ``None`` rather than with the decoration.
+    """
+    if not isinstance(value, str):
+        return None
+    residue = _NAME_DRIVES_RE.sub(" ", value)
+    residue = _AGENT_TAG_RE.sub(" ", residue)
+    # A Windows machine names itself in one word, so the first remaining word is
+    # the name and anything a person appended after it is annotation, not name.
+    for token in residue.split():
+        word = token.strip("()[]{}").rstrip(",.;:")
+        if len(word) >= 2:
+            return word[:MAX_LINK_LABEL_CHARS]
+    return None
+
+
+def name_tokens(value: Any) -> list[str]:
+    """Every name one link answers to, normalised for a request to match.
+
+    `label` carries up to two names of the same machine, joined by
+    `_NAME_SEPARATOR`: the PC's own name first (what Windows called it, filled
+    when the PC claimed itself) and the owner's alias second. Both choose the
+    PC, because both are how a person standing at that machine says its name.
+    Case and spacing are the speaker's, not a difference.
+    """
+    if not isinstance(value, str):
+        return []
+    tokens: list[str] = []
+    for part in value.split(_NAME_SEPARATOR):
+        token = " ".join(part.casefold().split())
+        if token and token not in tokens:
+            tokens.append(token)
+    return tokens
+
+
+def canonical_label(existing: Any, submitted: Any) -> str | None:
+    """The one stored form of a link's names, from what it had and what came in.
+
+    The machine name keeps its first position and survives every rename, so an
+    alias replaces only the second part. A submitted value that itself carries
+    the separator is taken as both names at once - that is how a link created
+    before this rule gets its machine name. An alias's own separator becomes a
+    dash rather than a second name, so no input can forge more parts than two.
+    """
+    if not isinstance(submitted, str) or not submitted.strip():
+        return None
+    text = submitted.replace(_NAME_SEPARATOR, "-").strip()
+    previous = [
+        " ".join(part.split())
+        for part in str(existing or "").split(_NAME_SEPARATOR)
+        if part.strip()
+    ] if isinstance(existing, str) else []
+    if _NAME_SEPARATOR in submitted:
+        head, _, tail = submitted.partition(_NAME_SEPARATOR)
+        machine = " ".join(head.split())
+        alias = " ".join(tail.split()).replace(_NAME_SEPARATOR, "-")
+    else:
+        machine = previous[0] if previous else None
+        alias = text
+    parts = [part for part in (machine, alias) if part]
+    joined = _NAME_SEPARATOR.join(parts)
+    if len(joined) > MAX_LINK_LABEL_CHARS:
+        raise PcPairingError("link label too long")
+    return joined or None
+
+
+def link_named_in(text: Any, links: Any) -> str | None:
+    """The mesh node id of the one linked PC `text` names, or ``None``.
+
+    An account with several PCs has to be able to say which one it means - by
+    the alias it chose or by the name Windows chose, whichever a person is more
+    likely to type - and the answer is allowed only when exactly one link
+    matches. No match, two matches, and an unnamed link all answer ``None``,
+    which leaves the caller's normal "which PC is this?" judgement untouched
+    rather than quietly picking the newest or the first.
+    """
+    if not isinstance(text, str) or not text.strip() or not isinstance(links, (list, tuple)):
+        return None
+    haystack = " ".join(text.casefold().split())
+    if not haystack:
+        return None
+    matched: list[str] = []
+    for link in links:
+        if not isinstance(link, Mapping):
+            continue
+        node = link.get("mesh_node_id")
+        if not isinstance(node, str) or not node:
+            continue
+        if any(token in haystack for token in name_tokens(link.get("label"))):
+            if node not in matched:
+                matched.append(node)
+    return matched[0] if len(matched) == 1 else None
+
+
 __all__ = [
     "D1PcPairingStore",
     "MAX_ROOTS_JSON_CHARS",
@@ -1106,6 +1276,10 @@ __all__ = [
     "derive_install_tag",
     "drive_root",
     "drives_from_agent_name",
+    "canonical_label",
+    "link_named_in",
+    "name_tokens",
+    "pc_name_from_agent_name",
     "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",

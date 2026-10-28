@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>의정활동 — 임미란 의원</title>
+  <link rel="stylesheet" href="./static/fonts/maruburi.css" />
+  <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">임</span><span class="brand-name">임미란 의원</span></div>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a href="./index.html">홈</a>
+      <a href="./activity.html" class="active">의정활동</a>
+      <a href="./policy.html">정책자료</a>
+      <a href="./media.html">미디어</a>
+      <a href="./about.html">의원 소개</a>
+    </nav>
+    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
+  </header>
+  <main id="main" class="section">
+    <div class="section-inner">
+      <p class="section-eyebrow">Activity</p>
+      <h1 class="section-title">의정활동</h1>
+      <p class="section-lead">공식 기록에 근거한 의정활동 목록입니다.</p>
+      <div class="activity-toolbar">
+        <input type="search" id="activitySearch" placeholder="활동 검색..." aria-label="의정활동 검색" />
+        <select id="activityFilter" aria-label="분류 필터">
+          <option value="all">전체</option>
+          <option value="의회">의회</option>
+          <option value="본회의">본회의</option>
+          <option value="위원회">위원회</option>
+          <option value="당선">당선</option>
+          <option value="기념식">기념식</option>
+        </select>
+      </div>
+      <ul class="activity-list" id="activityList" aria-live="polite"></ul>
+      <div class="activity-detail" id="activityDetail" hidden>
+        <button class="back-btn" id="activityBack" type="button">← 목록으로</button>
+        <h2 id="detailTitle"></h2>
+        <p class="detail-date" id="detailDate"></p>
+        <p class="detail-body" id="detailBody"></p>
+        <a class="detail-link" id="detailLink" href="#" target="_blank" rel="noopener">공식 페이지 보기</a>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.</p>
+    <p>자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+  </footer>
+  <script src="./static/app.js"></script>
+</body>
+</html>

@@ -10,8 +10,13 @@ reachable even though the Mesh execution target resolved.
 Two forms are canonical.
 
 ``bare``
-    ``^[A-Za-z0-9_.:@+-]{1,128}$`` - the device id the Broker device
-    directory and the deployment ownership map already use.
+    ``^[A-Za-z0-9_.$:@+-]{1,128}$`` - the device id the Broker device
+    directory and the deployment ownership map already use. The ``$`` is not
+    decoration: MeshCentral composes a node key from a base64-style alphabet
+    that uses ``$`` and ``@`` where base64 would use ``/`` and ``+``, so a real
+    ``id@domain`` device id can carry a ``$``. A grammar that refuses it does
+    not narrow the boundary - it drops the device, and with it the presence
+    receipt and the pairing claim that depends on it.
 
 ``mesh_node``
     ``^node/<domain>/<node-id>`` - the composed MeshCentral identity.
@@ -45,10 +50,10 @@ PC_MESH_DOMAIN_MAX_CHARS = 64
 #: The bare device id pattern, as source. Kept as source so the boundaries
 #: that cannot import this module can copy the exact same string and prove
 #: the copies are identical.
-PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.:@+-]{1,128}$"
+PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.$:@+-]{1,128}$"
 #: The composed Mesh node id pattern, as source.
 PC_MESH_NODE_ID_PATTERN = (
-    r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.:@+-]{1,128}$"
+    r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.$:@+-]{1,128}$"
 )
 
 PC_DEVICE_ID_RE = re.compile(PC_DEVICE_ID_PATTERN)

@@ -9,7 +9,10 @@ from __future__ import annotations
 import asyncio
 from contextlib import contextmanager
 
-_PC_TOOLS = frozenset({"claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file"})
+_PC_TOOLS = frozenset({
+    "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file",
+    "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
+})
 _STAGES = frozenset({"decision", "run_active", "run_guard", "tool_runtime_wait_for",
                      "runtime_checks", "handler_wait_for", "permissions_passed",
                      "schema_passed", "input_schema_rejected", "invocation", "drives_branch"})
