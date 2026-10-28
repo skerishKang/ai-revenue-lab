@@ -1534,6 +1534,8 @@ jobs:
             --settle-seconds "${STAGED_SETTLE_SECONDS}" \
             --smoke "python3 ../../.github/scripts/post_deploy_real_chat_smoke.py --lane chat" \
             --smoke "python3 ../../.github/scripts/post_deploy_signed_in_smoke.py"
+          echo "B62_PRODUCTION_CODE_DEPLOY=SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
 
       - name: Read back exact post-deploy binding and variable state
         shell: bash
