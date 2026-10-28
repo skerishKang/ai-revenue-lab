@@ -553,7 +553,9 @@
     pcFormStatus.setAttribute("aria-live", "polite");
     pcFormStatus.hidden = true;
     pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcSave, pcFormStatus);
-    messageLabel.after(pcForm);
+    // #5895: the section rides the form's own append below. Calling after() on
+    // the still-detached pair was a per-DOM no-op, so the dialog shipped
+    // without the PC form its launcher promises.
     wirePcForm({
       pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
       status: pcFormStatus, request: () => message.value,
@@ -570,7 +572,7 @@
 
     // Do not construct a hidden iframe on Chat startup. The cross-origin
     // preview is created only after a successful, user-requested quote.
-    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
+    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, pcForm, submit, status);
     panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
