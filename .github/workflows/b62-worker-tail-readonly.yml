@@ -1,0 +1,109 @@
+name: B62 Worker Tail Readonly
+
+# #4139: look inside the served Worker without a deploy and without an Owner token.
+# The COM2 Cloudflare credential cannot read Analytics Engine or the dashboard, and the
+# account audit log says nothing about a request that never reached the app. A tail is
+# the one read-only lane that shows what the Worker really did.
+#
+# This lane creates a tail, listens for a bounded window, prints AGGREGATES only, and
+# deletes the tail again. It never deploys, rolls back, writes a secret or touches D1.
+# Bodies, headers, cookies and tokens are not on any path to the output — see
+# .github/scripts/b62_tail_summarize.py and its test.
+
+on:
+  workflow_dispatch:
+    inputs:
+      worker:
+        description: Worker script to tail
+        required: false
+        default: padiem-chat
+        type: string
+      seconds:
+        description: Bounded capture window in seconds
+        required: false
+        default: "240"
+        type: string
+  pull_request:
+    paths:
+      - ".github/workflows/b62-worker-tail-readonly.yml"
+      - ".github/scripts/b62_tail_summarize.py"
+      - ".github/tests/test_b62_tail_summarize.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-worker-tail-readonly
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    name: Summarizer contract (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install --quiet pytest
+      - name: The summarizer counts and leaks nothing
+        run: python -m pytest -q .github/tests/test_b62_tail_summarize.py
+
+  tail:
+    name: Capture and aggregate one bounded window
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TAIL_WORKER: ${{ inputs.worker || 'padiem-chat' }}
+      TAIL_SECONDS: ${{ inputs.seconds || '240' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Credentials are present (values are never printed)
+        run: |
+          set -uo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || { echo "TAIL_NO_TOKEN"; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo "TAIL_NO_ACCOUNT"; exit 1; }
+          case "${TAIL_SECONDS}" in
+            ''|*[!0-9]*) echo "TAIL_BAD_SECONDS"; exit 1 ;;
+          esac
+          test "${TAIL_SECONDS}" -le 600 || { echo "TAIL_WINDOW_TOO_LONG"; exit 1; }
+          echo "TAIL_WORKER=${TAIL_WORKER}"
+          echo "TAIL_SECONDS=${TAIL_SECONDS}"
+          echo "TAIL_PRODUCTION_MUTATION=0"
+
+      - name: Listen for one bounded window
+        run: |
+          set -uo pipefail
+          out="${RUNNER_TEMP}/tail.jsonl"
+          err="${RUNNER_TEMP}/tail.err"
+          : > "${out}"
+          # Wrangler wants a config in some versions and none in others. Try the
+          # standalone form first, then the repository config, and keep whichever
+          # actually produced messages. Neither form bundles or uploads anything.
+          timeout --signal=TERM --kill-after=20 "${TAIL_SECONDS}" \
+            npx --yes wrangler@4 tail "${TAIL_WORKER}" --format json \
+            > "${out}" 2> "${err}" || true
+          if [ ! -s "${out}" ]; then
+            echo "TAIL_STANDALONE_EMPTY=retrying with the repository config"
+            timeout --signal=TERM --kill-after=20 "${TAIL_SECONDS}" \
+              npx --yes wrangler@4 tail "${TAIL_WORKER}" --format json \
+              --config "apps/padiem-chat/wrangler.toml" \
+              > "${out}" 2>> "${err}" || true
+          fi
+          echo "TAIL_LINES=$(wc -l < "${out}")"
+          echo "TAIL_ERR_HEAD=$(head -c 200 "${err}" | tr '\n' ' ')"
+          # An orphan tail keeps streaming into nobody. Delete what is registered
+          # for this Worker whether or not the capture worked.
+          npx --yes wrangler@4 tail --delete-all "${TAIL_WORKER}" \
+            > /dev/null 2>&1 || echo "TAIL_DELETE_INDETERMINATE=1"
+
+      - name: Aggregate (counts only)
+        run: python3 .github/scripts/b62_tail_summarize.py "${RUNNER_TEMP}/tail.jsonl"
