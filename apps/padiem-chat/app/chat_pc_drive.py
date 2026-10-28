@@ -454,12 +454,21 @@ async def chat_pc_tools_available(request: Request, *, uid: str | None) -> bool:
 
 async def resolve_chat_pc_stream_context(
     request: Request, *, uid: str, requested_device_id: str | None = None,
+    user_text: str | None = None,
 ) -> dict | None:
-    """Server-authored context only; no browser field or Broker registration grants it."""
+    """Server-authored context only; no browser field or Broker registration grants it.
+
+    #5573: the PC this turn *names* is the PC this turn runs on. The composer
+    attaches the last-chosen device id to every request, so that id is the
+    screen's memory rather than this sentence's choice - when the words answer
+    "which PC", the stale id neither picks the machine nor withholds the tools.
+    A turn that names nothing keeps the browser's choice exactly as before.
+    """
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection, resolve_pc_work_context,
+        linked_pc_targets, read_saved_device_selection, resolve_pc_work_context,
     )
+    from .pc_device_pairing_store import link_named_in
     try:
         session, subject_id, workspace_id = await _resolve_chat_owner(request, uid)
         if session is None or not subject_id:
@@ -468,6 +477,13 @@ async def resolve_chat_pc_stream_context(
         if selection.status == SAVED_SELECTION_UNAVAILABLE:
             return None
         selected = selection.device_id if selection.status == SAVED_SELECTION_SELECTED else None
+        named_device_id = None
+        if isinstance(user_text, str) and user_text.strip():
+            links = await linked_pc_targets(request, uid)
+            if links:
+                named_device_id = link_named_in(user_text, links)
+        if named_device_id is not None:
+            selected = named_device_id
         context = await resolve_pc_work_context(
             request, owner_id=uid, workspace_id=workspace_id,
             session_id=session.session_id, selected_device_id=selected,
@@ -477,7 +493,11 @@ async def resolve_chat_pc_stream_context(
         device_id = context.execution_device_id
         if not is_pc_device_id(device_id):
             return None
-        if requested_device_id is not None and requested_device_id != device_id:
+        if (
+            named_device_id is None
+            and requested_device_id is not None
+            and requested_device_id != device_id
+        ):
             return None
         if not await _check_mesh_grant(request, session, device_id=device_id):
             return None
