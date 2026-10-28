@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import io
 import subprocess
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -19,7 +20,8 @@ from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralCliFileReadPort, MeshCentralReadRefused, _PASSWORD_MARKER,
 )
 from kagent.local_agent_oracle_mesh_executor import (
-    CHANNEL_HEADER, POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
+    CHANNEL_HEADER, CHANNEL_SOCKET_TIMEOUT_SECONDS, CHANNEL_STALL_SECONDS,
+    POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
     MAX_RESULT_REJECTIONS, OracleMeshExecutionOutcome, make_oracle_mesh_executor,
 )
@@ -102,6 +104,100 @@ class ChannelTransportHeaderTests(unittest.TestCase):
         self.assertEqual(lowered[CHANNEL_HEADER.lower()], SECRET)
         self.assertEqual(lowered["content-type"], "application/json")
         self.assertEqual(lowered["accept"], "application/json")
+
+
+class ChannelSocketDeadlineTests(unittest.TestCase):
+    """#4139: the channel gets a socket deadline; a running command keeps none.
+
+    Measured 2026-10-28: one executor met a half-dead TCP path on a single poll and
+    blocked for 5 h 36 m with no log line at all (last send and last receive 20,125 s
+    apart, 1,971 of 3,099 bytes retransmitted). Nothing was claimable on any PC during
+    that time, and the operator saw it as "the PC lane is down". A poll may never own
+    the loop, while a command still runs until the console answers by owner decision.
+    """
+
+    class _RecordingPort:
+        def __init__(self):
+            self.calls: list[dict] = []
+
+        def read_bytes(self, **call):  # noqa: D102
+            self.calls.append(dict(call))
+            return b"ok"
+
+    def _executor(self, **kwargs) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net",
+            channel_secret=SECRET,
+            read_port=_StubPort(),
+            **kwargs,
+        )
+
+    def _opener(self, record: dict, outcome: str = "answer"):
+        class _Opener:
+            def open(self, request, timeout=None):  # noqa: D102
+                record["timeout"] = timeout
+                if outcome == "dead":
+                    raise OSError("connection reset by peer")
+                return ChannelTransportHeaderTests._Response()
+
+        return _Opener()
+
+    def test_every_channel_round_uses_the_socket_deadline(self):
+        for path in (POLL_PATH, RESULT_PATH):
+            seen: dict = {}
+            with patch("urllib.request.build_opener", return_value=self._opener(seen)):
+                self._executor()._https_post(path, None)
+            self.assertEqual(seen["timeout"], CHANNEL_SOCKET_TIMEOUT_SECONDS, path)
+
+    def test_the_deadline_is_no_ceiling_on_the_work_itself(self):
+        port = self._RecordingPort()
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=port, timeout_seconds=None, channel_timeout_seconds=7,
+        )
+        executor._execute_read(OracleMeshDispatch(
+            dispatch_id="dsp-1", nonce="n" * 32, node_ref=NODE,
+            file_path=FILE_PATH, command_id="cmd-1", run_id="run-1",
+        ))
+        self.assertIsNone(port.calls[0]["timeout_seconds"])
+
+        seen: dict = {}
+        with patch("urllib.request.build_opener", return_value=self._opener(seen)):
+            executor._https_post(POLL_PATH, None)
+        self.assertEqual(seen["timeout"], 7)
+
+    def test_a_round_that_never_completes_is_the_only_thing_the_watchdog_stops(self):
+        executor = self._executor()
+        self.assertFalse(executor.channel_stalled())
+        self.assertFalse(executor.watchdog_tick())
+
+        executor._last_round_at = time.monotonic() - CHANNEL_STALL_SECONDS - 1
+        self.assertTrue(executor.watchdog_tick())
+
+    def test_a_round_that_answers_badly_is_still_a_round(self):
+        executor = self._executor()
+        executor._last_round_at = time.monotonic() - CHANNEL_STALL_SECONDS - 1
+        seen: dict = {}
+        with patch("urllib.request.build_opener",
+                   return_value=self._opener(seen, outcome="dead")):
+            with self.assertRaises(OracleMeshChannelRefused):
+                executor._https_post(POLL_PATH, None)
+        self.assertFalse(executor.channel_stalled())
+
+    def test_the_operational_composition_keeps_the_deadline_off_the_dispatch_cap(self):
+        executor = make_oracle_mesh_executor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            meshctrl_js="/opt/padiem/meshcentral/node_modules/meshcentral/meshctrl.js",
+            login_user="padiemadmin", password_provider=lambda: PASSWORD,
+            channel_timeout_seconds=11,
+        )
+        self.assertEqual(executor._channel_timeout, 11)
+        self.assertIsNone(executor._timeout)
+
+    def test_an_unusable_deadline_refuses_to_start(self):
+        for bad in (0, -1, 901, True, "90", None):
+            with self.assertRaises(ContractError):
+                self._executor(channel_timeout_seconds=bad)
 
 
 class FactoryRunnerTests(unittest.TestCase):
