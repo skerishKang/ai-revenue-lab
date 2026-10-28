@@ -94,8 +94,12 @@ PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
 #: The closed reason namespace one change may report. Anything else is the
 #: generic failure, so a PC-side message never becomes part of a refusal code.
 PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed"})
-#: Owner rules 2026-10-26: 20MB defensive read bound. Chat enforces its own
-#: bound; the 3/3 Chat slice must raise that bound before release verification.
+#: 플랫폼 메모리 보호(2026-10-28 소유자 결정): Chat 읽기 레인 자체의 읽기
+#: 상한(oracle_mesh_read_return_routes.PC_FILES_READ_MAX_BYTES = 20MB,
+#: history.ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20MB)과 같은 숫자다.
+#: Engine은 읽기 본문을 텍스트 + UTF-8 사본으로 통째로 메모리에 두므로
+#: (read 검증의 ``output.encode("utf-8")`` 참조) 이보다 큰 본문은 이 경로의
+#: 정당한 읽기가 아니고, 큰 파일은 컴2 파일 레인 처리 예정(경로 미구현).
 PC_FILES_READ_MAX_BYTES = 20_000_000
 #: One whole drive, in any spelling the model repeats back: `C:`, `C:\`, `C:/Users`.
 #: It became a granted root shape when the Owner made a connected PC work over its
@@ -715,9 +719,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         content_bytes > PC_FILES_READ_MAX_BYTES
                         or len(encoded) > PC_FILES_READ_MAX_BYTES
                     ):
+                        # 플랫폼 메모리 보호(임의 상한 아님): Worker 메모리는 128MB,
+                        # 이 본문은 base64(4/3) + Chat 텍스트 + Engine의 UTF-8 사본 +
+                        # JSON 오버헤드로 동시에 메모리에 있고, Chat 읽기 레인이 요청하는
+                        # 최대치가 20MB라 더 큰 본문은 정당한 PC 파일 읽기가 아니다.
+                        # 64MB 이상 파일은 컴2 파일 레인으로 넘길 예정(경로 미구현).
                         raise ToolHandlerError(
                             "pc_files_output_too_large",
-                            "PC file output exceeds the read bound",
+                            "파일이 커서 이 경로로 읽지 못했습니다 — 컴2 파일 처리 예정",
                         )
                 else:
                     if termination not in (
