@@ -35,9 +35,10 @@
      first so a locally installed copy can never take over the rendering. */
   --font: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
   --font-serif: "MaruBuri", "Noto Serif KR", "Nanum Myeongjo", serif;
-  /* Hero background layer. Drop a real city / river / sky panorama here:
-     --hero-image: url("./hero-panorama.jpg");   — one line, no layout change. */
-  --hero-image: none;
+  /* Hero background layer — 영산강 in Gwangju, 3840x960 (4:1), cropped from a
+     6016x4000 original. Source: Saigen Jiro, Wikimedia Commons, CC0. The
+     gradient underneath still shows through wherever the photo is scrimmed. */
+  --hero-image: url("./images/hero-panorama.jpg");
 }
 [data-theme="light"] {
   --bg: #ffffff;
@@ -276,6 +277,8 @@ body {
 .ka-media { position: relative; }
 .ka-thumb { display: block; width: 100%; aspect-ratio: 20 / 7; object-fit: cover; background: var(--bg-soft); }
 [data-theme="light"] .ka-thumb { background: var(--ivory-soft); }
+/* A record the council did not photograph renders without a media block at all —
+   the same shape as the summary card — rather than borrowing another meeting's photo. */
 .ka-badge {
   position: absolute; left: 10px; bottom: -13px;
   width: 26px; height: 26px; border-radius: 50%;

@@ -35,14 +35,14 @@
 
   <main id="main">
     <!-- Cinematic hero (reference_01): light photographic band, copy left, portrait right.
-         The band background is its own layer, so swapping in a real city/river panorama
-         is a one-line change (--hero-image in styles.css) with no layout change. -->
+         The band background and the portrait are separate layers: the panorama is the
+         --hero-image custom property in styles.css, the cut-out is the img below. -->
     <section class="hero" aria-labelledby="heroName">
       <div class="hero-bg" aria-hidden="true"></div>
       <img class="hero-portrait"
-           src="https://assem.jeonnam-gwangju.go.kr/data/6130000/fileupload/memberPicture/2026/06/10/%EB%82%A8%EA%B5%AC1_%EB%AF%BC%EC%A3%BC%EB%8B%B9_%EC%9E%84%EB%AF%B8%EB%9E%80.png"
+           src="./static/images/profile-portrait.png"
            alt="임미란 의원 프로필 사진" width="500" height="641" decoding="async"
-           onerror="this.onerror=null;this.src='https://council.gwangju.go.kr/images/lawmaker/sub/9imr.jpg';" />
+           onerror="this.onerror=null;this.src='https://assem.jeonnam-gwangju.go.kr/data/6130000/fileupload/memberPicture/2026/06/10/%EB%82%A8%EA%B5%AC1_%EB%AF%BC%EC%A3%BC%EB%8B%B9_%EC%9E%84%EB%AF%B8%EB%9E%80.png';" />
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="hero-eyebrow">전남광주통합특별시의회 · 남구 제1선거구</p>
@@ -158,7 +158,7 @@
         <a href="./media.html">미디어</a>
         <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
       </nav>
-      <p class="footer-note">이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.<br />자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+      <p class="footer-note">이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.<br />자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>
     </div>
   </footer>
 

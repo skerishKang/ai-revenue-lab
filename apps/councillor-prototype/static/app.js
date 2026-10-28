@@ -8,15 +8,15 @@ const ACTIVITIES = [
 ];
 
 const MEDIA = [
-  { kind: "프로필", title: "임미란 의원 공식 프로필 사진", url: "https://council.gwangju.go.kr/9imr/index.do?PID=003", thumb: "https://council.gwangju.go.kr/images/lawmaker/sub/9imr.jpg", notes: ["광주광역시의회 공식 페이지 제공", "출처: council.gwangju.go.kr"] },
-  { kind: "포토", title: "6·25전쟁 제76주년 기념식", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/065fd00c569698e4fdaeeff940d56064t.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "제344회 임시회 제3차 본회의", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/67be8e27a73ef9e637d0afd43dca98bbt.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "제1차 산업건설위원회", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/6ff19762dcce4baefb738da6599dab22t.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "제1차 산업건설위원회 (2)", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "제344회 임시회 개회", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/9de8f1efa6b02b433b1d5905ae104c69t.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "6·19충혼탑 추념식", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/a08722e94721047ed3b75b1f4055af58t.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "6.18 5-18민주화운동 추모제", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/d0f9aea03a53fc5b64b4ce1f34de077ft.jpg", notes: ["의회 공개 사진자료실"] },
-  { kind: "포토", title: "6.18 5-18민주화운동 기념 민주화행진", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "https://council.gwangju.go.kr/attach/270/feef46e2ccabce286ed6e0c81f1a05det.jpg", notes: ["의회 공개 사진자료실"] },
+  { kind: "프로필", title: "임미란 의원 공식 프로필 사진", url: "https://council.gwangju.go.kr/9imr/index.do?PID=003", thumb: "./static/images/profile-portrait.png", notes: ["광주광역시의회 공식 페이지 제공", "출처: council.gwangju.go.kr"] },
+  { kind: "포토", title: "제1차 산업건설위원회", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-01.jpg", notes: ["의회 공개 사진자료실", "2026-06-15"] },
+  { kind: "포토", title: "제46주년 5·18민주화운동 기념 민주평화대행진", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-02.jpg", notes: ["의회 공개 사진자료실", "2026-05-17"] },
+  { kind: "포토", title: "제344회 임시회 제3차 본회의", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-03.jpg", notes: ["의회 공개 사진자료실", "2026-06-22"] },
+  { kind: "포토", title: "6·25전쟁 제76주년 기념식", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-04.jpg", notes: ["의회 공개 사진자료실", "2026-06-25"] },
+  { kind: "포토", title: "제344회 임시회 제1차 본회의(개회)", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-05.jpg", notes: ["의회 공개 사진자료실", "2026-06-15"] },
+  { kind: "포토", title: "제71회 현충일 추념식", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-06.jpg", notes: ["의회 공개 사진자료실", "2026-06-06"] },
+  { kind: "포토", title: "제1차 산업건설위원회 (2)", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-07.jpg", notes: ["의회 공개 사진자료실", "2026-06-15"] },
+  { kind: "포토", title: "제46주년 5·18민주화운동 전야제", url: "https://council.gwangju.go.kr/9imr/index.do?PID=014", thumb: "./static/images/media-08.jpg", notes: ["의회 공개 사진자료실", "2026-05-17"] },
   { kind: "영상", title: "의정활동영상", url: "https://council.gwangju.go.kr/9imr/index.do?PID=017", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["본회의 발언 및 현장 기록 영상"] },
   { kind: "영상", title: "영상인사말", url: "https://council.gwangju.go.kr/9imr/index.do?PID=029", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["영상 인사말"] },
   { kind: "본회의", title: "제316회 교육행정질문", url: "https://www.youtube.com/watch?v=8vdllvPwRAY", thumb: "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg", notes: ["유튜브"] },
@@ -68,16 +68,17 @@ function renderKeyActivities() {
   const grid = document.getElementById("keyActivities");
   if (!grid) return;
   grid.innerHTML = "";
-  const thumbs = [
-    "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg",
-    "https://council.gwangju.go.kr/attach/270/6ff19762dcce4baefb738da6599dab22t.jpg",
-    "https://council.gwangju.go.kr/attach/270/065fd00c569698e4fdaeeff940d56064t.jpg"
-  ];
+  // Only records the council photographed get a photo, and only their own: the 7·1
+  // 개원 record has no gallery photo, so it is rendered without one.
+  const thumbs = [null, "./static/images/activity-01.jpg", "./static/images/activity-02.jpg"];
   ACTIVITIES.slice(0, 3).forEach((a, i) => {
     const card = document.createElement("a");
     card.className = "key-activity-card";
     card.href = "./activity.html";
-    card.innerHTML = `<img class="ka-thumb" src="${thumbs[i]}" alt="${a.title}" loading="lazy" onerror="this.style.display='none'" /><div class="ka-date">${a.date} · ${a.tag}</div><div class="ka-title">${a.title}</div>`;
+    card.innerHTML = (thumbs[i]
+      ? `<img class="ka-thumb" src="${thumbs[i]}" alt="${a.title}" loading="lazy" onerror="this.style.display='none'" />`
+      : "") +
+      `<div class="ka-date">${a.date} · ${a.tag}</div><div class="ka-title">${a.title}</div>`;
     grid.appendChild(card);
   });
 }

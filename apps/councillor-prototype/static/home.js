@@ -33,11 +33,14 @@
   // assembly itself, a 기념식 as a flag; anything else falls back to the record glyph.
   const TAG_ICON = { 회의: "record", 위원회: "people", 본회의: "building", 기념식: "flag" };
 
-  // Same three verified thumbnails app.js uses for the activity cards.
+  // Only the records that the council actually photographed get a photo, and the
+  // photo is the one filed under that same meeting: 6·25 기념식 and 제344회 제3차
+  // 본회의. The 7·1 개원 record has no photo in the gallery, so it gets no image
+  // rather than someone else's.
   const THUMBS = [
-    "https://council.gwangju.go.kr/attach/270/98cd8f6145e5c736ed4354910280438at.jpg",
-    "https://council.gwangju.go.kr/attach/270/6ff19762dcce4baefb738da6599dab22t.jpg",
-    "https://council.gwangju.go.kr/attach/270/065fd00c569698e4fdaeeff940d56064t.jpg"
+    null,
+    "./static/images/activity-01.jpg",
+    "./static/images/activity-02.jpg"
   ];
 
   const LINKS = [
@@ -60,11 +63,13 @@
       card.className = "key-activity-card";
       card.href = "./activity.html";
       card.innerHTML =
-        '<div class="ka-media">' +
-          '<img class="ka-thumb" src="' + THUMBS[i] + '" alt="" loading="lazy" ' +
-            'onerror="this.style.visibility=\'hidden\'" />' +
-          '<span class="ka-badge" aria-hidden="true">' + icon(TAG_ICON[a.tag] || "record") + "</span>" +
-        "</div>" +
+        (THUMBS[i]
+          ? '<div class="ka-media">' +
+              '<img class="ka-thumb" src="' + THUMBS[i] + '" alt="" loading="lazy" ' +
+                'onerror="this.style.visibility=\'hidden\'" />' +
+              '<span class="ka-badge" aria-hidden="true">' + icon(TAG_ICON[a.tag] || "record") + "</span>" +
+            "</div>"
+          : "") +
         '<div class="ka-body">' +
           '<span class="ka-date">' + a.date + " · " + a.tag + "</span>" +
           '<p class="ka-title">' + a.title + "</p>" +
