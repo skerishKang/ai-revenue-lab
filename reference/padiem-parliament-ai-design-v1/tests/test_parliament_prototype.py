@@ -98,12 +98,22 @@ def test_prototype_calls_no_api_and_loads_no_remote_asset() -> None:
     assert "@import" not in CSS
 
 
-def test_no_outbound_link_survives_the_third_party_photo_removal() -> None:
-    """당산철교 사진을 내렸으면 그 사진의 CC 표기도 함께 내려가야 크레딧이 실제 사용과 일치한다."""
+def test_third_party_photo_credit_is_text_and_never_a_link() -> None:
+    """CC BY-SA 사진을 화면에 싣는다면 저작자·라이선스를 화면에 적어야 한다.
+    대신 링크로 내보내지는 않는다(프로토타입의 무-외부요청 계약)."""
     links = ANCHOR_HREF.findall(HTML)
-    assert links == [], f"nothing on screen is third-party anymore: {links}"
-    assert "creativecommons.org" not in HTML and "Wikimedia" not in HTML, (
-        "the footer must not attribute a licence for an image the page no longer shows")
+    assert links == [], f"the prototype links nowhere: {links}"
+    attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
+    credit = re.search(r'<p class="pa-credit">(.*?)</p>', HTML, re.S)
+    assert credit, "the footer credit is what a viewer actually reads"
+    text = re.sub(r"<[^>]+>", " ", credit.group(1))
+    # 영국 사진은 CC BY-SA 4.0 — 저작자와 라이선스가 화면과 기록 모두에 있어야 한다
+    for probe in ("Farruk Ahmed Bhuiyan", "CC BY-SA 4.0"):
+        assert probe in text, f"the on-screen credit must name {probe}"
+        assert probe in attribution, f"ATTRIBUTION.md must record {probe}"
+    # 퍼블릭 도메인 사진도 출처를 기록해 둔다
+    for probe in ("commons.wikimedia.org", "퍼블릭 도메인"):
+        assert probe in attribution or probe in text, f"photo provenance must record {probe}"
 
 
 def test_binaries_are_limited_to_recorded_assets_and_captures() -> None:
@@ -116,7 +126,7 @@ def test_binaries_are_limited_to_recorded_assets_and_captures() -> None:
     assert code, "the prototype must ship its own source files"
     assert all(Path(p).suffix in {".html", ".css", ".js", ".md", ".py"} for p in code), code
     images = [p for p in shipped if p.startswith("assets/") and Path(p).suffix in {".jpg", ".jpeg", ".png", ".webp"}]
-    assert len(images) == 4, f"hero 1 + card 3, nothing else ships: {images}"
+    assert len(images) == 7, f"hero 1 + card 3 + overseas hero 3, nothing else ships: {images}"
     attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
     for image in images:
         assert Path(image).name in attribution, f"{image} ships without a recorded source"
@@ -318,13 +328,14 @@ def test_image_slots_are_a_css_only_swap_and_every_referenced_file_exists() -> N
     for slot in ("--hero-image", "--card-image-1", "--card-image-2", "--card-image-3",
                  "--card-fit", "--card-position-1", "--card-position-2", "--card-position-3"):
         assert slot in CSS, slot
-    applied = ("parliament-hero.jpg", "speech-card.jpg", "sns-card.jpg", "meeting-card.jpg")
+    applied = ("parliament-hero.jpg", "speech-card.jpg", "sns-card.jpg", "meeting-card.jpg",
+               "parliament-uk-hero.jpg", "parliament-us-hero.jpg", "parliament-fr-hero.jpg")
     for name in applied:
         assert name in CSS, f"{name} has arrived but no slot points at it"
         assert name in (ROOT / "assets" / "IMAGE-SLOTS.md").read_text(encoding="utf-8"), f"{name} is not documented"
     on_disk = {p.name for p in (ROOT / "assets").iterdir() if p.is_file()}
     referenced = local_asset_refs(CSS) - font_refs(CSS)
-    assert referenced == set(applied), f"the screen must load exactly the four provided roles: {sorted(referenced)}"
+    assert referenced == set(applied), f"the screen must load exactly the recorded roles: {sorted(referenced)}"
     assert referenced <= on_disk, sorted(referenced - on_disk)
 
 
@@ -496,17 +507,25 @@ def test_chat_asset_stager_does_not_learn_this_directory() -> None:
     assert '"prefix": "apps/council"' in CHAT_BUILDER, "the shipped entry staging must stay exactly as it is"
 
 
-def test_countries_without_a_photo_say_so_explicitly() -> None:
-    """대체 그림을 지어 완성을 주장하지 않도록, 사진 없는 국가는 none을 코드로 선언해야 한다."""
-    for country in ("us", "fr", "uk"):
+def test_every_country_declares_its_hero_asset_and_ships_it() -> None:
+    """사진이 있는 국가는 파일을 실제로 배포하고, 없으면 none 을 코드로 남긴다.
+    사진이 있는 국가는 CSS 스카이라인 백스톱을 끄고, 없는 국가만 켠다."""
+    for country in COUNTRIES:
         body = " ".join(blocks_for("country", country))
-        assert re.search(r"--hero-photo:\s*none", body), f"{country} must declare --hero-photo: none until its asset arrives"
-    kr = " ".join(blocks_for("country", "kr"))
-    assert re.search(r"--hero-photo:\s*(?:url|image-set)\(", kr), "kr is the country that actually has a licensed photo"
-    assert re.search(r"--skyline-display:\s*none", kr), "the CSS skyline is a fallback, not decoration on top of a photo"
+        photo = re.search(r"--hero-photo:\s*([^;]+);", body)
+        skyline = re.search(r"--skyline-display:\s*(\w+)", body)
+        assert photo and skyline, f"{country} must declare its hero asset and skyline fallback"
+        if "none" in photo.group(1):
+            assert skyline.group(1) == "block", f"{country} has no photo, so the skyline backstop must show"
+        else:
+            assert "url(" in photo.group(1), f"{country} hero declaration is neither a file nor none"
+            assert skyline.group(1) == "none", f"{country} has a photo; the CSS skyline must not paint over it"
     referenced = local_asset_refs(CSS)
     on_disk = {p.relative_to(ROOT / "assets").as_posix() for p in (ROOT / "assets").rglob("*") if p.is_file()}
     assert referenced and referenced <= on_disk, f"CSS references assets that are not shipped: {sorted(referenced - on_disk)}"
+    attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
+    for name in ("parliament-uk-hero.jpg", "parliament-us-hero.jpg", "parliament-fr-hero.jpg"):
+        assert name in attribution, f"{name} ships without a recorded source"
 
 
 def test_the_shipped_fonts_are_the_ones_the_css_declares() -> None:
