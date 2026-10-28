@@ -5,7 +5,7 @@
  * `apps/padiem-ai-engine/preview-caller/worker.mjs`의 caller 형태를 따랐다) —
  * service binding으로 private 권위에 닿는 caller Worker, 상수시간 bearer, 크기 상한,
  * 실패 시 닫힌 JSON. 상태 전이는 `apps/padiem-chat/app/android_auth_store.py`의
- * 조건부 UPDATE 한 문장 방식 그대로이고, 표의 정의는 migration 073이다.
+ * 조건부 UPDATE 한 문장 방식 그대로이고, 표의 정의는 migration 076이다.
  *
  * 경계:
  * - 서버 간 인증(COM2 → 이 중계): `authorization: Bearer <LOVETREE_CALLER_SECRET>`. 서비스 신원이지 사용자 신원이 아니다.
@@ -86,7 +86,7 @@ async function readClosedBody(request) {
   }
 }
 
-// migration 058/073의 타임스탬프와 같은 고정 UTC 형식. 밀리초가 섞이면 문자열 비교가 어긋난다.
+// migration 058/076의 타임스탬프와 같은 고정 UTC 형식. 밀리초가 섞이면 문자열 비교가 어긋난다.
 function nowIso(at) {
   return new Date(at).toISOString().slice(0, 19) + "Z";
 }

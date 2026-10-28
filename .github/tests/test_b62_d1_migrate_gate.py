@@ -710,7 +710,7 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
         "--out", str(plan),
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
-    # inventory에는 표가 하나 더 있다: 073_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
+    # inventory에는 표가 하나 더 있다: 076_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
     assert len(result["seed"]) == 65
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []

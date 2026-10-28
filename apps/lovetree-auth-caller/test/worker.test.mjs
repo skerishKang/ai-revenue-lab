@@ -321,11 +321,11 @@ test('health and auth-check describe the durable handoff mint without leaking th
   assert.equal((await handleRequest(post('/whatever', {}, SECRET), env)).status, 404);
 });
 
-// migration 073과 저장소(app/lovetree_auth_store.py)가 이 중계가 쓰는 표·상태·고정값과
+// migration 076과 저장소(app/lovetree_auth_store.py)가 이 중계가 쓰는 표·상태·고정값과
 // 같은지 이 lane에서 묶는다. 실제 SQL 실행 검증은 B62 Chat CI lane의
 // tests/test_lovetree_login_handoff.py가 sqlite3로 한다 — 이 lane은 Chat 의존성이 없다.
 test('the table contract and the store still match what this relay claims', async () => {
-  const migration = await readFile(new URL('../../padiem-chat/migrations/073_lovetree_login_handoff.sql', import.meta.url), 'utf8');
+  const migration = await readFile(new URL('../../padiem-chat/migrations/076_lovetree_login_handoff.sql', import.meta.url), 'utf8');
   const store = await readFile(new URL('../../padiem-chat/app/lovetree_auth_store.py', import.meta.url), 'utf8');
 
   for (const fragment of [

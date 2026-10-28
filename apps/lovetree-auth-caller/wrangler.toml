@@ -12,7 +12,7 @@ workers_dev = true
 binding = "IDENTITY_AUTHORITY"
 service = "padiem-control-plane-identity"
 
-# 발급 근거가 되는 1회용 handoff 표(migration 073, 테이블 lovetree_login_handoffs)는
+# 발급 근거가 되는 1회용 handoff 표(migration 076, 테이블 lovetree_login_handoffs)는
 # 기존 PADIEM 로그인이 같은 D1에 쓴다. 이 중계는 그 행을 조건부 UPDATE 한 문장으로
 # 한 번만 소비하고 권위에 발급을 부탁한다 — 표를 새로 만들거나 신원을 고치지 않는다.
 # 바인딩 실제 적용(권한·배포)은 운영 작업이며 이 변경으로는 수행하지 않는다.
