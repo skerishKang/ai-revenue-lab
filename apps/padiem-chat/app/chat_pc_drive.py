@@ -717,18 +717,21 @@ async def execute_chat_pc_drive_lane(
     saved_selection = await read_saved_device_selection(
         request, owner_id=uid, workspace_id=workspace_id,
     )
-    # #5573: with more than one linked PC the request itself gets to say which
-    # machine it means, in the name the owner gave that machine. Only a single
-    # match decides; no match leaves the saved target in front, which is what
-    # "the last PC I used" means, and the lane still says which machine ran.
+    # #5573: the words of this turn pick the machine ahead of anything carried
+    # over. The composer sends the last-chosen PC on every request, so a request
+    # that says "컴2" while the screen still points at 컴1 has to run on 컴2 -
+    # otherwise a name can never choose anything, which is the whole reason an
+    # owner is allowed to name their PCs. A turn that names nothing keeps the
+    # browser's choice, and a new session keeps the saved preference ("the last
+    # PC I used"). Exactly one match decides; two names in one request decide
+    # nothing, and the ordinary ambiguity refusal is left to stand.
     named_device_id = None
-    if device_id is None:
-        linked = await linked_pc_targets(request, uid)
-        if linked:
-            named_device_id = link_named_in(
-                execution_user_text or user_text, linked,
-            )
-    if device_id is not None:
+    linked = await linked_pc_targets(request, uid)
+    if linked:
+        named_device_id = link_named_in(execution_user_text or user_text, linked)
+    if named_device_id is not None:
+        device_id = named_device_id
+    elif device_id is not None:
         if (
             saved_selection.status == SAVED_SELECTION_SELECTED
             and saved_selection.device_id != device_id
@@ -738,8 +741,6 @@ async def execute_chat_pc_drive_lane(
                 "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요.",
                 409,
             )
-    elif named_device_id is not None:
-        device_id = named_device_id
     elif saved_selection.status == SAVED_SELECTION_SELECTED:
         # New session/reload: the saved target is the account's default.
         device_id = saved_selection.device_id
