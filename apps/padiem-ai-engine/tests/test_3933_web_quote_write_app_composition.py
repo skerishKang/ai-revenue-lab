@@ -80,8 +80,10 @@ def test_read_and_write_apps_resolve_to_distinct_independent_bindings() -> None:
     read_spec = read_binding.registry.get(READ_CANONICAL).runtime_spec
     assert write_spec.side_effect.value == "write"
     assert read_spec.side_effect.value == "none"
-    assert write_spec.approval_policy.value == "user_confirmation"
-    assert read_spec.approval_policy.value == "user_confirmation"
+    # Owner decision 2026-10-28: both sides are pre-delegated on the
+    # connected owner lane, so a confirmation pause never occurs.
+    assert write_spec.approval_policy.value == "external_authorization"
+    assert read_spec.approval_policy.value == "external_authorization"
     assert write_spec.auth_scope != read_spec.auth_scope
 
 

@@ -87,7 +87,7 @@ def web_xlsx_confirmation_spec() -> ToolSpec:
         id=RUNTIME_TOOL, title="Confirm web XLSX original selection",
         description="Explicit user confirmation before server-side read",
         owner="core", side_effect=ToolSideEffect.NONE,
-        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
         auth_scope=(SCOPE,),
         input_schema={"type": "object", "additionalProperties": False,
                       "properties": props, "required": list(props)},
@@ -168,6 +168,10 @@ def build_web_xlsx_p01_tool_binding(
     auth = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(SCOPE,),
+        # Owner decision 2026-10-28: PC menu work runs pre-delegated. This
+        # binding exists only when the owner's PC lane is connected, and the
+        # per-invocation preflight re-authorizes against the live selection.
+        externally_authorized_tools=frozenset({RUNTIME_TOOL}),
     )
     return EngineToolBinding(
         app_id=APP_ID, tool_runtime=runtime, registry=registry,
