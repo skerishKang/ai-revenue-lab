@@ -1,13 +1,17 @@
 # 이미지 슬롯 계약 (IMAGE-SLOTS)
 
-히어로 1장 + 업무 카드 3장은 **CSS 변수 4개만 바꿔서** 교체한다. HTML 구조는 손대지 않는다.
-대표가 제공한 생성 이미지 4장은 2026-10-28에 수신·적용 완료했다(출처·내용·계측은 `ATTRIBUTION.md`).
+히어로 + 업무 카드 3장은 **CSS 변수만 바꿔서** 교체한다. HTML 구조는 손대지 않는다.
+대표가 제공한 생성 이미지 4장(한국 히어로 + 카드 3장)은 2026-10-28에 적용했고,
+해외 3국 히어로는 같은 날 Wikimedia Commons 의 라이선스 확인본으로 교체했다(출처·변형은 `ATTRIBUTION.md`).
 
 ## 슬롯
 
 | 변수 | 화면 요소 | 현재 파일 | fit / position |
 |---|---|---|---|
-| `--hero-photo` | `.pa-photo` (`.pa-scene` 안, 히어로 전폭) | `assets/parliament-hero.jpg` | `cover` · `74% 44%` · `--hero-photo-zoom: 1.06` |
+| `--hero-photo` (kr) | `.pa-photo` | `assets/parliament-hero.jpg` | `cover` · `74% 44%` · zoom 1.06 |
+| `--hero-photo` (us) | `.pa-photo` | `assets/parliament-us-hero.jpg` | `cover` · `62% 48%` · zoom 1.02 |
+| `--hero-photo` (uk) | `.pa-photo` | `assets/parliament-uk-hero.jpg` | `cover` · `58% 52%` · zoom 1.03 |
+| `--hero-photo` (fr) | `.pa-photo` | `assets/parliament-fr-hero.jpg` | `cover` · `52% 46%` · zoom 1.02 |
 | `--card-image-1` | `.pa-work[data-work="speech"]::before` | `assets/speech-card.jpg` | `--card-fit` · `--card-position-1: 64% 52%` |
 | `--card-image-2` | `.pa-work[data-work="sns"]::before` | `assets/sns-card.jpg` | `--card-fit` · `--card-position-2: 56% 50%` |
 | `--card-image-3` | `.pa-work[data-work="meeting"]::before` | `assets/meeting-card.jpg` | `--card-fit` · `--card-position-3: 42% 58%` |

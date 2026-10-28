@@ -234,11 +234,11 @@ html[data-country="us"] {
   --haze: rgba(36, 54, 95, .32);
   --lit: rgba(236, 234, 226, .5);
   --vignette: rgba(13, 27, 51, .5);
-  --hero-photo: none;   /* 사진 미확보 — 대체 그림을 만들어 완성 처리하지 않는다 */
-  --hero-photo-position: 50% 60%;
-  --hero-photo-zoom: 1;
+  --hero-photo: url("./assets/parliament-us-hero.jpg");
+  --hero-photo-position: 62% 48%;
+  --hero-photo-zoom: 1.02;
   --pa-grade-op: 0;
-  --skyline-display: block;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
   --card-image-1: none;
   --card-image-2: none;
   --card-image-3: none;
@@ -324,11 +324,11 @@ html[data-country="fr"] {
   --haze: rgba(61, 63, 102, .3);
   --lit: rgba(239, 227, 214, .5);
   --vignette: rgba(20, 24, 43, .48);
-  --hero-photo: none;
-  --hero-photo-position: 50% 60%;
-  --hero-photo-zoom: 1;
+  --hero-photo: url("./assets/parliament-fr-hero.jpg");
+  --hero-photo-position: 52% 46%;
+  --hero-photo-zoom: 1.02;
   --pa-grade-op: 0;
-  --skyline-display: block;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
   --card-image-1: none;
   --card-image-2: none;
   --card-image-3: none;
@@ -410,11 +410,11 @@ html[data-country="uk"] {
   --haze: rgba(36, 54, 92, .34);
   --lit: rgba(230, 221, 201, .45);
   --vignette: rgba(11, 18, 32, .52);
-  --hero-photo: none;
-  --hero-photo-position: 50% 60%;
-  --hero-photo-zoom: 1;
+  --hero-photo: url("./assets/parliament-uk-hero.jpg");
+  --hero-photo-position: 58% 52%;
+  --hero-photo-zoom: 1.03;
   --pa-grade-op: 0;
-  --skyline-display: block;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
   --card-image-1: none;
   --card-image-2: none;
   --card-image-3: none;
