@@ -202,3 +202,35 @@
 @media (max-width: 640px) {
   .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }
 }
+
+/* #5895: the quote screen's own Excel form section. The picker is its own dialog;
+   this only lays out the button, the chosen form, and the plain waiting lines. */
+.b66-quote-pcform {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.b66-quote-pcform-pick,
+.b66-quote-pcform-make,
+.b66-quote-pcform-save,
+.b66-quote-pcform-connect {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  color: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.b66-quote-pcform-chosen,
+.b66-quote-pcform-note,
+.b66-quote-pcform-status {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted, #5a7488);
+}
