@@ -12,6 +12,9 @@ the new proof - not the network:
   * a session that does not report itself authenticated fails even when every
     status line was 200;
   * only the model-side lane keeps its 429/503 excuse, and only as a marked pass;
+  * a step that returns NO answer at all is asked once more three seconds later,
+    while any HTTP answer - 5xx included - is judged immediately, and two missing
+    answers is still red;
   * the step runs after the auto-rollback step and carries no ``if:`` of its own,
     so a failed proof is read by a person and never rolls a release by itself;
   * the QA identity is consumed by NAME only, as the existing proofs do.
@@ -105,3 +108,93 @@ def test_the_proof_runs_after_the_rollback_and_is_never_conditional() -> None:
     assert env["B66_CGI_ALPHA_USERNAME"].startswith("${{ vars."), env
     assert env["B66_CGI_ALPHA_PASSWORD"].startswith("${{ secrets."), env
     assert "${{" not in body
+
+
+def test_a_missing_answer_is_asked_once_more_three_seconds_later(monkeypatch) -> None:
+    """The edge blinked for a second at a time on 2026-10-28 while traffic was healthy.
+
+    One retry tells a missing answer apart from a bad one. The second missing answer
+    is still a failure - this widens nothing, it only refuses to call a blink a
+    broken release.
+    """
+    import post_deploy_signed_in_smoke as smoke
+
+    calls: list[tuple[str, str]] = []
+    sleeps: list[int] = []
+
+    def fake_call(opener, path, *, method="GET", payload=None):
+        calls.append((path, method))
+        if len(calls) == 1:
+            raise smoke.CanaryError("http_transport_unavailable")
+        return 200, {"ok": True}
+
+    monkeypatch.setattr(smoke, "_call", fake_call)
+    status, body = smoke._call_once_more_without_an_answer(
+        object(), "/api/auth/login", method="POST", payload={"a": 1},
+        sleeper=sleeps.append,
+    )
+
+    assert (status, body) == (200, {"ok": True})
+    assert calls == [("/api/auth/login", "POST"), ("/api/auth/login", "POST")]
+    assert sleeps == [smoke.TRANSPORT_RETRY_WAIT_SECONDS]
+
+
+def test_two_missing_answers_are_still_red(monkeypatch) -> None:
+    import pytest
+
+    import post_deploy_signed_in_smoke as smoke
+
+    calls: list[str] = []
+
+    def never_answers(opener, path, *, method="GET", payload=None):
+        calls.append(path)
+        raise smoke.CanaryError("http_transport_unavailable")
+
+    monkeypatch.setattr(smoke, "_call", never_answers)
+    with pytest.raises(smoke.CanaryError):
+        smoke._call_once_more_without_an_answer(object(), "/api/auth/status", sleeper=lambda _s: None)
+    assert calls == ["/api/auth/status", "/api/auth/status"]
+
+
+def test_an_http_answer_is_judged_immediately_with_no_second_try(monkeypatch) -> None:
+    """5xx means Chat answered. Retrying it would hide the incident shape."""
+    import post_deploy_signed_in_smoke as smoke
+
+    calls: list[str] = []
+    sleeps: list[int] = []
+
+    def five_hundred(opener, path, *, method="GET", payload=None):
+        calls.append(path)
+        return 500, None
+
+    monkeypatch.setattr(smoke, "_call", five_hundred)
+    assert smoke._call_once_more_without_an_answer(
+        object(), "/api/auth/status", sleeper=sleeps.append,
+    ) == (500, None)
+    assert calls == ["/api/auth/status"] and sleeps == []
+
+    incident = [
+        ("login", 200, {"ok": True}),
+        ("auth_status", 500, None),
+        ("conversations", 200, {"conversations": []}),
+        ("chat", 200, {"answer": "ok", "conversation_id": "chat_" + "b" * 32}),
+    ]
+    assert smoke.decide_path(incident) == ("FAIL", "auth_status:http_500")
+
+
+def test_a_refusal_that_is_not_a_missing_answer_is_never_retried(monkeypatch) -> None:
+    """Only the transport case gets the second try; any other refusal is the answer."""
+    import pytest
+
+    import post_deploy_signed_in_smoke as smoke
+
+    calls: list[str] = []
+
+    def refuse(opener, path, *, method="GET", payload=None):
+        calls.append(path)
+        raise smoke.CanaryError("qa_credential_missing")
+
+    monkeypatch.setattr(smoke, "_call", refuse)
+    with pytest.raises(smoke.CanaryError):
+        smoke._call_once_more_without_an_answer(object(), "/api/auth/status", sleeper=lambda _s: None)
+    assert calls == ["/api/auth/status"]
