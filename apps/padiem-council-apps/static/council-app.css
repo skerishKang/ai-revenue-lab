@@ -88,6 +88,24 @@ body.council-body {
   cursor: pointer;
 }
 .council-badge-action[hidden] { display: none; }
+/* #6046: 콘텐츠 언어 선택. 국가 = 출력 언어·표현 라벨이며 법적 관할 설정이 아니다. */
+.council-country {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--council-muted);
+}
+.council-country select {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--council-border);
+  background: var(--council-surface, transparent);
+  color: inherit;
+  min-height: 32px;
+}
 
 #councilMain {
   max-width: 960px;
@@ -398,8 +416,14 @@ body.council-body {
 .council-photo-add,
 .council-photo-controls button,
 .council-photo-pos-select,
-.council-result h3 {
+.council-result h3,
+.council-country select {
   min-height: 44px;
+}
+/* 390px 실측에서 빠진 두 개: 언어 선택 32px, 활동 기록 체크박스 13px. */
+.council-book-check {
+  width: 24px;
+  height: 24px;
 }
 .council-archive-item button,
 .council-saved-item .council-saved-open,

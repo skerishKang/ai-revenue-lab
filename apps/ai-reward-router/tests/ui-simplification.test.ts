@@ -93,6 +93,25 @@ test('pipeline summary is status-centred with icons and a short login gate', asy
   assert.ok(!anonymous.includes('장황한'), '');
 });
 
+/**
+ * Live 390px capture (#6074): the pipeline screen printed its own name four
+ * times — header trust note, nav item, hero eyebrow and h1. The header slot
+ * carries a state message on every other surface, so it was the one repeating
+ * rather than informing.
+ */
+test('the pipeline screen names itself once and the header slot stays informative (#6074)', () => {
+  const html = renderIncomePipelineWeb(buildIncomePipelineViewModel({ userId: null, records: [] }));
+  const body = html.slice(html.indexOf('<body>'));
+  assert.equal(body.split('내 수익 관리').length - 1, 2, 'nav item and h1 only');
+  assert.match(html, /<span class="trust-note">사용자 직접 기록<\/span>/);
+  assert.match(html, /<p class="eyebrow">B64 계정<\/p>/);
+
+  const hero = html.match(/<section class="hero"[\s\S]*?<\/section>/)?.[0] ?? '';
+  assert.ok(hero.includes('<h1'), 'the hero still owns the page title');
+  assert.equal(hero.replace(/<h1[\s\S]*?<\/h1>/, '').includes('내 수익 관리'), false,
+    'nothing around the h1 restates it');
+});
+
 test('today keeps the honest split between immediate and screening opportunities', async () => {
   const html = await (await handler(new Request('https://b64.example/today'))).text();
   assert.match(html, /참가자 등록 가능/);

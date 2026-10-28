@@ -16,8 +16,11 @@ Fail-closed rules mirrored from connector_platform.py:115-127:
   lists;
 - an advertised tool that is not explicitly reviewed raises
   ``ConnectorProjectionError`` — it is never silently projected as READ;
-- every WRITE tool carries ``ApprovalPolicy.USER_CONFIRMATION``
-  (Core contracts.py:155-156 enforces that write tools need a policy).
+- every WRITE tool carries ``ApprovalPolicy.EXTERNAL_AUTHORIZATION`` — the
+  owner's connected connector is the pre-delegated authorization (Owner
+  decision 2026-10-28); the irreversible external-send family (send/post/
+  schedule/comment tools) keeps ``ApprovalPolicy.USER_CONFIRMATION`` pending
+  an Owner decision. Core enforces that write tools need a policy.
 
 Drift detection is free: ``RegisteredTool`` fingerprints are SHA-256 over the
 ToolSpec content (tool_registry.py:47-60), so any change to a projected tool
@@ -25,6 +28,8 @@ definition changes the fingerprint.
 """
 
 from __future__ import annotations
+
+import re
 
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
@@ -88,6 +93,11 @@ DEFERRED_CONNECTORS: dict[str, str] = {
         "does not model deployment governance (#1998 ④ NEEDS_NEW_MECHANISM)"
     ),
 }
+
+_TOOL_TOKENS = re.compile(r"[-_.]")
+# Irreversible external acts (mail send, message post/schedule, public comment)
+# keep USER_CONFIRMATION pending an Owner decision (Owner decision 2026-10-28).
+_SEND_FAMILY_TOKENS = frozenset({"send", "post", "schedule", "comment", "respond", "reaction", "invite"})
 
 _NEUTRAL_INPUT_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -178,7 +188,11 @@ def _tool_spec(
         approval_policy=(
             ApprovalPolicy.NOT_REQUIRED
             if effect_read
-            else ApprovalPolicy.USER_CONFIRMATION
+            else (
+                ApprovalPolicy.USER_CONFIRMATION
+                if _SEND_FAMILY_TOKENS & set(_TOOL_TOKENS.split(tool_name))
+                else ApprovalPolicy.EXTERNAL_AUTHORIZATION
+            )
         ),
         input_schema=input_schema,
     )

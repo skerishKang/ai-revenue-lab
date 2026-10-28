@@ -1,7 +1,9 @@
 name: B64 Deploy Gate Contract Tests
 
-# CI for the dispatch-only B64 production deploy gate. This workflow mutates
-# nothing: it parses the gate YAML and runs static pytest contracts.
+# CI for the two dispatch-only B64 production gates: the deploy gate and the
+# independent-identity activation gate (schema + credential bindings). This
+# workflow mutates nothing: it parses the gate YAML and runs static pytest
+# contracts.
 #
 # apps/ai-reward-router/** is in the path filter on purpose. The gate's
 # post-deploy parity step asserts on strings the product renders
@@ -15,7 +17,9 @@ on:
     paths:
       - ".github/workflows/b64-cloudflare-worker-production-deploy-gate.yml"
       - ".github/workflows/b64-deploy-gate-contract-tests.yml"
+      - ".github/workflows/b64-independent-identity-activation-gate.yml"
       - ".github/tests/test_b64_production_deploy_gate.py"
+      - ".github/tests/test_b64_google_oauth_binding_gate.py"
       - "apps/ai-reward-router/src/**"
       - "apps/ai-reward-router/wrangler.jsonc"
   push:
@@ -24,7 +28,9 @@ on:
     paths:
       - ".github/workflows/b64-cloudflare-worker-production-deploy-gate.yml"
       - ".github/workflows/b64-deploy-gate-contract-tests.yml"
+      - ".github/workflows/b64-independent-identity-activation-gate.yml"
       - ".github/tests/test_b64_production_deploy_gate.py"
+      - ".github/tests/test_b64_google_oauth_binding_gate.py"
       - "apps/ai-reward-router/src/**"
       - "apps/ai-reward-router/wrangler.jsonc"
   workflow_dispatch:
@@ -54,7 +60,10 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b64_production_deploy_gate.py
+        run: |
+          python -m pytest -q \
+            .github/tests/test_b64_production_deploy_gate.py \
+            .github/tests/test_b64_google_oauth_binding_gate.py
 
       - name: Record no deployment performed
         run: |

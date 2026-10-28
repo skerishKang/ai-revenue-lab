@@ -16,6 +16,7 @@ from padiem_ai_core.document_parser_boundary import (
 )
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
+from .request_contract import COUNTRIES
 from .project_files import (
     BINARY_PROJECT_FILE_MEDIA,
     DEFAULT_OWNER_FILES_PAGE,
@@ -89,13 +90,19 @@ async def _identity(request: Request):
     return uid, pid, None
 
 
-def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str]:
+def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str, str]:
     if not isinstance(raw, dict):
         raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-    if set(raw) != {"name", "media_type", "text"}:
+    if set(raw) - {"name", "media_type", "text", "country"}:
         raise ValueError("Project text documents require name, media_type and text; binary files use raw upload.")
+    if not {"name", "media_type", "text"} <= set(raw):
+        raise ValueError("Project text documents require name, media_type and text; binary files use raw upload.")
+    # #6046 — 국가는 필수가 아니다. 없으면 kr(기존 문서와 같은 규칙).
+    country = raw.get("country", "kr")
+    if not isinstance(country, str) or country not in COUNTRIES:
+        raise ValueError("국가 식별자가 올바르지 않습니다.")
     document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
-    return document.name, document.media_type, document.text
+    return document.name, document.media_type, document.text, country
 
 
 def _bad_request(field: str) -> JSONResponse:
@@ -171,8 +178,18 @@ async def project_files_collection(request: Request) -> JSONResponse:
     store: ProjectFileStore = request.app.state.project_file_store
 
     if request.method == "GET":
+        country_filter = request.query_params.get("country")
+        if country_filter is not None and country_filter not in COUNTRIES:
+            return JSONResponse(
+                {"error": {"code": "invalid_country", "message": "국가 식별자가 올바르지 않습니다."}},
+                status_code=400,
+            )
         try:
-            files = await store.list_files(uid, pid)
+            # 국가 필터를 요구한 경우에만 인자를 넘긴다: 필터 없는 호출은 오늘과 같은 호출 계약이다.
+            if country_filter is None:
+                files = await store.list_files(uid, pid)
+            else:
+                files = await store.list_files(uid, pid, country=country_filter)
         except Exception:
             return _unavailable()
         return JSONResponse({"files": [item.public_dict() for item in files]})
@@ -253,8 +270,13 @@ async def project_files_collection(request: Request) -> JSONResponse:
         raw = json.loads(body.decode("utf-8"))
         if not isinstance(raw, dict):
             raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-        name, media_type, text = _parse_project_file_item(raw)
-        created = await store.create_file(uid, pid, name, media_type, text)
+        name, media_type, text, country = _parse_project_file_item(raw)
+        # 기본값(kr)은 인자를 생략한다: 기존 저장소 대역·스키마와 호출 계약이
+        # 오늘과 같아지고, 국가를 쓰는 저장만 새 컬럼을 요구한다.
+        if country == "kr":
+            created = await store.create_file(uid, pid, name, media_type, text)
+        else:
+            created = await store.create_file(uid, pid, name, media_type, text, country=country)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:

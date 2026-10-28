@@ -3,6 +3,12 @@ import { loadVerifiedPublicOpportunities } from './public-supply/verified-public
 import { createB64AuthResolver } from './identity/auth.js';
 import { D1B64MemberStore, UnboundB64MemberStore } from './identity/member-store.js';
 import {
+  PROVIDER_RUNTIME_MODES,
+  type ProviderRuntimeMode,
+} from './ad-click-first/provider-runtime-config.js';
+import { D1RewardEventStore, UnboundRewardEventStore } from './ad-click-first/reward-event-store.js';
+import { readB64OperationsSnapshot } from './ops/operations-snapshot.js';
+import {
   D1UserIncomeRepository,
   UnboundUserIncomeRepository,
   type D1DatabaseLike,
@@ -27,14 +33,60 @@ import {
  *   required by the same-origin guard on cookie mutations. It is a
  *   configuration value, not a hard-coded assumption: moving B64 to its own
  *   registered domain is a one-line change here plus a redeploy.
+ * - `B64_GOOGLE_CLIENT_ID` / `B64_GOOGLE_CLIENT_SECRET` (#987): B64's OWN
+ *   Google OAuth client, registered on the redirect
+ *   `<B64_PUBLIC_BASE_URL>/auth/google/callback`. They are the credentials a
+ *   Google login needs, and nothing else: no other product's client id, login
+ *   endpoint or session cookie is referenced anywhere in this Worker. Left
+ *   unset, the Google entry is not offered and `/auth/google/*` answers 503 —
+ *   the site keeps working for every other request.
  */
 export interface B64WorkerEnv {
   readonly B64_SESSION_SECRET?: string;
   readonly B64_INCOME_DB?: D1DatabaseLike;
   readonly B64_PUBLIC_BASE_URL?: string;
+  readonly B64_GOOGLE_CLIENT_ID?: string;
+  readonly B64_GOOGLE_CLIENT_SECRET?: string;
+  /**
+   * ayeT reward postback (#987). Names are already fixed by
+   * `provider-runtime-config.ts`; only the values are missing, so nothing is
+   * guessed here. An absent or unrecognised `B64_AYET_MODE` is treated as
+   * DISABLED rather than throwing at boot: a typo in a production variable must
+   * fail closed, and a crashing isolate would take the whole consumer site
+   * down with it.
+   */
+  readonly B64_AYET_MODE?: string;
+  readonly B64_AYET_PUBLISHER_API_KEY?: string;
+  readonly B64_AYET_REWARDED_ADSLOT_ID?: string;
+  /**
+   * The single operator address (#6001). It is configuration, not source: the
+   * address is registered by the owner at deploy time and is never committed,
+   * logged or echoed. Unset means no administrator exists.
+   */
+  readonly B64_ADMIN_EMAIL?: string;
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
+
+/**
+ * The provider assessment reads environment variables by name, so it gets the
+ * string half of the binding set. The D1 object is not an environment value and
+ * is left out rather than coerced.
+ */
+function stringEnvironment(env: B64WorkerEnv): Record<string, string | undefined> {
+  const values: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(env)) {
+    if (typeof value === 'string') values[key] = value;
+  }
+  return values;
+}
+
+function ayetMode(value: string | undefined): ProviderRuntimeMode {
+  const trimmed = (value ?? '').trim();
+  return PROVIDER_RUNTIME_MODES.includes(trimmed as ProviderRuntimeMode)
+    ? trimmed as ProviderRuntimeMode
+    : 'DISABLED';
+}
 
 /** Reviewed origins only: a non-https or unparseable value is ignored so the
  * same-origin guard fails closed instead of trusting a sloppy expectation. */
@@ -78,10 +130,20 @@ export default {
       }),
       memberStore: members,
       sessionSecret: env.B64_SESSION_SECRET,
+      googleClientId: env.B64_GOOGLE_CLIENT_ID,
+      googleClientSecret: env.B64_GOOGLE_CLIENT_SECRET,
       incomeRepository: env.B64_INCOME_DB
         ? new D1UserIncomeRepository(env.B64_INCOME_DB)
         : new UnboundUserIncomeRepository(INCOME_D1_BINDING_NAME),
       expectedBrowserOrigin: reviewedBrowserOrigin(env.B64_PUBLIC_BASE_URL),
+      rewardEvents: env.B64_INCOME_DB
+        ? new D1RewardEventStore(env.B64_INCOME_DB)
+        : new UnboundRewardEventStore(INCOME_D1_BINDING_NAME),
+      ayetMode: ayetMode(env.B64_AYET_MODE),
+      ayetPublisherApiKey: env.B64_AYET_PUBLISHER_API_KEY,
+      ayetRewardedAdslotId: env.B64_AYET_REWARDED_ADSLOT_ID,
+      adminEmail: env.B64_ADMIN_EMAIL,
+      operationsSnapshot: () => readB64OperationsSnapshot({ db: env.B64_INCOME_DB, env: stringEnvironment(env) }),
     });
     return handler(request);
   },

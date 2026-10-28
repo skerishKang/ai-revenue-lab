@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 from kagent.local_agent_meshcentral_command_port import (
     ENVELOPE_PREFIX, EXIT_SENTINEL, MeshCentralCliCommandPort,
-    MeshCentralCommandRefused, _wrap, parse_transcript,
+    MeshCentralCommandRefused, cancel_kill_command, _wrap, parse_transcript,
 )
 from kagent.local_agent_oracle_mesh_executor import (
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
@@ -166,6 +166,17 @@ class CommandPortTests(unittest.TestCase):
                          "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__")
         self.assertEqual(kwargs["input"], PASSWORD + "\n")
         self.assertEqual(kwargs["timeout"], 45)
+
+    def test_long_and_unbounded_command_deadlines_are_accepted(self):
+        # #5895: the 60s default and 300s ceiling are gone. A ten-minute command
+        # is accepted as written, and None carries no PADIEM client deadline (the
+        # desktop-lane default), so a long-running job is never refused for time.
+        for value in (600, None):
+            calls = []
+            port = _port(_Completed(0, _transcript("ok\r\n")), calls=calls)
+            outcome = port.run_command(node_ref=NODE, command="long_running.exe", timeout_seconds=value)
+            self.assertEqual(outcome.termination, "exited", value)
+            self.assertEqual(calls[0][1]["timeout"], value)
 
     def test_timeout_claims_no_exit_code(self):
         expired = subprocess.TimeoutExpired(cmd="node", timeout=45, output=b"")
@@ -351,7 +362,8 @@ class CommandPortTests(unittest.TestCase):
         )
 
         class _RefusingPort:
-            def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None):
+            def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
+                    cancel_probe=None, dispatch_id=None):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -375,7 +387,8 @@ class _FakeCommandPort:
         self._outcome = outcome
         self.calls = []
 
-    def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None):
+    def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
+                    cancel_probe=None, dispatch_id=None):
         self.calls.append((node_ref, command, timeout_seconds))
         return self._outcome
 
@@ -572,3 +585,290 @@ def _outcome():
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestTheOwnerStopReachesARunningCommand(unittest.TestCase):
+    """#5895: the owner's 그만 has to end a command the executor already holds.
+
+    #5995 took the client deadline away, and a PC that never answers would otherwise
+    keep that command - and every operation queued behind it on a single-console agent -
+    open forever. The stop is read from the server's own record, and the only effect is
+    that this host stops waiting and ends its own client.
+    """
+
+    @staticmethod
+    def _streaming_port(proc, **kwargs):
+        return MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=lambda argv, **kw: proc,
+        )
+
+    def test_the_stop_kills_the_child_and_claims_no_console_answer(self):
+        class _Proc:
+            def __init__(self):
+                self.stdin = io.BytesIO()
+                self.stdout = io.BytesIO(_transcript("the pc never finished\n"))
+                self.stderr = io.BytesIO()
+                self.killed = False
+
+            def poll(self):
+                return None
+
+            def kill(self):
+                self.killed = True
+
+        proc = _Proc()
+        phases = []
+        outcome = self._streaming_port(proc).run_command(
+            node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
+            phase_observer=phases.append, cancel_probe=lambda: True,
+        )
+        self.assertEqual(outcome.termination, "cancelled")
+        self.assertIsNone(outcome.exit_code)
+        self.assertEqual(outcome.output, b"")
+        self.assertTrue(proc.killed)
+        self.assertEqual(phases, ["spawn", "cancel"])
+
+    def test_a_stop_that_cannot_be_read_is_never_treated_as_a_stop(self):
+        class _Proc:
+            def __init__(self):
+                self.stdin = io.BytesIO()
+                self.stdout = io.BytesIO(_transcript("done\n", "0"))
+                self.stderr = io.BytesIO()
+                self.killed = False
+
+            def poll(self):
+                return 0
+
+            def kill(self):
+                self.killed = True
+
+        proc = _Proc()
+        asked = []
+
+        def probe():
+            asked.append(1)
+            raise RuntimeError("the channel is down")
+
+        outcome = self._streaming_port(proc).run_command(
+            node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
+            cancel_probe=probe,
+        )
+        self.assertNotEqual(outcome.termination, "cancelled")
+        self.assertFalse(proc.killed)
+        self.assertEqual(asked, [])
+
+    def test_a_probe_that_is_not_callable_is_refused_before_the_pc_is_asked(self):
+        from kagent.contracts import ContractError
+
+        port = _port(_Completed(0, _transcript("x\n")))
+        with self.assertRaises(ContractError):
+            port.run_command(node_ref=NODE, command="hostname.exe",
+                             timeout_seconds=5, cancel_probe="yes")
+
+
+class TestTheExecutorProbesTheChannel(unittest.TestCase):
+    def test_the_executor_asks_about_the_dispatch_it_holds_and_reports_the_stop(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCommandOutcome,
+        )
+
+        class _CancellingPort:
+            def __init__(self):
+                self.answer = None
+
+            def run_command(self, *, node_ref, command, timeout_seconds,
+                            phase_observer=None, cancel_probe=None, dispatch_id=None):
+                self.answer = cancel_probe() if cancel_probe is not None else None
+                return MeshCentralCommandOutcome(
+                    termination="cancelled", exit_code=None, output=b"",
+                )
+
+        calls = []
+
+        def transport(path, payload):
+            calls.append((path, payload))
+            return 200, {"ok": True, "cancelled": payload == {"dispatch_id": "dsp-1"}}
+
+        port = _CancellingPort()
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=_ReadPort(), command_port=port, transport=transport,
+        )
+        outcome = executor.execute(_dispatch(command="Get-ChildItem C:/x"))
+        self.assertIs(port.answer, True)
+        self.assertEqual(outcome.termination, "cancelled")
+        self.assertEqual(calls[0][0], "/api/claw/connector/mesh-reads/cancel")
+        self.assertEqual(calls[0][1], {"dispatch_id": "dsp-1"})
+
+    def test_a_channel_that_does_not_answer_yes_leaves_the_command_running(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            MeshCentralCommandOutcome,
+        )
+
+        class _ProbingPort:
+            def __init__(self, transport):
+                self.answer = None
+                self._transport = transport
+
+            def run_command(self, *, node_ref, command, timeout_seconds,
+                            phase_observer=None, cancel_probe=None, dispatch_id=None):
+                self.answer = cancel_probe()
+                return MeshCentralCommandOutcome(
+                    termination="no_reply", exit_code=None, output=b"",
+                )
+
+        for status, body in ((503, {}), (200, {"ok": True}), (200, {"cancelled": "yes"})):
+            def transport(path, payload, status=status, body=body):
+                raise OracleMeshChannelRefused("down") if status == 503 else (status, body)
+
+            port = _ProbingPort(transport)
+            executor = OracleMeshExecutor(
+                chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+                read_port=_ReadPort(), command_port=port, transport=transport,
+            )
+            outcome = executor.execute(_dispatch(command="Get-ChildItem C:/x"))
+            self.assertIs(port.answer, False, (status, body))
+            self.assertEqual(outcome.termination, "no_reply", (status, body))
+
+
+class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
+    """#5895: a stop has to reach the customer's machine, not just this host.
+
+    Ending the client released the executor but left the PC's own PowerShell
+    running behind a console queue that serves one task at a time - measured on
+    2026-10-28, every later operation on that PC waited for the abandoned command
+    until a person killed it. The agent's terminal session is the one channel that
+    kept working while that queue was wedged, so the stop travels over it, aimed
+    only at the pid the command itself left behind.
+    """
+
+    MARKED = "dsp_" + "a" * 32
+
+    def test_a_running_command_leaves_its_own_marker_and_clears_it(self):
+        wrapped = _wrap("Get-ChildItem C:/x", self.MARKED)
+        self.assertIn("[IO.Path]::GetTempPath()+'padiem-dispatch-" + self.MARKED + ".pid'", wrapped)
+        self.assertIn("Set-Content -LiteralPath $__padiem_pidfile -Value $PID", wrapped)
+        self.assertIn("Remove-Item -LiteralPath $__padiem_pidfile", wrapped)
+        self.assertNotIn("\n", wrapped)
+        # Without a dispatch id the script is the bytes it always was.
+        self.assertNotIn("padiem-dispatch", _wrap("Get-ChildItem C:/x"))
+
+    def test_a_name_that_is_not_a_dispatch_id_is_refused_before_anyone_is_asked(self):
+        for bad in ("", "not-a-dispatch", "dsp_ZZZ", "dsp_" + "a" * 32 + "';Remove-Item C:" + chr(92) + "*"):
+            with self.assertRaises(MeshCentralCommandRefused):
+                cancel_kill_command(bad)
+            with self.assertRaises(MeshCentralCommandRefused):
+                _wrap("Get-ChildItem C:/x", bad)
+
+    def test_the_stop_targets_one_pid_and_names_no_image_or_service(self):
+        script = cancel_kill_command(self.MARKED)
+        self.assertIn("taskkill /T /F /PID", script)
+        self.assertIn("padiem-dispatch-" + self.MARKED + ".pid", script)
+        # /IM would kill every PowerShell on the PC; a service name would reach the
+        # agent itself. Neither is what the owner stopped.
+        for forbidden in ("/IM", "Mesh Agent", "Stop-Process", "Get-Process", "taskkill /F /IM"):
+            self.assertNotIn(forbidden, script)
+
+    def test_the_stop_travels_the_terminal_channel_and_is_bounded(self):
+        class _RunChild:
+            def __init__(self):
+                self.stdin = io.BytesIO()
+                self.stdout = io.BytesIO()
+                self.stderr = io.BytesIO()
+                self.killed = False
+
+            def poll(self):
+                return None
+
+            def kill(self):
+                self.killed = True
+
+        seen = {"run": [], "stop": []}
+
+        def popen(argv, **kwargs):
+            bucket = seen["stop"] if "shell" in argv else seen["run"]
+            child = _RunChild()
+            bucket.append((list(argv), dict(kwargs), child))
+            return child
+
+        handoffs = []
+
+        def pty_factory(payload):
+            class _Handoff:
+                slave = 77
+                waits = []
+
+                def __init__(self, data):
+                    self.data = data
+
+                def wait_closed(self, seconds):
+                    type(self).waits.append(seconds)
+
+            handoffs.append(_Handoff(payload))
+            return handoffs[-1]
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=popen, pty_factory=pty_factory,
+        )
+        phases = []
+        outcome = port.run_command(
+            node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
+            phase_observer=phases.append, cancel_probe=lambda: True,
+            dispatch_id=self.MARKED,
+        )
+
+        self.assertEqual(outcome.termination, "cancelled")
+        self.assertIsNone(outcome.exit_code)
+        self.assertTrue(seen["run"][0][2].killed, "this host stops waiting")
+        self.assertEqual(len(seen["stop"]), 1, "one terminal session, not a queue of them")
+        argv, kwargs, stop_child = seen["stop"][0]
+        self.assertIn("shell", argv)
+        self.assertIn("--powershell", argv)
+        self.assertIn(self.MARKED, handoffs[0].data.decode("utf-8"))
+        self.assertEqual(handoffs[0].data.decode("utf-8").splitlines()[0], PASSWORD,
+                         "the credential still never enters argv")
+        self.assertEqual(handoffs[0].waits, [15])
+        self.assertIsNone(stop_child.poll())
+        self.assertIn("cancel_kill", phases)
+
+    def test_a_stop_that_cannot_reach_the_pc_is_reported_and_still_releases_the_lane(self):
+        class _RefusingPty:
+            slave = 77
+
+            def __init__(self, payload):
+                raise OSError("no terminal device available")
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=lambda argv, **kw: _NeverChild(), pty_factory=lambda payload: _RefusingPty(payload),
+        )
+        phases = []
+        outcome = port.run_command(
+            node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
+            phase_observer=phases.append, cancel_probe=lambda: True,
+            dispatch_id=self.MARKED,
+        )
+        self.assertEqual(outcome.termination, "cancelled")
+        self.assertIn("cancel_kill_refused", phases)
+
+
+class _NeverChild:
+    def __init__(self):
+        self.stdin = io.BytesIO()
+        self.stdout = io.BytesIO()
+        self.stderr = io.BytesIO()
+        self.killed = False
+
+    def poll(self):
+        return None
+
+    def kill(self):
+        self.killed = True

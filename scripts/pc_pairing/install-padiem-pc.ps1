@@ -30,7 +30,7 @@
 param(
   [string] $ChatOrigin = "",
   [string] $Code = "",
-  [string] $AgentInstallerArgs = "/S",
+  [string[]] $AgentInstallerArgs = @("-fullinstall"),
   [string] $AgentInstallDir = "${env:ProgramFiles(x86)}\Mesh Services",
   [switch] $DryRun
 )
@@ -95,9 +95,24 @@ function Invoke-PadiemHandoff {
   }
 }
 
+function Get-PadiemDriveRoots {
+  # A linked PC works over its whole local drives by default (#5573, Owner
+  # decision), so the PC names the fixed drives it actually has. Network drives
+  # carry a DisplayRoot and stay out. A failed query reports nothing at all: the
+  # server then says the drive lookup failed instead of guessing a scope.
+  try {
+    return @(Get-PSDrive -PSProvider FileSystem -ErrorAction Stop |
+      Where-Object { $null -eq $_.DisplayRoot } |
+      ForEach-Object { $_.Name.ToUpperInvariant() + ':' } | Sort-Object -Unique)
+  } catch {
+    return @()
+  }
+}
+
 function Invoke-PadiemClaim {
-  param([string] $Origin, [string] $PairingCode, [string] $MeshNodeId)
-  $body = @{ code = $PairingCode; mesh_node_id = $MeshNodeId } | ConvertTo-Json -Compress
+  param([string] $Origin, [string] $PairingCode, [string] $MeshNodeId, [string[]] $Drives)
+  $body = @{ code = $PairingCode; mesh_node_id = $MeshNodeId; drives = @($Drives) } |
+    ConvertTo-Json -Compress
   try {
     return Invoke-RestMethod -Method Post -Uri ($Origin + $ClaimPath) `
       -ContentType 'application/json' -Body $body -TimeoutSec 30
@@ -116,15 +131,16 @@ function Read-PadiemCode {
 }
 
 function Start-PadiemInstall {
-  param([string] $Url, [string] $Arguments, [switch] $Simulate)
+  param([string] $Url, [string[]] $Arguments, [switch] $Simulate)
   if ($Simulate) { return $false }
   # The installer itself is downloaded to a temp path and removed after the
-  # attempt, so the pairing information never persists in a file.
+  # attempt, so the pairing information never persists in a file. Arguments are
+  # passed as a list, not split from one string: the agent name this script
+  # hands over carries spaces.
   $target = Join-Path $env:TEMP ("padiem-agent-" + [guid]::NewGuid().ToString('N') + ".exe")
   try {
     Invoke-WebRequest -Uri $Url -OutFile $target -UseBasicParsing -TimeoutSec 120
-    $switches = $Arguments -split ' ' | Where-Object { $_ }
-    Start-Process -FilePath $target -ArgumentList $switches -Wait
+    Start-Process -FilePath $target -ArgumentList @($Arguments) -Wait
     return $true
   } finally {
     Remove-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
@@ -160,11 +176,32 @@ if ($installed) {
   # observation lane (#5573 PR-4a) already carries; the claim endpoint stays the
   # direct route when a caller knows the node id.
   if ($env:PADIEM_MESH_NODE_ID) {
-    $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID
+    $claim = Invoke-PadiemClaim -Origin $origin -PairingCode $pairingCode -MeshNodeId $env:PADIEM_MESH_NODE_ID -Drives (Get-PadiemDriveRoots)
     if (-not $claim) { Write-Error $Copy.CodeRejected; exit 4 }
   }
   if ($agentUrl) { Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag) } else { Write-Host $Copy.AgentReady }
   exit 0
+}
+
+function Format-PadiemAgentName {
+  param([string] $Tag, [string[]] $Drives)
+  # The name the agent reports to the server is what completes the pairing: the
+  # tag inside it decides the account, and the drive letters after it are the
+  # same self-report a claiming PC posts. Anything that is not one bare letter
+  # is dropped rather than guessed at.
+  $letters = @($Drives |
+    ForEach-Object { (($_ -replace ':', '')).ToUpperInvariant() } |
+    Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
+  # The trailing word is the name Windows gave this machine. The server reads
+  # the tag to decide the account, the letters to grant whole drives, and that
+  # name to call the PC by until its owner renames it.
+  $machine = $env:COMPUTERNAME
+  if ($letters.Count -eq 0) {
+    if (-not $machine) { return $Tag }
+    return $Tag + ' ' + $machine
+  }
+  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' }
+  return $Tag + ' [' + ($letters -join ' ') + '] ' + $machine
 }
 
 if ($DryRun) {
@@ -172,6 +209,10 @@ if ($DryRun) {
   exit 0
 }
 
-Start-PadiemInstall -Url $agentUrl -Arguments $AgentInstallerArgs | Out-Null
+$nameParts = @($AgentInstallerArgs)
+if ($tag) {
+  $nameParts += ('--agentName="' + (Format-PadiemAgentName -Tag $tag -Drives (Get-PadiemDriveRoots)) + '"')
+}
+Start-PadiemInstall -Url $agentUrl -Arguments $nameParts | Out-Null
 Write-Host $Copy.Installed
 Write-Host ("{0} (표식 {1})" -f $Copy.Waiting, $tag)

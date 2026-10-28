@@ -5,6 +5,7 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
+from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
@@ -181,18 +182,29 @@ async def _close_stream(stream: Any) -> None:
 
 async def _chat_pc_tools_for_turn(
     request: Request, *, uid: str | None, model_id: str,
+    user_text: str | None = None,
 ) -> tuple[Any, ...]:
     """The PC tool declaration for this turn, or an empty tuple.
 
     Tools require BOTH a verified PC target for this account and a resolved
     route whose catalog row declares native tools; otherwise the request keeps
-    its existing shape and this turn has no PC path at all.
+    its existing shape and this turn has no PC path at all. The write tool is
+    added only when the owner's own words asked for a change.
     """
-    from .chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS, pc_tool_entry_available
+    from .chat_pc_drive import pc_tools_for_turn, pc_tool_entry_available
 
     if not await pc_tool_entry_available(request, uid=uid, model_id=model_id):
         return ()
-    return CHAT_PC_TOOL_DEFINITIONS
+    return pc_tools_for_turn(user_text)
+
+
+def _last_user_text(messages: Any) -> str:
+    """The current turn's own words, which decide whether write is declared."""
+    for message in reversed(messages or ()):
+        if isinstance(message, Mapping) and message.get("role") == "user":
+            content = message.get("content")
+            return content if isinstance(content, str) else ""
+    return ""
 
 
 def _model_history_incomplete() -> JSONResponse:
@@ -564,6 +576,7 @@ async def api_chat_stream(request: Request):
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            util_scope=util_scope,
             **({"explicit_search": True} if raw.get("web_search") else {}),
         )
     except GroundingError as exc:
@@ -596,7 +609,7 @@ async def api_chat_stream(request: Request):
         # context and is never offered a PC tool, so it can neither be deferred
         # nor handed to the PC lane.
         pc_tools = () if browser_project_id is not None else await _chat_pc_tools_for_turn(
-            request, uid=uid, model_id=policy.model_id,
+            request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages),
         )
         stream = client.stream_text_auto(
             messages,
@@ -1086,7 +1099,12 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill, **({"explicit_search": True} if raw.get("web_search") else {}))
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(
+                    messages,
+                    skill=skill,
+                    util_scope=util_scope,
+                    **({"explicit_search": True} if raw.get("web_search") else {}),
+                )
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client

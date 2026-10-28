@@ -38,6 +38,13 @@ def latest_user_question(messages: list[dict[str, str]]) -> str:
     raise GroundingError(422, "tool_input_required", "검색 여부를 판단할 사용자 질문이 필요합니다.")
 
 
+# #6046: a declared utility scope is the request's own routing label, and these
+# three are document-drafting tasks whose answer comes from the text the user
+# supplied. Their request body is that source document, so the classifier must
+# never read cues inside it as a question about the current world.
+_DOCUMENT_UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
+
+
 class AutoGroundingService:
     """B62 consumer of Core-owned search decision and grounding contracts."""
 
@@ -48,9 +55,23 @@ class AutoGroundingService:
             getattr(web_provider, "_automatic_search_enabled", True)
         )
 
-    def decide(self, messages: list[dict[str, str]], *, skill: TaskMode, explicit_search: bool = False) -> SearchDecision:
+    def decide(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        skill: TaskMode,
+        explicit_search: bool = False,
+        util_scope: str | None = None,
+    ) -> SearchDecision:
         if explicit_search:
             return SearchDecision(SearchDisposition.MUST_SEARCH, "explicit_search_request", latest_user_question(messages))
+        if util_scope in _DOCUMENT_UTIL_SCOPES:
+            return SearchDecision(
+                SearchDisposition.NO_SEARCH,
+                "document_util_scope",
+                latest_user_question(messages),
+                evidence_required=False,
+            )
         decision = decide_search(latest_user_question(messages), task_id=skill.id)
         # Automatic grounding is a live factuality feature. Preview providers created
         # from mock Settings explicitly disable it. MockWebProvider evidence is QA-only
@@ -73,8 +94,9 @@ class AutoGroundingService:
         skill: TaskMode,
         additional_system_context: str | None,
         explicit_search: bool = False,
+        util_scope: str | None = None,
     ) -> AutoGroundingPlan:
-        decision = self.decide(messages, skill=skill, explicit_search=explicit_search)
+        decision = self.decide(messages, skill=skill, explicit_search=explicit_search, util_scope=util_scope)
         if not decision.requires_search:
             return AutoGroundingPlan(decision=decision, prepared=None)
 

@@ -40,6 +40,32 @@
 
   // ── shared contract layer (same shape as util-menu.js 12-140) ────────────
 
+  // ── #6046 콘텐츠 국가 ─────────────────────────────────────────────────
+  // 국가는 **출력 언어와 표현**을 고르는 라벨이다(법적 관할·데이터 거주지 아님).
+  // kr 은 지시문이 비어 있어 프롬프트가 지금과 문자 단위로 같고, 요청에도 country 를 싣지 않는다.
+  const COUNTRY_KEY = "padiem-council-country";
+  const COUNTRY_INSTRUCTIONS = Object.freeze({
+    kr: "",
+    us: "\n\nWrite the entire answer in natural English (US conventions). " +
+        "Keep every personal name, date, place and amount exactly as given. " +
+        "Do not invent a named member, a real person's activity, or an event that was not provided.",
+    uk: "\n\nWrite the entire answer in natural English with British spelling and UK conventions. " +
+        "Keep every personal name, date, place and amount exactly as given. " +
+        "Do not invent a named member, a real person's activity, or an event that was not provided.",
+    fr: "\n\nRédigez toute la réponse en français naturel. " +
+        "Conservez exactement les noms, dates, lieux et montants fournis. " +
+        "N'inventez ni élu nommé, ni activité, ni événement non fournis.",
+  });
+  function currentCountry() {
+    try {
+      const value = (window.localStorage && window.localStorage.getItem(COUNTRY_KEY)) || "";
+      return Object.prototype.hasOwnProperty.call(COUNTRY_INSTRUCTIONS, value) ? value : "kr";
+    } catch (_) { return "kr"; }
+  }
+  function countryInstruction(country) {
+    return COUNTRY_INSTRUCTIONS[country] || "";
+  }
+
   async function apiChat(prompt, util) {
     // Same rule as util-menu.js apiChat / app.js selectedProductTier().
     // The util scope (PR #5916 contract) is the request's routing label:
@@ -49,8 +75,12 @@
     // identity, tier, entitlement or tool scope and is not an auth input.
     const selected = window.PadiemTierSelection?.get?.();
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
-    const payload = { messages: [{ role: "user", content: prompt }], mode: "auto", tier };
+    const country = currentCountry();
+    const content = prompt + countryInstruction(country);
+    const payload = { messages: [{ role: "user", content: content }], mode: "auto", tier };
     if (util) payload.util = util;
+    // 계약: 값이 없으면 kr 이므로, kr 요청은 지금과 같은 본문을 보낸다(하위 호환).
+    if (country !== "kr") payload.country = country;
     const res = await fetch("/api/chat", {
       method: "POST",
       credentials: "include",
@@ -93,7 +123,10 @@
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name, media_type: mediaType || "text/plain", text: text }),
+      body: JSON.stringify(Object.assign(
+        { name: name, media_type: mediaType || "text/plain", text: text },
+        currentCountry() === "kr" ? {} : { country: currentCountry() },
+      )),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -203,6 +236,12 @@
   }
   function isSnsRosterFile(file) { return storedName(file) === SNS_ROSTER_NAME; }
   /** Plain manuscripts: neither a book, an SNS post draft nor the photo roster. */
+  // #6046 — 저장 문서의 국가가 선택 국가와 같은 것만 보인다.
+  // 컬럼이 없는 기존 문서는 kr 로 읽어 한국어를 선택한 사용자 화면이 비지 않는다.
+  function sameCountry(file) {
+    return String((file && file.country) || "kr") === currentCountry();
+  }
+
   function isManuscriptFile(file) {
     const name = storedName(file);
     return name.endsWith(".txt") && !isStoredBook(file) && !isSnsPostFile(file);
@@ -364,7 +403,7 @@
         const pid = await projects.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
-         const speechFiles = files.filter(isManuscriptFile);
+         const speechFiles = files.filter(isManuscriptFile).filter(sameCountry);
         savedList.replaceChildren();
         savedList.appendChild(el("h3", null, "저장된 축사 원고"));
         if (!speechFiles.length) {
@@ -1020,7 +1059,7 @@
         const files = await listProjectFiles(pid);
         // A book is not one of its own source records, and an SNS draft or the
         // photo roster never belongs here either.
-        const meetingFiles = files.filter(isManuscriptFile);
+        const meetingFiles = files.filter(isManuscriptFile).filter(sameCountry);
         const bookFiles = files.filter(isStoredBook);
 
         // The book editor is built before the lists are drawn: a stored book has
@@ -1196,6 +1235,21 @@
       buildBookPrompt,
     };
   })();
+
+  function syncCountrySelect() {
+    const select = host("councilCountry");
+    if (!select) return;
+    const country = currentCountry();
+    select.value = country;
+    // init()(평소 로드)과 enterSignedIn()(로그인 후) 이 모두 부른다. 리스너는 한 번만 건다.
+    if (session.countryBound) return;
+    session.countryBound = true;
+    select.addEventListener("change", () => {
+      const next = COUNTRY_INSTRUCTIONS[select.value] === undefined ? "kr" : select.value;
+      try { if (window.localStorage) window.localStorage.setItem(COUNTRY_KEY, next); } catch (_) {}
+      setStatus(next === "kr" ? "" : "생성 결과의 언어가 바뀝니다(저장 문서는 그대로).");
+    });
+  }
 
   // ── independent entry wiring: auth gate, then build all three tools ──────
 
@@ -1378,6 +1432,7 @@
     if (!session.signedIn) { showAuthPanel("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요."); return false; }
     setBadge("로그인됨");
     hideAuthPanel();
+    syncCountrySelect();
     buildToolPanels();
     const wanted = session.pending || toolFromUrl() || rememberedTool();
     const focusWanted = Boolean(session.pending);
@@ -1436,6 +1491,7 @@
     }
     setBadge("로그인됨");
     hideAuthPanel();
+    syncCountrySelect();
     buildToolPanels();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);

@@ -28,7 +28,7 @@ import hashlib
 import json
 import re
 import secrets
-from typing import Any, Protocol
+from typing import Any, Mapping, Protocol
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
@@ -46,13 +46,15 @@ PAIRING_CODE_CHARS = 12
 #: derived from the code, so the PC needs nothing but the code to reproduce it.
 PAIRING_TAG_PREFIX = "pd-"
 PAIRING_TAG_CHARS = 8
-MAX_ROOTS_PER_LINK = 32
+MAX_ROOTS_JSON_CHARS = 8192
 MAX_ROOT_PATH_CHARS = 512
 MAX_ROOT_LABEL_CHARS = 64
 MAX_LINK_LABEL_CHARS = 128
 
 _USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@+-]{0,255}$")
 _LINK_ID_RE = re.compile(r"^pclink_[0-9a-f]{32}$")
+#: A whole drive, the shape the Owner's default scope grants (`C:`).
+_DRIVE_ROOT_RE = re.compile(r"[A-Za-z]:")
 _CODE_ID_RE = re.compile(r"^pcpair_[0-9a-f]{32}$")
 #: The derived install tag: `pd-` plus the eight hex characters this module
 #: produces. MeshCentral agent names are operator-editable text, so the tag is
@@ -61,6 +63,12 @@ _AGENT_TAG_RE = re.compile(
     r"(?<![0-9A-Za-z])" + re.escape(PAIRING_TAG_PREFIX) + r"[0-9a-f]{8}(?![0-9A-Za-z])",
     re.IGNORECASE,
 )
+#: A link carries up to two names of one machine in one bounded sentence: the
+#: name Windows gave the PC, then the alias its owner chose. Both choose the PC.
+_NAME_SEPARATOR = " · "
+#: The drive list an installing PC writes after its tag in the agent name:
+#: single letters inside one bracketed group.
+_NAME_DRIVES_RE = re.compile(r"\[\s*([A-Za-z](?:[ \t]+[A-Za-z])*)\s*\]")
 _STATE_ACTIVE = "active"
 _STATE_PENDING_VERIFICATION = "pending_verification"
 _STATE_REVOKED = "revoked"
@@ -77,7 +85,7 @@ class PcPairingStore(Protocol):
 
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
-        verified: bool = False,
+        verified: bool = False, drives: list[str] | None = None,
     ) -> dict[str, Any]: ...
 
     async def list_links(self, *, user_id: str) -> list[dict[str, Any]]: ...
@@ -89,6 +97,18 @@ class PcPairingStore(Protocol):
     ) -> dict[str, Any]: ...
 
     async def revoke_link(self, *, user_id: str, link_id: str, now: datetime) -> bool: ...
+
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]: ...
+
+    async def pause_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]: ...
+
+    async def resume_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]: ...
 
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
@@ -102,8 +122,12 @@ class PcPairingStore(Protocol):
 
     async def adopt_link(
         self, *, user_id: str, mesh_node_id: str, root_paths: list[str],
-        now: datetime, label: str | None = None,
+        now: datetime, label: str | None = None, drives: list[str] | None = None,
     ) -> dict[str, Any]: ...
+
+    async def resolve_account_ref(self, *, target: str) -> str | None: ...
+
+    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]: ...
 
     async def revoke_root(
         self, *, user_id: str, link_id: str, root_ref: str, now: datetime,
@@ -157,8 +181,14 @@ def normalize_root_path(value: Any) -> str | None:
     """The approved folder, in the one spelling the Mesh lane addresses.
 
     Same judgement `_pc_files_approved_root` makes from the other side: a real
-    folder at least one component below a drive, never a bare drive root, never
-    a relative or traversing path. Returns ``None`` for anything else.
+    folder at least one component below a drive, or a whole drive - never a
+    relative or traversing path. Returns ``None`` for anything else.
+
+    A drive root (``C:``) is a valid grant by the Owner's decision on #5573: a
+    connected PC works over its local drives by default, and narrowing to
+    folders is a later feature. The other guards - no traversal, no wildcards,
+    no control characters, bounded length, absolute shape - stay exactly as they
+    were, because they are what makes the grant addressable at all.
     """
     if not isinstance(value, str) or not value.strip():
         return None
@@ -169,6 +199,8 @@ def normalize_root_path(value: Any) -> str | None:
     while "//" in normalized:
         normalized = normalized.replace("//", "/")
     normalized = normalized.rstrip("/")
+    if _DRIVE_ROOT_RE.fullmatch(normalized) is not None:
+        return normalized.upper()
     segments = [segment for segment in normalized.split("/") if segment]
     if len(segments) < 2:
         return None
@@ -209,12 +241,61 @@ def default_root_label(path: str) -> str:
     return path.rsplit("/", 1)[-1]
 
 
+def drive_root(value: Any) -> str | None:
+    """One whole drive, the way the PC names it (`C:\\`, `d:`, `D:/`) → `C:`.
+
+    This is the shape a claiming PC is allowed to report about itself. Nothing
+    deeper is accepted here on purpose: a PC may declare which drives it has, it
+    may not use that call to name folders it has not been granted.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip().replace("\\", "/")
+    while text.endswith("/"):
+        text = text[:-1]
+    return text.upper() if _DRIVE_ROOT_RE.fullmatch(text) else None
+
+
+def _root_row(path: str, moment: str) -> dict[str, Any]:
+    return {
+        "root_ref": root_ref_for(path),
+        "label": default_root_label(path),
+        "path": path,
+        "state": _STATE_ACTIVE,
+        "approved_at": moment,
+        "revoked_at": None,
+    }
+
+
+def _merge_roots(
+    roots: list[dict[str, Any]], paths: list[str], moment: str,
+) -> list[dict[str, Any]]:
+    """Grant `paths` on top of `roots`, keeping what is already granted.
+
+    One drive letter and one deep folder are the same shape to the store from
+    here on: both are absolute grants, normalized or refused.
+    """
+    merged = list(roots)
+    for path in paths:
+        normalized = normalize_root_path(path)
+        if normalized is None:
+            raise PcPairingError("root path invalid")
+        if any(existing["path"] == normalized for existing in merged):
+            continue
+        merged.append(_root_row(normalized, moment))
+    return merged
+
+
 def _roots(value: Any) -> list[dict[str, Any]]:
     """Parse the server-written roots array, refusing anything malformed.
 
     A malformed column is a hard error rather than an empty list: an approved
     folder must never silently disappear from the authority that guards a read.
+    There is no count rule here - how many folders or drives one link carries is
+    bounded only by the storage the applied schema already enforces.
     """
+    if isinstance(value, str) and len(value) > MAX_ROOTS_JSON_CHARS:
+        raise PcPairingError("link roots unreadable")
     if isinstance(value, str):
         try:
             parsed = json.loads(value)
@@ -222,7 +303,7 @@ def _roots(value: Any) -> list[dict[str, Any]]:
             raise PcPairingError("link roots unreadable") from None
     else:
         parsed = value
-    if not isinstance(parsed, list) or len(parsed) > MAX_ROOTS_PER_LINK:
+    if not isinstance(parsed, list):
         raise PcPairingError("link roots unreadable")
     roots: list[dict[str, Any]] = []
     for row in parsed:
@@ -279,6 +360,38 @@ def tag_from_agent_name(value: Any) -> str | None:
     return found[0]
 
 
+def drives_from_agent_name(value: Any) -> list[str]:
+    """The drive letters one installing PC named beside its tag, or nothing.
+
+    A self-installing PC has no session and no code to post with, so the channel
+    that carries its own drive list is the same one that carries the tag: the
+    agent name the server observes. The install file writes `[C D]` after the
+    tag, and this reads it back as whole-drive grants.
+
+    Deliberately narrow, because the value is free text a machine wrote about
+    itself: one bracketed group of single letters, each turned into the same
+    `C:` shape a claiming PC posts through `drive_root`. Anything else - no
+    brackets, a second group, a folder hiding inside a letter - yields no drives,
+    which leaves the link with nothing granted rather than guessing a scope.
+    """
+    if not isinstance(value, str) or not 1 <= len(value) <= 256:
+        return []
+    found = _NAME_DRIVES_RE.findall(value)
+    if len(found) != 1:
+        return []
+    letters = found[0].split()
+    if not 1 <= len(letters) <= 26:
+        return []
+    drives: list[str] = []
+    for letter in letters:
+        single = drive_root(letter + ":")
+        if single is None:
+            return []
+        if single not in drives:
+            drives.append(single)
+    return drives
+
+
 def _hash(secret: str) -> str:
     return hashlib.sha256(secret.encode("utf-8")).hexdigest()
 
@@ -294,11 +407,17 @@ def _active(roots: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _public_link(row: dict[str, Any]) -> dict[str, Any]:
+    paused = bool(row.get("paused_at"))
     return {
         "link_id": row["link_id"],
         "mesh_node_id": row["mesh_node_id"],
         "label": row.get("label"),
-        "state": row["state"],
+        # A paused link still exists and keeps its folder grants, so the listing
+        # names the state the owner is actually looking at. The execution reads
+        # (`links_for_owner`, `device_scope`, `link_for`) drop the row instead.
+        "state": "paused" if paused else row["state"],
+        "paused": paused,
+        "paused_at": row.get("paused_at"),
         "roots": [
             {
                 "root_ref": root["root_ref"],
@@ -425,7 +544,7 @@ class D1PcPairingStore:
 
     async def redeem_code(
         self, *, code: str, mesh_node_id: str, label: str | None, now: datetime,
-        verified: bool = False,
+        verified: bool = False, drives: list[str] | None = None,
     ) -> dict[str, Any]:
         """Consume one code and create or refresh the (user, node) link.
 
@@ -433,6 +552,12 @@ class D1PcPairingStore:
         reaches the link table. `verified` is what PR-2 sets from the executor's
         own MeshCentral observation; without it the link exists but is not
         usable, because nothing has yet proved the node is real.
+
+        `drives` is what the installing PC reported as its own fixed local
+        drives. The Owner's default scope is the whole drive, so a fresh link
+        starts granted instead of starting empty and waiting for a hand. An
+        existing link is not widened here: a re-claim must not resurrect a
+        folder the owner has since withdrawn.
         """
         if not isinstance(code, str) or len(code) > 64:
             raise PcPairingError("pairing code invalid")
@@ -472,10 +597,35 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
-        return await self._claim_link(
+        link = await self._claim_link(
             owner=owner, node=node, label=label, code_id=row["code_id"],
             moment=moment, verified=verified,
         )
+        return await self._seed_drives(owner=owner, link=link, drives=drives, moment=moment)
+
+    async def _seed_drives(
+        self, *, owner: str, link: dict[str, Any], drives: list[str] | None, moment: str,
+    ) -> dict[str, Any]:
+        """Put the drives a PC named for itself onto the link it just claimed.
+
+        The Owner's default scope is a whole drive, so a fresh link starts
+        granted instead of starting empty and waiting for a hand. An existing
+        grant is never widened here: a re-claim must not resurrect a drive the
+        owner has since withdrawn.
+        """
+        if not drives:
+            return link
+        granted = [entry["path"] for entry in link["roots"]]
+        missing = [path for path in drives if path not in granted]
+        if missing:
+            await self._write_roots(
+                owner, link["link_id"],
+                _merge_roots(link["roots"], missing, moment), moment,
+            )
+            stored = await self._read_link(owner, link["link_id"])
+            if stored is not None:
+                link = stored
+        return link
 
     async def _claim_link(
         self, *, owner: str, node: str, label: Any, code_id: str, moment: str,
@@ -533,15 +683,18 @@ class D1PcPairingStore:
         tag into the agent's name, the existing presence beat carries that name
         here, and the tag — which only ever existed inside one unexpired
         one-time code — decides the owner. Nothing is asked of the PC beyond the
-        code it was handed.
+        code it was handed, and the drives it names beside its tag are the same
+        list a claiming PC reports through `redeem_code` — a PC may say which
+        drives it has, it may not name folders through this channel.
 
         Returns ``None`` when the name carries no pairing tag: ordinary devices
         keep reporting presence untouched. A name that does carry one is a
         claim attempt, and a failed attempt is refused rather than ignored,
         because silently dropping it would leave an owner staring at a card that
-        never resolves. The agent name itself is never stored — the link already
-        holds the node identity, and a Mesh device name can be renamed by its
-        owner at any time.
+        never resolves. What is kept from the name is the single word the machine
+        called itself, and only as this account's own label for the link; the
+        tag - the proof - is never written down, and neither is a name the owner
+        has already replaced with their own.
         """
         tag = tag_from_agent_name(agent_name)
         if tag is None:
@@ -581,23 +734,91 @@ class D1PcPairingStore:
             or consumed.get("mesh_node_id") != node
         ):
             raise PcPairingError("pairing code used")
-        return await self._claim_link(
+        link = await self._claim_link(
             owner=owner, node=node, label=None, code_id=row["code_id"],
             moment=moment, verified=True,
         )
+        # A PC that named itself keeps that name; an owner who already renamed
+        # it is never overwritten, and a name that was only decoration is no
+        # name at all.
+        machine = pc_name_from_agent_name(agent_name)
+        if machine and not link.get("label"):
+            await self._run(
+                "UPDATE pc_device_links SET label=?, updated_at=? "
+                "WHERE user_id=? AND link_id=? "
+                "AND (label IS NULL OR label='')",
+                machine, moment, owner, link["link_id"],
+            )
+            stored = await self._read_link(owner, link["link_id"])
+            if stored is not None:
+                link = stored
+        return await self._seed_drives(
+            owner=owner, link=link,
+            drives=drives_from_agent_name(agent_name),
+            moment=moment,
+        )
+
+    async def set_link_label(
+        self, *, user_id: str, link_id: str, label: Any, now: datetime,
+    ) -> dict[str, Any]:
+        """Name one linked PC, in the owner's own words.
+
+        A chat request picks a machine with a name ("the office PC's C drive"),
+        so a name has to exist before the second PC arrives. It is presentation
+        text the owner chooses, never an identity: the row's
+        `(user_id, mesh_node_id)` stays the only thing dispatch and revocation
+        decide from. Ownership is settled by the row exactly as pause settles
+        it, so another account's link is refused without saying whether it
+        exists.
+        """
+        owner = _user_id(user_id)
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        current = await self._first(
+            "SELECT label FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        named = canonical_label(
+            current.get("label") if isinstance(current, dict) else None, label,
+        )
+        if named is None:
+            raise PcPairingError("link label invalid")
+        named = _label(named)
+        if named is None:
+            raise PcPairingError("link label invalid")
+        moment = _stamp(now)
+        row = await self._first(
+            "SELECT user_id, state FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        if not isinstance(row, dict) or not row.get("state"):
+            raise PcPairingError("link not found")
+        if row.get("user_id") != owner:
+            raise PcPairingError("link not yours")
+        if row.get("state") == _STATE_REVOKED:
+            raise PcPairingError("link not active")
+        await self._run(
+            "UPDATE pc_device_links SET label=?, updated_at=? "
+            "WHERE user_id=? AND link_id=? AND state!='revoked'",
+            named, moment, owner, link_id,
+        )
+        stored = await self._read_link(owner, link_id)
+        if stored is None or stored.get("label") != named:
+            raise PcPairingError("pairing link not stored")
+        return _public_link(stored)
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]:
-        """Every active link this account owns, with its granted folders.
+        """Every link this account owns that may take work right now.
 
         The dispatch lane reads this: an empty list is the answer to "this
         account has no PC connected", and more than one link is a choice the
-        caller must narrow, never something to guess.
+        caller must narrow, never something to guess. A paused link is dropped
+        here rather than filtered by each caller, because the Owner's pause has
+        to hold even against a consumer that forgets to look at it.
         """
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links WHERE user_id=? "
-            "AND state='active' ORDER BY created_at DESC LIMIT 100",
+            "created_at, updated_at, paused_at FROM pc_device_links WHERE user_id=? "
+            "AND state='active' AND paused_at IS NULL ORDER BY created_at DESC LIMIT 100",
             owner,
         )
         links: list[dict[str, Any]] = []
@@ -610,7 +831,7 @@ class D1PcPairingStore:
 
     async def adopt_link(
         self, *, user_id: str, mesh_node_id: str, root_paths: list[str], now: datetime,
-        label: str | None = None,
+        label: str | None = None, drives: list[str] | None = None,
     ) -> dict[str, Any]:
         """Create the link an administrator adopted, with the folders the map already pinned.
 
@@ -620,10 +841,13 @@ class D1PcPairingStore:
         is not a display record - the file lane reads the same table - and it is
         idempotent, because an owner who clicks twice must not end up with two
         grants or a widened one.
+
+        `drives` is what the caller knows of the PC's fixed local drives - the
+        same default scope a claiming PC gets from its own report.
         """
         owner = _user_id(user_id)
         node = _mesh_node_id(mesh_node_id)
-        existing = await self.link_for(user_id=owner, mesh_node_id=node)
+        existing = await self._link_row_for_node(owner, node)
         if existing is not None:
             # Adoption that already happened is a read. Nothing is written, so
             # the link keeps its timestamps and, more importantly, keeps the
@@ -631,23 +855,7 @@ class D1PcPairingStore:
             # way to resurrect a revoked grant.
             return existing
         moment = _stamp(now)
-        roots: list[dict[str, Any]] = []
-        for path in root_paths:
-            normalized = normalize_root_path(path)
-            if normalized is None:
-                raise PcPairingError("root path invalid")
-            if any(existing["path"] == normalized for existing in roots):
-                continue
-            roots.append({
-                "root_ref": root_ref_for(normalized),
-                "label": default_root_label(normalized),
-                "path": normalized,
-                "state": _STATE_ACTIVE,
-                "approved_at": moment,
-                "revoked_at": None,
-            })
-            if len(roots) >= MAX_ROOTS_PER_LINK:
-                break
+        roots = _merge_roots([], list(root_paths) + list(drives or []), moment)
         link = await self._claim_link(
             owner=owner, node=node, label=label, code_id=None, moment=moment,
             verified=True,
@@ -661,11 +869,57 @@ class D1PcPairingStore:
             raise PcPairingError("pairing link not stored")
         return stored
 
+    async def resolve_account_ref(self, *, target: str) -> str | None:
+        """The account a target address names, or ``None`` when nothing does.
+
+        Adoption may name a customer by the id this deployment already uses or by
+        the address they sign in with. Both are answered from the account table
+        the same D1 binding holds, and an id is tried before an email so no rule
+        about what an address "looks like" decides the outcome. The caller cannot
+        name an account that does not exist: a link written against a made-up id
+        would be a PC nobody can use.
+        """
+        value = target.strip() if isinstance(target, str) else ""
+        if not value or len(value) > 320:
+            raise PcPairingError("adopt target invalid")
+        row = await self._first("SELECT id FROM users WHERE id=? LIMIT 1", value)
+        if not isinstance(row, dict) or not row.get("id"):
+            row = await self._first(
+                "SELECT id FROM users WHERE lower(email)=lower(?) LIMIT 1", value,
+            )
+        if not isinstance(row, dict) or not row.get("id"):
+            return None
+        return _user_id(row["id"])
+
+    async def drive_roots_for_node(self, *, mesh_node_id: str) -> list[str]:
+        """The whole-drive roots another link already records for this PC.
+
+        A claiming PC reports its own fixed drives, and #5981 made those drives
+        the default scope. Adoption puts a second account on the same machine, so
+        it takes the letters the PC itself reported instead of a folder list
+        somebody typed: one authority for what a PC's drives are.
+        """
+        node = _mesh_node_id(mesh_node_id)
+        rows = await self._all(
+            "SELECT roots_json FROM pc_device_links WHERE mesh_node_id=? LIMIT 100",
+            node,
+        )
+        drives: list[str] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            for root in _roots(row.get("roots_json")):
+                single = drive_root(root["path"])
+                if single is not None and single not in drives:
+                    drives.append(single)
+        return drives
+
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.
 
         A presence beat is keyed by the identity the server named, so an entry
-        is accepted only when an active link names exactly that node. The
+        is accepted only when a link that is active and not paused names exactly
+        that node. The
         accounts behind a shared PC are returned as a set: one account resolves
         a Broker credential generation, several do not, and the receipt is still
         recorded as Mesh-only (#5553 requirement 6).
@@ -674,7 +928,7 @@ class D1PcPairingStore:
             return None
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id FROM pc_device_links "
-            "WHERE mesh_node_id=? AND state='active' LIMIT 100",
+            "WHERE mesh_node_id=? AND state='active' AND paused_at IS NULL LIMIT 100",
             device_id,
         )
         accounts = {
@@ -690,7 +944,7 @@ class D1PcPairingStore:
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "pairing_code_id, created_at, updated_at, revoked_at "
+            "pairing_code_id, created_at, updated_at, revoked_at, paused_at "
             "FROM pc_device_links WHERE user_id=? AND link_id=?",
             user_id, link_id,
         )
@@ -703,7 +957,7 @@ class D1PcPairingStore:
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links WHERE user_id=? "
+            "created_at, updated_at, paused_at FROM pc_device_links WHERE user_id=? "
             "AND state!='revoked' ORDER BY created_at DESC LIMIT 100",
             owner,
         )
@@ -720,8 +974,9 @@ class D1PcPairingStore:
         node = _mesh_node_id(mesh_node_id)
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at FROM pc_device_links "
-            "WHERE user_id=? AND mesh_node_id=? AND state='active'",
+            "created_at, updated_at, paused_at FROM pc_device_links "
+            "WHERE user_id=? AND mesh_node_id=? AND state='active' "
+            "AND paused_at IS NULL",
             owner, node,
         )
         if not isinstance(row, dict) or not row.get("link_id"):
@@ -747,6 +1002,72 @@ class D1PcPairingStore:
         row = await self._read_link(owner, link_id)
         return row is not None and row["state"] == "revoked" and row["roots"] == []
 
+    async def _link_row_for_node(self, owner: str, node: str) -> dict[str, Any] | None:
+        """The live (not revoked) link for one node, pause aside.
+
+        Adoption asks this instead of ``link_for``: a paused pair is still the
+        pair that account owns, and treating it as absent would let an adoption
+        rewrite the folders of a link the owner deliberately stopped.
+        """
+        row = await self._first(
+            "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
+            "created_at, updated_at, paused_at FROM pc_device_links "
+            "WHERE user_id=? AND mesh_node_id=? AND state='active'",
+            owner, node,
+        )
+        if not isinstance(row, dict) or not row.get("link_id"):
+            return None
+        row["roots"] = _active(_roots(row.get("roots_json")))
+        return row
+
+    async def _set_pause(
+        self, *, user_id: str, link_id: str, now: datetime, paused: bool,
+    ) -> dict[str, Any]:
+        owner = _user_id(user_id)
+        if not isinstance(link_id, str) or _LINK_ID_RE.fullmatch(link_id) is None:
+            raise PcPairingError("link id invalid")
+        moment = _stamp(now)
+        # Ownership is settled by the row, not by the caller's claim: the same
+        # statement answers "no such link" and "not your link" differently, and
+        # only one of the two is a permission failure.
+        row = await self._first(
+            "SELECT user_id, state FROM pc_device_links WHERE link_id=?", link_id,
+        )
+        if not isinstance(row, dict) or not row.get("state"):
+            raise PcPairingError("link not found")
+        if row.get("user_id") != owner:
+            raise PcPairingError("link not yours")
+        if row.get("state") != _STATE_ACTIVE:
+            raise PcPairingError("link not active")
+        await self._run(
+            "UPDATE pc_device_links SET paused_at=?, updated_at=? "
+            "WHERE user_id=? AND link_id=? AND state='active'",
+            moment if paused else None, moment, owner, link_id,
+        )
+        stored = await self._read_link(owner, link_id)
+        if stored is None:
+            raise PcPairingError("pairing link not stored")
+        if bool(stored.get("paused_at")) is not paused:
+            raise PcPairingError("pairing link not stored")
+        return _public_link(stored)
+
+    async def pause_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Stop one link from taking work, keeping its folder approvals.
+
+        Idempotent by design: an owner who taps twice, or a retry after a lost
+        response, lands on the same single pause stamp rather than an error the
+        card would have to explain.
+        """
+        return await self._set_pause(user_id=user_id, link_id=link_id, now=now, paused=True)
+
+    async def resume_link(
+        self, *, user_id: str, link_id: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Put one paused link back in front of dispatch."""
+        return await self._set_pause(user_id=user_id, link_id=link_id, now=now, paused=False)
+
     async def approve_root(
         self, *, user_id: str, link_id: str, path: str, now: datetime,
         label: str | None = None,
@@ -770,8 +1091,6 @@ class D1PcPairingStore:
                 # Two folders the model cannot tell apart are worse than a
                 # refusal: the caller has to name one of them.
                 raise PcPairingError("root label exists")
-        if len([root for root in roots if root["state"] == _STATE_ACTIVE]) >= MAX_ROOTS_PER_LINK:
-            raise PcPairingError("too many approved roots")
         roots = [root for root in roots if root["root_ref"] != ref]
         roots.append({
             "root_ref": ref,
@@ -829,18 +1148,123 @@ class D1PcPairingStore:
         self, owner: str, link_id: str, roots: list[dict[str, Any]], moment: str,
     ) -> None:
         payload = json.dumps(roots, ensure_ascii=False, separators=(",", ":"))
-        if len(payload) > 8192:
+        if len(payload) > MAX_ROOTS_JSON_CHARS:
             raise PcPairingError("link roots too large")
+        # A live link only: a revoked pair's roots stay exactly as its owner left
+        # them. A link still waiting on its Mesh observation is a real link, and
+        # the drives its PC reported have to survive until it verifies - the file
+        # lane reads active links, so a pending grant grants nothing yet.
         await self._run(
             "UPDATE pc_device_links SET roots_json=?, updated_at=? "
-            "WHERE user_id=? AND link_id=? AND state='active'",
+            "WHERE user_id=? AND link_id=? AND state IN ('active', 'pending_verification')",
             payload, moment, owner, link_id,
         )
 
 
+def pc_name_from_agent_name(value: Any) -> str | None:
+    """The Windows machine name inside an observed agent name, or ``None``.
+
+    An agent reports its own machine name, and the pairing lane decorates that
+    name on the way in: the tag that decides the owner, and the drive letters
+    the PC declares. Removing both decorations leaves the name Windows chose,
+    which is the label a linked PC gets before the owner ever renames it. A name
+    that is nothing but decoration has no machine name, and is answered as
+    ``None`` rather than with the decoration.
+    """
+    if not isinstance(value, str):
+        return None
+    residue = _NAME_DRIVES_RE.sub(" ", value)
+    residue = _AGENT_TAG_RE.sub(" ", residue)
+    # A Windows machine names itself in one word, so the first remaining word is
+    # the name and anything a person appended after it is annotation, not name.
+    for token in residue.split():
+        word = token.strip("()[]{}").rstrip(",.;:")
+        if len(word) >= 2:
+            return word[:MAX_LINK_LABEL_CHARS]
+    return None
+
+
+def name_tokens(value: Any) -> list[str]:
+    """Every name one link answers to, normalised for a request to match.
+
+    `label` carries up to two names of the same machine, joined by
+    `_NAME_SEPARATOR`: the PC's own name first (what Windows called it, filled
+    when the PC claimed itself) and the owner's alias second. Both choose the
+    PC, because both are how a person standing at that machine says its name.
+    Case and spacing are the speaker's, not a difference.
+    """
+    if not isinstance(value, str):
+        return []
+    tokens: list[str] = []
+    for part in value.split(_NAME_SEPARATOR):
+        token = " ".join(part.casefold().split())
+        if token and token not in tokens:
+            tokens.append(token)
+    return tokens
+
+
+def canonical_label(existing: Any, submitted: Any) -> str | None:
+    """The one stored form of a link's names, from what it had and what came in.
+
+    The machine name keeps its first position and survives every rename, so an
+    alias replaces only the second part. A submitted value that itself carries
+    the separator is taken as both names at once - that is how a link created
+    before this rule gets its machine name. An alias's own separator becomes a
+    dash rather than a second name, so no input can forge more parts than two.
+    """
+    if not isinstance(submitted, str) or not submitted.strip():
+        return None
+    text = submitted.replace(_NAME_SEPARATOR, "-").strip()
+    previous = [
+        " ".join(part.split())
+        for part in str(existing or "").split(_NAME_SEPARATOR)
+        if part.strip()
+    ] if isinstance(existing, str) else []
+    if _NAME_SEPARATOR in submitted:
+        head, _, tail = submitted.partition(_NAME_SEPARATOR)
+        machine = " ".join(head.split())
+        alias = " ".join(tail.split()).replace(_NAME_SEPARATOR, "-")
+    else:
+        machine = previous[0] if previous else None
+        alias = text
+    parts = [part for part in (machine, alias) if part]
+    joined = _NAME_SEPARATOR.join(parts)
+    if len(joined) > MAX_LINK_LABEL_CHARS:
+        raise PcPairingError("link label too long")
+    return joined or None
+
+
+def link_named_in(text: Any, links: Any) -> str | None:
+    """The mesh node id of the one linked PC `text` names, or ``None``.
+
+    An account with several PCs has to be able to say which one it means - by
+    the alias it chose or by the name Windows chose, whichever a person is more
+    likely to type - and the answer is allowed only when exactly one link
+    matches. No match, two matches, and an unnamed link all answer ``None``,
+    which leaves the caller's normal "which PC is this?" judgement untouched
+    rather than quietly picking the newest or the first.
+    """
+    if not isinstance(text, str) or not text.strip() or not isinstance(links, (list, tuple)):
+        return None
+    haystack = " ".join(text.casefold().split())
+    if not haystack:
+        return None
+    matched: list[str] = []
+    for link in links:
+        if not isinstance(link, Mapping):
+            continue
+        node = link.get("mesh_node_id")
+        if not isinstance(node, str) or not node:
+            continue
+        if any(token in haystack for token in name_tokens(link.get("label"))):
+            if node not in matched:
+                matched.append(node)
+    return matched[0] if len(matched) == 1 else None
+
+
 __all__ = [
     "D1PcPairingStore",
-    "MAX_ROOTS_PER_LINK",
+    "MAX_ROOTS_JSON_CHARS",
     "MAX_ROOT_LABEL_CHARS",
     "MAX_ROOT_PATH_CHARS",
     "PAIRING_CODE_CHARS",
@@ -850,6 +1274,12 @@ __all__ = [
     "PcPairingStore",
     "default_root_label",
     "derive_install_tag",
+    "drive_root",
+    "drives_from_agent_name",
+    "canonical_label",
+    "link_named_in",
+    "name_tokens",
+    "pc_name_from_agent_name",
     "tag_from_agent_name",
     "normalize_root_label",
     "normalize_root_path",

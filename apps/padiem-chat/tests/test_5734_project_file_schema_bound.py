@@ -29,6 +29,7 @@ MIGRATION_SET = (
     "003_project_files.sql",
     "068_project_files_extracted_media.sql",
     "069_project_files_image_media.sql",
+    "075_project_files_country.sql",
 )
 
 

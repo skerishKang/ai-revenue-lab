@@ -17,6 +17,7 @@ The map fallback itself is the whole of ``test_5015_pc_read_dispatch.py``: those
 tests run with no pairing store composed and must stay green.
 """
 from __future__ import annotations
+import asyncio
 import json
 from pathlib import Path
 import sys
@@ -154,6 +155,74 @@ def test_revoking_the_link_leaves_only_what_the_map_still_pins(monkeypatch):
     assert QUOTATION not in row["command_text"] and lane.ROOT in row["command_text"]
 
 
+# -- a write needs an authority of its own, and nothing else supplies one ----
+
+WRITE_CALL = lane.RUN + ":write_file:" + "d" * 24
+WRITE_CEILING = {
+    "version": 1, "requested": "files_write", "admitted": "files_write",
+    "source": "decision", "ops": ["write", "move", "delete"], "app_id": "padiem-chat",
+}
+
+
+def _write(state):
+    """One real signed write dispatch under the write ceiling."""
+    payload = lane._base_payload(
+        op="write", path="견적/2026-10.txt", content="합계 1,200,000원",
+        tool_call_ref=WRITE_CALL,
+    )
+    response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(
+        lane._SignedRequest(state, payload, scope=WRITE_CEILING),
+    ))
+    return response.status_code, json.loads(response.body)
+
+
+def _no_map_for_this_account(state):
+    """Pin the deployment map to another account.
+
+    The transitional fallback lets a link-less account keep using its map row,
+    so the claim under test — that a write needs an authority of its own — can
+    only be observed once the map stops naming this account.
+    """
+    state.oracle_mesh_return_source = routes.build_oracle_mesh_return_source(
+        [{**lane._mapping()[0], "account_ref": "someone-else"}],
+        lane.CHANNEL_SECRET, routes.EXECUTION_MODE_MESH,
+    )
+    return state
+
+
+def test_a_write_from_an_account_with_no_link_is_refused_and_writes_nothing(monkeypatch):
+    """The write ceiling is a permission to write, not a permission to any PC.
+
+    The ceiling is signed and correct here; what is missing is the link. So the
+    refusal must come from the account having no PC of its own, and it must come
+    before any dispatch row exists — a write that was refused cannot have queued
+    a command for the connector to run.
+    """
+    state = _no_map_for_this_account(_state(monkeypatch, pairing_store=pairing.store()))
+
+    status, body = _write(state)
+
+    assert status == 403, body
+    assert body["error"]["code"] == "oracle_mesh_device_unverified"
+    assert state.history_store.rows == {}
+
+
+def test_a_suspended_link_is_refused_for_a_write_and_queues_nothing(monkeypatch):
+    """A link the owner withdrew is gone for writes, not merely hidden.
+
+    The same account, the same folder it used to be granted, a valid write
+    ceiling. The revocation is what stands between the request and the PC, and
+    the lane answers by writing nothing at all.
+    """
+    state = _no_map_for_this_account(_state(monkeypatch, revoke=True))
+
+    status, body = _write(state)
+
+    assert status == 403, body
+    assert body["error"]["code"] == "oracle_mesh_device_unverified"
+    assert state.history_store.rows == {}
+
+
 # -- two approved folders: the label is the namespace ----------------------
 
 def test_two_roots_require_the_label_and_it_selects_the_exact_folder(monkeypatch):
@@ -217,6 +286,63 @@ def test_one_folder_accepts_the_label_or_a_bare_relative_path_alike(monkeypatch)
 
 
 # -- the map still answers when there is no directory to ask --------------
+
+def test_a_drive_reference_names_the_whole_drive_and_a_bare_letter_stays_a_path():
+    """#5573: "C드라이브" is the volume, while `C` as text is still a file name.
+
+    A drive reference resolves only onto a drive the account actually granted, so
+    the lane never walks onto a volume nobody approved. Everything else keeps the
+    (A) rule: one grant means a plain relative path, two grants require a label.
+    """
+    drives = [
+        {"root_ref": None, "label": "C:", "path": "C:"},
+        {"root_ref": None, "label": "D:", "path": "D:"},
+    ]
+    assert routes._pc_files_pick_root(drives, "C드라이브") == ("C:", "")
+    assert routes._pc_files_pick_root(drives, "c:") == ("C:", "")
+    assert routes._pc_files_pick_root(drives, "D 드라이브") == ("D:", "")
+    assert routes._pc_files_pick_root(drives, "C:/Users") == ("C:", "Users")
+    # An ungranted volume is a refusal, never a guess.
+    assert routes._pc_files_pick_root(drives, "F:") is None
+    # Several grants and no name stays ambiguous.
+    assert routes._pc_files_pick_root(drives, "여기") is None
+    assert routes._pc_files_pick_root([{"root_ref": None, "label": "견적", "path": QUOTATION}], "여기") == (QUOTATION, "")
+    # A file genuinely called `C` is still reachable inside the granted folder.
+    folder = [{"root_ref": None, "label": "견적", "path": QUOTATION}]
+    assert routes._pc_files_pick_root(folder, "C") == (QUOTATION, "C")
+
+
+# -- a whole drive is a root, and it belongs to exactly one account --------
+
+def test_a_granted_drive_lists_the_drive_and_another_drives_path_is_refused(monkeypatch):
+    """#5573: the path argument may name the granted drive itself.
+
+    The operational failure was the Engine refusing `C:` as "not a relative path"
+    before any dispatch existed, so no command ever reached the PC. With a drive
+    granted, `.`, ``C:``, ``C:\\`` and ``C:\\Users`` all address that grant, and a
+    drive this account does not hold stays a refusal rather than a guess.
+    """
+    state = _state(monkeypatch, pairing_store=None, roots=("C:/",))
+
+    for path in (".", "C:", "C:\\", "C드라이브"):
+        status, body = lane._dispatch(state, lane._base_payload(path=path))
+        assert status == 200, (path, body)
+        row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+        assert row["node_ref"] == LINK_NODE
+        assert "-LiteralPath 'C:'" in row["command_text"], (path, row["command_text"])
+        state.history_store.rows.clear()
+
+    status, body = lane._dispatch(state, lane._base_payload(path="C:\\Users"))
+    assert status == 200, body
+    row = state.history_store.rows[body["dispatch"]["dispatch_id"]]
+    assert "-LiteralPath 'C:/Users'" in row["command_text"], row["command_text"]
+    state.history_store.rows.clear()
+
+    refused, refused_body = lane._dispatch(state, lane._base_payload(path="D:\\secret"))
+    assert refused == 422, refused_body
+    assert refused_body["error"]["code"] == "oracle_mesh_file_path_invalid"
+    assert state.history_store.rows == {}
+
 
 def test_an_unapplied_migration_falls_back_to_the_map_unchanged(monkeypatch):
     state = lane._state(monkeypatch)

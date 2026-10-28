@@ -8,6 +8,7 @@ constructs a ConnectorRuntime or registers a handler.
 
 from __future__ import annotations
 
+import re
 import unittest
 
 from kagent.connector_platform import (
@@ -60,7 +61,14 @@ class FiveEntriesProjectedTests(unittest.TestCase):
                 local = tool_id.split(":")[2].split("@")[0]
                 self.assertTrue(local.startswith(f"{connector_local}_"), tool_id)
 
-    def test_write_tools_carry_user_confirmation(self) -> None:
+    def test_write_tools_are_predelegated_except_the_send_family(self) -> None:
+        """Owner decision 2026-10-28: WRITE is pre-delegated to the connected
+        connector; the irreversible external-send family keeps confirmation."""
+        send_tokens = {"send", "post", "schedule", "comment", "respond", "reaction", "invite"}
+
+        def is_send(name: str) -> bool:
+            return bool(send_tokens & set(re.split(r"[-_.]", name)))
+
         entry_by_local = {
             entry.connector_id: entry for entry in PROJECTED_CATALOGUE_ENTRIES
         }
@@ -68,17 +76,27 @@ class FiveEntriesProjectedTests(unittest.TestCase):
             local = descriptor.connector_id.split(":")[2].split("@")[0]
             entry = entry_by_local[local]
             for tool_id in descriptor.canonical_tool_ids:
-                registered = self.projection.tool_registry.get(tool_id)
-                spec = registered.runtime_spec
+                spec = self.projection.tool_registry.get(tool_id).runtime_spec
                 local_tool = tool_id.split(":")[2].split("@")[0]
                 tool_name = local_tool.removeprefix(f"{local}_")
                 if tool_name in entry.write_tools:
                     self.assertIs(spec.side_effect, ToolSideEffect.WRITE, tool_id)
-                    self.assertIs(
-                        spec.approval_policy, ApprovalPolicy.USER_CONFIRMATION, tool_id
+                    expected = (
+                        ApprovalPolicy.USER_CONFIRMATION
+                        if is_send(tool_name)
+                        else ApprovalPolicy.EXTERNAL_AUTHORIZATION
                     )
+                    self.assertIs(spec.approval_policy, expected, tool_id)
                 else:
                     self.assertIs(spec.side_effect, ToolSideEffect.READ, tool_id)
+        gmail_send = self.projection.tool_registry.get(
+            "tool:b54:gmail_send_existing_approved_draft@1"
+        ).runtime_spec
+        gmail_draft = self.projection.tool_registry.get(
+            "tool:b54:gmail_create_draft@1"
+        ).runtime_spec
+        self.assertIs(gmail_send.approval_policy, ApprovalPolicy.USER_CONFIRMATION)
+        self.assertIs(gmail_draft.approval_policy, ApprovalPolicy.EXTERNAL_AUTHORIZATION)
 
     def test_requires_authorization_from_auth_kind(self) -> None:
         # All five reviewed entries are USER_OAUTH -> authorization required.

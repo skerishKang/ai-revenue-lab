@@ -91,6 +91,9 @@
 
   let runtime = null;
   let skills = [];
+  // #5895: an account with a linked PC reaches the quote screen through its own
+  // Excel form even before it has saved a skill.
+  let pcAccountLinked = false;
   let modelIds = [];
   let selectedModelByTier = {};
   let reasoningByModel = {};
@@ -105,6 +108,14 @@
   const PC_DIALOGUES_PATH = "/api/b66/ai/dialogues?limit=20";
   const PC_TXT_READ_PATH = "/api/b66/connect/txt-reads/request";
   const PC_RESULT_PATH_PREFIX = "/api/b66/runs/";
+  // #5895: the quote screen's own PC Excel form. Chat exchanges ids and the model's
+  // cell mapping only; the workbook itself is read and filled in COM2.
+  const PC_QUOTE_FILL_PATH = "/api/b66/pc-quote/fill";
+  const PC_SAVE_PATH = "/api/pc/save";
+  const PC_RESULT_PATH = "/api/pc/result";
+  const PC_PAIRINGS_PATH = "/api/pc/pairings";
+  const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
+  const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
   const PC_RESULT_PATH_SUFFIX = "/pc-result";
   const MAX_PC_DIRECTORY_BYTES = 32768;
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
@@ -185,6 +196,196 @@
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
+  }
+
+  let pcExchangePromise = null;
+
+  function pcCopy() {
+    if (document.documentElement.lang === "en") {
+      return {
+        pick: "Bring an Excel form from my PC", make: "Make a quote from this form",
+        save: "Save to my PC", chosen: "Form:", needRequest: "Write what the quote is for first.",
+        made: "The quote is ready. Save it next to your form.",
+        choosing: "Choose your form on your PC…", filling: "Making the quote from your form…",
+        saving: "Saving to your PC…", saved: "Saved to your PC.",
+        failed: "That did not work. Please try again in a moment.",
+        noPc: "Connect your PC to bring your own form.", connect: "Connect this PC",
+        entry: "Quote from my PC Excel form",
+      };
+    }
+    return {
+      pick: "내 PC 엑셀 양식 가져오기", make: "이 양식으로 견적서 만들기",
+      save: "내 PC에 저장", chosen: "양식:", needRequest: "견적 내용을 먼저 적어 주세요.",
+      made: "견적서를 만들었습니다. 양식이 있던 폴더에 저장해 주세요.",
+      choosing: "PC에서 양식을 골라 주세요…", filling: "양식으로 견적서를 만드는 중…",
+      saving: "PC에 저장하는 중…", saved: "PC에 저장했습니다.",
+      failed: "지금은 되지 않았어요. 잠시 후 다시 시도해 주세요.",
+      noPc: "PC를 연결하면 내 양식을 가져올 수 있습니다.", connect: "이 PC 연결",
+      entry: "내 PC 엑셀 양식으로 견적서",
+    };
+  }
+
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangePromise) return pcExchangePromise;
+    pcExchangePromise = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="' + PC_EXCHANGE_CSS + '"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = PC_EXCHANGE_CSS;
+        head.append(css);
+      }
+      const script = document.createElement("script");
+      script.src = PC_EXCHANGE_SCRIPT;
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc_exchange_unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc_exchange_unavailable")), { once: true });
+      head.append(script);
+    });
+    return pcExchangePromise;
+  }
+
+  async function pcLinkedNow() {
+    try {
+      const response = await nativeFetch(PC_PAIRINGS_PATH, { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } });
+      if (!response.ok) return null;
+      const body = await response.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openPcConnect() {
+    const opener = document.getElementById("connectorsNavButton");
+    if (!opener) return;
+    opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
+  // #5895: pick → fill → save, all through the shared part and the COM2 lane. The
+  // screen itself never opens a workbook and never guesses a cell.
+  function wirePcForm(nodes) {
+    let template = null;
+    let filled = null;
+    const say = (text) => {
+      nodes.status.textContent = text || "";
+      nodes.status.hidden = !text;
+    };
+    nodes.pick.addEventListener("click", async () => {
+      say(pcCopy().choosing);
+      let component = null;
+      try {
+        component = await loadPcExchange();
+      } catch (_) {
+        component = null;
+      }
+      if (!component || typeof component.open !== "function") {
+        say(pcCopy().failed);
+        return;
+      }
+      component.open({
+        onSelect: (picked) => {
+          if (!picked || typeof picked.fileId !== "string" || !picked.fileId) {
+            say(pcCopy().failed);
+            return;
+          }
+          template = {
+            name: picked.name || "견적서 양식.xlsx",
+            path: String(picked.path || picked.name || ""),
+            fileId: picked.fileId,
+          };
+          filled = null;
+          nodes.save.hidden = true;
+          nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
+          nodes.chosen.hidden = false;
+          nodes.make.hidden = false;
+          say("");
+        },
+      });
+    });
+    nodes.make.addEventListener("click", async () => {
+      if (!template) return;
+      const request = String(nodes.request() || "").trim();
+      if (!request) {
+        say(pcCopy().needRequest);
+        return;
+      }
+      say(pcCopy().filling);
+      try {
+        const response = await nativeFetch(PC_QUOTE_FILL_PATH, {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: template.fileId, request }),
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true || typeof body.filled_file_id !== "string") {
+          throw new Error("fill_failed");
+        }
+        filled = body;
+        nodes.save.hidden = false;
+        say(pcCopy().made);
+      } catch (_) {
+        say(pcCopy().failed);
+      }
+    });
+    nodes.save.addEventListener("click", async () => {
+      if (!filled || !template) return;
+      say(pcCopy().saving);
+      const folder = template.path.replace(/\\/g, "/").replace(/\/+[^/]*$/, "");
+      const target = (folder ? folder + "/" : "") + filled.filled_name;
+      try {
+        const response = await nativeFetch(PC_SAVE_PATH, {
+          method: "POST", credentials: "same-origin", cache: "no-store",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: filled.filled_file_id, path: target }),
+        });
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true) throw new Error("save_failed");
+        const saved = await waitPcResult(body.dispatch_id);
+        say(saved ? pcCopy().saved : pcCopy().failed);
+        if (saved) nodes.save.hidden = true;
+      } catch (_) {
+        say(pcCopy().failed);
+      }
+    });
+    async function waitPcResult(dispatchId) {
+      for (;;) {
+        let response = null;
+        let body = null;
+        try {
+          response = await nativeFetch(PC_RESULT_PATH + "?dispatch_id=" + encodeURIComponent(dispatchId), {
+            credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" },
+          });
+          body = await response.json().catch(() => null);
+        } catch (_) {
+          body = null;
+        }
+        if (body && body.state === "ready") return body.ok === true;
+        if (body && body.state === "cancelled") return false;
+        if (response && response.status !== 200) return false;
+        const seconds = body && Number(body.poll_seconds) > 0 ? Number(body.poll_seconds) : 2;
+        await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+      }
+    }
+    void pcLinkedNow().then((linked) => {
+      if (linked !== false) return;
+      nodes.pick.hidden = true;
+      nodes.note.textContent = pcCopy().noPc + " ";
+      const connect = el("button", "b66-quote-pcform-connect", pcCopy().connect);
+      connect.type = "button";
+      connect.addEventListener("click", openPcConnect);
+      nodes.note.append(connect);
+      nodes.note.hidden = false;
+    });
   }
 
   function ensureUi() {
@@ -326,6 +527,37 @@
     const reasoningSelect = document.createElement("select");
     reasoningSelect.id = "b66QuoteReasoningSelect";
     reasoningLabel.append(reasoningText, reasoningSelect);
+
+    // #5895: "내 PC 엑셀 양식 가져오기" — the owner's own form, filled as a new quote.
+    const pcForm = el("section", "b66-quote-pcform");
+    const pcPick = el("button", "b66-quote-pcform-pick", pcCopy().pick);
+    pcPick.id = "b66QuotePcPick";
+    pcPick.type = "button";
+    const pcChosen = el("p", "b66-quote-pcform-chosen", "");
+    pcChosen.id = "b66QuotePcChosen";
+    pcChosen.hidden = true;
+    const pcNote = el("p", "b66-quote-pcform-note", "");
+    pcNote.id = "b66QuotePcNote";
+    pcNote.hidden = true;
+    const pcMake = el("button", "b66-quote-pcform-make", pcCopy().make);
+    pcMake.id = "b66QuotePcMake";
+    pcMake.type = "button";
+    pcMake.hidden = true;
+    const pcSave = el("button", "b66-quote-pcform-save", pcCopy().save);
+    pcSave.id = "b66QuotePcSave";
+    pcSave.type = "button";
+    pcSave.hidden = true;
+    const pcFormStatus = el("p", "b66-quote-pcform-status", "");
+    pcFormStatus.id = "b66QuotePcFormStatus";
+    pcFormStatus.setAttribute("role", "status");
+    pcFormStatus.setAttribute("aria-live", "polite");
+    pcFormStatus.hidden = true;
+    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcSave, pcFormStatus);
+    messageLabel.after(pcForm);
+    wirePcForm({
+      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
+      status: pcFormStatus, request: () => message.value,
+    });
 
     const submit = el("button", "b66-quote-generate", copy().generate);
     submit.id = "b66QuoteGenerate";
@@ -715,6 +947,9 @@
     const submit = document.getElementById("b66QuoteGenerate");
     const close = document.getElementById("b66QuoteClose");
     const frame = document.getElementById("b66QuoteFrame");
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    const launcherLabel = document.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel && entryOnly) launcherLabel.textContent = pcCopy().entry;
     if (message) message.placeholder = c.requestPlaceholder;
     if (submit) submit.textContent = c.generate;
     if (close) close.setAttribute("aria-label", c.close);
@@ -836,8 +1071,17 @@
       option.textContent = skill.skill_name;
       select.append(option);
     });
-    launcher.hidden = !(runtime && skills.length > 0);
+    // #5895: a linked PC is enough to reach the quote screen; the form itself is the
+    // template, so the saved-skill controls only exist when a skill does.
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));
     launcher.disabled = launcher.hidden;
+    const launcherLabel = launcher.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel) launcherLabel.textContent = entryOnly ? pcCopy().entry : copy().launcher;
+    const selectLabelNode = document.querySelector('[data-b66-quote-select-label]');
+    if (selectLabelNode) selectLabelNode.hidden = entryOnly;
+    const generateButton = document.getElementById("b66QuoteGenerate");
+    if (generateButton) generateButton.hidden = entryOnly;
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
     const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
     if (pcSection) pcSection.hidden = !pcEnabled;
@@ -914,6 +1158,14 @@
     return assets;
   }
 
+  async function refreshPcAccount() {
+    const linked = await pcLinkedNow();
+    const next = linked === true;
+    if (next === pcAccountLinked) return;
+    pcAccountLinked = next;
+    populateSkills();
+  }
+
   async function refresh() {
     if (refreshPromise) return refreshPromise;
     refreshPromise = (async () => {
@@ -940,6 +1192,7 @@
         }
         skills = safeSkills(listResult.data);
         populateSkills();
+        void refreshPcAccount();
         await refreshModels();
         return skills.length > 0;
       } catch (_) {

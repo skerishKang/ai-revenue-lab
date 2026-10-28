@@ -25,6 +25,11 @@ ALLOWED = {
     "POST /api/projects",
     "GET /api/projects/p1/files",
     "POST /api/projects/p1/files",
+    # #5895: the authoring screens read whether a PC is linked, and the shared
+    # file part fetches one file's words through the PC file-exchange routes that
+    # already exist (same owner session, no new store or authority).
+    "GET /api/pc/pairings",
+    "POST /api/pc/reference",
 }
 
 

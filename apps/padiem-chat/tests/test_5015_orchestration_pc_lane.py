@@ -94,7 +94,7 @@ def _install(monkeypatch, lane: _Lane, *, pc_entry: bool = False) -> _Bridge:
     bridge = _Bridge()
     monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", lane)
 
-    async def _available(request, *, uid, requested_device_id=None):
+    async def _available(request, *, uid, requested_device_id=None, user_text=None):
         if not pc_entry or (requested_device_id is not None and requested_device_id != DEVICE_ID):
             return None
         return {"pc_tools": {"device_id": DEVICE_ID, "allowed_scopes": ["files_list"]},

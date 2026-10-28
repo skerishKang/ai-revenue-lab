@@ -101,49 +101,22 @@ def test_explicit_deployment_only_registration_matches_canonical_tools():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("listing", [True, False])
-async def test_real_engine_confirmation_pause_then_first_party_approved_decision(listing):
+async def test_a_connected_owner_reaches_the_office_handler_without_a_pause(listing):
+    """Owner decision 2026-10-28: pre-delegated — the handler runs directly."""
     binding = build_hark_office_p01_tool_binding()
     authority = binding.resolve_authority(AGENT_ID)
     tool = LIST_TOOL_ID if listing else READ_TOOL_ID
     invocation = ToolInvocation(tool_id=tool, arguments=_args(listing=listing))
-    with pytest.raises(ToolRuntimeError) as blocked:
-        await binding.tool_runtime.execute(
-            invocation, authority.compiled.runtime_profile, authority.authorization,
-        )
-    assert blocked.value.code == "tool_user_confirmation_required"
-    assert not authority.authorization.user_confirmed_tools
-
+    await binding.tool_runtime.execute(
+        invocation, authority.compiled.runtime_profile, authority.authorization,
+    )
     service, store = _engine(binding)
     payload = _payload(binding, listing=listing)
-    paused = await service.orchestrate_payload(payload)
-    assert paused.status_code == 200, paused.body
-    outcome = paused.body["orchestration"]
-    assert outcome["execution"]["metadata"]["status"] == "paused"
-    stored = store.resolve(app_id=APP_ID, continuation_ref=outcome["continuation_ref"])
-    assert stored.pause.tool_id == tool
-    assert stored.pause.approval_scope == (FILE_SCOPE,)
-    assert stored.pause.invocation_sha256 == __import__(
-        "padiem_ai_core.agent_approval", fromlist=["tool_invocation_digest"]
-    ).tool_invocation_digest(invocation)
-
-    decision = {
-        "decision_id": "decision_3580_" + ("list" if listing else "read"),
-        "pause_id": stored.pause.pause_id,
-        "outcome": "approved", "authority_ref": "owner_3580_first_party",
-        "evidence_ref": "session_3580_first_party",
-        "decided_at": min(datetime.now(timezone.utc),
-                          stored.pause.expires_at).isoformat(),
-    }
-    resumed = {k: v for k, v in payload.items()
-               if k not in {"require_evidence", "require_verification"}}
-    resumed["continuation_ref"] = outcome["continuation_ref"]
-    resumed["decision"] = decision
-    result = await service.resume_payload(resumed)
-    assert result.status_code == 200, result.body
-    assert result.body["orchestration"]["execution"]["metadata"]["status"] == "completed"
-    assert not result.body["orchestration"].get("local_bytes")
-    with pytest.raises(Exception):
-        store.resolve(app_id=APP_ID, continuation_ref=outcome["continuation_ref"])
+    outcome = await service.orchestrate_payload(payload)
+    assert outcome.status_code == 200, outcome.body
+    result = outcome.body["orchestration"]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert "continuation_ref" not in result
 
 
 @pytest.mark.asyncio
@@ -164,15 +137,10 @@ async def test_toolruntime_denies_cross_scope_and_forbidden_extra_arguments():
 
     args = _args(listing=False)
     args["drive_upload_allowed"] = True
-    confirmed = ToolAuthorizationContext(
-        app_id=APP_ID, agent_id=authority.compiled.runtime_profile.id,
-        granted_auth_scopes=(FILE_SCOPE,),
-        user_confirmed_tools=(READ_TOOL_ID,),
-    )
     with pytest.raises(ToolRuntimeError) as invalid:
         await binding.tool_runtime.execute(
             ToolInvocation(tool_id=READ_TOOL_ID, arguments=args),
-            authority.compiled.runtime_profile, confirmed,
+            authority.compiled.runtime_profile, authority.authorization,
         )
     assert invalid.value.code == "invalid_tool_arguments"
     for unsafe in ("../private.xlsx", "C:/secret.xlsx", "nested/other.xlsx"):
@@ -181,9 +149,10 @@ async def test_toolruntime_denies_cross_scope_and_forbidden_extra_arguments():
         with pytest.raises(ToolRuntimeError) as exc:
             await binding.tool_runtime.execute(
                 ToolInvocation(tool_id=READ_TOOL_ID, arguments=invalid_path),
-                authority.compiled.runtime_profile, confirmed,
+                authority.compiled.runtime_profile, authority.authorization,
             )
         assert exc.value.code == "invalid_tool_arguments"
+
 
 class _VerifiedReceiptSink:
     def __init__(self, *, persist=True):
@@ -197,86 +166,21 @@ class _VerifiedReceiptSink:
         return self.persist
 
 
-async def _actual_approved_office_resume(*, listing, sink, outcome="approved"):
+@pytest.mark.asyncio
+async def test_office_read_and_listing_run_directly_without_fabricating_a_receipt():
+    """With no pause there is no approved decision, so no receipt is invented."""
+    sink = _VerifiedReceiptSink()
     binding = build_hark_office_p01_tool_binding()
     engine, store = _engine(binding, receipt_sink=sink)
-    payload = _payload(binding, listing=listing)
-    paused = await engine.orchestrate_payload(
-        payload, trusted_office_run_id=payload["tool_arguments"]["step_1"]["run_id"],
-    )
-    assert paused.status_code == 200, paused.body
-    continuation_ref = paused.body["orchestration"]["continuation_ref"]
-    record = store.resolve(app_id=APP_ID, continuation_ref=continuation_ref)
-    submission = {
-        "decision_id": "decision_hark_receipt_" + ("list" if listing else "read"),
-        "pause_id": record.pause.pause_id,
-        "outcome": outcome,
-        "authority_ref": "trusted_user_session",
-        "evidence_ref": "first_party_verified_session",
-        "decided_at": min(datetime.now(timezone.utc), record.pause.expires_at).isoformat(),
-    }
-    resumed = {
-        k: v for k, v in payload.items()
-        if k not in {"require_evidence", "require_verification"}
-    }
-    resumed["continuation_ref"] = continuation_ref
-    resumed["decision"] = submission
-    result = await engine.resume_payload(resumed)
-    return result, engine, store, resumed, continuation_ref
-
-
-@pytest.mark.asyncio
-async def test_only_actually_verified_consumed_read_emits_private_office_receipt():
-    sink = _VerifiedReceiptSink()
-    result, engine, store, replay, ref = await _actual_approved_office_resume(
-        listing=False, sink=sink,
-    )
-    assert result.status_code == 200, result.body
-    assert len(sink.receipts) == 1
-    receipt = sink.receipts[0]
-    assert receipt.pause.run_id == _args(listing=False)["run_id"]
-    assert receipt.request_fingerprint == "b" * 64
-    assert receipt.verified_decision.outcome.value == "approved"
-    assert receipt.continuation_ref == ref
-    assert receipt.safe_dict()["device_permission_granted"] is False
-    assert receipt.safe_dict()["resident_dispatched"] is False
-    assert "verified_decision" not in str(result.body)
-    assert "first_party_verified_session" not in str(result.body)
-    replayed = await engine.resume_payload(replay)
-    assert replayed.status_code != 200
-    assert len(sink.receipts) == 1
-
-
-@pytest.mark.asyncio
-async def test_list_approval_never_becomes_selected_file_read_receipt():
-    sink = _VerifiedReceiptSink()
-    outcome, *_ = await _actual_approved_office_resume(listing=True, sink=sink)
-    assert outcome.status_code == 200
+    for listing in (False, True):
+        payload = _payload(binding, listing=listing)
+        result = await engine.orchestrate_payload(
+            payload, trusted_office_run_id=payload["tool_arguments"]["step_1"]["run_id"],
+        )
+        assert result.status_code == 200, result.body
+        assert result.body["orchestration"]["execution"]["metadata"]["status"] == "completed"
+        assert "continuation_ref" not in result.body["orchestration"]
     assert sink.receipts == []
-
-
-@pytest.mark.asyncio
-async def test_denied_office_read_never_emits_receipt():
-    sink = _VerifiedReceiptSink()
-    outcome, *_ = await _actual_approved_office_resume(
-        listing=False, sink=sink, outcome="denied",
-    )
-    assert outcome.status_code != 200
-    assert sink.receipts == []
-
-
-@pytest.mark.asyncio
-async def test_failed_private_receipt_storage_fail_closed_after_consumed():
-    sink = _VerifiedReceiptSink(persist=False)
-    outcome, engine, store, replay, ref = await _actual_approved_office_resume(
-        listing=False, sink=sink,
-    )
-    assert outcome.status_code == 503
-    assert outcome.body["error"]["code"] == "office_approval_receipt_unavailable"
-    assert len(sink.receipts) == 1
-    another = await engine.resume_payload(replay)
-    assert another.status_code != 200
-    assert len(sink.receipts) == 1
 
 
 def test_approved_receipt_is_immutable_and_exact_digest_only():
@@ -357,9 +261,6 @@ async def test_unconfigured_sink_does_not_export_any_private_approval():
     payload = _payload(binding, listing=False)
     result = await engine.orchestrate_payload(payload)
     assert result.status_code == 200
-    assert result.body["orchestration"]["execution"]["metadata"]["status"] == "paused"
-    record = store.resolve(
-        app_id=APP_ID,
-        continuation_ref=result.body["orchestration"]["continuation_ref"],
-    )
-    assert record.pause.run_id.startswith("bridge_run_")
+    assert result.body["orchestration"]["execution"]["metadata"]["status"] == "completed"
+    assert "continuation_ref" not in result.body["orchestration"]
+    assert "bridge_run_" not in str(result.body)

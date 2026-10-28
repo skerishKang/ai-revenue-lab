@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import inspect
 import json
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
@@ -253,6 +254,11 @@ class History:
             return None
         return dict(row)
 
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id):
+        if getattr(self, "cancellation_raises", False):
+            raise HistoryError("the store will not answer")
+        return dispatch_id in getattr(self, "cancelled_flags", set())
+
 
 def state(*, mesh=None, history=None, identity=None, secret=SECRET):
     return SimpleNamespace(
@@ -352,7 +358,7 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     outcome = executor.execute(dispatched)
     assert outcome.exit_code == 0 and outcome.body == TEXT_BYTES
     assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH,
-                           "timeout_seconds": 120}]
+                           "timeout_seconds": None}]
 
     # 3. the executor submits; the server verifies and appends once
     submitted = []
@@ -1025,3 +1031,78 @@ def test_5015_mesh_source_startup_reason_does_not_log_secrets(caplog):
     good = asyncio.run(routes.build_oracle_mesh_return_source_from_env(_deployment_env()))
     assert good is not None and good.configured is True
     assert caplog.messages == []
+
+
+# ------------------------------------------------------- the owner's stop, read back
+_MISSING = object()
+
+
+def _cancel_read(history, dispatch_id, *, secret=SECRET, payload=_MISSING):
+    if payload is _MISSING:
+        payload = {"dispatch_id": dispatch_id}
+    return call(
+        routes.oracle_mesh_read_cancel_check,
+        Request(payload, state(history=history), secret=secret),
+    )
+
+
+def test_the_executor_reads_the_owner_stop_for_the_command_it_is_running(monkeypatch):
+    """One dispatch id in, one boolean out - and the claim survives the read.
+
+    #5895: the owner's 그만 has to reach a command the executor already holds,
+    because #5995 removed the client deadline and a PC that never answers would
+    otherwise hold every later operation on that PC behind it. This read claims
+    nothing and writes nothing, which is what lets the executor ask it between
+    read slices for as long as the PC works.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+    _status, poll, _headers = call(
+        routes.oracle_mesh_read_poll,
+        Request({}, state(history=history), secret=SECRET),
+    )
+    nonce = poll["dispatch"]["nonce"]
+
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+    history.cancelled_flags = {dispatch_id}
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": True}
+
+    # Reading the stop is not consuming the claim: the result is still owed.
+    assert history.rows[dispatch_id]["nonce_sha256"]
+    status, submitted, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body(dispatch_id, nonce), state(history=history), secret=SECRET),
+    )
+    assert status == 200, submitted
+
+
+def test_the_stop_read_is_channel_only_and_answers_no_when_it_cannot_ask(monkeypatch):
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+
+    status, body, _ = _cancel_read(history, dispatch_id, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    for payload in ({}, {"dispatch_id": ""}, {"dispatch_id": {"a": 1}}, {"other": 1}, None):
+        bad = _cancel_read(history, dispatch_id, payload=payload)
+        assert bad[0] == 400, (payload, bad)
+
+    # An unreadable answer is never an owner's stop: ending a real command because
+    # a read failed is the worse of the two mistakes.
+    history.cancellation_raises = True
+    status, body, _ = _cancel_read(history, dispatch_id)
+    assert status == 200 and body == {"ok": True, "cancelled": False}
+
+
+def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():
+    """The killed client never saw a console answer, so nothing may claim one."""
+    source = inspect.getsource(routes.oracle_mesh_read_result)
+    allowed = source.split('wire.get("termination") not in (', 1)[1].split("):", 1)[0]
+    assert '"cancelled"' in allowed
+    for observed in ("timed_out", "no_reply", "not_executed"):
+        assert '"%s"' % observed in allowed

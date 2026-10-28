@@ -1,7 +1,7 @@
 // #5573 PR-3 — the owner's own PC pairing card, inside the EXISTING computer card.
 //
-// What this is: one surface for "connect my PC" (issue a one-time code), the
-// links this account already has, the folders each link allows, and the two
+// What this is: one surface for "connect this PC" (download the install file),
+// the links this account already has, the folders each link allows, and the two
 // destructive actions the owner is entitled to (revoke a folder, revoke a link).
 //
 // What this is NOT: an authority. Every answer here is a server answer, the
@@ -10,34 +10,53 @@
 // dispatch lane decide that. When the server says it is not ready (migration
 // 072 not applied) the card says so instead of showing an empty success.
 //
-// The install affordance is the one the card already carries: Windows only, one
-// sentence, and never the pairing code inside a URL. The code is typed into
-// what gets installed, which is how it stays a possession proof.
+// The install affordance is one button: "connect this PC" hands the signed-in
+// account's own connect program to the browser, with that account's tag already
+// inside it, and the person double-clicks it. The PowerShell file is the same
+// pairing for a PC where an unsigned program cannot run. Nothing here shows or asks
+// for a pairing code — the code stays on the server and only the tag derived from it
+// travels to the PC, which is how a click, and not a typed value, is enough to bind
+// a PC to an account.
 (() => {
   "use strict";
 
   const PAIRINGS = "/api/pc/pairings";
+  const INSTALL_FILE = "/api/pc/pairings/install-file";
+  const INSTALL_FILENAME = "padiem-pc-connect.ps1";
+  const INSTALL_EXE = "/api/pc/pairings/install-exe";
+  const INSTALL_EXE_FILENAME = "padiem-pc-connect.exe";
+  const LABEL_SUFFIX = "/label";
   const MAX_RESPONSE_BYTES = 32768;
+  // Twelve seconds is right for a server answer and wrong for a 20-kilobyte program
+  // a person may be pulling over an office connection.
+  const PROGRAM_TIMEOUT_MS = 60000;
+  const MAX_PROGRAM_BYTES = 262144;
   const REQUEST_TIMEOUT_MS = 12000;
   const CARD_ID = "connectorComputerCard";
   const SECTION_ID = "pcPairingSection";
   const COPY = Object.freeze({
     ko: {
       heading: "이 계정과 연결된 PC",
-      help: "코드는 10분 동안 한 번만 쓸 수 있습니다. PC에서 코드를 입력하면 이 계정에 연결됩니다.",
+      help: "이 PC의 Windows에 설치할 파일을 내려받아 실행하면 이 계정에 자동으로 연결됩니다. 연결 코드는 입력하지 않습니다.",
+      connect: "이 PC 연결",
+      connecting: "PC 연결 파일을 준비하고 있습니다.",
+      connected: "설치 파일을 내려받았습니다. 설치가 끝나면 아래 목록에 이 PC가 자동으로 나타납니다.",
+      unsigned: "Windows가 '알 수 없는 게시자' 경고를 띄우면 [추가 정보]를 누른 뒤 [실행]을 선택하세요. 이 설치 프로그램에는 아직 전자 서명이 없습니다.",
+      connectScript: "설치 파일로 받기 (.ps1)",
+      connectingScript: "PowerShell 설치 파일을 준비하고 있습니다.",
       issue: "새 연결 코드",
       issuing: "코드를 발급하고 있습니다.",
-      code: "연결 코드",
-      expires: "만료",
-      install: "Windows 설치 프로그램",
-      installHint: "설치 후 이 코드를 입력하세요.",
-      empty: "연결된 PC가 없습니다. 새 연결 코드로 PC를 연결하세요.",
+      empty: "연결된 PC가 없습니다. '이 PC 연결'로 PC를 연결하세요.",
       loading: "서버에서 연결 목록을 확인하고 있습니다.",
       failed: "연결 목록을 확인하지 못했습니다. 다시 시도해 주세요.",
       login: "로그인한 뒤 PC를 연결할 수 있습니다.",
       notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
       unavailable: "PC 연결을 현재 처리할 수 없습니다.",
       revokedLink: "연결을 해제했습니다. 이 PC의 폴더 승인도 함께 사라집니다.",
+      pausedLink: "이 PC를 잠시 멈췄습니다. 다시 시작할 때까지 작업이 전달되지 않습니다.",
+      resumedLink: "이 PC를 다시 시작했습니다.",
+      pause: "일시 중지",
+      resume: "다시 시작",
       revokedRoot: "폴더 승인을 해제했습니다.",
       approved: "폴더를 승인했습니다.",
       refused: "서버가 이 요청을 받아들이지 않았습니다.",
@@ -45,32 +64,41 @@
         active: "연결됨",
         pending_verification: "서버 확인 대기 중",
         revoked: "연결 해제",
+        paused: "일시 중지됨",
       },
       rootLabel: "폴더",
       rootPath: "경로",
       rootAdd: "이 PC의 폴더 승인",
+      name: "PC 이름",
+      nameSave: "이름 저장",
+      renamed: "PC 이름을 저장했습니다. 채팅에서 그 이름으로 이 PC를 고를 수 있습니다.",
       rootPlaceholder: "C:\\Users\\내이름\\문서",
       revoke: "해제",
       folderRevoke: "승인 해제",
       node: "PC 식별",
-      waiting: "연결되면 이 목록에 나타납니다.",
     },
     en: {
       heading: "PCs connected to this account",
-      help: "A code works once for ten minutes. Enter it on the PC to connect it to this account.",
+      help: "Download the file that installs on this PC's Windows and run it, and the PC joins this account by itself. No pairing code to type.",
+      connect: "Connect this PC",
+      connecting: "Preparing the PC connect file.",
+      connected: "Install file downloaded. This PC will appear below once the server sees it.",
+      unsigned: "If Windows warns about an unknown publisher, choose More info, then Run. This installer is not digitally signed yet.",
+      connectScript: "Download the PowerShell file (.ps1)",
+      connectingScript: "Preparing the PowerShell install file.",
       issue: "New pairing code",
       issuing: "Issuing a code.",
-      code: "Pairing code",
-      expires: "Expires",
-      install: "Windows installer",
-      installHint: "Enter this code after installing.",
-      empty: "No connected PC yet. Start with a new pairing code.",
+      empty: "No connected PC yet. Use 'Connect this PC' to add one.",
       loading: "Checking your links with the server.",
       failed: "Could not read your links. Please retry.",
       login: "Sign in to connect a PC.",
       notReady: "PC pairing is not ready yet. Please try again shortly.",
       unavailable: "PC pairing cannot be handled right now.",
       revokedLink: "Link revoked. Its folder approvals are gone with it.",
+      pausedLink: "PC paused. No work is sent to it until you resume it.",
+      resumedLink: "PC resumed.",
+      pause: "Pause",
+      resume: "Resume",
       revokedRoot: "Folder approval revoked.",
       approved: "Folder approved.",
       refused: "The server refused this request.",
@@ -78,15 +106,18 @@
         active: "Connected",
         pending_verification: "Waiting for server confirmation",
         revoked: "Revoked",
+        paused: "Paused",
       },
       rootLabel: "Folder",
       rootPath: "Path",
       rootAdd: "Approve a folder on this PC",
+      name: "PC name",
+      nameSave: "Save name",
+      renamed: "PC name saved. A chat request can choose this PC by that name.",
       rootPlaceholder: "C:\\Users\\me\\Documents",
       revoke: "Revoke",
       folderRevoke: "Revoke",
       node: "PC identity",
-      waiting: "It will appear here once the PC connects.",
     },
   });
 
@@ -138,9 +169,12 @@
         status: response.status,
         code: typeof code === "string" ? code : null,
         body,
+        // The install file is not JSON: the text is what the owner downloads,
+        // so it is carried as-is rather than dropped by the parse above.
+        text: raw,
       };
     } catch (networkError) {
-      return { ok: false, code: null, status: 0, body: null };
+      return { ok: false, code: null, status: 0, body: null, text: "" };
     } finally {
       clearTimeout(timer);
     }
@@ -149,8 +183,65 @@
   function messageFor(result, t) {
     if (result.status === 401) return t.login;
     if (result.code === "pc_pairing_not_ready") return t.notReady;
+    if (result.code === "pc_pairing_install_url_missing") return t.notReady;
     if (result.code === "pc_pairing_unavailable") return t.unavailable;
     return t.failed;
+  }
+
+  function saveFile(name, text) {
+    // The file is handed over as a download the browser owns; nothing about the
+    // pairing travels in a URL, a query string or a page navigation.
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const link = element("a", "pc-pairing-download");
+    link.href = url;
+    link.download = name;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function downloadProgram(url, name) {
+    // The program is bytes, not text. Reading it through the text path above would
+    // rewrite every byte that is not valid UTF-8, and the PC would be handed a file
+    // that does not run - so the download the person double-clicks has its own
+    // reader here, with the same origin and the same session cookie.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), PROGRAM_TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json", Accept: "application/octet-stream" },
+        body: "{}",
+      });
+      if (!response.ok) {
+        let code = null;
+        try {
+          const refused = await response.json();
+          code = typeof refused?.error?.code === "string" ? refused.error.code : null;
+        } catch (notJson) {
+          code = null;
+        }
+        return { ok: false, status: response.status, code };
+      }
+      const bytes = await response.arrayBuffer();
+      if (!bytes || !bytes.byteLength || bytes.byteLength > MAX_PROGRAM_BYTES) {
+        return { ok: false, status: 0, code: "pc_pairing_too_large" };
+      }
+      const objectUrl = URL.createObjectURL(
+        new Blob([bytes], { type: "application/octet-stream" }),
+      );
+      const link = element("a", "pc-pairing-download");
+      link.href = objectUrl;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+      return { ok: true, status: response.status, code: null };
+    } catch (networkError) {
+      return { ok: false, status: 0, code: null };
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   function install(card, t) {
@@ -161,27 +252,21 @@
     const status = element("p", "pc-pairing-status");
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
+    const connectButton = element("button", "pc-pairing-connect", t.connect);
+    connectButton.type = "button";
+    // The program is the offer; the script stays one click away for a PC where an
+    // unsigned download is blocked by policy, and it is the same pairing either way.
+    const scriptButton = element("button", "pc-pairing-connect-script", t.connectScript);
+    scriptButton.type = "button";
+    // Kept, not deleted: the code path is still the way a PC pairs when nobody
+    // can run the install file. It is simply no longer this card's offer.
     const issueButton = element("button", "pc-pairing-issue", t.issue);
     issueButton.type = "button";
-    const codeLine = element("p", "pc-pairing-code-line");
-    codeLine.hidden = true;
+    issueButton.hidden = true;
     const list = element("ul", "pc-pairing-list");
-    section.append(heading, help, issueButton, codeLine, status, list);
+    section.append(heading, help, connectButton, scriptButton, issueButton, status, list);
     card.append(section);
-    return { section, heading, help, status, codeLine, list, issueButton };
-  }
-
-  function renderCode(result, t, show) {
-    const pairing = result.body?.pairing;
-    if (!pairing || typeof pairing.code !== "string") {
-      show(false, messageFor(result, t));
-      return;
-    }
-    show(true, "", {
-      code: pairing.code,
-      tag: pairing.install_tag,
-      expires: String(pairing.expires_at || "").replace("T", " ").slice(0, 16),
-    });
+    return { section, heading, help, status, list, connectButton, scriptButton, issueButton };
   }
 
   function linkRow(link, t, actions) {
@@ -191,6 +276,8 @@
     );
     const state = element("span", "pc-pairing-state",
       t.linkState[link.state] || link.state || "");
+    // A paused link arrives with state "paused": it is still connected, and the
+    // server's own word is the only source of what the row says.
     state.dataset.state = String(link.state || "");
     row.append(name, state);
     if (link.mesh_node_id) {
@@ -218,10 +305,28 @@
     const addButton = element("button", "pc-pairing-root-add", t.rootAdd);
     addButton.type = "button";
     addButton.addEventListener("click", () => actions.approveRoot(link, pathField.value));
+    // The owner's own name for this machine. Once a second PC is linked it is
+    // how a chat request says which one was meant, so the card has to be able
+    // to set it. It names nothing the server did not already prove about this
+    // row, and it changes no identity and no authority.
+    const nameField = element("input", "pc-pairing-name-input");
+    nameField.type = "text";
+    nameField.value = link.label || "";
+    nameField.maxLength = 128;
+    nameField.setAttribute("aria-label", t.name);
+    const nameButton = element("button", "pc-pairing-name-save", t.nameSave);
+    nameButton.type = "button";
+    nameButton.addEventListener("click", () => actions.renameLink(link, nameField.value));
+    const pauseLinkButton = element("button", "pc-pairing-pause", t.pause);
+    pauseLinkButton.type = "button";
+    pauseLinkButton.addEventListener("click", () => actions.pauseLink(link));
+    const resumeLinkButton = element("button", "pc-pairing-resume", t.resume);
+    resumeLinkButton.type = "button";
+    resumeLinkButton.addEventListener("click", () => actions.resumeLink(link));
     const dropLink = element("button", "pc-pairing-revoke", t.revoke);
     dropLink.type = "button";
     dropLink.addEventListener("click", () => actions.revokeLink(link));
-    row.append(roots, pathField, addButton, dropLink);
+    row.append(nameField, nameButton, roots, pathField, addButton, pauseLinkButton, resumeLinkButton, dropLink);
     return row;
   }
 
@@ -268,6 +373,40 @@
     }
 
     const actions = {
+      async connect() {
+        say(true, t.connecting);
+        const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME);
+        if (program.ok) {
+          await load();
+          say(true, `${t.connected} ${t.unsigned}`);
+          return true;
+        }
+        // Only one refusal is worth falling back on: this build has no reviewed
+        // program in it. A login that is not valid, or a deployment with no
+        // installer link, is the same answer the script lane would give, and
+        // silently switching files would hide it.
+        if (program.code !== "pc_pairing_connect_exe_unavailable") {
+          say(false, messageFor(program, t), program.code || undefined);
+          return false;
+        }
+        return actions.connectScript();
+      },
+      async connectScript() {
+        say(true, t.connectingScript);
+        const result = await request(INSTALL_FILE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "text/plain" },
+          body: "{}",
+        });
+        if (!result.ok || !result.text) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return false;
+        }
+        saveFile(INSTALL_FILENAME, result.text);
+        await load();
+        say(true, t.connected);
+        return true;
+      },
       async issue() {
         say(true, t.issuing);
         const result = await request(PAIRINGS, {
@@ -276,25 +415,35 @@
           body: "{}",
         });
         if (!result.ok) {
-          view.codeLine.hidden = true;
           say(false, messageFor(result, t), result.code || undefined);
-          return;
+          return null;
         }
-        renderCode(result, t, (shown, text, pairing) => {
-          view.codeLine.hidden = !shown;
-          if (!shown) {
-            say(false, text);
-            return;
-          }
-          view.codeLine.replaceChildren(
-            element("span", "pc-pairing-code-label", `${t.code}: `),
-            element("code", "pc-pairing-code", pairing.code),
-            element("span", "pc-pairing-install", `${t.install} · ${t.installHint}`),
-            element("span", "pc-pairing-waiting", `${t.waiting} (${t.expires} ${pairing.expires})`),
-          );
-          say(true, "");
-        });
+        // The code is the PC's possession proof. It is returned to whoever
+        // called this function and is never written into the page.
+        const pairing = result.body?.pairing;
         await load();
+        return pairing && typeof pairing.code === "string" ? pairing : null;
+      },
+      async renameLink(link, name) {
+        if (typeof name !== "string" || !name.trim()) {
+          say(false, t.refused);
+          return false;
+        }
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}${LABEL_SUFFIX}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ label: name.trim() }),
+          },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return false;
+        }
+        await load();
+        say(true, t.renamed);
+        return true;
       },
       async revokeLink(link) {
         const result = await request(`${PAIRINGS}/${encodeURIComponent(link.link_id)}`, {
@@ -306,6 +455,30 @@
         }
         await load();
         say(true, t.revokedLink);
+      },
+      async pauseLink(link) {
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}/pause`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        await load();
+        say(true, t.pausedLink);
+      },
+      async resumeLink(link) {
+        const result = await request(
+          `${PAIRINGS}/${encodeURIComponent(link.link_id)}/resume`,
+          { method: "POST" },
+        );
+        if (!result.ok) {
+          say(false, messageFor(result, t), result.code || undefined);
+          return;
+        }
+        await load();
+        say(true, t.resumedLink);
       },
       async revokeRoot(link, root) {
         const result = await request(
@@ -342,6 +515,8 @@
       },
     };
 
+    view.connectButton.addEventListener("click", () => { void actions.connect(); });
+    view.scriptButton.addEventListener("click", () => { void actions.connectScript(); });
     view.issueButton.addEventListener("click", () => { void actions.issue(); });
     window.addEventListener("pageshow", () => { void load(); });
     new MutationObserver(() => {
@@ -350,6 +525,8 @@
       t = next;
       view.heading.textContent = t.heading;
       view.help.textContent = t.help;
+      view.connectButton.textContent = t.connect;
+      view.scriptButton.textContent = t.connectScript;
       view.issueButton.textContent = t.issue;
       draw();
     }).observe(document.documentElement, {

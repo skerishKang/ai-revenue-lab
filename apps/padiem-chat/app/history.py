@@ -6,7 +6,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 from .workspace_storage import _safe_identifier
@@ -32,6 +32,15 @@ MAX_RUN_RESULT_SUMMARY_CHARS = 200
 #: tool lane, and that lane is this one; the marker therefore names the same
 #: lane the dispatch scope names, without a second authority.
 MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query"})
+
+#: #5895 — how long one executor claim is held before the same dispatch may be
+#: handed out again. The Oracle executor holds a poll open for 20 seconds and
+#: re-requests about a second after an empty or dead round, so a claim whose
+#: response never reached it is offered again inside roughly three of those
+#: rounds. This is a delivery timer, not a workload limit: it decides nothing
+#: about how long a PC command may run, and the instant that ends a dispatch
+#: stays the `expires_at` the poll route stamps (#4139).
+ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
@@ -162,6 +171,7 @@ def _require_product_scope(value: object) -> str:
 PC_SCOPE_NOTICE_LABELS = {
     "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
     "files": "요청한 파일의 목록과 내용을 확인합니다.",
+    "files_write": "요청한 파일을 만들거나 바꾸고, 옮기거나 지웁니다. 바뀌기 전 내용은 백업합니다.",
     "query_drives": "드라이브 목록만 조회합니다.",
     "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
 }
@@ -306,8 +316,12 @@ def _search_snippet(hit: object, query: object) -> str:
     return prefix + excerpt + suffix
 
 
+def _iso(moment: datetime) -> str:
+    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return _iso(datetime.now(timezone.utc))
 
 
 def _user_id(subject: str) -> str:
@@ -2670,7 +2684,7 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "tool_call_ref=?, nonce_sha256=NULL, state=?, "
+                "tool_call_ref=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
@@ -2746,18 +2760,23 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and never handed out (no nonce).
-        The caller (the poll route, under the channel secret) atomically claims
-        it before responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or handed
+        out under a lease that has run out (#5895). A lease that ran out is the
+        only evidence that a claim reached nobody: the poll route wrote the nonce
+        and the response died before the executor could read it. The caller (the
+        poll route, under the channel secret) re-claims atomically before
+        responding; this read alone hands out nothing.
         """
+        now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
-            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NULL "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
-            "pending", _now_iso(),
+            "pending", now, now,
         )
         return dict(row) if row is not None else None
 
@@ -2767,20 +2786,118 @@ class D1HistoryStore:
         """#4139 — atomically hand one pending dispatch to the executor.
 
         The conditional update is the single-claim gate: exactly one poll wins
-        per dispatch. Returns False when another poll already claimed it, when
-        it expired, or when it left pending meanwhile.
+        one round. #5895 makes the hand-out a lease — the same UPDATE records the
+        instant the claim may be handed out again, under the same condition the
+        yield uses — so a claim whose response never reached the executor is not
+        a permanent loss. Re-claiming rolls the nonce, so a submission still
+        carrying the superseded nonce is refused by the existing nonce comparison
+        instead of attaching a second result. Returns False when another poll won
+        this round, when it expired, or when it left pending meanwhile.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce_sha256, str) or not nonce_sha256:
             raise HistoryError("nonce_sha256 is required")
-        now = _now_iso()
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
         written = await self._run(
-            "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
-            "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
-            nonce_sha256, dispatch_id, "pending", now,
+            "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            nonce_sha256,
+            _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
+            dispatch_id, "pending", now, now,
         )
         return _changed_rows(written) == 1
+
+    async def renew_oracle_mesh_claim(
+        self, *, dispatch_id: str, nonce_sha256: str,
+    ) -> str | None:
+        """#5997 — extend the lease of a command this executor is still running.
+
+        The condition is the same proof a submission carries: the row is still
+        pending and still names this nonce. A renewal whose claim was lost — the
+        lease ran out and a later poll re-rolled the nonce — changes nothing and is
+        told so, so the executor stops renewing instead of resurrecting a claim the
+        lane has already given to somebody else. A running executor that keeps
+        renewing is never handed out again; one that dies stops renewing, and the
+        existing lease expiry re-delivers the work exactly as before.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce_sha256, str) or not nonce_sha256:
+            raise HistoryError("nonce_sha256 is required")
+        moment = datetime.now(timezone.utc)
+        until = _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS))
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+            until, dispatch_id, "pending", nonce_sha256,
+        )
+        return until if _changed_rows(written) == 1 else None
+
+    async def cancel_oracle_mesh_dispatches_for_run(
+        self, *, user_id: str, run_id: str,
+    ) -> int:
+        """#5895 — stop one owner run's PC work, whether it is queued or running.
+
+        ``pending`` with no claim nonce is exactly "no executor has ever seen
+        this": stopping it removes the work from the queue, and the existing poll
+        — which yields only ``pending`` rows — never hands it out again, so the
+        next request the owner makes is claimed straight away instead of sitting
+        behind it.
+
+        A row that already carries a nonce is the case the owner is really asking
+        about: the PC has the command and the wait has no deadline (#5995 took the
+        client ceiling away, and a command the customer's shell never finishes -
+        measured on 2026-10-28 - holds every later operation on that PC behind it).
+        That row is not failed here. Its ``termination`` is set to ``cancelled``
+        and its ``state`` stays ``pending``, so the executor can read the owner's
+        stop through the existing channel, end its own child, and land its result
+        through the nonce gate it already holds. The row stays submittable on
+        purpose: a refused submission would be resent until quarantined, which
+        holds the queue longer than the stop the owner asked for.
+
+        The terminal row says ``cancelled`` in the column that already records how
+        a command ended, so an owner's own stop is never reported back as a PC
+        failure. Both the read and the write are owner-scoped in the WHERE clause,
+        so another account's dispatch is not addressable, and each update is one
+        conditional statement: a claim that won the race is not cancelled as
+        queued work, and a cancel that won is never claimed twice.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        stopped = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NULL",
+            "failed", "cancelled", user_id, run_id, "pending",
+        )
+        running = await self._run(
+            "UPDATE oracle_mesh_dispatch SET termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NOT NULL",
+            "cancelled", user_id, run_id, "pending",
+        )
+        return _changed_rows(stopped) + _changed_rows(running)
+
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id: str) -> bool:
+        """Whether the owner stopped one already-claimed dispatch, for the executor.
+
+        One bounded read on a single column, addressed only by the dispatch id the
+        executor already holds. It never claims, never writes, and answers ``False``
+        for anything it cannot read: an unreachable store must not look like an
+        owner's stop, because ``False`` leaves the running command alone while
+        ``True`` ends it.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        row = await self._first(
+            "SELECT termination FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=? AND state=?",
+            dispatch_id, "pending",
+        )
+        return isinstance(row, dict) and row.get("termination") == "cancelled"
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
