@@ -209,7 +209,10 @@ async def test_engine_preflight_authority_db_unavailable_prevents_pause():
 
 
 @pytest.mark.asyncio
-async def test_separate_pre_pause_and_post_approved_d1_status_recheck():
+async def test_predelegated_execute_verifies_the_live_dispatching_selection():
+    """Owner decision 2026-10-28: no approval pause, so the handler runs at
+    start and re-verifies the live (dispatching) selection; the waiting_p01
+    status this lane used to require post-approval is unreachable."""
     from padiem_ai_core import ToolAuthorizationContext, ToolInvocation, ToolRuntimeError
     db = database()
     first = D1WebXlsxTrustedScopeResolver(D1(db))
@@ -232,22 +235,13 @@ async def test_separate_pre_pause_and_post_approved_d1_status_recheck():
     invocation = ToolInvocation(
         tool_id="workspace.xlsx.confirm_original_read", arguments=args,
     )
-    # Engine user confirmation alone cannot prematurely read a source while
-    # B62 still has an uncommitted/uncertain dispatch.
-    with pytest.raises(ToolRuntimeError):
-        await binding.tool_runtime.execute(
-            invocation, auth.compiled.runtime_profile, confirmed,
-        )
-    db.execute("UPDATE claw_web_xlsx_p01_requests SET status='waiting_p01'")
-    assert await first(SEL) is None
-    assert await approved_only(SEL) is not None
     result = await binding.tool_runtime.execute(
         invocation, auth.compiled.runtime_profile, confirmed,
     )
     assert result.output["p01_intent_confirmed"] is True
     assert result.output["read_executed"] is False
     assert result.output["workcopy_created"] is False
-    # Even on the approved invocation, a missing original stops processing.
+    # Even without an approval pause, a missing original stops processing.
     db.execute("UPDATE claw_document_metadata SET deleted_at=? WHERE document_id=?",
                (datetime.now(timezone.utc).isoformat(), DOC))
     with pytest.raises(ToolRuntimeError):

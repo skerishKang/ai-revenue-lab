@@ -129,8 +129,11 @@ def build_web_xlsx_p01_tool_binding(
         )
 
     async def confirm_only(arguments: dict) -> dict:
-        # Defense in depth: source state must still match AFTER approval.
-        if not await verify_exact_source(arguments, post_approval=True):
+        # Owner decision 2026-10-28: the confirmation is pre-delegated, so the
+        # handler runs at start with no approval pause behind it. It still
+        # re-verifies the exact source against the live selection — the
+        # post-approval status it used to require does not exist on this lane.
+        if not await verify_exact_source(arguments, post_approval=False):
             raise ValueError("verified source scope changed")
         return {
             "p01_intent_confirmed": True,
