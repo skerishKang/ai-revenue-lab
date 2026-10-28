@@ -126,7 +126,7 @@ export const THEME_CSS_VARIABLES = `
       --line-soft: #dde4ef;
       --text: #17233b;
       --muted: #46536e;
-      --faint: #6e7b95;
+      --faint: #646f87;
       --accent: #1a6fd1;
       --accent-strong: #155fa8;
       --accent-dim: rgba(26,111,209,.10);
@@ -197,7 +197,7 @@ export const THEME_CSS_VARIABLES = `
       --line-soft: rgba(255,255,255,.09);
       --text: #f4f6fb;
       --muted: rgba(255,255,255,.68);
-      --faint: rgba(255,255,255,.45);
+      --faint: rgba(255,255,255,.5);
       --accent: #88c9ff;
       --accent-strong: #5fb3ff;
       --accent-dim: rgba(136,201,255,.14);

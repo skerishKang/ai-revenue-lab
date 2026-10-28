@@ -334,7 +334,7 @@ ${THEME_CSS_SHELL_INSET}
     .action-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--accent-dim); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid var(--accent-border); }
     .action-chip--public { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border); }
     .tier-chip { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-    .tier-chip--immediate { background: var(--accent-dim); color: var(--accent); }
+    .tier-chip--immediate { background: var(--accent-dim); color: var(--accent-strong); }
     .tier-chip--screening { background: var(--surface); color: var(--muted); border: 1px solid var(--line-soft); }
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
     .tier-note { margin: 12px 0 18px; color: var(--faint); font-size: 12px; line-height: 1.5; }
