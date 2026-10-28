@@ -263,7 +263,7 @@ class OracleMeshExecutor:
                 "User-Agent": PRODUCT_USER_AGENT,
                 # Retain the authenticated HTTPS request until a queued
                 # dispatch is available. Old consumers still get immediate poll.
-                **({"X-Oracle-Mesh-Wait": "20"} if path == POLL_PATH else {}),
+                **({"X-Oracle-Mesh-Wait": "5"} if path == POLL_PATH else {}),
             },
         )
         context = ssl.create_default_context()
