@@ -1641,7 +1641,9 @@ async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
         logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_shape")
         return None
     entries = value.get("presence")
-    if not isinstance(entries, list) or not 1 <= len(entries) <= _MAX_PRESENCE_ENTRIES:
+    if not isinstance(entries, list) or len(entries) < 1:
+        # No PADIEM presence count cap (Owner decision 2026-10-28);
+        # only an empty beat is ignored.
         logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entries")
         return None
     parsed: list[dict[str, Any]] = []

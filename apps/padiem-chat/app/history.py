@@ -2939,12 +2939,13 @@ class D1HistoryStore:
         if row is None:
             return None
         expected = row.get("nonce_sha256")
-        if (
-            not isinstance(expected, str) or not expected
-            or not isinstance(row.get("expires_at"), str)
-            or row["expires_at"] <= _now_iso()
-        ):
+        if not isinstance(expected, str) or not expected:
             return None
+        # Owner decision 2026-10-28: the dispatch TTL does not expire a result.
+        # A run whose lease is being extended (#5997 renew) may finish late; the
+        # nonce still proves this is the claimed executor, and the claim/lease
+        # gate above still decides delivery. Only a foreign or stale nonce is
+        # refused here.
         presented = _hashlib.sha256(nonce.encode("utf-8")).hexdigest()
         if not _hmac.compare_digest(presented, expected):
             return None

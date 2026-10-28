@@ -711,14 +711,6 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
-                    if (
-                        content_bytes > PC_FILES_READ_MAX_BYTES
-                        or len(encoded) > PC_FILES_READ_MAX_BYTES
-                    ):
-                        raise ToolHandlerError(
-                            "pc_files_output_too_large",
-                            "PC file output exceeds the read bound",
-                        )
                 else:
                     if termination not in (
                         "exited", "no_exit_code", "output_too_large",
