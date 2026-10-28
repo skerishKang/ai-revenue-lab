@@ -12,6 +12,7 @@ What is served (the executor's claim lane):
     POST /api/claw/connector/mesh-reads/poll
     POST /api/claw/connector/mesh-reads/renew
     POST /api/claw/connector/mesh-reads/cancel
+    POST /api/claw/connector/mesh-reads/busy     (#6113: who is working on this PC now)
     GET  /health                      (pending/working counts, no secret, no content)
 
 What is deliberately NOT served here: the result submission. Framing the answer and
@@ -46,18 +47,43 @@ from app.oracle_mesh_lease_renew_routes import (
     ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew,
 )
 from app.oracle_mesh_read_return_routes import (
-    ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
-    build_oracle_mesh_return_source, oracle_mesh_read_cancel_check,
-    oracle_mesh_read_poll,
+    ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
+    build_oracle_mesh_return_source, oracle_mesh_read_busy_check,
+    oracle_mesh_read_cancel_check, oracle_mesh_read_poll,
 )
 from app.pc_device_pairing_store import D1PcPairingStore
 
+from internal_store import (
+    DISPATCH_METHODS, INTERNAL_STORE_PATH, PAIRING_METHODS, PRESENCE_METHODS,
+    make_internal_handler,
+)
 from schema import open_queue
 
 DEFAULT_DB_PATH = "/opt/padiem/mesh-queue/queue.sqlite3"
 HEALTH_PATH = "/health"
 
-__all__ = ["DEFAULT_DB_PATH", "HEALTH_PATH", "create_app", "read_secret_file"]
+__all__ = ["DEFAULT_DB_PATH", "HEALTH_PATH", "create_app", "read_secret_file",
+           "store_resolvers"]
+
+
+def store_resolvers():
+    """Which allowlisted name is answered by which assembled object.
+
+    A name can only reach an object the queue declared here, so the RPC cannot be
+    pointed at anything else the process happens to hold.
+    """
+
+    def by_holder(attribute):
+        return lambda state: getattr(state, attribute, None)
+
+    table = {}
+    for name in DISPATCH_METHODS:
+        table[name] = by_holder("history_store")
+    for name in PAIRING_METHODS:
+        table[name] = by_holder("pc_device_pairing_store")
+    for name in PRESENCE_METHODS:
+        table[name] = by_holder("mesh_device_presence_store")
+    return table
 
 
 def read_secret_file(path: str, *, label: str) -> str:
@@ -77,7 +103,7 @@ def _no_store(content: dict[str, Any]) -> JSONResponse:
 
 
 def create_app(*, db_path: str | None = None, channel_secret: str,
-               ownership_map: str, mode: str = "mesh",
+               ownership_map: str, mode: str = "mesh", service_secret: str | None = None,
                connection: Any = None) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
@@ -132,6 +158,8 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
         Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check,
               methods=["POST"]),
+        Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,
+              methods=["POST"]),
     ])
     app.state.history_store = D1HistoryStore(database)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
@@ -143,12 +171,26 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         mapping, channel_secret, mode)
     if app.state.oracle_mesh_return_source is None:
         raise ValueError("the queue refused to compose the channel source")
+    if service_secret is not None:
+        # Added after the state exists: the handler reads the objects at call time, so
+        # an allowlisted name can only ever reach what is wired here.
+        app.routes.append(Route(
+            INTERNAL_STORE_PATH,
+            make_internal_handler(state=app.state, service_secret=service_secret,
+                                  resolvers=store_resolvers()),
+            methods=["POST"]))
     return app
 
 
 def app_from_environment() -> Starlette:
-    """Build the service from the unit's environment, refusing to guess material."""
+    """Build the service from the unit's environment, refusing to guess material.
 
+    The internal call is only served when a service secret is installed: without it the
+    queue still answers the executor (which is all PR-A needs), and the Chat Worker's
+    later switch is what turns this half on.
+    """
+
+    service_secret_file = os.environ.get("MESH_QUEUE_SERVICE_SECRET_FILE", "").strip()
     return create_app(
         db_path=os.environ.get("MESH_QUEUE_DB_PATH", DEFAULT_DB_PATH),
         channel_secret=read_secret_file(
@@ -160,6 +202,8 @@ def app_from_environment() -> Starlette:
                            "/opt/padiem/mesh-queue/ownership-map.json"),
             label="ownership map"),
         mode=os.environ.get("MESH_QUEUE_EXECUTION_MODE", "mesh"),
+        service_secret=(read_secret_file(service_secret_file, label="queue service secret")
+                        if service_secret_file else None),
     )
 
 

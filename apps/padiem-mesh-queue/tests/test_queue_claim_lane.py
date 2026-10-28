@@ -24,8 +24,8 @@ sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(QUEUE))
 
 from app.oracle_mesh_read_return_routes import (  # noqa: E402
-    ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
-    oracle_mesh_read_cancel_check, oracle_mesh_read_poll,
+    ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
+    oracle_mesh_read_busy_check, oracle_mesh_read_cancel_check, oracle_mesh_read_poll,
 )
 from app.oracle_mesh_lease_renew_routes import (  # noqa: E402
     ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew,
@@ -39,7 +39,7 @@ from schema import apply  # noqa: E402
 from service import create_app  # noqa: E402
 
 SECRET = "queue-channel-secret-value-261029"
-OWNERSHIP = [{"account_ref": "acct-1", "device_id": "device-1", "node_ref": "node//ABC",
+OWNERSHIP = [{"account_ref": "acct-1", "device_id": "device-1", "node_ref": "node-ABC",
               "root_ref": "C:", "path_relative": "p.txt", "file_path": "C:/p.txt",
               "command_exec": True}]
 MS_Z = re.compile(r"\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\Z")
@@ -113,7 +113,7 @@ async def _stage_async(state, *, dispatch_id, state_name, claimed_until):
         "cmd-" + dispatch_id[-8:], "tool-" + dispatch_id[-8:],
         "req-" + dispatch_id[-8:], "rev-" + dispatch_id[-8:], "evid-" + dispatch_id[-8:],
         "fp-" + dispatch_id[-8:], "acct-1", "ws-1", "device-1", "bind-1",
-        "node//ABC", "C:", "p.txt", "C:/p.txt", "read", state_name, _moment(600),
+        "node-ABC", "C:", "p.txt", "C:/p.txt", "read", state_name, _moment(600),
         _moment(), claimed_until, None,
     )
 
@@ -245,6 +245,39 @@ def test_consumption_refuses_an_unknown_dispatch_and_a_foreign_nonce():
                                       "WHERE dispatch_id=?", claimed["dispatch_id"]))
     assert digest["nonce_sha256"] == hashlib.sha256(
         claimed["nonce"].encode("utf-8")).hexdigest()
+
+
+def test_busy_counts_a_live_claim_on_the_same_pc_and_excludes_the_asker():
+    state = _state(_connection())
+    _stage(state)
+    claimed = _json(asyncio.run(oracle_mesh_read_poll(_Request(state, {}))))["dispatch"]
+    node = claimed["node_ref"]
+    other = asyncio.run(oracle_mesh_read_busy_check(
+        _Request(state, {"node_ref": node, "dispatch_id": "dsp_" + "9" * 32})))
+    assert _json(other) == {"ok": True, "working": True, "live_claims": 1}
+    self_answer = asyncio.run(oracle_mesh_read_busy_check(
+        _Request(state, {"node_ref": node, "dispatch_id": claimed["dispatch_id"]})))
+    assert _json(self_answer) == {"ok": True, "working": False, "live_claims": 0}
+
+
+def test_busy_refuses_to_end_work_when_the_answer_cannot_be_read():
+    state = _state(_connection())
+
+    def broken(*, node_ref, except_dispatch_id):
+        raise RuntimeError("store unreachable")
+
+    state.history_store.oracle_mesh_node_live_claims = broken
+    answer = _json(asyncio.run(oracle_mesh_read_busy_check(
+        _Request(state, {"node_ref": "node-ABC", "dispatch_id": "dsp_" + "1" * 32}))))
+    assert answer == {"ok": True, "working": True, "live_claims": 1}
+
+
+def test_busy_shares_the_channel_proof_rules():
+    state = _state(_connection())
+    response = asyncio.run(oracle_mesh_read_busy_check(
+        _Request(state, {"node_ref": "node-ABC"}, secret="nope-nope-nope-nope")))
+    assert response.status_code == 403
+    assert _json(response)["error"]["code"] == "oracle_mesh_channel_rejected"
 
 
 def test_health_reports_the_three_counts_the_cutover_decision_reads():
