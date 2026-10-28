@@ -21,13 +21,14 @@ The bytes returned here are the PC output verbatim, including CR/LF and any
 leading/trailing whitespace, minus the envelope line and the sentinel line this
 module itself added.
 
-One more fact governs the shape of this module: the agent serves that console one
-task at a time, so a command that never finished holds every later operation on
-that PC behind it. ``meshctrl shell`` reaches the same agent over a separate
-terminal session, which is the channel that kept working while the queue was
-wedged; the owner's stop (#6059) and the console sweep below both travel it. The
-wait for an answer carries a deadline and the work on the PC never does, and the
-sweep is what tells the two apart on the PC itself rather than by guesswork here.
+One more fact governs the shape of this module: the agent runs one command child at
+a time and answers a later ``runcommand`` with "already busy" while that child
+lives, so a command that never finished leaves every later operation on that PC
+without a reply. ``meshctrl shell`` reaches the same agent over a terminal tunnel,
+which is the channel that kept working while the console was held; the owner's stop
+(#6059) and the console sweep below both travel it. The wait for an answer carries a
+deadline and the work on the PC never does, and the sweep is what tells the two
+apart on the PC itself rather than by guesswork here.
 
 The envelope exists because of what the PC's own console does with Korean. A
 Windows console answers in its code page (cp949 on 한국어 installations), the
@@ -361,9 +362,10 @@ def sweep_script(
 ) -> str:
     """Free the PC's serial console from a process that no dispatch owns.
 
-    The agent serves one console at a time, so a PowerShell left behind by an
-    abandoned command holds every later operation on that PC - measured twice on
-    2026-10-28 and 2026-10-29, and ended by hand both times. The script decides on
+    The agent runs one command child at a time and drops a later request as
+    "already busy" while it lives, so a PowerShell left behind by an abandoned
+    command leaves every later operation on that PC without a reply - measured twice
+    on 2026-10-28 and 2026-10-29, and ended by hand both times. The script decides on
     the PC, so the safety never depends on an answer that may not come back:
 
     * the agent itself is never a candidate. It is read as the parent, and the
@@ -422,7 +424,7 @@ def sweep_script(
         )
     else:
         # The held-line scope: nothing this connector owns is running, so every
-        # console process the agent spawned is holding the queue for work that no
+        # console process the agent spawned is holding that console for work no
         # dispatch claims. Their markers go with them, for the same stale-pid reason.
         body = (
             "if (-not $__padiem_live) {"
@@ -1041,13 +1043,15 @@ class MeshCentralCliCommandPort:
         answer: Callable[[bytes], bool] | None = None,
         wait_seconds: float = CANCEL_KILL_WAIT_SECONDS,
     ) -> bytes:
-        """One bounded command on the agent's terminal channel, never on its queue.
+        """One bounded command on the agent's terminal channel, never on its console.
 
-        ``runcommand`` cannot carry either of these: it is the queue the held command
-        is blocking. ``meshctrl shell`` opens the agent's terminal over its own
-        session, which is the channel that worked by hand on 2026-10-28 and 2026-10-29
-        while that queue was wedged. The session is bounded in both shapes, so an
-        unreachable agent cannot turn a repair into the new way to hang a PC.
+        ``runcommand`` cannot carry either of these. The agent holds one global
+        command child, and while that child lives a later ``runcommand`` is answered
+        with "already busy" and dropped - it is not queued, so no amount of waiting
+        produces an answer for it. ``meshctrl shell`` opens the agent's terminal as a
+        tunnel instead, which is the channel that worked by hand on 2026-10-28 and
+        2026-10-29 while that console was held. The session is bounded in both shapes,
+        so an unreachable agent cannot turn a repair into the new way to hang a PC.
         """
         import subprocess
 
