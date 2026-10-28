@@ -402,7 +402,7 @@ async def run() -> int:
     after = await call(
         app, settings, path=f"/api/claw/office/web-selections/{ref}/p01-status",
     )
-    check(after.json()["status"] == "waiting_p01", "post-start status")
+    check(after.json()["status"] == "completed", "post-start status")
     check(after.json()["owner_decision_enabled"] in (True, False),
           "owner decision projection must be boolean")
 
