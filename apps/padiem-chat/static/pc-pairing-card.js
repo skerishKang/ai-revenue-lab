@@ -11,18 +11,26 @@
 // 072 not applied) the card says so instead of showing an empty success.
 //
 // The install affordance is one button: "connect this PC" hands the signed-in
-// account's own install file to the browser, with that account's tag already
-// inside it. Nothing here shows or asks for a pairing code — the code stays on
-// the server and only the tag derived from it travels to the PC, which is how a
-// click, and not a typed value, is enough to bind a PC to an account.
+// account's own connect program to the browser, with that account's tag already
+// inside it, and the person double-clicks it. The PowerShell file is the same
+// pairing for a PC where an unsigned program cannot run. Nothing here shows or asks
+// for a pairing code — the code stays on the server and only the tag derived from it
+// travels to the PC, which is how a click, and not a typed value, is enough to bind
+// a PC to an account.
 (() => {
   "use strict";
 
   const PAIRINGS = "/api/pc/pairings";
   const INSTALL_FILE = "/api/pc/pairings/install-file";
   const INSTALL_FILENAME = "padiem-pc-connect.ps1";
+  const INSTALL_EXE = "/api/pc/pairings/install-exe";
+  const INSTALL_EXE_FILENAME = "padiem-pc-connect.exe";
   const LABEL_SUFFIX = "/label";
   const MAX_RESPONSE_BYTES = 32768;
+  // Twelve seconds is right for a server answer and wrong for a 20-kilobyte program
+  // a person may be pulling over an office connection.
+  const PROGRAM_TIMEOUT_MS = 60000;
+  const MAX_PROGRAM_BYTES = 262144;
   const REQUEST_TIMEOUT_MS = 12000;
   const CARD_ID = "connectorComputerCard";
   const SECTION_ID = "pcPairingSection";
@@ -33,6 +41,9 @@
       connect: "이 PC 연결",
       connecting: "PC 연결 파일을 준비하고 있습니다.",
       connected: "설치 파일을 내려받았습니다. 설치가 끝나면 아래 목록에 이 PC가 자동으로 나타납니다.",
+      unsigned: "Windows가 '알 수 없는 게시자' 경고를 띄우면 [추가 정보]를 누른 뒤 [실행]을 선택하세요. 이 설치 프로그램에는 아직 전자 서명이 없습니다.",
+      connectScript: "설치 파일로 받기 (.ps1)",
+      connectingScript: "PowerShell 설치 파일을 준비하고 있습니다.",
       issue: "새 연결 코드",
       issuing: "코드를 발급하고 있습니다.",
       empty: "연결된 PC가 없습니다. '이 PC 연결'로 PC를 연결하세요.",
@@ -72,6 +83,9 @@
       connect: "Connect this PC",
       connecting: "Preparing the PC connect file.",
       connected: "Install file downloaded. This PC will appear below once the server sees it.",
+      unsigned: "If Windows warns about an unknown publisher, choose More info, then Run. This installer is not digitally signed yet.",
+      connectScript: "Download the PowerShell file (.ps1)",
+      connectingScript: "Preparing the PowerShell install file.",
       issue: "New pairing code",
       issuing: "Issuing a code.",
       empty: "No connected PC yet. Use 'Connect this PC' to add one.",
@@ -185,6 +199,51 @@
     URL.revokeObjectURL(url);
   }
 
+  async function downloadProgram(url, name) {
+    // The program is bytes, not text. Reading it through the text path above would
+    // rewrite every byte that is not valid UTF-8, and the PC would be handed a file
+    // that does not run - so the download the person double-clicks has its own
+    // reader here, with the same origin and the same session cookie.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), PROGRAM_TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json", Accept: "application/octet-stream" },
+        body: "{}",
+      });
+      if (!response.ok) {
+        let code = null;
+        try {
+          const refused = await response.json();
+          code = typeof refused?.error?.code === "string" ? refused.error.code : null;
+        } catch (notJson) {
+          code = null;
+        }
+        return { ok: false, status: response.status, code };
+      }
+      const bytes = await response.arrayBuffer();
+      if (!bytes || !bytes.byteLength || bytes.byteLength > MAX_PROGRAM_BYTES) {
+        return { ok: false, status: 0, code: "pc_pairing_too_large" };
+      }
+      const objectUrl = URL.createObjectURL(
+        new Blob([bytes], { type: "application/octet-stream" }),
+      );
+      const link = element("a", "pc-pairing-download");
+      link.href = objectUrl;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+      return { ok: true, status: response.status, code: null };
+    } catch (networkError) {
+      return { ok: false, status: 0, code: null };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   function install(card, t) {
     const section = element("div", "pc-pairing");
     section.id = SECTION_ID;
@@ -195,15 +254,19 @@
     status.setAttribute("aria-live", "polite");
     const connectButton = element("button", "pc-pairing-connect", t.connect);
     connectButton.type = "button";
+    // The program is the offer; the script stays one click away for a PC where an
+    // unsigned download is blocked by policy, and it is the same pairing either way.
+    const scriptButton = element("button", "pc-pairing-connect-script", t.connectScript);
+    scriptButton.type = "button";
     // Kept, not deleted: the code path is still the way a PC pairs when nobody
     // can run the install file. It is simply no longer this card's offer.
     const issueButton = element("button", "pc-pairing-issue", t.issue);
     issueButton.type = "button";
     issueButton.hidden = true;
     const list = element("ul", "pc-pairing-list");
-    section.append(heading, help, connectButton, issueButton, status, list);
+    section.append(heading, help, connectButton, scriptButton, issueButton, status, list);
     card.append(section);
-    return { section, heading, help, status, list, connectButton, issueButton };
+    return { section, heading, help, status, list, connectButton, scriptButton, issueButton };
   }
 
   function linkRow(link, t, actions) {
@@ -312,6 +375,24 @@
     const actions = {
       async connect() {
         say(true, t.connecting);
+        const program = await downloadProgram(INSTALL_EXE, INSTALL_EXE_FILENAME);
+        if (program.ok) {
+          await load();
+          say(true, `${t.connected} ${t.unsigned}`);
+          return true;
+        }
+        // Only one refusal is worth falling back on: this build has no reviewed
+        // program in it. A login that is not valid, or a deployment with no
+        // installer link, is the same answer the script lane would give, and
+        // silently switching files would hide it.
+        if (program.code !== "pc_pairing_connect_exe_unavailable") {
+          say(false, messageFor(program, t), program.code || undefined);
+          return false;
+        }
+        return actions.connectScript();
+      },
+      async connectScript() {
+        say(true, t.connectingScript);
         const result = await request(INSTALL_FILE, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "text/plain" },
@@ -435,6 +516,7 @@
     };
 
     view.connectButton.addEventListener("click", () => { void actions.connect(); });
+    view.scriptButton.addEventListener("click", () => { void actions.connectScript(); });
     view.issueButton.addEventListener("click", () => { void actions.issue(); });
     window.addEventListener("pageshow", () => { void load(); });
     new MutationObserver(() => {
@@ -444,6 +526,7 @@
       view.heading.textContent = t.heading;
       view.help.textContent = t.help;
       view.connectButton.textContent = t.connect;
+      view.scriptButton.textContent = t.connectScript;
       view.issueButton.textContent = t.issue;
       draw();
     }).observe(document.documentElement, {

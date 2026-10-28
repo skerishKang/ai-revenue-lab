@@ -26,3 +26,11 @@ packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
 
 # Existing Win32 tray module is stored as CRLF; its CR is not trailing space.
 apps/claw-connect/claw_connect/tray.py whitespace=cr-at-eol
+
+# #5573: the connect program's build inputs. The manifest travels into the exe byte
+# for byte, so a machine that checks this out with CRLF would otherwise build a
+# different artifact from the same reviewed source - and the pinned SHA-256 would
+# stop describing the file. Pinned at the three inputs the build hash covers.
+scripts/pc_pairing/connect-exe/app.manifest text eol=lf
+scripts/pc_pairing/connect-exe/PadiemPcConnect.cs text eol=lf
+scripts/pc_pairing/connect-exe/win32_reproducible.py text eol=lf
