@@ -8,6 +8,10 @@ from typing import Any, Protocol
 # Page size for one saved-output listing. This is a read shape, not a ceiling:
 # nothing refuses a save because the owner already has this many (#5895-C).
 MAX_OUTPUT_LIST = 100
+# D1 row size 한계(약 2MB) — the storage engine's own physical bound, not a
+# PADIEM ceiling. The row also carries the id, title and timestamps, so a
+# content guard at exactly this number stays on the conservative side.
+MAX_OUTPUT_ROW_BYTES = 2_000_000
 MAX_OUTPUT_TITLE_CHARS = 100
 
 
@@ -94,6 +98,8 @@ def validate_output_content(value: object) -> str:
     # bound is the only real limit here.
     if not content:
         raise ValueError("저장할 답변을 입력해 주세요.")
+    if len(content.encode("utf-8")) > MAX_OUTPUT_ROW_BYTES:
+        raise ValueError("답변이 너무 커서 저장할 수 없어요. 파일로 내려받아 주세요.")
     if "\x00" in content:
         raise ValueError("저장할 답변에 지원하지 않는 문자가 있습니다.")
     return content
