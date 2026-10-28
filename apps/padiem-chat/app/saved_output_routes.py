@@ -10,7 +10,6 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_conversation_id, validate_project_id
 from .history import PRODUCT_SCOPE_CHAT
 from .saved_outputs import (
-    SavedOutputLimitError,
     SavedOutputStore,
     validate_output_content,
     validate_output_id,
@@ -123,8 +122,6 @@ async def outputs_collection(request: Request) -> JSONResponse:
             return _provenance_not_found()
         conversation_id, project_id = verified
         saved = await output_store.create_output(uid, title, content, conversation_id, project_id)
-    except SavedOutputLimitError as exc:
-        return JSONResponse({"error": {"code": "saved_output_limit", "message": str(exc)}}, status_code=409)
     except ValueError as exc:
         return JSONResponse({"error": {"code": "invalid_saved_output", "message": str(exc)}}, status_code=422)
     except Exception:

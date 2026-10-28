@@ -16,6 +16,10 @@ from typing import Any
 
 from kagent.xlsx_fidelity_route import classify_xlsx, XlsxRoute
 
+# Platform memory bound, not a product ceiling (#5895-C). The Worker holds the
+# assembled body as bytes, then a base64 copy (4/3), then the JSON part
+# envelope at the same time, so 32MB of file is already most of the 128MB
+# Worker budget. A larger file is refused, never opened partially.
 MAX_OFFICE_BYTES = 32 * 1024 * 1024
 OFFICE_CHUNK_BYTES = 48 * 1024
 _SHA = re.compile(r"^[0-9a-f]{64}$")

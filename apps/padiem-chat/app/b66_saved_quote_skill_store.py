@@ -22,7 +22,9 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-MAX_SAVED_QUOTE_SKILLS = 20
+# Default page size for one saved-skill listing. Not a ceiling: a workspace may
+# keep more saved skills and keep reading them (#5895-C).
+DEFAULT_SAVED_QUOTE_SKILL_LIST = 50
 MAX_SKILL_ID_CHARS = 64
 MAX_SKILL_NAME_CHARS = 80
 MAX_SKILL_JSON_BYTES = 96 * 1024
@@ -223,7 +225,7 @@ class SavedQuoteSkillStore(Protocol):
         *,
         user_id: str,
         workspace_id: str,
-        limit: int = MAX_SAVED_QUOTE_SKILLS,
+        limit: int = DEFAULT_SAVED_QUOTE_SKILL_LIST,
     ) -> list[dict[str, Any]]: ...
 
     async def get_skill(
@@ -322,11 +324,11 @@ class D1SavedQuoteSkillStore:
         *,
         user_id: str,
         workspace_id: str,
-        limit: int = MAX_SAVED_QUOTE_SKILLS,
+        limit: int = DEFAULT_SAVED_QUOTE_SKILL_LIST,
     ) -> list[dict[str, Any]]:
         owner = _clean_owner(user_id, label="user_id", limit=MAX_USER_ID_CHARS)
         workspace = _clean_owner(workspace_id, label="workspace_id", limit=MAX_WORKSPACE_ID_CHARS)
-        bounded = max(1, min(int(limit), MAX_SAVED_QUOTE_SKILLS))
+        bounded = max(1, int(limit))
         rows = await self._all(
             "SELECT id, workspace_id, skill_id, skill_name, skill_fingerprint, skill_version, "
             "status, created_at, updated_at FROM b66_saved_quote_skill "

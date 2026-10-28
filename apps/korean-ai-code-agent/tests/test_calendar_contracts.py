@@ -102,6 +102,13 @@ class CalendarContractsTests(unittest.TestCase):
         values.update(overrides)
         return CalendarMutationMaterial(**values)
 
+    def test_the_reminder_count_is_not_capped(self):
+        """#5895-C: 8 was an arbitrary count; only each reminder's minutes are bounded."""
+        material = self.material(
+            reminders=tuple(CalendarReminder("popup", 10) for _ in range(12)),
+        )
+        assert len(material.reminders) == 12
+
     def approval(self, material=None, **overrides):
         material = material or self.material()
         values = dict(

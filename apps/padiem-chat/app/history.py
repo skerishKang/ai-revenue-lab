@@ -23,7 +23,6 @@ MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
-MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
@@ -486,8 +485,8 @@ def validate_project_fields(name: object, instructions: object = "") -> tuple[st
     if not isinstance(instructions, str):
         raise ValueError("프로젝트 지침 형식이 올바르지 않습니다.")
     cleaned_instructions = instructions.strip()
-    if len(cleaned_instructions) > MAX_PROJECT_INSTRUCTIONS_CHARS:
-        raise ValueError("프로젝트 지침은 1800자 이하로 입력해 주세요.")
+    # #5895-C: no character ceiling on project instructions. The 1800 the
+    # composer used to enforce was a pilot-era input clamp, not a store bound.
     return cleaned_name, cleaned_instructions
 
 
