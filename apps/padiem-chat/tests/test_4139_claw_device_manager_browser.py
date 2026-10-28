@@ -76,10 +76,11 @@ def open_claw(browser, server, width=1280):
 def open_manager(page):
     """Open the device management panel the way a user opens it.
 
-    The composer's small connection control is the visible entry above the
-    composer, so the panel is opened through it.
+    #5573 step 1 (2026-10-29 redesign): the composer's small connection
+    control opens the one connect flow now, so the panel is opened through its
+    own toggle. The manager contracts below are unchanged.
     """
-    page.locator("#composerPcStatus").click()
+    page.evaluate("document.getElementById('clawDeviceManagerToggle').click()")
 
 
 def payload(items):
