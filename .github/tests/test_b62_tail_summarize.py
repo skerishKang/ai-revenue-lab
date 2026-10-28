@@ -1,0 +1,115 @@
+"""#4139: the tail summarizer counts what matters and leaks nothing else.
+
+Offline only. The rows here are synthetic; what is proved is that a capture taken
+against production traffic can be printed on a shared CI log — outcomes, exception
+signatures, paths and colos, never a header, a cookie, a body or a token.
+"""
+from __future__ import annotations
+
+import importlib.util
+import io
+import pathlib
+import sys
+import unittest
+from contextlib import redirect_stdout
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+SCRIPT_PATH = ROOT / ".github" / "scripts" / "b62_tail_summarize.py"
+WORKFLOW_PATH = ROOT / ".github" / "workflows" / "b62-worker-tail-readonly.yml"
+
+spec = importlib.util.spec_from_file_location("b62_tail_summarize", SCRIPT_PATH)
+assert spec is not None and spec.loader is not None
+summ = importlib.util.module_from_spec(spec)
+sys.modules["b62_tail_summarize"] = summ
+spec.loader.exec_module(summ)
+
+COOKIE = "padiem_session=eyJhbC.SECRETSUFFIXaaaaaaaaaaaa"
+TOKEN = "cfapiv4tokenvalueNOTREAL000000000000"
+BODY = "the-whole-request-body-must-never-appear"
+
+
+def _row(outcome, message, url, colo=None):
+    row = {
+        "message": message,
+        "outcome": outcome,
+        "level": "log",
+        "timestamp": 1_793_000_000,
+        "request": {"method": "GET", "url": url,
+                    "headers": {"cookie": COOKIE, "authorization": TOKEN}},
+        "event": {"body": BODY},
+    }
+    if colo is not None:
+        row["colo"] = colo
+    return row
+
+
+def _capture(rows):
+    out = io.StringIO()
+    with redirect_stdout(out):
+        summ.emit(summ.summarize(rows))
+    return out.getvalue()
+
+
+class SummarizeTests(unittest.TestCase):
+    def test_outcomes_are_bucketed_by_resource_limit_kind(self):
+        rows = [
+            _row("ok", "hello", "https://chat.padiem.net/health"),
+            _row("exception", "TypeError: unhashable", "https://chat.padiem.net/api/pc/pairings"),
+            _row("exceedCpu", "worker exceeded CPU time limit", "https://chat.padiem.net/health"),
+            _row("exceededMemory", "Memory limit", "https://chat.padiem.net/health"),
+            _row("oom", "killed", "https://chat.padiem.net/health"),
+        ]
+        summary = summ.summarize(rows)
+        self.assertEqual(summary["outcomes"]["ok"], 1)
+        self.assertEqual(summary["outcomes"]["exception"], 1)
+        self.assertEqual(summary["outcomes"]["exceededCpu"], 1)
+        self.assertEqual(summary["outcomes"]["exceededMemory"], 2)
+
+    def test_paths_keep_the_path_and_drop_the_query(self):
+        rows = [_row("ok", "x", "https://chat.padiem.net/api/pc/result?dispatch_id=abc123&t=SECRET")]
+        printed = _capture(rows)
+        self.assertIn("/api/pc/result", printed)
+        self.assertNotIn("dispatch_id", printed)
+        self.assertNotIn("SECRET", printed)
+
+    def test_exception_signatures_are_top_five_and_token_scrubbed(self):
+        rows = [_row("exception", "boom", "https://chat.padiem.net/a")
+                for _ in range(3)]
+        rows.append({"outcome": "exception",
+                     "exception": {"pattern": "Error at <tok>" + TOKEN},
+                     "message": "irrelevant"})
+        summary = summ.summarize(rows)
+        top = summary["exceptions"].most_common(1)
+        self.assertEqual(top[0][1], 3)
+        printed = _capture(rows)
+        self.assertNotIn(TOKEN, printed)
+
+    def test_colo_is_counted_when_the_tail_carries_one(self):
+        rows = [_row("ok", "x", "https://chat.padiem.net/health", colo="lax"),
+                _row("ok", "x", "https://chat.padiem.net/health", colo="ICN")]
+        printed = _capture(rows)
+        self.assertIn("LAX=1", printed)
+        self.assertIn("ICN=1", printed)
+
+    def test_nothing_sensitive_ever_reaches_the_output(self):
+        rows = [_row("exception", "TypeError: unhashable", "https://chat.padiem.net/health")]
+        printed = _capture(rows)
+        for secret in (COOKIE, TOKEN, BODY, "cookie", "authorization"):
+            self.assertNotIn(secret, printed)
+
+
+class WorkflowContractTests(unittest.TestCase):
+    def test_the_tail_lane_is_dispatch_only_and_reads_credentials(self):
+        text = WORKFLOW_PATH.read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", text)
+        self.assertNotIn("schedule:", text)
+        self.assertIn("CLOUDFLARE_API_TOKEN", text)
+        # Read-only: no deploy, rollback, secret put or d1 apply on this lane.
+        for forbidden in ("wrangler deploy", "wrangler rollback", "secret put",
+                          "d1 migrations apply", "wrangler versions upload"):
+            self.assertNotIn(forbidden, text)
+        self.assertIn("b62_tail_summarize.py", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
