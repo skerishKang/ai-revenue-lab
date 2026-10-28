@@ -29,6 +29,11 @@ PHOTO = frozenset({"--hero-photo", "--hero-photo-position", "--hero-photo-zoom",
 # 밤 사진에 시안 톤을 입히는 층: 국가마다 강도를 정한다(0이면 무보정).
 # 시안의 3카드 분할 색: 국가마다 자기 음계에서 3개를 배정한다.
 WORK = frozenset({"--work-1", "--work-2", "--work-3"})
+# 카드 위 텍스트는 face 와 짝이어야 한다. 밝은 카드에 흰 잉크를 얹으면 카드가 빈 칸이 된다(#6011 실측).
+CARD = frozenset({"--work-1-text", "--work-2-text", "--work-3-text", "--work-index-display",
+                  "--work-arrow-bg", "--work-arrow-ink", "--work-arrow-line", "--work-arrow-inline-display"})
+# 원본마다 실제로 그 자리에 있는 요소가 다르다(04 만 인용구, 03 프랑 만 eyebrow 없음).
+PRESENCE = frozenset({"--hero-quote-display", "--hero-eyebrow-display"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op",
                    # 2차 해석표 반영: 전폭 사진 위의 읽기 오버레이와 헤더/밴드/스트립 위계
@@ -124,7 +129,7 @@ def test_each_country_declares_exactly_one_ramp_block() -> None:
         declaring = [b for b in blocks_for("country", country) if re.search(r"--[a-z0-9-]+\s*:", b)]
         assert len(declaring) == 1, f"{country} declares its ramp in {len(declaring)} places"
         keys = props_of(*declaring)
-        required = RAMP | SCENE | PHOTO | WORK | IDENTITY
+        required = RAMP | SCENE | PHOTO | WORK | CARD | PRESENCE | IDENTITY
         assert required <= keys, f"{country} is missing {sorted(required - keys)}"
         assert keys - required <= OPTIONAL, f"{country} invents unshared keys: {sorted(keys - required - OPTIONAL)}"
 
@@ -224,6 +229,70 @@ def test_accessibility_invariants_in_markup() -> None:
     assert len(re.findall(r'role="radio"[^>]*data-country="', HTML)) == 4
     assert len(re.findall(r'role="radio"[^>]*data-style="', HTML)) == 5
     assert 'aria-hidden="true"' in HTML
+
+
+COPY_BLOCK = JS[JS.index("const COPY = {"):JS.index("const COPY_NODES")]
+COPY_BY_COUNTRY = dict(re.findall(r"\n    (us|uk|fr): \{(.*?)\n    \}", COPY_BLOCK, re.S))
+HTML_I18N_KEYS = set(re.findall(r'data-i18n(?:-aria|-ph|-first)?="([\w.]+)"', HTML))
+
+
+def test_every_overseas_screen_string_has_a_key_and_no_string_is_orphaned() -> None:
+    """문구는 키로만 교환한다. 사전에 없는 키가 있으면 그 자리만 한국어로 남고,
+    마크업에 없는 키가 있으면 죽은 문자열이 된다. 둘 다 화면에서 조용히 보인다."""
+    assert len(COPY_BY_COUNTRY) == 3, "us · uk · fr 사전이 모두 파일에 박혀 있어야 한다"
+    for country, seg in COPY_BY_COUNTRY.items():
+        keys = set(re.findall(r'"([\w.]+)":\s*\[', seg))
+        assert keys == HTML_I18N_KEYS, f"{country} copy keys differ from the markup: {sorted(keys ^ HTML_I18N_KEYS)}"
+        for key, value in re.findall(r'"([\w.]+)":\s*\[([^\]]*)\]', seg):
+            assert "<" not in value and ">" not in value, (
+                f"{country}/{key} smuggles markup into a copy string; the renderer builds nodes itself")
+            assert not re.search(r"&\w+;", value), (
+                f"{country}/{key} carries an entity, which a text node would show literally")
+
+
+def test_korean_markup_is_the_source_of_truth_and_stays_untouched() -> None:
+    """JS 없이도 화면이 성립해야 한다. 그래서 한국어는 마크업에 그대로 있고, 사전은 kr 을 모른다."""
+    assert "kr: {" not in COPY_BLOCK and '"kr"' not in COPY_BLOCK, "kr must restore the markup, not duplicate it"
+    for fragment in ('data-i18n="hero.title">국민을 위한<br /><em>더 나은 의정활동, AI와 함께</em>',
+                     'data-i18n="work.title.3">회의정리·활동집',
+                     'data-i18n="nav.notice">공지사항',
+                     'data-i18n="works.empty" hidden>검색 결과가 없습니다'):
+        assert fragment in HTML, fragment
+    assert "textContent" in JS and "createTextNode" in JS
+    assert "innerHTML" not in JS, "copy must never be parsed as markup"
+
+
+def test_overseas_copy_carries_no_fictional_account_or_notice_data() -> None:
+    visible = re.sub(r"<!--.*?-->", "", HTML, flags=re.S)
+    for forbidden in ("김민주", "김의원", "pa-session-chip", "pa-avatar", "pa-bell"):
+        assert forbidden not in visible, forbidden
+        assert not any(forbidden in v for v in re.findall(r'"[\w.]+"\s*:\s*\[([^\]]*)\]', COPY_BLOCK))
+
+
+def test_originals_differ_on_which_hero_elements_exist_and_css_owns_that() -> None:
+    """04 만 히어로 우측 인용구를 쓰고, 03 프랑 패널은 eyebrow 없이 제목부터 앉는다."""
+    assert "display: var(--hero-quote-display)" in rule_body(".pa-hero-quote")
+    assert "display: var(--hero-eyebrow-display)" in rule_body(".pa-hero-copy .pa-eyebrow")
+    for country, quote, eyebrow in (("kr", "grid", "block"), ("us", "none", "block"),
+                                    ("fr", "none", "none"), ("uk", "none", "block")):
+        body = " ".join(blocks_for("country", country))
+        assert re.search(rf"--hero-quote-display:\s*{quote}\b", body), f"{country} quote presence drifted"
+        assert re.search(rf"--hero-eyebrow-display:\s*{eyebrow}\b", body), f"{country} eyebrow presence drifted"
+
+
+def test_the_editor_view_puts_the_header_back_in_flow_instead_of_a_magic_offset() -> None:
+    """히어로에 얹는 absolute 헤더는 작업실 화면의 내용을 덮는다.
+    390px 에서 바는 실제로 174px 라 70px 고정 예약만으로는 "← 시네마틱 홈으로"가
+    통째로 가려져 클릭이 죽었다(브라우저 실측: elementFromPoint = pa-topbar).
+    그래서 작업실에서는 위치를 흐름으로 되돌리는 것만이 유일한 올바른 예약이다."""
+    editor_bar = " ".join(
+        body for sel, body in rules(CSS) if sel.strip() == ".pa-main:has(#paEditor:not([hidden])) .pa-topbar")
+    assert "position: static" in editor_bar, f"the editor header must re-enter the flow: {editor_bar}"
+    reserved = [body for sel, body in rules(CSS)
+                if sel.strip() == ".pa-main:has(#paEditor:not([hidden]))" and "padding-top" in body]
+    assert reserved == [], f"a hardcoded header height crept back in: {reserved}"
+    # 홈 화면은 정본대로 사진 위에 얹는다 — 작업실 분기가 그걸까지 망가뜨리면 안 된다.
+    assert "position: absolute" in rule_body(".pa-topbar")
 
 
 def test_the_theme_popover_closes_before_it_leaves_the_editor() -> None:
@@ -332,12 +401,44 @@ def test_card_photo_sits_under_a_left_weighted_colour_scrim() -> None:
     assert "z-index: -2" in rule_body(".pa-work::before"), "the photo is the bottom layer, the scrim sits on it"
 
 
-def test_card_index_numbers_are_gone_and_card_titles_are_not_serif() -> None:
-    """01/02/03은 정본에 없는 추가 UI이고, 카드 제목은 정본에서 산세리프다."""
-    assert "pa-work-index" not in HTML, "the original numbers nothing"
-    assert "--pa-work-index" not in CSS and ".pa-work-index" not in CSS
+def test_card_index_numbers_follow_the_original_of_each_country() -> None:
+    """02(미국) 만 카드에 01·02·03 을 찍고 01(영국)·03(프랑스)·04(한국) 은 찍지 않는다.
+    그래서 번호는 마크업에 늘 있고, 국가는 그것가 보이는지 여부만 토으로 결정한다."""
+    assert HTML.count('class="pa-work-index"') == 3
+    assert HTML.count('class="pa-work-index" aria-hidden="true"') == 3, "순번은 장식이라 스크린리더에 읽히지 않는다"
+    assert "display: var(--work-index-display)" in rule_body(".pa-work-index")
+    for country, expected in (("kr", "none"), ("us", "block"), ("fr", "none"), ("uk", "none")):
+        body = " ".join(blocks_for("country", country))
+        got = re.search(r"--work-index-display:\s*(\w+)", body)
+        assert got, f"{country} must state whether the original numbers its cards"
+        assert got.group(1) == expected, f'{country} shows index "{got.group(1)}", the original shows "{expected}"'
     title = rule_body(".pa-work-title")
     assert "var(--font-body)" in title, f"card titles drifted back to the display face: {title}"
+
+
+def test_card_text_is_paired_with_its_own_card_face() -> None:
+    """face 는 국가가, 잉크는 face 의 밝기가 정한다. 한쪽만 바꾸면 흰 텍스트가 흰 카드에 앉는다."""
+    for country in COUNTRIES:
+        body = " ".join(blocks_for("country", country))
+        for n in (1, 2, 3):
+            assert re.search(rf"--work-{n}-text:\s*var\(--tone-\d\)", body), f"{country} leaves card {n} ink unpaired"
+    work = rule_body(".pa-work")
+    assert "--work-ink: var(--work-1-text)" in work, "card 1 must read its own ink pair"
+    assert "--work-ink: var(--work-2-text)" in rule_body(".pa-work:nth-child(2)")
+    assert "--work-ink: var(--work-3-text)" in rule_body(".pa-work:nth-child(3)")
+    for selector, prop in ((".pa-work-title", "color: var(--work-ink)"),
+                           (".pa-work-icon svg", "stroke: var(--work-ink)")):
+        assert prop in rule_body(selector), f"{selector} still reads a role that is not the card face"
+    disc = rule_body(".pa-work-select::after")
+    assert "var(--work-arrow-bg)" in disc and "var(--work-arrow-ink)" in disc and "var(--work-arrow-line)" in disc, (
+        f"the arrow disc must be paired with the card face, not the strip: {disc}")
+    assert "var(--strip-bg)" not in disc, "a strip-coloured disc is swallowed by a light card (01 실측)"
+    inline = rule_body(".pa-work-select span::after")
+    assert "display: var(--work-arrow-inline-display)" in inline, "the second arrow must be a country decision"
+    for country, expected in (("kr", "inline"), ("us", "none"), ("fr", "none"), ("uk", "none")):
+        body = " ".join(blocks_for("country", country))
+        got = re.search(r"--work-arrow-inline-display:\s*(\w+)", body)
+        assert got and got.group(1) == expected, f"{country} carries an arrow the original does not have"
 
 
 def test_view_toggles_survive_the_class_display_rule() -> None:

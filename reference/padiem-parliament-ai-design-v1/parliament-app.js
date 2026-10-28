@@ -96,6 +96,114 @@
   const THEME_NAMES = { kr: "한국", us: "미국", fr: "프랑스", uk: "영국" };
   const STYLE_NAMES = { classic: "클래식", modern: "모던", dark: "다크", light: "라이트", minimal: "미니멀" };
 
+  /* 국가별 화면 문구. 근거: 01/02 는 영문 eyebrow + 한글 제목, 03 매트릭스는 현지어 제목을 쓴다.
+     값은 줄 단위 문자열 배열이고 개행은 이 코드가 <br> 요소로 만든다 — 마크업 문자열을 해석하지 않는다.
+     kr 은 사전이 비어 있어 부팅 때 복제해 둔 한국어 마크업을 그대로 되돌린다. */
+  const COPY_LANG = { us: "en", uk: "en", fr: "fr" };
+  const COPY = {
+    us: {
+      "nav.home": ["Home"], "nav.tools": ["AI tools"], "nav.cases": ["Use cases"], "nav.guide": ["Guide"], "nav.notice": ["Notices"],
+      "nav.note": ["coming soon"], "search.ph": ["How can we help you?"],
+      "nav.list": ["Main menu"], "works.alltools.note": [" — coming soon"],
+      "works.title": ["3 AI work tools for your office"], "works.side": ["Efficient work,", "made with AI"],
+      "works.note": ["Leave the routine to AI,", "and focus on what matters"], "works.alltools": ["See all tools"],
+      "hero.eyebrow": ["PAIDIEM COUNCIL APPS"],
+      "hero.title": ["A STRONGER", "COMMUNITY"],
+      "hero.lead": ["AI for Public Service"],
+      "hero.cta": ["Get Started"],
+      "work.list": ["Choose a council AI work tool"],
+      "work.title.1": ["Speech Writer"], "work.desc.1": ["Create impactful messages"],
+      "work.title.2": ["Social Media"], "work.desc.2": ["Share your work with citizens"],
+      "work.title.3": ["Meeting Records"], "work.desc.3": ["Summarize and organize"],
+      "work.select": ["Start now"],
+      "works.empty": ["No matches. Try speech, social, or records."]
+    },
+    uk: {
+      "nav.home": ["Home"], "nav.tools": ["AI tools"], "nav.cases": ["Use cases"], "nav.guide": ["Guide"], "nav.notice": ["Notices"],
+      "nav.note": ["coming soon"], "search.ph": ["How can we help you?"],
+      "nav.list": ["Main menu"], "works.alltools.note": [" — coming soon"],
+      "works.title": ["3 AI work tools for your office"], "works.side": ["Efficient work,", "made with AI"],
+      "works.note": ["Leave the routine to AI,", "and focus on what matters"], "works.alltools": ["See all tools"],
+      "hero.eyebrow": ["AI FOR A STRONGER DEMOCRACY"],
+      "hero.title": ["Ideas for", "a Stronger Society"],
+      "hero.lead": ["AI for a more engaged Parliament"],
+      "hero.cta": ["Get Started"],
+      "work.list": ["Choose a parliament AI work tool"],
+      "work.title.1": ["Speeches"], "work.desc.1": ["Write with impact"],
+      "work.title.2": ["Social Media"], "work.desc.2": ["Engage your community"],
+      "work.title.3": ["Records & Reports"], "work.desc.3": ["Organize and publish"],
+      "work.select": ["Start now"],
+      "works.empty": ["No matches. Try speeches, social, or records."]
+    },
+    fr: {
+      "nav.home": ["Accueil"], "nav.tools": ["Outils IA"], "nav.cases": ["Cas d'usage"], "nav.guide": ["Guide"], "nav.notice": ["Annonces"],
+      "nav.note": ["bientôt"], "search.ph": ["Comment pouvons-nous vous aider ?"],
+      "nav.list": ["Menu principal"], "works.alltools.note": [" — bientôt disponible"],
+      "works.title": ["3 outils IA pour votre cabinet"], "works.side": ["Un travail efficace,", "grâce à l'IA"],
+      "works.note": ["Le routinier à l'IA,", "concentrez-vous sur l'essentiel"], "works.alltools": ["Voir tous les outils"],
+      "hero.eyebrow": [],   /* 03 프랑 패널에는 eyebrow 자리가 없다 — CSS 가 상자를 지우고 문자열도 빈다 */
+      "hero.title": ["Des idées", "pour des citoyens", "plus forts"],
+      "hero.lead": ["L'IA au service de l'action publique"],
+      "hero.cta": ["Commencer"],
+      "work.list": ["Choisir un outil de rédaction"],
+      "work.title.1": ["Discours"], "work.desc.1": ["Rédiger des messages de qualité"],
+      "work.title.2": ["Réseaux sociaux"], "work.desc.2": ["Créer des contenus d'impact"],
+      "work.title.3": ["Comptes rendus"], "work.desc.3": ["Organiser et publier"],
+      "work.select": ["Démarrer"],
+      "works.empty": ["Aucun résultat. Essayez discours, réseaux, ou comptes rendus."]
+    }
+  };
+  const COPY_NODES = Array.prototype.slice.call(
+      document.querySelectorAll("[data-i18n], [data-i18n-aria], [data-i18n-ph], [data-i18n-first]"));
+  const COPY_DEFAULTS = COPY_NODES.map((el) => {
+    const kept = document.createDocumentFragment();
+    Array.prototype.forEach.call(el.childNodes, (node) => kept.appendChild(node.cloneNode(true)));
+    return {
+      nodes: kept,
+      aria: el.getAttribute("aria-label"),
+      ph: el.getAttribute("placeholder"),
+      first: labelNode(el) ? labelNode(el).nodeValue : null
+    };
+  });
+
+  /* flex + gap 에서 줄바꿈·들여쓰기는 하나의 anonymous 항목이 된다. 그 공백을 지우면
+     마크업만으로 버튼이 6px 줄어든다(실측 .pa-works-tools 100.69 -> 94.69).
+     그래서 공백은 그대로 두고 라벨 텍스트 노드만 갈아끼운다. */
+  function labelNode(el) {
+    const node = Array.prototype.find.call(el.childNodes, (n) => n.nodeType === 3 && n.nodeValue.trim() !== "");
+    return node || null;
+  }
+
+  function setLines(el, lines) {
+    el.replaceChildren();
+    lines.forEach((line, i) => {
+      if (i) el.appendChild(document.createElement("br"));
+      el.appendChild(document.createTextNode(line));
+    });
+  }
+
+  function applyCopy(country) {
+    const dict = COPY[country] || null;
+    const lang = COPY_LANG[country] || null;
+    COPY_NODES.forEach((el, i) => {
+      const key = el.dataset.i18n || el.dataset.i18nAria || el.dataset.i18nPh || el.dataset.i18nFirst;
+      const hit = dict && Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : null;
+      if (el.dataset.i18n) {
+        if (hit === null) el.replaceChildren(COPY_DEFAULTS[i].nodes.cloneNode(true));
+        else setLines(el, hit);
+        if (hit !== null && lang) el.lang = lang;
+        else el.removeAttribute("lang");
+      } else if (el.dataset.i18nAria) {
+        el.setAttribute("aria-label", hit === null ? COPY_DEFAULTS[i].aria : hit.join(" "));
+      } else if (el.dataset.i18nPh) {
+        el.setAttribute("placeholder", hit === null ? COPY_DEFAULTS[i].ph : hit.join(" "));
+      } else {
+        const node = labelNode(el);
+        if (node) node.nodeValue = hit === null ? COPY_DEFAULTS[i].first : hit.join(" ");
+      }
+    });
+  }
+
   function syncThemeUI(country, style) {
     document.querySelectorAll("#paCountryGroup [data-country]").forEach((b) => {
       b.setAttribute("aria-checked", b.dataset.country === country ? "true" : "false");
@@ -114,6 +222,7 @@
     const safeStyle = STYLES.indexOf(style) >= 0 ? style : (root.dataset.style || "light");
     root.dataset.country = safeCountry;
     root.dataset.style = safeStyle;
+    applyCopy(safeCountry);
     syncThemeUI(safeCountry, safeStyle);
     try {
       const kept = store();

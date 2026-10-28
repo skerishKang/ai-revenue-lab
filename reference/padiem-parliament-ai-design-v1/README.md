@@ -219,7 +219,7 @@ THEME_AXIS         20조합 고유 페인트 서명 16종 유지 (페이지 배�
 ### 재현
 
 ```bash
-python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # 36 passed
+python -m pytest reference/padiem-parliament-ai-design-v1/tests -q   # v8 후 42 passed
 node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
 python -m http.server 8801 --directory reference/padiem-parliament-ai-design-v1
 ```
@@ -229,3 +229,120 @@ python -m http.server 8801 --directory reference/padiem-parliament-ai-design-v1
 `final-editor-sns-kr-light-1440.png`, `compare-kr-1440.png`.
 v1(CSS/SVG 렌더)·v2(단일 사진 히어로)·v3(46/54 분할) 계열 캡처는 채택되지 않은 상태이므로
 추적에서 제외했다 — 리뷰가 낡은 배치를 근거로 읽지 않도록.
+
+---
+
+## v8 — 해외 3국 원본 재현 + 화면 문구 현지화 (#6011, 2026-10-28)
+
+지시: 미국·영국·프랑스 테마의 시각적 완성도와 현지화 개선. 원본 분석표를 먼저 쓰고 구현했다.
+분석표는 `E:\analysis-6011\REFERENCE_TRANSLATION_SHEET_6011_OVERSEAS.md`(비공개 작업물).
+
+### 원본의 자격과 해석 충돌
+
+| 파일 | 크기 | 자격 |
+| --- | --- | --- |
+| `01_uk_classic.png` | 1586×992 | 영국 데스크톱 전체 목업 — 기하·색 정본 |
+| `02_us_cinematic.png` | 1586×992 | 미국 데스크톱 전체 목업 — 기하·색 정본 |
+| `03_global_theme_matrix.png` | 1536×1024 | 4단 시트, 패널당 384×1024 — **현지어 문구의 유일한 증거** |
+| `04_korea_cinematic_home.png` | 1672×941 | 한국 채택 정본 (v5~v7에서 처리 완료) |
+
+- 카드 face·정렬·인덱스: 01/02 가 이긴다(전체 목업 > 384px 썸네일).
+- 제목·내비·카드 라벨의 **언어**: 03 이긴다. 01/02 는 한글 제목 + 영문 eyebrow 만 쓰고,
+  03 은 미국·영국·프랑스 모두 현지어 제목(`A STRONGER COMMUNITY`, `Ideas for a Stronger Society`,
+  `Des idées pour des citoyens plus forts`)을 쓴다. 현지화 지시가 요구한 것이 그쪽이다.
+- 프랑스만 03 이 유일한 증거이므로, 프랑스 카드의 중앙 정렬·번호 없음은 03 을 따른다.
+
+### 고쳤던 판정 근거 — 픽셀 지표가 두 번 틀렸다
+
+`country_contrast.py` 는 붐빤 서체(14px 한글)에서 이웃 획을 배경으로 샘플링한다. 그래서
+평면 카드의 대비를 **과소보고**한다. 평면 토큰 의 정답은 WCAG 해석 계산이므로
+`token_contrast_audit.py`(4국가 × 5스타일 × 11짝 = 220판정)로 갈음했다.
+
+| 항목 | 픽셀 지표가 말한 것 | 해석 계산이 말한 것 | 처리 |
+| --- | --- | --- | --- |
+| fr `--muted` | 2.98 실패 | **4.02 실패** (AA 4.5 미만) | `--tone-4` `#6d6a92` → `#5b5880` (5.27) — 보정 자체는 옳았다 |
+| us/note 4.11, uk/note 3.56 | 실패 2건 | 5.26 / 4.94 **pass** | 손대지 않았다. 없는 결함을 고치면 디자인을 임의로 바꾼다 |
+| fr·uk 다크 스트립 | (미측정) | **3.87 / 4.29 실패** | `--tone-5` fr `#a99bbf`→`#bbabd3`, uk `#8b9cb8`→`#92a4c1` |
+
+진짜 결함은 카드 텍스트였다: 잉크가 카드 face 가 아니라 `--hero-text`(스타일 역할)에 묶여 있어
+us/light 카드 1·3 제목은 1.41, uk/light 카드 1·3 은 검출 잉크 0 — 화면상 빈 카드였다.
+이제 국가가 `--work-1-text/--work-2-text/--work-3-text` 로 face 와 짝을 선언하고
+`.pa-work-icon svg`·`.pa-work-title`·`.pa-work-desc`·`.pa-work-select` 가 `--work-ink` 를 읽는다.
+
+### 카드 face 도 원본 화소에서 다시 잤다
+
+`card_faces.py` 실측: 01 영국 카드1 `#0c1d3c`(네이비)·카드2·3 `#faf7f1`(크림), 02 미국 카드1 `#f7f2eb`·카드2 `#1a3046`·카드3 `#f2ece4`.
+영국은 3장 모두 크림으로 두고 있었다 → 카드1 을 `--tone-2` 네이비 + 밝은 잉크로 바꿨다.
+번호는 02(미국) 만 찍는다. 01·03·04 는 없다 → `--work-index-display` 를 국가가 정하고
+`.pa-work-index` 는 마크업에 늘 존재하되 `aria-hidden` 으로 장식 처리했다.
+
+### 원형 화살표는 카드 face 와 짝이어야 한다
+
+원반을 `--strip-bg` 에 고정하면 크림 카드에서 원반이 카드에 삼켜진다(uk 카드 2·3 실측).
+`--work-arrow-bg / --work-arrow-ink / --work-arrow-line` 3종을 국가가 선언한다.
+02·03 은 흰 원반 + 어두운 화살표, 01 은 채움 없는 골드 테두리. 한국은 `--strip-bg`/`--ink` 를
+그대로 읽어 기존 렌더를 보존한다. 인라인 화살표(`.pa-work-select span::after`)는
+fr 에서 네이비 카드 위 1.69:1, uk 에서 크림 위 2.54:1 이라 01/02/03 처럼 해외 3국에서는 끈다.
+
+### 화면 문구 현지화
+
+`parliament-app.js` 의 `applyTheme()` 이 `applyCopy(country)` 를 부른다. 마크업의 한국어는
+그대로 두고(스크립트 없이도 화면이 성립한다) `data-i18n` 키로만 교체한다.
+
+- 값은 **줄 단위 문자열 배열**이고 개행은 `createElement("br")` + `createTextNode` 로 만든다.
+  `innerHTML` 은 이 파일에 0 회다(리뷰 지적 후 제거). 마크업 문자열을 해석하는 경로가 없다.
+- 교체 지점 4종: 텍스트(`data-i18n`), `aria-label`(`data-i18n-aria`), `placeholder`(`data-i18n-ph`),
+  첫 라벨 텍스트 노드(`data-i18n-first`).
+- `data-i18n-first` 가 필요한 이유: `.pa-works-tools` 는 `flex + gap` 이라 줄바꿈·들여쓰기가
+  anonymous 항목 하나다. 라벨을 `<span>` 으로 감싸면 그 항목이 사라져 버튼이
+  100.69px → 94.69px 로 줄고 옆 블록이 3px 어긋난다(실측). 텍스트 노드 값 대치는 기하를 건드리지 않는다.
+- 교체된 노드에는 `lang="en|fr"` 를 붙이고 kr 로 돌아오면 떼낸다.
+- 03 프랑 패널에는 히어로 eyebrow 가 없다 → `--hero-eyebrow-display: none` + 사전 값도 빈 배열.
+- 검색 필터는 `card.textContent` 를 읽으므로 현지화된 이름으로 검색된다(fr `discours` → 1장,
+  fr 에서 `축사` → 0장 + 현지화된 빈 메시지, kr `축사` → 1장).
+
+### 작업실 화면의 헤더 뒤덮기 (#5974에서 main 에 남아 있던 결함)
+
+헤더는 히어로 사진에 얹는 `position: absolute` 다. 사진이 없는 작업실 화면에서는
+`padding-top: 70px` 로 자리를 미뤘는데, 그 70 은 **데스크톱 바 높이**에서 온 상수였다.
+390px 에서 이 바는 실제로 174px 라 "← 시네마틱 홈으로"(y 84, h 44)가 통째로 덮이고
+클릭이 죽었다 — `elementFromPoint` 가 `pa-topbar` 를 반환했다(실측 재현).
+작업실에서는 바를 흐름으로 되돌려(`position: static`) 높이를 스스로 확보하게 했다.
+데스크톱은 0.19px(바의 분수 높이)만 어긋나고 레이아웃·위계는 동일하다.
+
+### 한국 테마 보존 — 화소 증명
+
+main(8801) 과 이 브랜치(8821) 를 같은 빌더로 5스타일 × 2뷰포트 렌더와 비교했다.
+
+```text
+HOME  kr light/classic/modern/minimal/dark @1440x810  diff_px=0  maxdelta<=8
+HOME  kr (동일)                                @390x844  diff_px=0  maxdelta<=8
+kr us fr uk 왕복 후 되돌리기                    diff_px=0  maxdelta=0
+EDITOR kr @1440x810                            1906 AA 화소, 전역 0.19px 수직 오프셋
+EDITOR kr @390x844                             +104px — 헤더가 실제 높이(174px)를 예약, 의도된 수정
+```
+
+### v8 계측 (Playwright Chromium · 로컬 8821 · 운영 주소 미사용)
+
+```text
+COMBOS             40 (4국가 × 5스타일 × 2뷰포트) + 기능 2 = 42 검사, 문제 0
+CONTRAST           220 판정(20조합 × 11짝) 실패 0 · 해석 불가 0
+LOCALISATION       kr = 마크업 기본, us/uk = en, fr = fr — 사전 키 == 마크업 키 (3국가 모두)
+LAYOUT @1440x810   h1 2줄(us/uk)·3줄(fr 원본), 헤더 1줄, 카드 3열, ovfX 0
+LAYOUT @390x844    카드 1열, ovfX 0, 터치 목표 44px 미만 0
+INDEX              us 3장 노출 · kr/fr/uk 0장
+EDITORS            speech/sns/meeting × 2뷰포트 = 6회 열림, 돌아가기 2회 성공
+FONTS              새 면 0종 — 배포된 MaruBuri·Pretendard 로 fr/en/ko 전부 해결(cmap 누락 0)
+```
+
+### 남은 차이 (임의로 만들지 않아서 남은 것)
+
+| 항목 | 이유 |
+| --- | --- |
+| UK/US 를 좌측 레일로 재배치 | 레이아웃 분기 = 새 앵커 결정. CENTRAL 판단 |
+| 해외 사진 | 수집 지시 없음. `--hero-photo: none` + CSS 백스톱을 유지해 없는 것을 있는 것처럼 보이지 않게 한다 |
+| 라틴 고대비 세리프 제목 | 03 은 Didone 계열 제목을 쓴다. 새 웹폰트 배포는 승인 범위 밖 |
+| 가치 스트립·푸터·작업실 문구 | 01/02 가 그 영역을 **한국어로** 렌더한다. 현지어 증거가 없다 |
+| 브랜드 표기 `PADIEM Parliament AI / 의원3종 스튜디오` | 03 은 `PADIEM` 만 쓴다. 제품명 표기 결정 |
+| 영국 카드 배지(`AI 작성` 외) | 생성 시안 특유의 라벨. 정보구조 결정 |
+| 03 의 내비 어휘(`Council AI/Workspace/Library/Settings`) | 현재 5슬롯 IA 와 1:1 대응이 없어 라벨 현지화로 처리했다 |
