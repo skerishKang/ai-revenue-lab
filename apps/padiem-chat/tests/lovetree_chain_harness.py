@@ -41,7 +41,7 @@ from app.lovetree_auth_routes import lovetree_handoff_start
 from app.lovetree_auth_store import D1LoveTreeLoginHandoffStore
 from app.password_auth import hash_password, normalize_email
 
-MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "073_lovetree_login_handoff.sql"
+MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "076_lovetree_login_handoff.sql"
 
 
 def _env(name: str, default: str | None = None) -> str:

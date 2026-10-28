@@ -1,6 +1,6 @@
 """LoveTree 4.0 sign-in handoff: one-time rows, real SQL, and the relay's contract.
 
-These tests pin the load-bearing properties of migration 073 and
+These tests pin the load-bearing properties of migration 076 and
 ``app.lovetree_auth_store``: the row is bound to one product, one recipient, one login
 request, and one return origin; the verified identity is written only by the login side
 and only once; a claim is a single conditional UPDATE that requires the *same* login
@@ -29,7 +29,7 @@ from app.lovetree_auth_store import (
     handoff_digest,
 )
 
-MIGRATION_PATH = Path(__file__).resolve().parents[1] / "migrations" / "073_lovetree_login_handoff.sql"
+MIGRATION_PATH = Path(__file__).resolve().parents[1] / "migrations" / "076_lovetree_login_handoff.sql"
 RELAY_WORKER_PATH = MIGRATION_PATH.parents[2] / "lovetree-auth-caller" / "worker.mjs"
 
 NOW = "2026-10-27T00:00:00Z"
@@ -241,7 +241,7 @@ def test_origin_rules_are_enforced() -> None:
             checked_origin(bad)
 
 
-def test_migration_073_guards_are_real_sql() -> None:
+def test_migration_076_guards_are_real_sql() -> None:
     connection = _connection()
     columns = {row[1] for row in connection.execute("PRAGMA table_info(lovetree_login_handoffs)")}
     assert {
