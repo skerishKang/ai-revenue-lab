@@ -386,14 +386,27 @@ class D1ProjectFileStore:
         # row. Selecting the project row inside the same statement keeps the
         # save-time condition and the write in one atomic step, so a concurrent
         # add can never bypass it.
-        written = await self._run(
-            "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at, country) "
-            "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ?, ? FROM projects p "
-            "WHERE p.id = ? AND p.user_id = ? "
-            "RETURNING id",
-            fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now, country,
-            project_id, user_id,
-        )
+        # #6046 — 기본값(kr)은 컬럼을 아예 쓰지 않는다: DB DEFAULT 가 'kr' 이므로
+        # 기존 스키마·기존 테스트 대역에서도 INSERT 문이 오늘과 문자 그대로 같고,
+        # 마이그레이션 전 스키마에서도 한국어 저장이 계속 동작한다.
+        if country == "kr":
+            written = await self._run(
+                "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at) "
+                "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ? FROM projects p "
+                "WHERE p.id = ? AND p.user_id = ? "
+                "RETURNING id",
+                fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
+                project_id, user_id,
+            )
+        else:
+            written = await self._run(
+                "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at, country) "
+                "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ?, ? FROM projects p "
+                "WHERE p.id = ? AND p.user_id = ? "
+                "RETURNING id",
+                fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now, country,
+                project_id, user_id,
+            )
         if not _rows_from_result(written):
             raise ProjectFileError("project is not owned by current user")
         return ProjectFileRecord(
