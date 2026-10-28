@@ -1001,6 +1001,11 @@ def create_app(
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
             )
+            # #5997: the executor renews a live claim while a long command runs.
+            from .oracle_mesh_lease_renew_routes import (
+                ORACLE_MESH_READ_RENEW_PATH,
+                oracle_mesh_read_renew,
+            )
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
                 Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
@@ -1011,6 +1016,7 @@ def create_app(
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)
