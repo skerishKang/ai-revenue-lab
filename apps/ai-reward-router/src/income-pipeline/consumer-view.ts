@@ -378,14 +378,14 @@ ${THEME_CSS_SHELL_INSET}
           <span class="brand-divider" aria-hidden="true"></span>
           <span class="brand-product">AI Reward Router</span>
         </a>
-        <span class="trust-note">내 수익 관리</span>
+        <span class="trust-note">사용자 직접 기록</span>
         ${toggleButton}
         <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
       </div>
     </header>
     <main id="top">
       <section class="hero" aria-labelledby="hero-title">
-        <p class="eyebrow">내 수익 관리</p>
+        <p class="eyebrow">B64 계정</p>
         <h1 id="hero-title">${escapeHtml(title)}</h1>
         <p>저장한 기회와 진행 상황, 예상·실제 수익을 한곳에서 관리합니다.</p>
       </section>
