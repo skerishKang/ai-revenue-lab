@@ -171,6 +171,7 @@ def _require_product_scope(value: object) -> str:
 PC_SCOPE_NOTICE_LABELS = {
     "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
     "files": "요청한 파일의 목록과 내용을 확인합니다.",
+    "files_write": "요청한 파일을 만들거나 바꾸고, 옮기거나 지웁니다. 바뀌기 전 내용은 백업합니다.",
     "query_drives": "드라이브 목록만 조회합니다.",
     "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
 }
