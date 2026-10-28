@@ -42,6 +42,7 @@ import {
 } from '../identity/google.js';
 import { CredentialError } from '../identity/password.js';
 import { isB64SuperAdmin } from '../identity/admin.js';
+import { B64_ADS_TXT_PATH, B64_AYET_ADS_TXT } from './ads-txt.js';
 import { renderB64AdminConsole } from '../ops/admin-view.js';
 import type { B64OperationsSnapshot } from '../ops/operations-snapshot.js';
 import {
@@ -366,6 +367,15 @@ export function createConsumerHttpHandler(
 
     if (url.pathname === '/healthz') {
       return healthResponse(request);
+    }
+
+    // A seller.txt is fetched by machines at the domain root, so it answers
+    // before the consumer routes and before any session is resolved.
+    if (url.pathname === B64_ADS_TXT_PATH) {
+      return responseForMethod(request, B64_AYET_ADS_TXT, {
+        status: 200,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
     }
 
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
