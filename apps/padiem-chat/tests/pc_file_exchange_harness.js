@@ -3,9 +3,9 @@
 // A minimal DOM and a scripted fetch: the shipped module is exercised for real, and
 // the checks are the ones the owner's flow depends on — the dialog opens with the
 // owner's own folder, a folder click goes back to the server, a search is addressed by
-// name, the chosen file arrives as text or as a file, several PCs are asked about
-// instead of guessed, and a PC that takes thirty rounds of polling is still simply
-// working.
+// name, the chosen file arrives as text or as a file, several PCs and several folders
+// are asked about instead of guessed, saving names the file and takes the PC's own
+// account line, and a PC that takes thirty rounds of polling is still simply working.
 const fs = require("node:fs");
 const vm = require("node:vm");
 
@@ -30,6 +30,8 @@ class El {
     this.dataset = {};
     this.raw = "";
     this.hidden = false;
+    this.disabled = false;
+    this.value = "";
     this.listeners = {};
     this.className = "";
     this.parentNode = null;
@@ -81,7 +83,7 @@ function makeDom(responses) {
     const queue = responses[key];
     const chosen = Array.isArray(queue) ? (queue.length > 1 ? queue.shift() : queue[0]) : queue;
     // An entry may be a function: that is how a check looks at the screen while the
-    // part is still waiting, before the next answer arrives.
+    // part is still waiting, and how each staged call gets its own dispatch id.
     const reply = (typeof chosen === "function" ? chosen({ url, method, body: options && options.body }) : chosen)
       || { status: 500, body: { ok: false } };
     return {
@@ -93,7 +95,7 @@ function makeDom(responses) {
   const sandbox = {
     document,
     fetch: fetchImpl,
-    setInterval: () => 1,
+    setInterval: (run) => { run(); return 1; },
     clearInterval: () => {},
     setTimeout: (run) => { run(); return 1; },
     clearTimeout: () => {},
@@ -113,22 +115,39 @@ function makeDom(responses) {
 
 const LINK_ONE = "pclink_" + "1".repeat(32);
 const LINK_TWO = "pclink_" + "2".repeat(32);
-const DISPATCH = "dsp_" + "a".repeat(32);
+const FETCHED = "dsp_" + "a".repeat(32);
+const SAVED_TO = "C:/Users/qa/축사.txt";
 
-const working = { status: 200, body: { ok: true, state: "working", dispatch_id: DISPATCH, poll_seconds: 0.001 } };
-const staged = (kind) => ({ status: 200, body: {
-  ok: true, state: "working", dispatch_id: DISPATCH, run_id: "chat_pcq_" + "b".repeat(32),
-  conversation_id: "chat_" + "c".repeat(32), poll_seconds: 0.001, kind,
-} });
-const listed = { status: 200, body: { ok: true, state: "ready", dispatch_id: DISPATCH, items: [
+let sequence = 0;
+const nextDispatch = () => "dsp_" + (sequence += 1).toString(16).padStart(32, "0");
+
+// Each staged answer owns one dispatch id for its whole operation, because the waiting
+// loop follows the id the server handed back — a fixture that reused one id everywhere
+// would still pass if the part watched somebody else's answer.
+function staged() {
+  const id = nextDispatch();
+  return () => ({ status: 200, body: {
+    ok: true, state: "working", dispatch_id: id, run_id: "chat_pcq_" + "b".repeat(32),
+    conversation_id: "chat_" + "c".repeat(32), poll_seconds: 0.001,
+  } });
+}
+const working = () => ({ status: 200, body: { ok: true, state: "working", poll_seconds: 0.001 } });
+const listed = () => ({ status: 200, body: { ok: true, state: "ready", items: [
   { name: "견적", kind: "folder", size_bytes: null, modified_at: "2026-10-01T00:00:00Z" },
   { name: "1분기.md", kind: "file", size_bytes: 2048, modified_at: "2026-10-02T00:00:00Z" },
-] } };
-const found = { status: 200, body: { ok: true, state: "ready", dispatch_id: DISPATCH, found: [
+] } });
+const found = () => ({ status: 200, body: { ok: true, state: "ready", found: [
   { name: "명함.png", kind: "file", size_bytes: 100, folder: "D:/그림", path: "D:/그림/명함.png" },
-] } };
-const fetched = { status: 200, body: { ok: true, state: "ready", dispatch_id: DISPATCH,
-  content_kind: "text", content: "본문입니다", file_id: DISPATCH, size_bytes: 12 } };
+] } });
+const fetched = () => ({ status: 200, body: { ok: true, state: "ready",
+  content_kind: "text", content: "본문입니다", file_id: FETCHED, size_bytes: 12 } });
+const saved = () => ({ status: 200, body: { ok: true, state: "ready", saved: {
+  ok: true, op: "write", reason: null, target: SAVED_TO,
+  backup: "C:/.padiem-backup/2026-10-28/축사.txt", bytes: 18,
+} } });
+const refused = () => ({ status: 200, body: { ok: false, state: "ready", saved: {
+  ok: false, op: "write", reason: "backup_failed", target: SAVED_TO, backup: null, bytes: 0,
+} } });
 
 const results = [];
 const settle = async (rounds = 20) => {
@@ -138,44 +157,32 @@ function check(name, condition, detail) {
   results.push({ name, ok: Boolean(condition), detail: condition ? "" : String(detail ?? "") });
 }
 const browseCalls = (calls) => calls.filter((call) => call.url === "/api/pc/browse");
+const bodyOf = (call) => JSON.parse(call.body);
 const dialogOf = (dom) => dom.body.byClass("pc-exchange-dialog");
 const entriesOf = (dom) => dom.body.allWithClass("pc-exchange-entry");
 const buttonOf = (dom, className) => dom.body.find((node) => node.className === className);
+const stripOf = (dom) => dom.body.find((node) => node.className === "pc-exchange-pcs" && !node.hidden);
+const statusOf = (dom) => dom.body.find((node) => node.className === "pc-exchange-status" && !node.hidden);
 
 async function main() {
   // ── one PC: the dialog opens on the owner's own folder, then drills in ──
   const dom = makeDom({
-    "/api/pc/browse": [staged("browse"), staged("browse"), staged("browse")],
-    "/api/pc/result": [
-      working,
-      () => { duringWait = dialogOf(dom).allText(); return working; },
-      listed,
-    ],
+    "/api/pc/browse": [staged(), staged(), staged()],
+    "/api/pc/result": [working, () => { duringWait = dialogOf(dom).allText(); return working(); }, listed],
   });
-  let picked = null;
-  dom.window.PadiemPcFileExchange.open({ onSelect: (item) => { picked = item; } });
+  let duringWait = "";
+  dom.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
   check("opening asks the owner's PC for one folder listing",
     browseCalls(dom.calls).length === 1
-    && JSON.parse(browseCalls(dom.calls)[0].body).path === "."
-    && !("link_id" in JSON.parse(browseCalls(dom.calls)[0].body)),
+    && bodyOf(browseCalls(dom.calls)[0]).path === "."
+    && !("link_id" in bodyOf(browseCalls(dom.calls)[0])),
     JSON.stringify(dom.calls));
   check("the entries the PC reported are shown by name",
     entriesOf(dom).map((node) => node.allText()).join("|").includes("1분기.md"),
     dialogOf(dom).allText());
   // The screen the owner is looking at while the PC works: still working, with the
-  // time that has passed. Not a failure, not a technical state, not a deadline.
-  let duringWait = "";
-  const waiting = makeDom({
-    "/api/pc/browse": [staged("browse")],
-    "/api/pc/result": [
-      working,
-      () => { duringWait = dialogOf(waiting).allText(); return working; },
-      listed,
-    ],
-  });
-  waiting.window.PadiemPcFileExchange.open({ onSelect: () => {} });
-  await settle();
+  // time that has passed. Not a failure, not a technical state, not a give-up clock.
   check("while the PC is still answering, the dialog says so in the owner's words",
     duringWait.includes("PC에서 작업 중") && duringWait.includes("경과"), duringWait);
   check("the waiting line is the shipped copy, not a code name",
@@ -186,23 +193,23 @@ async function main() {
   await settle();
   check("a folder click asks again for that folder",
     browseCalls(dom.calls).length === 2
-    && JSON.parse(browseCalls(dom.calls)[1].body).path === "견적",
+    && bodyOf(browseCalls(dom.calls)[1]).path === "견적",
     JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
 
   buttonOf(dom, "pc-exchange-back").click();
   await settle();
   check("이전 폴더 asks the PC for the folder the owner came from",
     browseCalls(dom.calls).length === 3
-    && JSON.parse(browseCalls(dom.calls)[2].body).path === "."
+    && bodyOf(browseCalls(dom.calls)[2]).path === "."
     && entriesOf(dom).some((node) => node.allText().includes("1분기.md")),
     JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
 
   // ── searching by name, then choosing a file ──
   const search = makeDom({
-    "/api/pc/browse": [staged("browse")],
-    "/api/pc/find": [staged("find")],
+    "/api/pc/browse": [staged()],
+    "/api/pc/find": [staged()],
     "/api/pc/result": [working, listed, working, found, working, fetched],
-    "/api/pc/fetch": [staged("fetch")],
+    "/api/pc/fetch": [staged()],
   });
   let chosen = null;
   search.window.PadiemPcFileExchange.open({ onSelect: (item) => { chosen = item; } });
@@ -212,8 +219,7 @@ async function main() {
   buttonOf(search, "pc-exchange-search-button").click();
   await settle();
   check("the search is asked of the PC by name",
-    search.calls.some((call) => call.url === "/api/pc/find"
-      && JSON.parse(call.body).name === "명함"),
+    search.calls.some((call) => call.url === "/api/pc/find" && bodyOf(call).name === "명함"),
     JSON.stringify(search.calls.map((call) => call.url)));
   check("a found file shows the folder it came from",
     entriesOf(search).map((node) => node.allText()).join("|").includes("D:/그림"),
@@ -224,35 +230,37 @@ async function main() {
   await settle();
   check("choosing a file asks the PC for that one file",
     search.calls.some((call) => call.url === "/api/pc/fetch"
-      && JSON.parse(call.body).path === "D:/그림/명함.png"),
+      && bodyOf(call).path === "D:/그림/명함.png"),
     JSON.stringify(search.calls.map((call) => call.body)));
   check("the menu is handed the text and the addressable id",
     chosen && chosen.name === "명함.png" && chosen.kind === "text"
-    && chosen.content === "본문입니다" && chosen.fileId === DISPATCH,
+    && chosen.content === "본문입니다" && chosen.fileId === FETCHED,
     JSON.stringify(chosen));
-  check("picking a file closes the dialog",
-    !search.body.byClass("pc-exchange-dialog"), "");
+  check("picking a file closes the dialog", !search.body.byClass("pc-exchange-dialog"), "");
 
   // ── several PCs: the owner is asked, never guessed for ──
   const many = makeDom({
     "/api/pc/browse": [{ status: 409, body: { ok: false, error: { code: "pc_link_selection_required" },
       links: [{ link_id: LINK_ONE, label: "사무실 PC" }, { link_id: LINK_TWO, label: "집 PC" }] } },
-      staged("browse")],
+      staged()],
     "/api/pc/result": [working, listed],
   });
   many.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
-  const pcs = many.body.find((node) => node.className === "pc-exchange-pcs" && !node.hidden);
+  const pcs = stripOf(many);
   check("two PCs become a choice in the owner's own words",
     pcs && pcs.allText().includes("사무실 PC") && pcs.allText().includes("집 PC"),
     JSON.stringify(many.calls));
+  check("the PC question is asked in the words the screen ships",
+    pcs && pcs.getAttribute("aria-label") === copyOf("pc-exchange-choose-pc"),
+    pcs && pcs.getAttribute("aria-label"));
   check("nothing is listed on a PC until the owner names one",
     browseCalls(many.calls).length === 1, JSON.stringify(many.calls));
   pcs.children[1].click();
   await settle();
   check("the chosen PC is the one the listing is asked of",
     browseCalls(many.calls).length === 2
-    && JSON.parse(browseCalls(many.calls)[1].body).link_id === LINK_TWO,
+    && bodyOf(browseCalls(many.calls)[1]).link_id === LINK_TWO,
     JSON.stringify(many.calls.map((call) => call.body)));
 
   // ── several folders on one PC: the owner names one, and nothing is guessed ──
@@ -260,28 +268,90 @@ async function main() {
     "/api/pc/browse": [{ status: 409, body: {
       ok: false, error: { code: "pc_folder_selection_required" },
       folders: [{ label: "C:", path: "C:/" }, { label: "바탕화면", path: "바탕화면/" }],
-    } }, staged("browse")],
+    } }, staged()],
     "/api/pc/result": [working, listed],
   });
   drives.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
-  const folderStrip = drives.body.find((node) => node.className === "pc-exchange-pcs" && !node.hidden);
+  const folderStrip = stripOf(drives);
   check("two folders on one PC become a choice the owner can read",
     folderStrip && folderStrip.allText().includes("C:") && folderStrip.allText().includes("바탕화면"),
     folderStrip ? folderStrip.allText() : "no folder strip");
+  check("the folder question is asked in the words the screen ships",
+    folderStrip && folderStrip.getAttribute("aria-label") === copyOf("pc-exchange-choose-folder"),
+    folderStrip && folderStrip.getAttribute("aria-label"));
   check("no folder is opened until the owner names one",
     browseCalls(drives.calls).length === 1, JSON.stringify(drives.calls));
   folderStrip.children[1].click();
   await settle();
   check("the folder the owner named is the one the listing is asked of",
     browseCalls(drives.calls).length === 2
-    && JSON.parse(browseCalls(drives.calls)[1].body).path === "바탕화면/"
+    && bodyOf(browseCalls(drives.calls)[1]).path === "바탕화면/"
     && entriesOf(drives).some((node) => node.allText().includes("1분기.md")),
     JSON.stringify(drives.calls.map((call) => call.body)));
 
+  // ── saving back: the owner names the file, the PC answers with its own account ──
+  const save = makeDom({
+    "/api/pc/browse": [staged(), staged()],
+    "/api/pc/result": [working, listed, working, listed, working, saved],
+    "/api/pc/save": [staged()],
+  });
+  let written = null;
+  save.window.PadiemPcFileExchange.open({
+    mode: "save", content: "본문입니다", fileName: "축사.txt", onSave: (row) => { written = row; },
+  });
+  await settle();
+  const naming = save.body.find((node) => node.className === "pc-exchange-filename");
+  check("the save dialog asks for a name and never for a confirmation",
+    dialogOf(save).allText().includes(copyOf("pc-exchange-save-title").trim())
+    && naming && naming.value === "축사.txt"
+    && !dialogOf(save).allText().includes("확인"),
+    dialogOf(save).allText());
+  check("the save dialog does not offer a search for a file to open",
+    save.body.find((node) => node.className === "pc-exchange-search").hidden === true
+    && save.body.find((node) => node.className === "pc-exchange-search-button").hidden === true,
+    "search still offered");
+  check("the folder list is still browsed when saving",
+    entriesOf(save).some((node) => node.allText().includes("견적")), dialogOf(save).allText());
+
+  entriesOf(save)[0].click();
+  await settle();
+  check("saving into a folder asks the PC for that folder",
+    browseCalls(save.calls).length === 2
+    && bodyOf(browseCalls(save.calls)[1]).path === "견적",
+    JSON.stringify(save.calls.map((call) => call.body)));
+  buttonOf(save, "pc-exchange-save").click();
+  await settle();
+  check("saving sends the name the owner wrote and the text the menu holds",
+    save.calls.some((call) => call.url === "/api/pc/save"
+      && bodyOf(call).path === "견적/축사.txt" && bodyOf(call).content === "본문입니다"),
+    JSON.stringify(save.calls.map((call) => call.body)));
+  check("the menu is handed the PC's own account of what it wrote",
+    written && written.target === SAVED_TO && written.backup === "C:/.padiem-backup/2026-10-28/축사.txt",
+    JSON.stringify(written));
+  check("saving closes the dialog", !save.body.byClass("pc-exchange-dialog"), "");
+
+  // ── a write the PC refused is told to the owner, not dressed up as saved ──
+  const failed = makeDom({
+    "/api/pc/browse": [staged()],
+    "/api/pc/result": [working, listed, working, refused],
+    "/api/pc/save": [staged()],
+  });
+  let savedAnyway = null;
+  failed.window.PadiemPcFileExchange.open({
+    mode: "save", content: "본문입니다", fileName: "축사.txt", onSave: () => { savedAnyway = true; },
+  });
+  await settle();
+  buttonOf(failed, "pc-exchange-save").click();
+  await settle();
+  const failStatus = statusOf(failed);
+  check("a refused write is told plainly and the menu is not told it saved",
+    failStatus && failStatus.allText() === copyOf("pc-exchange-save-failed") && savedAnyway === null,
+    failStatus ? failStatus.allText() : "no status");
+
   // ── no give-up: thirty rounds of "still working" is still working ──
   const slow = makeDom({
-    "/api/pc/browse": [staged("browse")],
+    "/api/pc/browse": [staged()],
     "/api/pc/result": Array.from({ length: 30 }, () => working).concat([listed]),
   });
   slow.window.PadiemPcFileExchange.open({ onSelect: () => {} });
@@ -297,8 +367,8 @@ async function main() {
     name: `파일 ${index}.md`, kind: "file", size_bytes: 10, modified_at: null,
   }));
   const wide = makeDom({
-    "/api/pc/browse": [staged("browse")],
-    "/api/pc/result": [working, { status: 200, body: { ok: true, state: "ready", dispatch_id: DISPATCH, items: manyItems } }],
+    "/api/pc/browse": [staged()],
+    "/api/pc/result": [working, () => ({ status: 200, body: { ok: true, state: "ready", items: manyItems } })],
   });
   wide.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
@@ -312,30 +382,33 @@ async function main() {
 
   // ── a PC that answers nothing is said as such, in plain words ──
   const silent = makeDom({
-    "/api/pc/browse": [staged("browse")],
+    "/api/pc/browse": [staged()],
     "/api/pc/result": [working, { status: 410, body: { ok: false, error: { code: "pc_dispatch_expired" } } }],
   });
   silent.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
-  const status = silent.body.find((node) => node.className === "pc-exchange-status" && !node.hidden);
+  const status = statusOf(silent);
   check("an operation the PC never answered is told to the owner plainly",
     status && status.allText() === copyOf("pc-exchange-no-answer")
     && !/코드|dispatch|HTTP|path/i.test(status.allText()),
     status && status.allText());
 
   // ── the part itself: one entry point, no jargon, no extra confirmation ──
-  check("one function opens the part, and the copy carries no technical term",
-    typeof makeDom({ "/api/pc/browse": [staged("browse")], "/api/pc/result": [working] })
+  check("one function opens both halves of the part, and the copy carries no technical term",
+    typeof makeDom({ "/api/pc/browse": [staged()], "/api/pc/result": [working] })
       .window.PadiemPcFileExchange.open === "function"
-    && !/디스패치|라우트|JSON|HTTP|엔드포인트|path_relative/i.test(
-      ["pc-exchange-import-title", "pc-exchange-import-note", "pc-exchange-choose-pc",
-       "pc-exchange-up", "pc-exchange-search", "pc-exchange-more", "pc-exchange-close",
-       "pc-exchange-open-file", "pc-exchange-working", "pc-exchange-no-pc",
-       "pc-exchange-no-answer"].map(copyOf).join(" "),
-    ), "");
-  check("the part asks for nothing but its own four calls",
-    JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0])) ===
-      JSON.stringify(['"/api/pc/browse"', '"/api/pc/find"', '"/api/pc/fetch"', '"/api/pc/result"']),
+    && ["pc-exchange-import-title", "pc-exchange-import-note", "pc-exchange-save-title",
+        "pc-exchange-save-note", "pc-exchange-save-name", "pc-exchange-save-button",
+        "pc-exchange-choose-pc", "pc-exchange-choose-folder", "pc-exchange-up",
+        "pc-exchange-search", "pc-exchange-more", "pc-exchange-close", "pc-exchange-open-file",
+        "pc-exchange-working", "pc-exchange-no-pc", "pc-exchange-no-answer",
+        "pc-exchange-save-failed"].every((key) => !/디스패치|라우트|JSON|HTTP|엔드포인트|path_relative|경로/i
+          .test(copyOf(key))),
+    "");
+  check("the part asks for nothing but its own five calls",
+    JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0]).sort()) ===
+      JSON.stringify(['"/api/pc/browse"', '"/api/pc/fetch"', '"/api/pc/find"',
+                      '"/api/pc/result"', '"/api/pc/save"']),
     JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0])));
   for (const forbidden of ["confirm(", "alert(", "setTimeout(fetch", "maxAttempts", "max_wait"]) {
     check(`the part contains no ${forbidden}`, !script.includes(forbidden), forbidden);

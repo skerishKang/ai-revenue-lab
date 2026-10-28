@@ -44,10 +44,10 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
 
     assert html.count('<script src="./pc-file-exchange.js" defer></script>') == 1
     assert html.count('<link rel="stylesheet" href="./pc-file-exchange.css" />') == 1
-    # The part speaks only to the four new owner routes: nothing older, nothing the
+    # The part speaks only to the five new owner routes: nothing older, nothing the
     # composer owns, and no second pairing or dispatch surface.
     assert sorted({found for found in script.split('"') if found.startswith("/api/")}) == [
-        "/api/pc/browse", "/api/pc/fetch", "/api/pc/find", "/api/pc/result",
+        "/api/pc/browse", "/api/pc/fetch", "/api/pc/find", "/api/pc/result", "/api/pc/save",
     ]
     assert "EventSource" not in script and "WebSocket" not in script
     # One entry point, for any menu.

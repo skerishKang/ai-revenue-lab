@@ -15,23 +15,23 @@ PC lane already uses.
     POST /api/pc/find    {link_id?, name}    every file of that name, across every
                                              folder this account granted
     POST /api/pc/fetch   {link_id?, path}    one file's content
-    GET  /api/pc/result  ?dispatch_id=       the durable state of one of the three
+    POST /api/pc/save    {link_id?, path, content|file_id}   #5573's write, with the
+                                             backup it takes before anything changes
+    GET  /api/pc/result  ?dispatch_id=       the durable state of one of the four
     GET  /api/pc/file    ?dispatch_id=      the bytes, for what a text answer cannot
                                              carry — the "file id" a menu consumes
 
-The three POSTs stage a dispatch on the lane the PC tools already use and answer at
+The four POSTs stage a dispatch on the lane the PC tools already use and answer at
 once with the dispatch and run identity. The screen then watches `GET /api/pc/result`
 under the #5895 "PC에서 작업 중 — 경과 시간" display, so a PC that takes minutes is
 the same operation rather than a failure, and a request that drops is re-read from the
-server's own record. Nothing here adds a second, byte or item ceiling and no
+server's own record. Nothing here adds a second byte or item ceiling and no
 confirmation step: the only instant that can end a wait is the dispatch's own existing
 expiry, and every wait is a read-only GET.
-
-`/api/pc/save` is the fourth verb. It lands with #5994's write-with-backup tool, and
-this file deliberately stops where that authority begins.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import re
@@ -44,16 +44,19 @@ from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .chat_pc_drive import (ChatPCDriveError, _check_mesh_grant, _new_lane_run_id,
-                                     _resolve_chat_owner)
+                            _resolve_chat_owner)
 from .claw_local_task_result_projection import result_message_id
 from .history import HistoryError, validate_conversation_id
 from .oracle_mesh_read_return_routes import (
     PC_FILES_LIST_DEFAULT_LIMIT,
+    PC_WRITE_ACCOUNT_PREFIX,
     _engine_pc_files_target,
     _error,
+    _pc_backup_dir,
     _pc_files_command,
     _pc_files_pick_root,
     _pc_files_powershell_literal,
+    _pc_write_command,
     _read_body,
     _response,
     _text_value,
@@ -69,6 +72,7 @@ RESULT_POLL_SECONDS = 2.0
 PC_BROWSE_PATH = "/api/pc/browse"
 PC_FIND_PATH = "/api/pc/find"
 PC_FETCH_PATH = "/api/pc/fetch"
+PC_SAVE_PATH = "/api/pc/save"
 PC_RESULT_PATH = "/api/pc/result"
 PC_FILE_PATH = "/api/pc/file"
 LINK_ID = re.compile(r"\Apclink_[0-9a-f]{32}\Z")
@@ -326,6 +330,28 @@ def _found_items(text: str) -> list[dict[str, Any]]:
     """
 
     return _items(text, with_folder=True)
+
+
+def _write_account(text: str) -> dict[str, Any] | None:
+    """The one account line #5573's write step prints, or None when it is not there.
+
+    The PC base64-encodes that line so no console code page can change what it says,
+    which is also what makes it safe to read here: the answer stays the PC's own words
+    about what it changed and where the original now sits.
+    """
+
+    for line in reversed(text.splitlines()):
+        stripped = line.strip()
+        if not stripped.startswith(PC_WRITE_ACCOUNT_PREFIX):
+            continue
+        try:
+            decoded = json.loads(base64.b64decode(
+                stripped[len(PC_WRITE_ACCOUNT_PREFIX):], validate=True,
+            ).decode("utf-8"))
+        except (ValueError, TypeError, UnicodeDecodeError):
+            return None
+        return decoded if isinstance(decoded, dict) else None
+    return None
 
 
 def _resolve_path(roots: list[dict[str, Any]], value: Any) -> tuple[str, str] | None:
@@ -611,6 +637,89 @@ async def pc_file_exchange_fetch(request: Request) -> JSONResponse:
     return await _staged(answer, run=run, extra={"name": name})
 
 
+async def pc_file_exchange_save(request: Request) -> JSONResponse:
+    """Put one answer back on the owner's PC through #5573's write, backup first.
+
+    The bytes come from the menu's own text or from a file this same part fetched a
+    moment ago, and the target is a file the owner named inside their own grant. The
+    command is #5573's own builder, so the original is copied to the hidden per-drive
+    backup folder before anything changes and a backup that fails stops the step
+    there. This route adds no second write path and asks the owner no confirmation.
+    """
+
+    body = await _read_body(
+        request, frozenset({"path"}),
+        optional=frozenset({"link_id", "content", "file_id"}),
+    )
+    if body is None:
+        return _error(400, "pc_exchange_invalid_body")
+    content = body.get("content")
+    file_id = body.get("file_id")
+    if (content is None) == (file_id is None):
+        # Exactly one source: a menu either holds the text it wrote or the file it
+        # brought over, and never both under two names.
+        return _error(422, "pc_exchange_content_required")
+    owner = await _owner(request)
+    if isinstance(owner, JSONResponse):
+        return owner
+    session, uid, workspace_id = owner
+    links = await _live_links(request, uid)
+    if isinstance(links, JSONResponse):
+        return links
+    link_id, refusal = _link_id(body.get("link_id"))
+    if refusal is not None:
+        return refusal
+    link, refusal = _choose_link(links, link_id)
+    if refusal is not None:
+        return refusal
+    target, refusal = await _dispatch_target(request, session=session, uid=uid, link=link)
+    if refusal is not None:
+        return refusal
+    picked = _resolve_path(link["roots"], body.get("path"))
+    if picked is None:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    root, relative = picked
+    if not relative:
+        # Saving onto the granted folder itself would replace a folder with a file.
+        return _error(422, "oracle_mesh_file_path_invalid")
+    if content is not None:
+        if not isinstance(content, str):
+            return _error(422, "oracle_mesh_file_content_invalid")
+        payload = content.encode("utf-8")
+    else:
+        if not isinstance(file_id, str) or DISPATCH_ID.fullmatch(file_id) is None:
+            return _error(404, "pc_dispatch_not_found")
+        source = await _dispatch_row(request, uid, file_id)
+        if isinstance(source, JSONResponse):
+            return source
+        if source.get("state") != "done":
+            return _error(409, "oracle_mesh_result_not_ready")
+        stored, refusal = await _stored_output(request, uid, source)
+        if refusal is not None:
+            return refusal
+        payload = stored
+    name = relative.rsplit("/", 1)[-1]
+    run = await _stage_run(request, uid=uid, workspace_id=workspace_id,
+                           note="내 PC에 파일을 저장했습니다: " + name)
+    if isinstance(run, JSONResponse):
+        return run
+    answer = await dispatch_oracle_mesh_command_intent(
+        request,
+        command=_pc_write_command(
+            op="write",
+            target=root.rstrip("/") + "/" + relative,
+            backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+            relative=relative,
+            content_b64=base64.b64encode(payload).decode("ascii"),
+        ),
+        wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
+        trusted_owner=(session, uid, workspace_id),
+        tool_call_ref=_call_ref(run[0], "save", root, relative),
+        files_target=target,
+    )
+    return await _staged(answer, run=run, extra={"name": name})
+
+
 async def pc_file_exchange_result(request: Request) -> JSONResponse:
     """The durable state of one picker operation, addressed only by its dispatch id.
 
@@ -643,6 +752,12 @@ async def pc_file_exchange_result(request: Request) -> JSONResponse:
         return refusal
     text = content.decode("utf-8", errors="replace")
     if dispatch.get("kind") == "command":
+        account = _write_account(text)
+        if account is not None:
+            # The PC's own line is the answer: what it wrote, where, and where the
+            # original now sits. A write the PC refused stays refused, not rewritten.
+            return _response({"ok": account.get("ok") is True, "state": "ready",
+                              "dispatch_id": dispatch_id, "saved": account})
         if _SEARCH_MARK in str(dispatch.get("command_text") or ""):
             return _response({"ok": True, "state": "ready", "dispatch_id": dispatch_id,
                               "found": _found_items(text)})

@@ -427,6 +427,141 @@ def test_an_operation_that_outlived_its_own_dispatch_is_named(monkeypatch):
     assert status == 410 and body["error"]["code"] == "pc_dispatch_expired"
 
 
+# ── putting a file back: #5573's write, and the backup it takes first ──────
+
+ACCOUNT_OK = json.dumps({"ok": True, "op": "write", "reason": None,
+                         "target": QUARTERLY + "/축사.txt",
+                         "backup": "C:/.padiem-backup/2026-10-28/축사.txt", "bytes": 18},
+                        ensure_ascii=False)
+ACCOUNT_REFUSED = json.dumps({"ok": False, "op": "write", "reason": "backup_failed",
+                              "target": QUARTERLY + "/축사.txt", "backup": None, "bytes": 0},
+                             ensure_ascii=False)
+
+
+def _account_line(account: str) -> str:
+    import base64
+
+    return "PADIEM_PC_ACCOUNT=" + base64.b64encode(account.encode("utf-8")).decode("ascii")
+
+
+def test_save_writes_with_the_backup_that_the_write_lane_takes_first(monkeypatch):
+    state, captured, link_id, _ = _state(monkeypatch)
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_save(
+        _Request(state, body={"path": "축사.txt", "content": "본문입니다", "link_id": link_id})
+    )))
+    assert status == 200 and body["ok"] is True, body
+    assert body["name"] == "축사.txt"
+    command = captured[0]["command"]
+    assert QUARTERLY + "/축사.txt" in command
+    assert ".padiem-backup" in command
+    # The copy that makes the change undoable comes before the bytes are written.
+    assert 0 < command.index("Copy-Item") < command.index("[IO.File]::WriteAllBytes")
+    assert "Write-Output 'PADIEM_PC_ACCOUNT='" in command
+    # No prompt of any kind is generated: the account says the change happened.
+    for forbidden in ("Read-Host", "$Confirm", "ShouldProcess", "Confirm-"):
+        assert forbidden not in command, forbidden
+
+
+def test_saving_onto_the_granted_folder_itself_is_refused(monkeypatch):
+    state, captured, link_id, _ = _state(monkeypatch)
+    status, _body = _answer(pairing.run(exchange.pc_file_exchange_save(
+        _Request(state, body={"path": ".", "content": "본문입니다", "link_id": link_id})
+    )))
+    assert status == 422 and captured == []
+
+
+def test_the_save_call_takes_one_source_and_never_both(monkeypatch):
+    state, captured, link_id, _ = _state(monkeypatch)
+    for body in ({"path": "축사.txt", "link_id": link_id},
+                 {"path": "축사.txt", "content": "본문", "file_id": "dsp_" + "9" * 32,
+                  "link_id": link_id}):
+        status, answer = _answer(pairing.run(exchange.pc_file_exchange_save(
+            _Request(state, body=body)
+        )))
+        assert status == 422 and answer["error"]["code"] == "pc_exchange_content_required"
+    assert captured == []
+
+
+def test_a_file_brought_over_is_saved_from_the_bytes_the_server_verified(monkeypatch):
+    import base64
+
+    dispatch = "dsp_" + "9" * 32
+    state, captured, link_id, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="read", text="본문입니다")
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_save(
+        _Request(state, body={"path": "새로 저장.txt", "file_id": dispatch, "link_id": link_id})
+    )))
+    assert status == 200 and body["ok"] is True, body
+    payload = base64.b64encode("본문입니다".encode("utf-8")).decode("ascii")
+    assert payload in captured[0]["command"]
+
+
+def test_a_file_id_that_is_not_the_owners_is_not_saved(monkeypatch):
+    dispatch = "dsp_" + "8" * 32
+    pairing_store, created = _links()
+    state, captured, link_id, _ = _state(
+        monkeypatch, links=(pairing_store, created), uid=OUTSIDER,
+        dispatches={dispatch: {
+            "dispatch_id": dispatch, "user_id": OWNER, "kind": "read", "state": "done",
+            "expires_at": "2099-01-01T00:00:00.000Z", "result_sha256": _sha(b"someone elses file"),
+        }},
+    )
+    status, answer = _answer(pairing.run(exchange.pc_file_exchange_save(
+        _Request(state, body={"path": "축사.txt", "file_id": dispatch, "link_id": link_id})
+    )))
+    assert status == 404 and answer["error"]["code"] == "pc_link_not_found"
+    assert captured == []
+
+
+def test_another_account_cannot_save_on_the_owners_pc(monkeypatch):
+    pairing_store, created = _links()
+    state, captured, link_id, _ = _state(monkeypatch, links=(pairing_store, created),
+                                         uid=OUTSIDER)
+    status, answer = _answer(pairing.run(exchange.pc_file_exchange_save(
+        _Request(state, body={"path": "축사.txt", "content": "본문", "link_id": link_id})
+    )))
+    assert status == 404 and answer["error"]["code"] == "pc_link_not_found"
+    assert captured == []
+
+
+def test_the_saved_answer_is_the_pcs_own_account_of_what_it_wrote(monkeypatch):
+    dispatch = "dsp_" + "7" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command",
+              text="step output\n" + _account_line(ACCOUNT_OK))
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    assert status == 200 and body["ok"] is True and body["state"] == "ready"
+    assert body["saved"]["target"] == QUARTERLY + "/축사.txt"
+    assert body["saved"]["backup"] == "C:/.padiem-backup/2026-10-28/축사.txt"
+    assert body["saved"]["bytes"] == 18
+
+
+def test_a_write_the_pc_refused_is_reported_as_refused(monkeypatch):
+    dispatch = "dsp_" + "6" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command", text=_account_line(ACCOUNT_REFUSED))
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    # The PC said no — a backup that failed — so the screen is not handed a success.
+    assert status == 200 and body["ok"] is False and body["state"] == "ready"
+    assert body["saved"]["reason"] == "backup_failed"
+
+
+def test_an_unparsable_account_line_is_not_invented_into_a_saved_answer(monkeypatch):
+    dispatch = "dsp_" + "5" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command",
+              text="PADIEM_PC_ACCOUNT=not-base64-at-all")
+    _status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    # No account the server can read means no claim about what the PC wrote.
+    assert "saved" not in body and body["items"] == []
+
+
 def test_the_listing_answer_is_the_folders_own_entries(monkeypatch):
     dispatch = "dsp_" + "e" * 32
     state, _captured, _link, _ = _state(monkeypatch)

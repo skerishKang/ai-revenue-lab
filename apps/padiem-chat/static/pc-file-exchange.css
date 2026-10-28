@@ -88,7 +88,8 @@
   cursor: pointer;
 }
 
-.pc-exchange-search {
+.pc-exchange-search,
+.pc-exchange-filename {
   font: inherit;
   flex: 1 1 180px;
   min-height: 44px;
@@ -97,6 +98,21 @@
   border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
   background: var(--field, #fff);
   color: inherit;
+}
+
+.pc-exchange-naming {
+  display: flex;
+  flex: 1 1 220px;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.84rem;
+  color: var(--muted, #5a7488);
+}
+
+/* A control the owner cannot use in this mode is taken off the screen, not left
+   there greyed out: the save dialog shows a name, the import dialog shows a search. */
+.pc-exchange-dialog [hidden] {
+  display: none !important;
 }
 
 .pc-exchange-list {

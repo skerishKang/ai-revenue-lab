@@ -1,6 +1,7 @@
-// #5895: the shared "bring a file from my PC" part every menu can open.
+// #5895: the shared "bring a file from my PC" and "save it back" part every menu can open.
 //
-// One call opens it — `window.PadiemPcFileExchange.open({ onSelect })` — so the stable
+// One call opens either half — `window.PadiemPcFileExchange.open({ onSelect })` to pick
+// a file up, `.open({ mode: "save", content, onSave })` to put one down — so the stable
 // writing screen, the B66 quote sheet and the PDF·Markdown menu never grow their own
 // file browser.
 //
@@ -15,15 +16,16 @@
   const BROWSE = "/api/pc/browse";
   const FIND = "/api/pc/find";
   const FETCH = "/api/pc/fetch";
+  const SAVE = "/api/pc/save";
   const RESULT = "/api/pc/result";
   // How many already-received entries are shown before "더 보기". It splits the
   // answer on the screen; it never discards part of it.
   const PAGE = 60;
 
   const state = {
-    open: false, nodes: null, linkId: null, path: ".", folderName: "",
+    open: false, nodes: null, mode: "import", linkId: null, path: ".", folderName: "",
     items: [], shown: PAGE, selection: null, waiting: false, error: null,
-    startedAt: 0, timer: null, focusBefore: null, dispatchId: null,
+    startedAt: 0, timer: null, focusBefore: null, dispatchId: null, onFileName: null,
   };
 
   function copy(key, variables) {
@@ -232,6 +234,13 @@
         return;
       }
       state.selection = item;
+      if (state.mode === "save" && typeof state.onFileName === "function") {
+        // The owner is naming a file, not opening one: the list is only showing
+        // what already lives in this folder.
+        state.onFileName(item.name);
+        state.selection = null;
+        return;
+      }
       paintList();
     });
     row.append(button);
@@ -245,14 +254,18 @@
     const shown = state.items.slice(0, state.shown);
     shown.forEach((item) => nodes.list.append(rowFor(item)));
     nodes.more.hidden = state.items.length <= shown.length;
-    nodes.heading.textContent = state.folderName || copy("pc-exchange-contents");
+    nodes.folderLabel.textContent = state.folderName || copy("pc-exchange-contents");
+    if (state.mode === "save") {
+      nodes.pick.hidden = false;
+      return;
+    }
     nodes.pick.hidden = !(state.selection && state.selection.kind === "file");
     nodes.pick.textContent = state.selection
       ? copy("pc-exchange-open-file", { name: state.selection.name })
       : copy("pc-exchange-open-file", { name: "" });
   }
 
-  // One request shape for all three verbs: ask, then watch the server's record.
+  // One request shape for all four verbs: ask, then watch the server's record.
   async function start(url, payload, onReady) {
     if (state.linkId) payload.link_id = state.linkId;
     let answer;
@@ -287,45 +300,22 @@
     await wait(answer.body.dispatch_id, onReady);
   }
 
-  function askForPc(links) {
-    const nodes = state.nodes;
-    if (!nodes) return;
-    if (links.length === 0) {
-      refused("pc-exchange-no-pc");
-      return;
-    }
-    nodes.pcs.replaceChildren();
-    links.forEach((link) => {
-      const button = element("button", "pc-exchange-pc", link.label || copy("pc-exchange-my-pc"));
-      button.type = "button";
-      button.dataset.linkId = link.link_id;
-      button.addEventListener("click", () => {
-        state.linkId = link.link_id;
-        nodes.pcs.hidden = true;
-        nodes.pcs.replaceChildren();
-        state.path = ".";
-        state.folderName = "";
-        void start(BROWSE, { path: "." }, (body) => {
-          state.items = body.items || [];
-          state.shown = PAGE;
-          paintList();
-        });
-      });
-      nodes.pcs.append(button);
-    });
-    nodes.pcs.hidden = false;
-  }
-
-  function build(onSelect) {
+  function build(settings) {
+    const mode = settings.mode === "save" ? "save" : "import";
+    const onSelect = settings.onSelect;
+    const onSave = settings.onSave;
     const overlay = element("div", "pc-exchange-overlay");
     const dialog = element("section", "pc-exchange-dialog");
     dialog.setAttribute("role", "dialog");
     dialog.setAttribute("aria-modal", "true");
-    dialog.setAttribute("aria-label", copy("pc-exchange-import-title"));
+    dialog.setAttribute("aria-label", copy(mode === "save"
+      ? "pc-exchange-save-title" : "pc-exchange-import-title"));
     dialog.setAttribute("tabindex", "-1");
 
-    const heading = element("h2", "pc-exchange-heading", copy("pc-exchange-import-title"));
-    const note = element("p", "pc-exchange-note", copy("pc-exchange-import-note"));
+    const heading = element("h2", "pc-exchange-heading",
+      copy(mode === "save" ? "pc-exchange-save-title" : "pc-exchange-import-title"));
+    const note = element("p", "pc-exchange-note",
+      copy(mode === "save" ? "pc-exchange-save-note" : "pc-exchange-import-note"));
     const pcs = element("div", "pc-exchange-pcs");
     pcs.hidden = true;
     pcs.setAttribute("role", "group");
@@ -340,9 +330,21 @@
     search.placeholder = copy("pc-exchange-search-placeholder");
     const searchButton = element("button", "pc-exchange-search-button", copy("pc-exchange-search"));
     searchButton.type = "button";
+    // Saving names the file it writes, so the folder it lands in can be chosen.
+    const naming = element("label", "pc-exchange-naming");
+    const fileName = element("input", "pc-exchange-filename");
+    fileName.type = "text";
+    fileName.value = settings.fileName || "";
+    fileName.setAttribute("aria-label", copy("pc-exchange-save-name"));
+    fileName.placeholder = copy("pc-exchange-save-name");
+    naming.append(element("span", "pc-exchange-name-label", copy("pc-exchange-save-name")));
+    naming.append(fileName);
     tools.append(back, search, searchButton);
 
     const list = element("ul", "pc-exchange-list");
+    // The dialog keeps its own title and says which folder is open on its own line,
+    // so browsing never replaces the words that named what the owner is doing.
+    const folderLabel = element("p", "pc-exchange-folder-label", copy("pc-exchange-contents"));
     const more = element("button", "pc-exchange-more", copy("pc-exchange-more"));
     more.type = "button";
     more.hidden = true;
@@ -357,21 +359,17 @@
     pick.hidden = true;
     footer.append(cancel, pick);
 
-    dialog.append(heading, note, pcs, tools, list, more, status, footer);
+    dialog.append(heading, note, pcs, tools, folderLabel, list, more, status, footer);
     overlay.append(dialog);
 
     back.addEventListener("click", () => {
-      if (state.path === ".") return;
-      const parts = state.path.split("/");
-      parts.pop();
-      state.path = parts.length ? parts.join("/") : ".";
-      state.folderName = parts.length ? parts[parts.length - 1] : "";
+      const parent = parentOf(state.path);
+      if (parent === state.path) return;
+      state.path = parent;
+      const text = parent.replace(/\/+$/, "");
+      state.folderName = text ? text.slice(text.lastIndexOf("/") + 1) : "";
       state.selection = null;
-      void start(BROWSE, { path: state.path }, (body) => {
-        state.items = body.items || [];
-        state.shown = PAGE;
-        paintList();
-      });
+      void start(BROWSE, { path: parent }, listed);
     });
     more.addEventListener("click", () => {
       state.shown += PAGE;
@@ -395,6 +393,23 @@
       }
     });
     pick.addEventListener("click", () => {
+      if (mode === "save") {
+        const wanted = fileName.value.trim();
+        if (!wanted) return;
+        const path = state.path === "." ? wanted : state.path.replace(/\/+$/, "") + "/" + wanted;
+        const payload = settings.fileId ? { path, file_id: settings.fileId }
+          : { path, content: typeof settings.content === "string" ? settings.content : "" };
+        void start(SAVE, payload, (body) => {
+          const saved = body.saved || {};
+          if (body.ok !== true) {
+            refused("pc-exchange-save-failed");
+            return;
+          }
+          close();
+          onSave(saved);
+        });
+        return;
+      }
       const item = state.selection;
       if (!item) return;
       void start(FETCH, { path: pathOf(item) }, (body) => {
@@ -409,14 +424,34 @@
         onSelect(picked);
       });
     });
+    if (mode === "save") {
+      // A file already on the PC is a name worth offering, not a thing to open:
+      // choosing it only fills in the name box, and saving over it is what the
+      // backup that #5573 takes first is for.
+      tools.append(naming);
+      search.hidden = true;
+      searchButton.hidden = true;
+      pick.hidden = false;
+      pick.className = "pc-exchange-save";
+      pick.textContent = copy("pc-exchange-save-button");
+      pick.disabled = !fileName.value.trim();
+      state.onFileName = (name) => {
+        fileName.value = name;
+        pick.disabled = false;
+      };
+    }
 
-    return { overlay, dialog, heading, list, more, status, search, searchButton, back, pcs, pick };
+    return {
+      overlay, dialog, heading, list, more, status, search, searchButton, back, pcs, pick,
+      fileName, folderLabel,
+    };
   }
 
   function close() {
     if (!state.open) return;
     state.open = false;
     state.waiting = false;
+    state.onFileName = null;
     stopClock();
     if (state.nodes && state.nodes.overlay.parentNode) {
       state.nodes.overlay.parentNode.removeChild(state.nodes.overlay);
@@ -429,9 +464,13 @@
 
   function open(options) {
     const settings = options || {};
-    if (typeof settings.onSelect !== "function") return { close: close };
+    const saving = settings.mode === "save";
+    if (typeof (saving ? settings.onSave : settings.onSelect) !== "function") {
+      return { close: close };
+    }
     if (state.open) close();
     state.open = true;
+    state.mode = saving ? "save" : "import";
     state.linkId = null;
     state.path = ".";
     state.folderName = "";
@@ -441,14 +480,10 @@
     state.error = null;
     state.dispatchId = null;
     state.focusBefore = root.document.activeElement;
-    state.nodes = build(settings.onSelect);
+    state.nodes = build(settings);
     root.document.body.append(state.nodes.overlay);
     state.nodes.dialog.focus();
-    void start(BROWSE, { path: "." }, (body) => {
-      state.items = body.items || [];
-      state.shown = PAGE;
-      paintList();
-    });
+    void start(BROWSE, { path: "." }, listed);
     return { close: close };
   }
 
