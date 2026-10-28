@@ -63,6 +63,7 @@
   const androidHandoffError = document.getElementById("androidHandoffError");
   const authDivider = document.getElementById("authDivider");
   const passwordLoginForm = document.getElementById("passwordLoginForm");
+  const authHandoff = document.getElementById("authHandoff");
   const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
   const passwordLoginPassword = document.getElementById("passwordLoginPassword");
   const passwordLoginError = document.getElementById("passwordLoginError");
@@ -1674,6 +1675,9 @@
       }
       return;
     }
+    if (authHandoff && !authHandoff.value) {
+      authHandoff.value = loveTreeHandoffFromLocation();
+    }
     // #5481: a mailed one-time link opens the reset confirm view directly.
     const token = passwordResetTokenFromLocation();
     if (token) {
@@ -2043,10 +2047,17 @@
     setAuthFormError(passwordLoginError);
     passwordLoginSubmit.disabled = true;
     try {
-      await passwordAuthRequest("/api/auth/password/login", {
+      const result = await passwordAuthRequest("/api/auth/password/login", {
         identifier: passwordLoginIdentifier.value,
         password: passwordLoginPassword.value,
+        // A pending LoveTree sign-in travels back exactly as it arrived. The server
+        // binds it only after a verified login and answers with the hop it owns.
+        ...(authHandoff && authHandoff.value ? { handoff: authHandoff.value } : {}),
       });
+      if (result && typeof result.handoff_return === "string" && /^https?:\/\//.test(result.handoff_return)) {
+        window.location.assign(result.handoff_return);
+        return;
+      }
       passwordLoginPassword.value = "";
       closeAuthDialog();
       await loadAuthStatus();
@@ -2092,6 +2103,20 @@
     if (!node) return;
     node.textContent = message;
     node.hidden = !message;
+  }
+
+  // A LoveTree sign-in that arrived here hands its pending ticket to the form the dialog
+  // already submits. Same shape and same caution as the reset-link read below: the app shell
+  // also loads inside curated VM harnesses without a location object, so this runs when the
+  // dialog opens, never at load time. No wording or layout changes.
+  function loveTreeHandoffFromLocation() {
+    try {
+      const raw = window.location.search || "";
+      const match = /[?&]handoff=([A-Za-z0-9_.-]{1,1024})(?:&|$)/.exec(raw);
+      return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
   }
 
   function passwordResetTokenFromLocation() {

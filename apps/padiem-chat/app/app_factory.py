@@ -24,6 +24,8 @@ from .account_model_selection_routes import (
 )
 from .account_model_selection_store import D1AccountModelSelectionStore
 from .android_auth_store import D1AndroidAuthHandoffStore
+from .lovetree_auth_routes import lovetree_handoff_start
+from .lovetree_auth_store import D1LoveTreeLoginHandoffStore
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
@@ -523,6 +525,7 @@ def create_app(
     password_reset_store=None,
     password_reset_delivery=None,
     android_handoff_store=None,
+    lovetree_handoff_store=None,
     connector_owner_enrollment=None,
     github_oauth_store=None,
     github_oauth_provider=None,
@@ -568,6 +571,8 @@ def create_app(
         Route("/auth/android/handoff/{handoff_id}", android_handoff_status, methods=["GET"]),
         Route("/auth/android/handoff/{handoff_id}/claim", android_handoff_claim, methods=["POST"]),
         Route("/auth/android/confirm", android_handoff_confirm, methods=["POST"]),
+        # LoveTree 4.0 starts a login here; the callback above returns the one-time ticket.
+        Route("/auth/lovetree/start", lovetree_handoff_start, methods=["GET"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/password/change", password_change, methods=["POST"]),
@@ -1088,6 +1093,18 @@ def create_app(
     ):
         resolved_handoff_store = D1AndroidAuthHandoffStore(d1_binding)
     app.state.android_handoff_store = resolved_handoff_store
+    # LoveTree 4.0 signs in through the Google flow above and receives one single-use
+    # ticket from this table (migration 073). Same D1, no second account authority, and
+    # never a session minted here — without D1/session material the route fails closed.
+    resolved_lovetree_store = lovetree_handoff_store
+    if (
+        resolved_lovetree_store is None
+        and d1_binding is not None
+        and isinstance(resolved.session_secret, str)
+        and resolved.session_secret
+    ):
+        resolved_lovetree_store = D1LoveTreeLoginHandoffStore(d1_binding)
+    app.state.lovetree_handoff_store = resolved_lovetree_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
     # Chat/Claw surfaces read — no second database, table or migration. Without
