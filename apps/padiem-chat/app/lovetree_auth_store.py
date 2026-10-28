@@ -58,6 +58,11 @@ def checked_origin(value: Any) -> str:
     raise ValueError("return origin must be an allowlisted https origin (loopback http for tests)")
 
 
+def is_loopback_origin(value: Any) -> bool:
+    """A test harness on 127.0.0.1/localhost with any port. Never a public address."""
+    return isinstance(value, str) and bool(_LOOPBACK_ORIGIN.fullmatch(value))
+
+
 @dataclass(frozen=True, slots=True)
 class LoveTreeHandoffRecord:
     ticket_id: str
@@ -411,4 +416,5 @@ __all__ = [
     "checked_digest",
     "checked_origin",
     "handoff_digest",
+    "is_loopback_origin",
 ]

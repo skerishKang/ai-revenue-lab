@@ -188,6 +188,8 @@
             <input id="passwordLoginIdentifier" name="identifier" type="text" inputmode="email" autocomplete="username" maxlength="320" required>
             <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
             <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <!-- A pending LoveTree sign-in handoff travels here unchanged; the server binds it only after a verified login. -->
+            <input id="authHandoff" name="handoff" type="hidden" value="" maxlength="1024">
             <button class="auth-link" id="passwordResetOpen" type="button" data-locale-key="auth-forgot-password">비밀번호를 잊으셨나요?</button>
             <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
             <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
