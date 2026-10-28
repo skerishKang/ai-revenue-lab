@@ -287,7 +287,10 @@ def test_a_large_korean_output_fits_the_envelope_the_wire_actually_carries(
     row = state.history_store.rows[created["dispatch"]["dispatch_id"]]
     text = "리포트 행\n" * 350_000  # 4.9 MB of UTF-8 content
     body = text.encode("utf-8")
-    assert len(body) < routes._MAX_RESULT_BODY_BYTES
+    # Owner decision 2026-10-28: no PADIEM request-body ceiling; the parse
+    # itself (not a size comparison) is what the lane relies on now.
+    assert routes._MAX_RESULT_BODY_BYTES is None
+    assert body
 
     nonce = "n" * 32
     state.history_store.rows[row["dispatch_id"]]["nonce_sha256"] = (
@@ -301,8 +304,9 @@ def test_a_large_korean_output_fits_the_envelope_the_wire_actually_carries(
         "content_bytes": len(body),
     }
     wire_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    assert len(wire_bytes) < routes._MAX_RESULT_BODY_BYTES
-    assert len(json.dumps(payload).encode("utf-8")) > routes._MAX_FILE_TEXT_BYTES
+    assert routes._MAX_RESULT_BODY_BYTES is None
+    assert wire_bytes
+    assert routes._MAX_FILE_TEXT_BYTES is None
 
     response = asyncio.run(routes.oracle_mesh_read_result(
         Utf8Request(payload, state, secret=SECRET)

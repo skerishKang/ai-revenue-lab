@@ -1187,6 +1187,14 @@ class OracleMeshExecutor:
         """
         error = data.get("error")
         code = error.get("code") if isinstance(error, dict) else None
+        if status == 413:
+            # The platform's own request-body limit: this path cannot carry the
+            # result, so the caller shows exactly that reason. The bytes stay in
+            # the pending file for the operator; nothing is resent.
+            return self._with_persist_warning(
+                {"ok": False, "retryable": False, "resend_pending": False,
+                 "reason": "result_too_large_for_this_path",
+                 "status": status, "code": code}, persist_error)
         if status == 503 or status == 429 or status >= 500:
             self._rejections = 0
             wait = self._transient_wait_seconds()

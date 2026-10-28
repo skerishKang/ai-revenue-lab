@@ -105,7 +105,11 @@ _DISPATCH_TTL = timedelta(seconds=600)
 #: The result JSON buffers PC file content; use the Owner's 32MiB memory
 #: exception so a 20MB read is not rejected at the old 6MB channel envelope.
 #: Other request bodies and verified non-PC-read contents keep 6MB.
-_MAX_RESULT_BODY_BYTES = 32 * 1024 * 1024
+#: Owner decision 2026-10-28: no PADIEM request-body ceiling. The
+#: platform's own request limit (~100MB on Workers) is the bound; a
+#: rejected oversized result is reported as 'result too large for this
+#: path' by the caller that receives the platform refusal.
+_MAX_RESULT_BODY_BYTES: int | None = None
 _MAX_BODY_BYTES = 6_000_000
 #: One stored conversation message. Reuses the existing product bound
 #: (``history.MAX_HISTORY_MESSAGE_CHARS``); a larger output is split across
@@ -138,7 +142,8 @@ _PRESENCE_ENTRY_OPTIONAL_KEYS = frozenset({"agent_name"})
 _MAX_PRESENCE_ENTRIES = 8
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
-_MAX_FILE_TEXT_BYTES = 6_000_000
+#: No PADIEM text ceiling on a verified result (Owner decision 2026-10-28).
+_MAX_FILE_TEXT_BYTES: int | None = None
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -676,10 +681,11 @@ async def _read_body(
         return None
     try:
         declared = request.headers.get("content-length")
-        if declared is not None and (not declared.isdecimal() or int(declared) > limit):
+        if limit is not None and declared is not None and (
+                not declared.isdecimal() or int(declared) > limit):
             return None
         raw = await request.body()
-        if len(raw) > limit:
+        if limit is not None and len(raw) > limit:
             return None
     except Exception:
         return None
@@ -708,19 +714,23 @@ async def _read_result_body(
         return None if wire is None else (wire, None)
     try:
         declared = request.headers.get("content-length")
-        if declared is not None and (
-            not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
+        if (
+            _MAX_RESULT_BODY_BYTES is not None and declared is not None and (
+                not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
+            )
         ):
             return None
         raw = await request.body()
     except Exception:
         return None
-    if len(raw) < 6 or len(raw) > _MAX_RESULT_BODY_BYTES:
+    if len(raw) < 6 or (
+        _MAX_RESULT_BODY_BYTES is not None and len(raw) > _MAX_RESULT_BODY_BYTES
+    ):
         return None
     header_size = int.from_bytes(raw[:4], "big")
     # A frame without its own body is not a capture; the note-only shape
-    # stays JSON. The header itself is bounded by the same envelope.
-    if not 0 < header_size <= _MAX_RESULT_BODY_BYTES or 4 + header_size >= len(raw):
+    # stays JSON. The declared header size can never exceed the body it sits in.
+    if not 0 < header_size or 4 + header_size >= len(raw):
         return None
     header = _read_json(
         raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
@@ -1569,7 +1579,7 @@ def _deployment_target_for(
     return dict(matches[0]) if len(matches) == 1 else None
 
 
-def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int:
+def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int | None:
     """Server-computed read bound for one dispatch row.
 
     #5015: the Chat PC-files read is a 20 MB call; every other read consumer
@@ -1881,7 +1891,7 @@ def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
 
 
 def _verified_desktop_blob(
-    wire: dict[str, Any], max_bytes: int = _MAX_FILE_TEXT_BYTES,
+    wire: dict[str, Any], max_bytes: int | None = _MAX_FILE_TEXT_BYTES,
     raw: bytes | None = None,
 ) -> bytes | bytearray | None:
     """Revalidate a desktop screenshot blob, or ``b""`` when absent.
@@ -2019,7 +2029,7 @@ def _desktop_failed_content(
 
 def _verified_result_text(
     dispatch: dict[str, Any], wire: dict[str, Any],
-    max_bytes: int = _MAX_FILE_TEXT_BYTES,
+    max_bytes: int | None = _MAX_FILE_TEXT_BYTES,
 ) -> str | None:
     """Revalidate a submission against the claimed dispatch; return the text."""
     text = wire["content_utf8"]
@@ -2030,7 +2040,7 @@ def _verified_result_text(
     except UnicodeEncodeError:
         return None
     if (
-        len(raw) > max_bytes
+        (max_bytes is not None and len(raw) > max_bytes)
         or wire["content_bytes"] != len(raw)
         or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in text)
         or not isinstance(wire["content_sha256"], str)
