@@ -21,19 +21,18 @@ PASS_MARKERS = (
     "CROSS_APP_OWNER_UPLOAD=PASS",
     "CROSS_APP_ORIGINAL_SHA_PRESERVED=PASS",
     "CROSS_APP_OWNER_SELECTION=PASS",
-    "CROSS_APP_ENGINE_PAUSE_ISSUED=PASS",
+    "CROSS_APP_ENGINE_COMPLETED=PASS",
     "CROSS_APP_B62_REQUEST_COMMITTED=PASS",
-    "CROSS_APP_ENGINE_CONTINUATION_DURABLE=PASS",
     "CROSS_APP_DIAGNOSTIC_NO_LEAK=PASS",
     "READ_IS_NOT_WRITE=PASS",
-    "WEB_XLSX_P01_CROSS_APP_PAUSE=PASS",
+    "WEB_XLSX_P01_CROSS_APP_COMPLETED=PASS",
 )
 
 # The harness's own output must stay free of identifiers and credentials.
 LEAK_SENTINELS = ("usr_web_xlsx_owner", "cross-app-harness-credential")
 
 
-def test_real_b62_route_and_real_engine_agree_on_the_p01_pause():
+def test_real_b62_route_and_real_engine_agree_on_the_p01_completion():
     result = subprocess.run(
         [sys.executable, str(HARNESS)],
         capture_output=True, text=True, timeout=120, check=False,

@@ -387,14 +387,16 @@ async def run() -> int:
     )
     check(started.status_code == 202,
           f"start {started.status_code} {started.text[:200]}")
-    check(started.json()["status"] == "waiting_p01", "start status")
+    # Owner decision 2026-10-28: the lane is pre-delegated, so the Engine
+    # completes the tool directly and B62 commits a completion, not a pause.
+    check(started.json()["status"] == "completed", "start status")
     check(started.json()["processing_started"] is False, "no processing")
     check(started.json()["workcopy_created"] is False, "no workcopy at READ consent")
-    check(binding.calls and binding.calls[0]["engine_status"] == 202,
-          "Engine must answer the real pause contract")
+    check(binding.calls and binding.calls[0]["engine_status"] == 200,
+          "Engine must answer the real completed contract")
     check(binding.calls[0]["payload"]["app_id"] == "padiem-web-xlsx-p01",
           "the lane's app id must be dispatched")
-    print("CROSS_APP_ENGINE_PAUSE_ISSUED=PASS")
+    print("CROSS_APP_ENGINE_COMPLETED=PASS")
 
     after = await call(
         app, settings, path=f"/api/claw/office/web-selections/{ref}/p01-status",
@@ -408,13 +410,11 @@ async def run() -> int:
     ).fetchall()
     check(len(rows) == 1 and rows[0]["status"] == "waiting_p01",
           "exactly one committed B62 request")
-    check(bool(rows[0]["continuation_ref"]) and bool(rows[0]["pause_id"]),
-          "Engine continuation must be recorded")
-    continuations = conn.execute(
-        "SELECT app_id, state FROM padiem_web_xlsx_tool_continuations"
-    ).fetchall()
-    check(len(continuations) == 1 and continuations[0]["state"] == "active",
-          "exactly one durable Engine continuation")
+    # The pause/continuation shape is unreachable for this lane now (Owner
+    # decision 2026-10-28): no approval pause is issued, so no continuation is
+    # recorded and nothing is waiting for an owner decision.
+    check(rows[0]["continuation_ref"] in (None, "") and rows[0]["pause_id"] in (None, ""),
+          "a completed pre-delegated request carries no continuation")
 
     # Read consent is not a workcopy/edit grant, and the original stays intact.
     workcopies = conn.execute(
@@ -435,10 +435,9 @@ async def run() -> int:
     conn.close()
 
     print("CROSS_APP_B62_REQUEST_COMMITTED=PASS")
-    print("CROSS_APP_ENGINE_CONTINUATION_DURABLE=PASS")
     print("CROSS_APP_DIAGNOSTIC_NO_LEAK=PASS")
     print("READ_IS_NOT_WRITE=PASS")
-    print("WEB_XLSX_P01_CROSS_APP_PAUSE=PASS")
+    print("WEB_XLSX_P01_CROSS_APP_COMPLETED=PASS")
     return 0
 
 
@@ -446,7 +445,7 @@ def main() -> int:
     try:
         return asyncio.run(run())
     except HarnessFailure as exc:
-        print("WEB_XLSX_P01_CROSS_APP_PAUSE=FAIL", file=sys.stderr)
+        print("WEB_XLSX_P01_CROSS_APP_COMPLETED=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
 
