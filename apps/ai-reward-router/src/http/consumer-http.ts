@@ -184,7 +184,7 @@ const PROVIDER_CALLBACK_PATHS: ReadonlySet<string> = Object.freeze(new Set([AYET
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
-  'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+  'content-security-policy': "default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   'cross-origin-opener-policy': 'same-origin',
   'referrer-policy': 'no-referrer',
   'x-content-type-options': 'nosniff',

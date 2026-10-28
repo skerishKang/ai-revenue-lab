@@ -3,6 +3,7 @@ import { INCOME_PIPELINE_STATUS_LABELS, INCOME_PIPELINE_STATUSES, formatCurrency
 import type { PublicOpportunity } from '../public-supply/domain.js';
 import { displayablePublicOpportunityCards } from '../public-supply/domain.js';
 import {
+  B64_FONT_STYLESHEET_HREF,
   CATEGORY_ICON_CSS,
   THEME_CSS_SHELL_INSET,
   THEME_CSS_TOGGLE,
@@ -259,6 +260,7 @@ function renderShell(title: string, navItems: string, content: string, themeInfo
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="${theme}" />
   <title>내 수익 관리 · B64 AI Reward Router</title>
+  <link rel="stylesheet" href="${B64_FONT_STYLESHEET_HREF}" />
   <style>
 ${THEME_CSS_VARIABLES}
     * { box-sizing: border-box; }
