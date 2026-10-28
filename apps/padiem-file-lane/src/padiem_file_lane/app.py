@@ -13,7 +13,16 @@ from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
 from .storage import FileError, Store, disk_error, require_space
+from . import xlsx_edit
 from .tickets import InvalidTicket, verify_ticket
+
+_MEDIA_BY_KIND = {
+    "txt": "text/plain; charset=utf-8", "md": "text/markdown; charset=utf-8",
+    "csv": "text/csv; charset=utf-8", "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
 
 
 def create_app(*, root: Path | None = None, secret: str | None = None, origins=None):
@@ -28,6 +37,13 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
     if len(secret) < 32:
         raise RuntimeError("FILE_LANE_TICKET_SECRET must contain at least 32 characters")
     store = Store(root)
+
+    def _xlsx_source(store, user_id, file_id):
+        meta = store.meta(user_id, file_id)
+        if meta.get("kind") != "xlsx":
+            raise FileError("unsupported_file_type", 415)
+        directory = store.directory(user_id, file_id)
+        return (directory / "data").read_bytes(), meta
 
     def ticket(request):
         return verify_ticket(request.headers, secret)
@@ -92,6 +108,54 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                 "X-File-Lane-Total-Chars": str(total)})
         return FileResponse(path, media_type="text/plain; charset=utf-8", headers={"Cache-Control": "no-store"})
 
+    async def structure(request):
+        claims = ticket(request)
+        data, meta = await run_in_threadpool(_xlsx_source, store, claims.user_id,
+                                             request.path_params["file_id"])
+        form = await run_in_threadpool(xlsx_edit.describe, data)
+        return JSONResponse({"ok": True, "file_id": meta["file_id"], "name": meta["name"],
+                             **form}, headers={"Cache-Control": "no-store"})
+
+    async def fill(request):
+        claims = ticket(request)
+        try:
+            body = await request.json()
+        except Exception:
+            raise FileError("invalid_body", 400) from None
+        if not isinstance(body, dict) or set(body) - {"mapping", "extend", "filename"}:
+            raise FileError("invalid_body", 400)
+        data, _meta = await run_in_threadpool(_xlsx_source, store, claims.user_id,
+                                              request.path_params["file_id"])
+        try:
+            filled = await run_in_threadpool(
+                xlsx_edit.fill, data,
+                mapping=body.get("mapping"), extensions=body.get("extend"),
+            )
+        except xlsx_edit.FormError as exc:
+            raise FileError(exc.code, 422) from None
+        name = body.get("filename") or "filled.xlsx"
+        pending = store.new_upload(claims.user_id, name)
+        try:
+            await run_in_threadpool(pending.open)
+            await run_in_threadpool(pending.write, filled, claims.max_bytes)
+            meta = await run_in_threadpool(pending.finish)
+        finally:
+            with anyio.CancelScope(shield=True):
+                if not pending.committed:
+                    await run_in_threadpool(pending.close)
+        return JSONResponse({"ok": True, **meta}, status_code=201,
+                            headers={"Cache-Control": "no-store"})
+
+    async def raw(request):
+        claims = ticket(request)
+        directory = await run_in_threadpool(store.directory, claims.user_id,
+                                            request.path_params["file_id"])
+        meta = await run_in_threadpool(store.meta, claims.user_id,
+                                       request.path_params["file_id"])
+        media = _MEDIA_BY_KIND.get(meta.get("kind"), "application/octet-stream")
+        return FileResponse(directory / "data", media_type=media,
+                            filename=meta["name"], headers={"Cache-Control": "no-store"})
+
     async def health(request):
         return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
 
@@ -106,7 +170,10 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         return error(failure.code, failure.status)
 
     app = Starlette(routes=[Route("/health", health), Route("/files", upload, methods=["POST"]),
-                            Route("/files/{file_id}/meta", metadata), Route("/files/{file_id}/text", text)],
+                            Route("/files/{file_id}/meta", metadata), Route("/files/{file_id}/text", text),
+                            Route("/files/{file_id}/structure", structure),
+                            Route("/files/{file_id}/fill", fill, methods=["POST"]),
+                            Route("/files/{file_id}/raw", raw)],
                     exception_handlers={InvalidTicket: denied, FileError: failed, OSError: disk_failed})
     app.state.store = store
     allowed = origins if origins is not None else [x.strip() for x in os.environ.get("FILE_LANE_ALLOWED_ORIGINS", "").split(",") if x.strip()]
