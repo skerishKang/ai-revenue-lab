@@ -40,7 +40,7 @@ import {
   verifyB64OAuthState,
   type GoogleFetch,
 } from '../identity/google.js';
-import { CredentialError } from '../identity/password.js';
+import { CredentialError, PasswordHashingUnavailableError } from '../identity/password.js';
 import { isB64SuperAdmin } from '../identity/admin.js';
 import { B64_ADS_TXT_PATH, B64_AYET_ADS_TXT } from './ads-txt.js';
 import { renderB64AdminConsole } from '../ops/admin-view.js';
@@ -474,6 +474,11 @@ export function createConsumerHttpHandler(
       } catch (error) {
         if (error instanceof CredentialError) return jsonErrorResponse(request, 400, error.code);
         if (error instanceof B64MemberExistsError) return jsonErrorResponse(request, 409, 'member_exists');
+        // A refused KDF is not a storage failure: the two need different
+        // operators, and #5978 lost time to exactly this confusion.
+        if (error instanceof PasswordHashingUnavailableError) {
+          return jsonErrorResponse(request, 503, error.code);
+        }
         return storageUnavailableResponse(request);
       }
     }
