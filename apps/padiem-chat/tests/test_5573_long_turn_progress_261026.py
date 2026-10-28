@@ -102,6 +102,10 @@ def test_the_stream_stays_open_with_a_comment_line_and_no_deadline():
     assert "yield _KEEPALIVE_SENTINEL" in body
     assert "pending = None" in body
     assert "raise" in body  # an upstream failure still surfaces as a failure
+    # #5479: any exit - including a close at the yield point - cancels the
+    # read nobody will receive; the settled paths leave it done, a no-op.
+    assert "finally:" in body
+    assert "if pending is not None and not pending.done():" in body
     # The general lane is the one that needed it.
     assert "async for item in _stream_with_keepalive(stream):" in CHAT_ROUTES
     assert "yield SSE_KEEPALIVE" in CHAT_ROUTES
@@ -110,3 +114,56 @@ def test_the_stream_stays_open_with_a_comment_line_and_no_deadline():
     assert "heartbeat" in LIVE_EVENTS and 'if kind == "heartbeat":' in LIVE_EVENTS
     # A comment line is transport for the browser too: it is dropped, not shown.
     assert 'if (!line || line.startsWith(":")) return;' in TRANSPORT
+
+
+def test_a_stream_closed_between_keepalives_cancels_the_read_nobody_receives():
+    """#5479: a client that left closes the generator at its yield point.
+
+    GeneratorExit is not a CancelledError, so the shielded upstream read
+    needs its own guarantee: closing the stream cancels the read nobody
+    will receive instead of leaving it running on the loop.
+    """
+    import asyncio
+
+    from app.chat_routes import _KEEPALIVE_SENTINEL, _stream_with_keepalive
+
+    state = {"cancelled": False}
+
+    async def slow_upstream():
+        try:
+            yield "a"
+            await asyncio.sleep(30)
+            yield "b"
+        except asyncio.CancelledError:
+            state["cancelled"] = True
+            raise
+
+    async def scenario():
+        gen = _stream_with_keepalive(slow_upstream(), interval=0.01)
+        assert await gen.__anext__() == "a"
+        assert await gen.__anext__() is _KEEPALIVE_SENTINEL
+        await gen.aclose()
+        for _ in range(3):
+            await asyncio.sleep(0)
+        assert state["cancelled"] is True
+
+    asyncio.run(scenario())
+
+
+def test_the_roster_read_started_early_dies_with_the_turn_that_left_it():
+    """#5479: the catalog read (#5614) is cancelled when the turn never awaits it.
+
+    The read overlaps the PC work context, and the PC target checks may refuse
+    the turn before the roster is ever evaluated - or the client may leave
+    mid-flight. Either way the read ends with the turn instead of finishing
+    for nobody; a task the evaluation awaited is done, where the guard is a
+    no-op.
+    """
+    claw_general = (APP / "claw_general_routes.py").read_text(encoding="utf-8")
+    start = claw_general.index(
+        "catalog_task, catalog_unavailable = _start_selectable_model_read("
+    )
+    span = claw_general[start:claw_general.index("    live_requested = (")]
+    assert span.count("    finally:") == 1
+    assert "if catalog_task is not None and not catalog_task.done():" in span
+    assert span.index("await catalog_task") < span.index("    finally:")

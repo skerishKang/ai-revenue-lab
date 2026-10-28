@@ -127,21 +127,30 @@ async def _stream_with_keepalive(stream, *, interval: float = SSE_KEEPALIVE_SECO
 
     iterator = stream.__aiter__()
     pending: asyncio.Future | None = None
-    while True:
-        if pending is None:
-            pending = asyncio.ensure_future(iterator.__anext__())
-        try:
-            item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
-        except asyncio.TimeoutError:
-            yield _KEEPALIVE_SENTINEL
-            continue
-        except StopAsyncIteration:
-            return
-        except asyncio.CancelledError:
+    try:
+        while True:
+            if pending is None:
+                pending = asyncio.ensure_future(iterator.__anext__())
+            try:
+                item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
+            except asyncio.TimeoutError:
+                yield _KEEPALIVE_SENTINEL
+                continue
+            except StopAsyncIteration:
+                return
+            except asyncio.CancelledError:
+                pending.cancel()
+                raise
+            pending = None
+            yield item
+    finally:
+        # #5479: a client that left closes this generator at its yield point
+        # (GeneratorExit, which is not a CancelledError); without this, the
+        # shielded upstream read keeps running with nobody to receive it. The
+        # paths that already settled the read leave it done, where this is a
+        # no-op.
+        if pending is not None and not pending.done():
             pending.cancel()
-            raise
-        pending = None
-        yield item
 
 
 def _stream_json_error(exc: ChatRuntimeError) -> JSONResponse:
