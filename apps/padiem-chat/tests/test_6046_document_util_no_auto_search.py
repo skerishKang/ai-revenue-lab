@@ -170,7 +170,14 @@ async def test_document_scope_streams_without_a_grounding_degradation_notice() -
             json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto"},
         )
     assert undeclared.status_code == 200
-    assert "웹 검색을 사용할 수 없어" in undeclared.text, "the differential must keep showing the silent degradation"
+    # #6090: the undeclared document is still answered (never a 422), and the
+    # notice now names the real cause — the body is longer than a search query —
+    # instead of the misleading "웹 검색을 사용할 수 없어" degradation line. The
+    # differential this test exists for is unchanged: declared => no notice at
+    # all, undeclared => a notice.
+    assert "웹 검색을 사용할 수 없어" not in undeclared.text
+    assert "글이 너무 길어" in undeclared.text
+    assert '"web_search_query_too_long"' in undeclared.text
 
 
 @pytest.mark.asyncio
@@ -193,8 +200,13 @@ async def test_short_document_scope_does_not_egress_the_record_as_a_search_query
 
 
 @pytest.mark.asyncio
-async def test_undeclared_request_keeps_the_existing_cap_behavior() -> None:
-    """util 을 선언하지 않으면 기존 동작 그대로다 — 수정이 공유 분기를 넓히지 않았다는 differential 증거."""
+async def test_undeclared_request_answers_with_korean_length_guidance() -> None:
+    """util 을 선언하지 않은 같은 장문도 이제 답변이 나온다 (#6090).
+
+    #6046 당시 이 요청은 422 "검색어는 1자 이상 2000자 이하로 입력해 주세요." 였다.
+    본문 전문이 자동 검색 질의로 넘어갔기 때문이다. #6090 은 검색 분기를 고쳤고,
+    본문은 여전히 외부로 나가지 않으며(검색 호출 0) 대화는 한국어 안내와 함께 계속된다.
+    """
     seen: list[dict] = []
     app, provider = build_app(seen)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
@@ -203,8 +215,9 @@ async def test_undeclared_request_keeps_the_existing_cap_behavior() -> None:
             json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto"},
         )
 
-    assert response.status_code == 422
-    assert response.json()["error"]["message"] == "검색어는 1자 이상 2000자 이하로 입력해 주세요."
+    assert response.status_code == 200, response.text[:300]
+    assert response.json()["answer"] == "작성된 원고입니다."
+    assert response.json()["metadata"]["web_grounding_error"] == "web_search_query_too_long"
     assert provider.search_calls == []
 
 

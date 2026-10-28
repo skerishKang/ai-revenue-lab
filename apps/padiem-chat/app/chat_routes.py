@@ -15,7 +15,11 @@ from .attachments import ImageAttachment
 from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
-from .auto_grounding import AutoGroundingService, auto_grounding_may_continue
+from .auto_grounding import (
+    AutoGroundingService,
+    auto_grounding_may_continue,
+    auto_grounding_skip_fields,
+)
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -1151,6 +1155,10 @@ async def api_chat(request: Request) -> JSONResponse:
                         result.update(grounding_fallback_fields(exc))
                 else:
                     result = await _plain_completion()
+                    # #6090: an automatic search skipped because the request is a
+                    # document says so in Korean; a plain long answer says nothing.
+                    if auto_decision is not None:
+                        result.update(auto_grounding_skip_fields(auto_decision))
             else:
                 grounded = request.app.state.grounded_chat
                 result = await grounded.complete(

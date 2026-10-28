@@ -19,7 +19,13 @@ from padiem_ai_core.web_runtime import WebRuntimeError
 from .b14_client import B14Client, ChatRuntimeError, MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
 from .task_modes import TaskMode
 from .tool_presentations import ToolPresentationDescriptor
-from .web_tools import MAX_QUERY_CHARS, WebProvider, WebToolError
+from .web_tools import (
+    MAX_QUERY_CHARS,
+    SEARCH_QUERY_TOO_LONG_CODE,
+    SEARCH_QUERY_TOO_LONG_MESSAGE,
+    WebProvider,
+    WebToolError,
+)
 
 
 _RESEARCH_PLANNER_SKILL = TaskMode(
@@ -121,7 +127,27 @@ def _translate_core_error(exc: GroundingRuntimeError) -> GroundingError:
     return GroundingError(exc.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.", source_code=exc.code)
 
 
+def search_query_too_long_error() -> GroundingError:
+    """#6090: the request is longer than any query the search provider accepts.
+
+    Not a turn-ending client error: the provider's query contract is the real
+    limit, so the same selected model answers without web evidence and the
+    Korean guidance names both ways forward (split it, or attach the file).
+    """
+    return GroundingError(413, SEARCH_QUERY_TOO_LONG_CODE, SEARCH_QUERY_TOO_LONG_MESSAGE)
+
+
 def grounding_fallback_fields(error: GroundingError) -> dict:
+    # #6090: checked before the translation, which folds unknown codes into the
+    # generic web-grounding family.
+    if error.code == SEARCH_QUERY_TOO_LONG_CODE:
+        # The degradation notice is the actionable Korean guidance, not the
+        # generic "웹 검색을 사용할 수 없어" line, because the cause here is the
+        # shape of the user's own request and the user can fix it.
+        return {
+            "notice": SEARCH_QUERY_TOO_LONG_MESSAGE,
+            "metadata": {"web_grounding_error": SEARCH_QUERY_TOO_LONG_CODE},
+        }
     error = _translate_core_error(GroundingRuntimeError(error.code, "", error.status_code))
     if error.code not in {"web_grounding_auth_error", "web_grounding_unavailable", "web_grounding_no_evidence"}:
         error = GroundingError(error.status_code, "web_grounding_unavailable", "웹 검색을 사용할 수 없습니다.")
@@ -179,8 +205,10 @@ class GroundedChatService:
         additional_system_context: str | None,
     ) -> dict:
         query = (tool_input or _latest_user_message(messages)).strip()
-        if not query or len(query) > MAX_QUERY_CHARS:
-            raise GroundingError(422, "invalid_tool_input", "검색어는 1자 이상 2000자 이하로 입력해 주세요.")
+        if not query:
+            raise GroundingError(422, "invalid_tool_input", "검색할 내용을 한 줄로 알려 주세요.")
+        if len(query) > MAX_QUERY_CHARS:
+            raise search_query_too_long_error()
 
         async def planner(search_question: str) -> str | None:
             try:
@@ -259,8 +287,10 @@ class GroundedChatService:
         try:
             if tool.id == "web_search":
                 query = (tool_input or _latest_user_message(messages)).strip()
-                if not query or len(query) > MAX_QUERY_CHARS:
-                    raise GroundingError(422, "invalid_tool_input", "검색어는 1자 이상 2000자 이하로 입력해 주세요.")
+                if not query:
+                    raise GroundingError(422, "invalid_tool_input", "검색할 내용을 한 줄로 알려 주세요.")
+                if len(query) > MAX_QUERY_CHARS:
+                    raise search_query_too_long_error()
                 grounded = await self._runtime.run_search(
                     query,
                     synthesizer=synthesizer,
