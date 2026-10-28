@@ -2809,6 +2809,32 @@ class D1HistoryStore:
         )
         return _changed_rows(written) == 1
 
+    async def renew_oracle_mesh_claim(
+        self, *, dispatch_id: str, nonce_sha256: str,
+    ) -> str | None:
+        """#5997 — extend the lease of a command this executor is still running.
+
+        The condition is the same proof a submission carries: the row is still
+        pending and still names this nonce. A renewal whose claim was lost — the
+        lease ran out and a later poll re-rolled the nonce — changes nothing and is
+        told so, so the executor stops renewing instead of resurrecting a claim the
+        lane has already given to somebody else. A running executor that keeps
+        renewing is never handed out again; one that dies stops renewing, and the
+        existing lease expiry re-delivers the work exactly as before.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce_sha256, str) or not nonce_sha256:
+            raise HistoryError("nonce_sha256 is required")
+        moment = datetime.now(timezone.utc)
+        until = _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS))
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+            until, dispatch_id, "pending", nonce_sha256,
+        )
+        return until if _changed_rows(written) == 1 else None
+
     async def cancel_oracle_mesh_dispatches_for_run(
         self, *, user_id: str, run_id: str,
     ) -> int:

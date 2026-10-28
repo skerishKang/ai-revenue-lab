@@ -14,6 +14,7 @@ import json
 import re
 import ssl
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -30,6 +31,12 @@ RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 #: The owner's stop, read back while a command is already running. One dispatch id
 #: in, one boolean out; nothing is claimed and nothing is written.
 CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
+#: #5997: a live claim is renewed while the command still runs. The server's lease is
+#: one minute, so a third of it keeps a healthy executor always ahead of expiry while a
+#: dead one stops renewing and is re-delivered by the same lease as before. Nothing
+#: here is a time ceiling: the command runs until the console answers.
+LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
+RENEW_INTERVAL_SECONDS = 20
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -1323,7 +1330,47 @@ class OracleMeshExecutor:
         dispatch = self.poll_once()
         if dispatch is None:
             return None
-        return self.submit(dispatch, self.execute(dispatch))
+        renewer = self.start_lease_renewal(dispatch)
+        try:
+            outcome = self.execute(dispatch)
+        finally:
+            if renewer is not None:
+                renewer.set()
+        return self.submit(dispatch, outcome)
+
+    def start_lease_renewal(self, dispatch: OracleMeshDispatch) -> Optional[threading.Event]:
+        """#5997 — hold this claim for as long as the command actually runs.
+
+        A separate thread posts the same dispatch id and the same nonce every
+        ``RENEW_INTERVAL_SECONDS``, and the server pushes ``claimed_until`` forward
+        under that nonce — the very nonce the later submission carries, so the claim
+        and the result can never drift apart. A renewal the server refuses means the
+        claim is already gone (the lane re-delivered the work); the loop stops rather
+        than reviving it. If this process dies the thread dies with it, the lease runs
+        out, and the existing expiry hands the work out again.
+        """
+
+        stop = threading.Event()
+
+        def loop() -> None:
+            while not stop.wait(RENEW_INTERVAL_SECONDS):
+                try:
+                    status, _data = self._post(
+                        LEASE_RENEW_PATH,
+                        {"dispatch_id": dispatch.dispatch_id, "nonce": dispatch.nonce},
+                    )
+                except OracleMeshChannelRefused:
+                    continue
+                except Exception:
+                    continue
+                if status == 409:
+                    return
+
+        thread = threading.Thread(
+            target=loop, name="oracle-mesh-lease-renew", daemon=True,
+        )
+        thread.start()
+        return stop
 
 
 __all__ = [
