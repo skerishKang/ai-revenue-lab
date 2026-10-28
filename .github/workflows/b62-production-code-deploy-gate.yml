@@ -841,8 +841,23 @@ jobs:
           # traffic ever ran; proving against it would either block every later
           # release or teach the next generated config to carry that residue forward.
           if [ "${{ inputs.mode }}" = "rollback_production_code" ]; then
-            python3 .github/scripts/b62_binding_baseline.py \
-              --worker "${B62_WORKER}" --payload "${chat_served}"
+            # A rollback goes back to the bindings the version being returned to
+            # already carried, so the deploy-time baseline cannot be the gate here
+            # - the set it compares is precisely what the rollback is leaving
+            # behind. On 2026-10-28 this step blocked the gate's own rollback with
+            # BINDING_SET_DRIFT while Chat was answering 500 on every signed-in
+            # path, and the CTO had to run `wrangler rollback` to
+            # 2fb11b2b-606c-44c8-a5ff-d66c6b53dc53 by hand at 11:50.
+            # The comparison still runs, because the residue of the version being
+            # left is worth reading - it decides nothing. That the target exists
+            # and is a recorded version is proved by the rollback job, against the
+            # Worker's own version history, and this does not touch it.
+            if python3 .github/scripts/b62_binding_baseline.py \
+              --worker "${B62_WORKER}" --payload "${chat_served}"; then
+              echo "B62_ROLLBACK_LEAVING_VERSION_BINDINGS=MATCHES_BASELINE"
+            else
+              echo "B62_ROLLBACK_LEAVING_VERSION_BINDINGS=RESIDUE_NOTED"
+            fi
             if python3 .github/scripts/b62_binding_baseline.py \
               --worker "${B62_WORKER}" --payload "${chat_settings}" \
               > "${RUNNER_TEMP}/b62-baseline-settings-plane.txt" 2>&1; then
