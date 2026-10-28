@@ -1,6 +1,6 @@
 # 화면 자산 출처 (ATTRIBUTION)
 
-이 프로토타입이 실제로 내보내는 **이미지 4장**과 **웹폰트 6종**의 출처·변형·사용 조건 기록.
+이 프로토타입이 실제로 내보내는 **이미지 7장**과 **웹폰트 7종**의 출처·변형·사용 조건 기록.
 `tests/test_parliament_prototype.py`가 이 파일을 읽어, 자산마다 출처가 적혀 있는지 확인한다.
 
 ## 웹폰트 (Pretendard · MaruBuri)
@@ -26,6 +26,23 @@
 - CSS는 이 6개 파일만 `@font-face`로 선언하고, 화면이 요구하는 `font-weight`는 400/500/600/700 네 값만 쓴다. 면이 없는 650·750는 쓰지 않도록 정규화했다(근사면이 조용히 골라지는 것을 막기 위한 계약이며 테스트가 강제한다).
 - Playfair Display 는 us/uk/fr 의 **라틴 제목에만** 쓴다(`--font-display` 첫 면). 한글 제목은 마루부리가 담당하고, 한국 테마의 스택은 바꾸지 않았다. 파일은 Google Fonts 가 배포하는 latin 서브셋 woff2(318 glyph, 23,224 bytes, sha256 28453852…)를 변형 없이 싣는다. licence 전문은 `fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt`.
 - 원격 폰트 CDN은 쓰지 않는다. `@import`·원격 `url()` 금지가 이 저장소의 네트워크 0 계약과 같은 선상에 있다.
+
+## 해외 히어로 사진 3장 — Wikimedia Commons
+
+라이선스는 Commons API(`prop=imageinfo&iiprop=extmetadata`)로 조회한 값을 근거로 적는다.
+파일 페이지를 직접 확인하지 않은 값은 쓰지 않았다.
+
+| 파일 | 장소 | 원본 URL | 저작자 | 라이선스 | 변형 |
+|---|---|---|---|---|---|
+| `parliament-uk-hero.jpg` | 웨스트민스터 궁과 빅벤(템스강에서, dusk) | https://commons.wikimedia.org/wiki/File:Westminster_and_big_ben.jpg | Farruk Ahmed Bhuiyan | **CC BY-SA 4.0** (저작자·라이선스 표기 필요) | 3840×2160 → 2560×1440, JPEG q82 재인코딩, EXIF/GPS 제거 |
+| `parliament-us-hero.jpg` | 미국 국회의사당 서면 | https://commons.wikimedia.org/wiki/File:Capitol_Building_Full_View.jpg | Noclip | **퍼블릭 도메인** | 3840×1646 → 2560×1097, 〃 |
+| `parliament-fr-hero.jpg` | 팔레 부르봉(국민의회) 열주와 삼색기 | https://commons.wikimedia.org/wiki/File:Palais_Bourbon,_Paris_7e,_NW_View_140402_1.jpg | DXR | **퍼블릭 도메인** | 3840×2302 → 2560×1535, 〃 |
+
+- 세 장 모두 **실제 그 나라의 의회 건물**이다. 다른 나라 건물을 섞거나 실존 인물의 활동 사진을 만들지 않았다.
+- 영국 사진은 CC BY-SA 4.0 이므로 화면 푸터에 저작자와 라이선스를 적고, 이 파일에 원본 URL 과 변형 내역을 남겼다.
+  라이선스 전문: https://creativecommons.org/licenses/by-sa/4.0/
+- 미국 사진은 연방정부 건물을 촬영한 퍼블릭 도메인, 프랑스 사진도 퍼블릭 도메인이다. 표기는 의무가 아니지만 같은 방식으로 남겼다.
+- 원본은 내려받은 뒤 축소·재인코딩만 했고(자르기 없음), EXIF·GPS 는 제거했다. sha256 은 커밋 메시지에 기록했다.
 
 ## 이미지 — 제공자와 소유
 
