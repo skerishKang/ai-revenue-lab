@@ -50,11 +50,11 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
     assert 'script.src = "./pc-file-exchange.js"' in menu
     assert 'css.href = "./pc-file-exchange.css"' in menu
     assert menu.count("loadPcExchange()") >= 2
-    # The part speaks only to the six new owner routes: nothing older, nothing the
+    # The part speaks only to the eight new owner routes: nothing older, nothing the
     # composer owns, and no second pairing or dispatch surface.
     assert sorted({found for found in script.split('"') if found.startswith("/api/")}) == [
-        "/api/pc/browse", "/api/pc/cancel", "/api/pc/fetch", "/api/pc/find",
-        "/api/pc/result", "/api/pc/save",
+        "/api/pc/browse", "/api/pc/cancel", "/api/pc/delete", "/api/pc/fetch",
+        "/api/pc/find", "/api/pc/move", "/api/pc/result", "/api/pc/save",
     ]
     assert "EventSource" not in script and "WebSocket" not in script
     # One entry point, for any menu.

@@ -529,10 +529,11 @@ async function main() {
         "pc-exchange-save-failed"].every((key) => !/디스패치|라우트|JSON|HTTP|엔드포인트|path_relative|경로/i
           .test(copyOf(key))),
     "");
-  check("the part asks for nothing but its own six calls",
+  check("the part asks for nothing but its own eight calls",
     JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0]).sort()) ===
-      JSON.stringify(['"/api/pc/browse"', '"/api/pc/cancel"', '"/api/pc/fetch"',
-                      '"/api/pc/find"', '"/api/pc/result"', '"/api/pc/save"']),
+      JSON.stringify(['"/api/pc/browse"', '"/api/pc/cancel"', '"/api/pc/delete"',
+                      '"/api/pc/fetch"', '"/api/pc/find"', '"/api/pc/move"',
+                      '"/api/pc/result"', '"/api/pc/save"']),
     JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0])));
   for (const forbidden of ["confirm(", "alert(", "setTimeout(fetch", "maxAttempts", "max_wait"]) {
     check(`the part contains no ${forbidden}`, !script.includes(forbidden), forbidden);

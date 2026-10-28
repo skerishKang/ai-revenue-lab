@@ -122,6 +122,8 @@ PC_BROWSE_PATH = "/api/pc/browse"
 PC_FIND_PATH = "/api/pc/find"
 PC_FETCH_PATH = "/api/pc/fetch"
 PC_SAVE_PATH = "/api/pc/save"
+PC_MOVE_PATH = "/api/pc/move"
+PC_DELETE_PATH = "/api/pc/delete"
 PC_CANCEL_PATH = "/api/pc/cancel"
 PC_RESULT_PATH = "/api/pc/result"
 PC_FILE_PATH = "/api/pc/file"
@@ -962,6 +964,121 @@ async def pc_file_exchange_save(request: Request) -> JSONResponse:
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
         tool_call_ref=_call_ref(run[0], "save", root, relative),
+        files_target=target,
+    )
+    return await _staged(answer, run=run, extra={"name": name})
+
+
+async def pc_file_exchange_move(request: Request) -> JSONResponse:
+    """Move or rename one file on the owner's PC through #5573's write.
+
+    The destination stays inside the folder this same link granted: moving one
+    file is never a way to reach a folder the link did not. The builder copies
+    what the move would replace before anything changes, and a backup that
+    fails stops the step there.
+    """
+
+    body = await _read_body(
+        request, frozenset({"path", "destination"}), optional=frozenset({"link_id"}),
+    )
+    if body is None:
+        return _error(400, "pc_exchange_invalid_body")
+    owner = await _owner(request)
+    if isinstance(owner, JSONResponse):
+        return owner
+    session, uid, workspace_id = owner
+    links = await _live_links(request, uid)
+    if isinstance(links, JSONResponse):
+        return links
+    link_id, refusal = _link_id(body.get("link_id"))
+    if refusal is not None:
+        return refusal
+    link, refusal = _choose_link(links, link_id)
+    if refusal is not None:
+        return refusal
+    target, refusal = await _dispatch_target(request, session=session, uid=uid, link=link)
+    if refusal is not None:
+        return refusal
+    picked = _resolve_path(link["roots"], body.get("path"))
+    if picked is None:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    root, relative = picked
+    if not relative:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    picked_destination = _resolve_path(link["roots"], body.get("destination"))
+    if picked_destination is None:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    destination_root, destination_relative = picked_destination
+    if destination_root != root or not destination_relative:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    name = destination_relative.rsplit("/", 1)[-1]
+    run = await _stage_run(request, uid=uid, workspace_id=workspace_id,
+                           note="내 PC에서 파일을 옮겼습니다: " + name)
+    if isinstance(run, JSONResponse):
+        return run
+    answer = await dispatch_oracle_mesh_command_intent(
+        request,
+        command=_pc_write_command(
+            op="move",
+            target=root.rstrip("/") + "/" + relative,
+            backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+            relative=relative,
+            destination=destination_root.rstrip("/") + "/" + destination_relative,
+        ),
+        wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
+        trusted_owner=(session, uid, workspace_id),
+        tool_call_ref=_call_ref(run[0], "move", root, relative, destination_relative),
+        files_target=target,
+    )
+    return await _staged(answer, run=run, extra={"name": name})
+
+
+async def pc_file_exchange_delete(request: Request) -> JSONResponse:
+    """Delete one file on the owner's PC, after #5573's builder copies it first."""
+
+    body = await _read_body(request, frozenset({"path"}), optional=frozenset({"link_id"}))
+    if body is None:
+        return _error(400, "pc_exchange_invalid_body")
+    owner = await _owner(request)
+    if isinstance(owner, JSONResponse):
+        return owner
+    session, uid, workspace_id = owner
+    links = await _live_links(request, uid)
+    if isinstance(links, JSONResponse):
+        return links
+    link_id, refusal = _link_id(body.get("link_id"))
+    if refusal is not None:
+        return refusal
+    link, refusal = _choose_link(links, link_id)
+    if refusal is not None:
+        return refusal
+    target, refusal = await _dispatch_target(request, session=session, uid=uid, link=link)
+    if refusal is not None:
+        return refusal
+    picked = _resolve_path(link["roots"], body.get("path"))
+    if picked is None:
+        return _error(422, "oracle_mesh_file_path_invalid")
+    root, relative = picked
+    if not relative:
+        # Deleting the granted folder itself is not one file, and a backup of it
+        # would be a second copy of everything inside.
+        return _error(422, "oracle_mesh_file_path_invalid")
+    name = relative.rsplit("/", 1)[-1]
+    run = await _stage_run(request, uid=uid, workspace_id=workspace_id,
+                           note="내 PC에서 파일을 지웠습니다: " + name)
+    if isinstance(run, JSONResponse):
+        return run
+    answer = await dispatch_oracle_mesh_command_intent(
+        request,
+        command=_pc_write_command(
+            op="delete",
+            target=root.rstrip("/") + "/" + relative,
+            backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+            relative=relative,
+        ),
+        wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
+        trusted_owner=(session, uid, workspace_id),
+        tool_call_ref=_call_ref(run[0], "delete", root, relative),
         files_target=target,
     )
     return await _staged(answer, run=run, extra={"name": name})
