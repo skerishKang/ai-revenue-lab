@@ -295,7 +295,7 @@ ${THEME_CSS_SHELL_INSET}
 
     .home-intro { margin: 18px 0 8px; }
     .intro-desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
-    .cta-link { color: var(--accent); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .cta-link { display: inline-flex; align-items: center; min-height: 24px; color: var(--accent); font-size: 13px; font-weight: 700; white-space: nowrap; }
     .cta-link:hover { text-decoration: underline; }
     .home-actions { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 10px; }
     .home-cta { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: var(--radius-btn); font-size: 15px; font-weight: 700; letter-spacing: -.01em; transition: background .16s ease, transform .16s ease; }
@@ -342,7 +342,7 @@ ${THEME_CSS_SHELL_INSET}
       margin-top: auto;
     }
     .reward-cta:hover { background: var(--accent-strong); transform: translateY(-1px); }
-    .detail-link { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 11px; font-size: 13px; color: var(--accent); font-weight: 600; }
+    .detail-link { display: inline-flex; align-items: center; min-height: 24px; gap: 4px; align-self: flex-start; margin-top: 11px; font-size: 13px; color: var(--accent); font-weight: 600; }
     .detail-link:hover { text-decoration: underline; }
     .reward-cta:focus-visible, .nav-item:focus-visible, .brand:focus-visible, .detail-link:focus-visible, .filter-bar input:focus-visible, .filter-bar select:focus-visible, .filter-bar button:focus-visible, .back-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
