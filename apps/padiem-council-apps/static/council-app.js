@@ -1102,7 +1102,12 @@
             cb.value = f.id;
             cb.className = "council-book-check";
             cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
-            li.appendChild(cb);
+            /* 상자는 24px(#6075)로 두고, 그 주먹을 44×44 라벨로 감싼다. 라벨이 입력을
+               감싸면 상자 밖을 눌러도 선택되므로 이름·본문 단추와 경쟁하지 않는다. */
+            const check = document.createElement("label");
+            check.className = "council-archive-check";
+            check.appendChild(cb);
+            li.appendChild(check);
             const btn = document.createElement("button");
             btn.type = "button";
             btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
