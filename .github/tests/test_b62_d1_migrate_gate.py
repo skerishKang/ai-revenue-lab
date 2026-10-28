@@ -318,7 +318,7 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
 # --- window, up_to and source pinning ----------------------------------------------
 
 
-def use_migrations(tmp_path, extra_sql: str, name: str = "075_pending_thing.sql"):
+def use_migrations(tmp_path, extra_sql: str, name: str = "076_pending_thing.sql"):
     """Point the gate at a copy of the real migrations plus one extra file."""
 
     directory = tmp_path / "migrations"
@@ -355,10 +355,10 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
             "--snapshot", str(snapshot_path), "--probe", str(probe_path),
             "--ledger", str(ledger_path),
             "--detail", str(detail_path),
-            "--up-to", "075", "--out", str(plan_75),
+            "--up-to", "076", "--out", str(plan_75),
         ]) == 0
         planned = json.loads(plan_75.read_text(encoding="utf-8"))
-        assert planned["apply"] == ["075_pending_thing.sql"]
+        assert planned["apply"] == ["076_pending_thing.sql"]
         assert planned["seed"] == [] and planned["drift"] == []
 
         window_dir = tmp_path / "window"
@@ -366,7 +366,7 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
             "window", "--app", "chat", "--plan", str(plan_75),
             "--inventory", str(inventory_path), "--dir", str(window_dir),
         ]) == 0
-        assert [path.name for path in window_dir.iterdir()] == ["075_pending_thing.sql"]
+        assert [path.name for path in window_dir.iterdir()] == ["076_pending_thing.sql"]
 
         # up_to below the pending file leaves an empty window: nothing runs.
         plan_74 = tmp_path / "plan74.json"
@@ -375,7 +375,7 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
             "--snapshot", str(snapshot_path), "--probe", str(probe_path),
             "--ledger", str(ledger_path),
             "--detail", str(detail_path),
-            "--up-to", "074", "--out", str(plan_74),
+            "--up-to", "075", "--out", str(plan_74),
         ]) == 0
         assert json.loads(plan_74.read_text(encoding="utf-8"))["apply"] == []
         empty = tmp_path / "empty-window"
@@ -386,7 +386,7 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
         assert list(empty.iterdir()) == []
 
         # A byte that differs from the pinned inventory is refused, not applied.
-        (tmp_path / "migrations" / "075_pending_thing.sql").write_text(
+        (tmp_path / "migrations" / "076_pending_thing.sql").write_text(
             extra + "-- drifted\n", encoding="utf-8"
         )
         with pytest.raises(gate.GateError, match="SOURCE_SHA_DRIFT"):
@@ -411,11 +411,11 @@ def test_drop_guard_blocks_an_executed_rebuild_until_the_flag_is_given(tmp_path)
         "DROP TABLE b62_probe_seed;\n"
         "CREATE TABLE b62_gate_probe (id INTEGER PRIMARY KEY, extra TEXT);\n"
     )
-    original = use_migrations(tmp_path, rebuild, name="075_rebuild_probe.sql")
+    original = use_migrations(tmp_path, rebuild, name="076_rebuild_probe.sql")
     try:
         fresh = gate.build_inventory("chat")
         assert any(
-            item["name"] == "075_rebuild_probe.sql" and item["destructive"] for item in fresh
+            item["name"] == "076_rebuild_probe.sql" and item["destructive"] for item in fresh
         )
         inventory_path = write(tmp_path / "inv.json", fresh)
         detail_path, _tables = with_detail(tmp_path, fresh, schema, name="detail")
@@ -429,16 +429,16 @@ def test_drop_guard_blocks_an_executed_rebuild_until_the_flag_is_given(tmp_path)
                 "--snapshot", str(snapshot_path), "--probe", str(probe_path),
                 "--ledger", str(ledger_path),
                 "--detail", str(detail_path),
-                "--up-to", "075", "--out", str(plan),
+                "--up-to", "076", "--out", str(plan),
             ])
         assert gate.main([
             "classify", "--app", "chat", "--inventory", str(inventory_path),
             "--snapshot", str(snapshot_path), "--probe", str(probe_path),
             "--ledger", str(ledger_path),
             "--detail", str(detail_path),
-            "--up-to", "075", "--allow-table-drop", "--out", str(plan),
+            "--up-to", "076", "--allow-table-drop", "--out", str(plan),
         ]) == 0
-        assert json.loads(plan.read_text(encoding="utf-8"))["apply"] == ["075_rebuild_probe.sql"]
+        assert json.loads(plan.read_text(encoding="utf-8"))["apply"] == ["076_rebuild_probe.sql"]
     finally:
         gate.APPS["chat"]["migrations"] = original
 
@@ -710,7 +710,7 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
         "--out", str(plan),
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
-    assert len(result["seed"]) == 63
+    assert len(result["seed"]) == 64
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -896,7 +896,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 63
+    assert len(plan["seed"]) == 64
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -904,7 +904,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 63
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 64
 
     window_dir = tmp_path / "window"
     assert gate.main([
