@@ -237,8 +237,10 @@ def test_the_entries_route_through_the_one_connect_flow():
     assert "PadiemPcConnectFlow" in CLAW_STATUS_JS
     assert "flow.togglePopover(button)" in CLAW_STATUS_JS
     # An opening click on the card must not immediately close the panel it
-    # opened, so the card is excluded from the outside-click guard.
-    assert 'target.closest("#composerPcStatus, #pcConnectStarter")' in CLAW_JS
+    # opened, so the card is excluded from the outside-click guard. The
+    # guidance surface joins the exclusion: it reads the panel's own rendered
+    # states, so its clicks keep the directory open (#4139 summary contract).
+    assert 'target.closest("#composerPcStatus, #pcConnectStarter, #clawDeviceGuidance")' in CLAW_JS
     assert "root.append(toggle, panel)" in CLAW_JS
 
 

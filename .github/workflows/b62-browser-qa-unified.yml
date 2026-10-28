@@ -329,6 +329,12 @@ jobs:
           key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps --only-shell chromium
+      # #4139 PC directory panel and guidance Chromium contracts. The B62 full
+      # regression lane installs no Playwright (pytest.importorskip skips the
+      # browser suites there), so these two files only run in this lane; they
+      # boot their own static fixture servers and need no mock app.
+      - name: PC directory panel and guidance browser contracts
+        run: uv run pytest -q tests/test_4139_claw_device_manager_browser.py tests/test_4139_claw_device_guidance_browser.py
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
