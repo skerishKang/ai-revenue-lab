@@ -770,7 +770,10 @@ def test_save_writes_with_the_backup_that_the_write_lane_takes_first(monkeypatch
     assert ".padiem-backup" in command
     # The copy that makes the change undoable comes before the bytes are written.
     assert 0 < command.index("Copy-Item") < command.index("[IO.File]::WriteAllBytes")
-    assert "Write-Output 'PADIEM_PC_ACCOUNT='" in command
+    # One line, and the account printed as an expression: on the PC's own shell a
+    # bare `Write-Output 'A=' + $b` reaches three arguments and prints three lines.
+    assert "\n" not in command
+    assert "Write-Output ('PADIEM_PC_ACCOUNT=' + $encoded)" in command
     # No prompt of any kind is generated: the account says the change happened.
     for forbidden in ("Read-Host", "$Confirm", "ShouldProcess", "Confirm-"):
         assert forbidden not in command, forbidden
