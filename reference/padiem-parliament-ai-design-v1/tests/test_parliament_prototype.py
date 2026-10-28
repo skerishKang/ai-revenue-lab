@@ -302,6 +302,20 @@ def test_originals_differ_on_which_hero_elements_exist_and_css_owns_that() -> No
         assert re.search(rf"--hero-eyebrow-display:\s*{eyebrow}\b", body), f"{country} eyebrow presence drifted"
 
 
+
+def test_mobile_keeps_the_cards_below_the_hero_copy() -> None:
+    """모바일에서 제목·리드가 여러 줄로 늘어난다. 데스크톱 lift 를 그대로 쓰면 카드가 카피를 덮었다
+    (실측 390x844: 카피 하단 302, 카드 상단 299 → 3px 겹침). 모바일 lift 는 데스크톱보다 작은 크기여야 한다."""
+    desk = re.search(r"html\[data-country=\"us\"\][^{]*\{[^}]*--works-lift:\s*(\d+)px", CSS, re.S)
+    assert desk, "us must declare its desktop lift"
+    mobile = re.search(r"@media \(max-width:\s*900px\)\s*\{(.*?)\n\}", CSS, re.S)
+    assert mobile, "the mobile block must exist"
+    body = mobile.group(1)
+    rule = re.search(r'html\[data-country="us"\] \.pa-works,\s*\n\s*html\[data-country="uk"\] \.pa-works \{ margin-top: -(\d+)px; \}', body)
+    assert rule, "the mobile lift override must name both rail countries"
+    assert int(rule.group(1)) < int(desk.group(1)), (
+        f"the mobile lift ({rule.group(1)}px) must be smaller than the desktop one ({desk.group(1)}px)")
+
 def test_the_editor_view_puts_the_header_back_in_flow_instead_of_a_magic_offset() -> None:
     """히어로에 얹는 absolute 헤더는 작업실 화면의 내용을 덮는다.
     390px 에서 바는 실제로 174px 라 70px 고정 예약만으로는 "← 시네마틱 홈으로"가

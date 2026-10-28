@@ -1349,6 +1349,11 @@ html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-c
   .pa-hero h1 { font-size: clamp(28px, 6.4vw, 42px); }
   .pa-hero-quote { display: none; }
   .pa-editor-grid { grid-template-columns: minmax(0, 1fr); }
+  /* 모바일에서는 제목·리드가 여러 줄로 늘어 카피가 히어로 하단 가까이 내려온다.
+     데스크톱 lift(-258px)를 그대로 두면 카드가 카피를 3px 덮었다(실측 390x844).
+     lift 만 줄여 카드를 카피 아래로 내리고 사진 밴드 안에 남긴다. */
+  html[data-country="us"] .pa-works,
+  html[data-country="uk"] .pa-works { margin-top: -220px; }
 }
 
 @media (max-width: 767px) {
