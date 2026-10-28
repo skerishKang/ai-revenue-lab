@@ -327,7 +327,8 @@ def test_poll_sends_twenty_mb_for_the_chat_read_and_six_mb_for_other_reads(
     status, body = _poll(state)
     assert status == 200, body
     assert body["dispatch"]["dispatch_id"] == "dsp-other"
-    assert body["dispatch"]["max_bytes"] == 6_000_000
+    # Owner decision 2026-10-28: a non-PC-files read carries no PADIEM bound.
+    assert body["dispatch"]["max_bytes"] is None
 
 
 def test_the_server_root_decides_the_bound_not_the_caller_reference():
@@ -335,7 +336,7 @@ def test_the_server_root_decides_the_bound_not_the_caller_reference():
     assert routes._oracle_mesh_poll_max_bytes(row) == 20_000_000
 
     row.pop("root_ref")
-    assert routes._oracle_mesh_poll_max_bytes(row) == 6_000_000
+    assert routes._oracle_mesh_poll_max_bytes(row) is None
 
 
 def test_poll_still_rejects_a_wrong_channel_secret(monkeypatch):
@@ -433,7 +434,7 @@ def test_read_result_store_bound_is_twenty_mb_for_pc_files_and_six_mb_otherwise(
     ) is None
     assert routes._verified_read_result_text(
         {"root_ref": "other-read-lane"}, wire,
-    ) is None
+    ) is not None
     accepted = "x" * 6_000_001
     wire.update(content_utf8=accepted, content_bytes=len(accepted),
                 content_sha256=hashlib.sha256(accepted.encode()).hexdigest())
@@ -442,7 +443,7 @@ def test_read_result_store_bound_is_twenty_mb_for_pc_files_and_six_mb_otherwise(
     ) == accepted
     assert routes._verified_read_result_text(
         {"root_ref": "other-read-lane"}, wire,
-    ) is None
+    ) is not None
 
 
 def _scope_claim(plan="files_list"):
@@ -699,5 +700,20 @@ def test_twenty_mb_pc_result_crosses_the_channel_body_parser():
     assert routes._verified_read_result_text(
         {"root_ref": routes._PC_FILES_READ_ROOT_REF}, parsed,
     ) == raw.decode()
-    assert routes._verified_read_result_text({"root_ref": "other"}, parsed) is None
-    assert routes._verified_result_text({}, parsed, max_bytes=routes._MAX_FILE_TEXT_BYTES) is None
+    assert routes._verified_read_result_text({"root_ref": "other"}, parsed) is not None
+    # No PADIEM text ceiling remains (Owner decision 2026-10-28).
+    assert routes._verified_result_text({}, parsed, max_bytes=routes._MAX_FILE_TEXT_BYTES) is not None
+
+
+def test_a_twenty_five_mb_result_is_not_refused_without_a_product_cap():
+    """Owner decision 2026-10-28: no PADIEM text ceiling — only the platform
+    limit applies, so a 25MB verified result is accepted whole."""
+    import hashlib as _hashlib
+    text = "y" * 25_000_000
+    raw = text.encode("utf-8")
+    wire = {
+        "content_utf8": text, "content_bytes": len(raw),
+        "content_sha256": _hashlib.sha256(raw).hexdigest(),
+    }
+    assert routes._verified_read_result_text({"root_ref": "other-lane"}, wire) == text
+    assert routes._verified_result_text({"root_ref": "other-lane"}, wire) == text

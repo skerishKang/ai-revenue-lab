@@ -734,6 +734,9 @@ button { font: inherit; color: inherit; }
   width: min(84vw, 344px);
   padding: 16px;
   background: var(--paper);
+  /* 배경은 --paper 인데 잉크는 헤더(--topbar-text)를 그대로 물려받았다. 밝은 4개 스타일에서
+     두 역할이 같은 값이라 선택되지 않은 8개 항목 중 7개가 대비 1.00:1 로 안 보였다(실측). */
+  color: var(--text);
   border: var(--pa-hair) solid var(--line);
   border-radius: var(--pa-radius-lg);
   box-shadow: var(--shadow);
@@ -1359,11 +1362,15 @@ html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-c
 @media (max-width: 767px) {
   .pa-topbar { position: absolute; flex-wrap: wrap; gap: 8px 10px; padding: 10px 20px; }
   .pa-topbar > * { min-width: 0; }
+  /* 브랜드를 항상 혼자 앉힌다. 여유 폭을 두면 382—390px 에서만 브랜드+검색이 한 줄에
+     걸려 검색창이 286px→129.1px 로 무너지고 바 높이가 14px 는다(역전: 392px 는 다시 298px). */
+  .pa-topbar .pa-brand { flex: 0 1 100%; }
   .pa-nav { order: 6; width: 100%; min-width: 0; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: thin; }
   .pa-nav-item { white-space: nowrap; }
   .pa-search { order: 4; flex: 1 1 120px; }
   .pa-theme { order: 5; }
-  .pa-theme-panel { left: 0; right: auto; width: min(92vw, 344px); }
+  /* 국가·스타일 패널은 기본 규칙(right: 0)을 그대로 쓴다. left: 0 은 폭 44px 트리거 기준으로
+     걸려 화면 밖으로 230—280px 넘쳤고, 브라우저가 그것을 보이려고 문서를 왼쪽으로 밀었다. */
   /* 좁은 화면에서는 사진 전체가 바빠진다. 좌측 그라데이션 대신 전면 눌림으로 읽기를 보장한다. */
   .pa-hero { padding-top: 150px; min-height: 520px; }
   .pa-scene::before { background: linear-gradient(180deg, var(--hero-scrim-strong) 0%, var(--hero-scrim) 46%, var(--hero-scrim) 100%); }

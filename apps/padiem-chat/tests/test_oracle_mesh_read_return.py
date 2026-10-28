@@ -358,7 +358,7 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     outcome = executor.execute(dispatched)
     assert outcome.exit_code == 0 and outcome.body == TEXT_BYTES
     assert read_calls == [{"node_ref": NODE, "file_path": FILE_PATH,
-                           "timeout_seconds": 120}]
+                           "timeout_seconds": None}]
 
     # 3. the executor submits; the server verifies and appends once
     submitted = []

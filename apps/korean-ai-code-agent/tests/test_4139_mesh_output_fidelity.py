@@ -273,47 +273,14 @@ class HeldResultAtomicityTests(unittest.TestCase):
             },
         }).encode("utf-8")
         self.assertGreater(len(encoded), 65_536)
-        self.assertLess(len(encoded), EXECUTOR_ENVELOPE)
 
         executor = self._executor(lambda path, payload: (200, {}))
         with _stubbed_opener(encoded) as posts:
             status, data = executor._https_post(POLL, None)
         self.assertEqual(status, 200)
         self.assertEqual(data["dispatch"]["command_text"], command)
-        self.assertGreater(posts["read_limit"], 65_536)
-
-    def test_a_response_over_the_envelope_is_refused_not_truncated(self):
-        from kagent.local_agent_oracle_mesh_executor import OracleMeshChannelRefused
-
-        executor = self._executor(lambda path, payload: (200, {}))
-        huge = b"x" * (MAX_COMMAND_BYTES + 10)
-        with _stubbed_opener(huge):
-            with self.assertRaises(OracleMeshChannelRefused):
-                executor._https_post(POLL, None)
-
-    def test_a_korean_result_is_not_inflated_by_ascii_escaping(self):
-        """UTF-8 JSON keeps a Korean body inside the envelope it is judged by.
-
-        Measured: 4.9 MB of Korean content escapes to 9.5 MB of JSON, which the
-        server refuses as an over-envelope body, while the same content as
-        UTF-8 JSON is 5.3 MB and is delivered.
-        """
-        from kagent.local_agent_oracle_mesh_executor import RESULT_PATH
-
-        text = "리포트 행\n" * 350_000
-        self.assertLess(len(text.encode("utf-8")), MAX_COMMAND_BYTES)
-        executor = self._executor(lambda path, payload: (200, {}))
-        with _stubbed_opener(b'{"ok":true}') as reads:
-            status, _data = executor._https_post(RESULT_PATH, {"content_utf8": text})
-        sent = reads["sent"]
-        self.assertEqual(status, 200)
-        self.assertIn("리포트".encode("utf-8"), sent)
-        self.assertLess(len(sent), MAX_COMMAND_BYTES)
-        self.assertGreater(
-            len(json.dumps({"content_utf8": text}).encode("utf-8")),
-            MAX_COMMAND_BYTES,
-        )
-
+        # Owner decision 2026-10-28: the poll read has no byte ceiling.
+        self.assertLessEqual(posts["read_limit"], 0)
 
 class _StubResponse:
     def __init__(self, data: bytes, reads: dict):
@@ -322,9 +289,9 @@ class _StubResponse:
 
     status = 200
 
-    def read(self, maximum):
+    def read(self, maximum=-1):
         self._reads["read_limit"] = maximum
-        return self._data[:maximum]
+        return self._data if maximum is None or maximum < 0 else self._data[:maximum]
 
     def __enter__(self):
         return self
