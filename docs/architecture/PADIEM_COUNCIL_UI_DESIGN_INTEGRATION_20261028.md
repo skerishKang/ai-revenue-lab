@@ -35,6 +35,13 @@ no tag or message is attached by Cloudflare), whether any non-council asset also
 that a deploy travelled the authorised Actions path. Consequence for this contract: **a local
 measurement of the three files on `main` is a measurement of production today**, and nothing more.
 
+**That last sentence went stale on 2026-10-29 and is corrected here.** After S1 merged, production
+still served the pre-S1 `index.html` and `council-app.css` (`9026d1cd…`/`43793ed8…` live against
+`cfc3c7ac…`/`d6d22ca6…` in `main`; only `council-app.js` matched). The equality held at the two
+passes above because nobody had redeployed in between. Rule for later stages: re-run the three-way
+sha256 comparison at the start of every stage, and when it differs, say *deploy drift* — not
+*measurement of production*.
+
 ## 2. Constraints a visual integration may not break
 
 Each of these is a literal-string assertion that already fails CI if violated. They are the reason
@@ -111,10 +118,21 @@ No stage in this list deploys to production; production release stays with CENTR
   (canvas differential 118.1px against a 127.7px fallback); this app has no `@font-face`, so the
   same string renders at 127.7px. S1 matches the type *scale*, not the *face*. §6-1 covers the
   font decision.
-- **S2 — tool entry card anatomy + document list floor.** Build icon/badge/index in JS behind the
-  existing classes; give `.council-book-check` a 44 px hit area. Acceptance: the harness tests
-  (`test_module_harness.py`) still see the same endpoint set, and the archive list is keyboard
-  operable.
+- **S2 — tool entry card anatomy + document list floor (implemented in this PR).** Adopted from
+  `.pa-work`: a 30×30 icon slot holding a 26×26 stroke SVG, the 22×2 rule under it, a two-column
+  card (`30px minmax(0,1fr)`) with the editor spanning `1 / -1`, and the design's fluid title
+  `clamp(17px, 1.39vw, 20px)` / `-0.02em` (measured 17px at ≤768, 20px at 1440 — the design's own
+  two values). The archive checkbox keeps #6075's 24×24 box and is now wrapped in
+  `label.council-archive-check`, measured 44×44 at all four widths; pressing 5px inside the label's
+  left edge toggled the box in every width, and the book path still reads
+  `.council-book-check:checked`. The skip link's focused box went 25.6 → 44px tall.
+  Found and fixed while reviewing the capture: taking 42px away from the text column made the
+  Korean description break inside a word at 390; both card strings now carry
+  `word-break: keep-all`.
+  Flow proof: five cases (speech/sns/meeting at kr, speech at fr, meeting at us) run identically on
+  `main` and on this branch — same `/api/chat` and `/api/projects/p1/files` bodies, same rendered
+  result, same dialog count. kr sends no `country` field, fr/us send it on both requests, and the
+  SNS composition still posts as `application/json`.
 - **S3 — editor pass for the three tools.** Class-level restyle of form, result and save row.
   Acceptance: the `kr` request body is byte-identical to today, and the non-`kr` bodies still carry
   `country` only (#6046 behaviour, `test_6046_country_selection.py`).

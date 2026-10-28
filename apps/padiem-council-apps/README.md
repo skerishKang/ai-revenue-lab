@@ -129,6 +129,35 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
 - 근거 캡처: `docs/6065/s1-header-1440-before-after.png`,
   `docs/6065/s1-header-320-before-after.png`, `docs/6065/s1-active-tool-1440-before-after.png`
 
+## 카드 골격·문서 목록 터치 영역 (#6065 S2, 2026-10-29)
+
+시안 카드 `.pa-work`의 골격을 운영 카드에 옮기고, 아카이브 목록의 누르는 면을 44px로 벌렸다.
+신규 이미지·폰트·테마는 0이고 표장은 모두 인라인 SVG다.
+
+| 항목 | 시안(1440) | S2 전 운영 | S2 후 운영 |
+| --- | --- | --- | --- |
+| 아이콘 칸 | 30×30 슬롯 + 26×26 stroke SVG | 없음 | 30×30(x=277) + 26×26 |
+| 아이콘 아래 규칙선 | 22×2 | 없음 | 22×2, 색은 `--council-border` |
+| 카드 제목 | `clamp(17px, 1.39vw, 20px)` / −0.02em | 고정 17px / normal | 17px(≤768) · 20px(1440) / −0.4px |
+| 본문 열 | 아이콘 + 텍스트 2열 | 1열 | `30px minmax(0,1fr)` 2열, 편집기는 `1 / -1` |
+| 활동집 체크박스 | 시안에 목록 없음 | 상자 24×24가 유일한 표적 | 상자 24×24 + **라벨 44×44** |
+| 본문 바로가기 링크 | — | 포커스 92.8×25.6 | 포커스 116.8×**44** |
+
+- 44px 최소 누름 면 실측: 라벨 44×44 / 상자 24×24 / 기록 열기 단추 280×44(긴 이름 280×62.8) —
+  320·390·768·1440 동일. 라벨 좌측에서 5px 안쪽을 눌러도 상자가 선택됐다(False→True, 4폭 전부).
+- AI 3종·저장·국가 필터 무변경 증명: `main`과 이 브랜치를 같은 동작으로 5케이스
+  (speech/sns/meeting@kr, speech@fr, meeting@us) A/B — `/api/chat`과
+  `/api/projects/p1/files` 요청 본문·렌더 결과·alert 수가 **전 케이스 동등**.
+  kr 은 `country` 필드 없음(현행 바이트 유지), fr/us 는 두 요청 모두 코드를 싣는다.
+  SNS 사진 구성 파일도 기존대로 `application/json` 으로 저장된다.
+- 아이콘 때문에 본문 열이 42px 좁아져 390px에서 설명이 단어 중간('준비합/니다')으로 잘렸다.
+  카드 제목·설명에 `word-break: keep-all`을 걸어 어절 경계로만 끊기게 했다(320에서 3줄로 늘어남).
+- 32셀(로그인 전후 × 4폭 × 4화면) 가로 넘침 0·가림 0·잘림 0.
+- 근거 캡처: `docs/6065/s2-card-frame-1440-before-after.png`,
+  `docs/6065/s2-card-frame-390-before-after.png`, `docs/6065/s2-archive-1440-before-after.png`
+- 기준선 정정: 이 문단을 작성할 때 운영 `/apps/council/` 의 index.html·council-app.css 는
+  `main`과 **다르다**(S1 병합 후 재배포 전). council-app.js 는 동일.
+
 ## 실행
 
 ```bash
