@@ -23,6 +23,9 @@ MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
+# Page size for the project listing. This is a read shape, not a ceiling:
+# nothing refuses creating a project because the owner already has this many
+# (#5895-D). Kept until the list grows a pagination UI.
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
