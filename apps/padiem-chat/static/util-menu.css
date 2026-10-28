@@ -126,6 +126,13 @@ html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disab
 .util-actions { display: flex; gap: 8px; margin-top: 8px; }
 .util-actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
 .util-actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
+/* #5895: the 고치기 row — one instruction input and one button above the
+   result actions, on both authoring screens. */
+.util-revise { display: flex; gap: 8px; margin-top: 8px; }
+.util-revise-input { flex: 1; min-height: 44px; padding: 0 12px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; }
+.util-revise-go { min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; cursor: pointer; }
+.util-revise-go:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-revise-go:disabled { opacity: .6; cursor: default; }
 .util-saved-list, .util-archive { margin-top: 16px; }
 .util-saved-list ul, .util-archive ul { list-style: none; padding: 0; }
 .util-saved-list li, .util-archive li { margin: 4px 0; }

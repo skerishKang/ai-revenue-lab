@@ -345,6 +345,63 @@
     URL.revokeObjectURL(url);
   }
 
+  // #5895: one revision pass over the draft the editor already holds. The
+  // current text and the owner's instruction go to the same /api/chat lane
+  // generation uses, and the answer replaces the draft only when the model
+  // answered. Nothing is sent while the editor or the instruction is empty, so
+  // a 고치기 click never claims a revision that did not happen, and a failed
+  // call leaves the owner's draft untouched in the editor.
+  async function reviseDraft(output, input, util) {
+    const current = String(output.value || "").trim();
+    const ask = String(input.value || "").trim();
+    if (!current || !ask) return false;
+    const prompt = "다음 초안을 지시에 따라 고쳐 주세요.\n\n지시: " + ask +
+      "\n\n--- 고칠 초안 ---\n" + current + "\n--- 초안 끝 ---\n\n고쳐진 전체 글만 답해 주세요.";
+    let answer = null;
+    try {
+      answer = await apiChat(prompt, util);
+    } catch (e) {
+      alert("수정 실패: " + (e && e.message ? e.message : e));
+      return false;
+    }
+    if (!answer || !String(answer).trim()) {
+      alert("수정 실패: 모델이 빈 답을 돌려주었습니다.");
+      return false;
+    }
+    output.value = answer;
+    input.value = "";
+    return true;
+  }
+
+  // #5895: the 고치기 row both authoring screens carry — one instruction input
+  // and one button that run `reviseDraft` on that screen's own draft. The
+  // shipped speech markup holds the row already; the SNS builder inserts one.
+  function wireReviseClick(go, input, output, util) {
+    go.addEventListener("click", async () => {
+      go.disabled = true;
+      try {
+        await reviseDraft(output, input, util);
+      } finally {
+        go.disabled = false;
+      }
+    });
+  }
+
+  function buildReviseRow(output, util, idPrefix) {
+    const row = el("div", "util-revise");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "util-revise-input";
+    input.placeholder = "고칠 지시… 예: 더 짧게, 인사말을 격식 있게";
+    if (idPrefix) input.id = idPrefix + "ReviseInput";
+    const go = el("button", "util-revise-go", "고치기");
+    go.type = "button";
+    if (idPrefix) go.id = idPrefix + "ReviseGo";
+    wireReviseClick(go, input, output, util);
+    row.append(input, go);
+    return row;
+  }
+
   function el(tag, cls, text) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -551,6 +608,12 @@
       const eventName = String(document.querySelector("#utilSpeechForm [name=event]")?.value || "축사").trim();
       void saveTextToPc(speechOutput.value, eventName || "축사");
     });
+    // #5895: the shipped 고치기 row revises the draft the editor already holds.
+    const speechReviseInput = document.getElementById("utilSpeechReviseInput");
+    const speechReviseGo = document.getElementById("utilSpeechReviseGo");
+    if (speechReviseInput && speechReviseGo) {
+      wireReviseClick(speechReviseGo, speechReviseInput, speechOutput, "speech");
+    }
 
     if (saveBtn) saveBtn.addEventListener("click", async () => {
       const text = speechOutput.value.trim();
@@ -925,7 +988,9 @@
       const pcSaveB = el("button", "util-save", PC_REF_COPY.save);
       pcSaveB.type = "button"; pcSaveB.id = "utilSnsPcSave";
       actions.append(copyB, dlB, pcSaveB);
-      result.append(h3, output, previewBox, actions);
+      // #5895: the same 고치기 row the speech screen carries, on this draft.
+      const reviseRow = buildReviseRow(output, "sns", "utilSns");
+      result.append(h3, output, previewBox, reviseRow, actions);
 
       panel.replaceChildren(form, result);
       const title = h3;

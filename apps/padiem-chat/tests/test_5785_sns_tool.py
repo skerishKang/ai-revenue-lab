@@ -82,3 +82,23 @@ def test_the_group_touches_only_the_existing_endpoints(sns: dict) -> None:
     }
     assert "POST /api/chat" in sns["endpoints"]
     assert not sns["alerts"]
+
+
+# #5895: the SNS screen carries the same 고츄기 row on its own draft.
+@pytest.fixture(scope="module")
+def revise() -> dict:
+    return run("revise")
+
+
+def test_the_sns_revision_sends_its_own_draft_and_ask(revise: dict) -> None:
+    payload = revise["snsPayload"]
+    assert payload["util"] == "sns"
+    prompt = payload["messages"][0]["content"]
+    assert "더 짧게 줄여 주세요" in prompt
+    assert "--- 고칠 초안 ---" in prompt
+    assert "생성된 초안 본문입니다." in prompt
+
+
+def test_the_sns_revision_replaces_the_draft(revise: dict) -> None:
+    assert revise["snsRevised"] == "수정된 SNS 본문입니다."
+    assert not revise["pageErrors"]

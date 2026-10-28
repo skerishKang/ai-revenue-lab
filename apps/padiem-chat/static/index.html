@@ -607,6 +607,12 @@
           <div class="util-result" id="utilSpeechResult" hidden>
             <h3>생성 결과</h3>
             <textarea id="utilSpeechOutput" rows="12"></textarea>
+            <!-- #5895: the draft stays in the editor; one instruction revises it
+                 through the same /api/chat lane generation already uses. -->
+            <div class="util-revise">
+              <input type="text" id="utilSpeechReviseInput" placeholder="고칠 지시… 예: 더 짧게, 인사말을 격식 있게">
+              <button type="button" id="utilSpeechReviseGo">고치기</button>
+            </div>
             <!-- #5727: result-area actions are copy/download only. Regenerating
                  is re-pressing the form's 초안 생성; saving lives in the form. -->
             <div class="util-actions">

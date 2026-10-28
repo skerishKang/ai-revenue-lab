@@ -8,7 +8,7 @@
 // and nothing here invents a product behaviour or a second API.
 //
 // Usage: node _5785_util_harness.js <util-menu.js path> <scenario>
-//   scenario = speech | sns | meeting | shared | tier
+//   scenario = speech | sns | meeting | shared | tier | pcref | pcref_nopc | revise
 // Prints one JSON object of observations; the Python test modules own the
 // assertions so a changed contract fails in the readable place.
 const fs = require("node:fs");
@@ -285,6 +285,14 @@ function spawnSession(windowState = {}) {
   speechPcSave.type = "button";
   speechResultActions.append(speechCopy, speechDownload, speechPcSave);
   speechResult.appendChild(speechResultActions);
+  // #5895: the shipped 고치기 row (index.html) — the revise scenario drives it.
+  const speechReviseRow = mk("div", null, "util-revise");
+  const speechReviseInput = mk("input", "utilSpeechReviseInput", "util-revise-input");
+  speechReviseInput.type = "text";
+  const speechReviseGo = mk("button", "utilSpeechReviseGo", "util-revise-go");
+  speechReviseGo.type = "button";
+  speechReviseRow.append(speechReviseInput, speechReviseGo);
+  speechResult.appendChild(speechReviseRow);
   speechPanel.appendChild(speechResult);
   utilView.appendChild(speechPanel);
 
@@ -763,6 +771,75 @@ const SCENARIOS = {
       reentryRecordCount: reentryRecordButtons.length,
       endpoints: endpointSet(),
       alerts,
+      pageErrors,
+    };
+  },
+
+  // #5895: the 고치기 pass — the current draft and the instruction go to the
+  // same /api/chat lane, the answer replaces the draft, and a failed call
+  // leaves the draft the editor holds untouched.
+  async revise() {
+    const session = spawnSession();
+    await openTool(session, "speech");
+    const form = find(session, "utilSpeechForm");
+    form.querySelector("[name=event]").value = "수정 흐름 검증 행사";
+    await form.dispatch("submit");
+    await sleep(20);
+    const output = find(session, "utilSpeechOutput");
+    const input = find(session, "utilSpeechReviseInput");
+    const go = find(session, "utilSpeechReviseGo");
+
+    // Guard: an empty instruction sends nothing.
+    const beforeGuard = chatPayloads.length;
+    await go.dispatch("click");
+    await sleep(20);
+
+    chatResponseOverride = json({ answer: "수정된 초안 본문입니다. 마무리 인사가 격식 있습니다." });
+    const beforeRevise = chatPayloads.length;
+    input.value = "마무리 인사를 격식 있게 다듬어 주세요";
+    await go.dispatch("click");
+    await sleep(20);
+    const revisePayload = chatPayloads[beforeRevise] || null;
+    const revised = output.value;
+    const askCleared = input.value === "";
+
+    // Failure: the draft the editor holds must survive the failed call.
+    chatResponseOverride = { ok: false, status: 502, json: async () => ({ error: { code: "unavailable" } }) };
+    const draft = revised;
+    input.value = "더 짧게 줄여 주세요";
+    await go.dispatch("click");
+    await sleep(20);
+    const failureKeptDraft = output.value === draft;
+    chatResponseOverride = null;
+
+    // The SNS screen carries the same row on its own draft.
+    await openTool(session, "sns");
+    const snsForm = find(session, "utilSnsForm");
+    snsForm.querySelector("[name=event]").value = "수정 흐름 SNS";
+    snsForm.querySelector("[name=content]").value = "본문";
+    await snsForm.dispatch("submit");
+    await sleep(20);
+    const snsOutput = find(session, "utilSnsOutput");
+    const snsInput = find(session, "utilSnsReviseInput");
+    const snsGo = find(session, "utilSnsReviseGo");
+    chatResponseOverride = json({ answer: "수정된 SNS 본문입니다." });
+    const beforeSns = chatPayloads.length;
+    snsInput.value = "더 짧게 줄여 주세요";
+    await snsGo.dispatch("click");
+    await sleep(20);
+    const snsPayload = chatPayloads[beforeSns] || null;
+    chatResponseOverride = null;
+
+    return {
+      guardCalls: chatPayloads.slice(beforeGuard, beforeRevise).length,
+      revisePayload,
+      revised,
+      askCleared,
+      failureKeptDraft,
+      failureAlerts: alerts.slice(),
+      snsPayload,
+      snsRevised: snsOutput.value,
+      endpoints: endpointSet(),
       pageErrors,
     };
   },

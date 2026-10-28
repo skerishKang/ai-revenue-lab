@@ -122,3 +122,53 @@ def test_the_group_touches_only_the_existing_endpoints(speech: dict) -> None:
     assert set(speech["endpoints"]) <= allowed, speech["endpoints"]
     assert "POST /api/chat" in speech["endpoints"]
     assert not speech["alerts"]
+
+
+# #5895: the 고츄기 pass — one instruction revises the draft the editor
+# already holds, through the same /api/chat lane generation uses.
+@pytest.fixture(scope="module")
+def revise() -> dict:
+    return run("revise")
+
+
+def test_a_revision_instruction_sends_the_draft_and_the_ask(revise: dict) -> None:
+    prompt = revise["revisePayload"]["messages"][0]["content"]
+    assert "마무리 인사를 격식 있게 다듬어 주세요" in prompt
+    assert "--- 고칠 초안 ---" in prompt
+    assert "생성된 초안 본문입니다." in prompt, "the prompt must carry the draft the editor held"
+
+
+def test_the_revision_replaces_the_draft_and_clears_the_ask(revise: dict) -> None:
+    assert revise["revised"].startswith("수정된 초안 본문입니다.")
+    assert revise["askCleared"] is True
+
+
+def test_an_empty_instruction_sends_nothing(revise: dict) -> None:
+    assert revise["guardCalls"] == 0
+
+
+def test_a_failed_revision_keeps_the_owner_draft_and_says_so(revise: dict) -> None:
+    assert revise["failureKeptDraft"] is True
+    assert revise["failureAlerts"], "a failed revise must be visible, not silent"
+    assert all(a.startswith("수정 실패: ") for a in revise["failureAlerts"])
+
+
+def test_the_revision_uses_the_existing_chat_contract(revise: dict) -> None:
+    payload = revise["revisePayload"]
+    assert payload["mode"] == "auto"
+    assert payload["util"] == "speech"
+    assert [m["role"] for m in payload["messages"]] == ["user"]
+
+
+def test_the_revision_touches_only_the_existing_endpoints(revise: dict) -> None:
+    allowed = {
+        "GET /api/projects",
+        "POST /api/projects",
+        "GET /api/projects/p1/files",
+        "POST /api/projects/p1/files",
+        "POST /api/chat",
+        "GET /api/pc/pairings",
+    }
+    assert set(revise["endpoints"]) <= allowed, revise["endpoints"]
+    assert "POST /api/chat" in revise["endpoints"]
+    assert not revise["pageErrors"]
