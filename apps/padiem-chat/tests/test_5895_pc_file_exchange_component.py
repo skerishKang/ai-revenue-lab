@@ -73,7 +73,9 @@ def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
     assert 'aria-label", copy(groupLabelKey)' in script
     for token in ("pc_link_selection_required", "pc_folder_selection_required"):
         assert token in script, token
-    assert ".pc-exchange-choice" in css and "min-height: 44px" in css
+    for styled in (".pc-exchange-choice", ".pc-exchange-save", ".pc-exchange-filename"):
+        assert styled in css, styled
+    assert "min-height: 44px" in css
 
 
 def test_the_waiting_copy_exists_in_both_languages_and_names_no_technical_term():
