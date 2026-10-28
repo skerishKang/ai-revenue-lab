@@ -273,21 +273,28 @@
       component.open({ onSelect: (picked) => { void addPicked(picked); } });
     });
 
-    void pcLinked().then((linked) => {
-      if (linked !== false) return;
-      pick.hidden = true;
-      note.textContent = PC_REF_COPY.noPc + " ";
-      note.appendChild(el("span", "util-pc-ref-gap", " "));
-      const connect = el("button", "util-pc-ref-connect", PC_REF_COPY.connect);
-      connect.type = "button";
-      connect.addEventListener("click", openPcConnect);
-      note.appendChild(connect);
-      note.hidden = false;
-    });
+    // The check runs when the screen is first shown, not when the module loads:
+    // a page that never opens this tool asks the PC directory nothing at all.
+    let checked = false;
+    function check() {
+      if (checked) return;
+      checked = true;
+      void pcLinked().then((linked) => {
+        if (linked !== false) return;
+        pick.hidden = true;
+        note.textContent = PC_REF_COPY.noPc + " ";
+        const connect = el("button", "util-pc-ref-connect", PC_REF_COPY.connect);
+        connect.type = "button";
+        connect.addEventListener("click", openPcConnect);
+        note.appendChild(connect);
+        note.hidden = false;
+      });
+    }
 
     return {
       box,
       files,
+      check,
       read() {
         const lineBreak = String.fromCharCode(10);
         return files
@@ -375,6 +382,9 @@
 
     let lastPayload = null;
     let currentPid = null;
+    // #5895: the SNS panel is built on first open, so its PC section is handed back
+    // to the tab handler that knows when the panel is actually on screen.
+    let snsPcRef = null;
 
     // #5608 follow-up: the sidebar Util entry expands into its four tools. The
     // submenu rows and the (hidden) in-page tabs drive the same switch, so the
@@ -461,7 +471,11 @@
       // tools keep the shared defaults until their own pass.
       if (utilKickerEl) utilKickerEl.textContent = tab.dataset.kicker || "Padiem Util";
       if (utilTaglineEl) utilTaglineEl.textContent = tab.dataset.tagline || "AI 홍보·기록 비서";
-      if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
+      if (key === "speech") speechPc.check();
+      if (key === "sns") {
+        if (!panels.sns.dataset.loaded) buildSns();
+        snsPcRef.check();
+      }
       if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
       // #5731: re-entering the speech tool must show the past speeches the
       // account already stored — the list can't only exist after a save.
@@ -658,6 +672,7 @@
       toneLabel.appendChild(toneSel);
       form.appendChild(toneLabel);
       const snsPc = createPcReferenceSection();
+      snsPcRef = snsPc;
       form.appendChild(snsPc.box);
 
       const tabDiv = el("div", "util-sns-tabs");
