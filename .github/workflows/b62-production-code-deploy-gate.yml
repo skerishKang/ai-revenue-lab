@@ -426,6 +426,11 @@ jobs:
           # AFTER the auto-rollback guard so a failed proof cannot roll back.
           assert "Post-deploy real chat" in workflow
           assert ".github/scripts/post_deploy_real_chat_smoke.py --lane chat" in workflow
+          # 2026-10-28: the signed-in session proof, also after the rollback guard.
+          assert "Post-deploy signed-in session check" in workflow
+          assert ".github/scripts/post_deploy_signed_in_smoke.py" in workflow
+          assert workflow.rindex("Auto-rollback to recorded version on any failed step") < \
+              workflow.rindex("Post-deploy signed-in session check")
           assert workflow.rindex("Auto-rollback to recorded version on any failed step") < \
               workflow.rindex("Post-deploy real chat")
           assert "PRODUCTION_MUTATION=0" in workflow
@@ -1761,6 +1766,22 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/post_deploy_real_chat_smoke.py --lane chat
+
+      # 2026-10-28: a released build answered every anonymous request correctly
+      # while each session-reading path 500'd for two hours, and the free-composer
+      # proof above went green on it. This step is that missing reading: sign in
+      # as the QA account, then take the three paths the whole UI depends on -
+      # /api/auth/status, /api/conversations and one signed-in turn. It sits after
+      # the auto-rollback step on purpose, so a failure reddens the gate for a
+      # person to read and never rolls a release back on its own.
+      - name: Post-deploy signed-in session check
+        shell: bash
+        env:
+          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_signed_in_smoke.py
 
   rollback-production-code:
     needs: [source-contract, cloudflare-readonly]
