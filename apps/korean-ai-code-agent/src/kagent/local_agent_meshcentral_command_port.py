@@ -303,6 +303,7 @@ class MeshCentralCliCommandPort:
         command: str,
         timeout_seconds: int | None = None,
         phase_observer: Callable[[str], None] | None = None,
+        cancel_probe: Callable[[], bool] | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -311,6 +312,20 @@ class MeshCentralCliCommandPort:
                 except Exception:
                     # Instrumentation must never alter command execution.
                     pass
+
+        def cancelled() -> bool:
+            if cancel_probe is None:
+                return False
+            try:
+                return cancel_probe() is True
+            except Exception:
+                # A probe that cannot be read is not an owner's stop. Refusing to
+                # cancel on a transport problem is the only safe answer: the other
+                # side of this choice ends a real command on a real PC.
+                return False
+
+        if cancel_probe is not None and not callable(cancel_probe):
+            raise ContractError("the cancel probe must be callable")
 
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
@@ -376,12 +391,13 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        return self._run_streaming(argv, password, timeout_seconds, phase)
+        return self._run_streaming(argv, password, timeout_seconds, phase, cancelled)
 
     # ---- streaming execution -------------------------------------------
     def _run_streaming(
         self, argv: list[str], password: str, timeout_seconds: int | None,
         phase: Callable[[str], None],
+        cancelled: Callable[[], bool] | None = None,
     ) -> MeshCentralCommandOutcome:
         """Read the child's transcript in bounded chunks.
 
@@ -432,6 +448,17 @@ class MeshCentralCliCommandPort:
                 if not chunk:
                     if process.poll() is not None:
                         break
+                    # The owner stopped this. Ending the client is the whole
+                    # mechanism: it closes the MeshCentral session, so the command
+                    # lane is free for the next operation instead of waiting on a
+                    # console that may never answer (#5995 removed the deadline,
+                    # and a silent PC held every later operation behind it).
+                    if cancelled is not None and cancelled():
+                        process.kill()
+                        phase("cancel")
+                        return MeshCentralCommandOutcome(
+                            termination="cancelled", exit_code=None, output=b"",
+                        )
                     continue
                 chunks.append(chunk)
                 total += len(chunk)

@@ -1,8 +1,11 @@
-"""#5895 — stopping a search releases the queue; a claim already made is not refused.
+"""#5895 — stopping PC work releases the queue, and reaches work already in hand.
 
 `/api/pc/find` is spread over folders so one sweep cannot hold a PC, and
-`/api/pc/cancel` takes back the folders the PC has not started looking in. Both rules
-come down to one SQL condition, so this runs the real `D1HistoryStore` against the real
+`/api/pc/cancel` takes back the folders the PC has not started looking in. A folder the
+PC is already inside is not failed either: it carries the stop in the column that
+already records how a command ended, the executor reads that through the same channel
+secret it polls with, and its result still lands. Both rules come down to one SQL
+condition, so this runs the real `D1HistoryStore` against the real
 committed schema (the 047→074 replay) — the same ground the claim-lease test stands on.
 No executor is involved and no PC command is executed here: what is proved is which row
 the poll hands out, and that a stopped row can never be claimed or answered later.
@@ -91,7 +94,7 @@ def test_a_cancelled_folder_cannot_be_claimed_afterwards(tmp_path):
     )) is False
 
 
-def test_a_folder_the_pc_is_already_in_is_left_to_finish(tmp_path):
+def test_a_stop_reaches_the_folder_the_pc_is_already_in(tmp_path):
     store, _bucket = fixture(tmp_path)
     dispatch_id = _stage(store, SWEEP_RUN)
     # The lane hands out a hash of the nonce it generated and accepts the submission
@@ -102,15 +105,38 @@ def test_a_folder_the_pc_is_already_in_is_left_to_finish(tmp_path):
         dispatch_id=dispatch_id, nonce_sha256=_nonce(presented),
     )) is True
 
-    # The stop is asked while the PC holds this folder, so nothing is taken back and
-    # the submission carrying that nonce still lands. Refusing it instead would leave
-    # the executor resending a result nobody waits for and holding the queue longer.
-    assert _stopped(store, SWEEP_RUN) == 0
+    # The owner pressed 그만 while the PC held this folder. The row is not failed:
+    # it keeps its claim and its pending state, and carries the stop in the column
+    # that already records how a command ended, so the executor can read the stop and
+    # the result it still owes lands through the nonce gate it already holds.
+    assert _stopped(store, SWEEP_RUN) == 1
+    row = _row(store, dispatch_id)
+    assert row["state"] == "pending" and row["termination"] == "cancelled"
+    assert asyncio.run(store.oracle_mesh_dispatch_cancellation(dispatch_id=dispatch_id)) is True
     consumed = asyncio.run(store.consume_oracle_mesh_dispatch(
         dispatch_id=dispatch_id, nonce=presented,
     ))
     assert consumed is not None and consumed["claim"] == "first"
-    assert _row(store, dispatch_id)["termination"] is None
+
+
+def test_an_unstopped_or_unreadable_dispatch_is_not_a_stop(tmp_path):
+    """Only the owner's own recorded stop answers yes - never a read that failed."""
+    store, _bucket = fixture(tmp_path)
+    queued = _stage(store, SWEEP_RUN)
+    other = _stage(store, LISTING_RUN)
+
+    assert asyncio.run(store.oracle_mesh_dispatch_cancellation(dispatch_id=other)) is False
+    assert asyncio.run(store.oracle_mesh_dispatch_cancellation(dispatch_id=queued)) is False
+    # An id this account never staged is not addressable at all: the answer is no.
+    assert asyncio.run(
+        store.oracle_mesh_dispatch_cancellation(dispatch_id="dsp_not_a_real_dispatch")
+    ) is False
+    assert _stopped(store, SWEEP_RUN) == 1
+    # Work that never reached a PC is ended on the spot, so there is nothing for an
+    # executor to read: the flag exists only for the row whose command is running.
+    assert _row(store, queued)["state"] == "failed"
+    assert asyncio.run(store.oracle_mesh_dispatch_cancellation(dispatch_id=queued)) is False
+    assert asyncio.run(store.oracle_mesh_dispatch_cancellation(dispatch_id=other)) is False
 
 
 def test_a_stop_touches_no_other_run_and_no_other_account(tmp_path):
@@ -128,13 +154,16 @@ def test_a_stop_touches_no_other_run_and_no_other_account(tmp_path):
     assert asyncio.run(store.oldest_pending_oracle_mesh_dispatch())["dispatch_id"] == other_run
 
 
-def test_the_stop_is_one_conditional_statement_naming_no_second_authority():
+def test_the_stop_is_two_conditional_statements_naming_no_second_authority():
     source = inspect.getsource(D1HistoryStore.cancel_oracle_mesh_dispatches_for_run)
-    # The same test the poll applies — pending, and never handed out — so a stop can
-    # never race a claim into refusing a command the PC is already running.
+    # Queued work is taken out of the poll's own condition (pending, no nonce); work
+    # already in hand is only flagged, in the column that already ends a command, so
+    # the executor's owed submission still lands through its nonce gate.
     assert "state=?" in source and "nonce_sha256 IS NULL" in source
+    assert "nonce_sha256 IS NOT NULL" in source
     assert "user_id=? AND run_id=?" in source
     for forbidden in ("UPDATE claw_run_history", "DELETE FROM", "DROP", "expires_at=?"):
         assert forbidden not in source, forbidden
     # No second table and no new column: the row's own end is the record of the stop.
     assert "oracle_mesh_dispatch SET state=?, termination=?" in source
+    assert "oracle_mesh_dispatch SET termination=? " in source

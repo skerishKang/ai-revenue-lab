@@ -70,6 +70,10 @@ from .request_telemetry import emit_stage_event
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
 ORACLE_MESH_READ_POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
+#: Executor read of one owner's stop. The dispatch id the executor already holds
+#: is the only value it sends, nothing is claimed or written here, and the answer
+#: is one boolean: has the owner asked for this running command to end?
+ORACLE_MESH_READ_CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: Owner-scoped read of one stored over-budget command original. The dispatch
 #: id is the only browser-supplied value; the object key, the conversation and
 #: the message id are all re-derived server-side, so no browser-chosen object
@@ -1819,6 +1823,45 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     })
 
 
+async def oracle_mesh_read_cancel_check(request: Request) -> JSONResponse:
+    """Executor read of one owner's stop: is the command I am running cancelled?
+
+    The same deployment channel secret as poll and submit, one dispatch id in and
+    one boolean out. Nothing is claimed and nothing is written, so an executor may
+    ask as often as it likes while a PC works - which is what makes an owner's
+    ``그만`` reach a command that has already left the queue. #5995 removed the
+    client-side deadline, so a command that never answers would otherwise hold that
+    PC - and every operation queued behind it - open indefinitely.
+
+    Anything unreadable answers ``cancelled: false``. A transport or store problem
+    is not an owner's stop, and the one thing this must never do is end a real
+    command on a real PC because a read failed.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return _error(400, "oracle_mesh_invalid_body")
+    if not isinstance(body, dict):
+        return _error(400, "oracle_mesh_invalid_body")
+    dispatch_id = _ref(body.get("dispatch_id"), 128)
+    if dispatch_id is None:
+        return _error(400, "oracle_mesh_invalid_body")
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_dispatch_cancellation", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        cancelled = await reader(dispatch_id=dispatch_id)
+    except Exception:
+        return _response({"ok": True, "cancelled": False})
+    return _response({"ok": True, "cancelled": cancelled is True})
+
+
 def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
     """Revalidate a desktop observation note: short text, no control bytes."""
     note = wire.get("content_utf8")
@@ -2361,6 +2404,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         if wire.get("termination") not in (
             "timed_out", "no_reply", "no_exit_code", "not_executed",
             "captured", "acted", "desktop_unavailable", "output_too_large",
+            # An owner's stop ends the client, so nothing was ever observed from
+            # the PC's console. That is carried as null, never invented as 0.
+            "cancelled",
         ):
             return _error(400, "oracle_mesh_invalid_body")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
