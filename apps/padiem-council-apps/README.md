@@ -187,6 +187,29 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
 - 계약 테스트 7건 신규(`test_6065_s3_editor_skin.py`), 변형 10종 검출. 78 passed.
 - 근거 캡처: `docs/6065/s3-editor-1440-before-after.png`, `docs/6065/s3-editor-390-before-after.png`
 
+## 로그인 게이트·기록 목록 표면 (#6065 S4, 2026-10-29)
+
+시안에는 로그인 화면도 기록 목록도 없다. 그래서 **새로 지되 시안의 표면 어휘를 썼다**
+(정보 패널 `.pa-meta` 의 반지름·여백, 헤어라인 구분 `.pa-strip li + li`, 알약형 보조 동작 `.pa-back`).
+변경은 `council-app.css` 한 파일 — DOM을 만드는 JS·마크업은 diff에조차 없다.
+
+| 요소 | S3까지 운영 | S4 후 (실측) |
+| --- | --- | --- |
+| 로그인 패널 | 반지름 16 · padding 16 | 반지름 14 · `clamp(14px,1.8vw,20px)` → 1440에서 20px |
+| 로그인 제목 | 고정 17px | `clamp(17px,1.39vw,20px)` / −0.02em → 1440에서 20px |
+| 저장 목록·기록 보관함 | **표면 없음**(반지름 0, 테두리 0, padding 0) — 맨 `<ul>` | 패널(반지름 14 · 테두리 1px · padding 20px · surface) |
+| 목록 행 | 행마다 테두리 회색 박스 | 행은 테두리 없는 본문(600체, padding `8px 0`), 행 사이에 헤어라인 1px(첫 행은 0) |
+| Google 로그인 | 반지름 10 · 650 · `0 14px` | 알약 999px · 600 · `9px 16px`, 높이 45.6px |
+| 사진 구성 상자 | 반지름 10 · padding 12 | 반지름 14 · `clamp(14px,1.8vw,20px)` |
+
+- 실패 시에도 열리지 않는 게이트 확인: 로그아웃에서 `#councilAuthPanel` 표시 + `.council-form` **1개**(로그인 폼)만 존재, 도구 3종 빌더 미첨부. 자격증명 제출은 `POST /api/auth/password/login` 하나만 호출하고, 서버가 세션을 확인하지 않으면 패널이 열린 채 실패 문구를 띄우고 빌더는 계속 0개. Google 링크는 `return_to=%2Fapps%2Fcouncil%2F` 유지.
+- 데이터 핸들링 A/B(main vs 이 브랜치, 6케이스): speech/sns/meeting@kr, speech@fr, meeting@us, 그리고 로그아웃 로그인 시도 — `/api/chat`·`/api/projects/p1/files` 요청 본문과 렌더 결과가 **전 케이스 동등**. kr은 `country` 필드 없음, fr/us는 두 요청 모두 코드 수록.
+- 32셀(전후 × 320/390/768/1440 × 4화면) 가로 넘침 0·가림 0.
+- 계약 테스트 6건 신규(`test_6065_s4_auth_archive.py`), 변형 12종 검출. 84 passed.
+- 정정 기록: 첫 배합 치환에서 본문이 같은 두 규칙(보관함 행 / 저장 행)을 하나로 묶어 한쪽에 잘못 적용했다. 되돌린 뒤 **선택자 기준으로 규칙을 통째 치환**해 다시 적용했고, 계산된 스타일을 브라우저에서 재확인했다. 또 참고 선택 칩에 걸었던 `border-radius: 999px`는 공유 44px 하한 블록(10px)에 항상 지므로 선언 자체를 없앴다.
+- 근거 캡처: `docs/6065/s4-sign-in-1440-before-after.png`,
+  `docs/6065/s4-record-list-1440-before-after.png`, `docs/6065/s4-record-list-320-before-after.png`
+
 ## 실행
 
 ```bash
