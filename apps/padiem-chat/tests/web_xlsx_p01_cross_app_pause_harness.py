@@ -386,7 +386,8 @@ async def run() -> int:
         path=f"/api/claw/office/web-selections/{ref}/start-p01", payload={},
     )
     check(started.status_code == 202,
-          f"start {started.status_code} {started.text[:200]}")
+          f"start {started.status_code} {started.text[:200]} "
+          f"stages={[event.get('stage') for event in events]}")
     # Owner decision 2026-10-28: the lane is pre-delegated, so the Engine
     # completes the tool directly and B62 commits a completion, not a pause.
     check(started.json()["status"] == "completed", "start status")

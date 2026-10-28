@@ -321,10 +321,14 @@ async def dispatch_owner_web_xlsx_p01(
         result = await result
     try:
         pause = parse_engine_pause(result, original=request)
-    except WebXlsxP01RequestError:
+    except WebXlsxP01RequestError as pause_error:
         # Owner decision 2026-10-28: the lane is pre-delegated, so a completed
-        # tool projection is the normal answer; commit it as such.
-        completion = parse_engine_completion(result, original=request)
+        # tool projection is the normal answer; commit it as such. Anything
+        # else keeps the pause contract's own refusal and stage.
+        try:
+            completion = parse_engine_completion(result, original=request)
+        except WebXlsxP01RequestError:
+            raise pause_error from None
         committed = store.commit_completion(
             request=request, request_ref=request_ref, completion=completion,
         )
