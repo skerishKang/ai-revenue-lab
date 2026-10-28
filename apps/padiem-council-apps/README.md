@@ -219,7 +219,9 @@ S5는 코드 단계가 아니라 **배포 단계**다. 운영 릴리스는 릴�
 **운영이 실제로 서빙 중인 커밋을 특정했다.** `DRIFT`만으로는 "뭔가 다르다"일 뿐이라, 서빙 바이트를
 git blob으로 `main` 이력과 대조해 세 애셋이 모두 일치하는 가장 최근 커밋을 돌려준다.
 
-| 확인 | 실측 (2026-10-29, `main` = `b884ab7b9`) |
+배포 전 기준선 (2026-10-29, `main` = `b884ab7b9`):
+
+| 확인 | 실측 |
 | --- | --- |
 | 서빙 커밋 | `71a74dee2` (#6082, 2026-10-28 21:00 +0900) — main이 **26커밋** 앞 |
 | 배포 근거 | `B62 Production Code Deploy Gate` run `40684361588` (2026-10-28T12:00:43Z, success) |
@@ -229,9 +231,24 @@ git blob으로 `main` 이력과 대조해 세 애셋이 모두 일치하는 가�
 | 라이브 마커 | S0만 라이브 (320/390/768 `flex-wrap: wrap`, 1440 `nowrap`, 브랜드 16px·28px 마크, 카드 아이콘 없음, 필드 8px, 인증 패널 16px) |
 | 라이브 지오메트리 | 320/390/768/1440 가로 넘침 0 · 오버플로 요소 0 · 44px 미만 0 · 언어 4종 · 로그아웃에서 로그인 패널 표시 |
 
-따라서 **S1–S4는 병합됐지만 운영에 없다. `LIVE_VERIFIED=NO`.** 릴리스 후 이 도구를 다시 돌려
-`DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES` 세 개가 동시에 YES가 되면 그때
-`LIVE_VERIFIED=YES`다 (아니면 exit 1).
+즉 **S1–S4는 병합됐지만 운영에 없었다. `LIVE_VERIFIED=NO`.** 그리고 릴리스 오너(LOCAL0/CENTRAL)가
+같은 날 current main을 배포했다 — 이 레인이 배포한 것이 아니다.
+
+배포 후 재측정 (`B62 Production Code Deploy Gate` run `40786832140` success,
+deployed SHA `9430f3993`, cloud version `302b33f6-0c28-4b22-a16a-f2d1c7acdea8`):
+
+| 확인 | 실측 |
+| --- | --- |
+| 서빙 커밋 | `9430f3993` — main과 **0커밋 차이**, 세 애셋 전부 `MATCH` |
+| 라이브 마커 | S0(≤900 wrap) + S1(stroke 마크 30px, 16.5px/−0.165px) + S2(30px 아이콘 열) + S3(필드 14px) + S4(인증 패널 14px) 전부 운영 화면에서 확인 |
+| 지오메트리 | 320/390/768/1440 가로 넘침 0 · 오버플로 요소 0 · 44px 미만 0, `countries=kr,us,uk,fr`, 로그아웃에서 로그인 패널 표시 |
+| 판정 | `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES` → **`LIVE_VERIFIED=YES` (로그아웃 표면)** |
+
+미검증으로 남기는 것: **로그인 후** 편집기 3종 × 4폭, 실서비스 KR/US/UK/FR 생성, 저장·재진입, SNS 사진
+순서, 활동집, 복사/TXT, 키보드 포커스(S5 3–4단계). 인증 테스트 계정과 유료 모델 호출·실 파일 기록 동의가
+별도로 필요하다. 5단계의 "기존 사용자 문서 보존"은 현재 *이번 배포에 저장 쓰기 없었다*
+(`D1_SCHEMA_QUERY=READ_ONLY`, `D1_IDENTIFIER_OUTPUT=0`, `B62_D1_PLAN_APPLY=0`)와 배포 전 게이트 실측
+`project_files=14`까지만 근거이고, 재측정은 같은 인증 읽기가 필요하다.
 
 readback이 거짓말하는 다섯 가지 경우를 각각 막았고, 변형 테스트로 확인했다:
 

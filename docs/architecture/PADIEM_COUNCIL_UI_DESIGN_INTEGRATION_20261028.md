@@ -73,6 +73,33 @@ exactly that makes the served HTML **byte-identical** to the `index.html` commit
 `0027fc413` (#6052, the last commit to touch that file before S1), git blob `daeb754fbc7f`. That
 exactness is what makes the attribution above trustworthy rather than approximate.
 
+### 1.2 S5 post-deploy readback — the design is live
+
+The release owner (not this lane) deployed current main while this contract was being written:
+
+| fact | value |
+| --- | --- |
+| deployed SHA | `9430f39931616542a298dfe0d15a5a2c84813845` (#6112) — council assets identical to S4 `81813dbc8` |
+| workflow run | `B62 Production Code Deploy Gate` run `40786832140`, success, 2026-10-28T23:21:54Z |
+| cloud version | `DEPLOYED_VERSION_ID=302b33f6-0c28-4b22-a16a-f2d1c7acdea8` |
+| refused first dispatch | run `40786525919` failed on `Require explicit production code deploy authorization` with `CONFIRMATION:` empty; the rollback step logged `No recorded previous version; manual rollback required` and **nothing was republished** — production stayed on `9a561b5e-e4f0-46b9-9a7d-f4479c038ba5` until the authorised run |
+| D1 in this release | `D1_SCHEMA_QUERY=READ_ONLY`, `D1_IDENTIFIER_OUTPUT=0`; the last sanctioned plan (`B62 general D1 migration gate (Chat)`, run `40679268473`) recorded `B62_D1_PLAN_APPLY=0`, so no migration travelled with the deploy |
+
+Re-running the tool after that deploy: all three assets `MATCH`, `SERVING=9430f3993`,
+`main is 0 commits ahead`, and every stage marker is present on production —
+`S1mark=True/30`, `S1name=16.5px/-0.165px`, `S2cols=30px <auto>` with `icon=30`, `S3field=14px`,
+`S4auth=14px`, `S0wrap` at 320/390/768 and `nowrap` at 1440, `countries=kr,us,uk,fr`, sign-in panel
+rendered signed-out at all four widths, and overflow 0 / out-of-viewport 0 / sub-44px 0 in all 16
+measurements. → `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES`,
+**`LIVE_VERIFIED=YES` for the unauthenticated surface.**
+
+Not yet verified, and not claimed: the **authenticated** pass over the three editors at the four
+widths, live KR/US/UK/FR generation, save-and-reentry, SNS media order, the activity book, copy/TXT and
+keyboard focus (S5 steps 3–4). Those need an authorised test account, consent for paid model calls and
+real file writes; they are a separate bounded run, and step 5's "the existing user documents survived"
+is currently supported only by *no storage write happened* plus the gate's pre-deploy
+`project_files=14` count — a re-measure needs the same authorised read.
+
 ## 2. Constraints a visual integration may not break
 
 Each of these is a literal-string assertion that already fails CI if violated. They are the reason
@@ -226,8 +253,10 @@ No stage in this list deploys to production; production release stays with CENTR
   `DRIFT`, `SERVING=71a74dee2`, S0 live and S1–S4 merged-not-served, and the live page geometry
   already clean — overflow 0, offenders 0, sub-44px targets 0 at 320/390/768/1440,
   `countries=kr,us,uk,fr`, sign-in panel visible in the signed-out state at all four widths.
-  **LIVE_VERIFIED=NO until a deploy of current main reproduces this run with
-  `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES`.**
+  **`LIVE_VERIFIED=NO` at that moment** — and the release owner deployed current main shortly after,
+  so §1.2 carries the post-deploy read (`LIVE_VERIFIED=YES` on the unauthenticated surface, with the
+  authenticated steps 3–4 still open). The tool is the re-check: it exits 1 unless
+  `DEPLOYED_TO_MAIN_BYTES`, `S1_S4_MARKERS` and `GEOMETRY_CLEAN` are all YES.
   Guard strength, measured by mutation (each mutation applied alone, then reverted and byte-checked
   against the snapshot): beacon eats the source newline → 1 test red; beacon leaves its own newline →
   2 red; empty-response branch removed → 1 red; skip-link exclusion removed → 1 red; settle-wait
@@ -269,7 +298,6 @@ proof that generation or saving works.
    must extend that one block rather than restate it.
 
 ## 7. Evidence index
-
 - Harness: `council6065_harness.py` (local, read-only; `/api/chat` answered from a canned string,
   so no model call leaves the machine).
 - Measurement: `council6065_measure.py` → `live_measure.json`, 2 states × 4 widths × 4 views, with
