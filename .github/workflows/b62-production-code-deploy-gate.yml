@@ -1512,53 +1512,28 @@ jobs:
       - name: Deploy production code preserving the full binding set
         working-directory: apps/padiem-chat
         shell: bash
+        env:
+          # Deployment-procedure constants (not work-volume limits):
+          # partial traffic share and the settle wait before the smokes.
+          STAGED_TRAFFIC_PERCENT: "10"
+          STAGED_SETTLE_SECONDS: "20"
         run: |
           set -euo pipefail
           generated="wrangler.production.generated.toml"
           trap 'rm -f "${generated}"' EXIT
-          set +e
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-            --config "${generated}" --strict \
-            --tag "git-${TARGET_SHA}" \
-            --message "B62 production code ${TARGET_SHA}" \
-            2>&1 | python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}" \
-            > "${RUNNER_TEMP}/b62-deploy-attempt-1.log"
-          attempt1_status=$?
-          set -e
-          if [ "${attempt1_status}" -eq 0 ]; then
-            echo "STATE_ADOPTION_REQUIRED=NO"
-            echo "STATE_ADOPTION_PERFORMED=NO"
-            echo "STATE_ADOPTION_UPLOADS=0"
-          # Both Script-API and Dashboard ownership drift can yield Wrangler's
-          # same --strict conflict while *all* live bindings have already been
-          # snapshotted and preserved in the generated config. Authorize the
-          # existing one-time state-adoption upload for ONLY these exact warnings,
-          # immediately followed by a second strict deploy and the unchanged
-          # post-deploy binding/secret equality and rollback gates.
-          elif { grep -Fq "last updated via the script API" \
-                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log" \
-                 || grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard" \
-                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; } \
-            && grep -Fq "Aborting the upload operation because of conflicts" \
-                 "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; then
-            echo "STATE_ADOPTION_REQUIRED=YES"
-            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-              --config "${generated}" \
-              --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA} (state adoption)" 2>&1 | \
-              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
-            echo "STATE_ADOPTION_UPLOADS=1"
-            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-              --config "${generated}" --strict \
-              --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA}" 2>&1 | \
-              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
-            echo "STATE_ADOPTION_PERFORMED=YES"
-          else
-            cat "${RUNNER_TEMP}/b62-deploy-attempt-1.log" >&2
-            exit "${attempt1_status}"
-          fi
-          rm -f "${generated}"
+          # #5895: gradual deployment instead of a 100% swap. Upload a version,
+          # serve it to a partial share, prove the anonymous and signed-in paths
+          # against that exact version with Cloudflare-Workers-Version-Key, then
+          # promote to 100% or restore the previous version to 100% at once.
+          # The generated config keeps the full binding set; wrangler.toml stays
+          # the binding source of truth and the readback steps below are unchanged.
+          python3 ../../.github/scripts/b62_staged_chat_rollout.py \
+            --config "${generated}" \
+            --previous-version "${PREVIOUS_VERSION_ID}" \
+            --percent "${STAGED_TRAFFIC_PERCENT}" \
+            --settle-seconds "${STAGED_SETTLE_SECONDS}" \
+            --smoke "python3 ../../.github/scripts/post_deploy_real_chat_smoke.py --lane chat" \
+            --smoke "python3 ../../.github/scripts/post_deploy_signed_in_smoke.py"
           echo "B62_PRODUCTION_CODE_DEPLOY=SUCCESS"
           echo "PRODUCTION_MUTATION=1"
 
