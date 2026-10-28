@@ -109,9 +109,11 @@ BINARY_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": frozenset({".docx"}),
     "application/vnd.openxmlformats-officedocument.presentationml.presentation": frozenset({".pptx"}),
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": frozenset({".xlsx"}),
-    # LEGACY_HWP_DECISION=UNSUPPORTED: legacy .hwp is an OLE2 compound binary, not a zip
-    # container, so no bounded pure-stdlib parser is realistic in this slice; application/x-hwp
-    # stays outside every allow-list and fails closed. HWPX below is the OOXML-style zip path.
+    # LEGACY_HWP_DECISION=FILE_LANE (2026-10-28 CTO decision, was UNSUPPORTED):
+    # legacy .hwp is an OLE2 compound binary and stays outside every allow-list
+    # HERE — this package still never parses it. It is read by the COM2 file
+    # lane's own olefile-based reader (BSD, no AGPL), and the Chat Worker only
+    # ferries bytes. HWPX below is the OOXML-style zip path this package owns.
     "application/hwp+zip": frozenset({".hwpx"}),
 }
 
