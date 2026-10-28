@@ -68,6 +68,14 @@ def signature(row: dict) -> str | None:
     if not parts:
         parts = _texts(row.get("exception"), {"pattern", "message", "name"})
     if not parts:
+        # A Python worker reports its cause in the first line of `stack`. Only that one
+        # line: the frames below name files, not causes, and they are not the question.
+        for stack in _texts(row.get("exceptions"), {"stack"}):
+            head = next((line.strip() for line in stack.splitlines() if line.strip()), "")
+            if head:
+                parts.append(head)
+                break
+    if not parts:
         message = row.get("message")
         if isinstance(message, str) and message.strip():
             parts.append(message.strip())
@@ -105,7 +113,16 @@ def key_shape(node, depth: int = 0, prefix: str = "") -> list[str]:
                 names.append(prefix + "<hidden>")
                 continue
             name = prefix + str(key)
-            names.append(name)
+            if isinstance(value, str):
+                # The length is the diagnosis: the third capture showed the keys with no
+                # text behind them, and a name alone cannot tell an empty field from a
+                # field the extractor failed to read.
+                names.append("%s=%dch" % (name, len(value)))
+            elif isinstance(value, (int, bool)) or value is None:
+                names.append("%s=%s" % (name, "int" if isinstance(value, int)
+                                        else type(value).__name__))
+            else:
+                names.append(name)
             if isinstance(value, (dict, list)):
                 names.extend(key_shape(value, depth + 1, name + "."))
     elif isinstance(node, list):
@@ -131,10 +148,29 @@ def colo_of(row: dict) -> str | None:
 
 
 def status_of(row: dict) -> str | None:
-    for key in ("status", "statusCode", "status_code"):
-        value = row.get(key)
-        if isinstance(value, int):
-            return str(value)
+    """The response status the Worker answered with, wherever the row keeps it.
+
+    This row shape puts it under `event.response.status`, not at the top level.
+    """
+
+    return _int_named(row, "status", depth=0)
+
+
+def _int_named(node, name: str, depth: int) -> str | None:
+    if depth > 3:
+        return None
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if str(key).lower() == name and isinstance(value, int):
+                return str(value)
+            found = _int_named(value, name, depth + 1)
+            if found:
+                return found
+    elif isinstance(node, list):
+        for item in node:
+            found = _int_named(item, name, depth + 1)
+            if found:
+                return found
     return None
 
 
@@ -146,6 +182,7 @@ def summarize(rows: list[dict]) -> dict:
     statuses: Counter = Counter()
     fields: set[str] = set()
     shape: list[str] = []
+    truncated = 0
     for row in rows:
         if not isinstance(row, dict):
             continue
@@ -155,6 +192,8 @@ def summarize(rows: list[dict]) -> dict:
         outcomes[bucket(outcome)] += 1
         if not shape and bucket(outcome) != "ok":
             shape = key_shape(row)
+        if row.get("truncated") is True:
+            truncated += 1
         sig = signature(row)
         if sig:
             exceptions[sig] += 1
@@ -169,7 +208,7 @@ def summarize(rows: list[dict]) -> dict:
             statuses[status] += 1
     return {"rows": len(rows), "fields": sorted(fields), "outcomes": outcomes,
             "exceptions": exceptions, "paths": paths, "colos": colos,
-            "statuses": statuses, "shape": shape}
+            "statuses": statuses, "shape": shape, "truncated": truncated}
 
 
 def emit(summary: dict) -> None:
@@ -177,6 +216,9 @@ def emit(summary: dict) -> None:
     print("TAIL_FIELDS=%s" % ",".join(summary["fields"])[:400])
     if summary.get("shape"):
         print("SHAPE_KEYS=%s" % ";".join(summary["shape"])[:900])
+        print("TAIL_TRUNCATED=%d/%d (a truncated row carries no text, so this is "
+              "the difference between 'nothing threw' and 'the row was cut')"
+              % (summary.get("truncated", 0), summary["rows"]))
     if not summary["rows"]:
         print("TAIL_EMPTY=1 (no messages captured: the tail saw no traffic, "
               "or wrangler refused to start)")
