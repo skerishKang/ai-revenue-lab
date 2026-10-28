@@ -46,7 +46,7 @@
 .util-panel { display: block; }
 .util-form { display: flex; flex-direction: column; gap: 12px; }
 .util-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text, #17202a); }
-.util-form input, .util-form textarea, .util-form select { min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; }
+.util-form input, .util-form textarea, .util-form select { min-height: 44px; padding: 8px 10px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; }
 .util-generate { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 14px; font-weight: 650; }
 .util-generate:hover:not(:disabled) { filter: brightness(.96); }
 .util-generate:disabled { opacity: .5; cursor: not-allowed; }
@@ -59,7 +59,7 @@ html[data-theme="padiem-glass"] .pdfmd-btn-primary {
   background: #355977;
 }
 .util-result { margin-top: 16px; }
-.util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
+.util-result textarea { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 14px; box-sizing: border-box; }
 /* #5727: the form area carries the two authoring actions — generate (the
  * shared primary CTA) and save. Same secondary surface as the result-area
  * buttons, so both rows read as one control family. */
@@ -83,7 +83,7 @@ html[data-theme="padiem-glass"] .pdfmd-btn-primary {
  * real ink border on a solid surface instead. */
 #utilSpeechPanel .util-form input,
 #utilSpeechPanel .util-form textarea,
-#utilSpeechPanel .util-form select { border: 1px solid rgba(51, 74, 91, .34); background: #ffffff; }
+#utilSpeechPanel .util-form select { border: 1px solid var(--input-border-strong, rgba(51, 74, 91, .34)); background: #ffffff; }
 #utilSpeechPanel .util-form input:hover, #utilSpeechPanel .util-form textarea:hover, #utilSpeechPanel .util-form select:hover { border-color: rgba(51, 74, 91, .58); }
 #utilSpeechPanel .util-form input:focus, #utilSpeechPanel .util-form textarea:focus, #utilSpeechPanel .util-form select:focus { border-color: var(--accent, #79bce7); }
 /* The speech primary action joins the light PADIEM blue the brand dot and the
