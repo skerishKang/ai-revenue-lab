@@ -101,5 +101,11 @@ def test_observability_gate_tests_and_all_deploy_attempts_use_the_generated_conf
     assert "--config wrangler.production.generated.toml" in package
     deploy = workflow.split("\n      - name: Deploy production code preserving the full binding set", 1)[1].split("\n      - name: Read back exact post-deploy binding and variable state", 1)[0]
     assert 'generated="wrangler.production.generated.toml"' in deploy
-    assert deploy.count("pywrangler deploy") == 3
-    assert deploy.count('--config "${generated}"') == 6  # Three upload commands and three private-output filters.
+    # #5895: the staged rollout replaced the three one-shot deploys. Every
+    # upload, staged deploy, rollback and promote still names the generated
+    # config; no call may fall back to the mock wrangler.toml.
+    assert "b62_staged_chat_rollout.py" in deploy
+    assert '--config "${generated}"' in deploy
+    staged = (Path(__file__).resolve().parents[2] / ".github/scripts/b62_staged_chat_rollout.py").read_text(encoding="utf-8")
+    assert staged.count('"--config", config') == 4  # upload + staged + rollback + promote
+    assert "pywrangler deploy" not in deploy
