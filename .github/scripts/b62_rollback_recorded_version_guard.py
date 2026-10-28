@@ -78,22 +78,51 @@ def is_canonical_version_id(value: object) -> bool:
     return canonical == value
 
 
+def _serves_all_traffic(version: dict) -> bool:
+    """Whether one recorded version carried the whole traffic of its deployment.
+
+    A deployment record that names a percentage is only a stable state at 100: a
+    10% row describes a rollout in progress, and restoring traffic *to* it is not
+    a rollback.
+    """
+    percentage = version.get("percentage")
+    if percentage is None:
+        return True
+    try:
+        return float(percentage) >= 100.0
+    except (TypeError, ValueError):
+        return False
+
+
 def _predecessor_version_id(deployments: list[object]) -> str:
+    """The newest deployment below the live one that served all traffic alone.
+
+    #5895 staged rollout: promoting a version leaves two history entries under the
+    one serving traffic — the promotion at 100%, then the 10/90 split it came from.
+    The split entry carries two versions, so reading position one as "the previous
+    version" asks a question that has no answer, and that is the lock that refused a
+    rollback while a live incident was still serving bad traffic. A rollout record
+    is stepped over, not refused: the version to go back to is the newest entry that
+    stood alone at full traffic.
+    """
     if len(deployments) < 2:
         raise RecordedVersionError("no-predecessor-record")
-    entry = deployments[1]
-    if not isinstance(entry, dict):
-        raise RecordedVersionError("predecessor-entry")
-    versions = entry.get("versions")
-    if not isinstance(versions, list) or len(versions) != 1:
-        raise RecordedVersionError("predecessor-version-count")
-    version = versions[0]
-    if not isinstance(version, dict):
-        raise RecordedVersionError("predecessor-version-entry")
-    version_id = version.get("version_id")
-    if not is_safe_version_id(version_id):
-        raise RecordedVersionError("predecessor-version-id")
-    return version_id
+    for entry in deployments[1:]:
+        if not isinstance(entry, dict):
+            raise RecordedVersionError("predecessor-entry")
+        versions = entry.get("versions")
+        if not isinstance(versions, list) or not versions:
+            raise RecordedVersionError("predecessor-version-count")
+        if len(versions) != 1:
+            continue
+        version = versions[0]
+        if not isinstance(version, dict) or not _serves_all_traffic(version):
+            continue
+        version_id = version.get("version_id")
+        if not is_safe_version_id(version_id):
+            raise RecordedVersionError("predecessor-version-id")
+        return version_id
+    raise RecordedVersionError("no-predecessor-record")
 
 
 def resolve_recorded_role(deployments_payload: object, recorded_version_id: str) -> str:
