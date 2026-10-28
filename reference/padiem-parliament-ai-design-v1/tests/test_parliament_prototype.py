@@ -34,6 +34,12 @@ CARD = frozenset({"--work-1-text", "--work-2-text", "--work-3-text", "--work-ind
                   "--work-arrow-bg", "--work-arrow-ink", "--work-arrow-line", "--work-arrow-inline-display"})
 # 원본마다 실제로 그 자리에 있는 요소가 다르다(04 만 인용구, 03 프랑 만 eyebrow 없음).
 PRESENCE = frozenset({"--hero-quote-display", "--hero-eyebrow-display"})
+# 01/02 목업의 좌측 영구 레일: 존재·폭·active 형태·하단 인용 상자는 국가 구성이 정한다.
+RAIL = frozenset({"--rail-display", "--rail-w", "--rail-active-bg", "--rail-active-bar", "--rail-active-line",
+                  "--rail-active-ink", "--rail-caption-line", "--rail-caption-pad", "--topchrome-display", "--hero-copy-w"})
+# 카드 골격(세로/2열/중앙)과 배지·언더라인·스트립 존재도 원본별 구성 차이로 토큰화한다.
+SHELL = frozenset({"--work-display", "--work-cols", "--work-body-display", "--work-icon-rule",
+                   "--work-badge-display", "--work-align", "--work-items", "--work-icon-self", "--strip-display"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op",
                    # 2차 해석표 반영: 전폭 사진 위의 읽기 오버레이와 헤더/밴드/스트립 위계
@@ -129,7 +135,7 @@ def test_each_country_declares_exactly_one_ramp_block() -> None:
         declaring = [b for b in blocks_for("country", country) if re.search(r"--[a-z0-9-]+\s*:", b)]
         assert len(declaring) == 1, f"{country} declares its ramp in {len(declaring)} places"
         keys = props_of(*declaring)
-        required = RAMP | SCENE | PHOTO | WORK | CARD | PRESENCE | IDENTITY
+        required = RAMP | SCENE | PHOTO | WORK | CARD | PRESENCE | RAIL | SHELL | IDENTITY
         assert required <= keys, f"{country} is missing {sorted(required - keys)}"
         assert keys - required <= OPTIONAL, f"{country} invents unshared keys: {sorted(keys - required - OPTIONAL)}"
 
@@ -188,10 +194,15 @@ def test_screen_composition_is_limited_as_ordered() -> None:
     assert HTML.count('class="pa-work"') == 3, "exactly three work cards"
     assert HTML.count('class="pa-work-select"') == 3
     # 시안은 영구 사이드바 메뉴와 업무 카드 목록이라는 서로 다른 두 개의 탐색을 쓴다.
-    assert HTML.count("<nav") == 2, "top menu + work list, and nothing more"
+    assert HTML.count("<nav") == 3, "top menu + rail menu + work list, and nothing more"
     assert HTML.count('class="pa-nav-item"') + HTML.count('class="pa-nav-item is-current"') == 5, (
         "04 시안의 메뉴 5항(홈 · 업무 도구 · 활용 사례 · 가이드 · 공지사항) 이상을 두지 않는다")
-    assert HTML.count('aria-disabled="true"') == 4, "죽은 통제는 3개 메뉴 + 전체 도구 보기, 그리고 준비 중임을 밝혀야 한다"
+    # 01/02 레일: 홈 + 3업무(실제 통제) + 구분선 뒤 4항(죽은 통제). 라벨은 원본대로 한국어.
+    assert HTML.count('class="pa-rail-item"') == 7, "홈 + 축사·SNS·회의 + 죽은 3항"
+    assert HTML.count('class="pa-rail-item is-current"') == 1
+    for work in ("speech", "sns", "meeting"):
+        assert 'data-nav="%s"' % work in HTML, f"the rail must route the real work {work}"
+    assert HTML.count('aria-disabled="true"') == 8, "죽은 통제는 상단 3 + 전체 도구 보기 + 레일 4, 준비 중임을 밝혀야 한다"
     assert "<footer" in HTML
     for fragment in ('class="pa-topbar"', 'class="pa-hero"', 'class="pa-scene"', 'class="pa-editor"'):
         assert fragment in HTML, fragment
@@ -199,7 +210,7 @@ def test_screen_composition_is_limited_as_ordered() -> None:
     # CTO 결정 4: 로그인 전 화면에 허구의 계정·알림 데이터를 목업으로 띄우지 않는다.
     # 주석은 화면에 렌더되지 않으므로, 결정 근거를 적어두는 것과 실제 마크업은 구분해 검사한다.
     visible_markup = re.sub(r"<!--.*?-->", "", HTML, flags=re.S)
-    for forbidden in ("김민주", "pa-session-chip", "pa-avatar", "pa-bell", "aria-label=\"알림\""):
+    for forbidden in ("김민주", "pa-session-chip", "pa-avatar", "pa-bell", "aria-label=\"알림\"", "제22대", "김의원"):
         assert forbidden not in visible_markup, f"fictional account UI leaked back in: {forbidden}"
 
 
@@ -376,7 +387,11 @@ def test_hero_is_one_full_bleed_photo_without_a_panel_seam() -> None:
     assert "position: absolute" in scene and "inset: 0" in scene, "the scene must cover the whole hero"
     copy = rule_body(".pa-hero-copy")
     assert "background: transparent" in copy, "the copy sits on the photo, not on a graphite panel"
-    assert "51.4%" in copy, "the copy column ends where the original's text ends (51.4%W)"
+    assert "var(--hero-copy-w)" in copy, "the copy column width is country material now"
+    for country, expected in (("kr", "51.4%"), ("fr", "51.4%"), ("us", "40%"), ("uk", "40%")):
+        body = " ".join(blocks_for("country", country))
+        assert re.search(r"--hero-copy-w:\s*%s;" % re.escape(expected), body), f"{country} copy width drifted"
+    assert "inset: 0 0 auto var(--rail-w)" in rule_body(".pa-topbar"), "the bar must start right of the rail"
 
 
 def test_hero_headline_is_measured_for_two_lines_not_three() -> None:

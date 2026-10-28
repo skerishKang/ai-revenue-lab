@@ -27,6 +27,56 @@
 <body class="pa-body">
   <a class="pa-skip" href="#paMain">본문 바로가기</a>
 
+  <!-- 01/02 목업의 좌측 영구 레일. kr/fr(04·03) 에는 없는 구조라 국가가 존재를 켠다.
+       홈과 3개 업무 항목은 실제 통제를 재사용하고, 나머지 4항은 aria-disabled + announce 만이다.
+       bell·avatar·저장된 초안 목록·생성된 결과 본문은 허구 계정 데이터라 원본에 있어도 옮기지 않는다(CTO 결정 4). -->
+  <aside class="pa-rail" aria-label="레일 메뉴">
+    <p class="pa-rail-brand">
+      <span class="pa-rail-mark" aria-hidden="true">
+        <svg viewBox="0 0 30 30" focusable="false"><path d="M4 25h22M5 22h20M7 12h16M6 12l9-7 9 7M9 12v10M13 12v10M17 12v10M21 12v10" /></svg>
+      </span>
+      <span class="pa-rail-id">
+        <span class="pa-rail-name">의원 <em>3종</em> AI 스튜디오</span>
+        <span class="pa-rail-tagline" data-i18n="rail.tagline">For a Better Democracy</span>
+      </span>
+    </p>
+
+    <nav class="pa-rail-nav">
+      <button type="button" class="pa-rail-item is-current" data-nav="home">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 11l8-7 8 7M6 10v10h12V10" /></svg></span>홈
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="speech">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M6 3h9a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></svg></span>축사·인사말
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="sns">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="6" cy="12" r="2.6" /><circle cx="17" cy="6" r="2.6" /><circle cx="17" cy="18" r="2.6" /><path d="M8.3 10.8l6.4-3.6M8.3 13.2l6.4 3.6" /></svg></span>SNS 홍보
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="meeting">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6" /><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3" /></svg></span>회의정리·활동집
+      </button>
+
+      <span class="pa-rail-sep" aria-hidden="true"></span>
+
+      <button type="button" class="pa-rail-item" data-nav="box" aria-disabled="true">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 7h6l2 2h8v10H4z" /></svg></span><span data-i18n="rail.sec1">내 문서함</span>
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="star" aria-disabled="true">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 4l2.4 5 5.4.7-4 3.7 1.1 5.3L12 16l-4.9 2.7L8.2 13.4l-4-3.7 5.4-.7z" /></svg></span><span data-i18n="rail.sec2">즐겨찾기</span>
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="templates" aria-disabled="true">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" /></svg></span><span data-i18n="rail.sec3">템플릿 라이브러리</span>
+      </button>
+      <button type="button" class="pa-rail-item" data-nav="settings" aria-disabled="true">
+        <span class="pa-rail-ico" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="3.2" /><path d="M12 3.5v2.4M12 18.1v2.4M3.5 12h2.4M18.1 12h2.4M6 6l1.7 1.7M16.3 16.3L18 18M18 6l-1.7 1.7M7.7 16.3L6 18" /></svg></span><span data-i18n="rail.sec4">설정</span>
+      </button>
+      <span class="pa-rail-note" data-i18n="rail.note">준비 중</span>
+    </nav>
+
+    <p class="pa-rail-quote" data-i18n="rail.quote">국민의 더 나은 내일을 위해,<br />의원의 생각이 더 멀리,<br />더 깊이 닿을 수 있도록.</p>
+    <span class="pa-rail-dash" aria-hidden="true"></span>
+    <p class="pa-rail-caption" data-i18n="rail.caption">PEOPLE<br />POLICY<br />A STRONGER TOMORROW</p>
+  </aside>
+
   <div class="pa-shell">
     <div class="pa-main">
       <header class="pa-topbar">
@@ -151,39 +201,48 @@
                 <span class="pa-work-icon" aria-hidden="true">
                   <svg viewBox="0 0 32 32" focusable="false"><path d="M7 5h13a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H7z" /><path d="M11 11h8M11 15h8M11 19h5" /></svg>
                 </span>
-                <span class="pa-work-index" aria-hidden="true">01</span>
-                <h3 class="pa-work-title" data-i18n="work.title.1">축사·인사말</h3>
-                <p class="pa-work-desc" data-i18n="work.desc.1">행사 성격과 대상에 맞는 품격 있는 축사와 인사말을 빠르게 작성합니다.</p>
-                <p class="pa-work-foot">
-                  <button type="button" class="pa-work-select" data-work="speech"
-                          aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
-                </p>
+                <span class="pa-work-body">
+                  <span class="pa-work-badge" aria-hidden="true">AI 작성</span>
+                  <span class="pa-work-index" aria-hidden="true">01</span>
+                  <h3 class="pa-work-title" data-i18n="work.title.1">축사·인사말</h3>
+                  <p class="pa-work-desc" data-i18n="work.desc.1">행사 성격과 대상에 맞는 품격 있는 축사와 인사말을 빠르게 작성합니다.</p>
+                  <p class="pa-work-foot">
+                    <button type="button" class="pa-work-select" data-work="speech"
+                            aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
+                  </p>
+                </span>
               </article>
 
               <article class="pa-work" data-work="sns">
                 <span class="pa-work-icon" aria-hidden="true">
                   <svg viewBox="0 0 32 32" focusable="false"><path d="M5 13v6a2 2 0 0 0 2 2h3l8 5V6l-8 5H7a2 2 0 0 0-2 2z" /><path d="M23 11a6 6 0 0 1 0 10" /></svg>
                 </span>
-                <span class="pa-work-index" aria-hidden="true">02</span>
-                <h3 class="pa-work-title" data-i18n="work.title.2">SNS 홍보</h3>
-                <p class="pa-work-desc" data-i18n="work.desc.2">의정활동을 더 많은 국민에게, 효과적으로 전달합니다.</p>
-                <p class="pa-work-foot">
-                  <button type="button" class="pa-work-select" data-work="sns"
-                          aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
-                </p>
+                <span class="pa-work-body">
+                  <span class="pa-work-badge" aria-hidden="true">AI 홍보글</span>
+                  <span class="pa-work-index" aria-hidden="true">02</span>
+                  <h3 class="pa-work-title" data-i18n="work.title.2">SNS 홍보</h3>
+                  <p class="pa-work-desc" data-i18n="work.desc.2">의정활동을 더 많은 국민에게, 효과적으로 전달합니다.</p>
+                  <p class="pa-work-foot">
+                    <button type="button" class="pa-work-select" data-work="sns"
+                            aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
+                  </p>
+                </span>
               </article>
 
               <article class="pa-work" data-work="meeting">
                 <span class="pa-work-icon" aria-hidden="true">
                   <svg viewBox="0 0 32 32" focusable="false"><path d="M6 5h16a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H6z" /><path d="M11 11h9M11 15h9M11 19h6" /></svg>
                 </span>
-                <span class="pa-work-index" aria-hidden="true">03</span>
-                <h3 class="pa-work-title" data-i18n="work.title.3">회의정리·활동집</h3>
-                <p class="pa-work-desc" data-i18n="work.desc.3">회의 내용을 체계적으로 정리하고 의정활동 자료집까지 손쉽게 제작합니다.</p>
-                <p class="pa-work-foot">
-                  <button type="button" class="pa-work-select" data-work="meeting"
-                          aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
-                </p>
+                <span class="pa-work-body">
+                  <span class="pa-work-badge" aria-hidden="true">AI 요약</span>
+                  <span class="pa-work-index" aria-hidden="true">03</span>
+                  <h3 class="pa-work-title" data-i18n="work.title.3">회의정리·활동집</h3>
+                  <p class="pa-work-desc" data-i18n="work.desc.3">회의 내용을 체계적으로 정리하고 의정활동 자료집까지 손쉽게 제작합니다.</p>
+                  <p class="pa-work-foot">
+                    <button type="button" class="pa-work-select" data-work="meeting"
+                            aria-controls="paEditor" aria-expanded="false"><span data-i18n="work.select">바로 시작하기</span></button>
+                  </p>
+                </span>
               </article>
             </nav>
             <p class="pa-works-empty" id="paWorksEmpty" data-i18n="works.empty" hidden>검색 결과가 없습니다. 업무명은 축사, SNS, 회의입니다.</p>

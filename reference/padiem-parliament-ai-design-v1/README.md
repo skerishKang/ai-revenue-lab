@@ -346,3 +346,65 @@ FONTS              새 면 0종 — 배포된 MaruBuri·Pretendard 로 fr/en/ko 
 | 브랜드 표기 `PADIEM Parliament AI / 의원3종 스튜디오` | 03 은 `PADIEM` 만 쓴다. 제품명 표기 결정 |
 | 영국 카드 배지(`AI 작성` 외) | 생성 시안 특유의 라벨. 정보구조 결정 |
 | 03 의 내비 어휘(`Council AI/Workspace/Library/Settings`) | 현재 5슬롯 IA 와 1:1 대응이 없어 라벨 현지화로 처리했다 |
+
+---
+
+## v9 — 01/02 레일·카드 구도 재현, 스트립 제거 (#6030, 2026-10-28)
+
+지시: 해외 3국 **디자인 충실도** 보정. 원본을 다시 열고 실측한 뒤 구현했다.
+분석표: `E:\analysis-6011\FIDELITY_SHEET_6030.md`(비공개). 원본 PNG·측정용 후보 폰트는 저장소 밖.
+
+### 레일 기하 (실측)
+
+| 항목 | 01 영국 | 02 미국 |
+| --- | --- | --- |
+| seam | x=233 = **14.7%W** | x=250 = **15.8%W** |
+| 레일 상단색 | `#0a152b` | `#031d37` |
+| active | 보더 알약 + 골드 아이콘 | 채운 알약 + **crimson 좌측 바** |
+| 구분선 뒤 | 문서함·즐겨찾기·템플릿·설정 | 초안함·즐겨찾기·**최근 작업**·템플릿 |
+| 하단 | 3행 인용 + PEOPLE/POLICY/A STRONGER TOMORROW | 2행 인용 + 대시 + 테두리 카드 |
+
+- `.pa-rail` 은 `position: fixed` 이고 본문은 `.pa-main { padding-left: var(--rail-w) }` 로 인셋된다.
+  상단 바는 `inset: 0 0 auto var(--rail-w)` 로 레일 오른쪽에서 시작한다.
+- 레일의 홈·3개 업무 항목은 **실제 통제**다(같은 `openWork()` 라우트). 존재하지 않는 4항은
+  `aria-disabled` + announce 로만 존재한다.
+- **bell·avatar·"김의원 님/제22대 국회의원"·저장된 초안 목록·생성 결과 본문은 옮기지 않았다** —
+  원본에 있어도 허구 계정/의정 자료다(v7 CTO 결정 4, 지시 8항).
+
+### 카드·스트립
+
+| 국가 | 카드 구성 | 인덱스 | 배지 | 아이콘 언더라인 | 스트립 |
+| --- | --- | --- | --- | --- | --- |
+| kr(04) | 세로 스택 (불변) | 없음 | 없음 | 없음 | 유지 |
+| us(02) | **2열** 76px + 내용 | 01·02·03 | 없음 | **crimson** | **제거** |
+| uk(01) | **2열** 76px + 내용 | 없음 | **AI 작성/홍보글/요약** | 없음 | **제거** |
+| fr(03) | 세로 + **중앙 정렬** | 없음 | 없음 | 없음 | 유지(03 잘림, 증거 없음) |
+
+- 배지는 absolute 가 아니라 `.pa-work-body` 첫 행 우측 정렬이다. absolute 로 띄우면 긴 제목
+  (`Records & Reports`)이 배지 밑으로 파고들었다(실측 후 수정).
+- 스트립은 01/02에 존재하지 않는다 — 카드 아래가 곧 작업 영역이다. us/uk에서 `--strip-display: none`.
+
+### 토큰 (18 + 1종, 4국 공통 계약)
+
+`--rail-display/-w/-active-bg/-active-bar/-active-line/-active-ink/-caption-line/-caption-pad`,
+`--topchrome-display`, `--hero-copy-w`, `--work-display/-cols/-body-display/-icon-rule/-badge-display/-align/-items/-icon-self`, `--strip-display`.
+한국은 전부 "없음/기존" 값이라 렌더가 변하지 않는다.
+
+### 보존·검증
+
+```text
+kr 홈 5스타일 × 2뷰포트 (8801 main vs 8821 브랜치)   diff_px=0   maxdelta<=8
+kr→us→fr→uk→kr 왕복                                diff_px=0   maxdelta=0
+20조합 + 기능 2 = 42 검사                            문제 0
+  · 레일 존재/상단 내비 대체/카드 2열/배지/스트립 조합까지 판정에 포함
+테스트                                              42 passed
+편집기 3종 × 2뷰포트                                  열림·돌아가기 정상
+```
+
+### 서체·사진 (지시 4·5항, 보고만)
+
+- 실브라우저 비교: MaruBuri(배포) vs Playfair Display 700(측정용) vs Georgia(장비).
+  폭은 MaruBuri≈Playfair(3% 이내), Georgia +9~15%. 형태는 03의 Didone에 Playfair가 가장 가깝다.
+  한글은 MaruBuri가 유일. **후보 1종만 남기고 배포는 승인 대기**(새 웹폰트 결정).
+- 사진: 오너 제공 > 무료 라이선스(Unsplash/Pexels) > Wikimedia(표기 필요) > 상용 > 생성(금지).
+  `--hero-photo` 한 줄 교체로 끝나도록 구조는 이미 열려 있다. 지시 전까지 사진 없이 둔다.

@@ -102,6 +102,12 @@
   const COPY_LANG = { us: "en", uk: "en", fr: "fr" };
   const COPY = {
     us: {
+      "rail.tagline": ["For a Better Tomorrow"],
+      "rail.sec1": ["\ub0b4\ucd08\uc548\ud568"], "rail.sec2": ["\uc990\uaca8\ucc3e\uae30"],
+      "rail.sec3": ["\ucd5c\uac74 \uc791\uc5c5"], "rail.sec4": ["\ud15c\ud50c\ub9bf \ub77c\uc774\ube0c\ub7ec\ub9ac"],
+      "rail.note": ["\uc900\ube44 \uc911"],
+      "rail.quote": ["\uad6d\ubbfc\uacfc \ud568\uac8c", "\ub354 \ub098\uc740 \ub0b4\uc77c\uc744 \ub9cc\ub4dc\ub2c8\ub2e4."],
+      "rail.caption": ["AI\uc640 \ud568\uac8c\ud558\ub294", "\uc758\uc815\ud65c\ub3d9\uc758 \uc0c8\ub85c\uc6b4 \uae30\uc900", "\uc758\uc6d0 3\uc885 AI \uc2a4\ud29c\ub514\uc624"],
       "nav.home": ["Home"], "nav.tools": ["AI tools"], "nav.cases": ["Use cases"], "nav.guide": ["Guide"], "nav.notice": ["Notices"],
       "nav.note": ["coming soon"], "search.ph": ["How can we help you?"],
       "nav.list": ["Main menu"], "works.alltools.note": [" — coming soon"],
@@ -119,6 +125,12 @@
       "works.empty": ["No matches. Try speech, social, or records."]
     },
     uk: {
+      "rail.tagline": ["For a Better Democracy"],
+      "rail.sec1": ["\ub0b4 \ubb38\uc11c\ud568"], "rail.sec2": ["\uc990\uaca8\ucc3e\uae30"],
+      "rail.sec3": ["\ud15c\ud50c\ub9bf \ub77c\uc774\ube0c\ub7ec\ub9ac"], "rail.sec4": ["\uc124\uc815"],
+      "rail.note": ["\uc900\ube44 \uc911"],
+      "rail.quote": ["\uad6d\ubbfc\uc758 \ub354 \ub098\uc740 \ub0b4\uc77c\uc744 \uc704\ud574,", "\uc758\uc6d0\uc758 \uc0dd\uac01\uc774 \ub354 \uba40\ub9ac,", "\ub354 \uae4a\uc774 \ub2ec\uc744 \uc218 \uc788\ub3c4\ub85d."],
+      "rail.caption": ["PEOPLE", "POLICY", "A STRONGER TOMORROW"],
       "nav.home": ["Home"], "nav.tools": ["AI tools"], "nav.cases": ["Use cases"], "nav.guide": ["Guide"], "nav.notice": ["Notices"],
       "nav.note": ["coming soon"], "search.ph": ["How can we help you?"],
       "nav.list": ["Main menu"], "works.alltools.note": [" — coming soon"],
@@ -136,6 +148,8 @@
       "works.empty": ["No matches. Try speeches, social, or records."]
     },
     fr: {
+      "rail.tagline": [], "rail.sec1": [], "rail.sec2": [], "rail.sec3": [], "rail.sec4": [],
+      "rail.note": [], "rail.quote": [], "rail.caption": [],
       "nav.home": ["Accueil"], "nav.tools": ["Outils IA"], "nav.cases": ["Cas d'usage"], "nav.guide": ["Guide"], "nav.notice": ["Annonces"],
       "nav.note": ["bientôt"], "search.ph": ["Comment pouvons-nous vous aider ?"],
       "nav.list": ["Menu principal"], "works.alltools.note": [" — bientôt disponible"],
@@ -304,6 +318,9 @@
       const current = work ? "tools" : "home";
       item.classList.toggle("is-current", target === current);
     });
+    document.querySelectorAll(".pa-rail-item").forEach((item) => {
+      item.classList.toggle("is-current", item.dataset.nav === (work || "home"));
+    });
   }
 
   function openWork(work, moveFocus) {
@@ -357,7 +374,7 @@
   document.getElementById("paHomeCta").addEventListener("click", showWorks);
 
   // 상단 메뉴: 시안의 5개 라벨. 실제 화면이 있는 항목만 눌리고, 나머지는 죽은 통제처럼 보이지 않게 알린다.
-  document.querySelectorAll(".pa-nav-item").forEach((item) => {
+  document.querySelectorAll(".pa-nav-item, .pa-rail-item").forEach((item) => {
     item.addEventListener("click", () => {
       const target = item.dataset.nav;
       if (item.getAttribute("aria-disabled") === "true") {
@@ -366,6 +383,7 @@
       }
       if (target === "home") goHome();
       else if (target === "tools") showWorks();
+      else if (WORKS[target]) openWork(target);   // 01/02 레일의 3개 업무 항목은 실제 통제를 재사용한다
     });
   });
 
