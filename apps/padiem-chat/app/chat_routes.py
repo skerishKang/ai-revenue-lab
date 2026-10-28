@@ -576,6 +576,7 @@ async def api_chat_stream(request: Request):
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            util_scope=util_scope,
             **({"explicit_search": True} if raw.get("web_search") else {}),
         )
     except GroundingError as exc:
@@ -1098,7 +1099,12 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill, **({"explicit_search": True} if raw.get("web_search") else {}))
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(
+                    messages,
+                    skill=skill,
+                    util_scope=util_scope,
+                    **({"explicit_search": True} if raw.get("web_search") else {}),
+                )
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client
