@@ -126,6 +126,7 @@ PC_CANCEL_PATH = "/api/pc/cancel"
 PC_RESULT_PATH = "/api/pc/result"
 PC_FILE_PATH = "/api/pc/file"
 PC_REFERENCE_PATH = "/api/pc/reference"
+LANE_FILE_ID = re.compile(r"\Afile_[0-9a-f]{32}\Z")
 LINK_ID = re.compile(r"\Apclink_[0-9a-f]{32}\Z")
 DISPATCH_ID = re.compile(r"\Adsp_[0-9a-f]{32}\Z")
 #: The lane's own run identity, as `_new_lane_run_id` mints it. A screen may name a
@@ -933,6 +934,13 @@ async def pc_file_exchange_save(request: Request) -> JSONResponse:
         if not isinstance(content, str):
             return _error(422, "oracle_mesh_file_content_invalid")
         payload = content.encode("utf-8")
+    elif isinstance(file_id, str) and LANE_FILE_ID.fullmatch(file_id):
+        # A file the lane already holds — the filled Excel form the quote menu just
+        # made. The bytes are read with this owner's own read ticket; the Worker
+        # never parses them, it only hands them to the PC write below.
+        payload, refusal = await _lane_file_bytes(request, uid, file_id)
+        if refusal is not None:
+            return refusal
     else:
         if not isinstance(file_id, str) or DISPATCH_ID.fullmatch(file_id) is None:
             return _error(404, "pc_dispatch_not_found")
@@ -1066,6 +1074,43 @@ async def pc_file_exchange_file(request: Request) -> Response:
             "X-Padiem-PC-Content-SHA256": str(dispatch.get("result_sha256")),
         },
     )
+
+
+async def _lane_file_bytes(
+    request: Request, uid: str, file_id: str,
+) -> tuple[bytes | None, JSONResponse | None]:
+    """One file the COM2 lane already holds, read with the owner's own read ticket.
+
+    The lane owns the bytes (it made the filled workbook), so the Worker asks for
+    them with the same signed read ticket the document lane already uses. Nothing
+    here parses a workbook: the bytes go straight into the PC write.
+    """
+
+    client = getattr(request.app.state, "file_lane_client", None)
+    if client is None or getattr(client, "ready", False) is not True:
+        return None, _error(503, "file_lane_unavailable")
+    try:
+        headers, _expires = client.read_ticket(uid)
+    except Exception:
+        return None, _error(503, "file_lane_unavailable")
+    try:
+        import httpx
+
+        async with httpx.AsyncClient(
+            transport=getattr(client, "_transport", None), timeout=None,
+            follow_redirects=False, trust_env=False,
+        ) as http:
+            async with http.stream(
+                "GET", client.origin + "/files/" + file_id + "/raw", headers=headers,
+            ) as response:
+                if response.status_code != 200:
+                    return None, _error(502, "file_lane_read_failed")
+                data = b"".join([chunk async for chunk in response.aiter_bytes()])
+    except Exception:
+        return None, _error(503, "file_lane_unavailable")
+    if not data:
+        return None, _error(502, "file_lane_read_failed")
+    return data, None
 
 
 def _reference_text(name: str, content: bytes) -> str | None:
