@@ -91,6 +91,9 @@
 
   let runtime = null;
   let skills = [];
+  // #5895: an account with a linked PC reaches the quote screen through its own
+  // Excel form even before it has saved a skill.
+  let pcAccountLinked = false;
   let modelIds = [];
   let selectedModelByTier = {};
   let reasoningByModel = {};
@@ -207,6 +210,7 @@
         saving: "Saving to your PC…", saved: "Saved to your PC.",
         failed: "That did not work. Please try again in a moment.",
         noPc: "Connect your PC to bring your own form.", connect: "Connect this PC",
+        entry: "Quote from my PC Excel form",
       };
     }
     return {
@@ -217,6 +221,7 @@
       saving: "PC에 저장하는 중…", saved: "PC에 저장했습니다.",
       failed: "지금은 되지 않았어요. 잠시 후 다시 시도해 주세요.",
       noPc: "PC를 연결하면 내 양식을 가져올 수 있습니다.", connect: "이 PC 연결",
+      entry: "내 PC 엑셀 양식으로 견적서",
     };
   }
 
@@ -942,6 +947,9 @@
     const submit = document.getElementById("b66QuoteGenerate");
     const close = document.getElementById("b66QuoteClose");
     const frame = document.getElementById("b66QuoteFrame");
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    const launcherLabel = document.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel && entryOnly) launcherLabel.textContent = pcCopy().entry;
     if (message) message.placeholder = c.requestPlaceholder;
     if (submit) submit.textContent = c.generate;
     if (close) close.setAttribute("aria-label", c.close);
@@ -1063,8 +1071,17 @@
       option.textContent = skill.skill_name;
       select.append(option);
     });
-    launcher.hidden = !(runtime && skills.length > 0);
+    // #5895: a linked PC is enough to reach the quote screen; the form itself is the
+    // template, so the saved-skill controls only exist when a skill does.
+    const entryOnly = skills.length === 0 && pcAccountLinked;
+    launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));
     launcher.disabled = launcher.hidden;
+    const launcherLabel = launcher.querySelector('[data-b66-quote-launcher-label="true"]');
+    if (launcherLabel) launcherLabel.textContent = entryOnly ? pcCopy().entry : copy().launcher;
+    const selectLabelNode = document.querySelector('[data-b66-quote-select-label]');
+    if (selectLabelNode) selectLabelNode.hidden = entryOnly;
+    const generateButton = document.getElementById("b66QuoteGenerate");
+    if (generateButton) generateButton.hidden = entryOnly;
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
     const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
     if (pcSection) pcSection.hidden = !pcEnabled;
@@ -1141,6 +1158,14 @@
     return assets;
   }
 
+  async function refreshPcAccount() {
+    const linked = await pcLinkedNow();
+    const next = linked === true;
+    if (next === pcAccountLinked) return;
+    pcAccountLinked = next;
+    populateSkills();
+  }
+
   async function refresh() {
     if (refreshPromise) return refreshPromise;
     refreshPromise = (async () => {
@@ -1167,6 +1192,7 @@
         }
         skills = safeSkills(listResult.data);
         populateSkills();
+        void refreshPcAccount();
         await refreshModels();
         return skills.length > 0;
       } catch (_) {
