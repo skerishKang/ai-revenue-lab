@@ -258,6 +258,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     from .chat_pc_drive import resolve_chat_pc_stream_context
     pc_context = await resolve_chat_pc_stream_context(
         request, uid=uid, requested_device_id=raw.get("device_id"),
+        user_text=user_text,
     )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
@@ -368,6 +369,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return chat_pc_orchestration_sse(
             stream, pc_run_id=pc_run_id, on_completed=complete_stream,
             on_scope=scope_notice, done_fields=completion_fields, on_failed=fail_stream,
+            pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
         )
 
     try:

@@ -1,24 +1,16 @@
 {
   "worker": "b64-ai-reward-router",
   "reviewed_utc": "2026-10-27",
-  "source_served_version": "cf25ac1d-4ae2-40b1-937f-9b2a77fa34b6 (read back by deploy run 40456209084 from the integrated main revision; CONTROL_PLANE_IDENTITY is a target-set addition that becomes live at the next deploy of this branch)",
-  "decision_record": "Authentication switches to the shared Control Plane identity authority plus the existing chat liveness relay (issue #5864, #987). PADIEM_SESSION_SECRET is deliberately NOT in the target set: B64 holds no copy of another product's signing key, so the secret_text entry and the #5853 activation path are dropped rather than kept as a fallback.",
+  "source_served_version": "cf25ac1d-4ae2-40b1-937f-9b2a77fa34b6 (read back by deploy run 40456209084). This target set is the independent-business configuration from the 2026-10-27 owner decision and becomes live at the next deploy.",
+  "decision_record": "B64 is an independent business of ai-revenue-lab, not a PADIEM Chat/Apps product (issue #987 owner decision 2026-10-27). The CONTROL_PLANE_IDENTITY and PADIEM_CHAT_SERVICE bindings introduced by #5954 leave the target set: B64 authenticates its own members from its own D1. PADIEM_SESSION_SECRET never enters it. B64_SESSION_SECRET is owner-minted and is reported by the deploy gate rather than declared here, because wrangler.jsonc cannot declare a secret value.",
   "bindings": [
     {
       "name": "B64_INCOME_DB",
       "type": "d1"
     },
     {
-      "name": "PADIEM_B64_PUBLIC_BASE_URL",
+      "name": "B64_PUBLIC_BASE_URL",
       "type": "plain_text"
-    },
-    {
-      "name": "PADIEM_CHAT_SERVICE",
-      "type": "service"
-    },
-    {
-      "name": "CONTROL_PLANE_IDENTITY",
-      "type": "service"
     }
   ]
 }

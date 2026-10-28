@@ -35,7 +35,7 @@ class _StoreWithValidIds(MemoryProjectFileStore):
     """The shared memory store mints 69-char ids; the routes validate 37.
     These tests read the record back through HTTP, so mint real ids."""
 
-    async def create_file(self, user_id, project_id, name, media_type, text, *, source_media_type=None):
+    async def create_file(self, user_id, project_id, name, media_type, text, *, source_media_type=None, country="kr"):
         rec = ProjectFileRecord(
             id="file_" + _uuid.uuid4().hex,
             project_id=project_id, name=name, media_type=media_type,

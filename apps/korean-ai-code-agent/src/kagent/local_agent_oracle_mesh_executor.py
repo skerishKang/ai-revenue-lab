@@ -14,6 +14,7 @@ import json
 import re
 import ssl
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -27,6 +28,15 @@ from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
+#: The owner's stop, read back while a command is already running. One dispatch id
+#: in, one boolean out; nothing is claimed and nothing is written.
+CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
+#: #5997: a live claim is renewed while the command still runs. The server's lease is
+#: one minute, so a third of it keeps a healthy executor always ahead of expiry while a
+#: dead one stops renewing and is re-delivered by the same lease as before. Nothing
+#: here is a time ceiling: the command runs until the console answers.
+LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
+RENEW_INTERVAL_SECONDS = 20
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -253,7 +263,7 @@ class OracleMeshExecutor:
                 "User-Agent": PRODUCT_USER_AGENT,
                 # Retain the authenticated HTTPS request until a queued
                 # dispatch is available. Old consumers still get immediate poll.
-                **({"X-Oracle-Mesh-Wait": "20"} if path == POLL_PATH else {}),
+                **({"X-Oracle-Mesh-Wait": "5"} if path == POLL_PATH else {}),
             },
         )
         context = ssl.create_default_context()
@@ -560,6 +570,31 @@ class OracleMeshExecutor:
             # Instrumentation is best-effort; the command outcome is authoritative.
             pass
 
+    def _cancel_probe(self, dispatch: OracleMeshDispatch) -> Callable[[], bool]:
+        """Ask the server, once per idle read slice, whether the owner stopped this.
+
+        The answer that ends a real command must come from the server's own record
+        of the owner's press, so every other case - no dispatch id, a refused
+        channel, a non-200, a body that is not that shape - is "no". Choosing "no"
+        on a transport problem is deliberate: an unreadable answer is not an owner's
+        stop, and the cost of the other reading is a PC operation that was never
+        asked to end.
+        """
+        dispatch_id = str(getattr(dispatch, "dispatch_id", "") or "")
+        if not dispatch_id:
+            return lambda: False
+
+        def probe() -> bool:
+            try:
+                status, body = self._post(CANCEL_PATH, {"dispatch_id": dispatch_id})
+            except Exception:
+                return False
+            if status != 200 or not isinstance(body, dict):
+                return False
+            return body.get("cancelled") is True
+
+        return probe
+
     def _execute_command(
         self, dispatch: OracleMeshDispatch
     ) -> OracleMeshExecutionOutcome:
@@ -585,8 +620,15 @@ class OracleMeshExecutor:
             observed = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
                 command=dispatch.command_text or "",
-                timeout_seconds=max(1, self._timeout * 2),
+                # Long-running commands carry no PADIEM client deadline; the
+                # progress trace is already reported through phase (#5983). The
+                # owner's stop is what ends one now (#5895): the probe asks the
+                # server between read slices whether this dispatch was cancelled.
+                timeout_seconds=None,
                 phase_observer=phase,
+                cancel_probe=self._cancel_probe(dispatch),
+                # The marker the PC-side stop needs: this command's own dispatch.
+                dispatch_id=getattr(dispatch, "dispatch_id", None),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
@@ -604,7 +646,7 @@ class OracleMeshExecutor:
         termination = getattr(observed, "termination", "no_reply")
         if termination not in (
             "exited", "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "output_too_large",
+            "output_too_large", "bad_reply", "cancelled",
         ):
             termination = "no_reply"
         exit_code = getattr(observed, "exit_code", None)
@@ -1040,7 +1082,7 @@ class OracleMeshExecutor:
             termination = meta.get("termination")
             if termination not in (
                 "exited", "cancelled", "timed_out", "no_reply", "no_exit_code",
-                "not_executed", "output_too_large",
+                "not_executed", "output_too_large", "bad_reply",
                 "captured", "acted", "desktop_unavailable",
             ):
                 raise ValueError("pending termination is unknown")
@@ -1290,7 +1332,47 @@ class OracleMeshExecutor:
         dispatch = self.poll_once()
         if dispatch is None:
             return None
-        return self.submit(dispatch, self.execute(dispatch))
+        renewer = self.start_lease_renewal(dispatch)
+        try:
+            outcome = self.execute(dispatch)
+        finally:
+            if renewer is not None:
+                renewer.set()
+        return self.submit(dispatch, outcome)
+
+    def start_lease_renewal(self, dispatch: OracleMeshDispatch) -> Optional[threading.Event]:
+        """#5997 — hold this claim for as long as the command actually runs.
+
+        A separate thread posts the same dispatch id and the same nonce every
+        ``RENEW_INTERVAL_SECONDS``, and the server pushes ``claimed_until`` forward
+        under that nonce — the very nonce the later submission carries, so the claim
+        and the result can never drift apart. A renewal the server refuses means the
+        claim is already gone (the lane re-delivered the work); the loop stops rather
+        than reviving it. If this process dies the thread dies with it, the lease runs
+        out, and the existing expiry hands the work out again.
+        """
+
+        stop = threading.Event()
+
+        def loop() -> None:
+            while not stop.wait(RENEW_INTERVAL_SECONDS):
+                try:
+                    status, _data = self._post(
+                        LEASE_RENEW_PATH,
+                        {"dispatch_id": dispatch.dispatch_id, "nonce": dispatch.nonce},
+                    )
+                except OracleMeshChannelRefused:
+                    continue
+                except Exception:
+                    continue
+                if status == 409:
+                    return
+
+        thread = threading.Thread(
+            target=loop, name="oracle-mesh-lease-renew", daemon=True,
+        )
+        thread.start()
+        return stop
 
 
 __all__ = [

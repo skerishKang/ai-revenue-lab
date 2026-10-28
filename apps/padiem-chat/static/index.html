@@ -594,6 +594,10 @@
               <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
               <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
               <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
+              <!-- #5895: the shared "from my PC" picker mounts here. The button,
+                   the preview of what was brought over, and the one-line "connect
+                   your PC" notice all live in this container. -->
+              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
             </fieldset>
             <!-- #5727: the form area owns the two authoring actions — generate
                  and save. The result area below carries only copy/download. -->
@@ -610,6 +614,8 @@
             <div class="util-actions">
               <button type="button" id="utilSpeechCopy">복사</button>
               <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
+              <!-- #5895: the shared "to my PC" dialog, opened with this draft. -->
+              <button type="button" class="util-save" id="utilSpeechPcSave">내 PC에 저장</button>
             </div>
           </div>
         </div>

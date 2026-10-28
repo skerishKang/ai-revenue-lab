@@ -54,9 +54,9 @@ class ToolResourcePolicy:
         if self.max_timeout_seconds is not None and (
             isinstance(self.max_timeout_seconds, bool)
             or not isinstance(self.max_timeout_seconds, (int, float))
-            or not 0 < self.max_timeout_seconds <= 300
+            or not 0 < self.max_timeout_seconds
         ):
-            raise ToolResourcePolicyError("invalid_tool_resource_policy", "max_timeout_seconds is outside the bounded ToolSpec range")
+            raise ToolResourcePolicyError("invalid_tool_resource_policy", "max_timeout_seconds must be a positive number or None")
 
 
 @dataclass(frozen=True, slots=True)

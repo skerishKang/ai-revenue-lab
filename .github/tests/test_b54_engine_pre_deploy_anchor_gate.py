@@ -917,7 +917,10 @@ def test_engine_rollback_job_contract_is_untouched() -> None:
 def test_premutation_assertions_are_untouched() -> None:
     run = _step_run(PREMUTATION_STEP)
     assert 'test "$(git rev-parse HEAD)"' in run
+    # #5895: the equality still runs first; the guard is the fallback that lets
+    # an ancestor of main through when apps/padiem-ai-engine did not move.
     assert 'test "$(git rev-parse origin/main)"' in run
+    assert '.github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/padiem-ai-engine' in run
     assert "PREMUTATION_EXACT_MAIN_SHA=PASS" in run
 
 

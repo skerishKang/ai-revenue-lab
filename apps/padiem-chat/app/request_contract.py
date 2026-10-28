@@ -34,6 +34,11 @@ _ALLOWED_ROLES = {"user", "assistant"}
 # Routing label for the three 의원3종 utilities. It grants no identity, tier,
 # entitlement or tool scope, and it is not an authentication input.
 _UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
+# #6046: content country for the three 의원3종 utilities. Like `util` this is a
+# presentation/routing label — it selects the output language and wording and
+# grants no identity, tier, entitlement, legal jurisdiction or storage region.
+COUNTRIES = frozenset({"kr", "us", "uk", "fr"})
+DEFAULT_COUNTRY = "kr"
 
 
 class BrowserRequestError(ValueError):
@@ -122,6 +127,13 @@ def declared_util_scope(raw: Any) -> str | None:
     return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
 
 
+def declared_country(raw: Any) -> str:
+    """Content country of a request. Absent means kr, so every existing client
+    keeps today's Korean behaviour without sending anything new."""
+    value = raw.get("country") if isinstance(raw, dict) else None
+    return value if isinstance(value, str) and value in COUNTRIES else DEFAULT_COUNTRY
+
+
 def _validate_payload_parts(
     raw: Any,
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
@@ -129,12 +141,16 @@ def _validate_payload_parts(
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
     # The tail order below is a load-bearing literal: test_5015 pins
     # `"pc_run_id", "web_search"}` as the end of this set.
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "country", "pc_run_id", "web_search"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "util" in raw:
         util_scope = raw["util"]
         if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:
             raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")
+    if "country" in raw:
+        country = raw["country"]
+        if not isinstance(country, str) or country not in COUNTRIES:
+            raise BrowserRequestError("국가 식별자가 올바르지 않습니다.")
     if "pc_run_id" in raw:
         try:
             validate_chat_pc_run_id(raw.get("pc_run_id"))

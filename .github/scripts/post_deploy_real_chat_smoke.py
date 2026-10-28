@@ -103,9 +103,18 @@ def engine_lane(opener) -> tuple[int, Any]:
         payload={"identifier": username, "password": password},
     )
     if status != 200 or body.get("ok") is not True:
+        # Diagnosis without discretion: the same 401 is a wrong password, a
+        # missing identifier and an active lock by design (#3501/#3508), and the
+        # client cannot tell them apart. Print the HTTP status and the server's
+        # error code NAME only — never the body, never a credential — and keep
+        # the verdict exactly as before.
+        server_code = error_code(body) if isinstance(body, dict) else "no_json_body"
+        print(f"QA_LOGIN_DIAGNOSTIC login_http_status={status} server_error_code={server_code}")
         raise CanaryError("qa_login_refused")
     status, state = bounded_call(opener, STATUS)
     if status != 200 or state.get("authenticated") is not True:
+        state_code = error_code(state) if isinstance(state, dict) else "no_json_body"
+        print(f"QA_SESSION_DIAGNOSTIC status_http_status={status} server_error_code={state_code}")
         raise CanaryError("qa_session_unverified")
     return bounded_call(
         opener, ORCHESTRATION, method="POST", timeout=CHAT_TIMEOUT_SECONDS,

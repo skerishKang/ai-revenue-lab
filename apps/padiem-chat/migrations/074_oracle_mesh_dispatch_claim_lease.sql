@@ -1,0 +1,32 @@
+-- #5895: an executor claim is a lease, not a permanent hand-out.
+--
+-- `oldest_pending_oracle_mesh_dispatch` yielded only rows whose `nonce_sha256`
+-- was NULL, and `claim_oracle_mesh_dispatch` wrote that nonce BEFORE the HTTP
+-- response was produced. When the response never arrived -- the Worker answered
+-- and the request died on its way to the executor, or the connection dropped
+-- while the body was written -- the row kept a nonce no executor ever held. It
+-- was never yielded again, and no submission could ever match it, so the work
+-- sat in the table until its own expiry and the PC task was silently lost.
+--
+-- One nullable timestamp turns the hand-out into a lease: a claim names the
+-- instant at which the dispatch may be handed out again. The yield condition and
+-- the claim condition are the SAME condition -- never handed out, or handed out
+-- under a lease that has run out -- so a re-claim re-rolls the nonce and exactly
+-- one poll wins per round. A submission that still carries the superseded nonce
+-- is refused by the nonce comparison that already exists, so a late arrival can
+-- never attach a second result to the same dispatch.
+--
+-- `claimed_until` NULL means no lease was ever taken. A row claimed by a Worker
+-- revision that predates this migration therefore keeps its old, never-re-handed
+-- claim instead of being re-delivered by a mixed fleet: that is the fail-closed
+-- direction, because it can only delay a redelivery, never duplicate an
+-- execution.
+--
+-- The lease is a delivery timer, not a workload limit. Nothing in this column
+-- decides how long a PC command may run: the instant that ends a dispatch stays
+-- the existing `expires_at` the poll route stamps (#4139), untouched here.
+--
+-- No table is rebuilt, no row is rewritten, no index changes and no existing
+-- column changes meaning. `claimed_until` is unread by any revision before this
+-- one, so applying it first is always safe.
+ALTER TABLE oracle_mesh_dispatch ADD COLUMN claimed_until TEXT;

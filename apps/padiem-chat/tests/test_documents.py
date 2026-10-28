@@ -240,7 +240,7 @@ class MemoryProjectFiles:
             return next((item for item in self.files if item.id == file_id), None)
         return None
 
-    async def create_file(self, user_id, project_id, name, media_type, text):
+    async def create_file(self, user_id, project_id, name, media_type, text, country="kr"):
         raise NotImplementedError
 
     async def delete_file(self, user_id, project_id, file_id):

@@ -140,6 +140,11 @@ const requests = [];
 const chatPayloads = [];
 let chatResponseOverride = null;
 const storedFiles = [];
+// #5895: what the PC carries, as this account last saw it. The authoring screens read
+// these two shapes exactly as production does.
+let pcLinks = [{ link_id: "pclink_" + "1".repeat(32), label: "사무실 PC", state: "active" }];
+const pcReferenceTexts = {};
+const pcReferenceRequests = [];
 const alerts = [];
 // A browser logs an unhandled rejection and keeps the page alive; model that so
 // one recorded defect does not hide the rest of the feature's contract.
@@ -165,6 +170,15 @@ async function fetch(url, opts) {
   }
   requests.push({ method, url: path, credentials: options.credentials || null });
 
+  if (method === "GET" && path === "/api/pc/pairings") {
+    return json({ ok: true, links: pcLinks.map((link) => ({ ...link })) });
+  }
+  if (method === "POST" && path === "/api/pc/reference" && body) {
+    pcReferenceRequests.push(body);
+    const entry = pcReferenceTexts[body.file_id];
+    if (!entry) return json({ ok: false, error: { code: "pc_reference_unreadable" } }, 422);
+    return json({ ok: true, name: entry.name, text: entry.text, chars: entry.text.length });
+  }
   if (method === "POST" && path === "/api/chat") {
     chatPayloads.push(body);
     return chatResponseOverride || json({ answer: ANSWER });
@@ -252,6 +266,10 @@ function spawnSession(windowState = {}) {
   speechSave.textContent = "저장";
   speechActions.append(speechSubmit, speechSave);
   speechForm.appendChild(speechActions);
+  // #5895: the shared "from my PC" mount the shipped markup carries in the
+  // reference fieldset.
+  const speechPcMount = mk("div", "utilSpeechPcRef", "util-pc-ref-mount");
+  speechForm.appendChild(speechPcMount);
   speechPanel.appendChild(speechForm);
 
   const speechResult = mk("div", "utilSpeechResult");
@@ -263,7 +281,9 @@ function spawnSession(windowState = {}) {
   const speechDownload = mk("button", "utilSpeechDownload");
   speechDownload.type = "button";
   const speechResultActions = mk("div", null, "util-actions");
-  speechResultActions.append(speechCopy, speechDownload);
+  const speechPcSave = mk("button", "utilSpeechPcSave", "util-save");
+  speechPcSave.type = "button";
+  speechResultActions.append(speechCopy, speechDownload, speechPcSave);
   speechResult.appendChild(speechResultActions);
   speechPanel.appendChild(speechResult);
   utilView.appendChild(speechPanel);
@@ -335,7 +355,87 @@ function endpointSet() {
 }
 
 // ── scenarios ──────────────────────────────────────────────────────────────
+const REFERENCE_TEXT = "작년 신년사: 새해에도 여러분의 가정에 평안이 가득하기를 바랍니다.";
+const REFERENCE_NAME = "작년 신년사.txt";
+const PICKED_FILE_ID = "dsp_" + "a".repeat(32);
+
+// The shared part is loaded on first use, so the harness provides what the browser
+// would have after that load: the real module's public surface, recording every call.
+function pcExchangeStub() {
+  const opened = [];
+  return {
+    opened,
+    api: {
+      open(options) {
+        opened.push(options || {});
+        if (options && typeof options.onSelect === "function") {
+          options.onSelect({
+            name: REFERENCE_NAME, kind: "text",
+            content: REFERENCE_TEXT, fileId: PICKED_FILE_ID, sizeBytes: REFERENCE_TEXT.length,
+          });
+        }
+        if (options && typeof options.onSave === "function") options.onSave({ ok: true });
+        return { close() {} };
+      },
+      close() {},
+      isOpen() { return false; },
+      stop() {},
+    },
+  };
+}
+
 const SCENARIOS = {
+  async pcref() {
+    const exchange = pcExchangeStub();
+    const session = spawnSession({ PadiemPcFileExchange: exchange.api });
+    await openTool(session, "speech");
+    const mount = find(session, "utilSpeechPcRef");
+    const pick = mount.querySelectorAll(".util-pc-ref-pick")[0];
+    if (!pick) throw new Error("pick button missing");
+    if (pick.hidden) throw new Error("pick button hidden while a PC is linked");
+    await pick.dispatch("click");
+    await sleep(20);
+    const preview = text(mount.querySelectorAll(".util-pc-ref-preview")[0]);
+    const form = find(session, "utilSpeechForm");
+    const eventField = form.querySelectorAll("input").find((n) => n.name === "event");
+    if (eventField) eventField.value = "창립기념식";
+    form.dispatch("submit");
+    await sleep(30);
+    const prompt = chatPayloads.length ? String(chatPayloads[chatPayloads.length - 1].messages[0].content) : "";
+    find(session, "utilSpeechOutput").value = ANSWER;
+    await find(session, "utilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const saved = exchange.opened.filter((o) => o.mode === "save");
+    return {
+      pickCalls: exchange.opened.filter((o) => !o.mode).length,
+      preview,
+      promptHasReference: prompt.includes(REFERENCE_TEXT),
+      promptNamesFile: prompt.includes(REFERENCE_NAME),
+      saveCalled: saved.length === 1,
+      saveContent: saved[0] ? String(saved[0].content || "") : "",
+      saveFileName: saved[0] ? String(saved[0].fileName || "") : "",
+      alerts: alerts.slice(),
+    };
+  },
+
+  async pcref_nopc() {
+    pcLinks = [];
+    const exchange = pcExchangeStub();
+    const session = spawnSession({ PadiemPcFileExchange: exchange.api });
+    await openTool(session, "speech");
+    const mount = find(session, "utilSpeechPcRef");
+    const pick = mount.querySelectorAll(".util-pc-ref-pick")[0];
+    const note = mount.querySelectorAll(".util-pc-ref-note")[0];
+    const connect = mount.querySelectorAll(".util-pc-ref-connect")[0];
+    return {
+      pickHidden: Boolean(pick && pick.hidden),
+      noteText: text(note).trim(),
+      noteHidden: note ? Boolean(note.hidden) : true,
+      connectLabel: connect ? text(connect).trim() : "",
+      pickerOpened: exchange.opened.length,
+    };
+  },
+
   async tier() {
     const windowState = {};
     const session = spawnSession(windowState);

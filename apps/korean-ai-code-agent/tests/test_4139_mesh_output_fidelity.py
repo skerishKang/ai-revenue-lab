@@ -16,6 +16,7 @@ temporary files.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import shutil
@@ -27,7 +28,7 @@ from pathlib import Path
 from unittest import mock
 
 from kagent.local_agent_meshcentral_command_port import (
-    MAX_COMMAND_BYTES, parse_transcript,
+    ENVELOPE_PREFIX, EXIT_SENTINEL, MAX_COMMAND_BYTES, parse_transcript,
 )
 from kagent.local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
 from kagent.local_agent_oracle_mesh_executor import (
@@ -132,7 +133,9 @@ class StdoutFlushTests(unittest.TestCase):
     def test_parser_accepts_a_transcript_above_the_old_pipe_cap(self):
         """64 KiB was a truncated pipe, not a transport limit: prove the parse."""
         transcript = ("z" * 40 + "\n") * (SIZE // 41 + 1)
-        payload = (transcript + "__PADIEM_EXIT__0\n").encode("utf-8")
+        envelope = ENVELOPE_PREFIX + base64.b64encode(
+            transcript.encode("utf-8")).decode("ascii")
+        payload = (envelope + "\n" + EXIT_SENTINEL + "0\n").encode("utf-8")
         self.assertGreater(len(payload), 65_536)
         termination, code, output = parse_transcript(payload)
         self.assertEqual((termination, code), ("exited", 0))

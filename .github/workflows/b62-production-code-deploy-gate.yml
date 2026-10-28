@@ -344,6 +344,23 @@ jobs:
         run: |
           set -euo pipefail
           python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          # The repository declaration against the reviewed baseline, printed once
+          # and named as repo-vs-baseline: this is not a production diff. No Cloudflare
+          # call, no binding value, name and type only.
+          python - <<'PY'
+          import json, sys, tomllib
+          from pathlib import Path
+          sys.path.insert(0, ".github/scripts")
+          from b62_binding_baseline import load_baseline
+          from b62_repo_binding_authority import inventory
+          repo = inventory(tomllib.loads(Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")))
+          declared = {name: {"name": name, "type": entry["type"]} for name, entry in repo.items()}
+          base = {name: {"name": name, "type": kind} for name, kind in load_baseline("padiem-chat").items()}
+          added = sorted(declared.keys() - base.keys())
+          removed = sorted(base.keys() - declared.keys())
+          changed = sorted(n for n in base.keys() & declared.keys() if base[n]["type"] != declared[n]["type"])
+          print("B62_REPO_VS_BASELINE_DIFF_COUNTS=" + json.dumps({"added": len(added), "changed": len(changed), "removed": len(removed)}, sort_keys=True))
+          PY
           echo "CONNECTOR_BROKER_PRESERVATION_SOURCE=PASS"
           echo "PRODUCTION_MUTATION=0"
 
@@ -409,6 +426,11 @@ jobs:
           # AFTER the auto-rollback guard so a failed proof cannot roll back.
           assert "Post-deploy real chat" in workflow
           assert ".github/scripts/post_deploy_real_chat_smoke.py --lane chat" in workflow
+          # 2026-10-28: the signed-in session proof, also after the rollback guard.
+          assert "Post-deploy signed-in session check" in workflow
+          assert ".github/scripts/post_deploy_signed_in_smoke.py" in workflow
+          assert workflow.rindex("Auto-rollback to recorded version on any failed step") < \
+              workflow.rindex("Post-deploy signed-in session check")
           assert workflow.rindex("Auto-rollback to recorded version on any failed step") < \
               workflow.rindex("Post-deploy real chat")
           assert "PRODUCTION_MUTATION=0" in workflow
@@ -819,8 +841,23 @@ jobs:
           # traffic ever ran; proving against it would either block every later
           # release or teach the next generated config to carry that residue forward.
           if [ "${{ inputs.mode }}" = "rollback_production_code" ]; then
-            python3 .github/scripts/b62_binding_baseline.py \
-              --worker "${B62_WORKER}" --payload "${chat_served}"
+            # A rollback goes back to the bindings the version being returned to
+            # already carried, so the deploy-time baseline cannot be the gate here
+            # - the set it compares is precisely what the rollback is leaving
+            # behind. On 2026-10-28 this step blocked the gate's own rollback with
+            # BINDING_SET_DRIFT while Chat was answering 500 on every signed-in
+            # path, and the CTO had to run `wrangler rollback` to
+            # 2fb11b2b-606c-44c8-a5ff-d66c6b53dc53 by hand at 11:50.
+            # The comparison still runs, because the residue of the version being
+            # left is worth reading - it decides nothing. That the target exists
+            # and is a recorded version is proved by the rollback job, against the
+            # Worker's own version history, and this does not touch it.
+            if python3 .github/scripts/b62_binding_baseline.py \
+              --worker "${B62_WORKER}" --payload "${chat_served}"; then
+              echo "B62_ROLLBACK_LEAVING_VERSION_BINDINGS=MATCHES_BASELINE"
+            else
+              echo "B62_ROLLBACK_LEAVING_VERSION_BINDINGS=RESIDUE_NOTED"
+            fi
             if python3 .github/scripts/b62_binding_baseline.py \
               --worker "${B62_WORKER}" --payload "${chat_settings}" \
               > "${RUNNER_TEMP}/b62-baseline-settings-plane.txt" 2>&1; then
@@ -854,6 +891,13 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ALLOW_BINDING_REMOVAL: ${{ inputs.allow_binding_removal }}
+      # The staged proof signs in as the QA account the long-context canary
+      # already uses, so that identity has to reach the step that runs it. Names
+      # only: the values stay in vars/secrets, and no step body interpolates them
+      # into a command. Without these the signed-in proof can only ever answer
+      # "cannot sign in" - which is a failure to read, not a result about Chat.
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
@@ -873,14 +917,27 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      # #5895: a pull request merged while this run was starting used to break
+      # it, even when nothing in Chat had moved. The target now has to be
+      # current for the paths this gate ships: an ancestor of main whose
+      # apps/padiem-chat content is unchanged. A moved app path still fails.
       - name: Reconfirm exact main immediately before mutation
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           test "${GITHUB_SHA}" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            # #5895: main moved ahead while this run was starting. A target that
+            # is an ancestor of main still ships, as long as nothing under
+            # apps/padiem-chat moved between the two -- that directory is the whole
+            # surface this gate deploys. A moved path stops the run exactly as an
+            # unequal SHA did before, so a stale release is never waved through.
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path apps/padiem-chat --path packages
+          fi
           echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
 
       - name: Set up Node
@@ -1462,53 +1519,28 @@ jobs:
       - name: Deploy production code preserving the full binding set
         working-directory: apps/padiem-chat
         shell: bash
+        env:
+          # Deployment-procedure constants (not work-volume limits):
+          # partial traffic share and the settle wait before the smokes.
+          STAGED_TRAFFIC_PERCENT: "10"
+          STAGED_SETTLE_SECONDS: "20"
         run: |
           set -euo pipefail
           generated="wrangler.production.generated.toml"
           trap 'rm -f "${generated}"' EXIT
-          set +e
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-            --config "${generated}" --strict \
-            --tag "git-${TARGET_SHA}" \
-            --message "B62 production code ${TARGET_SHA}" \
-            2>&1 | python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}" \
-            > "${RUNNER_TEMP}/b62-deploy-attempt-1.log"
-          attempt1_status=$?
-          set -e
-          if [ "${attempt1_status}" -eq 0 ]; then
-            echo "STATE_ADOPTION_REQUIRED=NO"
-            echo "STATE_ADOPTION_PERFORMED=NO"
-            echo "STATE_ADOPTION_UPLOADS=0"
-          # Both Script-API and Dashboard ownership drift can yield Wrangler's
-          # same --strict conflict while *all* live bindings have already been
-          # snapshotted and preserved in the generated config. Authorize the
-          # existing one-time state-adoption upload for ONLY these exact warnings,
-          # immediately followed by a second strict deploy and the unchanged
-          # post-deploy binding/secret equality and rollback gates.
-          elif { grep -Fq "last updated via the script API" \
-                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log" \
-                 || grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard" \
-                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; } \
-            && grep -Fq "Aborting the upload operation because of conflicts" \
-                 "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; then
-            echo "STATE_ADOPTION_REQUIRED=YES"
-            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-              --config "${generated}" \
-              --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA} (state adoption)" 2>&1 | \
-              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
-            echo "STATE_ADOPTION_UPLOADS=1"
-            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-              --config "${generated}" --strict \
-              --tag "git-${TARGET_SHA}" \
-              --message "B62 production code ${TARGET_SHA}" 2>&1 | \
-              python ../../.github/scripts/b62_redact_deploy_output.py --config "${generated}"
-            echo "STATE_ADOPTION_PERFORMED=YES"
-          else
-            cat "${RUNNER_TEMP}/b62-deploy-attempt-1.log" >&2
-            exit "${attempt1_status}"
-          fi
-          rm -f "${generated}"
+          # #5895: gradual deployment instead of a 100% swap. Upload a version,
+          # serve it to a partial share, prove the anonymous and signed-in paths
+          # against that exact version with Cloudflare-Workers-Version-Key, then
+          # promote to 100% or restore the previous version to 100% at once.
+          # The generated config keeps the full binding set; wrangler.toml stays
+          # the binding source of truth and the readback steps below are unchanged.
+          python3 ../../.github/scripts/b62_staged_chat_rollout.py \
+            --config "${generated}" \
+            --previous-version "${PREVIOUS_VERSION_ID}" \
+            --percent "${STAGED_TRAFFIC_PERCENT}" \
+            --settle-seconds "${STAGED_SETTLE_SECONDS}" \
+            --smoke "python3 ../../.github/scripts/post_deploy_real_chat_smoke.py --lane chat" \
+            --smoke "python3 ../../.github/scripts/post_deploy_signed_in_smoke.py"
           echo "B62_PRODUCTION_CODE_DEPLOY=SUCCESS"
           echo "PRODUCTION_MUTATION=1"
 
@@ -1731,6 +1763,22 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/post_deploy_real_chat_smoke.py --lane chat
+
+      # 2026-10-28: a released build answered every anonymous request correctly
+      # while each session-reading path 500'd for two hours, and the free-composer
+      # proof above went green on it. This step is that missing reading: sign in
+      # as the QA account, then take the three paths the whole UI depends on -
+      # /api/auth/status, /api/conversations and one signed-in turn. It sits after
+      # the auto-rollback step on purpose, so a failure reddens the gate for a
+      # person to read and never rolls a release back on its own.
+      - name: Post-deploy signed-in session check
+        shell: bash
+        env:
+          B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+          B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/post_deploy_signed_in_smoke.py
 
   rollback-production-code:
     needs: [source-contract, cloudflare-readonly]

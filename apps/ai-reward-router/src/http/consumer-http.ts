@@ -18,7 +18,47 @@ import {
   renderIncomePipelineWeb,
 } from '../income-pipeline/consumer-view.js';
 import { defaultAuthResolver, type AuthResolver, type AuthResult } from '../income-pipeline/auth.js';
-import { PADIEM_SESSION_COOKIE_NAME } from '../income-pipeline/padiem-session-auth.js';
+import {
+  B64_SESSION_COOKIE_NAME,
+  b64SessionClearCookieValue,
+} from '../identity/session.js';
+import {
+  B64MemberExistsError,
+  type B64MemberStore,
+} from '../identity/member-store.js';
+import { extractCookieValue, logoutSession, registerMember, signInMember, signInWithGoogle } from '../identity/auth.js';
+import {
+  B64_GOOGLE_CALLBACK_PATH,
+  B64_GOOGLE_START_PATH,
+  B64_OAUTH_STATE_COOKIE_NAME,
+  GoogleAuthError,
+  b64GoogleAuthorizationUrl,
+  b64GoogleRedirectUri,
+  b64OAuthStateClearCookieValue,
+  b64OAuthStateCookieValue,
+  mintB64OAuthState,
+  verifyB64OAuthState,
+  type GoogleFetch,
+} from '../identity/google.js';
+import { CredentialError } from '../identity/password.js';
+import { isB64SuperAdmin } from '../identity/admin.js';
+import { B64_ADS_TXT_PATH, B64_AYET_ADS_TXT } from './ads-txt.js';
+import { renderB64AdminConsole } from '../ops/admin-view.js';
+import type { B64OperationsSnapshot } from '../ops/operations-snapshot.js';
+import {
+  AYET_S2S_CALLBACK_PATH,
+  AYET_S2S_SECURITY_HASH_HEADER,
+  ayetS2SParametersFromUrl,
+  AyetCallbackDisabled,
+  AyetCallbackUnconfigured,
+  handleAyetS2SCallback,
+} from '../ad-click-first/ayet-callback.js';
+import {
+  RewardEventStorageError,
+  UnboundRewardEventStore,
+  type RewardEventStore,
+} from '../ad-click-first/reward-event-store.js';
+import type { ProviderRuntimeMode } from '../ad-click-first/provider-runtime-config.js';
 import { getRepository, type UserIncomeRepository } from '../income-pipeline/store.js';
 import { validateUserIncomeRecord, isValidIncomePipelineTransition } from '../income-pipeline/domain.js';
 import type { UserIncomeRecord, UserIncomeLoader, IncomePipelineStatus } from '../income-pipeline/domain.js';
@@ -37,6 +77,7 @@ import {
 interface ConsumerThemeInfo {
   readonly theme: B64Theme;
   readonly themeToggleHref: string;
+  readonly googleLoginAvailable: boolean;
 }
 
 export type ConsumerCandidateLoader = (
@@ -47,6 +88,44 @@ export interface ConsumerHttpDependencies {
   readonly loadCandidates: ConsumerCandidateLoader;
   readonly resolveAuth?: AuthResolver;
   /**
+   * B64's own member and session store. Without it the identity endpoints
+   * answer 503 instead of falling back to a non-durable account store.
+   */
+  readonly memberStore?: B64MemberStore | undefined;
+  /** B64's own session signing secret (`B64_SESSION_SECRET`). */
+  readonly sessionSecret?: string | undefined;
+  /**
+   * B64's OWN Google OAuth client (`B64_GOOGLE_CLIENT_ID` /
+   * `B64_GOOGLE_CLIENT_SECRET`, issue #987). These are B64's credentials on
+   * B64's own redirect origin; another product's client id, redirect URI or
+   * login cookie is never accepted. Missing either one means the Google entry
+   * is not offered and the endpoints answer 503 rather than half-working.
+   */
+  readonly googleClientId?: string | undefined;
+  readonly googleClientSecret?: string | undefined;
+  /** Provider transport seam. Production uses the runtime fetch; tests pin it. */
+  readonly googleFetch?: GoogleFetch;
+  /**
+   * ayeT server-to-server reward postback (#987). The verification and state
+   * rules already existed as pure functions; these three are the connection.
+   * With no store, no key or a `DISABLED` mode the callback answers 503 and
+   * writes nothing, so the product keeps booting before any provider account
+   * exists.
+   */
+  readonly rewardEvents?: RewardEventStore | undefined;
+  readonly ayetMode?: ProviderRuntimeMode | undefined;
+  readonly ayetPublisherApiKey?: string | undefined;
+  /** `B64_AYET_REWARDED_ADSLOT_ID`; empty means the adslot is not chosen yet. */
+  readonly ayetRewardedAdslotId?: string | undefined;
+  /**
+   * Operator authority (#6001). `B64_ADMIN_EMAIL` is the single administrator
+   * address, supplied as server configuration and never committed or logged;
+   * unset means nobody is an administrator. The snapshot reader is the only
+   * production data the console can see, and it is read-only by construction.
+   */
+  readonly adminEmail?: string | undefined;
+  readonly operationsSnapshot?: (() => Promise<B64OperationsSnapshot>) | undefined;
+  /**
    * Server-owned, per-deployment storage dependency; default remains prototype.
    * Production wiring must inject a durable repository (D1); the in-memory
    * prototype default exists for tests and local prototypes only.
@@ -55,7 +134,7 @@ export interface ConsumerHttpDependencies {
   /**
    * Exact reviewed browser origin (scheme + host + port) cookie-authenticated
    * pipeline mutations must come from, mirroring the repository's single
-   * reviewed origin-isolation policy (#3476) for the `padiem_session` cookie.
+   * reviewed origin-isolation policy (#3476) for the `b64_session` cookie.
    * Derived from server configuration only — never from the request's own
    * Host/Origin. When a pipeline mutation carries the session cookie and this
    * is not configured, the request is denied 503 (fail closed).
@@ -64,7 +143,7 @@ export interface ConsumerHttpDependencies {
   /**
    * Optional public-supply lane: manually curated, publicly verified opportunities.
    * The public lane never grants provider authority; it only links users to
-   * official provider pages and pays PADIEM nothing.
+   * official provider pages and earns B64 nothing.
    */
   readonly loadPublicOpportunities?: PublicOpportunityLoader;
   /**
@@ -73,6 +152,35 @@ export interface ConsumerHttpDependencies {
    */
   readonly loadIncomeRecords?: UserIncomeLoader;
 }
+
+/**
+ * B64's own account endpoints. They are POST-only because the consumer surface
+ * runs under `script-src 'none'`: the forms that reach them live on /pipeline,
+ * and a stray GET lands back on the dashboard instead of a blank page.
+ */
+const IDENTITY_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/join', '/login', '/logout']));
+
+/**
+ * The Google round trip. Both halves are GET-only navigations: `/start` sends
+ * the browser to Google with a signed state cookie, `/callback` refuses
+ * anything whose `state` does not match that cookie. A form post to either is
+ * refused 405 by the method rule below.
+ */
+const GOOGLE_PATHS: ReadonlySet<string> = Object.freeze(new Set([B64_GOOGLE_START_PATH, B64_GOOGLE_CALLBACK_PATH]));
+
+/**
+ * The provider's own inbound reward callback. It is GET-only (ayeT calls it
+ * server-to-server with query parameters and a signature header), carries no
+ * browser cookie, and is authenticated by the publisher signature alone — so it
+ * is deliberately outside the identity paths, which are POST-only.
+ */
+/**
+ * The operator's read-only status surface (#6001). GET only: it reports state
+ * and changes nothing, so it needs no CSRF token and no mutation path.
+ */
+const ADMIN_PATHS: ReadonlySet<string> = Object.freeze(new Set(['/admin', '/admin/status']));
+
+const PROVIDER_CALLBACK_PATHS: ReadonlySet<string> = Object.freeze(new Set([AYET_S2S_CALLBACK_PATH]));
 
 const SECURITY_HEADERS = Object.freeze({
   'cache-control': 'no-store',
@@ -140,13 +248,39 @@ function supplyUnavailable(request: Request): Response {
   });
 }
 
-function carriesPadiemSessionCookie(cookieHeader: string): boolean {
+function carriesB64SessionCookie(cookieHeader: string): boolean {
   for (const part of cookieHeader.split(';')) {
     const separator = part.indexOf('=');
     const name = separator < 0 ? part : part.slice(0, separator);
-    if (name.trim() === PADIEM_SESSION_COOKIE_NAME) return true;
+    if (name.trim() === B64_SESSION_COOKIE_NAME) return true;
   }
   return false;
+}
+
+/**
+ * The #3476 origin boundary, applied to the request shapes B64 actually
+ * receives.
+ *
+ * A fetch/XHR mutation carries the document's real Origin, so an exact compare
+ * against the reviewed origin is the whole check. B64's consumer surface runs
+ * under `script-src 'none'`, so every mutation is instead a top-level HTML form
+ * POST, and a top-level form POST arrives with `Origin: null` — measured on
+ * Chrome 154 against the live Worker on 2026-10-28, where it made the visitor's
+ * own Save/Login/Logout buttons answer 403.
+ *
+ * The fallback keeps the boundary where #3476 put it. `Sec-Fetch-Site` is a
+ * forbidden request header, so a cross-site document cannot set it, and the
+ * same-site sibling that SameSite=Lax still carries the cookie to — the exact
+ * case this guard exists for — reports `same-site`, not `same-origin`. The
+ * request must also be addressed to the reviewed origin. A non-browser caller
+ * can forge both headers and still needs that member's own session cookie,
+ * which is not ambient browser authority. Everything else stays denied.
+ */
+function mutationOriginAccepted(request: Request, url: URL, expectedOrigin: string): boolean {
+  const origin = request.headers.get('origin');
+  if (origin === expectedOrigin) return true;
+  if (origin !== null && origin !== '' && origin !== 'null') return false;
+  return request.headers.get('sec-fetch-site') === 'same-origin' && url.origin === expectedOrigin;
 }
 
 function jsonErrorResponse(request: Request, status: number, error: string): Response {
@@ -158,6 +292,39 @@ function jsonErrorResponse(request: Request, status: number, error: string): Res
 
 function storageUnavailableResponse(request: Request): Response {
   return jsonErrorResponse(request, 503, 'storage_unavailable');
+}
+
+/**
+ * A Google callback response always drops the single-use state cookie, whether
+ * the login succeeded or not — a state that has been presented once is spent.
+ */
+function googleCallbackErrorResponse(request: Request, status: number, error: string): Response {
+  const headers = withSecurityHeaders({ 'content-type': 'application/json; charset=utf-8' });
+  headers.append('set-cookie', b64OAuthStateClearCookieValue());
+  return responseForMethod(request, JSON.stringify({ error }), { status, headers });
+}
+
+/** Everything the Google flow needs, or null: the flow is all-or-nothing. */
+interface GoogleFlowConfig {
+  readonly members: B64MemberStore;
+  readonly sessionSecret: string;
+  readonly clientId: string;
+  readonly clientSecret: string;
+  readonly redirectOrigin: string;
+}
+
+function googleFlowConfig(dependencies: ConsumerHttpDependencies): GoogleFlowConfig | null {
+  const { memberStore, sessionSecret, googleClientId, googleClientSecret, expectedBrowserOrigin } = dependencies;
+  if (!memberStore || !sessionSecret || !googleClientId || !googleClientSecret || !expectedBrowserOrigin) {
+    return null;
+  }
+  return Object.freeze({
+    members: memberStore,
+    sessionSecret,
+    clientId: googleClientId,
+    clientSecret: googleClientSecret,
+    redirectOrigin: expectedBrowserOrigin,
+  });
 }
 
 /** Redirect target for a theme toggle: same route without the theme parameter. */
@@ -190,7 +357,11 @@ export function createConsumerHttpHandler(
       return methodNotAllowed(request);
     }
 
-    if (request.method === 'POST' && url.pathname !== '/pipeline' && url.pathname !== '/income') {
+    const isIdentity = IDENTITY_PATHS.has(url.pathname);
+    const isGoogle = GOOGLE_PATHS.has(url.pathname);
+    const isProviderCallback = PROVIDER_CALLBACK_PATHS.has(url.pathname);
+    const isAdmin = ADMIN_PATHS.has(url.pathname);
+    if (request.method === 'POST' && !isIdentity && url.pathname !== '/pipeline' && url.pathname !== '/income') {
       return methodNotAllowed(request);
     }
 
@@ -198,10 +369,19 @@ export function createConsumerHttpHandler(
       return healthResponse(request);
     }
 
+    // A seller.txt is fetched by machines at the domain root, so it answers
+    // before the consumer routes and before any session is resolved.
+    if (url.pathname === B64_ADS_TXT_PATH) {
+      return responseForMethod(request, B64_AYET_ADS_TXT, {
+        status: 200,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
+    }
+
     const isBrowse = url.pathname === '/browse' || url.pathname === '/explore' || url.pathname === '/opportunities';
     const isDetail = url.pathname === '/detail' || url.pathname === '/opportunity';
 
-    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income') {
+    if (url.pathname !== '/' && url.pathname !== '/earn' && url.pathname !== '/today' && !isBrowse && !isDetail && url.pathname !== '/pipeline' && url.pathname !== '/income' && !isIdentity && !isGoogle && !isProviderCallback && !isAdmin) {
       return notFound(request);
     }
 
@@ -227,7 +407,205 @@ export function createConsumerHttpHandler(
     const themeInfo: ConsumerThemeInfo = {
       theme,
       themeToggleHref: themeToggleHref(url.pathname, url.searchParams),
+      googleLoginAvailable: googleFlowConfig(dependencies) !== null,
     };
+
+    if (isIdentity) {
+      if (request.method !== 'POST') {
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({ location: '/pipeline' }),
+        });
+      }
+      // Join, sign-in and sign-out each create or destroy a member cookie, so
+      // they are same-origin mutations even when no session exists yet — a
+      // cross-site form could otherwise log a visitor into an attacker's
+      // account.
+      const expectedOrigin = dependencies.expectedBrowserOrigin;
+      if (!expectedOrigin) {
+        return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
+      }
+      if (!mutationOriginAccepted(request, url, expectedOrigin)) {
+        return jsonErrorResponse(request, 403, 'origin_rejected');
+      }
+      const { memberStore, sessionSecret } = dependencies;
+      if (!memberStore || !sessionSecret) {
+        return jsonErrorResponse(request, 503, 'identity_unavailable');
+      }
+
+      if (url.pathname === '/logout') {
+        try {
+          await logoutSession({ store: memberStore, sessionSecret, cookieHeader });
+        } catch {
+          return storageUnavailableResponse(request);
+        }
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({
+            location: '/pipeline',
+            'set-cookie': b64SessionClearCookieValue(),
+          }),
+        });
+      }
+
+      const formData = await request.formData().catch(() => null);
+      if (!formData) {
+        return responseForMethod(request, 'Bad Request', {
+          status: 400,
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        });
+      }
+      const email = formData.get('email');
+      const password = formData.get('password');
+      try {
+        const issued = url.pathname === '/join'
+          ? await registerMember({ store: memberStore, sessionSecret, email, password })
+          : await signInMember({ store: memberStore, sessionSecret, email, password });
+        if (issued === null) {
+          return jsonErrorResponse(request, 401, 'invalid_credentials');
+        }
+        return new Response(null, {
+          status: 303,
+          headers: withSecurityHeaders({
+            location: '/pipeline',
+            'set-cookie': issued.cookieHeader,
+          }),
+        });
+      } catch (error) {
+        if (error instanceof CredentialError) return jsonErrorResponse(request, 400, error.code);
+        if (error instanceof B64MemberExistsError) return jsonErrorResponse(request, 409, 'member_exists');
+        return storageUnavailableResponse(request);
+      }
+    }
+
+    if (isGoogle) {
+      const config = googleFlowConfig(dependencies);
+      if (config === null) {
+        // No B64 Google client on this deployment: refuse rather than send a
+        // visitor to a login that cannot complete. The entry link is already
+        // hidden for this case.
+        return jsonErrorResponse(request, 503, 'auth_unavailable');
+      }
+      if (url.pathname === B64_GOOGLE_START_PATH) {
+        const issued = await mintB64OAuthState({ sessionSecret: config.sessionSecret });
+        const headers = withSecurityHeaders({
+          location: b64GoogleAuthorizationUrl({
+            clientId: config.clientId,
+            redirectUri: b64GoogleRedirectUri(config.redirectOrigin),
+            state: issued.state,
+          }),
+        });
+        headers.append('set-cookie', b64OAuthStateCookieValue(issued.token));
+        return new Response(null, { status: 303, headers });
+      }
+
+      const code = url.searchParams.get('code');
+      const state = url.searchParams.get('state');
+      const stateToken = cookieHeader === null
+        ? null
+        : extractCookieValue(cookieHeader, B64_OAUTH_STATE_COOKIE_NAME);
+      const stateVerified = await verifyB64OAuthState({
+        sessionSecret: config.sessionSecret,
+        state,
+        token: stateToken,
+      });
+      // No code (Google reported a refusal) and a state mismatch are the same
+      // answer: this callback was not produced by a /start this Worker issued.
+      if (!stateVerified || !code) {
+        return googleCallbackErrorResponse(request, 403, 'invalid_state');
+      }
+      try {
+        const issued = await signInWithGoogle({
+          store: config.members,
+          sessionSecret: config.sessionSecret,
+          clientId: config.clientId,
+          clientSecret: config.clientSecret,
+          publicBaseUrl: config.redirectOrigin,
+          code,
+          fetchImpl: dependencies.googleFetch,
+        });
+        const headers = withSecurityHeaders({ location: '/pipeline' });
+        headers.append('set-cookie', issued.cookieHeader);
+        headers.append('set-cookie', b64OAuthStateClearCookieValue());
+        return new Response(null, { status: 303, headers });
+      } catch (error) {
+        if (error instanceof GoogleAuthError) {
+          return googleCallbackErrorResponse(request, error.status, error.code);
+        }
+        return googleCallbackErrorResponse(request, 503, 'storage_unavailable');
+      }
+    }
+
+    if (isProviderCallback) {
+      // The provider authenticates itself with its signature; there is no
+      // cookie and no browser here. Storage and configuration failures answer
+      // 503 so the provider retries instead of silently losing an event.
+      const outcome = await handleAyetS2SCallback(
+        {
+          mode: dependencies.ayetMode ?? 'DISABLED',
+          publisherApiKey: dependencies.ayetPublisherApiKey,
+          rewardedAdslotId: dependencies.ayetRewardedAdslotId,
+          signingSecret: dependencies.sessionSecret,
+          rewardEvents: dependencies.rewardEvents ?? new UnboundRewardEventStore('B64_INCOME_DB'),
+        },
+        {
+          parameters: ayetS2SParametersFromUrl(url),
+          securityHash: request.headers.get(AYET_S2S_SECURITY_HASH_HEADER),
+          observedAt: new Date().toISOString(),
+        },
+      ).catch((error: unknown) => {
+        if (error instanceof AyetCallbackDisabled || error instanceof AyetCallbackUnconfigured) {
+          return { status: 503, body: '', decision: 'PROVIDER_UNAVAILABLE' } as const;
+        }
+        if (error instanceof RewardEventStorageError) {
+          return { status: 503, body: '', decision: 'STORAGE_UNAVAILABLE' } as const;
+        }
+        throw error;
+      });
+      return responseForMethod(request, outcome.body, {
+        status: outcome.status,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    if (isAdmin) {
+      const resolveAuth = dependencies.resolveAuth ?? defaultAuthResolver;
+      const auth = await resolveAuth(request);
+      if (!auth.authenticated || typeof auth.userId !== 'string') {
+        return jsonErrorResponse(request, 401, 'unauthenticated');
+      }
+      const { memberStore, adminEmail, operationsSnapshot } = dependencies;
+      if (!memberStore || !operationsSnapshot) {
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      let administrator = false;
+      try {
+        administrator = await isB64SuperAdmin({ adminEmail, members: memberStore, memberId: auth.userId });
+      } catch {
+        // "could not check" is reported as unavailable rather than quietly
+        // answered as a grant or a denial.
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      if (!administrator) {
+        return jsonErrorResponse(request, 403, 'admin_forbidden');
+      }
+      let snapshot: B64OperationsSnapshot;
+      try {
+        snapshot = await operationsSnapshot();
+      } catch {
+        return jsonErrorResponse(request, 503, 'admin_unavailable');
+      }
+      if (url.pathname === '/admin/status') {
+        return responseForMethod(request, JSON.stringify(snapshot), {
+          status: 200,
+          headers: { 'content-type': 'application/json; charset=utf-8' },
+        });
+      }
+      return responseForMethod(request, renderB64AdminConsole(snapshot, theme), {
+        status: 200,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
 
     let candidates: readonly AdClickConsumerCandidate[];
     try {
@@ -296,7 +674,7 @@ export function createConsumerHttpHandler(
       // Same-origin guard for cookie-authenticated mutations (#3476 policy,
       // mirrored from apps/padiem-chat/app/same_origin_guard.py): SameSite=Lax
       // is a site boundary, not an origin boundary, so a request carrying the
-      // `padiem_session` cookie must present an Origin header exactly equal to
+      // `b64_session` cookie must present an Origin header exactly equal to
       // the reviewed deployment origin. Missing Origin is denied (fail
       // closed); an unconfigured expected origin denies everything with 503
       // rather than weakening to "allow without expectation". Requests without
@@ -304,13 +682,12 @@ export function createConsumerHttpHandler(
       // subjects, and keep their existing auth error semantics (401 below).
       if (request.method === 'POST') {
         const cookieHeader = request.headers.get('cookie');
-        if (cookieHeader !== null && carriesPadiemSessionCookie(cookieHeader)) {
+        if (cookieHeader !== null && carriesB64SessionCookie(cookieHeader)) {
           const expectedOrigin = dependencies.expectedBrowserOrigin;
           if (!expectedOrigin) {
             return jsonErrorResponse(request, 503, 'origin_guard_unavailable');
           }
-          const origin = request.headers.get('origin');
-          if (!origin || origin !== expectedOrigin) {
+          if (!mutationOriginAccepted(request, url, expectedOrigin)) {
             return jsonErrorResponse(request, 403, 'origin_rejected');
           }
         }

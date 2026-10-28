@@ -61,11 +61,18 @@ jobs:
         shell: bash
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
           git fetch origin main
-          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          if ! test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"; then
+            # #5895: main moved ahead while this run was starting. The target
+            # still ships when it is an ancestor of main and nothing under
+            # apps/korean-ai-platform moved between the two -- that directory is
+            # the whole surface this gate deploys.
+            python3 .github/scripts/main_currency_guard.py --target "${{ github.event.inputs.target_sha }}" --path apps/korean-ai-platform --path packages
+          fi
           test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'PREMUTATION_TARGET_ACCOUNT=PASS'

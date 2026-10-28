@@ -390,6 +390,11 @@ _PC_QUERY_PLAN_SHAPES = (
     (("query_drives", "claw.pc.query_drives"),),
     (("list_files", "claw.pc.list_files"),),
     (("list_files", "claw.pc.list_files"), ("read_file", "claw.pc.read_file")),
+    # #4434: the write lane is its own plan. A request that may write is not also
+    # a permission to read, and a listing request is not a permission to write.
+    (("write_file", "claw.pc.write_file"),
+     ("move_file", "claw.pc.move_file"),
+     ("delete_file", "claw.pc.delete_file")),
 )
 
 
@@ -444,7 +449,9 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
     if not isinstance(payload, Mapping) or "declared_plan" not in payload:
         return None
     declared = payload["declared_plan"]
-    if not isinstance(declared, str) or declared not in {"files_list", "files", "query_drives"}:
+    if not isinstance(declared, str) or declared not in {
+        "files_list", "files", "files_write", "query_drives",
+    }:
         raise ServiceContractError(
             "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
         )
@@ -684,6 +691,14 @@ class OrchestrationEngineService:
             # One shared target binds the whole model-selected list/read loop.
             # It is metadata, not a third executable plan step.
             step_ids = {"files"}
+        elif shape == (
+            ("write_file", "claw.pc.write_file"),
+            ("move_file", "claw.pc.move_file"),
+            ("delete_file", "claw.pc.delete_file"),
+        ):
+            # The same single target binds the write/move/delete loop: one PC,
+            # one account, and no step may name a device of its own.
+            step_ids = {"files_write"}
         for step_id, entry in parsed.items():
             if (
                 step_id not in step_ids
@@ -788,6 +803,9 @@ class OrchestrationEngineService:
             (("list_files", "claw.pc.list_files"),): "files_list",
             (("list_files", "claw.pc.list_files"),
              ("read_file", "claw.pc.read_file")): "files",
+            (("write_file", "claw.pc.write_file"),
+             ("move_file", "claw.pc.move_file"),
+             ("delete_file", "claw.pc.delete_file")): "files_write",
         }.get(shape)
         if ceiling is not None:
             # The admitted plan fixes the ceiling even when the owner has no
@@ -1936,10 +1954,14 @@ class OrchestrationEngineService:
             yield _stream_event_line(prepared.first_event)
             while not prepared.task.done():
                 event_task = asyncio.ensure_future(prepared.queue.get())
+                # #5895: liveness is not an opt-in. Any Engine turn can wait
+                # longer than a proxy is willing to hold a silent response, so
+                # every stream reuses the existing heartbeat window instead of
+                # only the PC opt-in one. No new timeout value is introduced.
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
-                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS,
                 )
                 if not done:
                     event_task.cancel()

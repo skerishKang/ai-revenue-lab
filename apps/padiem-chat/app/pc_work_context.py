@@ -41,7 +41,11 @@ MAX_DEVICE_NAME_CHARS = 60
 _MAX_RENDERED_DEVICES = 6
 _DEVICE_LIMIT = 24
 #: Same closed grammar the Mesh ownership map accepts for device/node refs.
-_EXEC_REF_PATTERN = re.compile(r"^[A-Za-z0-9_.:@+\-\\/]{1,1024}$")
+#: ``$`` is in the class because MeshCentral composes its node keys from an
+#: alphabet that uses ``$`` and ``@`` where base64 uses ``/`` and ``+``: a real
+#: ``id@domain`` reference can carry it, and refusing it here dropped the
+#: device from every list that depended on the execution target.
+_EXEC_REF_PATTERN = re.compile(r"^[A-Za-z0-9_.$:@+\-\\/]{1,1024}$")
 _STATES = ("CONNECTED", "OFFLINE", "REVOKED")
 _MESH_EXECUTION_MODE = "mesh"
 
@@ -418,6 +422,78 @@ def _mapping_for(
     return _MAPPING_UNMAPPED
 
 
+async def linked_pc_targets(request: Any, owner_id: str) -> list[dict[str, Any]] | None:
+    """This account's linked PCs, from #5573's directory, or ``None``.
+
+    ``None`` means the directory could not be asked at all (no store, migration
+    072 not applied, a failed read), which is different from an empty list: only
+    the empty list says "this account has no linked PC", and only that lets the
+    deployment ownership map answer as it did before links existed.
+    """
+    state = getattr(getattr(request, "app", None), "state", None)
+    store = getattr(state, "pc_device_pairing_store", None)
+    reader = getattr(store, "links_for_owner", None)
+    if not callable(reader):
+        return None
+    try:
+        links = reader(user_id=owner_id)
+        if inspect.isawaitable(links):
+            links = await links
+    except Exception:
+        return None
+    return links if isinstance(links, list) else None
+
+
+def _link_devices(links: list[dict[str, Any]]) -> list[PcWorkDevice]:
+    """Directory rows for linked PCs, named the way the owner named them.
+
+    The name is what the answer and the browser call the machine by, so a link
+    contributes a row even before anything has proved it online - it is simply
+    not usable, which is the honest reading of "linked, not yet seen".
+    """
+    devices: list[PcWorkDevice] = []
+    for link in links:
+        if not isinstance(link, Mapping):
+            continue
+        node_ref = link.get("mesh_node_id")
+        if not is_pc_device_id(node_ref):
+            continue
+        label = link.get("label")
+        devices.append(PcWorkDevice(
+            device_id=node_ref,
+            name=label if isinstance(label, str) and label else None,
+            state="OFFLINE", usable=False,
+        ))
+    return devices
+
+
+def _link_execution_target(
+    links: list[dict[str, Any]], selected_device_id: str | None,
+) -> PcExecutionTarget | None:
+    """The command target this account's own links name, or ``None``.
+
+    Same rule the file lane applies (R4, directory first): the link the owner
+    chose - or the one link they have - is the target, and two links with no
+    choice made is a question, not a guess. A linked PC is pinned by nothing in
+    the deployment map, so the composed node identity travels unpinned.
+    """
+    candidates = [
+        link.get("mesh_node_id") for link in links
+        if isinstance(link, Mapping) and is_pc_device_id(link.get("mesh_node_id"))
+    ]
+    if not candidates:
+        return None
+    if selected_device_id is not None:
+        chosen = [node for node in candidates if node == selected_device_id]
+        if len(chosen) != 1:
+            return None
+    elif len(candidates) == 1:
+        chosen = candidates
+    else:
+        return None
+    return PcExecutionTarget(status=_EXEC_READY, device_id=chosen[0], pinned=False)
+
+
 async def resolve_pc_work_context(
     request: Any,
     *,
@@ -484,12 +560,25 @@ async def resolve_pc_work_context(
                 else:
                     broker_status = _READY
 
+    # #5573: a PC this account linked is its own machine, named by this account.
+    # The directory answers before the deployment map, and only for an account
+    # that has links - an account with none behaves exactly as it did before.
+    links = await linked_pc_targets(request, owner)
+    if links:
+        known = {device.device_id for device in devices}
+        devices.extend(
+            device for device in _link_devices(links) if device.device_id not in known
+        )
     execution = await _resolve_execution_target(
         request,
         session_id=connector.session_id if connector.ready else session,
         selected_device_id=selected_device_id,
         account_ref=connector.account_ref if connector.ready else None,
     )
+    if links:
+        linked = _link_execution_target(links, selected_device_id)
+        if linked is not None:
+            execution = linked
     usable = [device for device in devices if device.usable]
     # A paused owner has no execution target even though a PC is online.
     broker_target = (

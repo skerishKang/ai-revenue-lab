@@ -18,19 +18,36 @@ Two facts drive this module:
   ``no_exit_code``: the output is complete and the code stays unobserved.
 
 The bytes returned here are the PC output verbatim, including CR/LF and any
-leading/trailing whitespace, minus the sentinel line this module itself added.
+leading/trailing whitespace, minus the envelope line and the sentinel line this
+module itself added.
+
+The envelope exists because of what the PC's own console does with Korean. A
+Windows console answers in its code page (cp949 on 한국어 installations), the
+MeshCentral agent puts that reply on a WebSocket *text* frame, and MeshCentral
+rejects the frame with ``WS_ERR_INVALID_UTF8`` — the command ran, and the answer
+was destroyed before anyone could read it. The reply is therefore Base64 of its
+UTF-8 bytes, so only ASCII ever crosses the frame on the way back. The command
+itself travels as MeshCentral's own UTF-8 JSON, which the server encodes.
 """
 from __future__ import annotations
 
+import base64
+import os
 import re
+import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
 from .contracts import ContractError
-from .local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
+from .local_agent_meshcentral_private_reader import (
+    _MESHCTRL_STDIN_BOOTSTRAP,
+    _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+)
 
 #: Marker appended to the requested command so the PC reports its own exit code.
 EXIT_SENTINEL = "__PADIEM_EXIT__"
+#: #5573: the PC's own console label for the encoded reply body.
+ENVELOPE_PREFIX = "PADIEM_B64="
 #: #4139: a command is ordinary text. Korean, quotes, tabs and several lines are
 #: allowed, and there is no product length rule — the former 512- and
 #: 8,192-character caps were trial limits. Only NUL and CR are refused, because
@@ -47,14 +64,20 @@ _COMMAND_BODY = re.compile(r"[^\x00\r]+")
 #: dispatch row can carry.
 _MAX_ARGV_ELEMENT_BYTES = 131_072
 _SENTINEL_LINE = re.compile(rb"__PADIEM_EXIT__(-?\d+)?")
+_ENVELOPE_WHITESPACE = re.compile(rb"\s+")
 METHOD_LABEL = "powershell_runcommand_reply"
-#: stdout and stderr travel merged (trailing ``2>&1``); the conversation says so.
+#: stdout and stderr travel merged (``2>&1`` inside the captured expression);
+#: the conversation says so.
 MERGED_STREAMS = True
 #: Wire envelope for one output body: the same 6 MB the Claw request route
 #: already accepts for one user message. Above it the child is killed and the
 #: outcome reports ``output_too_large`` — nothing is truncated and nothing is
 #: buffered past this bound.
 MAX_COMMAND_BYTES = 6_000_000
+#: The same bound seen through the Base64 envelope, which is about four thirds
+#: the size of what it carries. The child is killed on this number; the product
+#: limit is still applied to the decoded PC bytes in ``parse_transcript``.
+MAX_TRANSCRIPT_BYTES = MAX_COMMAND_BYTES * 4 // 3 + 4096
 
 
 class MeshCentralCommandRefused(ValueError):
@@ -66,8 +89,11 @@ class MeshCentralCommandOutcome:
     """What one real command run produced, exactly as observed."""
 
     #: "exited" | "timed_out" | "no_reply" | "no_exit_code" | "output_too_large"
+    #: | "bad_reply"
     #: no_reply means the console never answered; no_exit_code means it answered
-    #: completely and PowerShell had no code to report.
+    #: completely and PowerShell had no code to report; bad_reply means it
+    #: answered but the envelope could not be read, so nothing is claimed about
+    #: what the PC printed.
     termination: str
     exit_code: int | None
     output: bytes
@@ -89,23 +115,137 @@ def _bounded_command(value: Any) -> str:
     return value.rstrip(" \t\r\n")
 
 
-def _wrap(command: str) -> str:
-    """Merge the error stream, then append the exit-code sentinel.
+#: #5895: how a stopped command is ended ON THE PC. Every command this lane runs
+#: leaves one file behind, named by its own dispatch id and holding its process id,
+#: and removes it on the way out. The stop reads that file and kills that process
+#: tree - nothing else. A name rather than a search, because the agent's console
+#: task queue is serial: a stop that had to look for the process would be queued
+#: behind the very command it is trying to end, which is the failure measured on
+#: 2026-10-28 (a cancelled sweep held every later PC operation for minutes until a
+#: person killed it by hand).
+PC_CANCEL_PID_FILE_PREFIX = "padiem-dispatch-"
+#: A dispatch id is this module's own identifier, and it is interpolated into a
+#: PowerShell literal on the customer's PC, so it is refused unless it is exactly
+#: what the server issues. No customer text reaches this position.
+_DISPATCH_ID = re.compile(r"^dsp_[0-9a-f]{16,64}$")
+#: The stop itself is a short console session, bounded so a wedged agent tunnel can
+#: never become the new way to hold a PC.
+CANCEL_KILL_WAIT_SECONDS = 15
 
-    Measured on the real PC: without the merge, a command that writes to stderr
-    either loses that text or never returns a transcript at all; with a trailing
-    ``2>&1`` the same command returns its error text through the console. The
-    merge is applied to the *whole* trailing statement only — a multi-statement
-    command keeps its own stream wiring for the earlier statements, and the
-    conversation states that the streams are merged.
 
-    ``$LASTEXITCODE`` is PowerShell's record of the last native command, so the
-    sentinel reports the real remote exit code instead of the shell's own.
+def _checked_dispatch_id(value: Any) -> str:
+    if not isinstance(value, str) or _DISPATCH_ID.fullmatch(value) is None:
+        raise MeshCentralCommandRefused("dispatch_id is not a dispatch identifier")
+    return value
+
+
+def _pid_file_literal(dispatch_id: str) -> str:
+    """The PowerShell expression for this dispatch's own marker file on the PC.
+
+    ``GetTempPath`` is the folder the agent's own account writes its scratch to, so
+    the command that starts and the stop that ends it resolve the same path without
+    either one being told where the PC keeps its temporary files.
     """
+    return ("[IO.Path]::GetTempPath()+'" + PC_CANCEL_PID_FILE_PREFIX
+            + _checked_dispatch_id(dispatch_id) + ".pid'")
+
+
+def cancel_kill_command(dispatch_id: str) -> str:
+    """The one-liner that ends exactly one stopped dispatch, and its marker.
+
+    Scoped by construction: it reads that dispatch's own pid file, kills that
+    process tree, and deletes the file. It never names an image, a service or a
+    window title, so the agent and any other customer work on the PC cannot be
+    reached through it. When the file is absent the command does nothing, which is
+    the normal case - a command that finished on its own has already removed it.
+    """
+    marker = "$__padiem_stop"
     return (
-        command + " 2>&1; Write-Output (\""
-        + EXIT_SENTINEL + "\" + $LASTEXITCODE)"
+        "$ErrorActionPreference='SilentlyContinue';"
+        f"{marker}={_pid_file_literal(dispatch_id)};"
+        f"if (Test-Path -LiteralPath {marker}) {{"
+        f"$__padiem_kill=(Get-Content -LiteralPath {marker} | Select-Object -First 1);"
+        "if ($__padiem_kill) { & taskkill /T /F /PID $__padiem_kill | Out-Null };"
+        f"Remove-Item -LiteralPath {marker} -Force }}"
     )
+
+
+def _wrap(command: str, dispatch_id: str | None = None) -> str:
+    """Run one command on the PC and bring its output back as ASCII Base64.
+
+    Three rules carry it:
+
+    * ``[Console]::OutputEncoding`` is set to UTF-8 first, so the console writes
+      the script's own bytes instead of the machine's code page;
+    * the merged stdout+stderr string is Base64-encoded **on the PC**, so the
+      reply frame carries only Base64 characters whatever the console produced —
+      this is what stops a cp949 answer from being destroyed in transit;
+    * the captured run is inside ``try``/``catch``, because a command carrying
+      ``-ErrorAction Stop`` raises a *terminating* error, and an uncaught one
+      would skip the envelope and the exit sentinel entirely. The error record's
+      own text then travels inside the envelope instead of being lost.
+
+    Only the reply is encoded. The command itself travels as MeshCentral's own
+    UTF-8 JSON — measured on the real PC, a Korean path in the command reaches
+    the agent intact — and encoding it too would shrink the argument the OS can
+    exec by a third for no transport gain. The merge is applied to the whole
+    statement (``2>&1`` inside the captured expression), which is what #4139
+    measured: without it, a command that writes to stderr either loses that text
+    or never returns a transcript at all. ``$LASTEXITCODE`` is PowerShell's
+    record of the last native command, so the sentinel reports the real remote
+    exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
+
+    With a dispatch id the wrapped script also leaves, and removes, that
+    dispatch's marker file - see ``cancel_kill_command``. Without one it is the
+    same bytes as before, so nothing about a command's own result can change.
+    """
+    marks = ""
+    clears = ""
+    if dispatch_id is not None:
+        marker = _pid_file_literal(dispatch_id)
+        marks = (
+            " $__padiem_pidfile=" + marker
+            + "; Set-Content -LiteralPath $__padiem_pidfile -Value $PID -Encoding ascii;"
+        )
+        clears = (
+            " if ($__padiem_pidfile) {"
+            " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
+        )
+    return (
+        "[Console]::OutputEncoding=[Text.Encoding]::UTF8;"
+        " $__padiem=$null;" + marks +
+        " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
+        " } catch { $__padiem=($_ | Out-String) };" + clears +
+        ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
+        "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+        ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
+    )
+
+
+def _unwrap_envelope(output: bytes) -> tuple[bytes, bytes] | None:
+    """Split one transcript into (text before the envelope, decoded body).
+
+    ``None`` means the reply is not a readable envelope: no marker, a payload
+    that is not Base64, or bytes that are not valid UTF-8. A caller that got a
+    console answer must not present mangled bytes as if the PC had printed them.
+    """
+    marker = ENVELOPE_PREFIX.encode("ascii")
+    position = output.find(marker)
+    if position < 0:
+        return None
+    prefix = output[:position]
+    # Whitespace is not part of Base64 and a long body may be wrapped by the
+    # console, so the token is read as the payload it is, not as one line.
+    payload = _ENVELOPE_WHITESPACE.sub(b"", output[position + len(marker):])
+    try:
+        body = base64.b64decode(payload, validate=True)
+    except Exception:
+        return None
+    try:
+        body.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    return prefix, body
 
 
 def _read_some(process: Any, timeout_seconds: float) -> bytes:
@@ -167,6 +307,20 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     raw_code = match.group(1)
     # Drop the sentinel line (and the newline that ended it) from the output.
     output = data[:start] + (data[end + 1:] if end < len(data) else b"")
+    code = None if raw_code is None else int(raw_code)
+    envelope = _unwrap_envelope(output)
+    if envelope is None:
+        # The console answered, but not with a readable envelope. This is not a
+        # silent console and not a truncation: it is a reply that cannot be
+        # presented as the PC's output, so it keeps its own outcome.
+        return "bad_reply", code, b""
+    prefix, body = envelope
+    if prefix:
+        body = prefix + body
+    if len(body) > MAX_COMMAND_BYTES:
+        # The bound is the product's, on the PC's own bytes: the Base64 envelope
+        # is bigger than its content, so the raw transcript is measured here.
+        return "output_too_large", code, b""
     if raw_code is None:
         # The sentinel printed an empty value. That is not a console that never
         # answered: PowerShell records `$LASTEXITCODE` only for "the exit code of
@@ -174,8 +328,44 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
         # about_Automatic_Variables), so a pipeline made only of cmdlets and .NET
         # calls leaves it empty while still returning its whole output. The code
         # stays unobserved here and is never turned into 0.
-        return "no_exit_code", None, output
-    return "exited", int(raw_code), output
+        return "no_exit_code", None, body
+    return "exited", int(raw_code), body
+
+
+class _TerminalHandoff:
+    """The pty ``meshctrl shell`` insists on, with its input already queued.
+
+    The client reads the credential from standard input and then pipes that same
+    stream into the PC's terminal, so the password is one line and the command is
+    the bytes after it, and closing the handle ends the session. ``setRawMode`` is
+    not a function on a pipe, which is why a terminal device is needed at all.
+    """
+
+    def __init__(self, write_bytes: bytes) -> None:
+        import pty
+
+        self._master, self.slave = pty.openpty()
+        os.write(self._master, write_bytes)
+
+    def wait_closed(self, seconds: float) -> None:
+        import select
+
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            if select.select([self._master], [], [], 0.2)[0]:
+                try:
+                    if os.read(self._master, 65536) == b"":
+                        break
+                except OSError:
+                    break
+        self.close()
+
+    def close(self) -> None:
+        for handle in (self._master, self.slave):
+            try:
+                os.close(handle)
+            except OSError:
+                pass
 
 
 class MeshCentralCliCommandPort:
@@ -197,6 +387,7 @@ class MeshCentralCliCommandPort:
         url: str = "wss://127.0.0.1:4443",
         work_dir: str | None = None,
         popen_factory: Callable[..., Any] | None = None,
+        pty_factory: Callable[[], Any] | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
@@ -204,6 +395,9 @@ class MeshCentralCliCommandPort:
         # read in chunks and killed the moment the transcript passes the wire
         # envelope, so a runaway command can never be buffered whole first.
         self._popen_factory = popen_factory
+        # The stop needs a terminal device for the official client's shell; a test
+        # injects a stand-in, and production uses the pty above.
+        self._pty_factory = pty_factory if callable(pty_factory) else _TerminalHandoff
         if not isinstance(meshctrl_js, str) or not meshctrl_js.strip():
             raise ContractError("the official meshctrl.js path is required")
         if not isinstance(login_user, str) or not login_user.strip():
@@ -224,8 +418,10 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str,
         command: str,
-        timeout_seconds: int = 60,
+        timeout_seconds: int | None = None,
         phase_observer: Callable[[str], None] | None = None,
+        cancel_probe: Callable[[], bool] | None = None,
+        dispatch_id: str | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -235,14 +431,37 @@ class MeshCentralCliCommandPort:
                     # Instrumentation must never alter command execution.
                     pass
 
+        def cancelled() -> bool:
+            if cancel_probe is None:
+                return False
+            try:
+                return cancel_probe() is True
+            except Exception:
+                # A probe that cannot be read is not an owner's stop. Refusing to
+                # cancel on a transport problem is the only safe answer: the other
+                # side of this choice ends a real command on a real PC.
+                return False
+
+        if cancel_probe is not None and not callable(cancel_probe):
+            raise ContractError("the cancel probe must be callable")
+
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
-        if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
-            raise MeshCentralCommandRefused("timeout_seconds must be an integer")
-        if timeout_seconds < 1 or timeout_seconds > 300:
-            raise MeshCentralCommandRefused("timeout_seconds is out of range")
+        # Owner decision (#5895): a long-running command carries no PADIEM
+        # client deadline by default, the way the desktop lane already runs
+        # with None. An explicit timeout remains available and is a caller
+        # choice, not a product ceiling, so it is only bounded below by one.
+        if timeout_seconds is not None:
+            if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, int):
+                raise MeshCentralCommandRefused("timeout_seconds must be an integer or None")
+            if timeout_seconds < 1:
+                raise MeshCentralCommandRefused("timeout_seconds is out of range")
         body = _bounded_command(command)
-        wrapped = _wrap(body)
+        # The marker is what makes a stop able to find this exact command on the
+        # PC. Refusing a malformed id here is also the only thing standing between
+        # a caller-supplied string and a PowerShell literal on a customer machine.
+        checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
+        wrapped = _wrap(body, checked_dispatch)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -294,20 +513,29 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        return self._run_streaming(argv, password, timeout_seconds, phase)
+        return self._run_streaming(
+            argv, password, timeout_seconds, phase, cancelled,
+            node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
+        )
 
     # ---- streaming execution -------------------------------------------
     def _run_streaming(
-        self, argv: list[str], password: str, timeout_seconds: int,
+        self, argv: list[str], password: str, timeout_seconds: int | None,
         phase: Callable[[str], None],
+        cancelled: Callable[[], bool] | None = None,
+        *,
+        node_ref: str | None = None,
+        dispatch_id: str | None = None,
     ) -> MeshCentralCommandOutcome:
         """Read the child's transcript in bounded chunks.
 
         Memory is bounded by the wire envelope plus one chunk: the moment the
         transcript passes it, the child is killed and the outcome reports
-        ``output_too_large``. A command that never answers is killed at the
-        deadline and reported as ``timed_out`` — the remote process may still be
-        running, so no exit code is claimed.
+        ``output_too_large``. A ``timeout_seconds`` of None means no PADIEM client
+        deadline (the desktop-lane default): the command runs until the console
+        answers, and only an explicit timeout is killed at its deadline and
+        reported as ``timed_out`` — the remote process may still be running, so
+        no exit code is claimed.
         """
         import subprocess
         import time
@@ -327,16 +555,18 @@ class MeshCentralCliCommandPort:
                 process.stdin.write((password + "\n").encode("utf-8"))
                 process.stdin.flush()
                 process.stdin.close()
-            deadline = time.monotonic() + timeout_seconds
+            deadline = None if timeout_seconds is None else time.monotonic() + timeout_seconds
             while True:
-                if time.monotonic() > deadline:
+                if deadline is not None and time.monotonic() > deadline:
                     process.kill()
                     phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
                     )
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
+                # None deadline: wait on the console with a fixed read slice so
+                # the loop stays responsive to the child finishing.
+                remaining = 1.0 if deadline is None else deadline - time.monotonic()
+                if deadline is not None and remaining <= 0:
                     process.kill()
                     phase("timeout")
                     return MeshCentralCommandOutcome(
@@ -346,10 +576,27 @@ class MeshCentralCliCommandPort:
                 if not chunk:
                     if process.poll() is not None:
                         break
+                    # The owner stopped this. Ending the client is the whole
+                    # mechanism: it closes the MeshCentral session, so the command
+                    # lane is free for the next operation instead of waiting on a
+                    # console that may never answer (#5995 removed the deadline,
+                    # and a silent PC held every later operation behind it).
+                    if cancelled is not None and cancelled():
+                        # Two ends, in this order: first ask the PC to stop the work
+                        # it is running, then stop waiting here. Ending only the
+                        # client left the customer's process running behind a
+                        # serial console queue, which is what held every later
+                        # operation on that PC after a stop (measured 2026-10-28).
+                        self._stop_on_pc(node_ref, dispatch_id, phase)
+                        process.kill()
+                        phase("cancel")
+                        return MeshCentralCommandOutcome(
+                            termination="cancelled", exit_code=None, output=b"",
+                        )
                     continue
                 chunks.append(chunk)
                 total += len(chunk)
-                if total > MAX_COMMAND_BYTES:
+                if total > MAX_TRANSCRIPT_BYTES:
                     oversize = True
                     process.kill()
                     break
@@ -369,6 +616,66 @@ class MeshCentralCliCommandPort:
         phase("reply")
         return outcome
 
+    def _stop_on_pc(
+        self, node_ref: str | None, dispatch_id: str | None, phase: Callable[[str], None],
+    ) -> bool:
+        """End the stopped command on the PC, best effort, and say which happened.
+
+        A failed stop is reported and never turns into a refusal here: the owner's
+        stop has already been honoured on this host, and the row's own result is on
+        its way. Silent failure is the thing to avoid, so the phase names it.
+        """
+        if node_ref is None or dispatch_id is None:
+            return False
+        try:
+            self.kill_command_process(node_ref=node_ref, dispatch_id=dispatch_id)
+        except Exception:
+            phase("cancel_kill_refused")
+            return False
+        phase("cancel_kill")
+        return True
+
+    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
+        """End exactly one dispatch's own process tree on the PC.
+
+        ``runcommand`` cannot carry a stop: it is the queue the running command is
+        holding. ``meshctrl shell`` opens the agent's terminal over its own session,
+        which is the channel that worked by hand on 2026-10-28 while the queue was
+        wedged. The command sent through it names only the stopped dispatch's pid
+        marker - no image name, no service, no window title - and the whole session
+        is bounded, so an unreachable agent cannot make this the new way to hang.
+        """
+        import subprocess
+
+        checked = _checked_dispatch_id(dispatch_id)
+        if not isinstance(node_ref, str) or not node_ref.strip():
+            raise MeshCentralCommandRefused("node_ref is required")
+        if self._popen_factory is None:
+            raise MeshCentralCommandRefused("stopping a command needs the streaming client")
+        password = self._password_provider()
+        if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
+            raise MeshCentralCommandRefused(
+                "the protected MeshCentral operator credential is invalid"
+            )
+        argv = [
+            "node", "-e", _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+            self._meshctrl_js, "shell",
+            "--url", self._url,
+            "--loginuser", self._login_user,
+            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+            "--id", node_ref.strip(),
+            "--powershell",
+        ]
+        handoff = self._pty_factory(
+            (password + "\n" + cancel_kill_command(checked) + "\n").encode("utf-8"),
+        )
+        child = self._popen_factory(
+            argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+        )
+        handoff.wait_closed(CANCEL_KILL_WAIT_SECONDS)
+        if child.poll() is None:
+            child.kill()
+
     def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
         if not raw:
             return MeshCentralCommandOutcome(
@@ -387,8 +694,10 @@ class MeshCentralCliCommandPort:
 
 
 __all__ = [
+    "ENVELOPE_PREFIX",
     "EXIT_SENTINEL",
     "MAX_COMMAND_BYTES",
+    "MAX_TRANSCRIPT_BYTES",
     "MERGED_STREAMS",
     "METHOD_LABEL",
     "MeshCentralCliCommandPort",

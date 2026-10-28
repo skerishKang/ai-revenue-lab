@@ -2513,6 +2513,9 @@
         if (item.role === "assistant") renderStoredAssistant(item.content, item);
         if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content }, targetProduct);
       });
+      // #5895: keep showing a PC turn that is still running on the server, and
+      // restore the thread once its stored answer lands.
+      void resumeUnfinishedPcRun(data.conversation.id);
       // A restored conversation opens on its newest turn with follow resumed,
       // on the same shared Chat/Claw control.
       window.__padiemConversationMotion?.resume?.();
@@ -2778,6 +2781,71 @@
     fetchImpl: window.fetch.bind(window),
   }) || null;
 
+  // #5895: a PC turn keeps running on the server after this tab goes away, and
+  // the owner's run history already names unfinished runs (#3139 reconciles a
+  // finished result back into the conversation that started it). Reopening that
+  // conversation continues the same "still working" display, with the elapsed
+  // time the server's own run row carries, and the stored answer lands in the
+  // thread through the existing restore path. Nothing is submitted from here,
+  // and no attempt count or deadline is chosen here.
+  function pcWaitElapsed(createdAt) {
+    const started = Date.parse(createdAt);
+    if (!Number.isFinite(started)) return null;
+    const clock = window.PadiemChatLifecycle?.elapsedClockText;
+    if (typeof clock !== "function") return null;
+    return clock(Math.max(0, Date.now() - started));
+  }
+
+  async function findUnfinishedPcRun(conversationId) {
+    let runs = [];
+    try {
+      const response = await fetch("/api/claw/runs", {
+        headers: { "Accept": "application/json" }, cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (response.ok && data?.ok === true && Array.isArray(data.runs)) runs = data.runs;
+    } catch (_) {
+      // A failed read adds no knowledge: the run is never replayed from here.
+      return null;
+    }
+    return runs.find((run) => run
+      && window.PadiemChatPcRecovery?.validRunId?.(run.run_id) === true
+      && (run.status === "pending" || run.status === "running")
+      && run.session?.conversation_id === conversationId) || null;
+  }
+
+  async function resumeUnfinishedPcRun(conversationId) {
+    if (!conversationId || !pcResultRecovery) return;
+    const unfinished = await findUnfinishedPcRun(conversationId);
+    if (!unfinished || resolvedPcRuns.has(unfinished.run_id)) return;
+    const showWait = () => {
+      const elapsed = pcWaitElapsed(unfinished.created_at);
+      setNote(elapsed
+        ? uiT("pc-elapsed-note", { elapsed })
+        : uiT("pc-processing-note"), "status");
+    };
+    showWait();
+    let result;
+    try {
+      result = await pcResultRecovery.waitForResult({
+        runId: unfinished.run_id, conversationId, onPending: showWait,
+      });
+    } catch (_) {
+      // The read was cancelled or the tab moved on; the run keeps running.
+      return;
+    }
+    if (result.kind === "pending") return;
+    // This tab will not read that run again. A completed answer lands in the
+    // thread; any other verdict only stops this screen from claiming that work
+    // is still happening, because the client cannot see its outcome and is not
+    // the one that decides what a finished PC run said.
+    resolvedPcRuns.add(unfinished.run_id);
+    setNote(idleNote());
+    if (result.kind === "completed" && result.conversationId === conversationId) {
+      await openSavedConversation(conversationId);
+    }
+  }
+
   function renderStoredPcAnswer(article, result, outboundMessages, contextSnapshot) {
     const content = article.querySelector(".assistant-content");
     if (!content) return false;
@@ -2844,7 +2912,11 @@
         return;
       }
       if (result.kind === "pending") {
-        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
+        // #5895: an unfinished run is not a failed run. Say what is actually
+        // true — still processing, and the stored answer lands in this
+        // conversation — instead of a failure the owner cannot act on.
+        PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+        window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
       if (article.isConnected && !signal.aborted) {
@@ -3002,6 +3074,15 @@
               && data.error.message.trim()
               ? data.error.message : chatTransport.streamErrorMessage(data);
           if (clawGeneralRequest && !paragraph) throw chatTransport.errorFor(data, message);
+          // #5895: on the PC lane a cut stream is not a refusal. The run keeps
+          // executing on the server and its answer is persisted, so keep this
+          // turn in its processing state and let the owner-scoped pending-result
+          // recovery below read the stored answer instead of claiming a failure.
+          if (!clawGeneralRequest && contextSnapshot?.pcRunId && chatTransport.isStreamLoss?.(data)) {
+            PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
+            window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
+            throw chatTransport.errorFor(data, message);
+          }
           // An explicit refusal is terminal even before the first token.
           // Handle it here so the outer catch never starts pending-result GETs.
           terminalError = true;

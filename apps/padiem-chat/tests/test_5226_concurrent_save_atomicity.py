@@ -41,6 +41,7 @@ MIGRATION_NAMES = (
     "014_claw_run_history_conversation.sql",
     "015_claw_run_history_workspace.sql",
     "042_conversation_product_scope.sql",
+    "075_project_files_country.sql",
 )
 
 OWNER = "usr_" + "a" * 32

@@ -94,6 +94,25 @@ _MESHCTRL_STDIN_BOOTSTRAP = (
     "require(process.argv[1]);"
 )
 
+#: The same credential hand-off for a client that keeps using standard input after
+#: the password — ``meshctrl shell`` pipes the terminal in from there. Reading the
+#: secret one byte at a time and stopping at its newline leaves the rest of the
+#: stream, unread, for the client itself; ``readFileSync(0)`` would take it all.
+_MESHCTRL_STDIN_LINE_BOOTSTRAP = (
+    _MESHCTRL_FLUSH_BARRIER
+    + "const fs=require('node:fs');"
+    "const marker='__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__';"
+    "const i=process.argv.indexOf(marker);"
+    "if(i<0)process.exit(2);"
+    "let secret='';const buf=Buffer.alloc(1);let done=false;"
+    "while(!done){let n=0;try{n=fs.readSync(0,buf,0,1,null);}catch(_){break;}"
+    "if(n===0)break;if(buf[0]===10)break;secret+=buf.toString('utf8');}"
+    "secret=secret.replace(/\\r$/,'');"
+    "if(!secret)process.exit(3);"
+    "process.argv[i]=secret;"
+    "require(process.argv[1]);"
+)
+
 
 
 class MeshCentralReadRefused(ValueError):

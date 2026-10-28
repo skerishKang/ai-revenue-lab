@@ -77,6 +77,8 @@ def test_the_group_touches_only_the_existing_endpoints(sns: dict) -> None:
         "GET /api/projects/p1/files",
         "POST /api/chat",
         "POST /api/projects/p1/files",
+        # #5895: whether a PC is linked, read through the existing pairing list.
+        "GET /api/pc/pairings",
     }
     assert "POST /api/chat" in sns["endpoints"]
     assert not sns["alerts"]

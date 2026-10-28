@@ -112,6 +112,227 @@
     return (data && data.files) ? data.files : [];
   }
 
+  // ── #5895: "내 PC에서 예전 글 가져오기" / "내 PC에 저장" ─────────────────
+  // The authoring tools share one browser part. It is loaded on first use (#5895:
+  // nothing joins the page or the Worker's cold init until a menu needs it), and the
+  // only endpoints it adds are the PC file-exchange routes that already exist.
+  const PC_REF_COPY = {
+    pick: "내 PC에서 예전 글 가져오기",
+    again: "내 PC에서 더 가져오기",
+    remove: "빼기",
+    preview: "가져온 글",
+    unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    noPc: "PC를 연결하면 예전 글을 가져올 수 있습니다.",
+    connect: "이 PC 연결",
+    save: "내 PC에 저장",
+    saveUnavailable: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    saved: "내 PC에 저장했습니다.",
+  };
+
+  let pcExchangeLoading = null;
+
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="./pc-file-exchange.css"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "./pc-file-exchange.css";
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = "./pc-file-exchange.js";
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc-exchange-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc-exchange-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    try {
+      const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
+      if (!res.ok) return null;
+      const body = await res.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // The existing Connectors surface owns the computer card: no second pairing screen.
+  function openPcConnect() {
+    const opener = document.getElementById("connectorsNavButton");
+    if (!opener) return;
+    opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
+  async function pcReferenceEntry(picked) {
+    if (!picked) return null;
+    if (typeof picked.content === "string" && picked.content.trim()) {
+      return { name: picked.name || "가져온 글", text: picked.content };
+    }
+    if (!picked.fileId) return null;
+    try {
+      const res = await fetch("/api/pc/reference", {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_id: picked.fileId }),
+      });
+      if (!res.ok) return null;
+      const body = await res.json().catch(() => null);
+      if (!body || body.ok !== true || typeof body.text !== "string" || !body.text.trim()) return null;
+      return {
+        name: typeof body.name === "string" && body.name ? body.name : (picked.name || "가져온 글"),
+        text: body.text,
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // One section per tool: the pick button, the files the owner chose with their
+  // preview, and — when no PC is linked — the one-line notice instead.
+  function createPcReferenceSection() {
+    const box = el("div", "util-pc-ref");
+    const pick = el("button", "util-pc-ref-pick", PC_REF_COPY.pick);
+    pick.type = "button";
+    const note = el("p", "util-pc-ref-note", "");
+    note.hidden = true;
+    const status = el("p", "util-pc-ref-status", "");
+    status.hidden = true;
+    const list = el("ul", "util-pc-ref-list");
+    list.hidden = true;
+    box.append(pick, note, list, status);
+    const files = [];
+
+    function say(text) {
+      status.textContent = text || "";
+      status.hidden = !text;
+    }
+
+    function render() {
+      list.replaceChildren();
+      files.forEach((file, index) => {
+        const item = el("li", "util-pc-ref-item");
+        const head = el("div", "util-pc-ref-head");
+        head.append(el("strong", "util-pc-ref-name", file.name));
+        head.append(el("span", "util-pc-ref-chars", file.text.length.toLocaleString("ko-KR") + "자"));
+        const drop = el("button", "util-pc-ref-remove", PC_REF_COPY.remove);
+        drop.type = "button";
+        drop.addEventListener("click", () => {
+          files.splice(index, 1);
+          render();
+        });
+        head.append(drop);
+        const preview = el("pre", "util-pc-ref-preview", file.text);
+        item.append(head, preview);
+        list.append(item);
+      });
+      list.hidden = files.length === 0;
+      pick.textContent = files.length ? PC_REF_COPY.again : PC_REF_COPY.pick;
+    }
+
+    async function addPicked(picked) {
+      say("");
+      const entry = await pcReferenceEntry(picked);
+      if (!entry) {
+        say(PC_REF_COPY.unreadable);
+        return;
+      }
+      files.push(entry);
+      render();
+    }
+
+    pick.addEventListener("click", async () => {
+      say("");
+      let component;
+      try {
+        component = await loadPcExchange();
+      } catch (_) {
+        component = null;
+      }
+      if (!component || typeof component.open !== "function") {
+        say(PC_REF_COPY.unavailable);
+        return;
+      }
+      component.open({ onSelect: (picked) => { void addPicked(picked); } });
+    });
+
+    // The check runs when the screen is first shown, not when the module loads:
+    // a page that never opens this tool asks the PC directory nothing at all.
+    let checked = false;
+    function check() {
+      if (checked) return;
+      checked = true;
+      void pcLinked().then((linked) => {
+        if (linked !== false) return;
+        pick.hidden = true;
+        note.textContent = PC_REF_COPY.noPc + " ";
+        const connect = el("button", "util-pc-ref-connect", PC_REF_COPY.connect);
+        connect.type = "button";
+        connect.addEventListener("click", openPcConnect);
+        note.appendChild(connect);
+        note.hidden = false;
+      });
+    }
+
+    return {
+      box,
+      files,
+      check,
+      read() {
+        const lineBreak = String.fromCharCode(10);
+        return files
+          .map((file, index) => "[참고 글 " + (index + 1) + ": " + file.name + "]" + lineBreak + file.text)
+          .join(lineBreak + lineBreak);
+      },
+    };
+  }
+
+  function pcSaveFileName(base) {
+    const title = String(base || "").trim().replace(/[\/:*?"<>|]+/g, " ").trim() || "글";
+    const now = new Date();
+    const pad = (value) => String(value).padStart(2, "0");
+    const day = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+    return title + "_" + day + ".txt";
+  }
+
+  async function saveTextToPc(text, baseName) {
+    const content = String(text || "").trim();
+    if (!content) return;
+    let component;
+    try {
+      component = await loadPcExchange();
+    } catch (_) {
+      component = null;
+    }
+    if (!component || typeof component.open !== "function") {
+      alert(PC_REF_COPY.saveUnavailable);
+      return;
+    }
+    component.open({
+      mode: "save",
+      content,
+      fileName: pcSaveFileName(baseName),
+      onSave: () => {},
+    });
+  }
+
   function downloadText(text, filename) {
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -145,6 +366,9 @@
     // markup) and stays disabled until a draft exists — it never claims a save
     // that did not happen.
     const saveBtn = document.getElementById("utilSpeechSave");
+    const speechPc = createPcReferenceSection();
+    const speechPcMount = document.getElementById("utilSpeechPcRef");
+    if (speechPcMount) speechPcMount.appendChild(speechPc.box);
     const utilTitleEl = document.getElementById("utilTitle");
     const utilKickerEl = document.getElementById("utilKicker");
     const utilTaglineEl = document.getElementById("utilTagline");
@@ -158,6 +382,9 @@
 
     let lastPayload = null;
     let currentPid = null;
+    // #5895: the SNS panel is built on first open, so its PC section is handed back
+    // to the tab handler that knows when the panel is actually on screen.
+    let snsPcRef = null;
 
     // #5608 follow-up: the sidebar Util entry expands into its four tools. The
     // submenu rows and the (hidden) in-page tabs drive the same switch, so the
@@ -244,7 +471,11 @@
       // tools keep the shared defaults until their own pass.
       if (utilKickerEl) utilKickerEl.textContent = tab.dataset.kicker || "Padiem Util";
       if (utilTaglineEl) utilTaglineEl.textContent = tab.dataset.tagline || "AI 홍보·기록 비서";
-      if (key === "sns" && !panels.sns.dataset.loaded) buildSns();
+      if (key === "speech") speechPc.check();
+      if (key === "sns") {
+        if (!panels.sns.dataset.loaded) buildSns();
+        snsPcRef.check();
+      }
       if (key === "meeting" && !panels.meeting.dataset.loaded) buildMeeting();
       // #5731: re-entering the speech tool must show the past speeches the
       // account already stored — the list can't only exist after a save.
@@ -289,6 +520,8 @@
       prompt += `분량: ${lengthMap[length] || "보통"}\n`;
       prompt += `말투: ${toneMap[tone] || "공식적"}\n`;
       if (style) prompt += `\n아래는 사용자의 기존 축사/인사말 샘플입니다. 이 문체와 어휘, 표현 특성을 반영하여 작성해 주세요:\n---\n${style}\n---\n`;
+      const references = speechPc.read();
+      if (references) prompt += `\n아래는 사용자의 PC에서 가져온 예전 글입니다. 문체와 어휘, 글의 구성을 참고하되 그대로 옮기지 마세요:\n---\n${references}\n---\n`;
       prompt += "\n축사 초안을 작성해 주세요. 행사 성격에 맞는 공식 축사 형식으로 작성하고, 인사말과 마무리 인사를 포함해 주세요.";
       return prompt;
     }
@@ -313,6 +546,11 @@
       try { await navigator.clipboard.writeText(speechOutput.value); copyBtn.textContent = "복사됨"; setTimeout(() => { copyBtn.textContent = "복사"; }, 1500); } catch (_) {}
     });
     if (downloadBtn) downloadBtn.addEventListener("click", () => { downloadText(speechOutput.value, "speech.txt"); });
+    const speechPcSave = document.getElementById("utilSpeechPcSave");
+    if (speechPcSave) speechPcSave.addEventListener("click", () => {
+      const eventName = String(document.querySelector("#utilSpeechForm [name=event]")?.value || "축사").trim();
+      void saveTextToPc(speechOutput.value, eventName || "축사");
+    });
 
     if (saveBtn) saveBtn.addEventListener("click", async () => {
       const text = speechOutput.value.trim();
@@ -433,6 +671,9 @@
       });
       toneLabel.appendChild(toneSel);
       form.appendChild(toneLabel);
+      const snsPc = createPcReferenceSection();
+      snsPcRef = snsPc;
+      form.appendChild(snsPc.box);
 
       const tabDiv = el("div", "util-sns-tabs");
       const tabNames = { blog: "블로그", facebook: "페이스북", instagram: "인스타그램" };
@@ -681,7 +922,9 @@
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
-      actions.append(copyB, dlB);
+      const pcSaveB = el("button", "util-save", PC_REF_COPY.save);
+      pcSaveB.type = "button"; pcSaveB.id = "utilSnsPcSave";
+      actions.append(copyB, dlB, pcSaveB);
       result.append(h3, output, previewBox, actions);
 
       panel.replaceChildren(form, result);
@@ -789,6 +1032,10 @@
         if (memo) prompt += `메모: ${memo}\n`;
         if (audience) prompt += `대상 독자: ${audience}\n`;
         prompt += `문체: ${toneMap[tone]}\n`;
+        const references = snsPc.read();
+        if (references) {
+          prompt += `아래는 사용자의 PC에서 가져온 예전 글입니다. 문체와 어휘, 글의 구성을 참고하되 그대로 옮기지 마세요:\n---\n${references}\n---\n`;
+        }
         prompt += "\n제목, 본문, 해시태그를 구분하여 작성해 주세요.";
         result.hidden = false;
         output.value = "생성 중...";
@@ -801,6 +1048,10 @@
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
       dlB.addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
+      pcSaveB.addEventListener("click", () => {
+        const eventName = String(document.querySelector("#utilSnsForm [name=event]")?.value || "SNS").trim();
+        void saveTextToPc(output.value, eventName || "SNS");
+      });
       formSaveB.addEventListener("click", async () => {
         const text = output.value.trim();
         if (!text) return;

@@ -55,9 +55,12 @@ def test_the_shared_script_exists_and_is_the_single_source() -> None:
     assert SCRIPT.is_file()
     for workflow, job in ((CHAT_GATE, "deploy-production-code"), (ENGINE_GATE, "deploy-production-engine")):
         runs = [str(step.get("run", "")) for step in _steps(workflow, job)]
-        # Exactly one step body invokes the script: one shared implementation,
-        # no second copy of the verdict logic inside the workflow.
-        assert sum(run.count(SCRIPT.name) for run in runs) == 1
+        # One shared implementation, no second copy of the verdict logic in the
+        # workflow. #5895: the Chat gate invokes it in two places — inside the
+        # staged rollout at partial traffic and again as the post-promotion
+        # proof after the rollback guard — so it counts 2 there and 1 on Engine.
+        expected = 2 if workflow == CHAT_GATE else 1
+        assert sum(run.count(SCRIPT.name) for run in runs) == expected
 
 
 def test_chat_gate_answers_one_real_chat_on_the_free_composer_lane() -> None:

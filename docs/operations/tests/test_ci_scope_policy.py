@@ -90,6 +90,8 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
+    "engine-full-regression",  # #5678 Engine whole suite on every main push
+    "b14-full-regression",  # #5678 B14 whole suite on every main push
 }
 
 

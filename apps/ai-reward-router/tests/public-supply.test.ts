@@ -93,7 +93,7 @@ test('browse activates public categories and keeps the ad-click lane untouched',
   assert.equal(vm.cards.length, 0, 'no ad-click cards in this lane');
   assert.equal(vm.publicCards.length, 6);
   assert.equal(vm.emptyState, null);
-  assert.match(vm.publicSupplyNote ?? '', /PADIEM에 수익을 주지 않고/);
+  assert.match(vm.publicSupplyNote ?? '', /B64는 수익을 받지 않습니다/);
 });
 
 test('browse category selection filters public cards and query matches title/vendor', () => {
@@ -137,8 +137,8 @@ test('public detail renders required facts and a safe outbound link', () => {
   const html = renderAdClickFirstOpportunityDetailWeb(vm);
   assert.match(html, /한국어 Voice AI Evaluator/);
   assert.match(html, /시급 최대 \$31/);
-  assert.match(html, /PADIEM 수익/);
-  assert.match(html, /0 \(이용자 가치 제공용/);
+  assert.match(html, /B64 수익/);
+  assert.match(html, /없음 · 업체에 직접 참여/);
   assert.match(html, /한국 참여 확인/);
   assert.match(html, /href="https:\/\/app\.outlier\.ai\/login\?job_post_id=4722459005"/);
   assert.match(html, /target="_blank"/);

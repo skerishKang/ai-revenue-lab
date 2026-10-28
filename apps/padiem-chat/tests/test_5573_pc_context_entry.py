@@ -17,8 +17,10 @@ import pytest
 import app.chat_pc_drive as lane
 import app.pc_work_context as pc_work_context
 from app.orchestration_bridge import B62EngineOrchestrationBridge
+from app.pc_device_pairing_store import _NAME_SEPARATOR
 
 DEVICE = "node/meshdomain1/owner-pc"
+SECOND = "node/meshdomain1/n0t1$K_lipvoice"
 CONVERSATION = "chat_" + "c" * 32
 
 
@@ -73,6 +75,7 @@ def _selection(selected):
 
 
 def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True):
+    context_calls: list[dict] = []
     context = pc_work_context.PcWorkContext(
         broker_status="ready" if devices else "no_device",
         devices=(
@@ -87,6 +90,7 @@ def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True):
     )
 
     async def _resolve_context(request, **kwargs):
+        context_calls.append(kwargs)
         return context
 
     b14 = _B14()
@@ -97,6 +101,7 @@ def _wire(monkeypatch, *, selected=True, devices=True, mesh_ready=True):
             b14_client=b14, orchestration_bridge=bridge, history_store=store,
         )),
         cookies={},
+        context_calls=context_calls,
     )
     monkeypatch.setattr(lane, "auth_ready", lambda req: True)
     monkeypatch.setattr(lane, "current_user_id", lambda req: "usr_5573")
@@ -431,3 +436,73 @@ def test_a_drive_turn_is_staged_as_a_drive_run(monkeypatch):
     assert result == ("ok", CONVERSATION)
     assert store.staged[0]["action"] == "pc_drive_query"
     assert store.staged[0]["title_prefix"] == "PC 드라이브 조회: "
+
+
+def _two_pcs(monkeypatch):
+    """The account's own pairing directory: two linked PCs, each with two names.
+
+    Labels are in the stored form (machine name, separator, owner alias) so the
+    match is against what the label API actually writes, and the second node id
+    carries a ``$`` because that is what MeshCentral really composes.
+    """
+    links = [
+        {"mesh_node_id": DEVICE,
+         "label": "Padiem-Command-Center" + _NAME_SEPARATOR + "컴1"},
+        {"mesh_node_id": SECOND,
+         "label": "K_lipvoice" + _NAME_SEPARATOR + "컴2"},
+    ]
+
+    async def _targets(request, owner_id):
+        return links
+
+    monkeypatch.setattr(pc_work_context, "linked_pc_targets", _targets)
+    return links
+
+
+def _run_on_screen(request, text, carried):
+    return asyncio.run(lane.execute_chat_pc_drive_lane(
+        request, user_text=text, skill=SimpleNamespace(id="auto"),
+        model_id="m", conversation_id=None,
+        selected_tool="files_list", device_id=carried,
+    ))
+
+
+def test_the_pc_named_in_the_turn_beats_the_pc_the_screen_points_at(monkeypatch):
+    """#5573: the composer carries the last-chosen PC on every request.
+
+    컴1's node id therefore arrives with a turn that says "컴2", and the screen's
+    value has to lose - otherwise an owner with two PCs could never reach the
+    second one from chat, which is the whole reason naming is allowed.
+    """
+    request, b14, bridge, _store = _wire(monkeypatch)
+    _two_pcs(monkeypatch)
+    result = _run_on_screen(request, "컴2의 C 드라이브 최상위 목록", DEVICE)
+
+    assert result == ("ok", CONVERSATION)
+    assert bridge.requests[0]["tool_arguments"] == {"files_list": {"device_id": SECOND}}
+    assert request.context_calls[-1]["selected_device_id"] == SECOND
+    assert b14.calls == []
+
+
+def test_the_machines_own_name_selects_it_too_in_any_spelling(monkeypatch):
+    """Windows' name chooses the same PC as the owner's alias, case aside."""
+    request, _b14, bridge, _store = _wire(monkeypatch)
+    _two_pcs(monkeypatch)
+    for text in ("k_lipvoice의 C 드라이브 최상위 목록", "K_lipvoice  C 드라이브 목록"):
+        result = _run_on_screen(request, text, DEVICE)
+        assert result == ("ok", CONVERSATION)
+        assert bridge.requests[-1]["tool_arguments"] == {
+            "files_list": {"device_id": SECOND},
+        }
+
+
+def test_a_turn_naming_nothing_keeps_the_choice_already_on_the_screen(monkeypatch):
+    """The name is an override, not a replacement for the ordinary selection."""
+    request, _b14, bridge, _store = _wire(monkeypatch)
+    _two_pcs(monkeypatch)
+    assert _run_on_screen(request, "C 드라이브 최상위 목록", DEVICE) == ("ok", CONVERSATION)
+    assert bridge.requests[0]["tool_arguments"] == {"files_list": {"device_id": DEVICE}}
+
+    # And the alias of the *other* PC still overrides in that direction.
+    assert _run_on_screen(request, "컴1의 C 드라이브 목록", SECOND) == ("ok", CONVERSATION)
+    assert bridge.requests[-1]["tool_arguments"] == {"files_list": {"device_id": DEVICE}}

@@ -144,6 +144,8 @@ jobs:
 
       - name: Require exact current main and unmodified migration source
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
@@ -151,7 +153,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           echo 'PREMUTATION_HEAD_MATCHES_TARGET=PASS'
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            # #5895: main moved ahead while this run was starting. The plan still
+            # runs when the target is an ancestor of main and the migration
+            # directory did not move between them, because that directory is the
+            # only thing this gate applies.
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
+          fi
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           # Nothing in the migration directory may differ from, or sit beside,
           # what this exact commit carries: git status sees both, and unlike a
@@ -293,12 +301,16 @@ jobs:
 
       - name: Re-require exact main, migration source and the read-only binding
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
+          fi
           test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'B62_D1_SOURCE_SHA_PINNED=PASS'

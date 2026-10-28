@@ -30,9 +30,10 @@ The deployment target is intentionally **account-independent and fail-closed**. 
 - DNS mutation
 - provider secrets or variables
 
-`PADIEM_B64_PUBLIC_BASE_URL` (the reviewed mutation origin for the same-origin
-guard, declared in `wrangler.jsonc` as `https://chat.padiem.net`) is an
-operational configuration var, not a provider credential.
+`B64_PUBLIC_BASE_URL` (the reviewed mutation origin for the same-origin guard,
+declared in `wrangler.jsonc` as B64's own serving host) is an operational
+configuration var, not a provider credential. It names no other product's
+origin: B64 is an independent business (owner decision 2026-10-27).
 
 The existing `ai-revenue-korean-ai-platform` production Worker is not a B64 deployment target and must not be modified as a side effect of this config.
 
@@ -67,20 +68,20 @@ the B62 chat product (`apps/padiem-chat/app/auth.py`, purpose
 `padiem-chat/session/v1`). B64 introduces no second login scheme, and no
 client-controlled header, query parameter, or body field can select the user.
 
-Required server-owned bindings on this Worker (all fail closed when absent):
+Required server-owned configuration on this Worker (all fail closed when absent):
 
 | Binding | Meaning | When missing |
 |---|---|---|
-| `CONTROL_PLANE_IDENTITY` (service) | REQUIRED for the income path. Binding to the shared Control Plane identity authority (`padiem-control-plane-identity`, already bound by padiem-chat / padiem-ai-engine / padiem-voice-stt). Resolves the cookie's canonical session id server-side (`resolve_auth_session` → `resolve_product_user_for_subject`) so the verified `usr_…` user id comes from the authority — no signing secret held, no client claim trusted, revoked/expired sessions blocked | Cookie-authenticated access is DENIED (fail closed) |
-| `PADIEM_B64_PUBLIC_BASE_URL` (var) | Exact reviewed public origin of this deployment, e.g. `https://chat.padiem.net`; required by the cookie-authenticated mutation same-origin guard (#3476 policy) | Cookie-carrying POSTs are denied 503 `origin_guard_unavailable` |
-| `B64_INCOME_DB` (D1) | Cloudflare D1 database `padiem-b64` for user income records | Pipeline storage answers 503 `storage_unavailable`; the non-durable in-memory prototype is never used as a production fallback |
-| `PADIEM_CHAT_SERVICE` (service) | REQUIRED for the income path, as the signature-parity half. Declared like the existing reference bridge (`reference/business-66-padiem-quote-v1/_worker.js`): the cookie is forwarded to chat's revocation-aware `GET /api/auth/status`, where chat verifies its own signature. The authority proves a session id is live; this proves chat actually signed the cookie | Cookie-authenticated access is DENIED (fail closed). Without it the session id alone would be a transferable bearer credential |
-| `PADIEM_SESSION_SECRET` (secret) | NOT bound — deliberately removed. B64 verifies identity through the authority, never with the signing key (the offline verifier exists only in isolated tests) | n/a — the deployed path must not depend on it |
+| `B64_INCOME_DB` (D1) | Cloudflare D1 database holding B64 income records (`b64_user_income`), B64 members (`b64_member`) and B64 sessions (`b64_session`) | Pipeline storage and the account endpoints answer 503; the non-durable in-memory prototype is never used as a production fallback |
+| `B64_PUBLIC_BASE_URL` (var) | B64's own reviewed public origin — the host this Worker actually serves — required by the same-origin guard on cookie mutations (#3476 policy) | Cookie-carrying POSTs are denied 503 `origin_guard_unavailable` |
+| `B64_SESSION_SECRET` (secret) | B64's own session signing key, minted for B64. Cookies carry the B64 purpose string, so a B64 token is not accepted by any other product's verifier and vice versa | Nobody authenticates: `/pipeline` stays anonymous and account mutations answer 503 `identity_unavailable` |
 
-`PADIEM_SESSION_SECRET_SOURCE` / the activation gate workflow (#5853) remain
-as a FALLBACK path only: they are not needed while the authority binding is
-the deployed authentication path, and dispatching them adds a signing-key
-copy that the authority-based path avoids.
+There is deliberately **no `services` block**. B64 is an independent business
+(owner decision 2026-10-27), so its login path must not depend on another
+product's Worker staying up. `CONTROL_PLANE_IDENTITY`, `PADIEM_CHAT_SERVICE` and
+`PADIEM_SESSION_SECRET` — the couplings #5954 and #5853 introduced — are out of
+the target set, and `.github/binding_baselines/b64-ai-reward-router.json`
+records that.
 
 The repository contract (`UserIncomeRepository`) has no global "delete everything"
 operation by design: every production statement is scoped to one `user_id`, and
@@ -88,23 +89,23 @@ test fixtures reset their own test-only stores.
 
 Deployment operations that remain OWNER/operator actions:
 
-1. Provision the `padiem-b64` D1 database and apply
-   `migrations/d1/0001_b64_user_income.sql` via the dispatch-only
-   `B64 Income D1 Provision Gate` workflow, then replace the placeholder
-   `database_id` in `wrangler.jsonc` with the real id the gate prints.
-2. `wrangler secret put PADIEM_SESSION_SECRET` with the chat product's
-   session secret value.
-3. Serve this Worker under the chat origin (route on the same host) or make
-   an explicit owner decision about cookie scope: the `padiem_session` cookie
-   is `HttpOnly; Secure; SameSite=Lax` with **no Domain attribute**, so it is
-   host-only for the chat origin and does not reach a different host such as
-   `b64-ai-reward-router.<account>.workers.dev`. Until the cookie actually
-   reaches this Worker, verification code is correct but no request can
-   authenticate.
-4. Confirm with the chat product owner that routing B64 liveness checks
-   through `PADIEM_CHAT_SERVICE` to `GET /api/auth/status` is acceptable
-   load-wise; the endpoint is the same one the reference B66 bridge already
-   calls.
+1. Mint a B64 session key and register it:
+   `wrangler secret put B64_SESSION_SECRET --name b64-ai-reward-router`
+   (run from `apps/ai-reward-router`). Any high-entropy value works; nothing is
+   copied from another product, and rotating it logs every B64 session out by
+   invalidating its signatures — the `b64_session` rows stay, so no data moves.
+2. Apply the new schema to the existing database, without recreating it:
+   `wrangler d1 migrations list padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`
+   then `wrangler d1 migrations apply padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`.
+   `0002_b64_member.sql` only adds tables; `b64_user_income` rows are untouched.
+3. Deploy from the exact merged SHA through
+   `.github/workflows/b64-cloudflare-worker-production-deploy-gate.yml`. It
+   reads the binding set back and prints `B64_SESSION_SECRET_BINDING=` so a
+   missing key is visible instead of looking like a broken login.
+4. A member cookie is host-scoped (`Secure`, `HttpOnly`, `SameSite=Lax`, no
+   `Domain`), so B64 login works on whatever host `B64_PUBLIC_BASE_URL` names.
+   Moving to B64's own registered domain is that one variable plus a redeploy —
+   no code change, and no other product's cookie is involved.
 
 ## Operational connection runbook (2026-10-26 measured, read-only)
 
@@ -325,45 +326,267 @@ Decision tree (owner decision required — LOCAL executes none of these):
   only ADD new host paths, rollback restores the exact pre-change serving.
   The workers.dev fallback host remains enabled until live E2E passes.
 
-## Authentication wiring as deployed (2026-10-27, issue #5864 / #987)
+## Independent identity as deployed (2026-10-27, issue #987)
 
-The income path answers two independent questions with two existing
-mechanisms, and holds no signing key:
+This section supersedes the "Authentication wiring as deployed (#5864)" text
+that #5954 added here. The owner decision of 2026-10-27 makes B64 an
+independent business of ai-revenue-lab, so the
+`CONTROL_PLANE_IDENTITY` / `PADIEM_CHAT_SERVICE` coupling that section described
+is removed, and the `chat.padiem.net` route rollout it was preparing is
+cancelled.
 
-| Question | Answered by | Binding |
-|---|---|---|
-| Is this session real, active, and a b62 user? Which `usr_…` is it? | Control Plane identity authority (`resolve_auth_session` → `resolve_product_user_for_subject`) | `CONTROL_PLANE_IDENTITY` |
-| Did chat actually sign this cookie, and has chat revoked the session? | chat's own revocation-aware `GET /api/auth/status`, cookie forwarded unchanged | `PADIEM_CHAT_SERVICE` |
+B64 answers its own two questions:
 
-Both must agree. The relay runs first, so a well-formed cookie carrying a
-genuine but stolen session id never reaches the authority: on its own that id
-is a transferable 128-bit bearer credential, and the authority lookup would
-happily confirm it. This is the delta CENTRAL's #5864 review named.
+| Question | Answered by |
+|---|---|
+| Did B64 issue this cookie, and is it unexpired? | HMAC-SHA256 over the B64 purpose string `b64-reward/session/v1` with `B64_SESSION_SECRET` |
+| Has this session been logged out or revoked? | the `b64_session` row in B64's own D1 (`revoked_at IS NULL`) |
+| Which member is this? | the token's `mid`, cross-checked against that row's `member_id` — never a client-asserted value |
 
-`PADIEM_SESSION_SECRET` is therefore not part of the target binding set, and
-`.github/workflows/b64-session-secret-activation-gate.yml` is not on the path to
-a working login. Its earlier "Plan A" note stays as the record of why B64 must
-not identify users from chat's public payloads — the authority is what supplies
-identity, which is exactly the gap that note ruled out.
+Both must hold. A correctly signed token whose row is gone resolves to nobody,
+and a token naming a member id the client picked has no row behind it, so it
+resolves to nobody too. Passwords use the repository's reviewed stored format
+(`pbkdf2_sha512$220000$<salt>$<digest>`), and
+`tests/identity-credentials.test.ts` proves the port both ways against the real
+Python implementation.
 
 ### Order of operations for a working login (CENTRAL)
 
-1. Merge, then dispatch `.github/workflows/b64-cloudflare-worker-production-deploy-gate.yml`
+1. Register B64's own key (nothing is copied from another product):
+   `wrangler secret put B64_SESSION_SECRET --name b64-ai-reward-router`
+   from `apps/ai-reward-router`.
+2. Apply the additive schema to the existing database — list first, apply only
+   if pending, never recreate:
+   `wrangler d1 migrations list padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`
+   `wrangler d1 migrations apply padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`
+3. Dispatch `.github/workflows/b64-cloudflare-worker-production-deploy-gate.yml`
    with `target_sha=<merged main SHA>` and
-   `confirmation=DEPLOY_B64_AI_REWARD_ROUTER`. Its binding readback now requires
-   `CONTROL_PLANE_IDENTITY` to be live, and its parity step fails the run — and
-   rolls back — if the deployed revision is not what the public host answers.
-2. Read the zone route table with `b64-cloudflare-zone-route-readonly-probe.yml`
-   (GET-only). Abort if it reports a host wildcard or any B64 path already
-   assigned to `padiem-chat`.
-3. Add the six routes from the table above to `b64-ai-reward-router`, recording
-   each `route_id`. `/`, `/api/*` and `/healthz` stay on `padiem-chat`; taking
-   `/` would also make step 1's relay call itself.
-4. Confirm income storage is migrated on the existing database (read-only):
-   `wrangler d1 migrations list padiem-b64 --remote --config apps/ai-reward-router/wrangler.jsonc`.
-   Apply only if it lists a pending migration, and never recreate the database.
-5. Run the signed-session E2E in a real browser on `chat.padiem.net`: log in
-   through chat, save one record on `/pipeline`, reload and confirm it returns,
-   confirm the realised-income total stays `지급 확인 전` until the status is
-   `지급 완료`, then log out and confirm the same tab falls back to the login
-   prompt. Steps 1-4 passing is not this check; only this closes #5864.
+   `confirmation=DEPLOY_B64_AI_REWARD_ROUTER`. It refuses a config that declares
+   service bindings or routes, and prints `B64_SESSION_SECRET_BINDING=` so a
+   missing key is visible instead of looking like a broken login.
+4. Browser E2E on `https://b64-ai-reward-router.charliekant.workers.dev/pipeline`:
+   join → save one record → reload and see it back → the amount stays
+   `지급 확인 전` until the status is `지급 완료` → log out and confirm the same
+   tab returns to the join/login gate and the record is gone from view. Steps
+   1-3 passing is wiring, not this check.
+5. Domain: no `chat.padiem.net` routes are created. When B64's own registered
+   domain is confirmed by a read-only Cloudflare inventory, changing
+   `B64_PUBLIC_BASE_URL` and redeploying is the whole move — the cookie is
+   host-scoped and B64 issues it itself.
+
+### Cancelled or retired by the owner decision
+
+- The `chat.padiem.net/{earn,today,browse,detail,pipeline,income}` route
+  rollout prepared under #5864. `b64-cloudflare-zone-route-readonly-probe.yml`
+  stays as a read-only diagnostic; nothing assigns B64 to that origin.
+- `PADIEM_SESSION_SECRET` registration and
+  `b64-session-secret-activation-gate.yml` are on no path to a working login.
+  They are left in place as history for CENTRAL to retire deliberately rather
+  than deleted as a side effect of this change.
+- Account copy now says `B64 계정` instead of pointing at a PADIEM login. The
+  wider brand wording across the consumer surface is a separate pass and is not
+  part of this change.
+
+## Google sign-in through B64's own OAuth client (2026-10-27, issue #987 reuse)
+
+The owner instruction for this step was to reuse what is already built rather
+than start a second auth engine. What is reused is the **contract** the
+repository already proved in `apps/padiem-chat/app/auth.py` — authorization-code
+flow, the same parameter set, a random state kept in a purpose-signed HttpOnly
+cookie and compared constant-time, and identity taken from `userinfo` with
+`verified_email` — plus B64's own existing session minting, session row and
+member id. What is reused is **not** another product's endpoint, client, cookie
+or account table, and no new signing or hashing engine was written: both token
+types now go through one primitive, `src/identity/hmac.ts`.
+
+| Piece | B64's own value |
+|---|---|
+| OAuth client | `B64_GOOGLE_CLIENT_ID` / `B64_GOOGLE_CLIENT_SECRET` — B64's credentials, registered on B64's origin |
+| Redirect URI | `B64_PUBLIC_BASE_URL` + `/auth/google/callback`, derived from server config, never from the request Host |
+| State cookie | `b64_oauth_state`, purpose `b64-reward/oauth-state/v1`, 600s, single-use |
+| Session cookie | `b64_session`, purpose `b64-reward/session/v1` — unchanged, and the same row `b64_session` that logout revokes |
+| Member id | `b64m_…` minted by B64; the Google `sub` is linked in `b64_member_google` (`0003`, additive) |
+
+Email address is **not** an account key. Signing in with Google for an address
+that already has an email/password member creates a separate B64 member rather
+than merging the two, because merging would put one person's ledger in another
+person's account. Google-only members have no row in `b64_member`, so they have
+no password to guess.
+
+Required configuration, all fail closed when absent:
+
+| Binding | Kind on the Worker | When missing |
+|---|---|---|
+| `B64_GOOGLE_CLIENT_ID` | secret_text | No `Google 로그인` entry is rendered; `/auth/google/*` answers 503 `auth_unavailable` |
+| `B64_GOOGLE_CLIENT_SECRET` | secret_text | same |
+| `B64_SESSION_SECRET` | secret | same (it signs the state as well as the session) |
+| `B64_INCOME_DB` | D1 | the state is signed and Google is reached, but the login completes 503 `storage_unavailable` and the state is spent |
+| `B64_PUBLIC_BASE_URL` | var | same — there is no origin to name as the redirect URI |
+
+Neither Google binding is declared in `wrangler.jsonc`, and
+`.github/binding_baselines/b64-ai-reward-router.json` is unchanged: a credential
+value never belongs in a reviewed config file, and both are delivered as
+`secret_text` by the activation gate below.
+
+### Order of operations for a working Google login (CENTRAL / OWNER)
+
+1. Create the OAuth client in Google Cloud for B64 (LOCAL cannot and did not).
+   Authorized redirect URI: `https://b64-ai-reward-router.charliekant.workers.dev/auth/google/callback`
+   — exactly the value `B64_PUBLIC_BASE_URL` plus the callback path, and a new
+   client entry is required whenever that origin changes.
+2. Register the client's two values as **`production` environment secrets** on
+   this repository, named exactly `B64_GOOGLE_CLIENT_ID` and
+   `B64_GOOGLE_CLIENT_SECRET`. A value is never pasted into a terminal, an
+   Issue, a PR or this file; the environment store is the only place it lives.
+3. Apply the schema **and** bind the credentials by dispatching
+   `.github/workflows/b64-independent-identity-activation-gate.yml`. It runs
+   `0003_b64_google_identity.sql` after `0002`, counts
+   `b64_user_income` / `b64_member` / `b64_session` rows before and after and
+   fails if any decreased, then pipes each environment secret through stdin into
+   `wrangler secret put` and reads both bindings back as `secret_text`. If one
+   of the two secrets is missing it writes **nothing** and says so, because a
+   client id without its secret would render the entry and then fail
+   mid-round-trip. It mints no OAuth client, rotates no key and deploys no
+   Worker revision.
+   Registering the GitHub secrets alone binds nothing — this step is what
+   reaches the Worker. Both values are `secret_text` rather than a config `var`
+   on purpose: `wrangler.jsonc` and
+   `.github/binding_baselines/b64-ai-reward-router.json` stay untouched, and
+   deploy run 40578410849 proved an out-of-band secret binding
+   (`B64_SESSION_SECRET`, absent from the config file) survives a later
+   `wrangler deploy`. The application reads `env.B64_GOOGLE_CLIENT_ID` as a
+   plain string either way.
+4. Deploy through `b64-cloudflare-worker-production-deploy-gate.yml`.
+5. Live E2E, which is the only proof that the client is correct: `/pipeline` →
+   `Google 로그인` → choose an account → back on `/pipeline` as a member → save
+   one record → reload and see it → log out → reload and see the gate. Until
+   step 1 exists this cannot be run, and no amount of passing unit tests stands
+   in for it: `B64_GOOGLE_LOGIN_LIVE_E2E=NOT_RUN`.
+
+### What this change deliberately does not do
+
+- It does not merge PR #5985. Its PBKDF2 cost change stays open for CENTRAL's
+  review, and its technical record stays in #5986. Google sign-in needs no KDF,
+  which is why it is the path that works inside the free-plan CPU budget today.
+- It does not add a service binding, an outbound call to another product, or any
+  dependency on `chat.padiem.net` staying up. The two HTTP calls in the flow go
+  to Google's own token and userinfo endpoints, from the Worker.
+- It does not use Google Identity Services in the page. The consumer surface
+  runs under `script-src 'none'`, so the login is a server-side redirect and one
+  plain link.
+
+
+## ayeT reward postback connected to the Worker and D1 (2026-10-28, issue #987)
+
+The verification and the state rules already existed as pure functions —
+`ayet-s2s-postback.ts` (signature and field contract) and `reward-events.ts`
+(`applyProviderRewardEvent`: idempotency, orphan reversal, identity mismatch).
+What was missing was a transport, a member link and a place to write, so a
+provider could not report anything. This section records the connection, not a
+new engine.
+
+| Piece | Value |
+|---|---|
+| Route | `GET /callbacks/ayet/s2s` — no cookie, no browser, signature-authenticated |
+| Signature | `X-Ayetstudios-Security-Hash` header, HMAC-SHA256 over the other query parameters (ayeT documents the hash as optional; B64 requires it) |
+| Member link | a signed B64 subject in `external_identifier`, purpose `b64-reward/ayet-subject/v1`, ≤128 chars for the provider's own limit |
+| Storage | `b64_reward_event` (`0004`, additive), keyed by `(provider_id, provider_transaction_id)` |
+| Ack | `200 OK` body `OK`; refusals answer 400/403/409 and write nothing |
+| Closed state | `B64_AYET_MODE` absent or `DISABLED` → 503 and the rest of the site is unaffected |
+
+A confirmed provider event is **not** money: it never writes `b64_user_income`,
+and `applyProviderRewardEvent` keeps `cashCustodyAction: 'NONE'`. The income
+pipeline still counts only its own `PAID` records.
+
+### Still owner/provider work before any ad runs
+
+- `B64_AYET_MODE`, `B64_AYET_PUBLISHER_ID`, `B64_AYET_PLACEMENT_ID`,
+  `B64_AYET_REWARDED_ADSLOT_ID`, `B64_AYET_OWNER_AUTHORIZED` and the
+  `B64_AYET_PUBLISHER_API_KEY` secret are **not registered anywhere**. Their
+  names are fixed by `provider-runtime-config.ts`; their values do not exist
+  until the publisher account, placement and ad slot do. Nothing was guessed.
+- **Callback URL to set in the ayeT Placement** (D12, from the official callback
+  documentation — the macro names below are exactly what this code reads):
+
+  ```text
+  https://b64-ai-reward-router.charliekant.workers.dev/callbacks/ayet/s2s
+    ?transaction_id={transaction_id}
+    &external_identifier={external_identifier}
+    &currency_amount={currency_amount}
+    &currency_identifier={currency_identifier}
+    &adslot_id={adslot_id}
+    &is_chargeback={is_chargeback}
+  ```
+
+  `{transaction_id}` is the duplicate check the docs require, and `{adslot_id}`
+  is the field the docs say to validate when one callback URL serves several
+  adslots: once `B64_AYET_REWARDED_ADSLOT_ID` is set, a callback from any other
+  adslot is refused. `callback_type` is deliberately absent — the
+  rewarded-video macro table does not list it, so B64 classifies the callback
+  from `{currency_amount}` and `{is_chargeback}`, and still honours an explicit
+  `callback_type` when a template carries one. The signature is not a template
+  field: it arrives in the `X-Ayetstudios-Security-Hash` header.
+- **Response policy follows the provider's retry rule** ("your server must
+  always reply with an HTTP 200 status code to our postbacks, otherwise we will
+  resend the postback 12 times over a span of one hour"). A refusal a retry can
+  never fix — bad or missing signature, a subject B64 never signed, a
+  transaction re-pointed at another member, a changed amount, a non-reward
+  callback type, a foreign adslot — is answered `200 OK` and writes nothing.
+  Only genuinely recoverable cases answer 503 and let ayeT retry: storage
+  failure, provider not configured, a reversal arriving before its conversion,
+  and a concurrent write on the same transaction. The acknowledgement is
+  transport only; the stored row is the reward decision.
+- Both documented canonicalizations are accepted for the signature. The PHP
+  reference (`ksort(SORT_STRING)` + `http_build_query`) escapes `*` and the
+  JavaScript reference (`URLSearchParams.toString()`) does not; every other
+  character encodes identically, measured. A publisher cannot tell which one the
+  sending server used, and guessing wrong costs a real reward. The API key is
+  secret either way, so accepting the provider's own two documented recipes
+  widens no authority.
+- **Showing** a rewarded video still needs the ayeT JavaScript SDK
+  (`AyetVideoSdk.init(...)`), and the consumer surface runs under
+  `script-src 'none'`. This PR does not open that hole: the postback route is
+  reachable and testable on its own, and no ad inventory is enabled by it. The
+  CSP exception for the SDK origin, plus the "Send S2S Callbacks" toggle on the
+  AdSlot, is a separate reviewed decision taken with the account.
+
+## Operator authority and the read-only status console (2026-10-28, issue #6001)
+
+The administrator rule is the repository's existing one, ported from
+`apps/padiem-chat/app/b66_member_admin.py::is_google_admin`: the administrator is
+the account whose **Google-verified address** equals the configured address, a
+password account can never hold it, and no client-supplied flag is ever read.
+What B64 checks it against is B64's own `b64_member_google` table, so no Chat
+cookie, Chat user table or Chat secret is in the path.
+
+| Setting | Value |
+|---|---|
+| `B64_ADMIN_EMAIL` | the single operator address. Server configuration, registered by the owner at deploy time — never committed, never logged, never rendered |
+| unset | nobody is an administrator; `/admin` answers 403 to every member (an absent allowlist is a closed door) |
+
+Routes: `GET /admin` (HTML) and `GET /admin/status` (JSON). Both are read-only —
+`POST` is refused 405 — and both are behind the session cookie **and** the
+authority check, so the answers are 401 anonymous, 403 `admin_forbidden` for a
+normal member, 503 `admin_unavailable` when the check or the storage cannot be
+performed. A failed check is never silently answered as a denial or a grant.
+
+The console reports counts and configuration verdicts only: members, Google
+linked members, live sessions, income records, reward events by state, and the
+same provider assessment `npm run supply:check` prints. No address, token,
+secret or setting **value** appears in the output — environment variables are
+named, never shown. It is deliberately separate from `src/admin-console/`, which
+is an opportunity review workflow over its own fixture state; pointing that at
+production would mean building a mutation surface this task does not ask for.
+
+How to bind it, without putting the address in source: register it as the
+repository's `production` environment secret `B64_ADMIN_EMAIL`, then dispatch
+`.github/workflows/b64-independent-identity-activation-gate.yml`. That gate pipes
+the secret through stdin into `wrangler secret put B64_ADMIN_EMAIL` and reads the
+binding back as `secret_text` — the same reviewed path as
+`B64_SESSION_SECRET` and the Google client pair. The address is never an argv
+entry (the runner echoes commands), never a workspace file, never an echo, and
+never a committed or publicly readable var. With the secret unregistered the gate
+writes nothing and says so, and `/admin` stays closed to every member.
+
+Owner action to use it: bind the address as above, then sign in with the Google
+account whose verified address matches it and open `/admin`.

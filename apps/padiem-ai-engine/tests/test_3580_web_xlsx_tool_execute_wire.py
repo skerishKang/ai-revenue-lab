@@ -34,19 +34,18 @@ async def test_real_tool_runtime_issues_canonical_web_xlsx_confirmation_pause():
         "tool_id": CANONICAL_TOOL,
         "arguments": web_xlsx_p01_arguments(scope),
     })
-    assert result.status_code == 202, result.body
+    assert result.status_code == 200, result.body
     data = result.body
     assert set(data) == {"ok", "tool"} and data["ok"] is True
     tool = data["tool"]
     assert tool["contract_version"] == "padiem.engine.tools/1.0"
     assert tool["agent_id"] == AGENT_ID
     assert tool["canonical_tool_id"] == CANONICAL_TOOL
-    assert tool["status"] == "paused"
-    pause = tool["approval_pause"]
-    assert pause["status"] == "paused"
-    assert pause["run_id"] == tool["run_id"]
-    assert pause["tool_id"] == "workspace.xlsx.confirm_original_read"
-    assert pause["requirement"] == "user_confirmation"
-    assert pause["approval_scope"] == []  # Core ToolExecution pause projects no scopes; ToolSpec.auth_scope gates runtime
-    assert tool["continuation_ref"].startswith("cont_")
-    assert called == [scope.selection_ref]  # server metadata preflight; no R2 bytes or handler execution
+    # Owner decision 2026-10-28: the connected owner's confirmation tool runs
+    # directly — no approval pause, no continuation to resume.
+    assert tool["status"] == "completed"
+    assert "approval_pause" not in tool
+    assert "continuation_ref" not in tool
+    # The handler ran on the resolved selection (the server preflight and the
+    # handler both observe it, so it never reach-evaluates a foreign source).
+    assert called and called[-1] == scope.selection_ref

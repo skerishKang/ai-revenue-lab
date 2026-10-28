@@ -67,6 +67,21 @@ def test_the_installer_is_fetched_over_https_only():
     assert "$agentUrl = [string] $handoff.handoff.agent_url" in SOURCE
 
 
+def test_the_installed_agent_is_told_the_name_that_carries_the_pairing():
+    """The tag only claims a PC once the server can see it in the agent's name.
+
+    So the install step has to hand the name over, and hand it over as one
+    argument: the drive list this script reports sits after the tag inside the
+    same quoted value, spaces and all.
+    """
+    assert '''--agentName="' + (Format-PadiemAgentName''' in SOURCE
+    assert "Get-PadiemDriveRoots" in SOURCE
+    assert "param([string] $Url, [string[]] $Arguments" in SOURCE
+    assert "$Arguments -split" not in SOURCE
+    # The switch is the agent's own unattended install, not a GUI silent flag.
+    assert '$AgentInstallerArgs = @("-fullinstall")' in SOURCE
+
+
 def test_the_already_installed_path_submits_the_code_and_installs_nothing():
     installed = SOURCE.index("if ($installed) {")
     link_pending = SOURCE.index("if (-not $agentUrl -and -not $installed) {")

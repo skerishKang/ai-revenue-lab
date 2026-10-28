@@ -88,6 +88,7 @@ from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
+from .b66_pc_template_routes import PC_QUOTE_FILL_PATH, pc_quote_fill
 from .b66_pc_directory_routes import B66_PC_DIRECTORY_PATH, b66_pc_directory
 from .b66_pc_txt_read_routes import (
     B66_PC_RESULT_PATH,
@@ -317,7 +318,12 @@ from .pc_device_pairing_routes import (
     PC_PAIRING_CLAIM_PATH,
     PC_PAIRING_ADOPT_PATH,
     PC_PAIRING_HANDOFF_PATH,
+    PC_PAIRING_INSTALL_FILE_PATH,
+    PC_PAIRING_INSTALL_EXE_PATH,
+    PC_PAIRING_LABEL_PATH,
     PC_PAIRING_LINK_PATH,
+    PC_PAIRING_PAUSE_PATH,
+    PC_PAIRING_RESUME_PATH,
     PC_PAIRING_PATH,
     PC_PAIRING_ROOT_PATH,
     PC_PAIRING_ROOTS_PATH,
@@ -325,10 +331,37 @@ from .pc_device_pairing_routes import (
     pc_pairing_adopt,
     pc_pairing_claim,
     pc_pairing_handoff,
+    pc_pairing_install_file,
+    pc_pairing_install_exe,
     pc_pairing_issue,
+    pc_pairing_label,
     pc_pairing_list,
+    pc_pairing_pause,
+    pc_pairing_resume,
     pc_pairing_revoke,
     pc_pairing_revoke_root,
+)
+from .pc_file_exchange_routes import (
+    PC_BROWSE_PATH,
+    PC_CANCEL_PATH,
+    PC_DELETE_PATH,
+    PC_FETCH_PATH,
+    PC_FILE_PATH,
+    PC_FIND_PATH,
+    PC_MOVE_PATH,
+    PC_REFERENCE_PATH,
+    PC_RESULT_PATH,
+    PC_SAVE_PATH,
+    pc_file_exchange_browse,
+    pc_file_exchange_cancel,
+    pc_file_exchange_delete,
+    pc_file_exchange_fetch,
+    pc_file_exchange_file,
+    pc_file_exchange_find,
+    pc_file_exchange_move,
+    pc_file_exchange_reference,
+    pc_file_exchange_result,
+    pc_file_exchange_save,
 )
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
@@ -727,6 +760,9 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        # #5895: the quote screen's "my PC Excel form" lane. Chat exchanges ids and the
+        # model's cell mapping only; reading and filling the workbook happen in COM2.
+        Route(PC_QUOTE_FILL_PATH, pc_quote_fill, methods=["POST"]),
         Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),
@@ -884,10 +920,29 @@ def create_app(
         Route(PC_PAIRING_PATH, pc_pairing_list, methods=["GET"]),
         Route(PC_PAIRING_CLAIM_PATH, pc_pairing_claim, methods=["POST"]),
         Route(PC_PAIRING_HANDOFF_PATH, pc_pairing_handoff, methods=["POST"]),
+        Route(PC_PAIRING_INSTALL_FILE_PATH, pc_pairing_install_file, methods=["POST"]),
+        Route(PC_PAIRING_INSTALL_EXE_PATH, pc_pairing_install_exe, methods=["POST"]),
         Route(PC_PAIRING_ADOPT_PATH, pc_pairing_adopt, methods=["POST"]),
         Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
+        Route(PC_PAIRING_LABEL_PATH, pc_pairing_label, methods=["POST"]),
+        Route(PC_PAIRING_PAUSE_PATH, pc_pairing_pause, methods=["POST"]),
+        Route(PC_PAIRING_RESUME_PATH, pc_pairing_resume, methods=["POST"]),
         Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
         Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
+        # #5895: the shared "from my PC / to my PC" part the menus will use. The
+        # owner session and this account's own PC links are the only authority, and
+        # no model turn is involved. The pairing store refuses 503 when it is not
+        # composed, exactly as the pairing routes above do.
+        Route(PC_BROWSE_PATH, pc_file_exchange_browse, methods=["POST"]),
+        Route(PC_FIND_PATH, pc_file_exchange_find, methods=["POST"]),
+        Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
+        Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
+        Route(PC_MOVE_PATH, pc_file_exchange_move, methods=["POST"]),
+        Route(PC_DELETE_PATH, pc_file_exchange_delete, methods=["POST"]),
+        Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
+        Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
+        Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
+        Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all
@@ -939,6 +994,7 @@ def create_app(
         # no such routes.
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
+                ORACLE_MESH_READ_CANCEL_PATH,
                 ORACLE_MESH_READ_ORIGINAL_PATH,
                 ORACLE_MESH_READ_POLL_PATH,
                 ORACLE_MESH_READ_REQUEST_PATH,
@@ -946,11 +1002,17 @@ def create_app(
                 oracle_chat_engine_pc_drive_call,
                 oracle_mesh_engine_chat_files_call,
                 oracle_mesh_engine_claw_files_call,
+                oracle_mesh_read_cancel_check,
                 oracle_mesh_read_original,
                 oracle_mesh_read_poll,
                 oracle_mesh_read_request,
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
+            )
+            # #5997: the executor renews a live claim while a long command runs.
+            from .oracle_mesh_lease_renew_routes import (
+                ORACLE_MESH_READ_RENEW_PATH,
+                oracle_mesh_read_renew,
             )
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
@@ -961,6 +1023,8 @@ def create_app(
                 Route("/internal/chat/engine-pc-files", oracle_mesh_engine_chat_files_call, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
+                Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)

@@ -24,6 +24,13 @@ on:
       - ".github/tests/test_5895_post_deploy_real_chat_gates.py"
       # #5895: the deployed-version-id log line covers all three production gates.
       - ".github/tests/test_5895_deployed_version_id_logging.py"
+      # #5895: main currency for the released app replaced the origin/main
+      # equality in all four mutating gates, so any of them moving re-runs this.
+      - ".github/scripts/main_currency_guard.py"
+      - ".github/tests/test_5895_main_currency_guard.py"
+      - ".github/workflows/b62-d1-migrate-gate.yml"
+      - ".github/scripts/b62_d1_migrate_gate.py"
+      - ".github/tests/test_b62_d1_migrate_gate.py"
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
       - ".github/tests/test_4194_engine_binding_rollout.py"
       - ".github/scripts/b62_binding_state_guard.py"
@@ -75,7 +82,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest -e packages/padiem-ai-core
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_4194_engine_binding_rollout.py .github/tests/test_b54_engine_a7_cp_admission_activation.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_b54_engine_pre_deploy_anchor_gate.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py .github/tests/test_post_deploy_real_chat_smoke.py .github/tests/test_5895_post_deploy_real_chat_gates.py .github/tests/test_5895_deployed_version_id_logging.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_4194_engine_binding_rollout.py .github/tests/test_b54_engine_a7_cp_admission_activation.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_b54_engine_pre_deploy_anchor_gate.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py .github/tests/test_post_deploy_real_chat_smoke.py .github/tests/test_5895_post_deploy_real_chat_gates.py .github/tests/test_5895_deployed_version_id_logging.py .github/tests/test_5895_main_currency_guard.py
 
       - name: Record no deploy performed
         run: |
