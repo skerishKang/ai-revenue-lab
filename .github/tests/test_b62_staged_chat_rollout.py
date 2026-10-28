@@ -90,3 +90,49 @@ def test_the_gate_step_runs_the_staged_rollout_with_one_constant_pair() -> None:
     assert "post_deploy_real_chat_smoke.py --lane chat" in text
     assert "post_deploy_signed_in_smoke.py" in text
     assert "- name: Deploy production code preserving the full binding set" in text
+
+
+def test_a_failing_smoke_reports_why_it_refused(capsys) -> None:
+    """The refusal marker the proof writes to standard error has to be readable.
+
+    A promoted-at-10% failure that says only ``STAGED_SMOKE=FAIL`` forces the
+    next person to guess which of the proofs broke and why - which is exactly
+    what happened on 2026-10-28, when the signed-in proof could not sign in
+    because the step that runs it had been given no QA identity at all.
+    """
+    class _Refusing(_FakeRunner):
+        def __call__(self, argv, *, env=None):
+            argv = list(argv)
+            self.calls.append(argv)
+            self.envs.append(env)
+            if argv[1:3] == ["versions", "upload"]:
+                return _Result(0, stdout=f"Version ID: {NEW}\n")
+            if argv[1:3] == ["versions", "deploy"]:
+                return _Result(0)
+            return _Result(1, stdout="SIGNED_IN_CHAT=FAIL code=auth_status:http_500",
+                           stderr="SIGNED_IN_SMOKE_FAILED=qa_credential_missing")
+
+    with pytest.raises(roll.StagedRolloutError, match="STAGED_SMOKE_FAILED"):
+        roll.rollout(
+            wrangler=WRANGLER, config="cfg.toml", previous_version=PREV,
+            percent=10, settle_seconds=0,
+            smokes=[["signed-in smoke"]], runner=_Refusing(1), sleep=lambda _s: None,
+        )
+    printed = capsys.readouterr().out
+    assert "SIGNED_IN_CHAT=FAIL" in printed
+    assert "SIGNED_IN_SMOKE_FAILED=qa_credential_missing" in printed
+
+
+def test_the_staged_proofs_are_given_the_qa_identity_they_read() -> None:
+    """The deploy job's own ``env`` carries the identity names, not a step body.
+
+    The staged phase signs in, so the identity has to be in scope where that
+    phase runs; a proof that cannot sign in reports a failure to read, and today
+    that failure was mistaken for a reason to roll the version back.
+    """
+    import yaml
+
+    job = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["jobs"]["deploy-production-code"]
+    env = job["env"]
+    assert env["B66_CGI_ALPHA_USERNAME"] == "${{ vars.B66_CGI_ALPHA_USERNAME }}"
+    assert env["B66_CGI_ALPHA_PASSWORD"] == "${{ secrets.B66_CGI_ALPHA_PASSWORD }}"
