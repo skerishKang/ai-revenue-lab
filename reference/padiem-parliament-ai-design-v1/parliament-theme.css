@@ -65,6 +65,16 @@
   src: url("./assets/fonts/MaruBuri-Bold.woff2") format("woff2");
 }
 
+/* 라틴 제목 면: 03 매트릭스의 고대비 Didone 결. us/uk/fr 만 --font-display 첫 면으로 쓴다.
+   한글 글리프는 이 파일에 없어 뒤의 MaruBuri 로 떨어지고, 한국 테마 스택은 바꾸지 않는다. */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/PlayfairDisplay-Bold-latin.woff2") format("woff2");
+}
+
 /* ==TOKENS-BEGIN== */
 :root {
   /* 골격 — 색과 무관 */
@@ -151,6 +161,43 @@ html[data-country="kr"] {
   --work-1: #062043;
   --work-2: #06322a;
   --work-3: #352442;
+  /* 카드 위 텍스트는 카드 face 와 짝지어야 한다. 세 장 모두 어두우므로 밝은 잉크. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-8);
+  --work-index-display: none;   /* 04 시안의 카드에는 번호가 없다 */
+  /* 원본이 실제로 그 자리에 있는 요소를 국가가 켠다. 04 만 우측 인용구를 쓴다. */
+  --hero-quote-display: grid;
+  --hero-eyebrow-display: block;
+  /* 04 의 카드 원형 화살표는 스트립 표면과 같은 밝기 — 스타일을 따라간다(기존 렌더 그대로). */
+  --work-arrow-bg: var(--strip-bg);
+  --work-arrow-ink: var(--ink);
+  --work-arrow-line: transparent;
+  /* 04 에는 좌측 레일이 없다: 레일 숨김, 내용 인덱스 0, 상단 크롬 유지, 카드는 세로 스택. */
+  --rail-display: none;
+  --rail-w: 0px;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: flex;
+  --hero-copy-w: 51.4%;
+  --work-display: flex;
+  --work-cols: none;
+  --work-body-display: contents;
+  --work-icon-rule: none;
+  --work-badge-display: none;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: auto;
+  --works-lift: 0px;
+  --works-head-display: flex;
+  --works-note-display: block;
+  --hero-actions-display: block;
+  --strip-display: block;
+  --work-arrow-inline-display: inline;
   /* B2 확정안: 제목은 마루부리(원본 04의 명조 결을 보존), 본문·메뉴·카드·에디터는 Pretendard.
      두 패밀리 모두 이 페이지가 웹폰트로 직접 배포하므로, 보는 사람의 설치 여부와 무관하게 항상 해결된다. */
   --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", "Batang", Georgia, serif;
@@ -202,9 +249,48 @@ html[data-country="us"] {
   --work-1: var(--tone-7);
   --work-2: var(--tone-1);
   --work-3: var(--tone-7);
+  /* 02 목업: 1·3 번은 크림 카드에 어두운 텍스트, 2 번만 네이비 카드. face 와 다른 잉크를 얹으면
+     흰 텍스트가 흰 카드에 앉는다(v7 에서 실측 1.41). 그래서 짝을 국가 재료로 둔다. */
+  --work-1-text: var(--tone-1);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-1);
+  --work-index-display: block;  /* 01/02 목업의 카드는 01·02·03 인덱스를 쓴다 */
+  /* 02 목업의 히어로 우측은 사진뿐 — 인용구는 04 만 쓰는 요소다. */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: block;
+  /* 02 목업: 세 카드 모두 흰 원반 + 어두운 화살표. face 가 크림이어도 원반이 카드에 삼켜지지 않는다. */
+  --work-arrow-bg: var(--tone-8);
+  --work-arrow-ink: var(--tone-1);
+  --work-arrow-line: transparent;
+  --work-arrow-inline-display: none;   /* 02/03 은 원형 화살표 하나만 쓴다 */
+  /* 02 목업: 좌측 영구 레일 15.8%W + active 채움 알약 + crimson 좌바 + 아이콘 언더라인 + 인덱스.
+     스트립 4항은 02 에 없다 — 카드 아래가 곧 작업 영역이다. */
+  --rail-display: grid;
+  --rail-w: 15.8%;
+  --rail-active-bg: var(--tone-2);
+  --rail-active-bar: var(--accent);
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--tone-8);
+  --rail-caption-line: color-mix(in srgb, var(--tone-8) 26%, transparent);
+  --rail-caption-pad: 12px 14px;
+  --topchrome-display: none;
+  --hero-copy-w: 40%;
+  --work-display: grid;
+  --work-cols: 76px minmax(0, 1fr);
+  --work-body-display: flex;
+  --work-icon-rule: var(--accent);
+  --work-badge-display: none;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: start;
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-head-display: none;
+  --works-note-display: none;
+  --hero-actions-display: none;
+  --strip-display: none;
   /* 해외 테마도 이 페이지가 배포한 두 면으로 확정한다(장비별 fallback 차이 제거).
      Tail 의 의도 서체는 웹폰트가 실패한 환경에서만 쓰인다. */
-  --font-display: "MaruBuri", "Playfair Display", Georgia, serif;
+  --font-display: "Playfair Display", "MaruBuri", Georgia, serif;
   --font-body: "Pretendard", Inter, "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
   --font-label: "Pretendard", Inter, system-ui, sans-serif;
 }
@@ -214,8 +300,8 @@ html[data-country="fr"] {
   --tone-1: #14182b;
   --tone-2: #222848;
   --tone-3: #3d3f66;
-  --tone-4: #6d6a92;
-  --tone-5: #a99bbf;
+  --tone-4: #5b5880;   /* 구 `#6d6a92` 는 --muted 로 2.98:1(AA 4.5 미만)이라 어둡게 바로잡았다 */
+  --tone-5: #bbabd3;   /* 다크 스트립에서 --muted 로 3.87:1(AA 4.5 미만) — 재료를 밝게 바로잡았다 */
   --tone-6: #dcc9c8;
   --tone-7: #efe3d6;
   --tone-8: #f7f1e8;
@@ -253,7 +339,44 @@ html[data-country="fr"] {
   --work-1: var(--tone-2);
   --work-2: var(--tone-4);
   --work-3: var(--tone-3);
-  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  /* 03 패널의 프랑스 카드는 세 장 모두 네이비에 흰 텍스트·흰 채운 아이콘. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-8);
+  --work-index-display: none;
+  /* 03 프랑 패널: 히어로에 eyebrow 도 인용구도 없이 제목이 내비 바로 아래 앉는다. */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: none;
+  /* 03 프랑 패널: 네이비 카드 위의 흰 원반. face 와 무관하게 항상 밝은 원반이다. */
+  --work-arrow-bg: var(--tone-8);
+  --work-arrow-ink: var(--tone-1);
+  --work-arrow-line: transparent;
+  --work-arrow-inline-display: none;   /* 02/03 은 원형 화살표 하나만 쓴다 */
+  /* 03 패널: 레일 없음(상단 수평 내비). 카드는 중앙 정렬이 원본의 유일한 지시. */
+  --rail-display: none;
+  --rail-w: 0px;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: flex;
+  --hero-copy-w: 51.4%;
+  --work-display: flex;
+  --work-cols: none;
+  --work-body-display: contents;
+  --work-icon-rule: none;
+  --work-badge-display: none;
+  --work-align: center;
+  --work-items: center;
+  --work-icon-self: auto;
+  --works-lift: 0px;
+  --works-head-display: flex;
+  --works-note-display: block;
+  --hero-actions-display: block;
+  --strip-display: block;
+  --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
 }
@@ -264,7 +387,7 @@ html[data-country="uk"] {
   --tone-2: #142039;
   --tone-3: #24365c;
   --tone-4: #4b5f86;
-  --tone-5: #8b9cb8;
+  --tone-5: #92a4c1;   /* 다크 스트립에서 --muted 로 4.29:1(AA 4.5 미만) — 재료를 밝게 바로잡았다 */
   --tone-6: #c6cede;
   --tone-7: #e6ddc9;
   --tone-8: #f4efe2;
@@ -299,10 +422,50 @@ html[data-country="uk"] {
   --card-position-2: 50% 55%;
   --card-position-3: 50% 55%;
   --card-photo-op: 0;
-  --work-1: var(--tone-8);
-  --work-2: var(--tone-7);
+  --work-1: var(--tone-2);
+  --work-2: var(--tone-8);
   --work-3: var(--tone-8);
-  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  /* 01 실측: 카드1 네이비 #0c1d3c · 카드2·3 크림 #faf7f1. face 와 같은 요소를 읽는 잉크로 짝짓는다.
+     흰 텍스트를 크림 카드에 얹으면(이전 상태) 카드 2·3 이 화면상 빈 칸이 됐다. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-1);
+  --work-3-text: var(--tone-1);
+  --work-index-display: none;   /* 01 목업의 영국 카드에는 번호가 없다(02 미국에만 있다) */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: block;
+  /* 01 목업: 원반을 채우지 않고 골드 테두리만 두른다. 크림 카드에서 흰 원반은 사라지고,
+     네이비 카드에서 어두운 원반은 사라진다 — 테두리만 두 형태가 둘 다 살아남는다.
+     (골드 링의 크림 위 대비는 1.9:1 이다. 이 원은 유일한 신호가 아니다: 같은 버튼에
+     라벨과 인라인 화살표가 있으므로 1.4.11 의 적용 대상이 아니다.) */
+  --work-arrow-bg: transparent;
+  --work-arrow-ink: var(--gold);
+  --work-arrow-line: var(--gold);
+  --work-arrow-inline-display: none;   /* 01 은 원형 화살표 하나만 쓴다 */
+  /* 01 목업: 레일 14.7%W + 보더 알약(active) + 골드 아이콘 + 배지 3종, 인덱스·언더라인 없음. */
+  --rail-display: grid;
+  --rail-w: 14.7%;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: color-mix(in srgb, var(--gold) 55%, transparent);
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: none;
+  --hero-copy-w: 40%;
+  --work-display: grid;
+  --work-cols: 76px minmax(0, 1fr);
+  --work-body-display: flex;
+  --work-icon-rule: none;
+  --work-badge-display: grid;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: start;
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-head-display: none;
+  --works-note-display: none;
+  --hero-actions-display: none;
+  --strip-display: none;
+  --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
 }
@@ -454,10 +617,10 @@ button { font: inherit; color: inherit; }
 /* ══ 앱 셸: 좌측 레일 + 본문 ═════════════════════════════════════════════ */
 /* ══ 셸: 단일 컬럼 + 상단 수평 내비(04 시안) ════════════════════════════ */
 .pa-shell { display: block; min-height: 100svh; }
-.pa-main { position: relative; min-width: 0; display: grid; grid-template-rows: auto 1fr auto; background: var(--bg); min-height: 100svh; }
+.pa-main { position: relative; min-width: 0; display: grid; grid-template-rows: auto 1fr auto; padding-left: var(--rail-w); background: var(--bg); min-height: 100svh; }
 .pa-main > * { min-width: 0; }
 
-.pa-brand { display: flex; align-items: center; gap: 10px; margin-right: 6px; min-width: 0; flex: 0 1 auto; }
+.pa-brand { display: var(--topchrome-display); align-items: center; gap: 10px; margin-right: 6px; min-width: 0; flex: 0 1 auto; }
 .pa-brand-mark {
   display: grid;
   place-items: center;
@@ -470,7 +633,7 @@ button { font: inherit; color: inherit; }
 .pa-brand-name { font-family: var(--font-body); font-size: 16.5px; font-weight: 700; letter-spacing: -0.01em; }
 .pa-brand-tag { font-family: var(--font-label); font-size: 10.5px; letter-spacing: .1em; opacity: .72; color: inherit; }
 
-.pa-nav { display: flex; align-items: center; gap: clamp(2px, .5vw, 8px); min-width: 0; flex: 0 1 auto; }
+.pa-nav { display: var(--topchrome-display); align-items: center; gap: clamp(2px, .5vw, 8px); min-width: 0; flex: 0 1 auto; }
 .pa-nav-item {
   position: relative;
   min-height: var(--pa-target);
@@ -505,7 +668,7 @@ button { font: inherit; color: inherit; }
 /* 04 시안: 상단 바는 히어로 사진 위에 얹히는 한 줄(필드·구분선 없음). */
 .pa-topbar {
   position: absolute;
-  inset: 0 0 auto;
+  inset: 0 0 auto var(--rail-w);   /* us/uk 는 레일 오른쪽, kr/fr 는 rail-w=0 이라 전폭 그대로 */
   z-index: 30;
   min-width: 0;
   display: flex;
@@ -522,8 +685,12 @@ button { font: inherit; color: inherit; }
   background: var(--bg);
   border-bottom: var(--pa-hair) solid var(--line);
   color: var(--text);
+  /* 아래를 70px 로 미뤄둔 것은 데스크톱 바 높이에서 온 상수였다. 390px 에서 이 바는 실제로
+     174px 라 "← 시네마틱 홈으로"(y 84, h 44)가 통째로 덮이고 클릭이 죽었다
+     (실측: elementFromPoint = pa-topbar). 사진에 얹을 이유가 없는 화면이므로
+     바를 흐름으로 돌려 높이를 스스로 확보하게 한다. */
+  position: static;
 }
-.pa-main:has(#paEditor:not([hidden])) { padding-top: 70px; }
 
 .pa-search { order: 4; flex: 0 1 clamp(150px, 14.5vw, 210px); }
 .pa-topbar-actions { order: 5; margin-left: 0; }
@@ -639,6 +806,83 @@ button { font: inherit; color: inherit; }
 }
 .pa-topbar-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 
+
+/* ══ 01/02 좌측 영구 레일 ══════════════════════════════════════════════════
+   사진이 레일 아래로 비치는 효과는 히어로 사진이 확보될 때의 일이다. 지금은
+   us/uk 에 사진이 없고(--hero-photo:none) 레일은 단색 + 하단 페이드로 둔다.
+   bell·avatar·초안 목록·생성 결과 본문은 허구 계정 데이터라 옮기지 않는다(CTO 결정 4). */
+.pa-rail {
+  display: var(--rail-display);
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  width: var(--rail-w);
+  z-index: 40;
+  grid-template-rows: auto 1fr auto auto auto;
+  gap: 12px;
+  padding: 18px 14px 22px;
+  background: linear-gradient(180deg, var(--rail) 0%, var(--rail) 60%, color-mix(in srgb, var(--rail) 86%, transparent) 100%);
+  border-right: var(--pa-hair) solid color-mix(in srgb, var(--rail-text) 12%, transparent);
+  color: var(--rail-text);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.pa-rail-brand { display: flex; align-items: center; gap: 10px; margin: 0; padding-bottom: 16px; border-bottom: var(--pa-hair) solid color-mix(in srgb, var(--rail-text) 16%, transparent); min-width: 0; }
+.pa-rail-mark { width: 30px; height: 30px; flex: 0 0 auto; color: var(--rail-active-ink); }
+.pa-rail-mark svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.pa-rail-id { display: grid; gap: 2px; min-width: 0; }
+.pa-rail-name { font-family: var(--font-display); font-size: 15px; font-weight: 700; white-space: nowrap; }
+.pa-rail-name em { font-style: normal; color: var(--rail-active-ink); }
+.pa-rail-tagline { font-family: var(--font-display); font-size: 11px; letter-spacing: .04em; color: color-mix(in srgb, var(--rail-text) 72%, transparent); white-space: nowrap; }
+.pa-rail-nav { display: grid; gap: 4px; align-content: start; min-width: 0; }
+.pa-rail-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; min-height: 44px; padding: 0 12px;
+  border: var(--pa-hair) solid var(--rail-active-line);
+  border-radius: var(--pa-radius);
+  background: transparent;
+  font: inherit; font-size: 13.5px; font-weight: 600;
+  color: color-mix(in srgb, var(--rail-text) 82%, transparent);
+  cursor: pointer; text-align: left; min-width: 0;
+}
+.pa-rail-ico { display: grid; place-items: center; width: 20px; height: 20px; flex: 0 0 auto; }
+.pa-rail-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.pa-rail-item.is-current { background: var(--rail-active-bg); color: var(--rail-active-ink); box-shadow: inset 3px 0 0 var(--rail-active-bar); }
+.pa-rail-item[aria-disabled="true"] { color: color-mix(in srgb, var(--rail-text) 52%, transparent); cursor: not-allowed; }
+.pa-rail-sep { height: var(--pa-hair); margin: 10px 2px; background: color-mix(in srgb, var(--rail-text) 18%, transparent); }
+.pa-rail-note { margin: 2px 0 0 12px; font-family: var(--font-label); font-size: 10.5px; letter-spacing: .14em; color: color-mix(in srgb, var(--rail-text) 45%, transparent); }
+.pa-rail-quote { margin: 0; font-family: var(--font-display); font-size: 13px; line-height: 1.7; color: color-mix(in srgb, var(--rail-text) 88%, transparent); word-break: keep-all; }
+.pa-rail-dash { width: 26px; height: 2px; background: var(--accent); }
+.pa-rail-caption {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10px; letter-spacing: .16em; line-height: 1.9;
+  color: var(--rail-active-ink);
+  border: var(--pa-hair) solid var(--rail-caption-line);
+  border-radius: var(--pa-radius);
+  padding: var(--rail-caption-pad);
+}
+@media (max-width: 860px) {
+  /* 레일 폭 15% 는 모바일에서 붕괴한다. 원본은 데스크톱 목업이라 모바일 레일 근거가 없다 —
+     상단 크롬(브랜드·내비)을 되살리고 레일은 접는다. 잔여: 모바일 레일 설계는 새 앵커 결정. */
+  .pa-rail { display: none; }
+  .pa-topbar { inset: 0 0 auto 0; }
+  /* 레일이 없으면 인셋도 없다. 토큰은 국가 구성이므로 그대로 두고 적용만 되돌린다. */
+  .pa-main { padding-left: 0; }
+  /* 선택자를 .pa-topbar 하위로 좁힌다: 같은 이름의 규칙이 먼저 잡히면 계측기가
+     @media 판을 기본값으로 읽는다(이전에 실제로 그렇게 오독했다).
+     카피 폭은 규칙을 덮지 않고 토큰만 되돌린다 — 기존 모바일 규칙(.pa-hero-copy width:100%)을
+     더 높은 특이도로 덮으면 안 된다(실측: 카피가 200px 로 접혀 히어로가 84px 늘었다). */
+  .pa-topbar .pa-brand { display: flex; }
+  .pa-topbar .pa-nav { display: flex; }
+}
+
+/* us/uk 전용: 01/02는 카드가 사진 위에 뜼고 사진이 카드 아래로 더 이어진다.
+   히어로가 더 길고 카피는 상단에서 시작한다. 토큰으로 둘 수 없었다:
+   토큰 안의 svh 값이 번거리 바꿀 사이에 재계산되지 않는 것을 실측했다
+   (클릭 후 토큰은 새 값이던 min-height는 422.82px 그대로였다). 국가 분기입니다. */
+html[data-country=us] .pa-hero,
+html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-content: start; }
+
 /* ══ 히어로: 전폭 사진 + 왼쪽 읽기 오버레이 (04 시안) ══════════════════════ */
 .pa-home { display: grid; gap: 0; background: var(--works-bg); }
 
@@ -655,7 +899,7 @@ button { font: inherit; color: inherit; }
   top: clamp(78px, 10svh, 118px);
   right: clamp(20px, 4.85vw, 70px);
   z-index: 3;
-  display: grid;
+  display: var(--hero-quote-display);   /* 04 만 쓰는 인용구 — 01/02/03 은 히어로 우측이 사진뿐 */
   gap: 10px;
   max-width: 30ch;
   text-align: right;
@@ -676,7 +920,7 @@ button { font: inherit; color: inherit; }
   position: relative;
   z-index: 2;
   box-sizing: border-box;
-  width: min(100%, 51.4%);
+  width: min(100%, var(--hero-copy-w));
   display: grid;
   align-content: center;
   gap: clamp(12px, 1.9svh, 22px);
@@ -691,6 +935,9 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   color: var(--gold);
 }
+/* 히어로 eyebrow 는 국가마다 원본에 실제로 있는다/없다 가 갈린다(03 프랑 패널엔 없다).
+   업무 밴드 eyebrow 는 그대로 두므로 히어로 복사 블록 안에서만 끈다. */
+.pa-hero-copy .pa-eyebrow { display: var(--hero-eyebrow-display); }
 .pa-hero h1 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -705,7 +952,7 @@ button { font: inherit; color: inherit; }
 }
 .pa-hero h1 em { font-style: normal; color: var(--gold); }
 .pa-hero-lead { font-size: clamp(14px, 1.11vw, 16px); line-height: 1.45; opacity: .9; word-break: keep-all; }
-.pa-hero-actions { margin-top: 10px; }
+.pa-hero-actions { margin-top: 10px; display: var(--hero-actions-display); }
 
 .pa-cta {
   min-height: var(--pa-target);
@@ -809,19 +1056,28 @@ button { font: inherit; color: inherit; }
 /* ══ 업무 밴드: 왼쪽 소개 컬럼 + 오른쪽 카드 3열 (04 시안) ════════════════ */
 .pa-works {
   display: grid;
+  /* us/uk는 카드가 사진 위에 앉도록 밴드를 끌어올린다(01/02 계측). kr/fr은 0. */
+  margin-top: calc(0px - var(--works-lift));
   grid-template-columns: minmax(0, 15.8%) minmax(0, 1fr);
   grid-template-areas: "head head" "note cards";
   gap: 0 clamp(8px, .8vw, 12px);
   align-items: start;
   padding: clamp(16px, 2.7svh, 28px) clamp(20px, 3.35vw, 48px) 0;
   max-width: var(--pa-shell);
-  margin: 0 auto;
+  /* 가운데 정렬은 좌우만 맡는다. 예전 `margin: 0 auto` 셰이프핸드가 위의 margin-top 을 덮어써
+     밴드 상승이 조용히 0 이 됐다(실측: CSSOM 규칙에 margin-top 이 남지 않았다). */
+  margin-right: auto;
+  margin-left: auto;
   width: 100%;
   box-sizing: border-box;
 }
-.pa-works-head { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--pa-gap); flex-wrap: wrap; }
+.pa-works-head { grid-area: head; align-items: flex-end; justify-content: space-between; gap: var(--pa-gap); flex-wrap: wrap;
+  display: var(--works-head-display);
+}
 .pa-works-head h2 { font-family: var(--font-display); font-size: clamp(24px, 2.64vw, 38px); font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; line-height: 1.15; }
-.pa-works-note { grid-area: note; align-self: start; color: var(--muted); font-size: 14px; line-height: 1.6; margin: 6px 0 0; word-break: keep-all; }
+.pa-works-note { grid-area: note; align-self: start; color: var(--muted); font-size: 14px; line-height: 1.6; margin: 6px 0 0; word-break: keep-all;
+  display: var(--works-note-display);
+}
 .pa-works-side { display: grid; gap: 4px; justify-items: end; text-align: right; font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--muted); }
 .pa-works-side::before { content: ""; width: 34px; height: var(--pa-hair); background: var(--line); margin-bottom: 6px; }
 .pa-works-tools {
@@ -846,14 +1102,18 @@ button { font: inherit; color: inherit; }
 
 .pa-work {
   --work-face: var(--work-1);
+  --work-ink: var(--work-1-text);
   /* 카드 색을 왼쪽에서 무겁게 눌러 사진 위에서 텍스트를 읽게 한다(04 시안의 오버레이 방향).
      이 그라데이션은 --work-face와 같은 요소에서 정의돼야 치환된다. :root에 두면 미해석된다. */
   --work-scrim: linear-gradient(96deg, var(--work-face) 0%, var(--work-face) 40%, transparent 82%);
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  display: flex;
+  display: var(--work-display);
   flex-direction: column;
+  grid-template-columns: var(--work-cols);
+  align-items: var(--work-items);
+  text-align: var(--work-align);
   gap: 6px;
   padding: clamp(12px, 1.15vw, 17px);
   background: var(--work-face);
@@ -862,8 +1122,8 @@ button { font: inherit; color: inherit; }
   box-shadow: var(--shadow);
   transition: transform .2s var(--pa-ease);
 }
-.pa-work:nth-child(2) { --work-face: var(--work-2); }
-.pa-work:nth-child(3) { --work-face: var(--work-3); }
+.pa-work:nth-child(2) { --work-face: var(--work-2); --work-ink: var(--work-2-text); }
+.pa-work:nth-child(3) { --work-face: var(--work-3); --work-ink: var(--work-3-text); }
 /* 아래 층: 카드 전용 사진. 위 층: 시안처럼 왼쪽으로 무거워지는 색 오버레이. */
 .pa-work::before {
   content: "";
@@ -889,10 +1149,31 @@ button { font: inherit; color: inherit; }
 .pa-work.is-open { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* 시안의 카드 아이콘: 칩 없이 흰색 선화만. */
-.pa-work-icon { display: grid; place-items: center; width: 30px; height: 30px; }
-.pa-work-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--hero-text); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.pa-work-title { font-family: var(--font-body); font-size: clamp(17px, 1.39vw, 20px); font-weight: 700; letter-spacing: -0.02em; color: var(--hero-text); word-break: keep-all; margin: 2px 0 0; }
-.pa-work-desc { font-size: 13px; line-height: 1.5; color: color-mix(in srgb, var(--hero-text) 94%, transparent); word-break: keep-all; }
+.pa-work-icon { display: grid; place-items: center; width: 30px; height: 30px; grid-row: 1 / -1; align-self: var(--work-icon-self); position: relative; }
+/* 02 미국은 아이콘 아래 짧은 crimson 언더라인을 깐다. 01·03·04 는 없다. */
+.pa-work-icon::after { content: ""; position: absolute; top: calc(100% + 9px); left: 50%; transform: translateX(-50%); width: 22px; height: 2px; background: var(--work-icon-rule); }
+/* 01 영국 카드의 배지. face 와 무관하게 골드 틴트 + 카드 잉크 텍스트. */
+.pa-work-badge {
+  display: var(--work-badge-display);
+  /* 01 은 배지가 제목 줄 위 우측에 앉는다. absolute 로 띄우면 긴 제목(Records & Reports)이
+     배지 밑으로 파고들었다(실측). 흐름 안 첫 행 우측 정렬이 원본과 같은 결과를 낸다. */
+  align-self: flex-end;
+  margin: 0 0 2px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 700;
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  border: var(--pa-hair) solid color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--work-ink);
+}
+/* kr/fr 는 contents 라 카드 flex 항목이 그대로 남고, us/uk 는 우열로 모여 세로 스택이 된다. */
+.pa-work-body { display: var(--work-body-display); flex-direction: column; gap: 6px; min-width: 0; }
+.pa-work-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--work-ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* 02(미국) 목업만 카드에 01·02·03 을 찍는다. 존재 여부는 국가 재료가 아니라 원본 구성이 정한다. */
+.pa-work-index { font-family: var(--font-label); font-size: 11.5px; letter-spacing: .18em; color: color-mix(in srgb, var(--work-ink) 70%, transparent); display: var(--work-index-display); }
+.pa-work-title { font-family: var(--font-body); font-size: clamp(17px, 1.39vw, 20px); font-weight: 700; letter-spacing: -0.02em; color: var(--work-ink); word-break: keep-all; margin: 2px 0 0; }
+.pa-work-desc { font-size: 13px; line-height: 1.5; color: color-mix(in srgb, var(--work-ink) 92%, transparent); word-break: keep-all; }
 .pa-work-foot { margin-top: auto; padding-top: 6px; }
 .pa-work-select {
   display: inline-flex;
@@ -904,13 +1185,18 @@ button { font: inherit; color: inherit; }
   background: transparent;
   font-weight: 700;
   font-size: 13.5px;
-  color: var(--hero-text);
+  color: var(--work-ink);
   cursor: pointer;
 }
-/* 정본은 "바로 시작하기 →" 순서(화살표가 뒤). */
-.pa-work-select span::after { content: "→"; margin-left: 8px; color: var(--accent); }
+/* 정본 04 는 라벨 뒤 인라인 화살표와 우하단 원형 화살표를 함께 쓴다.
+   01/02/03 은 원형 하나뿐이고, 실제로 인라인은 재료와 충돌한다
+   (fr 와인 #7c3550 가 네이비 카드 위에서 1.69:1, uk 골드 는 크림 위에서 2.54:1).
+   그래서 인라인 화살표의 존재 여부도 국가가 정한다. */
+.pa-work-select span::after { content: "→"; margin-left: 8px; color: var(--accent); display: var(--work-arrow-inline-display); }
 /* 시안의 원형 화살표는 카드 우하단 코너에 앉는다.
-   기준을 버튼이 아니라 카드로 잡아야 텍스트와 겹치지 않는다(.pa-work가 position:relative). */
+   기준을 버튼이 아니라 카드로 잡아야 텍스트와 겹치지 않는다(.pa-work가 position:relative).
+   원반을 스트립 색으로 고정하면 밝은 카드에서 원반이 카드에 삼켜진다(01 영국 크림 카드 실측).
+   그래서 채움·화살표·테두리를 카드 face 와 같은 국가 재료로 짝짓는다. */
 .pa-work-select::after {
   content: "→";
   position: absolute;
@@ -918,10 +1204,12 @@ button { font: inherit; color: inherit; }
   bottom: clamp(14px, 1.5vw, 20px);
   display: grid;
   place-items: center;
+  box-sizing: border-box;   /* 테두리 토큰을 얹었을 때 원반이 34px 에서 자라지 않게 (kr 화소 보존) */
   width: 34px; height: 34px;
   border-radius: 50%;
-  background: var(--strip-bg);
-  color: var(--ink);
+  background: var(--work-arrow-bg);
+  border: var(--pa-hair) solid var(--work-arrow-line);
+  color: var(--work-arrow-ink);
   font-size: 15px;
   line-height: 1;
   text-decoration: none;
@@ -932,6 +1220,7 @@ button { font: inherit; color: inherit; }
 
 /* ══ 기능 스트립: 밝은 밴드 위의 흰 카드 + 구분선 + 라인 아이콘 ════════════ */
 .pa-strip {
+  display: var(--strip-display);
   margin: clamp(10px, 1.5svh, 16px) clamp(20px, 3.35vw, 48px) clamp(24px, 4svh, 44px);
   padding: clamp(10px, 1.3vw, 14px) 0;
   border: var(--pa-hair) solid var(--strip-line);
@@ -1104,3 +1393,24 @@ button { font: inherit; color: inherit; }
   .pa-work { outline: 1px solid var(--hero-text); }
   .pa-meta, .pa-paper, .pa-strip { border-width: 2px; }
 }
+
+
+/* us/uk 히어로는 01/02 의 사진 밴드처럼 더 길고, 카피는 상단에서 시작한다. */
+html[data-country="us"] .pa-hero,
+html[data-country="uk"] .pa-hero {
+  /* 01: 사진 밴드 46.9%H, 카드는 카피에서 30px 아래에서 시작해 밴드 바닥보다 55px 위에서 끝난다.
+     우리 카피는 2줄 제목(03 현지어) + 리드로 더 길무로 히어로를 줄여 같은 관계를 맞춘다. */
+  /* 카피 끝(268) + 간격 30 + 카드 173 + 사진 여백 55 = 526. 실제 높이로 고정해 뷰포트가 커져도 구도가 늘어나지 않게 한다. */
+  min-height: 526px;
+  align-content: start;
+}
+
+/* 02 미국 레일의 세부 항목은 기능 의미가 다르다(최근 작업=시계, 템플릿=책).
+   01 영국은 그리드·기어다. 마크업에 두 벌을 같이 두고 국가가 하나를 고른다. */
+.pa-rail-ico .alt { display: none; }
+html[data-country="us"] .pa-rail-ico .main { display: none; }
+html[data-country="us"] .pa-rail-ico .alt { display: block; }
+
+/* us/uk 에는 좌측 소개 컬럼이 없다: 카드가 본문 전폭을 쓴다(01/02). */
+html[data-country="us"] .pa-works,
+html[data-country="uk"] .pa-works { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cards"; }
