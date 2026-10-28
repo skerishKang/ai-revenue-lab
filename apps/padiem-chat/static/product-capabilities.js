@@ -1993,15 +1993,34 @@
     return deployment;
   }
 
+  async function readAuthStatusOnce() {
+    const response = await nativeFetch("/api/auth/status", {
+      headers: { "Accept": "application/json" },
+      cache: "no-store",
+    });
+    const data = await response.json().catch(() => null);
+    return { ok: response.ok, data };
+  }
+
+  async function readAuthStatusWithRetry() {
+    // #6114: a Python Worker restart can eat one status read (1101/1102). A
+    // request that produced NO answer never counts as signed-out: ask once
+    // more before the projection reports unreachable. A definitive guest
+    // answer (a 200 that says ready and not authenticated) is not re-asked.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const answer = await readAuthStatusOnce();
+        if (answer.ok) return answer;
+      } catch (_) { /* no answer yet; one more ask */ }
+    }
+    return { ok: false, data: null };
+  }
+
   async function readAuthFresh() {
     let nextAuth = EMPTY_AUTH;
     try {
-      const response = await nativeFetch("/api/auth/status", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      nextAuth = response.ok ? projectAuth(data) : UNREACHABLE_AUTH;
+      const answer = await readAuthStatusWithRetry();
+      nextAuth = answer.ok ? projectAuth(answer.data) : UNREACHABLE_AUTH;
     } catch (_) {
       nextAuth = UNREACHABLE_AUTH;
     }

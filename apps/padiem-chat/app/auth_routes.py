@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
+import html as html_module
 import json
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from padiem_control_plane.b54_identity_bridge import B54BridgedIdentitySession
 
 from .android_auth_routes import (
+    _page,
     android_handoff_confirm_page,
     android_handoff_terminal_page,
     bind_android_handoff_user,
@@ -118,6 +120,36 @@ def current_user_id(request: Request) -> str | None:
         return None
     settings: Settings = request.app.state.settings
     return decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+
+
+def _wants_html(request: Request) -> bool:
+    """A browser navigation carries text/html in Accept; this app's own fetches
+    always ask for JSON. One login failure speaks both languages: the navigation
+    gets the Korean screen, the fetch keeps its JSON contract (#6114)."""
+    accept = request.headers.get("accept", "")
+    return "text/html" in accept.lower()
+
+
+_GOOGLE_LOGIN_RETRY_HREF = "/auth/google/start"
+
+
+def google_login_error_page(message: str, status: int) -> HTMLResponse:
+    """The browser-navigated login failure screen. One Korean line the owner can
+    act on and one button that starts the login over with a fresh signed state —
+    never the raw JSON envelope, never a code the owner cannot act on."""
+    body = (
+        "<h1>로그인을 마치지 못했어요</h1>"
+        f"<p class=\"error\" role=\"alert\">{html_module.escape(message)}</p>"
+        f"<a class=\"action\" href=\"{_GOOGLE_LOGIN_RETRY_HREF}\">다시 로그인</a>"
+        "<p class=\"note\">버튼이 로그인을 다시 시작합니다. 문제가 반복되면 잠시 후 다시 시도해 주세요.</p>"
+    )
+    return _page("Padiem 로그인", body, status)
+
+
+def _auth_failure(request: Request, status: int, code: str, message: str) -> Response:
+    if _wants_html(request):
+        return google_login_error_page(message, status)
+    return _auth_error(status, code, message)
 
 
 def _unavailable() -> JSONResponse:
@@ -287,7 +319,7 @@ def _bridge_origin(request: Request) -> str | None:
 
 async def google_start(request: Request) -> Response:
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     bridge_origin = _bridge_origin(request)
@@ -300,7 +332,7 @@ async def google_start(request: Request) -> Response:
         )
         location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     response = RedirectResponse(location, status_code=302)
     response.set_cookie(OAUTH_STATE_COOKIE, signed, **oauth_state_cookie_kwargs())
     return response
@@ -438,7 +470,7 @@ async def establish_b54_canonical_session_after_google_login(
 
 async def google_callback(request: Request) -> Response:
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     query_state = request.query_params.get("state")
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE)
@@ -450,10 +482,7 @@ async def google_callback(request: Request) -> Response:
         # its own signature instead. It only identifies the pending handoff; it
         # never authenticates a user or issues a session.
         if not isinstance(query_state, str) or not query_state:
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
+            return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
         handoff_record, handoff_response = await load_android_handoff_for_callback(
             request, query_state
         )
@@ -468,20 +497,14 @@ async def google_callback(request: Request) -> Response:
             if pending is None:
                 # Not a signed handoff state either: keep the pre-existing
                 # invalid-OAuth-state rejection and never exchange the code.
-                return JSONResponse(
-                    {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                    status_code=400,
-                )
+                return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
         if handoff_record is not None and handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
             # The Google code was already exchanged on the first callback. A
             # reload must not consume it again; render the same code form.
             return android_handoff_confirm_page(query_state)
     code = request.query_params.get("code")
     if not isinstance(code, str) or not code.strip() or len(code) > 4096:
-        return JSONResponse(
-            {"error": {"code": "invalid_oauth_callback", "message": "Google 로그인 결과를 확인할 수 없습니다."}},
-            status_code=400,
-        )
+        return _auth_failure(request, 400, "invalid_oauth_callback", "Google 로그인 결과를 확인할 수 없습니다.")
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
     bridge_origin = _bridge_origin(request)
@@ -513,12 +536,9 @@ async def google_callback(request: Request) -> Response:
             else None
         )
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     except Exception:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
-        )
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
 
     # #3240: the B62 Google login above is already complete and unchanged. The
     # canonical B54 session is additive and best-effort — a B54 failure returns
@@ -552,10 +572,7 @@ async def google_callback(request: Request) -> Response:
         return await return_to_lovetree(request, pending)
 
     if not isinstance(session, str) or not session:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
-        )
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
     response = RedirectResponse(
         verified_oauth_return_target(settings, cookie_state), status_code=302
     )
