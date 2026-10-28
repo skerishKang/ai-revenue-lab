@@ -52,27 +52,67 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
-from .chat_pc_drive import (ChatPCDriveError, _check_mesh_grant, _new_lane_run_id,
-                            _resolve_chat_owner)
 from .claw_local_task_result_projection import result_message_id
 from .history import HistoryError, validate_conversation_id
-from .oracle_mesh_read_return_routes import (
-    PC_FILES_LIST_DEFAULT_LIMIT,
-    PC_WRITE_ACCOUNT_PREFIX,
-    _engine_pc_files_target,
-    _error,
-    _pc_backup_dir,
-    _pc_files_command,
-    _pc_files_pick_root,
-    _pc_files_powershell_literal,
-    _pc_write_command,
-    _read_body,
-    _response,
-    _text_value,
-    dispatch_oracle_mesh_command_intent,
-    dispatch_oracle_mesh_file_read_intent,
-)
 from .pc_device_pairing_store import is_pc_device_id
+
+#: The lane modules this file speaks through, and every name it uses from them.
+#:
+#: None of them is imported at module load. ``worker.py`` imports ``app.main``, which
+#: builds the app at module import, so every module the route table pulls in is compiled
+#: before the first request — and this Worker's compat date (2026-08-25) still carries
+#: the platform's cold-init NoGilError race, which is how a heavier cold init turns into
+#: a 500 on every login and session request. Every other consumer of these modules
+#: imports them inside the function that needs them for the same reason: ``app_factory``
+#: mounts the mesh lane inside ``create_app``, ``worker.py`` composes it inside
+#: ``fetch``, and ``chat_pc_drive``'s own helpers import the mesh lane per call.
+_LAZY_LANE_MODULE = {
+    **{name: ".chat_pc_drive" for name in (
+        "_check_mesh_grant", "_new_lane_run_id", "_resolve_chat_owner",
+    )},
+    **{name: ".oracle_mesh_read_return_routes" for name in (
+        "_engine_pc_files_target", "_error", "_pc_backup_dir", "_pc_files_command",
+        "_pc_files_pick_root", "_pc_files_powershell_literal", "_pc_write_command",
+        "_read_body", "_response", "_text_value",
+        "dispatch_oracle_mesh_command_intent", "dispatch_oracle_mesh_file_read_intent",
+    )},
+}
+
+
+def _lane_call(name: str):
+    """A module-level stand-in that imports the real function on first call.
+
+    The name stays in this module's globals, so a test can still replace it the way it
+    replaces any other collaborator, while the import itself happens in a request.
+    ``sys.modules`` caches the module, so only the first request per isolate pays.
+    """
+
+    def call(*args, **kwargs):
+        from importlib import import_module
+
+        target = getattr(import_module(_LAZY_LANE_MODULE[name], __package__), name)
+        return target(*args, **kwargs)
+
+    call.__name__ = name
+    call.__qualname__ = name
+    return call
+
+
+_check_mesh_grant = _lane_call("_check_mesh_grant")
+_new_lane_run_id = _lane_call("_new_lane_run_id")
+_resolve_chat_owner = _lane_call("_resolve_chat_owner")
+_engine_pc_files_target = _lane_call("_engine_pc_files_target")
+_error = _lane_call("_error")
+_pc_backup_dir = _lane_call("_pc_backup_dir")
+_pc_files_command = _lane_call("_pc_files_command")
+_pc_files_pick_root = _lane_call("_pc_files_pick_root")
+_pc_files_powershell_literal = _lane_call("_pc_files_powershell_literal")
+_pc_write_command = _lane_call("_pc_write_command")
+_read_body = _lane_call("_read_body")
+_response = _lane_call("_response")
+_text_value = _lane_call("_text_value")
+dispatch_oracle_mesh_command_intent = _lane_call("dispatch_oracle_mesh_command_intent")
+dispatch_oracle_mesh_file_read_intent = _lane_call("dispatch_oracle_mesh_file_read_intent")
 
 #: The read-only status cadence the PC lane already uses: the Engine step driver and
 #: the browser recovery both space their polls by 2 seconds. It spaces GETs and ends
@@ -133,6 +173,8 @@ async def _owner(request: Request) -> tuple[Any, str, str] | JSONResponse:
     uid = current_user_id(request)
     if not isinstance(uid, str) or not uid:
         return _error(401, "canonical_session_required")
+    from .chat_pc_drive import ChatPCDriveError
+
     try:
         session, _subject_id, workspace_id = await _resolve_chat_owner(request, uid)
     except ChatPCDriveError as exc:
@@ -397,6 +439,14 @@ def _found_items(text: str) -> list[dict[str, Any]]:
     return _items(text, with_folder=True)
 
 
+def _listing_limit() -> int:
+    """How many entries the existing listing command asks for — read where it is used."""
+
+    from .oracle_mesh_read_return_routes import PC_FILES_LIST_DEFAULT_LIMIT
+
+    return PC_FILES_LIST_DEFAULT_LIMIT
+
+
 def _write_account(text: str) -> dict[str, Any] | None:
     """The one account line #5573's write step prints, or None when it is not there.
 
@@ -404,6 +454,8 @@ def _write_account(text: str) -> dict[str, Any] | None:
     which is also what makes it safe to read here: the answer stays the PC's own words
     about what it changed and where the original now sits.
     """
+
+    from .oracle_mesh_read_return_routes import PC_WRITE_ACCOUNT_PREFIX
 
     for line in reversed(text.splitlines()):
         stripped = line.strip()
@@ -675,7 +727,7 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
     answer = await dispatch_oracle_mesh_command_intent(
         request,
         command=_pc_files_command(
-            op="list", root=root, relative=relative, limit=PC_FILES_LIST_DEFAULT_LIMIT,
+            op="list", root=root, relative=relative, limit=_listing_limit(),
         ),
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
