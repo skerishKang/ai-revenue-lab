@@ -985,3 +985,112 @@ def test_a_pinned_output_that_no_longer_matches_its_digest_is_not_served(monkeyp
         _Request(state, query={"dispatch_id": dispatch}, method="GET")
     )))
     assert status == 503 and body["error"]["code"] == "oracle_mesh_original_unavailable"
+
+
+# ── the legacy .hwp reference: the lane reads it, the Worker only ferries ───
+
+LANE_SECRET = "fixture-file-lane-secret-" + "0" * 16
+
+
+def _hwp_fixture() -> bytes:
+    return (Path(__file__).resolve().parents[2] / "padiem-file-lane" / "tests"
+            / "fixtures" / "example.hwp").read_bytes()
+
+
+def _lane_client(transport):
+    from app.file_lane import FileLaneClient
+
+    return FileLaneClient("https://lane.example.test", LANE_SECRET, transport=transport)
+
+
+def test_a_legacy_hwp_reference_is_read_by_the_lane_and_handed_back(monkeypatch):
+    import base64
+    import httpx
+
+    # The chat CI env ships no parser on purpose (#6034: the Worker never imports
+    # olefile), so the lane's reader itself is pinned by the lane's own suite.
+    # What this side owns is the ferrying: the real client's signed upload
+    # ticket, the lane's own reader path, and the words coming back whole.
+    words = "HWP test file\n자동 추출된 본문 미리보기"
+    seen = []
+
+    def lane(request):
+        seen.append(request)
+        return httpx.Response(200, json={"ok": True, "text": words, "chars": len(words)})
+
+    payload = _hwp_fixture()
+    dispatch = "dsp_" + "a" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    state.file_lane_client = _lane_client(httpx.MockTransport(lane))
+    _finished(state, dispatch_id=dispatch, kind="read", text=payload)
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/작년 축사.hwp"
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": dispatch})
+    )))
+
+    assert status == 200 and body["ok"] is True, body
+    assert body["name"] == "작년 축사.hwp"
+    assert body["text"] == words and body["chars"] == len(words)
+    # One trip, to the lane's own reader, under the same signed upload ticket
+    # every write uses — budgeted for exactly these bytes.
+    assert len(seen) == 1, seen
+    assert seen[0].url.path == exchange.LANE_HWP_TEXT_PATH
+    encoded = seen[0].headers["x-padiem-file-ticket"]
+    claims = json.loads(base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)))
+    assert claims["user_id"] == OWNER and claims["max_bytes"] == len(payload)
+    assert seen[0].headers["x-padiem-file-proof"]
+    assert seen[0].read() == payload
+
+
+def test_a_sealed_or_distributed_hwp_refusal_keeps_the_lane_s_code(monkeypatch):
+    import httpx
+
+    payload = b"the fetched bytes of the owner's sealed document"
+    for code in ("hwp_encrypted", "hwp_distributable"):
+        seen = []
+
+        def lane(request, _code=code, _seen=seen):
+            _seen.append(request)
+            return httpx.Response(422, json={"ok": False, "error": {"code": _code}})
+
+        dispatch = "dsp_" + ("b" if code == "hwp_encrypted" else "c") * 32
+        state, _captured, _link, _ = _state(monkeypatch)
+        state.file_lane_client = _lane_client(httpx.MockTransport(lane))
+        _finished(state, dispatch_id=dispatch, kind="read", text=payload)
+        state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/계약서.hwp"
+
+        status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+            _Request(state, body={"file_id": dispatch})
+        )))
+
+        # The lane's refusal is the answer — same code, same status — so the
+        # menu can say exactly why instead of claiming the file is broken.
+        assert status == 422 and body["error"]["code"] == code, (code, body)
+        # The bytes travelled once, under the client's own signed upload ticket.
+        assert len(seen) == 1, seen
+        assert seen[0].url.path == "/files/hwp-text"
+        assert seen[0].headers["x-padiem-file-ticket"]
+        assert seen[0].read() == payload
+
+
+def test_a_reference_read_names_a_lane_that_is_not_running(monkeypatch):
+    dispatch = "dsp_" + "d" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="read", text="본문")
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/작년 축사.hwp"
+
+    # No lane client configured at all: the answer names the service, not the file.
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": dispatch})
+    )))
+    assert status == 503 and body["error"]["code"] == "file_lane_unavailable", body
+
+    # A configured-but-not-ready client is the same answer, not a network guess.
+    from app.file_lane import FileLaneClient
+
+    state.file_lane_client = FileLaneClient(None, "")
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": dispatch})
+    )))
+    assert status == 503 and body["error"]["code"] == "file_lane_unavailable", body

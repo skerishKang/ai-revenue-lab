@@ -7,7 +7,7 @@ name = "padiem-file-lane"
 version = "0.1.0"
 description = "COM2 disk-backed file upload and text service"
 requires-python = ">=3.11"
-dependencies = ["starlette>=0.45,<1", "uvicorn>=0.32,<1", "padiem-ai-core[documents]"]
+dependencies = ["starlette>=0.45,<1", "uvicorn>=0.32,<1", "padiem-ai-core[documents]", "olefile>=0.46,<1"]
 
 [project.optional-dependencies]
 windows = ["pywin32>=308; sys_platform == 'win32'"]

@@ -144,6 +144,8 @@ const storedFiles = [];
 // these two shapes exactly as production does.
 let pcLinks = [{ link_id: "pclink_" + "1".repeat(32), label: "사무실 PC", state: "active" }];
 const pcReferenceTexts = {};
+// #5895: the refusals the Worker answers by code, so the menu can say them out loud.
+const pcReferenceErrors = {};
 const pcReferenceRequests = [];
 const alerts = [];
 // A browser logs an unhandled rejection and keeps the page alive; model that so
@@ -175,6 +177,11 @@ async function fetch(url, opts) {
   }
   if (method === "POST" && path === "/api/pc/reference" && body) {
     pcReferenceRequests.push(body);
+    const refusal = pcReferenceErrors[body.file_id];
+    if (refusal) {
+      const status = refusal === "file_lane_unavailable" ? 503 : 422;
+      return json({ ok: false, error: { code: refusal } }, status);
+    }
     const entry = pcReferenceTexts[body.file_id];
     if (!entry) return json({ ok: false, error: { code: "pc_reference_unreadable" } }, 422);
     return json({ ok: true, name: entry.name, text: entry.text, chars: entry.text.length });
@@ -361,7 +368,7 @@ const PICKED_FILE_ID = "dsp_" + "a".repeat(32);
 
 // The shared part is loaded on first use, so the harness provides what the browser
 // would have after that load: the real module's public surface, recording every call.
-function pcExchangeStub() {
+function pcExchangeStub(pickedFileId = PICKED_FILE_ID, pickedContent = REFERENCE_TEXT) {
   const opened = [];
   return {
     opened,
@@ -371,7 +378,7 @@ function pcExchangeStub() {
         if (options && typeof options.onSelect === "function") {
           options.onSelect({
             name: REFERENCE_NAME, kind: "text",
-            content: REFERENCE_TEXT, fileId: PICKED_FILE_ID, sizeBytes: REFERENCE_TEXT.length,
+            content: pickedContent, fileId: pickedFileId, sizeBytes: REFERENCE_TEXT.length,
           });
         }
         if (options && typeof options.onSave === "function") options.onSave({ ok: true });
@@ -434,6 +441,34 @@ const SCENARIOS = {
       connectLabel: connect ? text(connect).trim() : "",
       pickerOpened: exchange.opened.length,
     };
+  },
+
+  // #5895: the Worker's refusal codes are said out loud in Korean — a sealed or
+  // distributed 한글 file, or a lane that is not running, is not a broken picker.
+  async pcref_refusals() {
+    const cases = [
+      ["hwpEncrypted", "hwp_encrypted", "b"],
+      ["hwpDistributable", "hwp_distributable", "c"],
+      ["laneDown", "file_lane_unavailable", "d"],
+    ];
+    const refusals = {};
+    for (const [key, code, tag] of cases) {
+      const fileId = "dsp_" + tag.repeat(32);
+      pcReferenceErrors[fileId] = code;
+      // No inline content and a file id: exactly what a picked 한글 document is,
+      // so the preview has to come from the reference route.
+      const exchange = pcExchangeStub(fileId, "");
+      const session = spawnSession({ PadiemPcFileExchange: exchange.api });
+      await openTool(session, "speech");
+      const mount = find(session, "utilSpeechPcRef");
+      const pick = mount.querySelectorAll(".util-pc-ref-pick")[0];
+      if (!pick) throw new Error("pick button missing");
+      if (pick.hidden) throw new Error("pick button hidden while a PC is linked");
+      await pick.dispatch("click");
+      await sleep(20);
+      refusals[key] = text(mount.querySelectorAll(".util-pc-ref-status")[0]).trim();
+    }
+    return { refusals, pageErrors };
   },
 
   async tier() {

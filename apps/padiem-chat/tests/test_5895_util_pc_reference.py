@@ -48,3 +48,15 @@ def test_a_user_without_a_pc_gets_a_line_and_the_existing_connect_entry():
     assert observed["noteText"] == "PC를 연결하면 예전 글을 가져올 수 있습니다.", observed
     assert observed["connectLabel"] == "이 PC 연결", observed
     assert observed["pickerOpened"] == 0, observed
+
+
+def test_a_sealed_hwp_a_distributed_hwp_and_a_dead_lane_say_so_in_korean():
+    observed = util.run("pcref_refusals")
+    refusals = observed["refusals"]
+    # The refusal codes the Worker and the lane answer are said out loud in the
+    # same Korean the picker uses everywhere: a sealed or distributed 한글 file is
+    # not a broken picker, and a lane that is down is named as a service.
+    assert refusals["hwpEncrypted"] == "암호가 걸린 한글 파일은 읽을 수 없어요.", refusals
+    assert refusals["hwpDistributable"] == "배포용으로 저장된 한글 파일은 읽을 수 없어요.", refusals
+    assert refusals["laneDown"] == "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.", refusals
+    assert observed["pageErrors"] == [], observed

@@ -14,6 +14,7 @@ from starlette.routing import Route
 
 from .storage import FileError, Store, disk_error, require_space
 from . import xlsx_edit
+from . import hwp_text
 from .tickets import InvalidTicket, verify_ticket
 
 _MEDIA_BY_KIND = {
@@ -156,6 +157,31 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         return FileResponse(directory / "data", media_type=media,
                             filename=meta["name"], headers={"Cache-Control": "no-store"})
 
+    async def hwp_reference(request: Request):
+        # #5895: the legacy .hwp reader lives here, where olefile (BSD) runs —
+        # the Worker hands the bytes over and gets the words back. The body is
+        # capped by the same upload ticket every write uses.
+        claims = ticket(request)
+        length = request.headers.get("content-length")
+        if length is not None:
+            if not length.isascii() or not length.isdigit():
+                raise FileError("invalid_content_length", 400)
+            if int(length) > claims.max_bytes:
+                raise FileError("ticket_size_exceeded", 413)
+        received = 0
+        chunks = []
+        async for block in request.stream():
+            received += len(block)
+            if received > claims.max_bytes:
+                raise FileError("ticket_size_exceeded", 413)
+            chunks.append(block)
+        try:
+            text = await run_in_threadpool(hwp_text.extract_text, b"".join(chunks))
+        except hwp_text.HwpError as exc:
+            raise FileError(exc.code, 422) from None
+        return JSONResponse({"ok": True, "text": text, "chars": len(text)},
+                            headers={"Cache-Control": "no-store"})
+
     async def health(request):
         return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
 
@@ -173,7 +199,8 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                             Route("/files/{file_id}/meta", metadata), Route("/files/{file_id}/text", text),
                             Route("/files/{file_id}/structure", structure),
                             Route("/files/{file_id}/fill", fill, methods=["POST"]),
-                            Route("/files/{file_id}/raw", raw)],
+                            Route("/files/{file_id}/raw", raw),
+                            Route("/files/hwp-text", hwp_reference, methods=["POST"])],
                     exception_handlers={InvalidTicket: denied, FileError: failed, OSError: disk_failed})
     app.state.store = store
     allowed = origins if origins is not None else [x.strip() for x in os.environ.get("FILE_LANE_ALLOWED_ORIGINS", "").split(",") if x.strip()]

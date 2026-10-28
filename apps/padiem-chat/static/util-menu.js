@@ -123,6 +123,9 @@
     preview: "가져온 글",
     unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
     unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
+    hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
+    laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
     noPc: "PC를 연결하면 예전 글을 가져올 수 있습니다.",
     connect: "이 PC 연결",
     save: "내 PC에 저장",
@@ -193,7 +196,17 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ file_id: picked.fileId }),
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        // #5895: the refusals the lane and the Worker answer by code, said out
+        // loud — a sealed or distributed 한글 file is not a broken picker.
+        const refused = await res.json().catch(() => null);
+        const code = refused && refused.error && typeof refused.error.code === "string"
+          ? refused.error.code : "";
+        if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
+        if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
+        if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };
+        return null;
+      }
       const body = await res.json().catch(() => null);
       if (!body || body.ok !== true || typeof body.text !== "string" || !body.text.trim()) return null;
       return {
@@ -250,6 +263,10 @@
     async function addPicked(picked) {
       say("");
       const entry = await pcReferenceEntry(picked);
+      if (entry && typeof entry.error === "string") {
+        say(entry.error);
+        return;
+      }
       if (!entry) {
         say(PC_REF_COPY.unreadable);
         return;
