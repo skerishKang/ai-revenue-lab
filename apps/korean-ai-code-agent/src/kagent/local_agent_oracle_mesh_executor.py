@@ -58,13 +58,12 @@ def _pairing_tag_of(agent_name: Any) -> str | None:
 #: evaluated. This executor is a first-party product client, so it identifies
 #: itself with the same product token the kagent transport already sends.
 PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
-#: Commands retain 6MB. A server-authorized PC read may explicitly request
-#: up to 20MB; a legacy/default read retains 6MB. Oversize is refused whole,
-#: never truncated.
-MAX_COMMAND_BYTES = 6_000_000
+#: Owner decision 2026-10-28: no PADIEM byte ceiling on command output or the
+#: desktop wire. None means no product bound; the platforms that carry the
+#: bytes keep their own limits. A server-authorized PC read still names its own
+#: requested amount (the dispatch max_bytes, else the legacy default below).
+MAX_COMMAND_BYTES: int | None = None
 MAX_READ_BYTES_ENVELOPE = 20_000_000
-#: Legacy/default reads retain the pre-existing 6MB bound. The server-owned
-#: dispatch max_bytes opts into the separate 20MB PC-file ceiling.
 MAX_READ_BYTES = 6_000_000
 #: Existing PC-file error markers the Engine already maps. A read failure is a
 #: truthful body, not an empty success: the executor reports the marker so the
@@ -173,7 +172,7 @@ class OracleMeshExecutor:
         read_port: Any,
         command_port: Any = None,
         desktop_port: Any = None,
-        timeout_seconds: int = 30,
+        timeout_seconds: int | None = None,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
         claim_gate: Optional[Callable[[], bool]] = None,
@@ -277,12 +276,8 @@ class OracleMeshExecutor:
                 # fixed 64 KiB used to truncate a long command's JSON and make
                 # the dispatch look absent. The bound is the same wire envelope
                 # the submit leg is held to.
-                raw = response.read(MAX_COMMAND_BYTES + 1)
+                raw = response.read()
                 status = int(getattr(response, "status", 0) or 0)
-                if len(raw) > MAX_COMMAND_BYTES:
-                    raise OracleMeshChannelRefused(
-                        "chat channel response exceeds the wire envelope"
-                    )
         except urllib.error.HTTPError as exc:
             raw = exc.read(4096)
             status = int(exc.code)
@@ -495,7 +490,7 @@ class OracleMeshExecutor:
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
             "file_path": dispatch.file_path,
-            "timeout_seconds": self._timeout * 4,
+            "timeout_seconds": (self._timeout * 4 if self._timeout is not None else None),
         }
         if dispatch.max_bytes is not None:
             # Pass the server-computed bound only when the poll supplied one;
@@ -660,16 +655,6 @@ class OracleMeshExecutor:
         if not isinstance(body, (bytes, bytearray)):
             body = b""
         raw = bytes(body)
-        if len(raw) > MAX_COMMAND_BYTES:
-            # Oversize output is never truncated; the body is withheld and the
-            # observed exit code is still carried.
-            self._trace_command(
-                dispatch, "result", started, termination="output_too_large",
-                output_bytes=0,
-            )
-            return OracleMeshExecutionOutcome(
-                termination="output_too_large", exit_code=exit_code, body=b"",
-            )
         self._trace_command(
             dispatch, "result", started, termination=termination,
             output_bytes=len(raw),
@@ -701,13 +686,16 @@ class OracleMeshExecutor:
                 note="the desktop op was refused before the PC was asked",
             )
         try:
+            desktop_timeout: dict[str, Any] = {}
+            if self._timeout is not None:
+                # A full multi-monitor redraw moves megabytes of tiles; the
+                # read lane already waits timeout*4 for the same reason.
+                desktop_timeout["timeout_seconds"] = max(1, self._timeout * 4)
             observed = self._desktop_port.run_desktop_op(
                 node_ref=dispatch.node_ref,
                 op=op,
                 arg=arg,
-                # A full multi-monitor redraw moves megabytes of tiles; the
-                # read lane already waits timeout*4 for the same reason.
-                timeout_seconds=max(1, self._timeout * 4),
+                **desktop_timeout,
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralDesktopRefused":
@@ -735,13 +723,7 @@ class OracleMeshExecutor:
         if termination == "captured" and not raw:
             termination = "desktop_unavailable"
             note = (note + "; no image bytes" if note else "no image bytes")
-        if len(raw) > MAX_COMMAND_BYTES:
-            # Oversize evidence is never truncated; the observation note is
-            # still carried so the turn is not silent.
-            return OracleMeshExecutionOutcome(
-                termination="output_too_large", exit_code=None, body=b"",
-                note=note,
-            )
+
         return OracleMeshExecutionOutcome(
             termination=termination, exit_code=None, body=raw, note=note,
         )
@@ -1091,11 +1073,10 @@ class OracleMeshExecutor:
                 isinstance(exit_code, bool) or not isinstance(exit_code, int)
             ):
                 raise ValueError("pending exit code is not an integer")
-            if len(body) > (
-                (dispatch.max_bytes or MAX_READ_BYTES)
-                if dispatch.kind == "read" else MAX_COMMAND_BYTES
+            if dispatch.kind == "read" and len(body) > (
+                dispatch.max_bytes or MAX_READ_BYTES
             ):
-                raise ValueError("pending body exceeds the wire envelope")
+                raise ValueError("pending read body exceeds the requested amount")
             note = meta.get("note", "")
             if not isinstance(note, str):
                 raise ValueError("pending note is not text")
@@ -1142,8 +1123,7 @@ class OracleMeshExecutor:
         except (UnicodeEncodeError, ValueError):
             note_raw = b""
         if (
-            len(note_raw) > MAX_COMMAND_BYTES
-            or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in note)
+            any(ord(ch) < 32 and ch not in "\n\r\t" for ch in note)
             or "\x7f" in note
         ):
             self._pending = (dispatch, outcome)
@@ -1176,15 +1156,7 @@ class OracleMeshExecutor:
             wire_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
         # The channel envelope limits the whole frame (header + bytes), never a
         # base64 expansion of it. Persist the image before any refusal.
-        if wire_bytes > MAX_COMMAND_BYTES:
-            self._pending = (dispatch, outcome)
-            persist_error = self._persist_pending()
-            return self._with_persist_warning(
-                {"ok": False, "retryable": False, "resend_pending": False,
-                 "reason": "desktop_result_wire_envelope_exceeded",
-                 "serialized_bytes": wire_bytes,
-                 "envelope_bytes": MAX_COMMAND_BYTES,
-                 "outcome_preserved": True}, persist_error)
+
         self._pending = (dispatch, outcome)
         persist_error = self._persist_pending()
         try:
@@ -1215,6 +1187,14 @@ class OracleMeshExecutor:
         """
         error = data.get("error")
         code = error.get("code") if isinstance(error, dict) else None
+        if status == 413:
+            # The platform's own request-body limit: this path cannot carry the
+            # result, so the caller shows exactly that reason. The bytes stay in
+            # the pending file for the operator; nothing is resent.
+            return self._with_persist_warning(
+                {"ok": False, "retryable": False, "resend_pending": False,
+                 "reason": "result_too_large_for_this_path",
+                 "status": status, "code": code}, persist_error)
         if status == 503 or status == 429 or status >= 500:
             self._rejections = 0
             wait = self._transient_wait_seconds()
@@ -1402,7 +1382,7 @@ def make_oracle_mesh_executor(
     password_provider: Callable[[], str],
     mesh_url: str = "wss://127.0.0.1:4443",
     work_dir: str | None = None,
-    timeout_seconds: int = 30,
+    timeout_seconds: int | None = None,
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,

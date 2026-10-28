@@ -69,15 +69,11 @@ METHOD_LABEL = "powershell_runcommand_reply"
 #: stdout and stderr travel merged (``2>&1`` inside the captured expression);
 #: the conversation says so.
 MERGED_STREAMS = True
-#: Wire envelope for one output body: the same 6 MB the Claw request route
-#: already accepts for one user message. Above it the child is killed and the
-#: outcome reports ``output_too_large`` — nothing is truncated and nothing is
-#: buffered past this bound.
-MAX_COMMAND_BYTES = 6_000_000
-#: The same bound seen through the Base64 envelope, which is about four thirds
-#: the size of what it carries. The child is killed on this number; the product
-#: limit is still applied to the decoded PC bytes in ``parse_transcript``.
-MAX_TRANSCRIPT_BYTES = MAX_COMMAND_BYTES * 4 // 3 + 4096
+#: Owner decision 2026-10-28 (#5895): the command output carries no PADIEM byte
+#: ceiling. A large transcript is returned whole; the wire and memory ceilings
+#: of the platforms that carry it remain the only bounds.
+MAX_COMMAND_BYTES: int | None = None
+MAX_TRANSCRIPT_BYTES: int | None = None
 
 
 class MeshCentralCommandRefused(ValueError):
@@ -317,10 +313,6 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     prefix, body = envelope
     if prefix:
         body = prefix + body
-    if len(body) > MAX_COMMAND_BYTES:
-        # The bound is the product's, on the PC's own bytes: the Base64 envelope
-        # is bigger than its content, so the raw transcript is measured here.
-        return "output_too_large", code, b""
     if raw_code is None:
         # The sentinel printed an empty value. That is not a console that never
         # answered: PowerShell records `$LASTEXITCODE` only for "the exit code of
@@ -391,9 +383,9 @@ class MeshCentralCliCommandPort:
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
-        # #4139: the streaming path is what actually bounds memory. The child is
-        # read in chunks and killed the moment the transcript passes the wire
-        # envelope, so a runaway command can never be buffered whole first.
+        # #4139: the child is read in chunks, so memory tracks what the PC
+        # actually sent. #5895 removed the byte ceiling: the transcript is
+        # returned whole, and the chunked read stays as the streaming shape.
         self._popen_factory = popen_factory
         # The stop needs a terminal device for the official client's shell; a test
         # injects a stand-in, and production uses the pty above.
@@ -527,11 +519,11 @@ class MeshCentralCliCommandPort:
         node_ref: str | None = None,
         dispatch_id: str | None = None,
     ) -> MeshCentralCommandOutcome:
-        """Read the child's transcript in bounded chunks.
+        """Read the child's transcript in chunks and return it whole.
 
-        Memory is bounded by the wire envelope plus one chunk: the moment the
-        transcript passes it, the child is killed and the outcome reports
-        ``output_too_large``. A ``timeout_seconds`` of None means no PADIEM client
+        #5895: the transcript carries no PADIEM byte ceiling — the chunked
+        read streams what the PC actually sent, and the whole transcript is
+        returned. A ``timeout_seconds`` of None means no PADIEM client
         deadline (the desktop-lane default): the command runs until the console
         answers, and only an explicit timeout is killed at its deadline and
         reported as ``timed_out`` — the remote process may still be running, so
@@ -548,8 +540,6 @@ class MeshCentralCliCommandPort:
         )
         phase("spawn")
         chunks: list[bytes] = []
-        total = 0
-        oversize = False
         try:
             if process.stdin is not None:
                 process.stdin.write((password + "\n").encode("utf-8"))
@@ -595,11 +585,6 @@ class MeshCentralCliCommandPort:
                         )
                     continue
                 chunks.append(chunk)
-                total += len(chunk)
-                if total > MAX_TRANSCRIPT_BYTES:
-                    oversize = True
-                    process.kill()
-                    break
         except Exception:
             try:
                 process.kill()
@@ -607,11 +592,6 @@ class MeshCentralCliCommandPort:
                 pass
             raise MeshCentralCommandRefused("the official meshcentral client failed") from None
         raw = b"".join(chunks)
-        if oversize:
-            phase("reply")
-            return MeshCentralCommandOutcome(
-                termination="output_too_large", exit_code=None, output=b"",
-            )
         outcome = self._from_transcript(raw)
         phase("reply")
         return outcome
