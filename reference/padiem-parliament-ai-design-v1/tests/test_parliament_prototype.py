@@ -39,7 +39,8 @@ RAIL = frozenset({"--rail-display", "--rail-w", "--rail-active-bg", "--rail-acti
                   "--rail-active-ink", "--rail-caption-line", "--rail-caption-pad", "--topchrome-display", "--hero-copy-w"})
 # 카드 골격(세로/2열/중앙)과 배지·언더라인·스트립 존재도 원본별 구성 차이로 토큰화한다.
 SHELL = frozenset({"--work-display", "--work-cols", "--work-body-display", "--work-icon-rule",
-                   "--work-badge-display", "--work-align", "--work-items", "--work-icon-self", "--strip-display"})
+                   "--work-badge-display", "--work-align", "--work-items", "--work-icon-self", "--strip-display",
+                   "--works-lift", "--works-head-display", "--works-note-display"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op",
                    # 2차 해석표 반영: 전폭 사진 위의 읽기 오버레이와 헤더/밴드/스트립 위계
@@ -513,7 +514,7 @@ def test_the_shipped_fonts_are_the_ones_the_css_declares() -> None:
     실제 렌더(Noto Sans KR)가 달랐다. 그래서 '선언한 면은 실재하는 면'을 계약으로 못박는다.
     """
     faces = re.findall(r"@font-face\s*\{([^}]*)\}", COMMENT.sub("", CSS), re.S)
-    assert len(faces) == 6, f"Pretendard 400/500/600/700 + MaruBuri 400/700: got {len(faces)}"
+    assert len(faces) == 7, f"Pretendard 400/500/600/700 + MaruBuri 400/700 + Playfair 700: got {len(faces)}"
     declared: dict[str, set[str]] = {}
     for body in faces:
         fam = re.search(r'font-family:\s*"([^"]+)"', body)
@@ -541,7 +542,7 @@ def test_every_country_leads_with_a_shipped_face() -> None:
     웹폰트 로드 실패 시의 의도된 대체일 뿐이며, 그 자체가 1순위가 되면 안 된다.
     """
     shipped = set(re.findall(r'@font-face\s*\{[^}]*font-family:\s*"([^"]+)"', COMMENT.sub("", CSS), re.S))
-    assert shipped == {"Pretendard", "MaruBuri"}, shipped
+    assert shipped == {"Pretendard", "MaruBuri", "Playfair Display"}, shipped
     for country in COUNTRIES:
         body = " ".join(blocks_for("country", country))
         for role in ("--font-display", "--font-body", "--font-label"):
@@ -565,17 +566,18 @@ def test_no_remote_font_is_loaded_and_licences_travel_with_the_files() -> None:
     """원격 웹폰트 CDN은 요청·감사 범위를 저장소 밖으로 내보낸다. 로컬 파일만 허용한다."""
     assert not re.search(r"@import|url\(\s*[\"']?(?:https?:)?//", CSS), "no remote stylesheet or remote font URL"
     fonts = sorted(p.name for p in (ROOT / "assets" / "fonts").iterdir() if p.is_file())
-    assert sum(1 for f in fonts if f.endswith(".woff2")) == 6, fonts
+    assert sum(1 for f in fonts if f.endswith(".woff2")) == 7, fonts   # 6 + Playfair Display Bold(latin)
     licences = [f for f in fonts if f.startswith("LICENSE-")]
     assert any("Pretendard" in f and "OFL" in f for f in licences), f"Pretendard OFL text must ship: {licences}"
     assert any("MaruBuri" in f or "NAVER" in f for f in licences), f"Naver font notice must ship: {licences}"
+    assert any("Playfair" in f and "OFL" in f for f in licences), f"Playfair OFL text must ship: {licences}"
     ofl = next((ROOT / "assets" / "fonts" / f).read_text(encoding="utf-8") for f in licences if "Pretendard" in f)
     assert "SIL OPEN FONT LICENSE" in ofl and "Reserved Font Name" in ofl
     naver = next((ROOT / "assets" / "fonts" / f).read_text(encoding="utf-8") for f in licences if "MaruBuri" in f)
     for probe in ("NAVER", "hangeul.pstatic.net", "commercial use", "상업"):
         assert probe in naver, f"the Naver notice must record {probe}"
     attribution = (ROOT / "assets" / "ATTRIBUTION.md").read_text(encoding="utf-8")
-    for fam in ("Pretendard", "MaruBuri"):
+    for fam in ("Pretendard", "MaruBuri", "Playfair Display"):
         assert fam in attribution, f"{fam} is shipped but not recorded in ATTRIBUTION.md"
 
 
