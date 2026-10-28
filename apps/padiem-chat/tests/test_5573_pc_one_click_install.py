@@ -31,6 +31,7 @@ from app.pc_device_pairing_routes import (                # noqa: E402
     PC_PAIRING_INSTALL_EXE_FILENAME,
     PC_PAIRING_INSTALL_EXE_PATH,
     connect_exe_trailer,
+    install_url_from_config,
     render_install_exe,
     render_install_script,
 )
@@ -56,6 +57,14 @@ import win32_reproducible                                 # noqa: E402
 
 NODE = "node/meshdomain/mesh-beta-01"
 AGENT_URL = "https://mesh.example.padiem.net/meshagents?id=4&meshid=c9yfFkUpi38"
+#: The link a real MeshCentral deployment hands out: the meshid is a node identity,
+#: so it carries '$' and '@' inside the query. Both installers must survive it - the
+#: program that refused every '@' closed a clean PC's first connect with "설치 링크를
+#: 아직 내려주지 않았습니다" while the server had just written that URL into the file.
+MESH_AGENT_URL = (
+    "https://mesh.padiem.net/meshagents?id=4"
+    "&meshid=u$GdZqL5KuEbKiLsr@c9yfFkUpi38Hzq3y97OlMbLP@EoEa3COl$GmnOfGEelbxb"
+)
 RUN = pairing.run
 
 #: The exact shape of an issued code. Its presence in a downloaded file would
@@ -277,13 +286,29 @@ def test_a_trailer_that_cannot_be_written_safely_is_refused_not_improvised() -> 
     for unreadable in (
         {"install_tag": "pd-1234abcd", "agent_url": "http://m.example/x.exe"},
         {"install_tag": "pd-1234abcd", "agent_url": "https://m.example/x.exe\r\nPADIEMX:1"},
-        {"install_tag": "pd-1234abcd", "agent_url": "https://evil@safe.example/x.exe"},
         {"install_tag": "pd 1234", "agent_url": AGENT_URL},
         {"install_tag": None, "agent_url": AGENT_URL},
         {"install_tag": "pd-1234abcd", "agent_url": None},
     ):
         assert connect_exe_trailer(**unreadable) is None, unreadable
         assert render_install_exe(**unreadable) is None, unreadable
+
+
+def test_the_real_mesh_link_survives_both_download_shapes() -> None:
+    """A live MeshCentral link is not a pretty URL, and it is the legal one.
+
+    Its ``meshid`` is a node identity, so it carries ``$`` and ``@`` inside the query.
+    The server has always handed that out; what broke on 2026-10-28 was downstream -
+    the program's own URL wall refused every ``@``, so a clean PC was told the
+    deployment had no installer link while the file in its hand named one.
+    """
+    assert install_url_from_config(MESH_AGENT_URL) == MESH_AGENT_URL
+    script = render_install_script(install_tag="pd-1234abcd", agent_url=MESH_AGENT_URL)
+    assert script is not None
+    assert "$AgentInstallerUrl = '" + MESH_AGENT_URL + "'" in script
+    trailer = connect_exe_trailer(install_tag="pd-1234abcd", agent_url=MESH_AGENT_URL)
+    assert trailer is not None
+    assert trailer.decode("ascii").endswith("PADIEMURL:" + MESH_AGENT_URL + "\r\n")
 
 
 def test_the_click_downloads_the_program_with_the_tag_and_never_the_code() -> None:
@@ -386,15 +411,45 @@ def test_the_agent_is_installed_from_a_folder_of_the_products_own() -> None:
 
 @pytest.mark.skipif(sys.platform != "win32", reason="the artifact is a Windows program")
 def test_the_programs_plan_installs_from_the_durable_folder(tmp_path: Path) -> None:
-    """--dry-run on the shipped bytes: the command it would run, with nothing run."""
+    """--dry-run on the shipped bytes, with the link a live deployment really issues."""
     import subprocess
 
-    program = render_install_exe(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    program = render_install_exe(install_tag="pd-1234abcd", agent_url=MESH_AGENT_URL)
     target = tmp_path / PC_PAIRING_INSTALL_EXE_FILENAME
     target.write_bytes(program)
     done = subprocess.run([str(target), "--dry-run"], capture_output=True, text=True,
                           encoding="utf-8", timeout=120, check=False)
     assert done.returncode == 0, done.stdout + done.stderr
     assert "-install --agentName=\"pd-1234abcd [" in done.stdout, done.stdout
+    # the whole point of the 2026-10-28 fix: the '@' inside a meshid is data, not
+    # credentials, and the program must still name the link it was handed.
+    assert "설치 대상 " + MESH_AGENT_URL in done.stdout, done.stdout
     assert "MeshAgent.exe" in done.stdout and "PADIEM" in done.stdout
     assert "점검 실행" in done.stdout, done.stdout
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="the artifact is a Windows program")
+def test_the_program_refuses_a_link_with_credentials_even_from_a_hand_edited_file(
+        tmp_path: Path) -> None:
+    """The server never writes such a trailer; the program refuses it anyway.
+
+    The route refuses a URL with userinfo before a file is ever built, but the file is
+    editable bytes on a disk, so the wall is repeated where the download is run: an
+    ``https://host`` whose authority carries a user is not the deployment's link.
+    """
+    import subprocess
+
+    data = connect_exe_bytes()
+    forged = data + (
+        "PADIEMTRAILER:PADIEM-PC-CONNECT-1\r\n"
+        "PADIEMTAG:pd-1234abcd\r\n"
+        "PADIEMURL:https://evil@safe.example/meshagents?id=4\r\n"
+    ).encode("ascii")
+    target = tmp_path / PC_PAIRING_INSTALL_EXE_FILENAME
+    target.write_bytes(forged)
+    done = subprocess.run([str(target), "--check"], capture_output=True, text=True,
+                          encoding="utf-8", timeout=120, check=False)
+    lines = dict(line.split("=", 1) for line in done.stdout.splitlines())
+    assert lines["CONNECT_EXE_CHECK_TAG"] == "pd-1234abcd", done.stdout
+    assert lines["CONNECT_EXE_CHECK_URL_PRESENT"] == "0", done.stdout
+    assert lines["CONNECT_EXE_CHECK"] == "URL_UNUSABLE", done.stdout

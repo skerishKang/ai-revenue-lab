@@ -7,8 +7,8 @@ ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
 AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
 AGENT_FOLDER=%ProgramFiles%\PADIEM
-CONNECT_EXE_SHA256=941f3642b973066ade35cffecd0ce2681d42d97fff2e2c8eb82d587b0327b66c
-CONNECT_EXE_BYTES=23040
+CONNECT_EXE_SHA256=1a1b668ecb19a86cd36db61263970c53955d6632a9d5d87fc13158a41c9a71e3
+CONNECT_EXE_BYTES=23552
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
 
@@ -79,7 +79,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=14eda0976fc9599e83fde57f78ded5d0d188d9679f268f347700634b5a431778
+CONNECT_EXE_SEED=9737ed7578f067c308f6661dda328a02b5ab838273fd5ca87bef2169362914ef
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
@@ -154,6 +154,39 @@ Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -Expan
 | `apps/padiem-chat/tests/test_5573_pc_one_click_install.py` | 지문·꼬리말 거절·경로 동작·(Windows에서만) 실물 `--check` |
 
 ## 7. 확인한 것과 남은 것
+
+### 2026-10-28 20:14 KST — 깨끗한 PC(CGI-1) 첫 설치 실패와 그 원인
+
+- 목격: 경고 창 없이 실행돼 콘솔에 `이 PC에 에이전트가 아직 없고 서버가 설치 링크를 아직
+  내려주지 않았습니다.`만 남았다. PC에는 `Mesh Agent` 서비스도
+  `C:\Program Files\PADIEM`도 생기지 않았다.
+- 원인은 한 줄이었다: 프로그램의 URL 검사자(`CleanHttps`)가 문자열 어디든 `@`가 있으면
+  거부했다. 그런데 MeshCentral이 실제로 내주는 설치 링크는
+  `https://mesh.padiem.net/meshagents?id=4&meshid=<노드>@<서버>`처럼 **쿼리에 `@`를
+  담고 있다**(meshid가 노드 식별자이기 때문). 서버는 그 링크를 정상적으로 파일에
+  적어 주었고, 프로그램이 그것을 버려서 "설치 링크 없음" 취급이 됐다.
+- 왜 지금까지 몰랐나: 컴1·컴2는 에이전트가 이미 설치된 상태라 꼬리말 표식 → 설치 링크
+  경로를 한 번도 타지 않았다. 첫 정 PC 시험이 처음 그 경로를 지났다.
+- 고침: `@`는 **권한(authority) 자리에서만** 금지하고(사용자 이름/비밀번호 형태), 경로는
+  통과시킨다 — 서버의 `install_url_from_config`가 이미 같은 규칙이고, 이제 둘이 같다.
+  자격 증명이 들어간 링크(`https://evil@safe.example/…`)는 서버도 파일도 계속 거부한다
+  (테스트로 고정). 표식이 있는데 링크를 못 읽는 경우는 `--check`가
+  `CONNECT_EXE_CHECK=URL_UNUSABLE`로 구분해 알려 준다.
+- 재현·검증: 실제 프로덕션 링크 형태로 `--check` → `CONNECT_EXE_CHECK=PASS`,
+  `URL_PRESENT=1`, `--dry-run`이 `설치 대상 https://mesh.padiem.net/meshagents?id=4&meshid=…`를
+  출력. 손으로 꼬리말을 바꿔 `user@host`를 만든 파일은 `URL_PRESENT=0` / `URL_UNUSABLE`.
+- **재시도 방법: 새 파일이 필요하다.** 고친 곳은 exe 안이므로 바이트가 바뀌었다
+  (아래 지문 참조). 기존 파일로 재시도하면 같은 메시지만 다시 나온다. 그 파일에 담긴
+  표식(연결 코드에서 파생)은 10분이면 만료되니 어차피 재사용 대상이 아니다.
+
+### 경고 창이 뜨지 않은 것(관측만 기록, 고치지 않음)
+
+- CGI-1(Windows 11 Pro)의 첫 더블클릭에서 "알 수 없는 게시자" 창 없이 실행됐다.
+  SmartScreen이 "알림만"또는 끄기 상태이거나, 브라우저가 파일을 보존하면서 영역 표기
+  (Zone.Identifier)가 붙지 않았으면 경고는 뜨지 않는다. 즉 경고를 보는 PC도 있고 못 보는
+  PC가 있다는 뜻이고, 안내 문구는 both 케이스에 대해 유효하다.
+
+### 그 외
 
 확인한 것:
 - 두 번의 빌드가 같은 SHA-256을 냈다 (`CONNECT_EXE_REPRODUCIBLE=1`).

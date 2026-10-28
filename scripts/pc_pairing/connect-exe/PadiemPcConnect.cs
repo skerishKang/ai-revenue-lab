@@ -340,7 +340,7 @@ namespace Padiem.Connect
             bool usable = !string.IsNullOrEmpty(tag) && !string.IsNullOrEmpty(agentUrl);
             Console.WriteLine(usable
                 ? "CONNECT_EXE_CHECK=PASS"
-                : "CONNECT_EXE_CHECK=NO_TRAILER");
+                : (string.IsNullOrEmpty(tag) ? "CONNECT_EXE_CHECK=NO_TRAILER" : "CONNECT_EXE_CHECK=URL_UNUSABLE"));
             Console.WriteLine("CONNECT_EXE_CHECK_TAG=" + tag);
             Console.WriteLine("CONNECT_EXE_CHECK_URL_PRESENT=" + (string.IsNullOrEmpty(agentUrl) ? "0" : "1"));
             Console.WriteLine("CONNECT_EXE_CHECK_DRIVES=" + string.Join(" ", FixedDriveLetters()));
@@ -823,7 +823,26 @@ namespace Padiem.Connect
                 return null;
             }
             string text = value.Trim();
-            if (text.Length == 0 || text.Length > 2048 || text.IndexOf('@') >= 0)
+            if (text.Length == 0 || text.Length > 2048)
+            {
+                return null;
+            }
+            // '@' is forbidden only where it could mean credentials: the authority.
+            // MeshCentral's own agent link carries '@' inside its meshid query
+            // (…/meshagents?id=4&meshid=<node>@<server>), so refusing it anywhere was
+            // the same as throwing away the deployment's installer - which is what
+            // closed a first-ever connect on a clean PC with "서버가 설치 링크를 아직
+            // 내려주지 않았습니다" while the server had handed one out.
+            int schemeEnd = text.IndexOf("://", StringComparison.Ordinal);
+            if (schemeEnd < 0)
+            {
+                return null;
+            }
+            int pathStart = text.IndexOf('/', schemeEnd + 3);
+            string authority = pathStart < 0
+                ? text.Substring(schemeEnd + 3)
+                : text.Substring(schemeEnd + 3, pathStart - schemeEnd - 3);
+            if (authority.IndexOf('@') >= 0 || authority.Length == 0)
             {
                 return null;
             }
