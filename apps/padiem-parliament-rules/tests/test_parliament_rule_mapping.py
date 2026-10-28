@@ -161,3 +161,53 @@ def _country_for_tier(tier: str) -> Country:
     return {
         "kr": Country.KR, "us": Country.US, "uk": Country.UK, "fr": Country.FR,
     }[tier.split("_")[0]]
+
+
+def test_two_different_laws_never_share_one_identifier():
+    """A copied ``lsiSeq`` silently cites the wrong statute.
+
+    #6062 review caught 국회법 and 「행정업무의 운영 및 혁신에 관한 규정」 pointing
+    at the same law.go.kr sequence number, so the pairing is now asserted.
+    """
+    seen = {}
+    for key in registered_keys():
+        for src in rule_for(*key).sources:
+            identity = src.url.split("?")[-1]
+            if src.title in seen:
+                assert seen[src.title] == identity, f"{src.title} is cited by two different identifiers"
+            elif identity in seen.values():
+                same = next(k for k, v in seen.items() if v == identity)
+                raise AssertionError(f"{src.title} and {same} share identifier {identity}")
+            seen[src.title] = identity
+
+
+def test_every_korean_source_carries_an_identifier_and_an_effective_date():
+    """law.go.kr has two citation forms and both must stay identifiable.
+
+    ``lsInfoP.do?lsiSeq=`` names a statute version, ``lawService.do?...&MST=``
+    names a retrieved 자치법규 body. Either is acceptable; an unqualified
+    homepage link is not.
+    """
+    for key in registered_keys():
+        for src in rule_for(*key).sources:
+            if "law.go.kr" not in src.url:
+                continue
+            assert "lsiSeq=" in src.url or "MST=" in src.url, f"{key}: {src.url}"
+            if "lsiSeq=" in src.url and src.title != "행정업무의 운영 및 혁신에 관한 규정":
+                assert "efYd=" in src.url, f"{key} cites a statute version without its effective date"
+
+
+def test_the_decree_is_not_cited_under_the_assembly_act_identifier():
+    assembly = rule_for("kr", "kr_national", "legislative_draft").sources[0]
+    decree = rule_for("kr", "kr_national", "formatted_official").sources[0]
+    assert "lsiSeq=289167" in assembly.url
+    assert "lsiSeq=290525" in decree.url
+    assert assembly.url != decree.url
+
+
+def test_the_document_format_record_keeps_its_open_question_visible():
+    rule = rule_for("kr", "kr_local", "formatted_official")
+    assert rule.verification is Verification.PARTIAL
+    assert "applicability" in rule.unverified_fields
+    assert not rule.is_safe_to_use_as_fact()
+    assert any("행정업무의 운영" in s.title for s in rule.sources)

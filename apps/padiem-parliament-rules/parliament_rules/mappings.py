@@ -47,8 +47,8 @@ KR_ASSEMBLY_ACT = _src(
 )
 KR_DECREE = _src(
     "행정업무의 운영 및 혁신에 관한 규정",
-    "시행 2026-10-02 (대통령령 제36728호)",
-    "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=289167&chrClsCd=010202&urlMode=lsInfoP",
+    "시행 2026-10-02 (공포 2026-09-29 / 대통령령 제36728호)",
+    "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=290525&efYd=20261002&chrClsCd=010202&urlMode=lsInfoP",
 )
 KR_STAFF_ACT = _src(
     "국회의원의 보좌직원과 수당 등에 관한 법률",
@@ -78,8 +78,8 @@ KR_LOCAL_ACCOUNTING = _src(
 
 US_HOUSE_CSM = _src(
     "House Communications Standards Manual",
-    "판 호 확인 필요 (2025-12-01 본문을 회수; HCSC Rules Rule 26은 2020판 편입을 선언)",
-    "https://cha.house.gov/house-communications-standards-commission-rules",
+    "판 호 확인 필요 (2025-12-01 본문을 회수; HCSC Rules Rule 26은 2020판을 편입했다고 선언)",
+    "https://cha.house.gov/communications-standards-manual",
 )
 US_HCSC_RULES = _src(
     "Rules of the House Communications Standards Commission, 119th Congress",
@@ -336,6 +336,26 @@ _rule(
     terms=KR_TERMS, verification=V.VERIFIED,
     sources=(KR_ENFORCEMENT_DECREE, KR_Gangjin_RULES),
     notes="강진군 규칙 제56조·제58조",
+)
+_rule(
+    Country.KR, T.KR_NATIONAL, K.FORMATTED_OFFICIAL, A.SELF,
+    citation=True, coords=("lawId+promulgationDate+promulgationNo", "articleKey", "effectiveDate"),
+    effective=True, register="한글·가로쓰기·24시각제 쌍점 (제7조)",
+    openness="개방형 파일 형식 + 요지·키워드 요구 (제5조②)",
+    terms=KR_TERMS, verification=V.PARTIAL,
+    sources=(KR_DECREE,),
+    gaps=(Unverified("applicability", "제2조 열거에 국회가 없어 의원실 작성물의 적용 범위가 미확정 (#6026 §1.5)"),),
+    notes="제6조①(결재로 성립)·제9조①(결재 전 검토, 생략 시 사유 기재)",
+)
+_rule(
+    Country.KR, T.KR_LOCAL, K.FORMATTED_OFFICIAL, A.SELF,
+    citation=True, coords=("ordinanceId", "promulgationDate", "effectiveDate"),
+    effective=True, register="한글·가로쓰기·24시각제 쌍점 (제7조)",
+    openness="개방형 파일 형식 + 요지·키워드 요구 (제5조②)",
+    terms=KR_TERMS, verification=V.PARTIAL,
+    sources=(KR_DECREE, KR_Gangjin_RULES),
+    gaps=(Unverified("applicability", "지방의회 의원실까지 제5조②·제9조가 자동 적용된다는 근거를 회수하지 못함 (#6026 §6-1)"),),
+    notes="사무기구가 아닌 의원 개인 작성물에 대한 적용 범위는 미확정으로 남긴다",
 )
 _rule(
     Country.KR, T.KR_NATIONAL, K.ELECTORAL, A.NOT_RESEARCHED,
