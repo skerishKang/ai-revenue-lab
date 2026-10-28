@@ -1,0 +1,288 @@
+/* #5573 — the PC pairing card's own styles (2026-10-29 redesign).
+   The card's classes previously shipped with no stylesheet at all, which is
+   why its buttons rendered with the browser's default look. Everything here
+   reuses the shared tokens (--panel/--line/--muted/--accent-strong/--success/
+   --danger) and the .connector-retry button the other connector cards use, so
+   the card reads as one design system surface in both themes and at phone
+   width. */
+.pc-pairing {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line, #e3e3e9);
+}
+
+.pc-pairing-heading {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: inherit;
+}
+
+.pc-pairing-help {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #6f7079);
+}
+
+.pc-pairing-connect {
+  justify-self: start;
+  min-width: 200px;
+  font-weight: 700;
+}
+
+/* The empty card is the offer: one line, one big button. */
+.pc-pairing[data-empty="true"] .pc-pairing-connect {
+  justify-self: stretch;
+  width: 100%;
+  min-height: 48px;
+  font-size: 15px;
+}
+
+.pc-pairing-steps {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 10px;
+  background: var(--panel, #fff);
+}
+
+.pc-pairing-steps[hidden] {
+  display: none;
+}
+
+.pc-pairing-steps-title {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pc-pairing-steps-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.pc-pairing-wait {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--accent-strong, #2f6f99);
+}
+
+.pc-pairing-wait[hidden] {
+  display: none;
+}
+
+.pc-pairing-alternate {
+  font: inherit;
+  border: 0;
+}
+
+.pc-pairing-alternate-summary {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted, #6f7079);
+}
+
+.pc-pairing-alternate-help {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #6f7079);
+}
+
+.pc-pairing-status {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 12px;
+  color: var(--muted, #6f7079);
+}
+
+.pc-pairing-status[data-state="ok"] {
+  color: var(--success, #1a6b3a);
+  font-weight: 700;
+}
+
+.pc-pairing-status[data-state="error"] {
+  color: var(--danger, #b3261e);
+}
+
+.pc-pairing-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pc-pairing-none {
+  font-size: 12px;
+  color: var(--muted, #6f7079);
+}
+
+.pc-pairing-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 10px;
+  background: var(--panel, #fff);
+}
+
+.pc-pairing-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pc-pairing-state {
+  flex: none;
+  margin-left: auto;
+  padding: 2px 8px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted, #6f7079);
+}
+
+/* One colour per server state, the same vocabulary the device manager uses. */
+.pc-pairing-state[data-state="active"] {
+  color: #11685f;
+  border-color: rgba(17, 104, 95, .35);
+  background: rgba(17, 104, 95, .08);
+}
+
+.pc-pairing-state[data-state="paused"] {
+  color: #8a6d1a;
+  border-color: rgba(138, 109, 26, .35);
+  background: rgba(138, 109, 26, .08);
+}
+
+.pc-pairing-state[data-state="pending_verification"] {
+  color: var(--accent-strong, #2f6f99);
+  border-color: rgba(47, 111, 153, .35);
+  background: rgba(47, 111, 153, .08);
+}
+
+.pc-pairing-state[data-state="revoked"] {
+  color: var(--danger, #b3261e);
+  border-color: rgba(179, 38, 30, .35);
+  background: rgba(179, 38, 30, .08);
+}
+
+.pc-pairing-menu {
+  position: relative;
+  flex: none;
+  margin-left: 4px;
+}
+
+.pc-pairing-menu-toggle {
+  min-width: 32px;
+  min-height: 32px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 8px;
+  background: var(--panel, #fff);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pc-pairing-menu-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 148px;
+  padding: 4px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 10px;
+  background: var(--panel, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+}
+
+.pc-pairing-menu-panel[hidden] {
+  display: none;
+}
+
+.pc-pairing-menu-panel > button {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+
+.pc-pairing-menu-panel > button:hover {
+  background: rgba(127, 127, 127, .14);
+}
+
+.pc-pairing-menu-revoke {
+  color: var(--danger, #b3261e);
+}
+
+.pc-pairing-rename-editor {
+  display: flex;
+  flex: 1 1 100%;
+  gap: 6px;
+}
+
+.pc-pairing-rename-editor[hidden] {
+  display: none;
+}
+
+.pc-pairing-name-input {
+  flex: 1;
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 8px;
+  background: var(--panel, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  .pc-pairing-link {
+    flex-wrap: wrap;
+  }
+
+  .pc-pairing-name {
+    flex: 1 1 auto;
+  }
+
+  .pc-pairing-state {
+    margin-left: 0;
+  }
+
+  .pc-pairing-menu {
+    margin-left: auto;
+  }
+
+  .pc-pairing-rename-editor {
+    flex-wrap: wrap;
+  }
+
+  .pc-pairing-name-input {
+    flex: 1 1 100%;
+  }
+}
