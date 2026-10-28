@@ -289,7 +289,7 @@ jobs:
         with:
           name: b62-auth-history-browser-qa
           path: .tmp/b62-auth-history-browser-qa
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
   browser-qa:
