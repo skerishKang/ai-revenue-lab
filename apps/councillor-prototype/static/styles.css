@@ -504,10 +504,16 @@ body {
     order: 2;
     position: static;
     display: block;
-    height: 196px;
+    /* The face must stay whole and large enough to read at 360–430px. Height scales with
+       the viewport and the width cap leaves the gutter clear, so the head can never be
+       pushed past the edge; object-fit keeps the cut-out's own proportion instead of
+       cropping it. The flat chest cut still lands on the band's bottom edge. */
+    height: clamp(212px, 58vw, 252px);
     width: auto;
-    max-width: 58%;
-    margin: 10px var(--gutter) 0 auto;
+    max-width: min(70%, 260px);
+    margin: 8px var(--gutter) 0 auto;
+    object-fit: contain;
+    object-position: bottom center;
     filter: drop-shadow(0 6px 16px rgba(11, 26, 46, 0.16));
   }
   .hero-copy { max-width: none; }
