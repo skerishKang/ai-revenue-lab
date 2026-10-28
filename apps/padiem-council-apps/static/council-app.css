@@ -416,11 +416,10 @@ body.council-body {
 .council-photo-add,
 .council-photo-controls button,
 .council-photo-pos-select,
-.council-result h3,
-.council-country select {
+.council-result h3 {
   min-height: 44px;
 }
-/* 390px 실측에서 빠진 두 개: 언어 선택 32px, 활동 기록 체크박스 13px. */
+/* 기록 선택 체크박스는 UA 기본 13px 라 대상 크기를 명시한다(행 자체는 위 44px 하한). */
 .council-book-check {
   width: 24px;
   height: 24px;
@@ -446,6 +445,9 @@ body.council-body {
   .council-menu { grid-template-columns: 1fr; gap: 12px; }
   .council-photo-item { flex-wrap: wrap; gap: 8px; }
   .council-photo-controls { width: 100%; justify-content: flex-end; }
+  /* 390px 실측 32.0px -> 터치 대상. 위 #5942 하한에 합류시키면 데스크톱 상단바가
+     55.60 -> 68.88px(+13.28)로 자라서, 좁은 화면에서만 올린다. */
+  .council-country select { min-height: 44px; }
 }
 
 @media (max-width: 390px) {
