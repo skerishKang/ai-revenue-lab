@@ -572,9 +572,19 @@
         </nav>
         <div class="util-panel" id="utilSpeechPanel">
           <form class="util-form" id="utilSpeechForm">
+            <!-- 참고 글 leads the form — the SNS tool's #6098 lane language: the
+                 PC reference lives in its own titled fieldset, before 기본 정보.
+                 The #5799 grouping continues below: basics, content, tone. -->
+            <fieldset class="util-fieldset" id="utilSpeechRef">
+              <legend>참고 글</legend>
+              <!-- #5895: the shared "from my PC" picker mounts here. The button,
+                   the preview of what was brought over, and the one-line "connect
+                   your PC" notice all live in this container. -->
+              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
+            </fieldset>
             <!-- #5799: the speech form follows the meeting-modes grouping
-                 pattern — same legend/border family, three sections: basics,
-                 content, tone/reference. Field names and behavior unchanged. -->
+                 pattern — same legend/border family: basics, content,
+                 tone/reference. Field names and behavior unchanged. -->
             <fieldset class="util-fieldset">
               <legend>기본 정보</legend>
               <label>행사명 <input name="event" type="text" required /></label>
@@ -594,10 +604,6 @@
               <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
               <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
               <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
-              <!-- #5895: the shared "from my PC" picker mounts here. The button,
-                   the preview of what was brought over, and the one-line "connect
-                   your PC" notice all live in this container. -->
-              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
             </fieldset>
             <!-- #5727: the form area owns the two authoring actions — generate
                  and save. The result area below carries only copy/download. -->

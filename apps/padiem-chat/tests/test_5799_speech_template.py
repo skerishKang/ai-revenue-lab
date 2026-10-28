@@ -39,9 +39,14 @@ def test_the_speech_header_carries_the_tool_kicker_and_tagline():
 
 def test_the_speech_form_groups_into_sections():
     form = HTML[HTML.index('id="utilSpeechForm"') : HTML.index("</form>", HTML.index("id=\"utilSpeechForm\""))]
-    assert form.count('class="util-fieldset"') == 3
-    for legend in ("기본 정보", "내용", "분량·말투·참고"):
+    # #6100: the reference lane leads the form first (the SNS tool's #6098
+    # language), then the #5799 sections: 기본 정보, 내용, 분량·말투·참고.
+    assert form.count('class="util-fieldset"') == 4
+    for legend in ("참고 글", "기본 정보", "내용", "분량·말투·참고"):
         assert f"<legend>{legend}</legend>" in form
+    # The PC reference lane is the form's own first section, mount inside it.
+    ref_at = form.index('id="utilSpeechRef"')
+    assert ref_at < form.index('id="utilSpeechPcRef"') < form.index("<legend>기본 정보</legend>")
     # Field names are the API surface — grouping must not rename anything.
     for name in ("event", "date", "place", "nature", "audience", "author", "message", "emphasis", "length", "tone", "style"):
         assert f'name="{name}"' in form
