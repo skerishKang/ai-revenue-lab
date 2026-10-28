@@ -2812,35 +2812,65 @@ class D1HistoryStore:
     async def cancel_oracle_mesh_dispatches_for_run(
         self, *, user_id: str, run_id: str,
     ) -> int:
-        """#5895 — stop one owner run's PC work that has not reached a PC yet.
+        """#5895 — stop one owner run's PC work, whether it is queued or running.
 
         ``pending`` with no claim nonce is exactly "no executor has ever seen
         this": stopping it removes the work from the queue, and the existing poll
         — which yields only ``pending`` rows — never hands it out again, so the
         next request the owner makes is claimed straight away instead of sitting
-        behind it. A row that already carries a nonce is deliberately left alone:
-        the PC is running that command, and its submission has to keep landing
-        under the existing nonce gate. Refusing it instead would make the
-        executor resend a result nobody asked for and hold the queue longer than
-        stopping it helps.
+        behind it.
+
+        A row that already carries a nonce is the case the owner is really asking
+        about: the PC has the command and the wait has no deadline (#5995 took the
+        client ceiling away, and a command the customer's shell never finishes -
+        measured on 2026-10-28 - holds every later operation on that PC behind it).
+        That row is not failed here. Its ``termination`` is set to ``cancelled``
+        and its ``state`` stays ``pending``, so the executor can read the owner's
+        stop through the existing channel, end its own child, and land its result
+        through the nonce gate it already holds. The row stays submittable on
+        purpose: a refused submission would be resent until quarantined, which
+        holds the queue longer than the stop the owner asked for.
 
         The terminal row says ``cancelled`` in the column that already records how
         a command ended, so an owner's own stop is never reported back as a PC
         failure. Both the read and the write are owner-scoped in the WHERE clause,
-        so another account's dispatch is not addressable, and the update is one
-        conditional statement: a claim that won the race is not cancelled here,
-        and a cancel that won is never claimed.
+        so another account's dispatch is not addressable, and each update is one
+        conditional statement: a claim that won the race is not cancelled as
+        queued work, and a cancel that won is never claimed twice.
         """
         if not isinstance(user_id, str) or not user_id:
             raise HistoryError("user_id is required")
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
-        written = await self._run(
+        stopped = await self._run(
             "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
             "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NULL",
             "failed", "cancelled", user_id, run_id, "pending",
         )
-        return _changed_rows(written)
+        running = await self._run(
+            "UPDATE oracle_mesh_dispatch SET termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NOT NULL",
+            "cancelled", user_id, run_id, "pending",
+        )
+        return _changed_rows(stopped) + _changed_rows(running)
+
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id: str) -> bool:
+        """Whether the owner stopped one already-claimed dispatch, for the executor.
+
+        One bounded read on a single column, addressed only by the dispatch id the
+        executor already holds. It never claims, never writes, and answers ``False``
+        for anything it cannot read: an unreachable store must not look like an
+        owner's stop, because ``False`` leaves the running command alone while
+        ``True`` ends it.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        row = await self._first(
+            "SELECT termination FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=? AND state=?",
+            dispatch_id, "pending",
+        )
+        return isinstance(row, dict) and row.get("termination") == "cancelled"
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str

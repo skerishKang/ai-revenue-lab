@@ -27,6 +27,9 @@ from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 RESULT_PATH = "/api/claw/connector/mesh-reads/result"
+#: The owner's stop, read back while a command is already running. One dispatch id
+#: in, one boolean out; nothing is claimed and nothing is written.
+CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -560,6 +563,31 @@ class OracleMeshExecutor:
             # Instrumentation is best-effort; the command outcome is authoritative.
             pass
 
+    def _cancel_probe(self, dispatch: OracleMeshDispatch) -> Callable[[], bool]:
+        """Ask the server, once per idle read slice, whether the owner stopped this.
+
+        The answer that ends a real command must come from the server's own record
+        of the owner's press, so every other case - no dispatch id, a refused
+        channel, a non-200, a body that is not that shape - is "no". Choosing "no"
+        on a transport problem is deliberate: an unreadable answer is not an owner's
+        stop, and the cost of the other reading is a PC operation that was never
+        asked to end.
+        """
+        dispatch_id = str(getattr(dispatch, "dispatch_id", "") or "")
+        if not dispatch_id:
+            return lambda: False
+
+        def probe() -> bool:
+            try:
+                status, body = self._post(CANCEL_PATH, {"dispatch_id": dispatch_id})
+            except Exception:
+                return False
+            if status != 200 or not isinstance(body, dict):
+                return False
+            return body.get("cancelled") is True
+
+        return probe
+
     def _execute_command(
         self, dispatch: OracleMeshDispatch
     ) -> OracleMeshExecutionOutcome:
@@ -586,9 +614,12 @@ class OracleMeshExecutor:
                 node_ref=dispatch.node_ref,
                 command=dispatch.command_text or "",
                 # Long-running commands carry no PADIEM client deadline; the
-                # progress trace is already reported through phase (#5983).
+                # progress trace is already reported through phase (#5983). The
+                # owner's stop is what ends one now (#5895): the probe asks the
+                # server between read slices whether this dispatch was cancelled.
                 timeout_seconds=None,
                 phase_observer=phase,
+                cancel_probe=self._cancel_probe(dispatch),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
@@ -606,7 +637,7 @@ class OracleMeshExecutor:
         termination = getattr(observed, "termination", "no_reply")
         if termination not in (
             "exited", "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "output_too_large", "bad_reply",
+            "output_too_large", "bad_reply", "cancelled",
         ):
             termination = "no_reply"
         exit_code = getattr(observed, "exit_code", None)

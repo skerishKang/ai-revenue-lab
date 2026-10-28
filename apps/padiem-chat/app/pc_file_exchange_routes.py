@@ -19,8 +19,8 @@ PC lane already uses.
     POST /api/pc/fetch   {link_id?, path}    one file's content
     POST /api/pc/save    {link_id?, path, content|file_id}   #5573's write, with the
                                              backup it takes before anything changes
-    POST /api/pc/cancel  {run_id}            stop this account's own operation that
-                                             has not reached a PC yet
+    POST /api/pc/cancel  {run_id}            stop this account's own operation, whether
+                                             the PC has started it or not
     GET  /api/pc/result  ?dispatch_id=       the durable state of one of the four
     GET  /api/pc/file    ?dispatch_id=      the bytes, for what a text answer cannot
                                              carry — the "file id" a menu consumes
@@ -805,12 +805,15 @@ async def pc_file_exchange_find(request: Request) -> JSONResponse:
 async def pc_file_exchange_cancel(request: Request) -> JSONResponse:
     """Stop one of this account's own picker operations.
 
-    Only work that has not reached a PC is taken out of the queue: a command the
-    executor already holds would have to be refused on submission, and a refused
-    result is resent until it is quarantined — which holds the queue longer than
-    letting that one command finish and simply not waiting for it. The answer is the
-    count of rows stopped, because the owner pressed one button and is owed to know
-    whether anything was actually still waiting. No confirmation step precedes it.
+    Work the PC has not started is taken out of the queue, and work the executor
+    already holds is stopped too: the row carries the owner's stop, the executor
+    reads it through its own channel while the command runs, and ending it is what
+    frees that PC - #5995 removed the client deadline, and a command the PC never
+    answers would otherwise hold every later operation behind it. The stopped row
+    keeps its claim, so the result the executor still owes lands as a stop rather
+    than being resent. The answer is the count of rows stopped, because the owner
+    pressed one button and is owed to know whether anything actually stopped. No
+    confirmation step precedes it.
     """
 
     body = await _read_body(request, frozenset({"run_id"}))
