@@ -185,7 +185,11 @@ async def project_files_collection(request: Request) -> JSONResponse:
                 status_code=400,
             )
         try:
-            files = await store.list_files(uid, pid, country=country_filter)
+            # 국가 필터를 요구한 경우에만 인자를 넘긴다: 필터 없는 호출은 오늘과 같은 호출 계약이다.
+            if country_filter is None:
+                files = await store.list_files(uid, pid)
+            else:
+                files = await store.list_files(uid, pid, country=country_filter)
         except Exception:
             return _unavailable()
         return JSONResponse({"files": [item.public_dict() for item in files]})
