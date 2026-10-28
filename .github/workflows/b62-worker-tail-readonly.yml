@@ -100,10 +100,35 @@ jobs:
           fi
           echo "TAIL_LINES=$(wc -l < "${out}")"
           echo "TAIL_ERR_HEAD=$(head -c 200 "${err}" | tr '\n' ' ')"
-          # An orphan tail keeps streaming into nobody. Delete what is registered
-          # for this Worker whether or not the capture worked.
-          npx --yes wrangler@4 tail --delete-all "${TAIL_WORKER}" \
-            > /dev/null 2>&1 || echo "TAIL_DELETE_INDETERMINATE=1"
+
+      - name: Leave no tail registered
+        run: |
+          set -uo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.error, urllib.request
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          worker = os.environ["TAIL_WORKER"]
+          base = ("https://api.cloudflare.com/client/v4/accounts/%s/workers/scripts/%s/tails"
+                  % (account, worker))
+          def call(url, method="GET"):
+              req = urllib.request.Request(url, method=method, headers={
+                  "Authorization": "Bearer " + token, "Content-Type": "application/json"})
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      return resp.status, json.loads(resp.read().decode("utf-8", "replace"))
+              except urllib.error.HTTPError as exc:
+                  return exc.code, {}
+          status, body = call(base)
+          rows = (body or {}).get("result") or []
+          print("TAIL_REGISTERED=%d" % len(rows))
+          for row in rows:
+              tail_id = row.get("id")
+              if not tail_id:
+                  continue
+              code, _ = call("%s/%s" % (base, tail_id), method="DELETE")
+              print("TAIL_DELETED=%s http=%s" % (str(tail_id)[:8], code))
+          PY
 
       - name: Aggregate (counts only)
         run: python3 .github/scripts/b62_tail_summarize.py "${RUNNER_TEMP}/tail.jsonl"

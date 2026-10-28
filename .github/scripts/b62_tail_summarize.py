@@ -38,6 +38,10 @@ def signature(row: dict) -> str | None:
     """One exception line, shortened and scrubbed of anything token-shaped."""
 
     exc = row.get("exception")
+    if not isinstance(exc, dict):
+        listed = row.get("exceptions")
+        if isinstance(listed, list):
+            exc = next((item for item in listed if isinstance(item, dict)), None)
     parts: list[str] = []
     if isinstance(exc, dict):
         for key in ("pattern", "message", "name"):
@@ -57,7 +61,12 @@ def signature(row: dict) -> str | None:
 
 
 def path_of(row: dict) -> str | None:
-    for holder in (row.get("request"), row.get("event") or {}):
+    holders = [row.get("request")]
+    event = row.get("event")
+    if isinstance(event, dict):
+        holders.append(event)
+        holders.append(event.get("request"))
+    for holder in holders:
         if isinstance(holder, dict):
             url = holder.get("url")
             if isinstance(url, str) and url:
@@ -143,16 +152,34 @@ def emit(summary: dict) -> None:
 
 
 def load(path: str) -> list[dict]:
+    """Read a capture as a stream of JSON values.
+
+    `wrangler tail --format json` pretty-prints one JSON array across many lines, while
+    other builds emit one object per line. Both are read here: values are decoded where
+    they start, and anything that is not JSON (wrangler's own header lines) is skipped.
+    """
+
+    text = open(path, encoding="utf-8", errors="replace").read()
+    decoder = json.JSONDecoder()
     rows: list[dict] = []
-    with open(path, encoding="utf-8", errors="replace") as handle:
-        for line in handle:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
+    index = 0
+    while index < len(text):
+        if text[index] in " \t\r\n,[]":
+            index += 1
+            continue
+        try:
+            value, end = decoder.raw_decode(text, index)
+        except ValueError:
+            newline = text.find("\n", index)
+            if newline < 0:
+                break
+            index = newline + 1
+            continue
+        if isinstance(value, dict):
+            rows.append(value)
+        elif isinstance(value, list):
+            rows.extend(item for item in value if isinstance(item, dict))
+        index = end
     return rows
 
 

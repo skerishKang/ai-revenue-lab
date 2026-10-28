@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import json
 import pathlib
 import sys
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 
@@ -98,6 +100,48 @@ class SummarizeTests(unittest.TestCase):
             self.assertNotIn(secret, printed)
 
 
+class LoadTests(unittest.TestCase):
+    """The capture shape is what wrangler really writes, not what we guessed.
+
+    The first run produced 4,541 lines and 0 usable rows because wrangler pretty-prints
+    one JSON array across many lines. Both shapes must load.
+    """
+
+    def _write(self, text):
+        directory = self.enterContext(tempfile.TemporaryDirectory())
+        handle = pathlib.Path(directory) / "tail.jsonl"
+        handle.write_text(text, encoding="utf-8")
+        return str(handle)
+
+    def test_a_pretty_printed_json_array_loads(self):
+        array = json.dumps([_row("ok", "x", "https://chat.padiem.net/health"),
+                            _row("exceedCpu", "cpu", "https://chat.padiem.net/health")], indent=2)
+        rows = summ.load(self._write(array))
+        self.assertEqual(len(rows), 2)
+        summary = summ.summarize(rows)
+        self.assertEqual(summary["outcomes"]["ok"], 1)
+        self.assertEqual(summary["outcomes"]["exceededCpu"], 1)
+        self.assertIn("request", summary["fields"])
+
+    def test_one_object_per_line_still_loads(self):
+        text = "\n".join(json.dumps(_row("ok", "x", "https://chat.padiem.net/health"))
+                         for _ in range(3))
+        self.assertEqual(len(summ.load(self._write(text))), 3)
+
+    def test_wrangler_header_noise_is_skipped_not_counted(self):
+        text = ("Connected to padiem-chat...\n"
+                "while logs are connected, press ctrl-c to stop\n"
+                + json.dumps(_row("exception", "boom", "https://chat.padiem.net/health"))
+                + "\n")
+        rows = summ.load(self._write(text))
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(summ.summarize(rows)["outcomes"]["exception"], 1)
+
+    def test_an_empty_capture_says_so_instead_of_printing_nothing(self):
+        printed = _capture(summ.load(self._write("")))
+        self.assertIn("TAIL_EMPTY=1", printed)
+
+
 class WorkflowContractTests(unittest.TestCase):
     def test_the_tail_lane_is_dispatch_only_and_reads_credentials(self):
         text = WORKFLOW_PATH.read_text(encoding="utf-8")
@@ -109,6 +153,9 @@ class WorkflowContractTests(unittest.TestCase):
                           "d1 migrations apply", "wrangler versions upload"):
             self.assertNotIn(forbidden, text)
         self.assertIn("b62_tail_summarize.py", text)
+        # The tail is always unregistered again, through the API rather than a guessed
+        # wrangler flag, so a killed capture cannot leave a live tail behind.
+        self.assertIn("TAIL_REGISTERED", text)
 
 
 if __name__ == "__main__":
