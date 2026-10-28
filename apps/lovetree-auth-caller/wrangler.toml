@@ -5,9 +5,18 @@ workers_dev = true
 
 # COM2 → 중계 서버 간 인증 비밀은 secret으로만 넣는다(값을 이 파일에 적지 않는다).
 #   npx wrangler secret put LOVETREE_CALLER_SECRET --name lovetree-auth-caller
-# 읽기 전용이 아니라 폐기(쓰기) 한 종류만 허용한 중계다. 제품 ID는 코드에서 고정한
-# lovetree-4-0만 권위에 전달하므로 호출자가 제품이나 주체를 주장할 수 없다.
-# D1/KV/R2 바인딩 0개, Control Plane의 공개 HTTP 표면은 그대로다.
+# 폐기 한 종류와, 검증된 1회용 handoff 표를 근거로 한 발급만 허용한 중계다. 제품 ID는 코드에서
+# 고정한 lovetree-4-0만 권위에 전달하므로 호출자가 제품이나 주체를 주장할 수 없다.
+# Control Plane의 공개 HTTP 표면은 그대로다(이 중계가 새 공개 HTTP 진입점이 된다).
 [[services]]
 binding = "IDENTITY_AUTHORITY"
 service = "padiem-control-plane-identity"
+
+# 발급 근거가 되는 1회용 handoff 표(migration 073, 테이블 lovetree_login_handoffs)는
+# 기존 PADIEM 로그인이 같은 D1에 쓴다. 이 중계는 그 행을 조건부 UPDATE 한 문장으로
+# 한 번만 소비하고 권위에 발급을 부탁한다 — 표를 새로 만들거나 신원을 고치지 않는다.
+# 바인딩 실제 적용(권한·배포)은 운영 작업이며 이 변경으로는 수행하지 않는다.
+[[d1_databases]]
+binding = "LOVETREE_LOGIN_DB"
+database_name = "padiem-chat-db"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"

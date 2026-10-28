@@ -5,10 +5,15 @@ on:
     paths:
       - 'apps/lovetree-authority-caller/**'
       - 'apps/lovetree-auth-caller/**'
+      # 발급 중계가 소비하는 표의 정의(migration 073)와 전이 규칙이 이 lane의 검증 대상이다.
+      - 'apps/padiem-chat/app/lovetree_auth_store.py'
+      - 'apps/padiem-chat/migrations/073_lovetree_login_handoff.sql'
+      - 'apps/padiem-chat/tests/test_lovetree_login_handoff.py'
       - '.github/workflows/lovetree-authority-caller-ci.yml'
   push:
     paths:
       - 'apps/lovetree-authority-caller/**'
+      - 'apps/lovetree-auth-caller/**'
   workflow_dispatch:
 
 permissions:
@@ -46,7 +51,7 @@ jobs:
           [ "${skipped:-1}" = "0" ] || { echo "실패: 읽기 전용 중계 테스트 skip"; exit 1; }
           [ "${pass:-0}" -ge 11 ] || { echo "실패: 읽기 전용 중계 테스트 11건 미만 실행"; exit 1; }
 
-      - name: Run the revoke caller worker tests
+      - name: Run the login handoff caller worker tests
         working-directory: apps/lovetree-auth-caller
         run: |
           node --test --test-reporter=tap test/worker.test.mjs > /tmp/auth.tap 2>&1 || { cat /tmp/auth.tap; exit 1; }
@@ -54,7 +59,12 @@ jobs:
           pass=$(awk '/^# pass /{print $3}' /tmp/auth.tap)
           fail=$(awk '/^# fail /{print $3}' /tmp/auth.tap)
           skipped=$(awk '/^# skipped /{print $3}' /tmp/auth.tap)
-          echo "revoke caller: pass=$pass fail=$fail skipped=$skipped"
-          [ "${fail:-1}" = "0" ] || { echo "실패: 폐기 중계 테스트 실패"; exit 1; }
-          [ "${skipped:-1}" = "0" ] || { echo "실패: 폐기 중계 테스트 skip"; exit 1; }
-          [ "${pass:-0}" -ge 4 ] || { echo "실패: 폐기 중계 테스트 4건 미만 실행"; exit 1; }
+          echo "login handoff caller: pass=$pass fail=$fail skipped=$skipped"
+          [ "${fail:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 실패"; exit 1; }
+          [ "${skipped:-1}" = "0" ] || { echo "실패: 발급 중계 테스트 skip"; exit 1; }
+          [ "${pass:-0}" -ge 11 ] || { echo "실패: 발급 중계 테스트 11건 미만 실행"; exit 1; }
+
+      # migration 073의 SQL·CHECK과 저장소 전이 규칙은 이 lane에서 텍스트 계약으로 묶고(drift guard),
+      # 실제 SQL 실행 검증은 apps/padiem-chat/tests/test_lovetree_login_handoff.py가 B62 Chat CI lane에서
+      # sqlite3로 한다. 이 lane은 Chat 의존성(httpx·starlette·padiem_control_plane)을 제공하지 않으므로
+      # 여기서 Chat 테스트를 수집하지 않는다(CROSS_LANE_DEPENDENCY_GUARD 규칙).

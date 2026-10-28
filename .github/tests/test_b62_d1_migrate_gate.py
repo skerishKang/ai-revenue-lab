@@ -705,7 +705,8 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
         "--out", str(plan),
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
-    assert len(result["seed"]) == 61
+    # inventory에는 표가 하나 더 있다: 073_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
+    assert len(result["seed"]) == 62
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -891,7 +892,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 61
+    assert len(plan["seed"]) == 62
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -899,7 +900,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 61
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 62
 
     window_dir = tmp_path / "window"
     assert gate.main([
