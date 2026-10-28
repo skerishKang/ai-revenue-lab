@@ -12,22 +12,31 @@ the approved roots are all re-read server-side through the authorities the compo
 PC lane already uses.
 
     POST /api/pc/browse  {link_id?, path?}   one folder's entries
-    POST /api/pc/find    {link_id?, name}    every file of that name, across every
-                                             folder this account granted
+    POST /api/pc/find    {link_id?, name, run_id?, folder?, remaining?}
+                                            every file of that name, across every
+                                            folder this account granted, one folder
+                                            of the sweep per call
     POST /api/pc/fetch   {link_id?, path}    one file's content
     POST /api/pc/save    {link_id?, path, content|file_id}   #5573's write, with the
                                              backup it takes before anything changes
+    POST /api/pc/cancel  {run_id}            stop this account's own operation that
+                                             has not reached a PC yet
     GET  /api/pc/result  ?dispatch_id=       the durable state of one of the four
     GET  /api/pc/file    ?dispatch_id=      the bytes, for what a text answer cannot
                                              carry — the "file id" a menu consumes
 
-The four POSTs stage a dispatch on the lane the PC tools already use and answer at
+The POSTs stage a dispatch on the lane the PC tools already use and answer at
 once with the dispatch and run identity. The screen then watches `GET /api/pc/result`
 under the #5895 "PC에서 작업 중 — 경과 시간" display, so a PC that takes minutes is
 the same operation rather than a failure, and a request that drops is re-read from the
 server's own record. Nothing here adds a second byte or item ceiling and no
-confirmation step: the only instant that can end a wait is the dispatch's own existing
-expiry, and every wait is a read-only GET.
+confirmation step: the only instants that can end a wait are the dispatch's own
+existing expiry and the owner pressing 그만, and every wait is a read-only GET.
+
+A search is the one operation that is spread over several dispatches, because one
+whole-drive command answers only at its end and holds the PC until then. That is a
+division of the work, not a limit on it: every folder the account granted is still
+swept, and the owner can stop at any point.
 """
 from __future__ import annotations
 
@@ -73,13 +82,25 @@ PC_BROWSE_PATH = "/api/pc/browse"
 PC_FIND_PATH = "/api/pc/find"
 PC_FETCH_PATH = "/api/pc/fetch"
 PC_SAVE_PATH = "/api/pc/save"
+PC_CANCEL_PATH = "/api/pc/cancel"
 PC_RESULT_PATH = "/api/pc/result"
 PC_FILE_PATH = "/api/pc/file"
 LINK_ID = re.compile(r"\Apclink_[0-9a-f]{32}\Z")
 DISPATCH_ID = re.compile(r"\Adsp_[0-9a-f]{32}\Z")
+#: The lane's own run identity, as `_new_lane_run_id` mints it. A screen may name a
+#: run to continue its own sweep; it may not name one it does not own, and that is
+#: decided by the owner-scoped read, not by this shape.
+RUN_ID = re.compile(r"\Achat_pcq_[0-9a-f]{32}\Z")
 #: PowerShell's `ConvertTo-Json -Compress` answers one object for one entry, an array
 #: for several, and nothing at all for an empty folder. All three are the same answer.
 _SEARCH_MARK = " -Recurse "
+#: The two columns a search adds to a plain folder listing: the whole path, so one
+#: name found in two folders can be told apart, and the folder rows themselves, which
+#: are the next places to look.
+_FOUND_MARK = "Select-Object FullName, Name"
+#: The dispatch's own word for "the owner stopped this", written into the column that
+#: already records how a command ended.
+CANCELLED_TERMINATION = "cancelled"
 _MAX_LABEL_CHARS = 200
 _MAX_FIND_NAME_CHARS = 255
 _TEXT_SUFFIXES = (
@@ -240,6 +261,50 @@ async def _stage_run(
     return run_id, str(conversation_id)
 
 
+async def _continued_run(
+    request: Request, *, uid: str, workspace_id: str, run_id: Any,
+) -> tuple[str, str] | JSONResponse:
+    """The sweep the screen already started, proved again to be this account's.
+
+    A search is one operation spread over many folders, so every step after the
+    first lands on the run — and in the conversation — the first call made. Only
+    the run id comes from the browser: the row, its owner and its workspace are
+    read back here, so one account cannot queue work inside another account's
+    picker operation, and a made-up id is simply not found.
+    """
+
+    if not isinstance(run_id, str) or RUN_ID.fullmatch(run_id) is None:
+        return _error(400, "pc_exchange_run_id_invalid")
+    store = getattr(request.app.state, "history_store", None)
+    reader = getattr(store, "get_claw_run", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        row = await reader(uid, run_id)
+    except Exception:
+        return _error(503, "chat_pc_store_unavailable")
+    conversation_id = validate_conversation_id(
+        row.get("conversation_id") if isinstance(row, dict) else None
+    )
+    if (
+        not isinstance(row, dict) or row.get("run_id") != run_id
+        or row.get("workspace_id") != workspace_id or not conversation_id
+    ):
+        return _error(404, "pc_run_not_found")
+    return run_id, conversation_id
+
+
+async def _picker_run(
+    request: Request, *, uid: str, workspace_id: str, body: dict[str, Any], note: str,
+) -> tuple[str, str] | JSONResponse:
+    """A new picker run, or the one this screen is already sweeping inside."""
+
+    run_id = body.get("run_id")
+    if run_id is None:
+        return await _stage_run(request, uid=uid, workspace_id=workspace_id, note=note)
+    return await _continued_run(request, uid=uid, workspace_id=workspace_id, run_id=run_id)
+
+
 async def _staged(answer: JSONResponse, *, run: tuple[str, str], extra: dict[str, Any] | None = None) -> JSONResponse:
     """Pass the lane's own refusal through, or answer with the staged dispatch."""
 
@@ -392,25 +457,96 @@ def _folder_choices(roots: list[dict[str, Any]]) -> list[dict[str, str]]:
     ]
 
 
-def _search_command(roots: list[dict[str, Any]], name: str) -> str:
-    """Every file of one name inside the folders this account granted.
+def _granted_folder(roots: list[dict[str, Any]], value: Any) -> str | None:
+    """The PC path for one folder of the sweep, or None when it is outside every grant.
 
-    The cmdlet-only shape the existing listing command uses — no native program, so
-    the reply keeps reporting no exit code — and deliberately no `-First`: an owner
-    asking where a file is must not get an answer that silently stops at a number,
-    so the screen splits the list instead.
+    The screen names the folder it is standing in and the folders still waiting; each
+    of those is judged by the lane's own root rule. A queue entry that points outside
+    what this account granted is therefore not a wider search — it is a refusal, the
+    same way a typed path would be.
+    """
+
+    picked = _resolve_path(roots, value)
+    if picked is None:
+        return None
+    root, relative = picked
+    return root.rstrip("/") + ("/" + relative if relative else "")
+
+
+def _sweep_step(
+    roots: list[dict[str, Any]], body: dict[str, Any],
+) -> tuple[str | None, list[str], JSONResponse | None]:
+    """(folder to sweep now, folders still waiting, refusal).
+
+    A call with neither `folder` nor `remaining` is the first look: the granted
+    folders themselves. After that the queue travels with the request, because the
+    sweep belongs to the screen that started it — and every entry in it is checked
+    against the grants, so a queue can never grow past what the owner allowed.
+    """
+
+    folder = body.get("folder")
+    remaining = body.get("remaining")
+    if folder is None and remaining is None:
+        return None, [], None
+    if folder is None:
+        return None, [], _error(422, "oracle_mesh_file_path_invalid")
+    if not isinstance(remaining, list):
+        return None, [], _error(422, "pc_exchange_queue_required")
+    swept = _granted_folder(roots, folder)
+    if swept is None:
+        return None, [], _error(422, "oracle_mesh_file_path_invalid")
+    waiting: list[str] = []
+    for entry in remaining:
+        path = _granted_folder(roots, entry)
+        if path is None:
+            return None, [], _error(422, "oracle_mesh_file_path_invalid")
+        waiting.append(path)
+    return swept, waiting, None
+
+
+def _ps_like(name: str) -> str:
+    """A name typed with `*`, `?` or `[` is that literal name: `-like` wildcards are
+    escaped so the owner's own characters cannot widen the search."""
+
+    return "".join(("`" + ch) if ch in "*?[`" else ch for ch in name)
+
+
+_FOUND_TAIL = (" | Select-Object FullName, Name, Length, LastWriteTimeUtc, PSIsContainer"
+               " | ConvertTo-Json -Compress")
+
+
+def _seed_search_command(roots: list[dict[str, Any]], name: str) -> str:
+    """The granted folders one level deep: what matches here, and what is left to look in.
+
+    The cmdlet-only shape the existing listing command uses — no native program, so the
+    reply keeps reporting no exit code — and deliberately no `-First`: an owner asking
+    where a file is must not get an answer that silently stops at a number. The folder
+    rows are the plan for the rest of the sweep, which is why they come back with the
+    matches rather than being filtered away.
     """
 
     paths = ", ".join(_pc_files_powershell_literal(str(root["path"])) for root in roots)
-    # A name typed with `*`, `?` or `[` is that literal name: `-like` wildcards are
-    # escaped so the owner's own characters cannot widen the search.
-    literal = "".join(("`" + ch) if ch in "*?[`" else ch for ch in name)
     return (
         "Get-ChildItem -LiteralPath " + paths
+        + " -Force -ErrorAction SilentlyContinue"
+        + " | Where-Object { $_.PSIsContainer -or $_.Name -like '*" + _ps_like(name) + "*' }"
+        + _FOUND_TAIL
+    )
+
+
+def _sweep_command(folder: str, name: str) -> str:
+    """One whole subtree, by name — the next call asks for the next folder.
+
+    Splitting the search this way is what keeps a PC usable: a single whole-drive
+    command answers only at its end and nothing else runs on that PC until then, while
+    every folder here is still swept, so no match is left out and no count is capped.
+    """
+
+    return (
+        "Get-ChildItem -LiteralPath " + _pc_files_powershell_literal(folder)
         + " -Recurse -Force -ErrorAction SilentlyContinue"
-        + " | Where-Object { $_.Name -like '*" + literal + "*' }"
-        + " | Select-Object FullName, Name, Length, LastWriteTimeUtc, PSIsContainer"
-        + " | ConvertTo-Json -Compress"
+        + " | Where-Object { $_.Name -like '*" + _ps_like(name) + "*' }"
+        + _FOUND_TAIL
     )
 
 
@@ -550,9 +686,24 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
 
 
 async def pc_file_exchange_find(request: Request) -> JSONResponse:
-    """Every file of one name, across every folder this account granted."""
+    """Every file of one name, across every folder this account granted.
 
-    body = await _read_body(request, frozenset({"name"}), optional=frozenset({"link_id"}))
+    The sweep is spread over calls instead of run as one command, because a single
+    whole-drive command answers only when it ends and nothing else runs on that PC
+    until then. The first call looks at the granted folders themselves and reports the
+    folders left to look in; each next call takes the folder the screen is now at and
+    the list of the ones still waiting. Every granted folder is still swept — no match
+    is left out and no count is capped — but each answer arrives on its own, so the
+    screen shows what has been found so far and a short request waits behind one
+    folder rather than behind a whole drive. The screen also stops asking whenever the
+    owner presses 그만, and `/api/pc/cancel` takes the folder that has not reached a
+    PC yet out of the queue.
+    """
+
+    body = await _read_body(
+        request, frozenset({"name"}),
+        optional=frozenset({"link_id", "run_id", "folder", "remaining"}),
+    )
     if body is None:
         return _error(400, "pc_exchange_invalid_body")
     name = _text_value(body.get("name"), limit=_MAX_FIND_NAME_CHARS)
@@ -575,19 +726,62 @@ async def pc_file_exchange_find(request: Request) -> JSONResponse:
     target, refusal = await _dispatch_target(request, session=session, uid=uid, link=link)
     if refusal is not None:
         return refusal
-    run = await _stage_run(request, uid=uid, workspace_id=workspace_id,
-                           note="내 PC에서 파일을 찾았습니다: " + name)
+    folder, waiting, refusal = _sweep_step(link["roots"], body)
+    if refusal is not None:
+        return refusal
+    run = await _picker_run(request, uid=uid, workspace_id=workspace_id, body=body,
+                            note="내 PC에서 파일을 찾습니다: " + name)
     if isinstance(run, JSONResponse):
         return run
+    command = (_seed_search_command(link["roots"], name) if folder is None
+               else _sweep_command(folder, name))
     answer = await dispatch_oracle_mesh_command_intent(
         request,
-        command=_search_command(link["roots"], name),
+        command=command,
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
-        tool_call_ref=_call_ref(run[0], "find", name),
+        tool_call_ref=_call_ref(run[0], "find", name, folder or "."),
         files_target=target,
     )
-    return await _staged(answer, run=run, extra={"name": name})
+    return await _staged(answer, run=run, extra={
+        "name": name, "folder": folder, "remaining": waiting,
+    })
+
+
+async def pc_file_exchange_cancel(request: Request) -> JSONResponse:
+    """Stop one of this account's own picker operations.
+
+    Only work that has not reached a PC is taken out of the queue: a command the
+    executor already holds would have to be refused on submission, and a refused
+    result is resent until it is quarantined — which holds the queue longer than
+    letting that one command finish and simply not waiting for it. The answer is the
+    count of rows stopped, because the owner pressed one button and is owed to know
+    whether anything was actually still waiting. No confirmation step precedes it.
+    """
+
+    body = await _read_body(request, frozenset({"run_id"}))
+    if body is None:
+        return _error(400, "pc_exchange_invalid_body")
+    owner = await _owner(request)
+    if isinstance(owner, JSONResponse):
+        return owner
+    _session, uid, workspace_id = owner
+    run = await _continued_run(request, uid=uid, workspace_id=workspace_id,
+                               run_id=body.get("run_id"))
+    if isinstance(run, JSONResponse):
+        return run
+    store = getattr(request.app.state, "history_store", None)
+    canceller = getattr(store, "cancel_oracle_mesh_dispatches_for_run", None)
+    if not callable(canceller):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        stopped = await canceller(user_id=uid, run_id=run[0])
+    except Exception:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    if not isinstance(stopped, int) or stopped < 0:
+        return _error(503, "oracle_mesh_dispatch_unavailable")
+    return _response({"ok": True, "state": "cancelled", "run_id": run[0],
+                      "stopped": stopped, "poll_seconds": RESULT_POLL_SECONDS})
 
 
 async def pc_file_exchange_fetch(request: Request) -> JSONResponse:
@@ -746,6 +940,10 @@ async def pc_file_exchange_result(request: Request) -> JSONResponse:
         return _response({"ok": True, "state": "working", "dispatch_id": dispatch_id,
                           "poll_seconds": RESULT_POLL_SECONDS})
     if state == "failed":
+        if dispatch.get("termination") == CANCELLED_TERMINATION:
+            # The owner stopped this. It is a state of the operation, not a PC that
+            # failed, and the screen says so in those words.
+            return _response({"ok": True, "state": "cancelled", "dispatch_id": dispatch_id})
         return _error(502, "pc_dispatch_failed")
     content, refusal = await _stored_output(request, uid, dispatch)
     if refusal is not None:
@@ -758,9 +956,19 @@ async def pc_file_exchange_result(request: Request) -> JSONResponse:
             # original now sits. A write the PC refused stays refused, not rewritten.
             return _response({"ok": account.get("ok") is True, "state": "ready",
                               "dispatch_id": dispatch_id, "saved": account})
-        if _SEARCH_MARK in str(dispatch.get("command_text") or ""):
-            return _response({"ok": True, "state": "ready", "dispatch_id": dispatch_id,
-                              "found": _found_items(text)})
+        command_text = str(dispatch.get("command_text") or "")
+        if _FOUND_MARK in command_text:
+            rows = _found_items(text)
+            if _SEARCH_MARK in command_text:
+                return _response({"ok": True, "state": "ready", "dispatch_id": dispatch_id,
+                                  "found": rows})
+            # The first look: what matched in the granted folders themselves, and the
+            # folders the sweep has still to go through.
+            return _response({
+                "ok": True, "state": "ready", "dispatch_id": dispatch_id,
+                "found": [row for row in rows if row["kind"] == "file"],
+                "folders": [row["path"] for row in rows if row["kind"] == "folder"],
+            })
         return _response({"ok": True, "state": "ready", "dispatch_id": dispatch_id,
                           "items": _listing_items(text)})
     readable = _is_text(content)

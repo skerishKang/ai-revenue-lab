@@ -2809,6 +2809,39 @@ class D1HistoryStore:
         )
         return _changed_rows(written) == 1
 
+    async def cancel_oracle_mesh_dispatches_for_run(
+        self, *, user_id: str, run_id: str,
+    ) -> int:
+        """#5895 — stop one owner run's PC work that has not reached a PC yet.
+
+        ``pending`` with no claim nonce is exactly "no executor has ever seen
+        this": stopping it removes the work from the queue, and the existing poll
+        — which yields only ``pending`` rows — never hands it out again, so the
+        next request the owner makes is claimed straight away instead of sitting
+        behind it. A row that already carries a nonce is deliberately left alone:
+        the PC is running that command, and its submission has to keep landing
+        under the existing nonce gate. Refusing it instead would make the
+        executor resend a result nobody asked for and hold the queue longer than
+        stopping it helps.
+
+        The terminal row says ``cancelled`` in the column that already records how
+        a command ended, so an owner's own stop is never reported back as a PC
+        failure. Both the read and the write are owner-scoped in the WHERE clause,
+        so another account's dispatch is not addressable, and the update is one
+        conditional statement: a claim that won the race is not cancelled here,
+        and a cancel that won is never claimed.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NULL",
+            "failed", "cancelled", user_id, run_id, "pending",
+        )
+        return _changed_rows(written)
+
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
     ) -> dict[str, Any] | None:

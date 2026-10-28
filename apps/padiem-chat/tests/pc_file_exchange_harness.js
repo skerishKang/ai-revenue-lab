@@ -113,6 +113,7 @@ function makeDom(responses) {
   return { body, calls, sandbox, window: sandbox, El };
 }
 
+const SWEEP_RUN = "chat_pcq_" + "d".repeat(32);
 const LINK_ONE = "pclink_" + "1".repeat(32);
 const LINK_TWO = "pclink_" + "2".repeat(32);
 const FETCHED = "dsp_" + "a".repeat(32);
@@ -124,10 +125,11 @@ const nextDispatch = () => "dsp_" + (sequence += 1).toString(16).padStart(32, "0
 // Each staged answer owns one dispatch id for its whole operation, because the waiting
 // loop follows the id the server handed back — a fixture that reused one id everywhere
 // would still pass if the part watched somebody else's answer.
-function staged() {
+function staged(runId) {
   const id = nextDispatch();
+  const run = runId || ("chat_pcq_" + id.slice(4));
   return () => ({ status: 200, body: {
-    ok: true, state: "working", dispatch_id: id, run_id: "chat_pcq_" + "b".repeat(32),
+    ok: true, state: "working", dispatch_id: id, run_id: run,
     conversation_id: "chat_" + "c".repeat(32), poll_seconds: 0.001,
   } });
 }
@@ -148,6 +150,18 @@ const saved = () => ({ status: 200, body: { ok: true, state: "ready", saved: {
 const refused = () => ({ status: 200, body: { ok: false, state: "ready", saved: {
   ok: false, op: "write", reason: "backup_failed", target: SAVED_TO, backup: null, bytes: 0,
 } } });
+
+// The first look answers the matches at that level and the folders left to look in, and
+// each folder answered afterwards carries only its own matches: that is what lets the
+// screen show part of a search while the rest is still being looked through.
+const seeded = () => ({ status: 200, body: { ok: true, state: "ready", found: [
+  { name: "명함.png", kind: "file", size_bytes: 100, folder: "C:/Users/qa",
+    path: "C:/Users/qa/명함.png" },
+], folders: ["C:/Users/qa/2026", "C:/Users/qa/사진"] } });
+const swept = (name, folder) => () => ({ status: 200, body: { ok: true, state: "ready", found: [
+  { name: name, kind: "file", size_bytes: 120, folder: folder, path: folder + "/" + name },
+] } });
+const cancelled = { status: 200, body: { ok: true, state: "cancelled", stopped: 1 } };
 
 const results = [];
 const settle = async (rounds = 20) => {
@@ -204,11 +218,19 @@ async function main() {
     && entriesOf(dom).some((node) => node.allText().includes("1분기.md")),
     JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
 
-  // ── searching by name, then choosing a file ──
+  // ── searching by name: the sweep walks the folders and the list grows as it goes ──
+  let duringSweep = -1;
   const search = makeDom({
     "/api/pc/browse": [staged()],
-    "/api/pc/find": [staged()],
-    "/api/pc/result": [working, listed, working, found, working, fetched],
+    "/api/pc/find": [staged(SWEEP_RUN), staged(SWEEP_RUN), staged(SWEEP_RUN)],
+    "/api/pc/result": [
+      working, listed,
+      working, seeded,
+      working, swept("견적서.xlsx", "C:/Users/qa/2026"),
+      working, () => { duringSweep = entriesOf(search).length; return working(); },
+      working, swept("명함.png", "C:/Users/qa/사진"),
+      working, fetched,
+    ],
     "/api/pc/fetch": [staged()],
   });
   let chosen = null;
@@ -217,20 +239,46 @@ async function main() {
   const searchBox = search.body.find((node) => node.tagName === "INPUT");
   searchBox.value = "명함";
   buttonOf(search, "pc-exchange-search-button").click();
-  await settle();
+  await settle(60);
+  const findCalls = search.calls.filter((call) => call.url === "/api/pc/find").map(bodyOf);
   check("the search is asked of the PC by name",
-    search.calls.some((call) => call.url === "/api/pc/find" && bodyOf(call).name === "명함"),
-    JSON.stringify(search.calls.map((call) => call.url)));
+    findCalls.length > 0 && findCalls.every((call) => call.name === "명함"),
+    JSON.stringify(findCalls));
+  check("the first look is asked without naming a folder",
+    findCalls[0].folder === undefined && findCalls[0].run_id === undefined,
+    JSON.stringify(findCalls[0]));
+  check("the sweep then asks one folder at a time inside the same operation",
+    findCalls[1].folder === "C:/Users/qa/2026"
+    && findCalls[2].folder === "C:/Users/qa/사진"
+    && findCalls[1].run_id === findCalls[2].run_id
+    && findCalls[1].run_id === SWEEP_RUN && findCalls[2].run_id === SWEEP_RUN,
+    JSON.stringify(findCalls));
+  check("the folder still waiting travels with the request",
+    findCalls[1].remaining.length === 1 && findCalls[1].remaining[0] === "C:/Users/qa/사진"
+    && findCalls[2].remaining.length === 0,
+    JSON.stringify(findCalls));
+  check("the matches of every folder looked through stay on the screen",
+    entriesOf(search).length === 3
+    && entriesOf(search).map((node) => node.allText()).join("|").includes("견적서.xlsx"),
+    `rows=${entriesOf(search).length}`);
+  // The whole point of dividing the search: the owner is never shown an empty screen
+  // while the rest of the drive is still being looked through.
+  check("part of the answer is shown while the next folder is still being searched",
+    duringSweep === 2, `rows_while_sweeping=${duringSweep}`);
+  check("the search ends in the owner's words, not a spinner",
+    statusOf(search) === null
+    || statusOf(search).allText() === copyOf("pc-exchange-searched"),
+    statusOf(search) ? statusOf(search).allText() : "no status");
   check("a found file shows the folder it came from",
-    entriesOf(search).map((node) => node.allText()).join("|").includes("D:/그림"),
+    entriesOf(search).map((node) => node.allText()).join("|").includes("C:/Users/qa/2026"),
     dialogOf(search).allText());
 
-  entriesOf(search)[0].click();
+  entriesOf(search)[entriesOf(search).length - 1].click();
   buttonOf(search, "pc-exchange-pick").click();
   await settle();
   check("choosing a file asks the PC for that one file",
     search.calls.some((call) => call.url === "/api/pc/fetch"
-      && bodyOf(call).path === "D:/그림/명함.png"),
+      && bodyOf(call).path === "C:/Users/qa/사진/명함.png"),
     JSON.stringify(search.calls.map((call) => call.body)));
   check("the menu is handed the text and the addressable id",
     chosen && chosen.name === "명함.png" && chosen.kind === "text"
@@ -349,6 +397,82 @@ async function main() {
     failStatus && failStatus.allText() === copyOf("pc-exchange-save-failed") && savedAnyway === null,
     failStatus ? failStatus.allText() : "no status");
 
+  // ── 그만: the owner stops the sweep, and the folders not yet looked in are stopped ──
+  let sweptAfterStop = -1;
+  const stopping = makeDom({
+    "/api/pc/browse": [staged()],
+    "/api/pc/find": [staged(SWEEP_RUN), staged(SWEEP_RUN), staged(SWEEP_RUN)],
+    "/api/pc/result": [
+      working, listed,
+      working, seeded,
+      working, () => {
+        buttonOf(stopping, "pc-exchange-stop").click();
+        sweptAfterStop = stopping.calls.filter((call) => call.url === "/api/pc/find").length;
+        return working();
+      },
+    ],
+    "/api/pc/cancel": [cancelled],
+  });
+  stopping.window.PadiemPcFileExchange.open({ onSelect: () => {} });
+  await settle();
+  stopping.body.find((node) => node.tagName === "INPUT").value = "명함";
+  buttonOf(stopping, "pc-exchange-search-button").click();
+  await settle(40);
+  const stoppedCalls = stopping.calls.filter((call) => call.url === "/api/pc/find").map(bodyOf);
+  const cancelCalls = stopping.calls.filter((call) => call.url === "/api/pc/cancel").map(bodyOf);
+  check("그만 cancels the search the owner started",
+    cancelCalls.length === 1 && cancelCalls[0].run_id === SWEEP_RUN,
+    JSON.stringify({ cancelCalls, stoppedCalls }));
+  check("그만 asks for no folder after it",
+    stoppedCalls.length === sweptAfterStop,
+    `find calls=${stoppedCalls.length} at stop=${sweptAfterStop}`);
+  check("그만 keeps what had already been found on the screen",
+    entriesOf(stopping).some((node) => node.allText().includes("명함.png")),
+    dialogOf(stopping).allText());
+  const stoppedStatus = statusOf(stopping);
+  check("그만 is told in the owner's own words and the dialog stays open",
+    stoppedStatus && stoppedStatus.allText() === copyOf("pc-exchange-stopped")
+    && stopping.window.PadiemPcFileExchange.isOpen() === true
+    && stopping.window.PadiemPcFileExchange.current().sweeping === false,
+    stoppedStatus ? stoppedStatus.allText() : "no status");
+
+  // ── the search is not allowed to hold the PC: a listing goes between the folders ──
+  const queue = makeDom({
+    "/api/pc/browse": [staged(), staged(), staged()],
+    "/api/pc/find": [staged(SWEEP_RUN), staged(SWEEP_RUN), staged(SWEEP_RUN)],
+    "/api/pc/result": [
+      working, listed,
+      working, listed,
+      working, seeded,
+      working, () => {
+        // The owner steps out of the folder while its first subtree is still being
+        // looked through: that listing must be what the PC does next.
+        buttonOf(queue, "pc-exchange-back").click();
+        return working();
+      },
+      working, listed,
+    ],
+    "/api/pc/cancel": [cancelled],
+  });
+  queue.window.PadiemPcFileExchange.open({ onSelect: () => {} });
+  await settle();
+  buttonOf(queue, "pc-exchange-entry").click();          // into 견적
+  await settle();
+  queue.body.find((node) => node.tagName === "INPUT").value = "명함";
+  buttonOf(queue, "pc-exchange-search-button").click();
+  await settle(40);
+  const queueBrowse = browseCalls(queue.calls).map(bodyOf);
+  check("a folder listing asked during a search is asked of the PC at once",
+    queueBrowse.length === 3 && queueBrowse[1].path === "견적"
+    && queueBrowse[2].path === "."
+    && bodyOf(queue.calls.filter((call) => call.url === "/api/pc/cancel")[0]).run_id === SWEEP_RUN
+    && queue.calls.filter((call) => call.url === "/api/pc/cancel").length === 1
+    && entriesOf(queue).some((node) => node.allText().includes("1분기.md")),
+    JSON.stringify(queue.calls.map((call) => call.url)));
+  check("the search that was stepped out of asks for no further folder",
+    queue.calls.filter((call) => call.url === "/api/pc/find").length === 2,
+    JSON.stringify(queue.calls.map((call) => call.url)));
+
   // ── no give-up: thirty rounds of "still working" is still working ──
   const slow = makeDom({
     "/api/pc/browse": [staged()],
@@ -405,10 +529,10 @@ async function main() {
         "pc-exchange-save-failed"].every((key) => !/디스패치|라우트|JSON|HTTP|엔드포인트|path_relative|경로/i
           .test(copyOf(key))),
     "");
-  check("the part asks for nothing but its own five calls",
+  check("the part asks for nothing but its own six calls",
     JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0]).sort()) ===
-      JSON.stringify(['"/api/pc/browse"', '"/api/pc/fetch"', '"/api/pc/find"',
-                      '"/api/pc/result"', '"/api/pc/save"']),
+      JSON.stringify(['"/api/pc/browse"', '"/api/pc/cancel"', '"/api/pc/fetch"',
+                      '"/api/pc/find"', '"/api/pc/result"', '"/api/pc/save"']),
     JSON.stringify([...script.matchAll(/"\/api\/[a-z/_]+"/g)].map((m) => m[0])));
   for (const forbidden of ["confirm(", "alert(", "setTimeout(fetch", "maxAttempts", "max_wait"]) {
     check(`the part contains no ${forbidden}`, !script.includes(forbidden), forbidden);
