@@ -78,17 +78,27 @@ Costs: `Settings.plugins.enabled` plus meshcore module injection (`pluginHandler
 
 ## 5. Knobs that do NOT help, and one trap to respect
 
-`domain.limits.maxagentsessions` (`agents/meshagent.js:726`), `maxusersessions` / `maxsingleusersessions` (`src/meshuser.js:390`), consent flags (`domain.userconsentflags`, `src/meshcentral.js:1609`; `domain.consentmessages.autoacceptifterminalnouser`, `src/meshrelay.js:926`) gate consent and session counts. None makes `runcommand` concurrent.
+`domain.limits.maxagentsessions` (`src/meshagent.js:726`), `maxusersessions` / `maxsingleusersessions` (`src/meshuser.js:390`), consent flags (`domain.userconsentflags`, `src/meshcentral.js:1609`; `domain.consentmessages.autoacceptifterminalnouser`, `src/meshrelay.js:926`) gate consent and session counts. None makes `runcommand` concurrent.
 
-Trap for any retry or heartbeat loop on this lane: `agents/meshagent.js:1289` closes the agent connection after 30 identical console messages (anti-DoS). A polling-style probe that repeats one payload is therefore not safe at high frequency.
+Trap for any retry or heartbeat loop on this lane: `src/meshagent.js:1287-1295` closes the agent connection once `consoleKickCount > 30` consecutive **identical** agent console output strings arrive (anti-DoS). That drops the agent offline, so a probe that repeats one payload — or a `kill` retried verbatim 31 times — is not safe at high frequency.
 
-## 6. Clearing a wedged console without touching the agent service
+## 6. Clearing a wedged console without touching the agent service — SPIKE VERDICT
 
-`processConsoleCommand` (`agents/meshcore.js:4784`) implements agent console verbs including `ps`, `kill [pid]` (`meshcore.js:5895`, plain `process.kill`) and `tunnels` (`meshcore.js:6192`). These arrive as `{action:'msg', type:'console', value: ...}` (`meshcore.js:1359`), are routed by `src/meshuser.js:1021`, and require rights `& 8` and `& 16` = AgentConsole (`meshctrl.js:2641`). Because that path never touches `mesh.cmdchild`, ending the stuck `powershell.exe` fires its `exit` handler → `delete mesh.cmdchild` → `runcommand` recovers, with **no service restart**. This matches what was done by hand on 2026-10-28 and 2026-10-29.
+**Verdict: reachable, but not with `meshctrl.js`. It needs a new small WebSocket client, and it is not cheaper than what shipped. Recommendation: do not build it now; keep the terminal-session sweep and re-open this only as part of the dispatch-session design (§3).**
 
-The shipped fix reaches the same outcome through `meshctrl shell`, which is CLI-reachable and measured. The narrower follow-up worth one spike: whether an authorised client can send the `console` message directly (it is a server↔agent message type, and `meshctrl.js` exposes no subcommand for it in 1.3.1). If it can, detection and clearing become one small message instead of a bounded pty session. `eval "delete mesh.cmdchild"` (`meshcore.js:5923`) would clear the handle even faster but is **INFERENCE** — an unverified way to poke agent internals on a customer machine, and not adopted.
+What the source says:
 
-`agentupdate` / `agentupdateex` (`meshcore.js:5135`) swap meshcore without stopping the Windows service; relevant if an agent-side change ever becomes necessary.
+* `processConsoleCommand` (`agents/meshcore.js:4784`) does implement `ps`, `kill [pid]` (`meshcore.js:5895`, plain `process.kill`) and `tunnels` (`meshcore.js:6192`), fed by `{action:'msg', type:'console', value: ...}` (`meshcore.js:1358-1364`) and gated by rights `& 8` and `& 16` = AgentConsole. That path never touches `mesh.cmdchild`, so ending the stuck `powershell.exe` fires its `exit` handler → `delete mesh.cmdchild` → `runcommand` recovers with **no service restart**. Nothing is blocked about the mechanism.
+* `meshctrl.js` cannot send it. The literal `'console'` appears zero times as a message type in `meshctrl.js` (master, 3,356 lines, and npm `latest` = 1.3.1), `possibleCommands` (`meshctrl.js:50`) has no such subcommand, and the reply handler folds `case 'msg'` (`meshctrl.js:2305`) into a `responseid`-gated block (`meshctrl.js:2333-2340`) that would not surface console output even if it arrived.
+* Typing `kill 123` inside a `meshctrl shell` session is **not** that path. `processConsoleCommand` has only two feeders: the `msg`/`console` handler above and a local registered-app IPC path that requires `debugConsole` (`meshcore.js:641-644`). A terminal tunnel spawns a real pty (`win-terminal` / `win-virtual-terminal`, `meshcore.js:2920, 2962, 2970`), so `kill` there resolves to PowerShell's `Stop-Process` alias — which is the same class of action our sweep already performs with `taskkill /T /F`. The shipped fix therefore already reaches the outcome by the CLI-reachable route.
+* The minimal new client is: connect `wss://<host>/control.ashx` (`meshctrl.js:1368-1376`), then send `{action:'runcommands', nodeids:['node/<domain>/<id>'], type: 4, cmds: 'kill <pid>', responseid: '<x>'}`. `type: 4` is first-party and labelled "agent console command" in `src/meshuser.js:3246-3268`, which checks `(rights & 24) != 24` and builds the `{action:'msg', type:'console', ...}` message. Auth is the `x-meshauth` header (`meshctrl.js:1389-1395`), or a passwordless `?auth=` via `--loginkey` / `--loginkeyfile` (`meshctrl.js:1398-1425`), or a token from `meshctrl LoginTokens --add` (`meshctrl.js:1472-1480`). No REST route exists (`runcommands` is absent from `webserver.js`), and `meshcmd` is agent-local only (`agents/meshcmd.js:186-196`).
+* What it would buy, and what it would not: the ACK is `result:'OK'` alone, and real output returns as `{action:'msg', type:'console', value, nodeid}` events on the caller's own session (`src/webserver.js:10489-10502`; agent side `meshcore.js:6840, 6844`) with **no sentinel framing of ours**. So `kill` could replace one half of a sweep session while the detection half — which needs the marker, the parent chain and the protected set read back as a parseable verdict — would still need the pty session and its Base64 frame. Reaching that only by console events also loses the tree kill (`/T`) that a `taskkill` of the marker pid gives us today.
+* Consent: no customer-visible prompt. The console branch never reads `data.consent` (`meshcore.js:1358-1364`); consent exists only on tunnel paths (`meshcore.js:1392-1417`, `2773+`).
+* `eval` (`meshcore.js:5923`, help listed at `meshcore.js:4789`) is guarded only by the same `& 8 && & 16` check, and its own source comment reads "can only be run by trusted administrator" (`meshcore.js:5929`). It runs arbitrary JavaScript as SYSTEM on the customer's machine. Not adopted, for any purpose, including `delete mesh.cmdchild`.
+
+`agentupdate` / `agentupdateex` (`meshcore.js:5135`) swap meshcore without stopping the Windows service; relevant only if an agent-side change ever becomes necessary.
+
+_Correction to the first draft of this memo: it cited `agents/meshagent.js` for the session limits and the anti-DoS kick. The package ships that file at `src/meshagent.js`; the line numbers were right, the directory was not._
 
 ## 7. What the pre-flight probe costs (test environment, 2026-10-29 KST)
 
@@ -112,14 +122,14 @@ What that does and does not say:
 
 ## 8. Recommendation ordering for the next slice
 
-1. Keep the shipped serial-lane healing (detection, bounded clearing, one retry, counters). It addresses the measured failure with the channels we already trust.
-2. Spike **per-dispatch terminal sessions** (section 3). It is the only option that is both parallel and first-party, and it removes the class of defect instead of recovering from it. Price the framing, session-leak and exit-code consequences first.
-3. Spike the direct `console` message path (section 6) as a cheaper clearing primitive.
+1. Keep the shipped serial-lane healing (detection, bounded clearing, one retry, counters) with the server-claim gate of §0. It addresses the measured failure with the channels that are already reachable and already proven on a real PC.
+2. Spike **per-dispatch terminal sessions** (section 3). It is the only option that is both parallel and first-party, and it removes the class of defect instead of recovering from it. Price the framing, session-leak and exit-code consequences first. The `{action:'msg', type:'console'}` lane of section 6 belongs to this decision, not to a separate one: it only makes sense as the result channel of sessions we already own.
+3. Do not build the console-`kill` client on its own (section 6 verdict): it cannot carry detection, it drops the tree kill, and it adds a second authenticated transport for one half of one command.
 4. Treat the ScriptTask plugin (section 4) as an adoption decision requiring `TECHNOLOGY_ADOPTION_POLICY` review, not as a quick win.
 
 ## Sources
 
-- https://github.com/Ylianst/MeshCentral — `agents/meshcore.js`, `agents/meshagent.js`, `src/meshuser.js`, `src/meshrelay.js`, `src/taskmanager.js`, `src/pluginHandler.js`, `meshctrl.js` (npm `meshcentral@1.3.1` tarball, shasum `ce04bd2...405fb`)
+- https://github.com/Ylianst/MeshCentral — `agents/meshcore.js`, `agents/meshcmd.js`, `src/meshagent.js`, `src/meshuser.js`, `src/meshrelay.js`, `src/webserver.js`, `src/taskmanager.js`, `src/pluginHandler.js`, `meshctrl.js` (npm `meshcentral@1.3.1` tarball, shasum `ce04bd2...405fb`; master `meshctrl.js` re-fetched for the §6 verdict, 3,356 lines)
 - https://docs.meshcentral.com/
 - https://github.com/ryanblenis/MeshCentral-ScriptTask — `modules_meshcore/scripttask.js`
 - https://registry.npmjs.org/meshcentral/latest
