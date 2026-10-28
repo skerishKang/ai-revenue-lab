@@ -36,3 +36,14 @@ def test_the_country_is_read_from_local_storage_with_a_korean_default():
 def test_the_instruction_forbids_inventing_people_and_events():
     for probe in ("Do not invent a named member", "N'inventez ni élu nommé"):
         assert probe in JS, probe
+
+
+def test_saving_a_document_carries_the_country_only_outside_korea():
+    # kr 은 지금과 같은 본문(국가 필드 없음)을 보낸다 — 기존 사용자 요청 불변.
+    assert "currentCountry() === \"kr\" ? {} : { country: currentCountry() }" in JS
+
+
+def test_saved_lists_show_only_the_selected_country():
+    assert "function sameCountry(file)" in JS
+    assert 'String((file && file.country) || "kr") === currentCountry()' in JS
+    assert JS.count(".filter(sameCountry)") >= 2

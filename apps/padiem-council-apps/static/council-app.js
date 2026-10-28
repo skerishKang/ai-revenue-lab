@@ -123,7 +123,10 @@
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name, media_type: mediaType || "text/plain", text: text }),
+      body: JSON.stringify(Object.assign(
+        { name: name, media_type: mediaType || "text/plain", text: text },
+        currentCountry() === "kr" ? {} : { country: currentCountry() },
+      )),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -233,6 +236,12 @@
   }
   function isSnsRosterFile(file) { return storedName(file) === SNS_ROSTER_NAME; }
   /** Plain manuscripts: neither a book, an SNS post draft nor the photo roster. */
+  // #6046 — 저장 문서의 국가가 선택 국가와 같은 것만 보인다.
+  // 컬럼이 없는 기존 문서는 kr 로 읽어 한국어를 선택한 사용자 화면이 비지 않는다.
+  function sameCountry(file) {
+    return String((file && file.country) || "kr") === currentCountry();
+  }
+
   function isManuscriptFile(file) {
     const name = storedName(file);
     return name.endsWith(".txt") && !isStoredBook(file) && !isSnsPostFile(file);
@@ -394,7 +403,7 @@
         const pid = await projects.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
-         const speechFiles = files.filter(isManuscriptFile);
+         const speechFiles = files.filter(isManuscriptFile).filter(sameCountry);
         savedList.replaceChildren();
         savedList.appendChild(el("h3", null, "저장된 축사 원고"));
         if (!speechFiles.length) {
@@ -1050,7 +1059,7 @@
         const files = await listProjectFiles(pid);
         // A book is not one of its own source records, and an SNS draft or the
         // photo roster never belongs here either.
-        const meetingFiles = files.filter(isManuscriptFile);
+        const meetingFiles = files.filter(isManuscriptFile).filter(sameCountry);
         const bookFiles = files.filter(isStoredBook);
 
         // The book editor is built before the lists are drawn: a stored book has

@@ -84,6 +84,8 @@ class ProjectFileRecord:
     content_chars: int = 0
     created_at: str = ""
     updated_at: str = ""
+    # #6046 — 기본값이 곧 기존 문서의 호환 규칙이다(컬럼 추가 시 DEFAULT 'kr').
+    country: str = "kr"
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -94,13 +96,14 @@ class ProjectFileRecord:
             "content_chars": self.content_chars,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "country": self.country,
         }
 
 
 class ProjectFileStore(Protocol):
-    async def list_files(self, user_id: str, project_id: str) -> list[ProjectFileRecord]: ...
+    async def list_files(self, user_id: str, project_id: str, country: str | None = None) -> list[ProjectFileRecord]: ...
     async def get_file(self, user_id: str, project_id: str, file_id: str) -> ProjectFileRecord | None: ...
-    async def create_file(self, user_id: str, project_id: str, name: str, media_type: str, text: str) -> ProjectFileRecord: ...
+    async def create_file(self, user_id: str, project_id: str, name: str, media_type: str, text: str, country: str = "kr") -> ProjectFileRecord: ...
     async def delete_file(self, user_id: str, project_id: str, file_id: str) -> bool: ...
 
 
@@ -168,6 +171,7 @@ def _from_row(row: dict[str, Any]) -> ProjectFileRecord:
         content_chars=int(row.get("content_chars") or len(text)),
         created_at=str(row.get("created_at", "")),
         updated_at=str(row.get("updated_at", "")),
+        country=str(row.get("country") or "kr"),   # 컬럼이 없는 예전 행도 kr
     )
 
 
@@ -272,7 +276,7 @@ class D1ProjectFileStore:
             statement = statement.bind(*values)
         return _rows_from_result(await statement.run())
 
-    async def list_files(self, user_id: str, project_id: str) -> list[ProjectFileRecord]:
+    async def list_files(self, user_id: str, project_id: str, country: str | None = None) -> list[ProjectFileRecord]:
         # D1 queries must remain page-sized; project ownership is bound on every page.
         # No artificial total file count: retrieve all pages with stable keyset ordering.
         records: list[ProjectFileRecord] = []
@@ -280,18 +284,21 @@ class D1ProjectFileStore:
         while True:
             if after is None:
                 rows = await self._all(
-                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at "
+                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
                     "FROM project_files WHERE user_id=? AND project_id=? "
-                    "ORDER BY created_at ASC, id ASC LIMIT ?",
-                    user_id, project_id, MAX_OWNER_FILES_PAGE,
+                    + ("AND country=? " if country else "")
+                    + "ORDER BY created_at ASC, id ASC LIMIT ?",
+                    *((user_id, project_id, country, MAX_OWNER_FILES_PAGE) if country else (user_id, project_id, MAX_OWNER_FILES_PAGE)),
                 )
             else:
                 rows = await self._all(
-                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at "
+                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
                     "FROM project_files WHERE user_id=? AND project_id=? "
-                    "AND (created_at > ? OR (created_at = ? AND id > ?)) "
-                    "ORDER BY created_at ASC, id ASC LIMIT ?",
-                    user_id, project_id, after[0], after[0], after[1], MAX_OWNER_FILES_PAGE,
+                    + ("AND country=? " if country else "")
+                    + "AND (created_at > ? OR (created_at = ? AND id > ?)) "
+                    + "ORDER BY created_at ASC, id ASC LIMIT ?",
+                    *((user_id, project_id, country, after[0], after[0], after[1], MAX_OWNER_FILES_PAGE)
+                      if country else (user_id, project_id, after[0], after[0], after[1], MAX_OWNER_FILES_PAGE)),
                 )
             records.extend(_from_row(row) for row in rows)
             if len(rows) < MAX_OWNER_FILES_PAGE:
@@ -336,7 +343,7 @@ class D1ProjectFileStore:
 
     async def get_file(self, user_id: str, project_id: str, file_id: str) -> ProjectFileRecord | None:
         row = await self._first(
-            "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at "
+            "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
             "FROM project_files WHERE id=? AND user_id=? AND project_id=?",
             file_id, user_id, project_id,
         )
@@ -379,11 +386,11 @@ class D1ProjectFileStore:
         # save-time condition and the write in one atomic step, so a concurrent
         # add can never bypass it.
         written = await self._run(
-            "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at) "
-            "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ? FROM projects p "
+            "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at, country) "
+            "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ?, ? FROM projects p "
             "WHERE p.id = ? AND p.user_id = ? "
             "RETURNING id",
-            fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
+            fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now, country,
             project_id, user_id,
         )
         if not _rows_from_result(written):
@@ -391,6 +398,7 @@ class D1ProjectFileStore:
         return ProjectFileRecord(
             id=fid, project_id=project_id, name=document.name, media_type=document.media_type,
             content_text=document.text, content_chars=len(document.text), created_at=now, updated_at=now,
+            country=country,
         )
 
     async def delete_file(self, user_id: str, project_id: str, file_id: str) -> bool:
