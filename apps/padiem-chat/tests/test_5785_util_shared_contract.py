@@ -101,8 +101,10 @@ def test_util_api_chat_sends_selected_tier_or_free_and_preserves_server_errors()
         assert row["output"] == "생성된 초안 본문입니다.\n\n두 번째 문단입니다."
     assert {row["name"]: row["output"] for row in observed["errors"]} == {
         "server_message": "생성 실패: 관리자 인증을 확인해 주세요.",
-        "no_message": "생성 실패: HTTP 502",
-        "non_string": "생성 실패: HTTP 403",
-        "not_json": "생성 실패: HTTP 503",
+        # A bare "HTTP nnn" never reaches the screen: GEN_ERROR_COPY in
+        # util-menu.js resolves unnamed statuses, once, for every util tool.
+        "no_message": "생성 실패: 서버 연결이 잠시 끊겼습니다. 잠시 후 다시 시도해 주세요.",
+        "non_string": "생성 실패: 이 계정에서는 할 수 없는 요청입니다. 로그인 상태를 확인해 주세요.",
+        "not_json": "생성 실패: 서버가 잠시 과부하 상태입니다. 잠시 후 다시 시도해 주세요.",
     }
     assert all(row["calls"] == 1 for row in observed["errors"])

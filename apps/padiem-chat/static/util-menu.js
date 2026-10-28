@@ -9,22 +9,69 @@
     }
   }
 
+  // One place for generation-failure copy. The server's own Korean message
+  // wins; a bare "HTTP nnn" never reaches the screen — statuses the server
+  // did not name resolve here, once, for every util tool.
+  const GEN_ERROR_COPY = {
+    401: "로그인이 필요합니다. 다시 로그인해 주세요.",
+    403: "이 계정에서는 할 수 없는 요청입니다. 로그인 상태를 확인해 주세요.",
+    429: "요청이 잠시 많습니다. 조금 뒤에 다시 시도해 주세요.",
+    500: "만드는 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.",
+    502: "서버 연결이 잠시 끊겼습니다. 잠시 후 다시 시도해 주세요.",
+    503: "서버가 잠시 과부하 상태입니다. 잠시 후 다시 시도해 주세요.",
+    504: "서버 응답이 늦어집니다. 잠시 후 다시 시도해 주세요."
+  };
+  const GEN_ERROR_FALLBACK = "생성에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+  const GEN_OFFLINE_COPY = "인터넷 연결을 확인해 주세요.";
+  const GEN_RETRY_LABEL = "다시 시도";
+
+  function generationFailureText(error) {
+    const message = error && typeof error.message === "string" ? error.message.trim() : "";
+    return "생성 실패: " + (message || GEN_ERROR_FALLBACK);
+  }
+
+  // The failure line stays prefixed with 생성 실패: the session-restore code
+  // treats drafts that do not start with it as real content.
+  function showGenerationFailure(output, retry, error) {
+    output.value = generationFailureText(error);
+    if (retry) retry.hidden = false;
+  }
+
+  function retryButton(id, run) {
+    const button = el("button", "util-retry", GEN_RETRY_LABEL);
+    button.type = "button";
+    button.id = id;
+    button.hidden = true;
+    button.addEventListener("click", () => {
+      button.hidden = true;
+      run();
+    });
+    return button;
+  }
+
   async function apiChat(prompt, util) {
     // Same rule as app.js selectedProductTier(), lines 3039-3040.
     const selected = window.PadiemTierSelection?.get?.();
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
     const payload = { messages: [{ role: "user", content: prompt }], mode: "auto", tier };
     if (util) payload.util = util;
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    let res;
+    try {
+      res = await fetch("/api/chat", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (_) {
+      throw new Error(GEN_OFFLINE_COPY);
+    }
     if (!res.ok) {
       const data = await res.json().catch(() => null);
       const message = data?.error?.message;
-      throw new Error(typeof message === "string" && message ? message : "HTTP " + res.status);
+      throw new Error(typeof message === "string" && message.trim()
+        ? message
+        : (GEN_ERROR_COPY[res.status] || GEN_ERROR_FALLBACK));
     }
     const data = await res.json();
     return (data && data.answer) ? data.answer : (data && data.message ? data.message : JSON.stringify(data));
@@ -386,6 +433,11 @@
     const speechPc = createPcReferenceSection();
     const speechPcMount = document.getElementById("utilSpeechPcRef");
     if (speechPcMount) speechPcMount.appendChild(speechPc.box);
+    // #5895 beta UX: a failed draft comes back with its own 다시 시도 instead of
+    // leaving the owner to find the form button again.
+    const speechActions = document.querySelector("#utilSpeechResult .util-actions");
+    const speechRetry = retryButton("utilSpeechRetry", () => { if (speechForm) generateSpeech(speechForm); });
+    if (speechActions) speechActions.appendChild(speechRetry);
     const utilTitleEl = document.getElementById("utilTitle");
     const utilKickerEl = document.getElementById("utilKicker");
     const utilTaglineEl = document.getElementById("utilTagline");
@@ -551,7 +603,7 @@
       try {
         speechOutput.value = await apiChat(prompt, "speech");
       } catch (e) {
-        speechOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
+        showGenerationFailure(speechOutput, speechRetry, e);
       }
       // #5727: saving is a form-area action; the click handler's empty guard
       // keeps an unused save from claiming anything.
@@ -654,6 +706,16 @@
       panel.dataset.loaded = "1";
       const form = el("form", "util-form");
       form.id = "utilSnsForm";
+      // 참고 글: the PC reference leads the form in its own titled section —
+      // the speech tool's fieldset language — instead of floating between the
+      // two-lane grid's field cells.
+      const refSection = el("fieldset", "util-fieldset");
+      refSection.id = "utilSnsRef";
+      refSection.appendChild(el("legend", null, "참고 글"));
+      const snsPc = createPcReferenceSection();
+      snsPcRef = snsPc;
+      refSection.appendChild(snsPc.box);
+      form.appendChild(refSection);
       // fields
       const fields = [
         ["event", "행사명", "text", true],
@@ -688,9 +750,6 @@
       });
       toneLabel.appendChild(toneSel);
       form.appendChild(toneLabel);
-      const snsPc = createPcReferenceSection();
-      snsPcRef = snsPc;
-      form.appendChild(snsPc.box);
 
       const tabDiv = el("div", "util-sns-tabs");
       const tabNames = { blog: "블로그", facebook: "페이스북", instagram: "인스타그램" };
@@ -941,7 +1000,8 @@
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
       const pcSaveB = el("button", "util-save", PC_REF_COPY.save);
       pcSaveB.type = "button"; pcSaveB.id = "utilSnsPcSave";
-      actions.append(copyB, dlB, pcSaveB);
+      const snsRetry = retryButton("utilSnsRetry", () => { void gen(); });
+      actions.append(copyB, dlB, pcSaveB, snsRetry);
       result.append(h3, output, previewBox, actions);
 
       panel.replaceChildren(form, result);
@@ -1057,7 +1117,7 @@
         result.hidden = false;
         output.value = "생성 중...";
         try { output.value = await apiChat(prompt, "sns"); }
-        catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
+        catch (e) { showGenerationFailure(output, snsRetry, e); }
         if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
@@ -1141,7 +1201,8 @@
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilMeetingCopy";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilMeetingDownload";
-      actions.append(copyB, dlB);
+      const meetingRetry = retryButton("utilMeetingRetry", () => { void gen(); });
+      actions.append(copyB, dlB, meetingRetry);
       result.append(h3, output, actions);
 
       const archive = el("div", "util-archive");
@@ -1167,7 +1228,7 @@
         result.hidden = false;
         output.value = "생성 중...";
         try { output.value = await apiChat(prompt, "meeting"); }
-        catch (e) { output.value = "생성 실패: " + (e && e.message ? e.message : e); }
+        catch (e) { showGenerationFailure(output, meetingRetry, e); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
       copyB.addEventListener("click", async () => {
@@ -1299,6 +1360,7 @@
         bookOutput.rows = 16;
         // #5727: result actions are copy/download only; regenerating the
         // book draft is re-pressing the generate button in the selection area.
+        const bookRetry = retryButton("utilBookRetry", () => bookBtn.click());
         const bookActions = el("div", "util-actions");
         const bookCopy = el("button", null, "복사"); bookCopy.type = "button";
         const bookDl = el("button", null, "TXT 다운로드"); bookDl.type = "button";
@@ -1306,7 +1368,7 @@
         // through the same project-file channel under its own name rule, so
         // re-entering the tool restores and re-edits it.
         const bookSave = el("button", "util-save", "활동집 저장"); bookSave.type = "button"; bookSave.id = "utilBookSave";
-        bookActions.append(bookCopy, bookDl, bookSave);
+        bookActions.append(bookCopy, bookDl, bookSave, bookRetry);
         bookResult.append(bookH, bookOutput, bookActions);
         arc.appendChild(bookResult);
 
@@ -1342,7 +1404,7 @@
             bookOutput.value = "생성 중...";
             bookOutput.value = await apiChat(prompt, "meeting");
           } catch (e) {
-            bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
+            showGenerationFailure(bookOutput, bookRetry, e);
           }
         });
 
