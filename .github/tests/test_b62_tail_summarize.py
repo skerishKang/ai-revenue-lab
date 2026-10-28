@@ -142,6 +142,39 @@ class LoadTests(unittest.TestCase):
         self.assertIn("TAIL_EMPTY=1", printed)
 
 
+class RealRowShapeTests(unittest.TestCase):
+    """The second capture showed the row shape: outcome, exceptions[], logs[], event.
+
+    What matters is that the structured error is read, the request path is read without
+    its query, and the app's own log text - which can carry a person's request - never
+    reaches a shared CI log.
+    """
+
+    ROW = {
+        "outcome": "exception",
+        "cpuTime": 12,
+        "wallTime": 1300,
+        "scriptName": "padiem-chat",
+        "truncated": False,
+        "event": {"request": {"url": "https://chat.padiem.net/api/pc/pairings?t=QUERYSECRET",
+                              "headers": {"cookie": COOKIE}}},
+        "exceptions": [{"name": "Error", "pattern": "PythonException: import blew up",
+                        "message": "import blew up"}],
+        "diagnosticsChannelEvents": [{"body": {"kind": "exception"}}],
+        "logs": [{"level": "error", "message": "app log text: " + BODY}],
+    }
+
+    def test_signature_path_and_shape_come_out_and_nothing_else_does(self):
+        printed = _capture([dict(self.ROW)])
+        self.assertIn("PythonException: import blew up", printed)
+        self.assertIn("/api/pc/pairings", printed)
+        self.assertIn("SHAPE_KEYS=", printed)
+        self.assertIn("exceptions[].pattern", printed)
+        self.assertNotIn("QUERYSECRET", printed)
+        self.assertNotIn(COOKIE, printed)
+        self.assertNotIn(BODY, printed)
+
+
 class WorkflowContractTests(unittest.TestCase):
     def test_the_tail_lane_is_dispatch_only_and_reads_credentials(self):
         text = WORKFLOW_PATH.read_text(encoding="utf-8")

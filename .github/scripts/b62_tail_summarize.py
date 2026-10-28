@@ -16,6 +16,9 @@ from urllib.parse import urlsplit
 #: Only whitelisted fields are ever read below: headers, cookies, bodies and tokens
 #: are not on any path to the output, so a shared CI log stays safe.
 _TOKENISH = re.compile(r"[0-9A-Za-z_+/$@.-]{24,}")
+#: Key names that are never descended into or spelled out in the shape report.
+HIDDEN_KEYS = frozenset({"headers", "cookie", "cookies", "authorization", "body",
+                         "value", "token", "secret", "params", "query", "search"})
 _BUCKETS = (
     ("exceededMemory", ("exceedmem", "exceededmemory", "oom", "memory")),
     ("exceededCpu", ("exceedcpu", "exceededcpu", "cpu")),
@@ -34,20 +37,36 @@ def bucket(outcome: str) -> str:
     return "other:" + (str(outcome or "unknown")[:40])
 
 
+def _texts(node, keys: set, depth: int = 0) -> list[str]:
+    """Strings found under whitelisted key names, at bounded depth.
+
+    The row shape moves; the allowlist does not. A header, a cookie or a request body
+    has no key name on this list, so it cannot reach the output by any path.
+    """
+
+    found: list[str] = []
+    if depth > 3:
+        return found
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if str(key).lower() in keys and isinstance(value, str) and value.strip():
+                found.append(value.strip())
+            else:
+                found.extend(_texts(value, keys, depth + 1))
+    elif isinstance(node, list):
+        for item in node:
+            found.extend(_texts(item, keys, depth + 1))
+    return found
+
+
 def signature(row: dict) -> str | None:
     """One exception line, shortened and scrubbed of anything token-shaped."""
 
-    exc = row.get("exception")
-    if not isinstance(exc, dict):
-        listed = row.get("exceptions")
-        if isinstance(listed, list):
-            exc = next((item for item in listed if isinstance(item, dict)), None)
-    parts: list[str] = []
-    if isinstance(exc, dict):
-        for key in ("pattern", "message", "name"):
-            value = exc.get(key)
-            if isinstance(value, str) and value.strip():
-                parts.append(value.strip())
+    parts = _texts(row.get("exceptions"), {"pattern", "message", "name", "reason"})
+    parts += _texts(row.get("diagnosticsChannelEvents"),
+                    {"pattern", "message", "name", "kind", "reason"})
+    if not parts:
+        parts = _texts(row.get("exception"), {"pattern", "message", "name"})
     if not parts:
         message = row.get("message")
         if isinstance(message, str) and message.strip():
@@ -61,19 +80,40 @@ def signature(row: dict) -> str | None:
 
 
 def path_of(row: dict) -> str | None:
-    holders = [row.get("request")]
-    event = row.get("event")
-    if isinstance(event, dict):
-        holders.append(event)
-        holders.append(event.get("request"))
-    for holder in holders:
-        if isinstance(holder, dict):
-            url = holder.get("url")
-            if isinstance(url, str) and url:
-                path = urlsplit(url).path
-                if path:
-                    return path[:80]
+    for url in _texts(row, {"url"}):
+        path = urlsplit(url).path
+        if path:
+            return path[:80]
     return None
+
+
+def key_shape(node, depth: int = 0, prefix: str = "") -> list[str]:
+    """Key NAMES of a row, dot-joined to a bounded depth. Names, never values.
+
+    The tail's row shape moved once already, so the capture prints this and the next
+    read is written against what the Worker actually sent rather than against a guess.
+    Keys that would carry credentials or request content are named once, then closed -
+    even their names are only reported as an opaque slot.
+    """
+
+    names: list[str] = []
+    if depth > 2:
+        return names
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if str(key).lower() in HIDDEN_KEYS:
+                names.append(prefix + "<hidden>")
+                continue
+            name = prefix + str(key)
+            names.append(name)
+            if isinstance(value, (dict, list)):
+                names.extend(key_shape(value, depth + 1, name + "."))
+    elif isinstance(node, list):
+        for item in node[:1]:
+            base = prefix.rstrip(".") + "[]"
+            names.append(base)
+            names.extend(key_shape(item, depth + 1, base + "."))
+    return sorted(set(names))
 
 
 def colo_of(row: dict) -> str | None:
@@ -105,11 +145,16 @@ def summarize(rows: list[dict]) -> dict:
     colos: Counter = Counter()
     statuses: Counter = Counter()
     fields: set[str] = set()
+    shape: list[str] = []
     for row in rows:
         if not isinstance(row, dict):
             continue
-        fields.update(str(key) for key in row)
-        outcomes[bucket(row.get("outcome") or row.get("level") or "")] += 1
+        fields.update(str(key) for key in row
+                      if str(key).lower() not in HIDDEN_KEYS)
+        outcome = row.get("outcome") or row.get("level") or ""
+        outcomes[bucket(outcome)] += 1
+        if not shape and bucket(outcome) != "ok":
+            shape = key_shape(row)
         sig = signature(row)
         if sig:
             exceptions[sig] += 1
@@ -124,12 +169,14 @@ def summarize(rows: list[dict]) -> dict:
             statuses[status] += 1
     return {"rows": len(rows), "fields": sorted(fields), "outcomes": outcomes,
             "exceptions": exceptions, "paths": paths, "colos": colos,
-            "statuses": statuses}
+            "statuses": statuses, "shape": shape}
 
 
 def emit(summary: dict) -> None:
     print("TAIL_ROWS=%d" % summary["rows"])
     print("TAIL_FIELDS=%s" % ",".join(summary["fields"])[:400])
+    if summary.get("shape"):
+        print("SHAPE_KEYS=%s" % ";".join(summary["shape"])[:900])
     if not summary["rows"]:
         print("TAIL_EMPTY=1 (no messages captured: the tail saw no traffic, "
               "or wrangler refused to start)")
