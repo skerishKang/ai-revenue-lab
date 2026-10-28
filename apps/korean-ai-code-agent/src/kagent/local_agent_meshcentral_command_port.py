@@ -131,6 +131,10 @@ class MeshCentralLineSweep:
     observed: bool
     #: The PC answered "a dispatch this connector owns is running right now".
     running: bool
+    #: A server-side claim on this PC stopped the sweep before it ran. Nothing was
+    #: looked at and nothing was ended, and that is reported as itself rather than
+    #: as a console that was asked and found clean.
+    gated: bool = False
     #: Agent children that were holding the console when the sweep ran.
     found: tuple[dict[str, Any], ...] = ()
     #: Process ids whose tree the PC ended.
@@ -439,6 +443,27 @@ def sweep_script(
             " Remove-Item -LiteralPath $__padiem_o.file -Force };"
         )
     return head + body + _sweep_frame(mode)
+
+
+def _may_clear(line_guard: Callable[[], bool] | None,
+               phase: Callable[[str], None]) -> bool:
+    """Whether a held console may be cleared, as the caller's authority answers.
+
+    No guard at all is a clear "no": a port composed without the server's view of
+    the PC cannot tell its own idle from its failover partner's running command, and
+    guessing is the one thing that would end real work. A guard that raises, times
+    out or answers anything other than ``True`` is the same "no".
+    """
+    if line_guard is None:
+        phase("line_gate_closed")
+        return False
+    try:
+        allowed = line_guard() is True
+    except Exception:
+        allowed = False
+    if not allowed:
+        phase("line_gate_busy")
+    return allowed
 
 
 def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
@@ -751,6 +776,7 @@ class MeshCentralCliCommandPort:
         cancel_probe: Callable[[], bool] | None = None,
         dispatch_id: str | None = None,
         keep_dispatch_ids=(),
+        line_guard: Callable[[], bool] | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -773,6 +799,8 @@ class MeshCentralCliCommandPort:
 
         if cancel_probe is not None and not callable(cancel_probe):
             raise ContractError("the cancel probe must be callable")
+        if line_guard is not None and not callable(line_guard):
+            raise ContractError("the line guard must be callable")
 
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
@@ -846,6 +874,7 @@ class MeshCentralCliCommandPort:
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
+            line_guard=line_guard,
         )
 
     # ---- streaming execution -------------------------------------------
@@ -857,6 +886,7 @@ class MeshCentralCliCommandPort:
         node_ref: str,
         dispatch_id: str | None,
         keep_dispatch_ids: tuple[str, ...],
+        line_guard: Callable[[], bool] | None = None,
     ) -> MeshCentralCommandOutcome:
         """Run one command, and free the console line when something else holds it.
 
@@ -886,6 +916,7 @@ class MeshCentralCliCommandPort:
                 argv, password, timeout_seconds, phase, cancelled,
                 node_ref=node_ref, dispatch_id=dispatch_id,
                 keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
+                line_guard=line_guard,
             )
             if report is None:
                 break
@@ -917,6 +948,7 @@ class MeshCentralCliCommandPort:
         dispatch_id: str | None = None,
         keep_dispatch_ids: tuple[str, ...] = (),
         line_watch: bool = False,
+        line_guard: Callable[[], bool] | None = None,
     ) -> tuple[MeshCentralCommandOutcome, MeshCentralLineSweep | None]:
         """Read the child's transcript in chunks and return it whole.
 
@@ -987,6 +1019,20 @@ class MeshCentralCliCommandPort:
                         ), None
                     if line_watch and time.monotonic() >= stall_at:
                         stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
+                        if not _may_clear(line_guard, phase):
+                            # Somebody's claim is live on this PC according to the
+                            # server, so this silence belongs to real work that is
+                            # not ours to end. Stop waiting on a request the agent
+                            # already dropped, and let the caller's single retry ask
+                            # again - without touching anything on the machine.
+                            process.kill()
+                            return MeshCentralCommandOutcome(
+                                termination="no_reply", exit_code=None, output=b"",
+                            ), MeshCentralLineSweep(
+                                mode=SWEEP_MODE_HELD, ran=False, observed=False,
+                                running=False, gated=True,
+                                error="a live claim on this PC was not cleared",
+                            )
                         report = self.sweep_agent_children(
                             node_ref=str(node_ref), dispatch_id=str(dispatch_id),
                             keep_dispatch_ids=keep_dispatch_ids,
