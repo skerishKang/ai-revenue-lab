@@ -409,8 +409,8 @@ async def run() -> int:
     rows = conn.execute(
         "SELECT status, continuation_ref, pause_id FROM claw_web_xlsx_p01_requests"
     ).fetchall()
-    check(len(rows) == 1 and rows[0]["status"] == "waiting_p01",
-          "exactly one committed B62 request")
+    check(len(rows) == 1 and rows[0]["status"] == "dispatching",
+          "exactly one committed B62 request (one-shot reservation consumed)")
     # The pause/continuation shape is unreachable for this lane now (Owner
     # decision 2026-10-28): no approval pause is issued, so no continuation is
     # recorded and nothing is waiting for an owner decision.

@@ -140,6 +140,10 @@ def parse_engine_completion(
         or tool.get("agent_id") != "agent:padiem:web-xlsx-confirm@1"
         or tool.get("canonical_tool_id") != "tool:padiem:web-xlsx-confirm@1"
         or tool.get("status") != "completed"
+        # A completed projection carries no pause: a pause-shaped body relabelled
+        # "completed" is a client-side forgery, never an Engine answer.
+        or "approval_pause" in tool
+        or "continuation_ref" in tool
     ):
         raise WebXlsxP01RequestError("Engine tool did not complete")
     return VerifiedWebXlsxEngineCompletion(engine_run_id=tool.get("run_id"))
@@ -275,8 +279,12 @@ class D1WebXlsxP01RequestStore:
                 or not re.fullmatch(r"wpr_[0-9a-f]{32}", request_ref)):
             raise WebXlsxP01RequestError("invalid completion scope")
         now = datetime.now(timezone.utc).isoformat()
+        # The 030 CHECK admits only 'dispatching'/'waiting_p01'; a completed
+        # pre-delegated run stays 'dispatching' (the one-shot reservation is
+        # consumed) and is identified by its Engine run id. No schema migration
+        # is needed, and the start response already told the caller 'completed'.
         statement = self.db.prepare(
-            "UPDATE claw_web_xlsx_p01_requests SET status='completed', "
+            "UPDATE claw_web_xlsx_p01_requests SET "
             "engine_run_id=?,updated_at=? "
             "WHERE request_ref=? AND selection_ref=? AND user_id=? AND workspace_id=? "
             "AND run_id=? AND document_id=? AND source_sha256=? AND status='dispatching'"
@@ -289,8 +297,7 @@ class D1WebXlsxP01RequestStore:
             "WHERE request_ref=? AND user_id=? AND workspace_id=? AND run_id=?"
         ).bind(request_ref, request.owner_id, request.workspace_id, request.run_id)
         row = _row_to_dict(await check.first())
-        return bool(row and row.get("status") == "completed"
-                    and row.get("engine_run_id") == completion.engine_run_id)
+        return bool(row and row.get("engine_run_id") == completion.engine_run_id)
 
 
 async def dispatch_owner_web_xlsx_p01(
