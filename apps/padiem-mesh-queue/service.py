@@ -12,6 +12,7 @@ What is served (the executor's claim lane):
     POST /api/claw/connector/mesh-reads/poll
     POST /api/claw/connector/mesh-reads/renew
     POST /api/claw/connector/mesh-reads/cancel
+    POST /api/claw/connector/mesh-reads/busy     (#6113: who is working on this PC now)
     GET  /health                      (pending/working counts, no secret, no content)
 
 What is deliberately NOT served here: the result submission. Framing the answer and
@@ -46,9 +47,9 @@ from app.oracle_mesh_lease_renew_routes import (
     ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew,
 )
 from app.oracle_mesh_read_return_routes import (
-    ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
-    build_oracle_mesh_return_source, oracle_mesh_read_cancel_check,
-    oracle_mesh_read_poll,
+    ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
+    build_oracle_mesh_return_source, oracle_mesh_read_busy_check,
+    oracle_mesh_read_cancel_check, oracle_mesh_read_poll,
 )
 from app.pc_device_pairing_store import D1PcPairingStore
 
@@ -131,6 +132,8 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
         Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
         Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check,
+              methods=["POST"]),
+        Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,
               methods=["POST"]),
     ])
     app.state.history_store = D1HistoryStore(database)
