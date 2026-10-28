@@ -16,6 +16,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from app import app_factory
 from app import oracle_mesh_read_return_routes as routes
 from app.history import HistoryError, HistoryForbidden
 from app.claw_local_task_result_projection import result_message_id
@@ -258,6 +259,11 @@ class History:
         if getattr(self, "cancellation_raises", False):
             raise HistoryError("the store will not answer")
         return dispatch_id in getattr(self, "cancelled_flags", set())
+
+    async def oracle_mesh_node_live_claims(self, *, node_ref, except_dispatch_id=""):
+        if getattr(self, "live_claims_raises", False):
+            raise HistoryError("the store will not answer")
+        return getattr(self, "live_claims", 0)
 
 
 def state(*, mesh=None, history=None, identity=None, secret=SECRET):
@@ -1097,6 +1103,93 @@ def test_the_stop_read_is_channel_only_and_answers_no_when_it_cannot_ask(monkeyp
     history.cancellation_raises = True
     status, body, _ = _cancel_read(history, dispatch_id)
     assert status == 200 and body == {"ok": True, "cancelled": False}
+
+
+# --------------------------------------- what the server counts as work on one PC
+def _busy_read(history, node, *, secret=SECRET, payload=_MISSING, **fields):
+    if payload is _MISSING:
+        payload = {"node_ref": node}
+        payload.update(fields)
+    return call(
+        routes.oracle_mesh_read_busy_check,
+        Request(payload, state(history=history), secret=secret),
+    )
+
+
+def test_the_executor_asks_whether_a_pc_is_working_before_it_clears_one(monkeypatch):
+    """#6106 follow-up, one node reference in and one boolean out.
+
+    The connector can see its own running dispatch and nothing else. The failover
+    partner (#5462) can hold a claim on the same PC, and the agent answers this
+    host's request "already busy" and drops it, so the silence the first host reads
+    is the partner's real work. Clearing it would cut a job short, which standard
+    rule 1 forbids, so this read decides whether the sweep runs at all.
+
+    It claims nothing and writes nothing, the same as the stop read, and the asker's
+    own dispatch id is excluded so the answer can be "idle" at all.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    dispatch_id = create_dispatch(history)
+
+    history.live_claims = 0
+    status, body, _ = _busy_read(history, NODE, dispatch_id=dispatch_id)
+    assert status == 200 and body == {"ok": True, "working": False, "live_claims": 0}
+
+    history.live_claims = 2
+    status, body, _ = _busy_read(history, NODE, dispatch_id=dispatch_id)
+    assert status == 200 and body == {"ok": True, "working": True, "live_claims": 2}
+
+    # Asking is not claiming and not consuming: the row is still pending and its
+    # result is still owed.
+    assert history.rows[dispatch_id]["state"] == "pending"
+
+
+def test_the_busy_read_is_channel_only_and_answers_busy_when_it_cannot_ask(monkeypatch):
+    """Every unreadable case answers ``working: true``.
+
+    That is the stop read's default turned around, and for the same reason read the
+    other way: the answer unlocks ending a process on a customer machine, so an
+    answer this route cannot prove must be the one that touches nothing.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+
+    status, body, _ = _busy_read(history, NODE, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    for bad in ({}, {"node_ref": ""}, {"node_ref": 12}, {"node_ref": None},
+                {"node_ref": NODE, "dispatch_id": {"a": 1}},
+                {"node_ref": NODE, "dispatch_id": "x" * 129}, None):
+        status, body, _ = _busy_read(history, NODE, payload=bad)
+        assert status == 400, (bad, body)
+
+    history.live_claims_raises = True
+    status, body, _ = _busy_read(history, NODE, dispatch_id="dsp_" + "a" * 32)
+    assert status == 200 and body["working"] is True, "not a free sweep"
+
+    # A store with no such reader is not configured, not idle.
+    status, body, _ = call(
+        routes.oracle_mesh_read_busy_check,
+        Request({"node_ref": NODE}, SimpleNamespace(
+            history_store=SimpleNamespace(),
+            oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
+                _mapping(), SECRET, routes.EXECUTION_MODE_MESH,
+            ),
+        ), secret=SECRET),
+    )
+    assert status == 503 and body["error"]["code"] == "oracle_mesh_unconfigured"
+
+
+def test_the_busy_route_is_mounted_on_the_same_channel_proof_as_poll():
+    """A new executor leg is mounted where the existing legs are, not beside them."""
+
+    source = inspect.getsource(routes.oracle_mesh_read_busy_check)
+    assert "_channel_proof(request, mesh_source)" in source, "the same secret gate"
+    assert routes.ORACLE_MESH_READ_BUSY_PATH == "/api/claw/connector/mesh-reads/busy"
+    app_source = inspect.getsource(app_factory)
+    assert ('Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,'
+            ' methods=["POST"])') in app_source
 
 
 def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():

@@ -40,7 +40,7 @@ class _StubCommandPort:
 
     def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
                     cancel_probe=None, dispatch_id=None,  # noqa: D102
-                    keep_dispatch_ids=()):
+                    keep_dispatch_ids=(), line_guard=None):
         del node_ref, command, timeout_seconds
         self.calls += 1
         return SimpleNamespace(

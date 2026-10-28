@@ -363,7 +363,8 @@ class CommandPortTests(unittest.TestCase):
 
         class _RefusingPort:
             def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
-                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=()):
+                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
+                    line_guard=None):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -388,7 +389,8 @@ class _FakeCommandPort:
         self.calls = []
 
     def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
-                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=()):
+                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=(),
+                    line_guard=None):
         self.calls.append((node_ref, command, timeout_seconds))
         return self._outcome
 
@@ -681,7 +683,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=()):
+                            keep_dispatch_ids=(), line_guard=None):
                 self.answer = cancel_probe() if cancel_probe is not None else None
                 return MeshCentralCommandOutcome(
                     termination="cancelled", exit_code=None, output=b"",
@@ -716,7 +718,7 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
 
             def run_command(self, *, node_ref, command, timeout_seconds,
                             phase_observer=None, cancel_probe=None, dispatch_id=None,
-                            keep_dispatch_ids=()):
+                            keep_dispatch_ids=(), line_guard=None):
                 self.answer = cancel_probe()
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",

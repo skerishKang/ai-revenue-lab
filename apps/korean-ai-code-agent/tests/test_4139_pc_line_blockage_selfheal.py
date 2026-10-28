@@ -159,6 +159,10 @@ class _Harness:
         call.setdefault("command", "Get-ChildItem C:/x")
         call.setdefault("timeout_seconds", None)
         call.setdefault("dispatch_id", OURS)
+        # The server's answer about live claims on this PC. A harness that does not
+        # override it is saying "nothing else is claimed here", which is the only
+        # condition under which a held line may be cleared at all.
+        call.setdefault("line_guard", lambda: True)
         phases = []
         outcome = self.port().run_command(
             node_ref=NODE, phase_observer=phases.append, **call,
@@ -351,6 +355,133 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
         self.assertEqual(outcome.termination, "exited")
 
 
+class TestTheServersClaimStopsAChildThatIsNotOurs(unittest.TestCase):
+    """#6106 follow-up, standard rule 1 across two executor hosts.
+
+    The connector's own active map covers the host that runs it. During a failover
+    handover (#5462) the partner can hold a live claim on the same PC, and the agent
+    drops this host's request while that claim runs - so the silence this host sees
+    belongs to a real command that is not its own. Only the server sees both hosts,
+    and its answer is what gates the clearing.
+    """
+
+    def test_a_live_claim_on_the_pc_means_nothing_is_swept_and_nothing_is_killed(self):
+        harness = _Harness(
+            sweep_answers=(_frame(running=False), _frame(running=False, killed=[701])),
+            run_answers=(None, None),
+        )
+        with patch.object(port_module, "LINE_STALL_WAIT_SECONDS", STALL_SECONDS):
+            outcome, phases = harness.run(line_guard=lambda: False)
+        self.assertEqual(len(harness.sweeps), 1, "only the pre-flight look ran")
+        self.assertEqual(len(harness.runs), 2, "the command is still retried once")
+        self.assertTrue(harness.runs[0]["child"].killed,
+                        "this host stops waiting on a request the agent dropped")
+        self.assertEqual(outcome.line_cleared, 0, "a gated line is not a cleared one")
+        self.assertIn("line_gate_busy", phases)
+        self.assertNotIn("line_stalled", phases)
+
+    def test_a_guard_that_raises_is_the_safe_answer(self):
+        def broken():
+            raise RuntimeError("the channel did not answer")
+
+        harness = _Harness(
+            sweep_answers=(_frame(running=False), _frame(running=False, killed=[7])),
+            run_answers=(None, None),
+        )
+        with patch.object(port_module, "LINE_STALL_WAIT_SECONDS", STALL_SECONDS):
+            outcome, phases = harness.run(line_guard=broken)
+        self.assertEqual(len(harness.sweeps), 1)
+        self.assertEqual(outcome.line_cleared, 0)
+        self.assertIn("line_gate_busy", phases)
+
+    def test_a_port_composed_without_the_servers_view_clears_nothing(self):
+        # No guard is not "no objection", it is "no authority". A caller that cannot
+        # see the partner's claim must not be able to end a stranger's work.
+        harness = _Harness(
+            sweep_answers=(_frame(running=False), _frame(running=False, killed=[7])),
+            run_answers=(None, None),
+        )
+        with patch.object(port_module, "LINE_STALL_WAIT_SECONDS", STALL_SECONDS):
+            outcome, phases = harness.run(line_guard=None)
+        self.assertEqual(len(harness.sweeps), 1, "the held sweep never ran")
+        self.assertEqual(outcome.line_cleared, 0)
+        self.assertIn("line_gate_closed", phases)
+
+    def test_the_pre_flight_scope_is_not_gated_because_it_touches_only_our_own_host(self):
+        # The abandoned scope reaches only a marker this very host wrote, so a live
+        # partner claim cannot make it wrong, and gating it would cost every command
+        # a channel round for no safety.
+        harness = _Harness(
+            sweep_answers=(_frame(running=False, found=[{"pid": 9}], killed=[9]),),
+            run_answers=(0.0,),
+        )
+        outcome, phases = harness.run(line_guard=lambda: False)
+        self.assertEqual(len(harness.sweeps), 1)
+        self.assertEqual(outcome.line_cleared, 1, "our own leftover was still cleared")
+        self.assertNotIn("line_gate_busy", phases)
+
+    def test_the_executor_asks_the_busy_route_and_only_yes_on_a_working_false(self):
+        from kagent.local_agent_oracle_mesh_executor import (
+            BUSY_PATH, OracleMeshDispatch, OracleMeshExecutor,
+        )
+
+        dispatch = OracleMeshDispatch(
+            dispatch_id=OURS, nonce="n" * 32, node_ref=NODE,
+            file_path="C:/x/a.txt", command_id="cmd-1", run_id="run-1",
+            kind="command", command_text="Get-ChildItem C:/x",
+        )
+        asked = []
+
+        def build(answers):
+            queue = list(answers)
+
+            def transport(path, payload):
+                if path == BUSY_PATH:
+                    asked.append(payload)
+                    return queue.pop(0)
+                return 200, {"ok": True}
+
+            return OracleMeshExecutor(
+                chat_origin="https://chat.example", channel_secret="x" * 32,
+                read_port=_ReadPort(), command_port=_NoopPort(), transport=transport,
+            )
+
+        cases = (
+            ((200, {"ok": True, "working": False}), True, "nothing claimed here"),
+            ((200, {"ok": True, "working": True}), False, "a claim is live"),
+            ((200, {"ok": True}), False, "an answer without the field"),
+            ((200, {"ok": False, "working": False}), False, "a refused body"),
+            ((503, {"ok": False}), False, "an unreadable route"),
+            ((200, "not a dict"), False, "a body that is not that shape"),
+        )
+        for answer, expected, why in cases:
+            asked.clear()
+            with self.subTest(why):
+                self.assertIs(build([answer])._line_guard(dispatch)(), expected)
+                self.assertEqual(asked[-1], {"node_ref": NODE, "dispatch_id": OURS},
+                                 "the asker names only its own PC and its own claim")
+
+    def test_a_transport_that_throws_keeps_the_pc_untouched(self):
+        from kagent.local_agent_oracle_mesh_executor import (
+            OracleMeshDispatch, OracleMeshExecutor,
+        )
+
+        dispatch = OracleMeshDispatch(
+            dispatch_id=OURS, nonce="n" * 32, node_ref=NODE,
+            file_path="C:/x/a.txt", command_id="cmd-1", run_id="run-1",
+            kind="command", command_text="Get-ChildItem C:/x",
+        )
+
+        def transport(path, payload):
+            raise AssertionError("the channel is down")
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.example", channel_secret="x" * 32,
+            read_port=_ReadPort(), command_port=_NoopPort(), transport=transport,
+        )
+        self.assertIs(executor._line_guard(dispatch)(), False)
+
+
 class TestTheSweepAnswerIsReadFromThePcAlone(unittest.TestCase):
     """Standard rule 4: the verdict is the PC's own process state, not text."""
 
@@ -528,6 +659,11 @@ class TestTheJournalAndTheReportCarryTheCount(unittest.TestCase):
         self.assertEqual(box["keep"], (OURS,))
         self.assertIsNone(executor._pending)
         self.assertEqual(executor.active_dispatch_ids(), ())
+
+
+class _NoopPort:
+    def run_command(self, **call):
+        raise AssertionError("the guard never runs a command")
 
 
 class _ReadPort:

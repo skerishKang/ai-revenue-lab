@@ -2901,6 +2901,51 @@ class D1HistoryStore:
         )
         return isinstance(row, dict) and row.get("termination") == "cancelled"
 
+    async def oracle_mesh_node_live_claims(
+        self, *, node_ref: str, except_dispatch_id: str = "",
+    ) -> int:
+        """How many dispatches are claimed on one PC right now, for the executor.
+
+        #6106 leaves a held console line only when nothing on that PC is working.
+        The connector's own map covers the host that runs it, and this row set is
+        the only view that also covers the failover partner (#5462): during a
+        handover both hosts can hold a claim, and a sweep that ended the partner's
+        running command would break standard rule 1 — the work on a PC is never
+        cut short.
+
+        The claim is read from the same real columns the lease already uses: a row
+        still ``pending``, unexpired, handed out (``nonce_sha256`` set) and not yet
+        yielded (``claimed_until`` in the future). Nothing is inferred from text.
+        ``except_dispatch_id`` removes the asker's own claim, which is live for
+        exactly as long as it is asking, so without it the answer would always be
+        "busy" and no wedged line could ever be cleared.
+
+        It never claims, never writes, and raises on an unreadable row like every
+        other reader here: the route turns that into the safe answer, which is
+        "busy", because the alternative ends a real command on a customer machine.
+        """
+        if not isinstance(node_ref, str) or not node_ref or len(node_ref) > 256:
+            raise HistoryError("node_ref is required")
+        if not isinstance(except_dispatch_id, str):
+            raise HistoryError("except_dispatch_id must be text")
+        now = _now_iso()
+        sql = (
+            "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch "
+            "WHERE node_ref=? AND state=? AND expires_at>? "
+            "AND nonce_sha256 IS NOT NULL AND claimed_until>?"
+        )
+        params: list[Any] = [node_ref, "pending", now, now]
+        if except_dispatch_id:
+            sql += " AND dispatch_id<>?"
+            params.append(except_dispatch_id)
+        row = await self._first(sql, *params)
+        if not isinstance(row, dict):
+            raise HistoryError("oracle mesh claim read unavailable")
+        count = row.get("n")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            raise HistoryError("oracle mesh claim read is not a count")
+        return count
+
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
     ) -> dict[str, Any] | None:

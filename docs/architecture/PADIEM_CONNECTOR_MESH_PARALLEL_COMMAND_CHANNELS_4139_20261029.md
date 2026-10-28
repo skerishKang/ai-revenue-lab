@@ -1,8 +1,35 @@
 # #4139 Connector — can MeshCentral carry PC commands in parallel? (2026-10-29 KST)
 
-**Status:** RESEARCH MEMO · no code in this document is authorised by it · the fix that shipped is `fix/pc-line-blockage-selfheal-261029` (detection and clearing on the serial lane), NOT a parallel channel. Implementation of anything below is a separate PR with its own work contract.
+**Status:** RESEARCH MEMO + the record of what shipped on this lane · no code in this document is authorised by it · the fix that shipped first is `fix/pc-line-blockage-selfheal-261029` (#6106, detection and clearing on the serial lane), and the follow-up closes its cross-host hole (§0). Implementation of anything below §1 is a separate PR with its own work contract.
 
 **Primary artifact examined:** official MeshCentral, repository `Ylianst/MeshCentral`, and the published npm package `meshcentral@1.3.1` (tarball unpacked, read directly). Line numbers are from that package. Anything not seen in that source is marked **INFERENCE** or **UNVERIFIED**.
+
+## 0. What shipped, and the hole its follow-up closed
+
+#6106 heals the serial lane: a pre-flight look at the PC's console over the terminal
+tunnel, a 120-second bound on the wait for an ANSWER (never on the work), one retry
+after clearing, and counts in the journal. Its own active-dispatch map says which PC
+this connector is busy with.
+
+That map is the limit of what one host can see. Two executor hosts exist (#5462) and
+during a handover both can hold a claim on one PC, so the first host's 120-second
+silence can be the second host's running command - and a sweep that ended it would
+break standard rule 1. The follow-up therefore gates the clearing on the server's own
+claim state:
+
+* a read-only `POST /api/claw/connector/mesh-reads/busy` on the Chat side takes the
+  node reference and the asker's own dispatch id, and answers from the lease columns
+  the lane already writes - `state='pending' AND expires_at>now AND nonce_sha256 IS
+  NOT NULL AND claimed_until>now`, minus the asker's own row. One boolean, nothing
+  claimed, nothing written, the same channel proof as poll.
+* the held sweep runs only when that answer says nothing is claimed. A live claim, a
+  refused channel, a non-200, an unreadable body, a port composed with no guard at
+  all - all of them mean **clear nothing**. The safe default here is deliberately the
+  opposite of the owner-stop probe's, because what this answer unlocks is ending a
+  process on a customer machine.
+* the pre-flight (abandoned-marker) scope is not gated: it already reaches only a
+  marker this very host wrote, so it cannot be wrong about a partner's work, and
+  gating it would spend a channel round trip on every command for no safety.
 
 ## 1. Why the lane is serial, and what a stuck command actually does to the next one
 
@@ -63,7 +90,27 @@ The shipped fix reaches the same outcome through `meshctrl shell`, which is CLI-
 
 `agentupdate` / `agentupdateex` (`meshcore.js:5135`) swap meshcore without stopping the Windows service; relevant if an agent-side change ever becomes necessary.
 
-## 7. Recommendation ordering for the next slice
+## 7. What the pre-flight probe costs (test environment, 2026-10-29 KST)
+
+Requested measurement, stated with its boundary: these numbers are **this development PC and the test doubles**, so they cover PADIEM's own work and the floor of launching a child. They do **not** cover a real agent round trip. The live per-command number is Qoder's to take on 컴1, and it is the one that matters for the lane's latency budget.
+
+Environment: Windows 11 (10.0.22631), CPython 3.13.7, Node v26.3.0, code at `main` after #6106. Timed with `time.perf_counter`.
+
+| What | min | median | max | n |
+|---|---|---|---|---|
+| `sweep_script(...)` build (one held-scope script, 2,494 bytes) | 0.0029 ms | 0.0037 ms | 0.0677 ms | 3,000 |
+| `parse_sweep_reply(...)` on a noisy terminal buffer (echo + frame) | 0.0019 ms | 0.0022 ms | 0.0200 ms | 3,000 |
+| Bare `node -e 0` child launch on this PC (the floor of any meshctrl session) | 32.4 ms | 35.3 ms | 40.0 ms | 15 |
+
+What that does and does not say:
+
+* The Python the probe adds is **microseconds per command** and is not the cost. Anything measured above is process launch and network.
+* One sweep is one `meshctrl shell` session — the same shape, same credential path and same 15-second bound (#6059) already ships as the owner's stop. So the added latency per command is approximately **one stop session per command**, and its floor on this PC is ~35 ms of node startup; the real total is node startup + tunnel connect + agent terminal + one PowerShell + the CIM queries.
+* The session exits **as soon as its answer frame parses** (`_TerminalHandoff.wait_for` breaks on the predicate), so a healthy PC does not pay the 15-second bound. The polling granularity is 0.2 s (`select` timeout), so the answer is noticed within 200 ms of arriving.
+* Worst case is bounded by `LINE_SWEEP_WAIT_SECONDS = 15` for the sweep, and the sweep's failure is reported (`line_probe_refused` / `line_probe_unobserved`) rather than retried into a loop.
+* Two consequences worth deciding on deliberately, because they are choices and not facts: (1) a live claim on that PC now gates the held sweep, so the probe's channel round trip still happens at pre-flight while the clearing itself is skipped; (2) if the round trip measures materially against interactive read latency, the pre-flight scope can be narrowed to once per node per window, or made to run only after a non-clean previous outcome, with the 120-second path left as the recovery.
+
+## 8. Recommendation ordering for the next slice
 
 1. Keep the shipped serial-lane healing (detection, bounded clearing, one retry, counters). It addresses the measured failure with the channels we already trust.
 2. Spike **per-dispatch terminal sessions** (section 3). It is the only option that is both parallel and first-party, and it removes the class of defect instead of recovering from it. Price the framing, session-leak and exit-code consequences first.

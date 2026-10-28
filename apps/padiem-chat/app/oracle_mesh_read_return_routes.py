@@ -74,6 +74,10 @@ ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
 #: is the only value it sends, nothing is claimed or written here, and the answer
 #: is one boolean: has the owner asked for this running command to end?
 ORACLE_MESH_READ_CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
+#: Executor read of one PC's live claims. The node reference the executor is about
+#: to sweep, plus its own dispatch id so its own claim is not counted, in; one
+#: boolean out. Nothing is claimed or written here either.
+ORACLE_MESH_READ_BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
 #: Owner-scoped read of one stored over-budget command original. The dispatch
 #: id is the only browser-supplied value; the object key, the conversation and
 #: the message id are all re-derived server-side, so no browser-chosen object
@@ -1876,6 +1880,56 @@ async def oracle_mesh_read_cancel_check(request: Request) -> JSONResponse:
     except Exception:
         return _response({"ok": True, "cancelled": False})
     return _response({"ok": True, "cancelled": cancelled is True})
+
+
+async def oracle_mesh_read_busy_check(request: Request) -> JSONResponse:
+    """Executor read of one PC's live claims: is anything working there right now?
+
+    #6106 clears a console line the agent is holding for nothing, and the only
+    thing that proves "for nothing" across two executor hosts is this row set: the
+    failover partner (#5462) can hold a claim on the same PC during a handover, and
+    ending its running command would cut a real job short, which the owner rule
+    forbids. The claim is read from the lease's own columns, never from text.
+
+    The same deployment channel secret as poll, submit and cancel-check, and the
+    same ownership boundary: the caller names only a node reference and the dispatch
+    id it already holds, and it may not address another account's work by anything
+    else. One read, nothing claimed, nothing written.
+
+    Anything this route cannot prove answers ``working: true``. That is the
+    opposite default from cancel-check, for the same reason read the other way: an
+    unreadable answer must never be what ends a command on a customer machine. The
+    cost of the safe reading is one more minute of a wedged line, and the line is
+    retried on the next command anyway.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return _error(400, "oracle_mesh_invalid_body")
+    if not isinstance(body, dict):
+        return _error(400, "oracle_mesh_invalid_body")
+    node_ref = _ref(body.get("node_ref"), 256)
+    if node_ref is None:
+        return _error(400, "oracle_mesh_invalid_body")
+    dispatch_id = body.get("dispatch_id")
+    if dispatch_id is None:
+        dispatch_id = ""
+    elif not isinstance(dispatch_id, str) or len(dispatch_id) > 128:
+        return _error(400, "oracle_mesh_invalid_body")
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_node_live_claims", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        live = await reader(node_ref=node_ref, except_dispatch_id=dispatch_id)
+    except Exception:
+        return _response({"ok": True, "working": True, "live_claims": 1})
+    return _response({"ok": True, "working": live > 0, "live_claims": live})
 
 
 def _verified_desktop_note(wire: dict[str, Any]) -> str | None:

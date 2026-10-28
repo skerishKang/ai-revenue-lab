@@ -37,6 +37,13 @@ CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: here is a time ceiling: the command runs until the console answers.
 LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
 RENEW_INTERVAL_SECONDS = 20
+#: #6106 follow-up: before anything on a customer PC is ended, the executor asks the
+#: server whether that PC has a live claim at all. The connector's own map covers the
+#: host it runs on; this is the only view that also covers the failover partner
+#: (#5462), which can hold a claim on the same PC during a handover. One node
+#: reference and the asker's own dispatch id in, one boolean out — the same read-only
+#: shape, the same channel proof and the same ownership boundary as poll.
+BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
 #: A channel request may never own the loop indefinitely. One host met a half-dead
 #: TCP path on a single poll and blocked for 5 h 36 m with no log line at all (last
 #: send and last receive 20,125 s apart, 1,971 of 3,099 bytes retransmitted), so no
@@ -630,6 +637,38 @@ class OracleMeshExecutor:
 
         return probe
 
+    def _line_guard(self, dispatch: OracleMeshDispatch) -> Callable[[], bool]:
+        """Ask the server whether this PC's console may be cleared at all.
+
+        True means "nothing on this PC is claimed, clear it". Every other answer -
+        a live claim under any executor host, a refused channel, a non-200, a body
+        that is not that shape - is False. The reading is deliberate and is the
+        opposite of the cancel probe's: the action this answer unlocks ends a process
+        on a customer machine, so an unreadable answer must never be the one that
+        authorises it. A PC that stays wedged for one more minute is recoverable; a
+        real command cut short is not, and standard rule 1 forbids it.
+        """
+        node_ref = str(getattr(dispatch, "node_ref", "") or "")
+        dispatch_id = str(getattr(dispatch, "dispatch_id", "") or "")
+        if not node_ref:
+            return lambda: False
+
+        def probe() -> bool:
+            try:
+                status, body = self._post(
+                    BUSY_PATH,
+                    {"node_ref": node_ref, "dispatch_id": dispatch_id},
+                )
+            except Exception:
+                return False
+            if status != 200 or not isinstance(body, dict):
+                return False
+            if body.get("ok") is not True:
+                return False
+            return body.get("working") is False
+
+        return probe
+
     def _execute_command(
         self, dispatch: OracleMeshDispatch
     ) -> OracleMeshExecutionOutcome:
@@ -667,6 +706,9 @@ class OracleMeshExecutor:
                 # What the console sweep may never touch: the dispatches this
                 # connector is running, read from its own state.
                 keep_dispatch_ids=self.active_dispatch_ids(),
+                # Whether the server sees any live claim on this PC at all. The
+                # connector's own map cannot see the failover partner's claim.
+                line_guard=self._line_guard(dispatch),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
