@@ -25,6 +25,7 @@ from starlette.responses import JSONResponse, Response
 
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .pc_pairing_connect_exe_asset import connect_exe_bytes
 from .pc_device_pairing_store import (
     PcPairingError,
     drive_root,
@@ -45,6 +46,13 @@ PC_PAIRING_HANDOFF_PATH = "/api/pc/pairings/handoff"
 #: the file, so nothing on the PC has to be typed.
 PC_PAIRING_INSTALL_FILE_PATH = "/api/pc/pairings/install-file"
 PC_PAIRING_INSTALL_FILENAME = "padiem-pc-connect.ps1"
+#: The same connect as a program: one double-click, no PowerShell, no right-click
+#: menu, nothing typed. The account's tag travels after the program's own bytes.
+PC_PAIRING_INSTALL_EXE_PATH = "/api/pc/pairings/install-exe"
+PC_PAIRING_INSTALL_EXE_FILENAME = "padiem-pc-connect.exe"
+#: The line the program looks for at the end of its own file. Written here, read
+#: there, and nothing else on the PC holds the pairing information.
+PC_PAIRING_CONNECT_EXE_MARKER = "PADIEMTRAILER:PADIEM-PC-CONNECT-1"
 #: Administrator adoption: the Owner links a device this deployment already
 #: knows about to their own account, without waiting for somebody else's PC to
 #: run an installer.
@@ -87,6 +95,9 @@ _MESSAGES = {
     #: is no file to give this account's PC. Same 준비 중 shape as an unapplied
     #: migration: nothing is refused about the account, and nothing is guessed.
     "pc_pairing_install_url_missing": "PC 설치 파일은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
+    #: The reviewed program is not in this build, or its bytes are not the bytes the
+    #: build recorded. Handing out something else would be worse than waiting.
+    "pc_pairing_connect_exe_unavailable": "PC 연결 프로그램은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
     "pc_pairing_body_invalid": "PC 연결 요청 형식이 올바르지 않습니다.",
     "pc_pairing_code_unknown": "연결 코드를 확인할 수 없습니다. 새 코드로 다시 시도해 주세요.",
     "pc_pairing_code_used": "이 연결 코드는 이미 사용되었습니다. 새 코드를 발급해 주세요.",
@@ -461,6 +472,47 @@ def render_install_script(*, install_tag: Any, agent_url: Any) -> str | None:
     return _INSTALL_SCRIPT_TEMPLATE % {"tag": quoted_tag, "url": quoted_url}
 
 
+def connect_exe_trailer(*, install_tag: Any, agent_url: Any) -> bytes | None:
+    """The lines a downloaded program reads out of its own file, or ``None``.
+
+    Two values and nothing else: the account's tag, which is what the agent reports
+    back inside its name, and the deployment's own installer link. No chat origin
+    travels here on purpose - the program needs neither to install, and a file that
+    carried an address the browser had chosen would be a file that could be pointed
+    somewhere else. The origin belongs to the typed-code path, which is a switch on
+    the command line, not a value in a download.
+    """
+    if not isinstance(install_tag, str) or _INSTALL_TAG_RE.fullmatch(install_tag) is None:
+        return None
+    url = install_url_from_config(agent_url)
+    if url is None:
+        return None
+    return (
+        f"{PC_PAIRING_CONNECT_EXE_MARKER}\r\n"
+        f"PADIEMTAG:{install_tag}\r\n"
+        f"PADIEMURL:{url}\r\n"
+    ).encode("ascii")
+
+
+def render_install_exe(*, install_tag: Any, agent_url: Any) -> bytes | None:
+    """The double-click connect program with this account's tag behind its bytes.
+
+    Windows runs an executable without regard for what follows it, so the tag rides
+    at the end of the file instead of in a second download, a registry value, or a
+    prompt. Everything before the trailer is the reviewed artifact byte for byte -
+    this function adds nothing to the front and changes nothing inside, which is
+    what lets the same SHA-256 the build printed describe what a PC receives.
+    """
+    trailer = connect_exe_trailer(install_tag=install_tag, agent_url=agent_url)
+    if trailer is None:
+        return None
+    try:
+        program = connect_exe_bytes()
+    except ValueError:
+        return None
+    return program + trailer
+
+
 #: UTF-8 with a byte-order mark: Windows PowerShell 5.1 reads a file without one
 #: in the machine's own code page, which turns Korean prose into unreadable
 #: bytes and, in this deployment's experience, is exactly what breaks a reply.
@@ -556,6 +608,55 @@ async def pc_pairing_install_file(request: Request) -> Response:
         headers={
             **_NO_STORE,
             "Content-Disposition": f'attachment; filename="{PC_PAIRING_INSTALL_FILENAME}"',
+        },
+    )
+
+
+async def pc_pairing_install_exe(request: Request) -> Response:
+    """One double-click: this PC joins the signed-in account, no shell involved.
+
+    The same lane as the install file above, in the shape a person who does not
+    know what PowerShell is can use: the browser downloads one file, they run it,
+    and it asks Windows for administrator approval itself. Session-authenticated and
+    owner-scoped exactly the same way, and it mints a fresh code the same way, so a
+    file that dies halfway can be clicked again - the code is never consumed here.
+
+    Refused rather than improvised when the reviewed program is not in this build:
+    the bytes a PC runs as a service have to be the bytes the build verified, and a
+    substitute is not a smaller version of the same answer.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    agent_url = install_url_from_config(
+        getattr(request.app.state, "pc_pairing_install_url", None),
+    )
+    if agent_url is None:
+        return _error(503, "pc_pairing_install_url_missing")
+    body = await _body(request)
+    if body is None or set(body) != set():
+        return _error(400, "pc_pairing_body_invalid")
+    # Read the artifact before minting anything: a click on a build that cannot
+    # hand out the program must not leave a code behind that nothing can redeem.
+    try:
+        connect_exe_bytes()
+    except ValueError:
+        return _error(503, "pc_pairing_connect_exe_unavailable")
+    issued, refused = await _await_store(store.issue_code, user_id=user_id, issued_at=_now())
+    if refused is not None:
+        return refused
+    program = render_install_exe(install_tag=issued["install_tag"], agent_url=agent_url)
+    if program is None:
+        return _error(503, "pc_pairing_connect_exe_unavailable")
+    return Response(
+        content=program,
+        media_type="application/octet-stream",
+        headers={
+            **_NO_STORE,
+            "Content-Disposition": f'attachment; filename="{PC_PAIRING_INSTALL_EXE_FILENAME}"',
         },
     )
 
@@ -813,6 +914,8 @@ __all__ = [
     "PC_PAIRING_HANDOFF_PATH",
     "PC_PAIRING_INSTALL_FILE_PATH",
     "PC_PAIRING_INSTALL_FILENAME",
+    "PC_PAIRING_INSTALL_EXE_FILENAME",
+    "PC_PAIRING_INSTALL_EXE_PATH",
     "PC_PAIRING_LABEL_PATH",
     "PC_PAIRING_LINK_PATH",
     "PC_PAIRING_PATH",
@@ -823,6 +926,9 @@ __all__ = [
     "pc_pairing_handoff",
     "pc_pairing_adopt",
     "pc_pairing_install_file",
+    "pc_pairing_install_exe",
+    "connect_exe_trailer",
+    "render_install_exe",
     "install_url_from_config",
     "render_install_script",
     "pc_pairing_issue",
