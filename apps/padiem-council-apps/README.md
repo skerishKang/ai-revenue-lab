@@ -157,6 +157,35 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
   `docs/6065/s2-card-frame-390-before-after.png`, `docs/6065/s2-archive-1440-before-after.png`
 - 기준선 정정: 이 문단을 작성할 때 운영 `/apps/council/` 의 index.html·council-app.css 는
   `main`과 **다르다**(S1 병합 후 재배포 전). council-app.js 는 동일.
+  S3 작성 시점(2026-10-29)에는 **세 파일 모두** 다르다 — S2 가 JS 를 바꾸었으나 운영은 여전히
+  S1 이전본이다. `main` = `d941fb33a`, 운영 = 그 이전 배포.
+
+## 편집기 3종 스킨 (#6065 S3, 2026-10-29)
+
+시안 편집기의 두 표면을 운영에 옮겼다. DOM 구조·엔드포인트·요청 본문은 그대로이고 변경은 CSS 한 파일이다.
+
+| 요소 | 시안 어휘 | S3 전 운영 | S3 후 운영 |
+| --- | --- | --- | --- |
+| 정보 묶음 | `.pa-meta` 패널 | border + 반지름 10, padding 12, gap 10 | 반지름 14, `padding: clamp(14px,1.8vw,20px)`, gap 12 |
+| 레이블 | 12px / .04em / muted | 14px 기본 색 | 시안과 동일 |
+| 입력 | 44h · `10px 12px` · 15px | 44h · `8px 10px` · inherit | 시안과 동일(반지름 14) |
+| 텍스트에리아 | `min-height: 92` · `resize: vertical` | 88 · 지정 없음 | 시안과 동일 |
+| 1차 동작 | `.pa-draft` 알약 · 700 | 반지름 10 · 650 | `border-radius: 999px` · 700 · `10px 20px` |
+| 2차 동작 | `.pa-back` 헤어라인 알약 | 반지름 10 | `council-save`·`council-actions button` 알약 |
+| 문서 표면 | `.pa-paper` — 두께 있는 여백 + 그림자, 안의 텍스트는 테두리 없는 종이(16.5px/1.85) | 테두리 있는 입력 상자 160px | 시안과 동일(최소 `clamp(320px,54svh,620px)`) |
+| 편집 레이아웃 | `.pa-editor-grid` — 정보 320 + 문서 나머지, ≤900 은 1열 | 1열(폼 886px) | ≥900 에서 `340px / 1fr` 2열 |
+
+- 2열은 **오른쪽에 내용이 있을 때만** 열린다(`.council-card-body:has(...)`). 결과가 아직 없는 SNS에서
+  빈 열이 생기지 않는다. `:has()` 미지원 브라우저는 규칙이 통째로 무시되어 지금의 1열로 남는다.
+- 포커스 신호: 시안대로 문서 텍스트에리아의 아웃라인을 지우는 대신 `.council-result:focus-within`
+  테두리를 accent 로 밝힌다. 전역 `:focus-visible` 링은 유지.
+- 32셀(로그인 전후 × 320/390/768/1440 × 4화면) 가로 넘침 0·가림 0. 1440 실측 열 `340px 532px`,
+  폼 340, 결과·목록 x=631. 768/390/320 은 1열 유지(폼 706/332/262).
+- AI·저장 무변경 A/B: speech/sns/meeting@kr, speech@fr, meeting@us 5케이스에서
+  `/api/chat`·`/api/projects/p1/files` 요청 본문과 렌더 결과가 main 과 동일.
+  kr 은 `country` 없음, fr/us 는 두 요청 모두 코드 수록, SNS 사진 구성은 `application/json` 유지.
+- 계약 테스트 7건 신규(`test_6065_s3_editor_skin.py`), 변형 10종 검출. 78 passed.
+- 근거 캡처: `docs/6065/s3-editor-1440-before-after.png`, `docs/6065/s3-editor-390-before-after.png`
 
 ## 실행
 
