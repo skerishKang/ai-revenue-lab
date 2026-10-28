@@ -1912,7 +1912,7 @@ def _verified_desktop_blob(
         return None
     if isinstance(size, bool) or not isinstance(size, int):
         return None
-    if size <= 0 or size > max_bytes:
+    if size <= 0 or (max_bytes is not None and size > max_bytes):
         return None
     if raw is not None:
         # A binary frame never also carries the base64 copy: exactly one shape.
