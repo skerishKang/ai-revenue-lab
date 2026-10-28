@@ -224,6 +224,21 @@ function renderEmptyNotice(): string {
   return `<p class="later-tier-notice" data-empty-state="NO_LIVE_REWARD_SUPPLY">아직 확인된 적립이 없습니다. 검증된 공급자가 연결되면 이곳에 표시됩니다.</p>`;
 }
 
+/**
+ * A filter that matches nothing is the visitor's own condition, not missing
+ * supply (#6074). Answering it with the supply notice told a visitor who typed
+ * a word that B64 has no verified rewards at all, so the browse page now names
+ * the condition and offers the way out.
+ */
+function renderNoFilterResults(): string {
+  return `<div class="empty-state" role="status" data-empty-state="NO_FILTER_MATCH">
+    <div class="empty-state__mark" aria-hidden="true">${renderBrandMark('empty-state__mark-svg')}</div>
+    <h3>조건에 맞는 기회가 없습니다</h3>
+    <p>검색어나 소요 시간 조건을 바꾸거나 전체 기회를 보세요.</p>
+    <a class="ghost-btn" href="/browse">전체 기회 보기 →</a>
+  </div>`;
+}
+
 function renderShell(
   viewModel: { mode: string; issueNumber: number | null },
   navItems: string,
@@ -679,14 +694,17 @@ export function renderAdClickFirstBrowseWeb(viewModel: AdClickFirstBrowseViewMod
   </form>`;
 
   let content: string;
+  const filterActive = viewModel.filters.query.trim() !== ''
+    || viewModel.filters.maxSeconds !== null
+    || viewModel.filters.category !== 'ALL';
   if (!hasPublic && renderedCards.length === 0) {
     content = `<section id="available-now" aria-labelledby="available-title">
       <div class="section-head">
         <h2 id="available-title">수익 기회 탐색</h2>
         <span>실시간 확인</span>
       </div>
-      ${renderEmptyState()}
-      <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>
+      ${filterActive ? renderNoFilterResults() : `${renderEmptyState()}
+      <p class="later-tier-notice">${escapeHtml(viewModel.laterTierNotice)}</p>`}
     </section>`;
   } else if (!hasPublic) {
     content = `<section id="available-now" aria-labelledby="available-title">

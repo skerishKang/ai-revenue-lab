@@ -127,7 +127,12 @@ test('/browse filters by query and maxSeconds', async () => {
   assert.match(await r1.text(), /data-visible-card-count="1"/);
   const r2 = await handler(new Request('https://b64.example/browse?maxSeconds=10'));
   assert.equal(r2.status, 200);
-  assert.match(await r2.text(), /data-empty-state="NO_LIVE_REWARD_SUPPLY"/);
+  // #6074: this used to expect NO_LIVE_REWARD_SUPPLY, which is the defect — a
+  // duration cap that excludes the one card is a filter outcome, not a statement
+  // that B64 has no verified supply.
+  const r2html = await r2.text();
+  assert.ok(!r2html.includes('data-visible-card-count="1"'), 'the 10s cap excludes the 15s card');
+  assert.match(r2html, /data-empty-state="NO_FILTER_MATCH"/);
 });
 
 test('/detail renders a known opportunity and 404s an unknown one', async () => {
