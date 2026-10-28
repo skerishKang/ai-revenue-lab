@@ -133,9 +133,20 @@ No stage in this list deploys to production; production release stays with CENTR
   `main` and on this branch — same `/api/chat` and `/api/projects/p1/files` bodies, same rendered
   result, same dialog count. kr sends no `country` field, fr/us send it on both requests, and the
   SNS composition still posts as `application/json`.
-- **S3 — editor pass for the three tools.** Class-level restyle of form, result and save row.
-  Acceptance: the `kr` request body is byte-identical to today, and the non-`kr` bodies still carry
-  `country` only (#6046 behaviour, `test_6046_country_selection.py`).
+- **S3 — editor pass for the three tools (implemented in this PR).** CSS only, one file; the DOM the
+  three modules build is untouched, so prompt assembly, payload, save and permission paths are
+  unchanged by construction and were re-proven by the same five-case A/B as S2.
+  Adopted from the design: `.pa-meta` (a 14px-radius panel with `clamp(14px,1.8vw,20px)` padding),
+  the 12px/.04em muted label register, fields at `10px 12px` / 15px / 14px radius on the 44px floor,
+  `min-height: 92px` resizable textareas, the filled pill primary action (`.pa-draft`: 999px radius,
+  weight 700) and hairline pill secondaries (`.pa-back`), and `.pa-paper` as the result surface — a
+  padded panel whose textarea is a borderless sheet at 16.5px/1.85 with `min-height:
+  clamp(320px, 54svh, 620px)`, focus carried by the panel border instead of a second ring.
+  The design's two-column editor (`minmax(0,320px)` + paper) is adopted at ≥900 as `340px` + 1fr,
+  gated on `:has()` so a tool with no result yet keeps one column instead of showing an empty
+  right side; where `:has()` is unsupported the rule is ignored and today's single column remains.
+  Measured: 1440 columns `340px 532px`, form 340, result and lists at x=631; 768/390/320 single
+  column (form 706/332/262); 32 cells overflow 0, occlusion 0.
 - **S4 — auth surface authored in the design's vocabulary.** Acceptance: fail-closed gate intact,
   the Google return allowlist intact, and no new endpoint.
 - **S5 — hero, photography, and localised chrome.** Blocked on §6.

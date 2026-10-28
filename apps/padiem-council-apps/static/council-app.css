@@ -255,11 +255,12 @@ body.council-body {
 
 .council-form { display: grid; gap: 12px; }
 .council-fieldset {
+  /* 시안 `.pa-meta`: 정보 묶음은 카드 위에 얹은 패널 하나다. */
   border: 1px solid var(--council-border);
-  border-radius: var(--council-radius);
-  padding: 12px;
+  border-radius: 14px;
+  padding: clamp(14px, 1.8vw, 20px);
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 .council-fieldset legend {
   font-size: 13px;
@@ -267,30 +268,33 @@ body.council-body {
   color: var(--council-muted);
   padding: 0 6px;
 }
-.council-form label { display: grid; gap: 4px; font-size: 14px; }
+.council-form label { display: grid; gap: 5px; font-size: 12px; letter-spacing: .04em; color: var(--council-muted); }
 .council-form input,
 .council-form textarea,
 .council-form select {
   font: inherit;
+  font-size: 15px;
+  letter-spacing: normal;
   min-height: 44px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: 1px solid var(--council-border);
-  border-radius: var(--council-radius);
+  border-radius: 14px;
   background: var(--council-bg);
   color: var(--council-text);
 }
-.council-form textarea { min-height: 88px; }
+.council-form textarea { min-height: 92px; resize: vertical; }
 .council-form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .council-generate,
 .council-login {
+  /* 시안의 1차 동작(`.pa-draft`)은 알약형 채운 버튼이다. */
   font: inherit;
   background: var(--council-accent);
   color: var(--council-accent-ink);
   border: 0;
-  border-radius: var(--council-radius);
+  border-radius: 999px;
   min-height: 44px;
-  padding: 0 16px;
-  font-weight: 650;
+  padding: 10px 20px;
+  font-weight: 700;
   cursor: pointer;
 }
 .council-generate:disabled,
@@ -300,38 +304,50 @@ body.council-body {
   background: var(--council-accent-soft);
   color: var(--council-accent);
   border: 1px solid var(--council-border);
-  border-radius: var(--council-radius);
+  border-radius: 999px;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 10px 20px;
   font-weight: 650;
   cursor: pointer;
 }
 .council-save:hover { border-color: var(--council-accent); }
 .council-result {
+  /* 시안 `.pa-paper`: 문서는 입력칸이 아니라 종이다. */
   margin-top: 14px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  padding: clamp(16px, 2.4vw, 30px);
+  border: 1px solid var(--council-border);
+  border-radius: 18px;
+  background: var(--council-surface);
 }
+.council-result:focus-within { border-color: var(--council-accent); }
 .council-result[hidden] { display: none; }
 .council-result textarea {
   width: 100%;
   font: inherit;
-  min-height: 160px;
-  padding: 10px;
-  border: 1px solid var(--council-border);
-  border-radius: var(--council-radius);
-  background: var(--council-bg);
+  font-family: var(--council-face);
+  font-size: 16.5px;
+  line-height: 1.85;
+  min-height: clamp(320px, 54svh, 620px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--council-text);
+  resize: vertical;
 }
+.council-result textarea:focus-visible { outline: 0; }
 .council-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .council-actions button {
   font: inherit;
   min-height: 44px;
-  padding: 0 14px;
-  border-radius: var(--council-radius);
+  padding: 9px 16px;
+  border-radius: 999px;
   border: 1px solid var(--council-border);
   background: var(--council-surface);
   color: var(--council-text);
+  font-weight: 600;
   cursor: pointer;
 }
 .council-actions button:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
@@ -502,6 +518,26 @@ body.council-body {
 }
 .council-photo-controls button { padding: 0 12px; }
 .council-result h3 { margin: 0; font-size: 15px; display: flex; align-items: center; }
+
+@media (min-width: 900px) {
+  /* 시안 `.pa-editor-grid`는 정보(320)와 문서(나머지) 두 열이다. 문서 쪽에 내용이
+     없을 때까지 두 열로 벌리면 빈 열이 남으므로, 내용이 있는 경우에만 걸린다.
+     `:has()`를 지원하지 않는 브라우저는 이 규칙이 통째로 무시되어 지금의 1열이다. */
+  .council-card-body:has(.council-result:not([hidden])),
+  .council-card-body:has(.council-saved-list),
+  .council-card-body:has(.council-archive) {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: start;
+  }
+  .council-card-body:has(.council-saved-list) .council-form,
+  .council-card-body:has(.council-archive) .council-form,
+  .council-card-body:has(.council-result:not([hidden])) .council-form { grid-column: 1; }
+  .council-card-body:has(.council-saved-list) :is(.council-result, .council-saved-list),
+  .council-card-body:has(.council-archive) :is(.council-result, .council-archive),
+  .council-card-body:has(.council-result:not([hidden])) .council-result { grid-column: 2; }
+}
 
 @media (max-width: 900px) {
   /* 열이 좁아지면 헤더는 감싼다. 한 줄로 버티면 상태 배지가 최소 내용 폭(실측 34px,
