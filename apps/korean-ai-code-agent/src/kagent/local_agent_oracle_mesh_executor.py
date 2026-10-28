@@ -627,6 +627,8 @@ class OracleMeshExecutor:
                 timeout_seconds=None,
                 phase_observer=phase,
                 cancel_probe=self._cancel_probe(dispatch),
+                # The marker the PC-side stop needs: this command's own dispatch.
+                dispatch_id=getattr(dispatch, "dispatch_id", None),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
