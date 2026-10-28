@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>미디어 — 임미란 의원</title>
+  <link rel="stylesheet" href="./static/fonts/maruburi.css" />
+  <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">임</span><span class="brand-name">임미란 의원</span></div>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a href="./index.html">홈</a>
+      <a href="./activity.html">의정활동</a>
+      <a href="./policy.html">정책자료</a>
+      <a href="./media.html" class="active">미디어</a>
+      <a href="./about.html">의원 소개</a>
+    </nav>
+    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
+  </header>
+  <main id="main" class="section">
+    <div class="section-inner">
+      <p class="section-eyebrow">Media</p>
+      <h1 class="section-title">미디어</h1>
+      <p class="section-lead">의회가 공개한 사진·영상 자료입니다.</p>
+      <div class="media-grid" id="mediaGrid"></div>
+      <p class="source-note">본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.</p>
+      <div style="margin-top:32px;">
+        <video controls preload="metadata" style="width:100%;border-radius:14px;" poster="https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg">
+          <source src="https://media.padiem.net/councillor/miraen/hero/hero-2025-v1.mp4" type="video/mp4" />
+        </video>
+        <p class="source-note">첫 화면 영상·포스터: 의원실 제공 자료</p>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.</p>
+    <p>자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+  </footer>
+  <script src="./static/app.js"></script>
+</body>
+</html>

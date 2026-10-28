@@ -316,6 +316,7 @@ from .pc_device_pairing_routes import (
     PC_PAIRING_ADOPT_PATH,
     PC_PAIRING_HANDOFF_PATH,
     PC_PAIRING_INSTALL_FILE_PATH,
+    PC_PAIRING_LABEL_PATH,
     PC_PAIRING_LINK_PATH,
     PC_PAIRING_PAUSE_PATH,
     PC_PAIRING_RESUME_PATH,
@@ -328,11 +329,28 @@ from .pc_device_pairing_routes import (
     pc_pairing_handoff,
     pc_pairing_install_file,
     pc_pairing_issue,
+    pc_pairing_label,
     pc_pairing_list,
     pc_pairing_pause,
     pc_pairing_resume,
     pc_pairing_revoke,
     pc_pairing_revoke_root,
+)
+from .pc_file_exchange_routes import (
+    PC_BROWSE_PATH,
+    PC_CANCEL_PATH,
+    PC_FETCH_PATH,
+    PC_FILE_PATH,
+    PC_FIND_PATH,
+    PC_RESULT_PATH,
+    PC_SAVE_PATH,
+    pc_file_exchange_browse,
+    pc_file_exchange_cancel,
+    pc_file_exchange_fetch,
+    pc_file_exchange_file,
+    pc_file_exchange_find,
+    pc_file_exchange_result,
+    pc_file_exchange_save,
 )
 from .password_reset import PasswordResetService
 from .password_reset_store import D1PasswordResetStore
@@ -888,10 +906,22 @@ def create_app(
         Route(PC_PAIRING_INSTALL_FILE_PATH, pc_pairing_install_file, methods=["POST"]),
         Route(PC_PAIRING_ADOPT_PATH, pc_pairing_adopt, methods=["POST"]),
         Route(PC_PAIRING_LINK_PATH, pc_pairing_revoke, methods=["DELETE"]),
+        Route(PC_PAIRING_LABEL_PATH, pc_pairing_label, methods=["POST"]),
         Route(PC_PAIRING_PAUSE_PATH, pc_pairing_pause, methods=["POST"]),
         Route(PC_PAIRING_RESUME_PATH, pc_pairing_resume, methods=["POST"]),
         Route(PC_PAIRING_ROOTS_PATH, pc_pairing_approve_root, methods=["POST"]),
         Route(PC_PAIRING_ROOT_PATH, pc_pairing_revoke_root, methods=["DELETE"]),
+        # #5895: the shared "from my PC / to my PC" part the menus will use. The
+        # owner session and this account's own PC links are the only authority, and
+        # no model turn is involved. The pairing store refuses 503 when it is not
+        # composed, exactly as the pairing routes above do.
+        Route(PC_BROWSE_PATH, pc_file_exchange_browse, methods=["POST"]),
+        Route(PC_FIND_PATH, pc_file_exchange_find, methods=["POST"]),
+        Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
+        Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
+        Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
+        Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
+        Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all

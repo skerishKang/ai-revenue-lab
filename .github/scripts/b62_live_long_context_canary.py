@@ -61,6 +61,11 @@ def bounded_call(opener, path: str, *, method: str = "GET", payload=None, timeou
         "User-Agent": "PADIEM-B62-owner-long-context-canary/1.0",
         "Cache-Control": "no-store",
     }
+    _version_header = os.environ.get("B62_STAGED_VERSION_HEADER", "")
+    _version_id = os.environ.get("B62_STAGED_VERSION_ID", "")
+    if _version_header and _version_id:
+        # #5895 staged rollout: pin these probes to the version under test.
+        headers[_version_header] = _version_id
     data = None
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")

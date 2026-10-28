@@ -248,6 +248,7 @@ ${THEME_CSS_VARIABLES}
       min-width: 320px;
       background: var(--bg-glow) var(--bg);
       color: var(--text);
+      font-size: var(--fs-body); line-height: var(--lh-body); font-weight: var(--fw-body);
     }
     a { color: inherit; text-decoration: none; }
 
@@ -280,14 +281,14 @@ ${THEME_CSS_SHELL_INSET}
     .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
     .hero h1 {
       margin: 0; max-width: 720px;
-      font-size: clamp(27px, 5.6vw, 56px);
-      line-height: 1.06; letter-spacing: -.045em; font-weight: 640;
+      font-size: var(--fs-display);
+      line-height: var(--lh-display); letter-spacing: var(--ls-display); font-weight: var(--fw-display);
       text-wrap: balance;
     }
-    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .hero p { margin: 14px 0 0; max-width: 560px; color: var(--muted); font-size: var(--fs-body); line-height: var(--lh-body); }
 
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 14px; flex-wrap: wrap; }
-    .section-head h2 { margin: 0; font-size: 19px; letter-spacing: -.025em; font-weight: 650; }
+    .section-head h2 { margin: 0; font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -.018em; font-weight: var(--fw-title); }
     .section-head > span { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
 
     .home-intro { margin: 18px 0 8px; }
@@ -321,7 +322,7 @@ ${THEME_CSS_SHELL_INSET}
     .public-note { margin: 0 0 12px; color: var(--faint); font-size: 12px; line-height: 1.55; }
     .tier-note { margin: 12px 0 18px; color: var(--faint); font-size: 12px; line-height: 1.5; }
     .freshness { color: var(--faint); font-size: 11px; white-space: nowrap; }
-    .reward-card h3 { margin: 13px 0 10px; font-size: 16px; line-height: 1.4; letter-spacing: -.015em; font-weight: 650; overflow-wrap: anywhere; }
+    .reward-card h3 { margin: 13px 0 10px; font-size: var(--fs-subtitle); line-height: 1.42; letter-spacing: -.012em; font-weight: var(--fw-title); overflow-wrap: anywhere; }
     .reward-card__reward { display: flex; align-items: baseline; gap: 8px; }
     .reward-card__reward strong { color: var(--gold); font-size: 23px; letter-spacing: -.03em; font-weight: 700; }
     .reward-card__reward span { color: var(--faint); font-size: 12px; font-weight: 600; }
@@ -351,7 +352,7 @@ ${THEME_CSS_SHELL_INSET}
     }
     .empty-state__mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); }
     .empty-state__mark-svg { width: 28px; height: 28px; }
-    .empty-state h3 { margin: 16px 0 8px; font-size: 17px; letter-spacing: -.02em; font-weight: 650; }
+    .empty-state h3 { margin: 16px 0 8px; font-size: 17.5px; letter-spacing: -.015em; font-weight: var(--fw-title); line-height: var(--lh-title); }
     .empty-state p { margin: 0; max-width: 380px; color: var(--muted); font-size: 14px; line-height: 1.6; }
     .empty-steps { list-style: none; padding: 0; margin: 20px 0 0; max-width: 420px; display: grid; gap: 9px; text-align: left; }
     .empty-steps li { position: relative; padding-left: 18px; font-size: 13px; color: var(--muted); line-height: 1.55; }
@@ -363,7 +364,7 @@ ${THEME_CSS_SHELL_INSET}
     .footer-note { margin: 40px auto 0; max-width: 560px; color: var(--faint); font-size: 11.5px; line-height: 1.65; text-align: center; }
 
     .filter-bar { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: end; padding: 12px 0 2px; }
-    .filter-bar label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; min-width: 0; }
+    .filter-bar label { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-label); color: var(--muted); font-weight: var(--fw-label); letter-spacing: .02em; min-width: 0; }
     .filter-bar input, .filter-bar select {
       width: 100%; min-height: 44px; padding: 9px 12px; border-radius: var(--radius-btn);
       border: 1px solid var(--line-soft); background: var(--surface); color: var(--text);
@@ -372,9 +373,9 @@ ${THEME_CSS_SHELL_INSET}
     .filter-bar input::placeholder { color: var(--faint); }
     .filter-bar select { height: 44px; }
     .filter-bar button {
-      grid-column: 1 / -1; min-height: 46px; padding: 0 22px; border-radius: var(--radius-btn);
+      grid-column: 1 / -1; min-height: var(--control-height); padding: 0 22px; border-radius: var(--radius-btn);
       border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent);
-      font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: -.01em;
+      font-size: var(--fs-ui); font-weight: var(--fw-display); cursor: pointer; letter-spacing: 0;
       transition: background .16s ease;
     }
     .filter-bar button:hover { background: var(--accent-strong); }
@@ -385,7 +386,7 @@ ${THEME_CSS_SHELL_INSET}
     .nav-item[aria-disabled="true"] { color: var(--faint); cursor: default; }
 
     .hero--browse { padding-bottom: 8px; }
-    .hero--browse h1 { font-size: clamp(30px, 4.5vw, 48px); }
+    .hero--browse h1 { font-size: var(--fs-display); }
     .hero--browse p { margin-top: 10px; }
     .browse-toolbar { padding: 4px 0 8px; }
     .browse-toolbar .category-tabs { padding-top: 8px; }
@@ -398,14 +399,14 @@ ${THEME_CSS_SHELL_INSET}
     .back-link:hover { color: var(--text); }
 
     .detail-card { padding: 22px 18px 20px; border: 1px solid var(--line-soft); border-radius: var(--radius-card); background: var(--card-bg); }
-    .detail-card h2 { margin: 12px 0 16px; font-size: 24px; line-height: 1.25; letter-spacing: -.03em; font-weight: 660; overflow-wrap: anywhere; }
+    .detail-card h2 { margin: 12px 0 16px; font-size: 26px; line-height: 1.28; letter-spacing: var(--ls-display); font-weight: var(--fw-display); overflow-wrap: anywhere; }
     .detail-reward { display: flex; align-items: baseline; gap: 10px; padding-bottom: 18px; border-bottom: 1px solid var(--line-soft); }
-    .detail-reward strong { color: var(--gold); font-size: 32px; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
-    .detail-reward span { color: var(--faint); font-size: 12px; font-weight: 600; }
+    .detail-reward strong { color: var(--gold); font-size: 32px; line-height: 1.1; letter-spacing: -.02em; font-weight: var(--fw-display); font-variant-numeric: tabular-nums; }
+    .detail-reward span { color: var(--faint); font-size: var(--fs-meta); font-weight: var(--fw-label); }
     .detail-facts { display: grid; gap: 0; padding: 6px 0 14px; }
     .detail-fact { display: grid; grid-template-columns: 116px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px dashed var(--line-soft); }
     .detail-fact:last-child { border-bottom: 0; }
-    .detail-fact__label { color: var(--faint); font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; padding-top: 2px; }
+    .detail-fact__label { color: var(--faint); font-size: var(--fs-meta); font-weight: var(--fw-label); letter-spacing: .04em; text-transform: uppercase; padding-top: 2px; }
     .detail-fact__value { font-size: 14.5px; line-height: 1.55; overflow-wrap: anywhere; }
     .detail-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 4px 0 18px; color: var(--faint); font-size: 11.5px; }
     .detail-meta a { color: var(--accent); text-decoration: underline; }
@@ -444,7 +445,7 @@ ${THEME_CSS_SHELL_INSET}
     }
     @media (min-width: 1280px) {
       .hero { padding: 76px 0 36px; }
-      .hero h1 { font-size: 60px; }
+      .hero h1 { font-size: 48px; }
       .reward-card { padding: 22px; }
       .section-head { margin: 26px 0 16px; }
       .detail-card { padding: 32px 32px 28px; }

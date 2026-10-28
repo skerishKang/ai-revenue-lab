@@ -709,14 +709,29 @@ async def execute_chat_pc_drive_lane(
         raise
     from .pc_work_context import (
         SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-        read_saved_device_selection, render_pc_work_context,
+        linked_pc_targets, read_saved_device_selection, render_pc_work_context,
         resolve_pc_work_context,
     )
+    from .pc_device_pairing_store import link_named_in
 
     saved_selection = await read_saved_device_selection(
         request, owner_id=uid, workspace_id=workspace_id,
     )
-    if device_id is not None:
+    # #5573: the words of this turn pick the machine ahead of anything carried
+    # over. The composer sends the last-chosen PC on every request, so a request
+    # that says "컴2" while the screen still points at 컴1 has to run on 컴2 -
+    # otherwise a name can never choose anything, which is the whole reason an
+    # owner is allowed to name their PCs. A turn that names nothing keeps the
+    # browser's choice, and a new session keeps the saved preference ("the last
+    # PC I used"). Exactly one match decides; two names in one request decide
+    # nothing, and the ordinary ambiguity refusal is left to stand.
+    named_device_id = None
+    linked = await linked_pc_targets(request, uid)
+    if linked:
+        named_device_id = link_named_in(execution_user_text or user_text, linked)
+    if named_device_id is not None:
+        device_id = named_device_id
+    elif device_id is not None:
         if (
             saved_selection.status == SAVED_SELECTION_SELECTED
             and saved_selection.device_id != device_id

@@ -52,6 +52,9 @@ PC_PAIRING_ADOPT_PATH = "/api/pc/pairings/adopt"
 PC_PAIRING_LINK_PATH = "/api/pc/pairings/{link_id}"
 PC_PAIRING_ROOTS_PATH = "/api/pc/pairings/{link_id}/roots"
 PC_PAIRING_ROOT_PATH = "/api/pc/pairings/{link_id}/roots/{root_ref}"
+#: The owner's own name for one linked PC. A chat request chooses a machine with
+#: this name when the account has more than one.
+PC_PAIRING_LABEL_PATH = "/api/pc/pairings/{link_id}/label"
 #: Pause and resume are two states of the same link, not two kinds of unlink:
 #: revoke stays the only path that drops the folder approvals.
 PC_PAIRING_PAUSE_PATH = "/api/pc/pairings/{link_id}/pause"
@@ -316,6 +319,34 @@ async def pc_pairing_resume(request: Request) -> JSONResponse:
     return _json({"ok": True, "link": link}, 200)
 
 
+async def pc_pairing_label(request: Request) -> JSONResponse:
+    """Name one linked PC, in the words this account will use for it.
+
+    With a second linked PC the question "which machine?" has to be answerable
+    in a chat request, and the answer is the name the owner gave the machine.
+    This changes no identity and no authority: the row stays keyed by
+    `(account, node)`, dispatch keeps re-deciding from it, and a name is only
+    ever a way to ask.
+    """
+    user_id = current_user_id(request)
+    if not user_id:
+        return _error(401, "unauthorized")
+    store = _store(request)
+    if store is None:
+        return _error(503, "pc_pairing_unavailable")
+    body = await _body(request)
+    if body is None or set(body) != {"label"}:
+        return _error(400, "pc_pairing_body_invalid")
+    link, refused = await _await_store(
+        store.set_link_label, user_id=user_id,
+        link_id=request.path_params.get("link_id"),
+        label=body.get("label"), now=_now(),
+    )
+    if refused is not None:
+        return refused
+    return _json({"ok": True, "link": link}, 200)
+
+
 def install_url_from_config(value: Any) -> str | None:
     """The reviewed deployment value, or ``None`` when there is nothing to hand out.
 
@@ -460,10 +491,14 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "try {\n"
     "  $agent = Join-Path $work \"padiem-agent.exe\"\n"
     "  Invoke-WebRequest -Uri $AgentInstallerUrl -OutFile $agent -UseBasicParsing -TimeoutSec 180\n"
-    "  $reported = $PairingTag\n"
+    "  # The name the agent reports is what the server reads the pairing from:\n"
+    "  # the tag decides the account, the bracketed letters are this PC's own\n"
+    "  # drives, and the trailing word is the name Windows gave the machine -\n"
+    "  # which becomes the link's first name unless the owner renames it.\n"
+    "  $reported = $PairingTag + \" \" + $env:COMPUTERNAME\n"
     "  $letters = @(Get-PadiemDriveLetters)\n"
     "  if ($letters.Count -gt 0) {\n"
-    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"]\"\n"
+    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"] \" + $env:COMPUTERNAME\n"
     "  }\n"
     "  try {\n"
     "    Start-Process -FilePath $agent -Wait -Verb RunAs `\n"
@@ -778,6 +813,7 @@ __all__ = [
     "PC_PAIRING_HANDOFF_PATH",
     "PC_PAIRING_INSTALL_FILE_PATH",
     "PC_PAIRING_INSTALL_FILENAME",
+    "PC_PAIRING_LABEL_PATH",
     "PC_PAIRING_LINK_PATH",
     "PC_PAIRING_PATH",
     "PC_PAIRING_ROOTS_PATH",
@@ -790,6 +826,7 @@ __all__ = [
     "install_url_from_config",
     "render_install_script",
     "pc_pairing_issue",
+    "pc_pairing_label",
     "pc_pairing_list",
     "pc_pairing_revoke",
     "pc_pairing_revoke_root",

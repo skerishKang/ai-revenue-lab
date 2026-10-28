@@ -7,6 +7,7 @@ import {
   type ProviderRuntimeMode,
 } from './ad-click-first/provider-runtime-config.js';
 import { D1RewardEventStore, UnboundRewardEventStore } from './ad-click-first/reward-event-store.js';
+import { readB64OperationsSnapshot } from './ops/operations-snapshot.js';
 import {
   D1UserIncomeRepository,
   UnboundUserIncomeRepository,
@@ -57,9 +58,28 @@ export interface B64WorkerEnv {
   readonly B64_AYET_MODE?: string;
   readonly B64_AYET_PUBLISHER_API_KEY?: string;
   readonly B64_AYET_REWARDED_ADSLOT_ID?: string;
+  /**
+   * The single operator address (#6001). It is configuration, not source: the
+   * address is registered by the owner at deploy time and is never committed,
+   * logged or echoed. Unset means no administrator exists.
+   */
+  readonly B64_ADMIN_EMAIL?: string;
 }
 
 const INCOME_D1_BINDING_NAME = 'B64_INCOME_DB';
+
+/**
+ * The provider assessment reads environment variables by name, so it gets the
+ * string half of the binding set. The D1 object is not an environment value and
+ * is left out rather than coerced.
+ */
+function stringEnvironment(env: B64WorkerEnv): Record<string, string | undefined> {
+  const values: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(env)) {
+    if (typeof value === 'string') values[key] = value;
+  }
+  return values;
+}
 
 function ayetMode(value: string | undefined): ProviderRuntimeMode {
   const trimmed = (value ?? '').trim();
@@ -122,6 +142,8 @@ export default {
       ayetMode: ayetMode(env.B64_AYET_MODE),
       ayetPublisherApiKey: env.B64_AYET_PUBLISHER_API_KEY,
       ayetRewardedAdslotId: env.B64_AYET_REWARDED_ADSLOT_ID,
+      adminEmail: env.B64_ADMIN_EMAIL,
+      operationsSnapshot: () => readB64OperationsSnapshot({ db: env.B64_INCOME_DB, env: stringEnvironment(env) }),
     });
     return handler(request);
   },

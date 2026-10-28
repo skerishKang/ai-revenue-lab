@@ -179,6 +179,53 @@ def test_binding_is_verified_after_it_is_written(run_blocks: list[tuple[str, str
     )
 
 
+
+def test_operator_address_is_bound_the_same_way_as_the_other_secrets(steps: list[dict]) -> None:
+    """#6001: the administrator address is a value the owner registers, so it
+    must travel the same stdin-only path and must never reach source."""
+    bound = [
+        step for step in steps
+        if step.get("run") and "wrangler@4 secret put B64_ADMIN_EMAIL" in step["run"]
+    ]
+    assert len(bound) == 1, "exactly one step may write the operator address"
+    env = bound[0].get("env") or {}
+    assert env == {"ADMIN_EMAIL_VALUE": "${{ secrets.B64_ADMIN_EMAIL }}"}, (
+        "the address comes from the environment secret and nothing else"
+    )
+    script = bound[0]["run"]
+    needle = "printf '%s' \"${ADMIN_EMAIL_VALUE}\""
+    pattern = (
+        re.escape(needle)
+        + r"\s*\\\n\s*\|\s*npx --yes wrangler@4 secret put "
+        + "B64_ADMIN_EMAIL"
+    )
+    assert re.search(pattern, script), "the address must reach wrangler through stdin only"
+    for line in script.splitlines():
+        stripped = line.strip()
+        assert not (stripped.startswith("echo") and "ADMIN_EMAIL_VALUE" in stripped), (
+            f"the address is being echoed by {stripped!r}"
+        )
+    assert "B64_ADMIN_EMAIL_BINDING=SKIPPED" in script, (
+        "an unregistered address must leave the console closed without failing the gate"
+    )
+    assert "secret_text CONFIRMED" in script and "B64_ADMIN_EMAIL_BINDING_AFTER" in script, (
+        "the binding is verified after it is written"
+    )
+    assert "RUNNER_TEMP" in script and script.count('> "${RUNNER_TEMP}/b64-admin-email-put.log"') == 1
+
+
+def test_the_operator_address_is_never_committed() -> None:
+    """Source must not carry the address: wrangler.jsonc and the binding
+    baseline stay clean, and no literal address appears in the app config."""
+    wrangler = (ROOT / "apps" / "ai-reward-router" / "wrangler.jsonc").read_text(encoding="utf-8")
+    assert "B64_ADMIN_EMAIL" not in wrangler
+    baseline = (ROOT / ".github" / "binding_baselines" / "b64-ai-reward-router.json").read_text(encoding="utf-8")
+    assert "B64_ADMIN_EMAIL" not in baseline
+    assert re.search(r"[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", WORKFLOW.read_text(encoding="utf-8")) is None, (
+        "an email address must not be written into the gate that binds it"
+    )
+
+
 def test_gate_still_deploys_no_worker_revision_and_mints_no_client(workflow_text: str) -> None:
     assert "wrangler@4 deploy" not in workflow_text, (
         "the deploy gate owns Worker revisions; this gate owns schema and bindings"

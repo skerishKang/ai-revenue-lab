@@ -192,8 +192,16 @@ function Format-PadiemAgentName {
   $letters = @($Drives |
     ForEach-Object { (($_ -replace ':', '')).ToUpperInvariant() } |
     Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
-  if ($letters.Count -eq 0) { return $Tag }
-  return $Tag + ' [' + ($letters -join ' ') + ']'
+  # The trailing word is the name Windows gave this machine. The server reads
+  # the tag to decide the account, the letters to grant whole drives, and that
+  # name to call the PC by until its owner renames it.
+  $machine = $env:COMPUTERNAME
+  if ($letters.Count -eq 0) {
+    if (-not $machine) { return $Tag }
+    return $Tag + ' ' + $machine
+  }
+  if (-not $machine) { return $Tag + ' [' + ($letters -join ' ') + ']' }
+  return $Tag + ' [' + ($letters -join ' ') + '] ' + $machine
 }
 
 if ($DryRun) {

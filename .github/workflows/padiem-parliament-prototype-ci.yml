@@ -1,0 +1,77 @@
+name: PADIEM Parliament Prototype CI
+
+# Focused contract lane for the #5967 design prototype only.
+#
+# It proves what the prototype must never become: a screen that calls an API, loads a
+# remote asset, paints with hard-coded colours outside the theme tokens, or links into
+# the production /apps/council/ entry. It runs no provider, deploys nothing, and is not
+# a gate for any shipped app — the prototype lives outside every asset bundle.
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'reference/padiem-parliament-ai-design-v1/**'
+      - '.github/workflows/padiem-parliament-prototype-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'reference/padiem-parliament-ai-design-v1/**'
+      - '.github/workflows/padiem-parliament-prototype-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-parliament-prototype-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  prototype-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assert exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install pytest only (the prototype owns no package and no dependency)
+        run: python -m pip install --disable-pip-version-check 'pytest>=8'
+
+      - name: Check the browser module parses
+        run: node --check reference/padiem-parliament-ai-design-v1/parliament-app.js
+
+      - name: Test the prototype contracts
+        run: python -m pytest reference/padiem-parliament-ai-design-v1/tests -q
+
+      - name: Report the shipped surface size
+        run: |
+          set -euo pipefail
+          cd reference/padiem-parliament-ai-design-v1
+          wc -c index.html parliament-theme.css parliament-app.js

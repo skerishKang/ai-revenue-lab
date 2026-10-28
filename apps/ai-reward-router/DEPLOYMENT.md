@@ -549,3 +549,44 @@ pipeline still counts only its own `PAID` records.
   reachable and testable on its own, and no ad inventory is enabled by it. The
   CSP exception for the SDK origin, plus the "Send S2S Callbacks" toggle on the
   AdSlot, is a separate reviewed decision taken with the account.
+
+## Operator authority and the read-only status console (2026-10-28, issue #6001)
+
+The administrator rule is the repository's existing one, ported from
+`apps/padiem-chat/app/b66_member_admin.py::is_google_admin`: the administrator is
+the account whose **Google-verified address** equals the configured address, a
+password account can never hold it, and no client-supplied flag is ever read.
+What B64 checks it against is B64's own `b64_member_google` table, so no Chat
+cookie, Chat user table or Chat secret is in the path.
+
+| Setting | Value |
+|---|---|
+| `B64_ADMIN_EMAIL` | the single operator address. Server configuration, registered by the owner at deploy time — never committed, never logged, never rendered |
+| unset | nobody is an administrator; `/admin` answers 403 to every member (an absent allowlist is a closed door) |
+
+Routes: `GET /admin` (HTML) and `GET /admin/status` (JSON). Both are read-only —
+`POST` is refused 405 — and both are behind the session cookie **and** the
+authority check, so the answers are 401 anonymous, 403 `admin_forbidden` for a
+normal member, 503 `admin_unavailable` when the check or the storage cannot be
+performed. A failed check is never silently answered as a denial or a grant.
+
+The console reports counts and configuration verdicts only: members, Google
+linked members, live sessions, income records, reward events by state, and the
+same provider assessment `npm run supply:check` prints. No address, token,
+secret or setting **value** appears in the output — environment variables are
+named, never shown. It is deliberately separate from `src/admin-console/`, which
+is an opportunity review workflow over its own fixture state; pointing that at
+production would mean building a mutation surface this task does not ask for.
+
+How to bind it, without putting the address in source: register it as the
+repository's `production` environment secret `B64_ADMIN_EMAIL`, then dispatch
+`.github/workflows/b64-independent-identity-activation-gate.yml`. That gate pipes
+the secret through stdin into `wrangler secret put B64_ADMIN_EMAIL` and reads the
+binding back as `secret_text` — the same reviewed path as
+`B64_SESSION_SECRET` and the Google client pair. The address is never an argv
+entry (the runner echoes commands), never a workspace file, never an echo, and
+never a committed or publicly readable var. With the secret unregistered the gate
+writes nothing and says so, and `/admin` stays closed to every member.
+
+Owner action to use it: bind the address as above, then sign in with the Google
+account whose verified address matches it and open `/admin`.
