@@ -26,6 +26,7 @@ from starlette.responses import JSONResponse, Response
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .pc_pairing_connect_exe_asset import connect_exe_bytes
+from .pc_pairing_agent_install import render_agent_install_block
 from .pc_device_pairing_store import (
     PcPairingError,
     drive_root,
@@ -538,6 +539,30 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  }\n"
     "}\n"
     "\n"
+    # The install sequence itself is the one definition both .ps1 lanes read:
+    # the same constants and the same stop - copy - install - start - check walk
+    # the double-click program runs. A lane that drifts is a test failure, not
+    # a smaller version of the same answer.
+    + render_agent_install_block()
+    + "\n"
+    "# One approval covers the whole sequence: the service work below needs the\n"
+    "# administrator token, the same single prompt the double-click program asks\n"
+    "# for before it connects. A refused approval still exits with its own code.\n"
+    "$identity = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()\n"
+    "if (-not $identity.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {\n"
+    "  Write-Host \"관리자 권한 승인 창이 나타나면 [예]를 눌러 주세요. 설치에는 관리자 권한이 필요합니다.\"\n"
+    "  try {\n"
+    "    Start-Process -FilePath \"powershell.exe\" -ArgumentList @(\"-NoProfile\", \"-ExecutionPolicy\", \"Bypass\", \"-File\", ('\"' + $PSCommandPath + '\"')) -Verb RunAs\n"
+    "  } catch [System.ComponentModel.Win32Exception] {\n"
+    "    Write-Host \"설치 권한이 거부되었습니다. 이 파일을 관리자 권한으로 다시 실행해 주세요.\"\n"
+    "    exit 5\n"
+    "  } catch {\n"
+    "    Write-Host \"PC 연결 프로그램을 실행하지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"
+    "    exit 6\n"
+    "  }\n"
+    "  exit 0\n"
+    "}\n"
+    "\n"
     "$work = Join-Path $env:TEMP (\"padiem-pc-\" + [guid]::NewGuid().ToString(\"N\"))\n"
     "New-Item -ItemType Directory -Path $work | Out-Null\n"
     "try {\n"
@@ -552,15 +577,13 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  if ($letters.Count -gt 0) {\n"
     "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"] \" + $env:COMPUTERNAME\n"
     "  }\n"
-    "  try {\n"
-    "    Start-Process -FilePath $agent -Wait -Verb RunAs `\n"
-    "      -ArgumentList @(\"-fullinstall\", \"--agentName=`\"\" + $reported + \"`\"\")\n"
-    "  } catch [System.ComponentModel.Win32Exception] {\n"
-    "    Write-Host \"설치 권한이 거부되었습니다. 이 파일을 관리자 권한으로 다시 실행해 주세요.\"\n"
-    "    exit 5\n"
-    "  } catch {\n"
-    "    Write-Host \"PC 연결 프로그램을 실행하지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"
+    "  if (-not (Install-PadiemAgentService -SourceExe $agent -AgentName $reported)) {\n"
+    "    Write-Host \"에이전트 설치를 마치지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"
     "    exit 6\n"
+    "  }\n"
+    "  $service = Get-Service -Name $PadiemAgentServiceName -ErrorAction SilentlyContinue\n"
+    "  if ($service) {\n"
+    "    Write-Host (\"에이전트 서비스 상태: \" + $service.Status + \" - \" + $PadiemAgentDurableExe)\n"
     "  }\n"
     "  Write-Host \"연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM PC 목록에 자동으로 나타납니다.\"\n"
     "} finally {\n"

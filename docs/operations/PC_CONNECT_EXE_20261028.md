@@ -214,10 +214,15 @@ Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -Expan
   **Windows 10 Home**이라 Windows Sandbox가 없고(`Containers-DisposableClientVM` 없음),
   Hyper-V 관리 도구(`Get-VM`/vmms)와 Docker 데몬도 없다. 컴1·컴2는 시험 대상이 아니므로,
   깨끗한 Windows 1대(여분 노트북 또는 VM 호스트)가 잡히는 대로 이 절을 채운다.
-- **`.ps1` 레인은 같은 검증을 아직 못 지났다**: `scripts/pc_pairing/install-padiem-pc.ps1`과
-  서버가 내려주는 자동 연결 스크립트 모두 `-fullinstall`을 쓴다. 깨끗한 PC 1대에서 저
-  두 경로가 실제로 서비스를 등록하는지 확인한 뒤 옵션을 맞춰야 한다(지금까지 "이 PC 연결"이
-  확인된 PC는 에이전트가 이미 붙어 있던 PC였다).
+- **`.ps1` 두 레인은 .exe와 같은 순서로 맞춰졌다(2026-10-28. 깨끗한 PC 실물 검증은 아직)**:
+  `scripts/pc_pairing/install-padiem-pc.ps1`과 서버가 내려주는 자동 연결 스크립트 모두
+  `-fullinstall`을 걷어내고 .exe와 같은 순서를 쓴다 — 기존 "Mesh Agent" 서비스를 서비스
+  기록의 ImagePath 바이너리로 -stop → `%ProgramFiles%\PADIEM\MeshAgent.exe` 복사 → 같은
+  서비스 이름으로 -install → -start → 서비스 상태 확인. 두 레인의 상수와 순서는 한 곳
+  (`apps/padiem-chat/app/pc_pairing_agent_install.py`)에서 정의되고, 두 .ps1 사본이 같은
+  블록을 담는지는 테스트가 강제한다. 깨끗한 PC 1대에서 두 경로가 실제로 서비스를 등록·
+  기동하는지 확인하는 절은 그대로 남는다(지금까지 "이 PC 연결"이 확인된 PC는 에이전트가
+  이미 붙어 있던 PC였다).
 - 코드 서명을 사면: 바이트 뒤에 꼬리말을 붙이는 이 방식은 다시 봐야 한다(다운로드 시점에
   붙이면 서명 지문이 깨진다). 서명 이후에는 exe에 제품 주소만 구워 넣고 코드는 입력받는
   경로가 이미 남아 있으므로 그 경로가 본문이 된다.
