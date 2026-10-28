@@ -167,8 +167,9 @@ async def test_engine_preflight_denies_foreign_digest_without_creating_pause():
         "tool_id": CANONICAL_TOOL, "arguments": web_xlsx_p01_arguments(original),
     }
     allowed = await engine.execute_payload(body)
-    assert allowed.status_code == 202, allowed.body
-    assert allowed.body["tool"]["status"] == "paused"
+    assert allowed.status_code == 200, allowed.body
+    # Owner decision 2026-10-28: no confirmation pause; the handler completes.
+    assert allowed.body["tool"]["status"] == "completed"
     for key, bad in (
         ("owner_id", "someone_else"),
         ("workspace_id", "owner:other"),
@@ -226,7 +227,7 @@ async def test_separate_pre_pause_and_post_approved_d1_status_recheck():
     confirmed = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=auth.compiled.runtime_profile.id,
         granted_auth_scopes=("workspace.xlsx.original.read.intent",),
-        user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
+        externally_authorized_tools=("workspace.xlsx.confirm_original_read",),
     )
     invocation = ToolInvocation(
         tool_id="workspace.xlsx.confirm_original_read", arguments=args,
