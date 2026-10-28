@@ -47,3 +47,17 @@ def test_saved_lists_show_only_the_selected_country():
     assert "function sameCountry(file)" in JS
     assert 'String((file && file.country) || "kr") === currentCountry()' in JS
     assert JS.count(".filter(sameCountry)") >= 2
+
+
+def test_a_plain_page_load_syncs_and_binds_the_selector():
+    """init() 은 enterSignedIn() 을 거치지 않는다.
+
+    실서비스 390/1440 E2E 에서 새로고침 후 선택값이 복원되지 않고 변경이 저장되지
+    않았다(리스너 미부착). 평소 로드 경로도 동기화·바인딩을 걸어야 한다."""
+    import re as _re
+
+    init = _re.search(r"async function init\(\) \{(.*?)\n  \}", JS, _re.S)
+    assert init, "init() must exist"
+    assert "syncCountrySelect();" in init.group(1)
+    # 두 경로가 같은 함수를 부르므로 리스너는 한 번만 건다
+    assert "if (session.countryBound) return;" in JS
