@@ -361,3 +361,40 @@ def test_the_program_reads_the_tag_out_of_its_own_file(tmp_path: Path) -> None:
     assert drives_from_agent_name(lines["CONNECT_EXE_CHECK_NAME"]) == [
         root + ":" for root in lines["CONNECT_EXE_CHECK_DRIVES"].split()
     ], lines
+
+
+def test_the_agent_is_installed_from_a_folder_of_the_products_own() -> None:
+    """Measured, not assumed: this build registers with ``-install``, from where it ran.
+
+    The agent's own help offers both - ``-install`` "install the service from this
+    location" and ``-fullinstall`` "copy agent into program files, install and
+    launch" - and on the tagged Windows agent of 2026-10-28 ``-fullinstall`` exited 0
+    and registered nothing while ``-install`` produced a running, auto-start service.
+    Because ``-install`` keeps the *location* in the service record, the copy is this
+    program's own job: an agent installed out of a temp folder is a service that
+    cannot start after that folder is cleaned up.
+    """
+    source = (REPO / "scripts" / "pc_pairing" / "connect-exe" / "PadiemPcConnect.cs").read_text(
+        encoding="utf-8")
+    assert 'installerArguments = "-install --agentName=\\""' in source, source[:0]
+    assert 'installerArguments = "-fullinstall' not in source
+    assert 'const string DurableFolder = "PADIEM";' in source
+    assert "SpecialFolder.ProgramFiles), DurableFolder, AgentFileName" in source
+    # The downloaded copy is the thing deleted, never the installed one.
+    assert 'File.Delete(temp)' in source
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="the artifact is a Windows program")
+def test_the_programs_plan_installs_from_the_durable_folder(tmp_path: Path) -> None:
+    """--dry-run on the shipped bytes: the command it would run, with nothing run."""
+    import subprocess
+
+    program = render_install_exe(install_tag="pd-1234abcd", agent_url=AGENT_URL)
+    target = tmp_path / PC_PAIRING_INSTALL_EXE_FILENAME
+    target.write_bytes(program)
+    done = subprocess.run([str(target), "--dry-run"], capture_output=True, text=True,
+                          encoding="utf-8", timeout=120, check=False)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "-install --agentName=\"pd-1234abcd [" in done.stdout, done.stdout
+    assert "MeshAgent.exe" in done.stdout and "PADIEM" in done.stdout
+    assert "점검 실행" in done.stdout, done.stdout

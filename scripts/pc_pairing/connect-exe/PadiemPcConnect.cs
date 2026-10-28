@@ -7,9 +7,18 @@
 //
 // What it does, in order: read the tag out of its own trailing bytes, ask for
 // administrator approval once, look up the fixed drives this PC really has,
-// download the deployment's own agent installer over TLS 1.2 at minimum, and run
-// it with the name the server pairs on. An agent that is already there is updated
-// in place under the same service name - never installed a second time.
+// download the deployment's own agent installer over TLS 1.2 at minimum, put it in
+// a folder of the product's own, and install the service from there with the name
+// the server pairs on. An agent that is already there is stopped, replaced under the
+// same service name and started again - never registered a second time.
+//
+// The install switch was measured, not assumed. This MeshCentral build's own help
+// says "-install: install the service from this location" and "-fullinstall: copy
+// agent into program files, install and launch", and on the tagged Windows agent of
+// 2026-10-28 -fullinstall exited 0 and registered nothing while -install did. So the
+// copy is this program's job: -install leaves the service pointing at whatever
+// folder it ran from, and a service whose binary sits in a temp file is a service
+// that dies at the next restart of the PC.
 //
 // What it never does: it stores nothing (the tag and the link live in this
 // process), it asks no account password, and it runs no command line the browser
@@ -28,6 +37,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 // The names Windows shows even without a signature. The native version resource is
 // written by the build, and these are the same words inside the managed metadata, so
@@ -57,6 +67,10 @@ namespace Padiem.Connect
 
         const string HandoffPath = "/api/pc/pairings/handoff";
         const string AgentServiceName = "Mesh Agent";
+        const string AgentServiceKey =
+            "SYSTEM\\CurrentControlSet\\Services\\Mesh Agent";
+        const string AgentFileName = "MeshAgent.exe";
+        const string DurableFolder = "PADIEM";
         const int InstallerTimeoutMilliseconds = 180000;
         const int HandoffTimeoutMilliseconds = 30000;
         const int MaximumRedirects = 4;
@@ -185,38 +199,135 @@ namespace Padiem.Connect
                 Say("이 PC에는 에이전트가 이미 설치되어 있습니다. 같은 서비스 이름으로 갱신 설치합니다(중복 서비스 없음).");
             }
             string name = AgentName(tag, FixedDriveLetters(), Environment.MachineName);
-            string installerArguments = "-fullinstall --agentName=\"" + name + "\"";
+            string durable = DurableAgentPath();
+            string installerArguments = "-install --agentName=\"" + name + "\"";
             if (options.DryRun)
             {
                 Say("점검 실행: 설치 프로그램은 실행하지 않았습니다.");
                 Say("설치 대상 " + agentUrl);
+                Say("설치 위치 " + durable);
+                Say("실행 명령 " + AgentFileName + " " + installerArguments);
                 Say("에이전트 이름 " + name);
                 return ExitOk;
             }
-            string target = Path.Combine(Path.GetTempPath(),
+            string temp = Path.Combine(Path.GetTempPath(),
                 "padiem-agent-" + Guid.NewGuid().ToString("N") + ".exe");
             try
             {
-                int downloaded = Download(agentUrl, target);
+                int downloaded = Download(agentUrl, temp);
                 if (downloaded <= 0)
                 {
                     Say("설치 프로그램을 내려받지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.");
                     return ExitDownloadUnusable;
                 }
-                if (!StartInstaller(target, installerArguments))
+                // Stop the service through the binary it was registered with, so an
+                // update over a running agent does not fail on a locked file. A PC that
+                // never had the agent has nothing to stop, and that is not a failure.
+                if (installed)
+                {
+                    string running = RegisteredAgentPath();
+                    if (running != null && !running.Equals(durable, StringComparison.OrdinalIgnoreCase))
+                    {
+                        RunQuiet(running, "-stop");
+                    }
+                }
+                if (!Place(temp, durable))
+                {
+                    Say("에이전트를 놓을 폴더를 만들 수 없습니다. 다른 프로그램이 사용 중인지 확인해 주세요.");
+                    return ExitInstallerFailed;
+                }
+                if (!StartInstaller(durable, installerArguments))
                 {
                     Say("PC 연결 프로그램을 실행하지 못했습니다. 잠시 후 다시 시도해 주세요.");
                     return ExitInstallerFailed;
                 }
+                // -install registers; it does not launch. Saying so once, here, is what
+                // makes a fresh PC answer the server's first call instead of waiting for
+                // the next restart of Windows.
+                RunQuiet(durable, "-start");
             }
             finally
             {
-                try { File.Delete(target); }
+                try { File.Delete(temp); }
                 catch (Exception) { }
             }
             Say("연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM의 '내 PC 연결'에 자동으로 나타납니다.");
             Say("연결 표식 " + tag);
+            Say("에이전트 " + durable);
             return ExitOk;
+        }
+
+        static string DurableAgentPath()
+        {
+            // Program Files, not Temp: -install leaves the service pointing at whatever
+            // folder the agent ran from, so a temp download would become a service that
+            // cannot start after the file is cleaned up.
+            return Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ProgramFiles), DurableFolder, AgentFileName);
+        }
+
+        static string RegisteredAgentPath()
+        {
+            // The service's own recorded binary. Reading a registry value is allowed
+            // without elevation and says exactly which file is in use.
+            try
+            {
+                using (Microsoft.Win32.RegistryKey key =
+                    Microsoft.Win32.Registry.LocalMachine.OpenSubKey(AgentServiceKey))
+                {
+                    if (key == null)
+                    {
+                        return null;
+                    }
+                    object value = key.GetValue("ImagePath");
+                    string text = value == null
+                        ? null : Convert.ToString(value, CultureInfo.InvariantCulture);
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        return null;
+                    }
+                    text = text.Trim();
+                    if (text.StartsWith("\"", StringComparison.Ordinal))
+                    {
+                        int closing = text.IndexOf('"', 1);
+                        return closing > 1 ? text.Substring(1, closing - 1) : null;
+                    }
+                    int space = text.IndexOf(' ');
+                    return space < 0 ? text : text.Substring(0, space);
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        static bool Place(string source, string target)
+        {
+            // The stop above is asynchronous, so the first copy over a just-stopped
+            // service can still see the file held; three short waits is the whole retry,
+            // and a folder that will not take the agent is a refusal the person is told.
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(target));
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    try
+                    {
+                        File.Copy(source, target, true);
+                        return true;
+                    }
+                    catch (IOException)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         static int Report(Options options)
@@ -234,6 +345,9 @@ namespace Padiem.Connect
             Console.WriteLine("CONNECT_EXE_CHECK_URL_PRESENT=" + (string.IsNullOrEmpty(agentUrl) ? "0" : "1"));
             Console.WriteLine("CONNECT_EXE_CHECK_DRIVES=" + string.Join(" ", FixedDriveLetters()));
             Console.WriteLine("CONNECT_EXE_CHECK_SERVICE_INSTALLED=" + (AgentAlreadyInstalled() ? "1" : "0"));
+            Console.WriteLine("CONNECT_EXE_CHECK_AGENT_TARGET=" + DurableAgentPath());
+            string registered = RegisteredAgentPath();
+            Console.WriteLine("CONNECT_EXE_CHECK_SERVICE_PATH=" + (registered ?? ""));
             Console.WriteLine("CONNECT_EXE_CHECK_ELEVATED=" + (IsAdministrator() ? "1" : "0"));
             Console.WriteLine("CONNECT_EXE_CHECK_TLS=" + TlsSummary());
             if (!string.IsNullOrEmpty(tag))
@@ -556,10 +670,10 @@ namespace Padiem.Connect
 
         static bool StartInstaller(string path, string arguments)
         {
-            // -fullinstall over an existing agent is the update: the installer stops
-            // the service, replaces the binary under the same name and starts it
-            // again. Passing the arguments as a list, not a split string, is what
-            // lets an agent name with spaces arrive intact.
+            // -install registers the service from the folder this file sits in, and the
+            // name the agent reports is what the server pairs the PC on. Passing the
+            // arguments as a list, not a split string, is what lets an agent name with
+            // spaces arrive intact.
             ProcessStartInfo start = new ProcessStartInfo(path, arguments);
             start.UseShellExecute = false;
             start.CreateNoWindow = true;
@@ -579,6 +693,31 @@ namespace Padiem.Connect
             {
                 return false;
             }
+        }
+
+        static void RunQuiet(string path, string argument)
+        {
+            // -stop and -start are asked of the agent itself rather than of a shell:
+            // this is the one program on the PC that knows its own service name, and a
+            // PC that refuses to stop is still worth installing over.
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                return;
+            }
+            try
+            {
+                ProcessStartInfo start = new ProcessStartInfo(path, argument);
+                start.UseShellExecute = false;
+                start.CreateNoWindow = true;
+                using (Process process = Process.Start(start))
+                {
+                    if (process != null)
+                    {
+                        process.WaitForExit(15000);
+                    }
+                }
+            }
+            catch (Exception) { }
         }
 
         // ---- the file's own trailing bytes -------------------------------

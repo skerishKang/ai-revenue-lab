@@ -2,11 +2,13 @@
 
 ```text
 DOC_ROLE=PC_CONNECT_EXE_INSTALL_GUIDE
-STATUS=IMPLEMENTED, 실물 설치 증빙은 남은 PC 1대
+STATUS=IMPLEMENTED, 깨끗한 PC 1대에서의 실물 설치 증빙 미완료(빌드 호스트가 Windows 10 Home: Sandbox 없음)
 ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
-CONNECT_EXE_SHA256=6b0d84226f9b8a5f982d610ce8187cb82f7566b881b1ab990912800b3dc7f61a
-CONNECT_EXE_BYTES=21504
+AGENT_INSTALL_OPTION=-install (measured on the tagged Windows agent, 2026-10-28)
+AGENT_FOLDER=%ProgramFiles%\PADIEM
+CONNECT_EXE_SHA256=941f3642b973066ade35cffecd0ce2681d42d97fff2e2c8eb82d587b0327b66c
+CONNECT_EXE_BYTES=23040
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
 
@@ -20,13 +22,21 @@ BUILD=scripts/pc_pairing/build-connect-exe.ps1
 `padiem-pc-connect.exe`는 같은 레인을 그대로 두고 **더블클릭 한 번**으로 만든다.
 
 - 코드를 입력하지 않는다: 계정의 연결 표식(tag)이 파일 뒤에 붙어서 내려온다.
-- 설치는 이전과 완전히 같은 경로다: 에이전트를 내려받아
-  `-fullinstall --agentName="tag [C D] PCNAME"`으로 실행하고, 서버가 그 이름을 관찰해
-  연결을 끝낸다.
-- 이미 설치된 PC에서 다시 실행하면 **같은 서비스 이름으로 갱신 설치**한다. 서비스는
-  `Mesh Agent` 하나이며 중복 서비스는 만들지 않는다.
-- 아무것도 디스크에 남기지 않는다: tag와 설치 링크는 프로세스 안에서만 살고, 에이전트
-  설치에 쓴 임시 파일은 실행 직후 삭제된다.
+- 설치는 두 단계다: 에이전트를 내려받아 **`%ProgramFiles%\PADIEM\MeshAgent.exe`에 놓고**
+  그 자리에서 `-install --agentName="tag [C D] PCNAME"`을 실행한 뒤 `-start`한다. 서버는
+  그 이름을 관찰해 연결을 끝낸다.
+  `-fullinstall`(에이전트를 program files로 복사하고 설치·실행한다고 적혀 있는 옵션)은
+  2026-10-28 태그 빌드에서 exit 0만 내고 서비스를 아무것도 등록하지 않았다. 그래서 복사
+  단계는 이 프로그램이 스스로 한다. `-install`은 **자신이 실행된 폴더를 서비스 기록에 남기
+  는** 옵션이라, 임시 폴더에서 설치하면 그 폴더가 정리되는 순간 재시작 못 하는 서비스가
+  된다(컴2의 현재 서비스 기록이 `D:\pdf1024\issue4317\tmpdocs\MeshAgent.exe`를 가리키는
+  것이 바로 그 모양이다).
+- 이미 설치된 PC에서 다시 실행하면 **같은 서비스 이름으로 갱신 설치**한다. 먼저 서비스
+  기록의 ImagePath에 적힌 기존 바이너리로 `-stop`을 요구하고, 새 에이전트를 durable
+  폴더에 놓은 뒤 같은 이름으로 `-install`·`-start`한다. 서비스는 `Mesh Agent` 하나이며
+  중복 서비스는 만들지 않는다.
+- 설치물에 남는 것은 에이전트 한 파일(`%ProgramFiles%\PADIEM\MeshAgent.exe`)뿐이다: tag와
+  설치 링크는 프로세스 안에서만 살고, 내려받은 임시 파일은 실행 직후 삭제된다.
 
 ## 2. 흐름
 
@@ -36,9 +46,10 @@ BUILD=scripts/pc_pairing/build-connect-exe.ps1
 고객                  →  더블클릭
 exe                   →  관리자 권한 요청 (거절하면 아무것도 하지 않고 종료)
                      →  이 PC의 로컬 드라이버 문자 수집 (네트워크 드라이브 제외)
-                     →  "Mesh Agent" 서비스 감지 → 있으면 갱신, 없으면 신규
+                     →  "Mesh Agent" 서비스 감지 → 있으면 기존 바이너리로 -stop
                      →  https로만 에이전트 설치 프로그램 내려받기 (최소 TLS 1.2, redirect 재검사, MZ 확인)
-                     →  MeshAgent.exe -fullinstall --agentName="<tag> [C D] <PCNAME>"
+                     →  %ProgramFiles%\PADIEM\MeshAgent.exe 로 복사
+                     →  MeshAgent.exe -install --agentName="<tag> [C D] <PCNAME>", 이어서 -start
 서버                  →  관찰된 이름에서 tag와 드라이버를 읽고 링크를 active로 만든다
 ```
 
@@ -68,7 +79,7 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-CONNECT_EXE_SEED=c1d0148f707967908cd8ba95503d503a9973e425d510e2db6758dd40ef2541fa
+CONNECT_EXE_SEED=14eda0976fc9599e83fde57f78ded5d0d188d9679f268f347700634b5a431778
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
@@ -99,11 +110,14 @@ Windows가 '알 수 없는 게시자' 경고를 띄우면
 - 경고를 보다가 창을 닫아버려 파일이 실행되지 않은 경우: 다시 내려받아 실행하면 된다.
   내려받을 때 발급된 코드는 소모되지 않는다.
 
-**스크린샷 자리** — 실제 경고 창은 이 파일을 처음 더블클릭하는 PC 1대에서 찍어 넣는다
-(2026-10-28 현재 이미지는 아직 첨부되지 않았다). 첨부할 화면 2장:
+**스크린샷 자리** — 실제 경고 창은 깨끗한 Windows 1대에서 이 파일을 처음 더블클릭해 찍는다
+(2026-10-28 현재 미첨부; 이 PC는 Windows 10 Home이라 Windows Sandbox가 없고 Hyper-V 관리
+도구·Docker 데몬도 없다). 첨부할 화면 3장:
 
 1. `padiem-pc-connect.exe` 더블클릭 직후의 "알 수 없는 게시자" 창 ([추가 정보] 누르기 전)
-2. [추가 정보]를 눌렀을 때 [실행]이 나타난 창
+2. [추가 정보]를 눌렀을 때 [실행]이 나타난 창 (여기서 제품 이름 `PADIEM`이 함께 보인다)
+3. 설치 후 `services.msc`의 `Mesh Agent`(실행 중/자동 시작) 또는 PADIEM '내 PC 연결' 목록에
+   새로 붙은 PC 이름
 
 ## 5. 제거 방법
 
@@ -112,11 +126,16 @@ PC에서 서비스를 지우면 에이전트가 사라진다.
 
 ```powershell
 # 1) PADIEM 웹 '내 PC 연결'에서 해당 PC [연결 해제]  (폴더 승인도 함께 사라진다)
-# 2) PC에서 에이전트 제거
-& "${env:ProgramFiles(x86)}\Mesh Services\MeshAgent.exe" -uninstall
+# 2) PC에서 에이전트 제거 (이 설치물이 놓은 자리)
+& "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall
+Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force
+
+# 2') 예전에 수동으로 설치된 PC는 서비스 기록이 다른 폴더를 가리킬 수 있다.
+#     어떤 파일로 등록됐는지는 여기서 본다:
+Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -ExpandProperty PathName
 ```
 
-- 남는 것: 설치에 쓴 임시 파일은 실행 직후 삭제되므로 남지 않는다.
+- 남는 것: 설치에 쓴 임시 파일은 실행 직후 삭제되므로 남지 않는다. 지운 뒤 남는 폴더도 없다.
 - `.padiem-backup\<날짜>` 폴더는 PC 작업(쓰기/이동/삭제)이 만든 백업이지 이 설치물이 만든
   것이 아니다 — 설치 제거와 함께 지우지 않는다.
 - 다시 붙이고 싶으면 같은 파일을 한 번 더 더블클릭하면 된다(갱신 설치).
@@ -125,7 +144,7 @@ PC에서 서비스를 지우면 에이전트가 사라진다.
 
 | 경로 | 역 |
 |---|---|
-| `scripts/pc_pairing/connect-exe/PadiemPcConnect.cs` | 프로그램 자체. 꼬리말 읽기, 권한 상승, 드라이버 수집, 기존 서비스 감지, https 전용 내려받기, 설치 실행 |
+| `scripts/pc_pairing/connect-exe/PadiemPcConnect.cs` | 프로그램 자체. 꼬리말 읽기, 권한 상승, 드라이버 수집, 기존 서비스 감지와 `-stop`, https 전용 내려받기, `%ProgramFiles%\PADIEM` 복사, `-install`·`-start` |
 | `scripts/pc_pairing/connect-exe/app.manifest` | asInvoker + supportedOS (TLS 1.3 판단이 이 버전 인식을 읽는다) |
 | `scripts/pc_pairing/connect-exe/win32_reproducible.py` | 재현 가능한 바이트와 PADIEM 버전 리소스를 손으로 쓰는 곳 |
 | `scripts/pc_pairing/build-connect-exe.ps1` | 빌드·두 번 비교·지문 출력·자산 모듈 생성 |
@@ -140,16 +159,32 @@ PC에서 서비스를 지우면 에이전트가 사라진다.
 - 두 번의 빌드가 같은 SHA-256을 냈다 (`CONNECT_EXE_REPRODUCIBLE=1`).
 - 완성된 산출물의 `--check`가 이 PC(컴2)에서
   `CONNECT_EXE_CHECK_SERVICE_INSTALLED=1`, `CONNECT_EXE_CHECK_DRIVES=C D`,
-  `CONNECT_EXE_CHECK_TLS=1.2+1.3`을 출력했고, `--dry-run`은
-  "같은 서비스 이름으로 갱신 설치합니다"를 출력하고 설치는 실행하지 않았다.
+  `CONNECT_EXE_CHECK_AGENT_TARGET=C:\Program Files\PADIEM\MeshAgent.exe`,
+  `CONNECT_EXE_CHECK_SERVICE_PATH=D:\pdf1024\issue4317\tmpdocs\MeshAgent.exe`,
+  `CONNECT_EXE_CHECK_TLS=1.2+1.3`을 출력했다 — 서비스 기록의 ImagePath를 읽어 기존
+  바이너리를 알아 맞추는 경로가 실제로 작동한다는 증거다. `--dry-run`은
+  `MeshAgent.exe -install --agentName="pd-… [C D] K_LIPVOICE"` 계획을 출력하고 아무것도
+  실행하지 않았다.
 - Windows가 읽는 파일 속성이 `PADIEM`(Company/Product), `PADIEM PC 연결`
   (FileDescription), `padiem-pc-connect.exe`(OriginalFilename)로 나온다.
 - 서버가 쓴 꼬리말을 실제 exe가 다시 읽어 `pd-1234abcd [C D] K_LIPVOICE` 이름을 만들고,
   서버의 파서(`drives_from_agent_name`)가 `['C:', 'D:']`로 읽는다.
+- 에이전트 자기 도움말에서 두 옵션의 정의를 읽었다(`-install` = "이 위치에서 서비스
+  등록", `-fullinstall` = "program files로 복사 후 등록·실행"). `-fullinstall`이 아무
+  서비스도 등록하지 않았다는 실측과, 이 PC의 서비스가 `-install`로 등록된 자리에 그대로
+  붙어 있다는 사실이 같은 방향을 가리킨다.
 
 남은 것:
-- **실물 설치 1회**: 빈 PC(또는 기존 에이전트를 갱신하는 실제 클릭)에서 더블클릭 →
-  UAC → 설치 → 서버 확인. 무서명 경고 스크린샷도 이때 함께 얻는다.
+- **깨끗한 Windows 1대에서의 실물 설치**: 다운로드 → "알 수 없는 게시자" 창 캡처 →
+  [추가 정보] → [실행] → UAC → `Mesh Agent` 등록/실행 확인 → 웹에 이름으로 나타남 확인
+  → 웹에서 연결 해제(서버 쪽 노드 기록은 별도로 정리). 2026-10-28 현재 이 PC는
+  **Windows 10 Home**이라 Windows Sandbox가 없고(`Containers-DisposableClientVM` 없음),
+  Hyper-V 관리 도구(`Get-VM`/vmms)와 Docker 데몬도 없다. 컴1·컴2는 시험 대상이 아니므로,
+  깨끗한 Windows 1대(여분 노트북 또는 VM 호스트)가 잡히는 대로 이 절을 채운다.
+- **`.ps1` 레인은 같은 검증을 아직 못 지났다**: `scripts/pc_pairing/install-padiem-pc.ps1`과
+  서버가 내려주는 자동 연결 스크립트 모두 `-fullinstall`을 쓴다. 깨끗한 PC 1대에서 저
+  두 경로가 실제로 서비스를 등록하는지 확인한 뒤 옵션을 맞춰야 한다(지금까지 "이 PC 연결"이
+  확인된 PC는 에이전트가 이미 붙어 있던 PC였다).
 - 코드 서명을 사면: 바이트 뒤에 꼬리말을 붙이는 이 방식은 다시 봐야 한다(다운로드 시점에
   붙이면 서명 지문이 깨진다). 서명 이후에는 exe에 제품 주소만 구워 넣고 코드는 입력받는
   경로가 이미 남아 있으므로 그 경로가 본문이 된다.
