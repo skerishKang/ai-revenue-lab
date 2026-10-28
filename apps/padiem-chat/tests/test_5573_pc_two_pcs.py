@@ -21,7 +21,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 import test_5172_mesh_device_id_boundary as directory   # noqa: E402
 import test_5573_pc_device_pairing as pairing           # noqa: E402
 
-from app.pc_device_pairing_store import link_named_in    # noqa: E402
+from app.pc_device_pairing_store import (                # noqa: E402
+    canonical_label,
+    link_named_in,
+    pc_name_from_agent_name,
+)
 from app.pc_work_context import (                        # noqa: E402
     _EXEC_READY,
     _link_execution_target,
@@ -174,3 +178,56 @@ def test_the_link_directory_is_a_question_only_when_it_cannot_be_asked() -> None
     assert RUN(linked_pc_targets(asked, pairing.OWNER)) == []
 
 
+# -- 4. a linked PC is named by Windows first, renamed second --------------
+
+def test_the_machine_name_is_read_out_of_the_observed_agent_name() -> None:
+    """The name the agent reports holds three things; only one is a name."""
+    assert pc_name_from_agent_name("pd-1234abcd [C D] K_LIPVOICE") == "K_LIPVOICE"
+    assert pc_name_from_agent_name("pd-1234abcd K_lipvoice") == "K_lipvoice"
+    # A name that is nothing but the pairing decoration has no machine in it,
+    # and the decoration is never stored as somebody's PC name.
+    assert pc_name_from_agent_name("pd-1234abcd [C D]") is None
+    assert pc_name_from_agent_name("pd-1234abcd") is None
+    assert pc_name_from_agent_name(None) is None
+
+
+def test_a_claim_names_the_link_after_the_machine_and_an_alias_keeps_it() -> None:
+    store = pairing.store()
+    issued = RUN(store.issue_code(user_id=pairing.OWNER, issued_at=pairing._now()))
+
+    link = RUN(store.complete_claim_from_observation(
+        agent_name=f"{issued['install_tag']} [C D] K_lipvoice",
+        mesh_node_id=NODE_A, now=pairing._now(),
+    ))
+    assert link["label"] == "K_lipvoice"
+    assert [root["path"] for root in link["roots"]] == ["C:", "D:"]
+
+    # The owner's alias joins the name instead of replacing it, so both ways of
+    # saying the same machine keep working - and case and spacing are the
+    # speaker's business, not a different PC.
+    renamed = RUN(store.set_link_label(
+        user_id=pairing.OWNER, link_id=link["link_id"], label="컴2", now=pairing._now(),
+    ))
+    assert renamed["label"] == "K_lipvoice · 컴2"
+
+    other = _linked(store, owner=pairing.OWNER, node=NODE_B, label=None)
+    RUN(store.set_link_label(
+        user_id=pairing.OWNER, link_id=other["link_id"],
+        label="Padiem-Command-Center · 컴1", now=pairing._now(),
+    ))
+    links = RUN(store.links_for_owner(user_id=pairing.OWNER))
+    assert link_named_in("컴2의 C 드라이브 최상위 목록", links) == NODE_A
+    assert link_named_in("k_lipvoice 최상위", links) == NODE_A
+    assert link_named_in("  K_LIPVOICE  목록", links) == NODE_A
+    assert link_named_in("컴1의 C 드라이브 목록", links) == NODE_B
+    assert link_named_in("padiem-command-center 목록", links) == NODE_B
+    # A second machine's name in the same request decides nothing.
+    assert link_named_in("컴1과 컴2 비교", links) is None
+
+
+def test_an_alias_never_forges_a_third_name_and_names_nothing_by_itself() -> None:
+    assert canonical_label("K_lipvoice · 컴2", "출장 PC") == "K_lipvoice · 출장 PC"
+    assert canonical_label(None, "컴2") == "컴2"
+    assert canonical_label("K_lipvoice", "컴2 · 그 외") == "컴2 · 그 외"
+    assert canonical_label("K_lipvoice", "  ") is None
+    assert canonical_label(None, None) is None
