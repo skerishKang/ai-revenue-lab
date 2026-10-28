@@ -147,8 +147,28 @@ No stage in this list deploys to production; production release stays with CENTR
   right side; where `:has()` is unsupported the rule is ignored and today's single column remains.
   Measured: 1440 columns `340px 532px`, form 340, result and lists at x=631; 768/390/320 single
   column (form 706/332/262); 32 cells overflow 0, occlusion 0.
-- **S4 — auth surface authored in the design's vocabulary.** Acceptance: fail-closed gate intact,
-  the Google return allowlist intact, and no new endpoint.
+- **S4 — auth surface authored in the design's vocabulary (implemented in this PR).** The prototype
+  has neither a sign-in panel nor a record list, so nothing could be ported; both surfaces were
+  built from the design's *existing* vocabulary instead of invented styling — the field-panel radius
+  and padding (`.pa-meta`), hairline row separation (`.pa-strip li + li`) and the hairline pill
+  (`.pa-back`). CSS only; the markup and the module JS are not in the diff.
+  Measured: the saved list and the meeting archive had **no surface at all** (radius 0, no border,
+  no padding — a bare `<ul>` of grey chips); they are now panels (14px radius, `clamp(14px,1.8vw,20px)`
+  padding, hairline border) whose rows are bare 600-weight lines separated by a 1px hairline
+  (row 1 border-top 0px, row 2 1px). The sign-in panel moved 16 → 14px radius with the field-panel
+  padding, its heading took the card-title scale (20px at 1440), and the Google link became a
+  999px pill at 45.6px tall.
+  Preserved and re-proven: signed out, exactly one `.council-form` exists (the login form) and no
+  tool builder attaches; submitting credentials reaches only `POST /api/auth/password/login`, and
+  without a confirmed session the panel stays open with the failure status and zero builders; the
+  Google link keeps `return_to=%2Fapps%2Fcouncil%2F`. Six A/B cases (three tools at kr, speech at
+  fr, meeting at us, plus the signed-out login attempt) produced identical request bodies and
+  identical rendered output on `main` and on this branch.
+  Two corrections recorded here rather than hidden: an initial batch of body-anchored CSS
+  replacements hit the wrong rule because the archive and saved rows share an identical body — the
+  file was reverted and every rule rewritten by its own selector, then re-verified through computed
+  style; and a `border-radius: 999px` on the reference chip was deleted because the shared 44px
+  floor block declares 10px later and always won.
 - **S5 — hero, photography, and localised chrome.** Blocked on §6.
 
 ## 5. Non-goals
