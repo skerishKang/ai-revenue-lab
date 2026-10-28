@@ -77,7 +77,9 @@ def test_quote_ui_bridge_uses_exact_iframe_source_and_origin() -> None:
 
 def test_signed_out_startup_is_network_silent_for_b66() -> None:
     source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert 'auth.authenticated === true) refresh()' in source
+    # #6100: signedIn comes from the capability event; refresh() only on it.
+    assert "signedIn = !!(auth && auth.authenticated === true);" in source
+    assert "if (signedIn) refresh();" in source
     assert "ensureUi();\n      refresh();" not in source
     # API access is centralized behind refresh/readJson rather than eager top-level fetch.
     assert source.count('readJson("/api/b66/runtime-config")') == 1

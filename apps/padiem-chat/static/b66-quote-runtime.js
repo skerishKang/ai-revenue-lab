@@ -12,6 +12,8 @@
       generate: "견적서 만들기",
       close: "닫기",
       selectLabel: "견적서 양식",
+      signinHint: "로그인하면 내 양식과 등급을 고를 수 있어요",
+      signinAction: "로그인",
       idle: "내용을 입력하면 배정된 견적서 양식으로 바로 만듭니다.",
       working: "견적 내용을 정리하고 있습니다.",
       missing: "거래처와 품목·수량·단가를 조금 더 알려 주세요.",
@@ -54,6 +56,8 @@
       generate: "Create quote",
       close: "Close",
       selectLabel: "Quote template",
+      signinHint: "Sign in to pick your template and AI tier.",
+      signinAction: "Sign in",
       idle: "Enter the changing values and your assigned template will be used.",
       working: "Preparing the quote values.",
       missing: "Please add the customer and item, quantity, and unit price.",
@@ -94,6 +98,10 @@
   // #5895: an account with a linked PC reaches the quote screen through its own
   // Excel form even before it has saved a skill.
   let pcAccountLinked = false;
+  // #6100: the capability event's own word on whether this browser is signed
+  // in. The selects' data belongs to a signed-in account, so the logged-out
+  // dialog says so instead of showing three empty controls.
+  let signedIn = false;
   let modelIds = [];
   let selectedModelByTier = {};
   let reasoningByModel = {};
@@ -495,6 +503,7 @@
     const form = el("form", "b66-quote-form");
     form.id = "b66QuoteForm";
     const selectLabel = el("label", "b66-quote-field");
+    selectLabel.id = "b66QuoteSkillField";
     const selectText = el("span", "", copy().selectLabel);
     selectText.dataset.b66QuoteSelectLabel = "true";
     const select = document.createElement("select");
@@ -512,6 +521,7 @@
     messageLabel.append(messageText, message);
 
     const modelLabel = el("label", "b66-quote-field");
+    modelLabel.id = "b66QuoteModelField";
     const modelText = el("span", "", document.documentElement.lang === "en" ? "AI tier" : "AI 등급");
     modelText.dataset.b66QuoteModelLabel = "true";
     const modelSelect = document.createElement("select");
@@ -523,12 +533,30 @@
     // /api/b66/quote/models, so the control never offers a level the selected
     // model does not actually support. The provider default is first.
     const reasoningLabel = el("label", "b66-quote-field");
+    reasoningLabel.id = "b66QuoteReasoningField";
     const reasoningText = el("span", "", document.documentElement.lang === "en"
       ? "Reasoning level" : "추론 수준");
     reasoningText.dataset.b66QuoteReasoningLabel = "true";
     const reasoningSelect = document.createElement("select");
     reasoningSelect.id = "b66QuoteReasoningSelect";
     reasoningLabel.append(reasoningText, reasoningSelect);
+
+    // #6100: the logged-out stand-in for the three selects above — one line
+    // and the product's own login entry (#loginButton), which the account
+    // area already owns. On sign-in the same capability event that runs
+    // refresh() brings the selects back; nothing after login changes.
+    const signinHint = el("p", "b66-quote-signin-hint", "");
+    signinHint.id = "b66QuoteSigninHint";
+    signinHint.hidden = true;
+    const signinText = el("span", "b66-quote-signin-text", copy().signinHint);
+    signinText.dataset.b66QuoteSigninText = "true";
+    const signinButton = el("button", "b66-quote-signin-button", copy().signinAction);
+    signinButton.id = "b66QuoteSigninButton";
+    signinButton.type = "button";
+    signinButton.addEventListener("click", () => {
+      document.getElementById("loginButton")?.click();
+    });
+    signinHint.append(signinText, signinButton);
 
     // #5895: "내 PC 엑셀 양식 가져오기" — the owner's own form, filled as a new quote.
     const pcForm = el("section", "b66-quote-pcform");
@@ -574,7 +602,7 @@
 
     // Do not construct a hidden iframe on Chat startup. The cross-origin
     // preview is created only after a successful, user-requested quote.
-    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, pcForm, submit, status);
+    form.append(selectLabel, modelLabel, reasoningLabel, signinHint, messageLabel, pcForm, submit, status);
     panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
@@ -939,6 +967,7 @@
       ["[data-b66-quote-title]", "title"],
       ["[data-b66-quote-description]", "description"],
       ["[data-b66-quote-select-label]", "selectLabel"],
+      ["[data-b66-quote-signin-text]", "signinHint"],
       ["[data-b66-quote-request-label]", "requestLabel"]
     ];
     map.forEach(([selector, key]) => {
@@ -954,6 +983,8 @@
     if (launcherLabel && entryOnly) launcherLabel.textContent = pcCopy().entry;
     if (message) message.placeholder = c.requestPlaceholder;
     if (submit) submit.textContent = c.generate;
+    const signinButton = document.getElementById("b66QuoteSigninButton");
+    if (signinButton) signinButton.textContent = c.signinAction;
     if (close) close.setAttribute("aria-label", c.close);
     if (frame) frame.title = c.title;
     const pcToggle = document.getElementById("b66QuotePcToggle");
@@ -1084,6 +1115,23 @@
     if (selectLabelNode) selectLabelNode.hidden = entryOnly;
     const generateButton = document.getElementById("b66QuoteGenerate");
     if (generateButton) generateButton.hidden = entryOnly;
+    // #6100: logged out, the selects hide and the one-line hint stands in;
+    // signed in, the fields come back exactly as before (the entry-only span
+    // hiding above is untouched). The capability event flips signedIn, so a
+    // login lands here through the same refresh() that fills the selects.
+    const signinHint = document.getElementById("b66QuoteSigninHint");
+    const quoteFields = [
+      document.getElementById("b66QuoteSkillField"),
+      document.getElementById("b66QuoteModelField"),
+      document.getElementById("b66QuoteReasoningField"),
+    ];
+    if (!signedIn) {
+      quoteFields.forEach((field) => { if (field) field.hidden = true; });
+      if (signinHint) signinHint.hidden = false;
+    } else {
+      quoteFields.forEach((field) => { if (field) field.hidden = false; });
+      if (signinHint) signinHint.hidden = true;
+    }
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
     const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
     if (pcSection) pcSection.hidden = !pcEnabled;
@@ -1341,7 +1389,10 @@
 
   window.addEventListener("padiem:capabilitychange", (event) => {
     const auth = event && event.detail && event.detail.auth;
-    if (auth && auth.authenticated === true) refresh();
+    // #6100: the event fires at startup too (after /api/auth/status), so the
+    // logged-out hint is decided by the product's own signal, never guessed.
+    signedIn = !!(auth && auth.authenticated === true);
+    if (signedIn) refresh();
     else {
       resetPcDirectory();
       runtime = null;

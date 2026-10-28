@@ -135,7 +135,9 @@
   min-height: 44px;
   padding: 8px 12px;
   border-radius: 12px;
-  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  /* #6100: these are inputs too — the input-only border token, not the card
+     hairline the glass theme draws at 38% white. */
+  border: 1px solid var(--input-border-strong, var(--line, rgba(66, 106, 135, 0.28)));
   background: var(--field, #fff);
   color: inherit;
 }

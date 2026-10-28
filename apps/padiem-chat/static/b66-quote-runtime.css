@@ -58,7 +58,9 @@
 .b66-quote-field textarea {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  /* #6100: inputs take the input-only border token; the themes define it to
+     clear the 3:1 non-text floor where the shared --border hairline does not. */
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.28)));
   border-radius: 10px;
   background: var(--surface, rgba(255, 255, 255, 0.05));
   color: inherit;
@@ -85,6 +87,31 @@
   margin: 0;
   font-size: 13px;
   opacity: 0.8;
+}
+/* #6100: the logged-out stand-in for the selects — one line and the product's
+   own login entry, not three empty controls. */
+.b66-quote-signin-hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted, inherit);
+}
+.b66-quote-signin-hint[hidden] {
+  display: none !important;
+}
+.b66-quote-signin-button {
+  font: inherit;
+  font-weight: 650;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127, 127, 127, 0.3)));
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
 }
 .b66-quote-status[data-state="error"],
 .b66-quote-status[data-state="missing"] {
@@ -176,7 +203,7 @@
   font: inherit;
   color: inherit;
   background: transparent;
-  border: 1px solid var(--border, rgba(127,127,127,.3));
+  border: 1px solid var(--input-border-strong, var(--border, rgba(127,127,127,.3)));
   border-radius: 9px;
   padding: 8px 10px;
   min-height: 40px;
