@@ -27,7 +27,6 @@ from app.config import Settings
 from app.main import create_app
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.pc_work_context import (
-    MAX_RENDERED_CHARS,
     PC_DRIVE_TOOL_ID,
     PC_WORK_CONTEXT_VERSION,
     SAVED_SELECTION_NONE,
@@ -518,7 +517,8 @@ def test_render_is_bounded_and_carries_no_secret_identifier():
     rendered = render_pc_work_context(resolve(
         Directory(rows), mesh=Mesh([mesh_row("target", node_ref="target")]), identity=Identity(),
     ))
-    assert len(rendered) <= MAX_RENDERED_CHARS
+    # #5895-D: no text slice - the closing guidance survives the worst case.
+    assert "Google Drive와 로컬 PC 드라이브는 서로 다른 대상" in rendered
     assert "Target" in rendered
     assert OWNER not in rendered and WORKSPACE not in rendered
     assert CONNECTOR_ACCOUNT not in rendered and SESSION not in rendered

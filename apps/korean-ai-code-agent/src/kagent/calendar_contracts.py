@@ -12,8 +12,6 @@ from .connector_trust import ConnectorWriteIntent, ConnectorWriteReceipt
 from .contracts import ContractError
 from .security import redact_secrets
 
-MAX_CALENDAR_IDS = 32
-MAX_ATTENDEES = 50
 MAX_RECURRENCE_RULES = 16
 MAX_SUMMARY_CHARS = 998
 MAX_LOCATION_CHARS = 1024
@@ -80,8 +78,9 @@ def _email(value: str, field_name: str) -> str:
 
 
 def _emails(values: tuple[str, ...], field_name: str) -> tuple[str, ...]:
-    if len(values) > MAX_ATTENDEES:
-        raise ContractError("calendar attendee count exceeds bound")
+    # #5895-D: no attendee count ceiling. Email validity and uniqueness are
+    # the contract; the 50-address clamp was a product number that refused
+    # real rosters with no provider or storage bound behind it.
     normalized = tuple(_email(value, field_name) for value in values)
     if len(normalized) != len(set(normalized)):
         raise ContractError("calendar attendee addresses must be unique")
@@ -148,8 +147,11 @@ class CalendarScopeProjection:
     def __post_init__(self) -> None:
         object.__setattr__(self, "binding_ref", _safe_ref(self.binding_ref, "binding_ref"))
         object.__setattr__(self, "workspace_ref", _safe_ref(self.workspace_ref, "workspace_ref"))
-        if not self.allowed_calendar_ids or len(self.allowed_calendar_ids) > MAX_CALENDAR_IDS:
-            raise ContractError("calendar scope requires 1..32 explicit calendar ids")
+        # #5895-D: the scope must name at least one explicit calendar id, but
+        # there is no upper bound: authorization is a per-id exact match, so a
+        # 32-id ceiling only refused wide owner grants.
+        if not self.allowed_calendar_ids:
+            raise ContractError("calendar scope requires at least one explicit calendar id")
         ids = tuple(_safe_ref(value, "calendar_id") for value in self.allowed_calendar_ids)
         if len(ids) != len(set(ids)):
             raise ContractError("calendar ids must be unique")

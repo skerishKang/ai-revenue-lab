@@ -117,7 +117,9 @@
   const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
   const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
   const PC_RESULT_PATH_SUFFIX = "/pc-result";
-  const MAX_PC_DIRECTORY_BYTES = 32768;
+  // #5895-D: no client byte gate on the owner's own same-origin reads. The
+  // closed projection below governs what gets rendered; a raw-length gate
+  // only silently turned real folder lists and run results into "empty".
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
@@ -690,7 +692,6 @@
     let data = null;
     try {
       const raw = await response.text();
-      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_dialogues_oversize");
       data = JSON.parse(raw);
     } catch (_) {
       data = null;
@@ -768,7 +769,7 @@
         body: JSON.stringify(payload)
       });
       const raw = await response.text();
-      if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+      data = JSON.parse(raw);
     } catch (_) {
       data = null;
     }
@@ -807,7 +808,7 @@
           body: "{}"
         });
         const raw = await response.text();
-        if (raw.length <= MAX_PC_DIRECTORY_BYTES) data = JSON.parse(raw);
+        data = JSON.parse(raw);
       } catch (_) {
         data = null;
       }
@@ -875,11 +876,10 @@
         status.textContent = c.pcFailed;
         return;
       }
-      // Bound raw response and reuse the existing closed, read-only Claw
+      // Parse the whole response and reuse the existing closed, read-only Claw
       // projection, never render raw server HTML/credentials or invent ONLINE.
       const raw = await response.text();
       if (!isCurrent()) return;
-      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_directory_oversize");
       const payload = JSON.parse(raw);
       if (!payload || payload.ok !== true || payload.available !== true ||
           payload.ownerScoped !== true) {

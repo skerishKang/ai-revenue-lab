@@ -16,7 +16,9 @@ def test_b66_pc_view_reuses_canonical_claw_projection_without_execution():
     assert "window.PadiemClawLocalHandoff?.deriveDeviceDirectory" in js
     assert html.index('./claw-local-handoff.js') < html.index('./b66-quote-runtime.js')
     assert 'credentials: "same-origin"' in js
-    assert 'MAX_PC_DIRECTORY_BYTES = 32768' in js
+    # #5895-D: no client byte gate refuses the owner's own same-origin reads.
+    assert 'MAX_PC_DIRECTORY_BYTES' not in js
+    assert 'const payload = JSON.parse(raw)' in js
     loader = js.split("async function loadPcDirectory() {", 1)[1].split(
         "function closeDialog()", 1
     )[0]

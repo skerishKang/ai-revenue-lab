@@ -36,9 +36,12 @@ PC_TOOL_SUMMARY = (
     f"{PC_DRIVE_TOOL_ID} (드라이브 목록), {PC_LIST_FILES_TOOL_ID} "
     f"(승인된 폴더 목록), {PC_READ_FILE_TOOL_ID} (UTF-8 텍스트 파일 읽기)"
 )
-MAX_RENDERED_CHARS = 1800
+# #5895-D: the rendering is bounded by structure - 24 directory rows with
+# 60-char names plus fixed guidance lines - not by a text slice: a hard
+# [:1800] cut silently dropped the closing guidance lines exactly when many
+# devices made the broker line long.
 MAX_DEVICE_NAME_CHARS = 60
-_MAX_RENDERED_DEVICES = 6
+_MAX_RENDERED_DEVICES = 6  # summary shape: the total count is always named, the first 6 labels shown
 _DEVICE_LIMIT = 24
 #: Same closed grammar the Mesh ownership map accepts for device/node refs.
 #: ``$`` is in the class because MeshCentral composes its node keys from an
@@ -700,7 +703,7 @@ def render_pc_work_context(context: PcWorkContext) -> str:
         "Google Drive와 로컬 PC 드라이브는 서로 다른 대상입니다. 실제 도구 결과 없이 "
         "드라이브·파일·PC 상태를 확인했다고 주장하지 마세요."
     )
-    return "\n".join(lines)[:MAX_RENDERED_CHARS]
+    return "\n".join(lines)
 
 
 async def _read_saved_device_selection(
@@ -790,7 +793,6 @@ async def build_pc_work_context_text(
 __all__ = [
     "PC_WORK_CONTEXT_VERSION",
     "PC_DRIVE_TOOL_ID",
-    "MAX_RENDERED_CHARS",
     "PC_SCOPE_OWNER_UNAVAILABLE",
     "PcConnectorScope",
     "PcExecutionTarget",
