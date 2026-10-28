@@ -17,7 +17,7 @@ from .history import (
 from .model_policy import ModelPolicyError, resolve_model_policy, resolve_tier_policy
 from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
-from .web_tools import MAX_QUERY_CHARS, normalize_public_url
+from .web_tools import MAX_QUERY_CHARS, SEARCH_QUERY_TOO_LONG_MESSAGE, normalize_public_url
 
 # #4379: a browser request body carries no PADIEM byte total. The reader
 # stays incremental, so the body is never materialized past the platform's
@@ -103,8 +103,12 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
         if not isinstance(value, str):
             raise BrowserRequestError("검색어 형식이 올바르지 않습니다.")
         query = value.strip()
-        if not query or len(query) > MAX_QUERY_CHARS:
-            raise BrowserRequestError("검색어는 1자 이상 2000자 이하로 입력해 주세요.")
+        if not query:
+            raise BrowserRequestError("검색할 내용을 한 줄로 알려 주세요.")
+        if len(query) > MAX_QUERY_CHARS:
+            # #6090: MAX_QUERY_CHARS is the search provider's own query contract.
+            # The answer names what the user can do, not the number.
+            raise BrowserRequestError(SEARCH_QUERY_TOO_LONG_MESSAGE)
         return BrowserToolRequest(tool=tool, tool_input=query)
     if tool.id == "web_fetch":
         if not isinstance(value, str) or not value.strip():
