@@ -240,10 +240,13 @@ Write-Output "CONNECT_EXE_ASSET_MODULE=$AssetModule"
 Write-Output "CONNECT_EXE_CHECK=$($probe -join ';')"
 
 if (Test-Path -LiteralPath $DocsMemo) {
-  # The install guide has to carry the same number the build just proved, so the
-  # build refreshes the line it owns instead of leaving a second copy to rot.
+  # The install guide has to carry the same numbers the build just proved, so the
+  # build refreshes the lines it owns instead of leaving a second copy to rot.
   $text = [IO.File]::ReadAllText($DocsMemo)
-  $updated = $text -replace '(?m)^CONNECT_EXE_SHA256=.*$', "CONNECT_EXE_SHA256=$digest"
+  $updated = $text `
+    -replace '(?m)^CONNECT_EXE_SHA256=.*$', "CONNECT_EXE_SHA256=$digest" `
+    -replace '(?m)^CONNECT_EXE_BYTES=.*$', "CONNECT_EXE_BYTES=$artifactBytes" `
+    -replace '(?m)^CONNECT_EXE_SEED=.*$', "CONNECT_EXE_SEED=$Seed"
   if ($updated -ne $text) {
     [IO.File]::WriteAllText($DocsMemo, $updated, (New-Object Text.UTF8Encoding($false)))
     Write-Output "CONNECT_EXE_DOCS_UPDATED=$DocsMemo"

@@ -13,6 +13,7 @@ tag claims it, and the grant the PC named for itself is what the lane reads.
 """
 from __future__ import annotations
 from pathlib import Path
+import hashlib
 import re
 import sys
 
@@ -213,8 +214,6 @@ def test_the_shipped_program_is_the_bytes_the_build_recorded() -> None:
     promise to serve what ships with the code; the digest is checked on every read
     so a hand-edited payload cannot reach a PC.
     """
-    import hashlib
-
     data = connect_exe_bytes()
     assert len(data) == PC_PAIRING_CONNECT_EXE_BYTES
     assert hashlib.sha256(data).hexdigest() == PC_PAIRING_CONNECT_EXE_SHA256
@@ -222,6 +221,25 @@ def test_the_shipped_program_is_the_bytes_the_build_recorded() -> None:
     assert (REPO / "docs" / "operations" / "PC_CONNECT_EXE_20261028.md").read_text(
         encoding="utf-8",
     ).count(f"CONNECT_EXE_SHA256={PC_PAIRING_CONNECT_EXE_SHA256}") == 1
+
+
+def test_the_program_was_built_from_the_source_in_this_commit() -> None:
+    """The seed the build recorded is the seed this source still produces.
+
+    A digest alone only proves the payload matches its own pin - an artifact built
+    from older code would be perfectly self-consistent and quietly wrong. The seed
+    is the digest of the three files that decide the bytes, so a source edit that
+    nobody rebuilt against is a failure here rather than a shipped surprise.
+    """
+    from app.pc_pairing_connect_exe_asset import PC_PAIRING_CONNECT_EXE_SEED
+
+    inputs = ("PadiemPcConnect.cs", "app.manifest", "win32_reproducible.py")
+    directory = REPO / "scripts" / "pc_pairing" / "connect-exe"
+    joined = "".join(
+        hashlib.sha256((directory / name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for name in inputs
+    )
+    assert hashlib.sha256(joined.encode("utf-8")).hexdigest() == PC_PAIRING_CONNECT_EXE_SEED
 
 
 def test_the_program_calls_itself_padiem_and_nothing_else() -> None:

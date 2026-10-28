@@ -5,7 +5,7 @@ DOC_ROLE=PC_CONNECT_EXE_INSTALL_GUIDE
 STATUS=IMPLEMENTED, 실물 설치 증빙은 남은 PC 1대
 ISSUE=#5573
 CODE_SIGNING=NONE (대표 결정: 무서명으로 진행)
-CONNECT_EXE_SHA256=739c429aa41e44b1aa7c5edb077ce276ea33d3eaf83fbb173078f175ac7f0f81
+CONNECT_EXE_SHA256=6b0d84226f9b8a5f982d610ce8187cb82f7566b881b1ab990912800b3dc7f61a
 CONNECT_EXE_BYTES=21504
 BUILD=scripts/pc_pairing/build-connect-exe.ps1
 ```
@@ -68,14 +68,17 @@ Worker로 돌고, 코드와 함께 가는 바이트만이 반드시 서비스된
 
 ```text
 CONNECT_EXE_REPRODUCIBLE=1   # 두 번의 빌드가 같은 바이트
-SEED=da9026733cb71ac8ee85180e29c98a0c79f83d209dd1bb1520ec94b9b96283d7
+CONNECT_EXE_SEED=c1d0148f707967908cd8ba95503d503a9973e425d510e2db6758dd40ef2541fa
 ```
 
 `SEED`는 `PadiemPcConnect.cs`·`app.manifest`·`win32_reproducible.py` 세 파일의 해시에서
 나오므로, 세 파일 중 하나라도 바뀌면 산출물 지문도 바뀐다.
 
-위 블록의 `CONNECT_EXE_SHA256=…` 한 줄은 빌드 스크립트가 이 파일에서 직접 갱신한다. 문서에
-손으로 옮겨 적어 두고 잊는 사본이 되지 않도록, 테스트는 이 줄과 산출물 해시가 같은지 확인한다.
+위 블록의 `CONNECT_EXE_SHA256`, `CONNECT_EXE_BYTES`, `CONNECT_EXE_SEED` 세 줄은 빌드
+스크립트가 이 파일에서 직접 갱신한다. 문서에 손으로 옮겨 적어 두고 잊는 사본이 되지
+않도록, 테스트는 (1) 산출물 해시가 이 지문과 같은지, (2) 지금 이 소스 세 파일에서
+나오는 시드가 기록된 시드와 같은지 확인한다. (2)가 없으면 "옛날 소스로 빌드된, 자기
+로는 완전하게 정합적인" 산출물이 조용히 섞여 들어간다.
 
 ## 4. 서명이 없어서 뜨는 경고 — 무엇을 누를까
 
