@@ -624,6 +624,78 @@ def test_mobile_headline_is_sized_for_two_lines() -> None:
         "28px is the measured ceiling at which MaruBuri still sets the hero headline in two lines at 390")
 
 
+def media_block(max_width: str) -> str:
+    """그 최대폭 블록의 본문만. 안의 규칙은 모두 한 줄 규칙이라 닫는 `}` 가 줄 시작에 온다."""
+    found = re.search(rf"@media \(max-width:\s*{max_width}px\)\s*\{{(.*?)\n\}}", COMMENT.sub("", CSS), re.S)
+    assert found, f"the {max_width}px breakpoint block must exist"
+    body = found.group(1)
+    assert "@media" not in body, f"the {max_width}px slice ran past its own block"
+    return body
+
+
+def test_the_mobile_header_never_packs_the_brand_and_the_search_on_one_line() -> None:
+    """실측 382—390px(4개국 5스타일 동일): 브랜드 204.9 + 틈 10 + 검색 기준 120 = 334.9 가
+    내용폭 350 에 걸려 두 통제가 한 줄에 들어갔다. 검색창은 375px 의 286px 에서 390px 에
+    129.1px 로 무너졌다가 392px 에 다시 298px 로 돌아왔다 — 화면이 넓어지는데 통로가 좁아지는
+    역전이고, 바는 14px 늘어(159.2→173.2) 히어로가 예약한 158px 를 5.2px 덮었다.
+    브랜드가 언제나 줄을 혼자 잡아야 폭에 대해 단조로워진다."""
+    mobile = media_block("767")
+    brand = re.search(r"\.pa-topbar\s+\.pa-brand\s*\{([^}]*)\}", mobile)
+    assert brand, "the mobile block must own the brand row"
+    assert re.search(r"flex:\s*0\s+1\s+100%", brand.group(1)), (
+        f"the brand must take the whole first row on mobile: {brand.group(1)}")
+    search = re.search(r"\.pa-search\s*\{([^}]*)\}", mobile)
+    assert search and re.search(r"flex:\s*1\s+1\s+120px", search.group(1)), (
+        "the search must keep growing to fill the row it shares with the trigger")
+    assert re.search(r"flex:\s*0\s+1\s+auto", rule_body(".pa-brand")), (
+        "desktop keeps the original one-row header; the fix is mobile-scoped")
+
+
+def test_the_theme_popover_is_never_left_anchored_to_its_44px_trigger() -> None:
+    """실측: `left: 0` 은 패널(294—344px)을 폭 44px 트리거의 왼쪽 모서리에 걸었다. 트리거가 헤더
+    줄 오른쪽에 앉는 모든 모바일 폭에서 패널이 화면 밖으로 230—280px 넘쳤고, 브라우저가 그것을
+    보이려고 문서 전체를 밀었다(패널을 열 때 scrollX: 320→230, 375→280, 430→280, 브랜드는 x -210).
+    기본 `right: 0` 은 트리거 오른쪽에 걸려 항상 안에서 끝나고, 전 폭에서 scrollX 0 을 실측했다."""
+    for m in re.finditer(r"@media \((max-width:[^)]*)\)\s*\{(.*?)\n\}", COMMENT.sub("", CSS), re.S):
+        for sel, body in re.findall(r"([^{}]*\.pa-theme-panel[^{}]*)\{([^{}]*)\}", m.group(2)):
+            assert not re.search(r"(?:^|[;\s])left\s*:", body), (
+                f"{m.group(1)} re-anchors the popover to its trigger: {sel} {{ {body} }}")
+    base = rule_body(".pa-theme-panel")
+    assert "right: 0" in base, f"the popover must hang from the trigger's right edge: {base}"
+    assert not re.search(r"(?:^|[;\s])left\s*:", base), base
+
+
+def test_the_trigger_that_anchors_the_popover_stays_at_the_right_end_of_its_row() -> None:
+    """`right: 0` 가 안전한 전제는 트리거가 검색창과 같은 줄의 오른쪽 끝이라는 것이다.
+    순서가 뒤집히거나 트리거가 줄을 늘어나면 패널이 다시 화면 밖으로 나간다."""
+    mobile = media_block("767")
+    order = {}
+    for sel, body in re.findall(r"(\.pa-[a-z]+)\s*\{([^}]*)\}", mobile):
+        step = re.search(r"order:\s*(\d+)", body)
+        if step:
+            order[sel] = int(step.group(1))
+    assert order[".pa-search"] < order[".pa-theme"] < order[".pa-nav"], order
+    nav = re.search(r"\.pa-nav\s*\{([^}]*)\}", mobile).group(1)
+    assert re.search(r"width:\s*100%", nav), "the nav must keep its own full-width row"
+    assert re.search(r"flex:\s*0\s+0\s+auto", rule_body(".pa-theme")), (
+        "the trigger must not grow, or the popover's right edge leaves the viewport")
+
+
+def test_the_theme_popover_paints_its_own_ink_role() -> None:
+    """실측 390x844, 4개국 5스타일: 패널은 배경을 `--paper` 로 깔면서 잉크는 헤더
+    (--topbar-text)를 그대로 물려받았다. 밝은 4개 스타일에서 두 역할이 같은 값이라
+    선택되지 않은 8개 항목 중 7개가 대비 1.00:1 — 즉 안 보였다(16조합 공통).
+    배경과 같은 축의 잉크 역할(--text)을 선언해야 선택·비선택이 한 패널에서 같이 읽힌다."""
+    base = rule_body(".pa-theme-panel")
+    ink = re.search(r"(?:^|[;\s])color:\s*([^;]+);", base)
+    assert ink, f"the popover must stop inheriting the header ink: {base}"
+    assert ink.group(1).strip() == "var(--text)", f"unexpected popover ink role: {ink.group(1)}"
+    bg = re.search(r"background:\s*([^;]+);", base)
+    assert bg and bg.group(1).strip() == "var(--paper)", "the ink role is only right if it pairs the panel's own background role"
+    chosen = " ".join(body for sel, body in rules(CSS) if sel.strip() == '.pa-theme-group button[aria-checked="true"]')
+    assert "color: var(--text)" in chosen, "the checked chip must keep sharing the same ink role, not a second one"
+
+
 def test_prototype_directory_shape_is_independent() -> None:
     assert ROOT.parent.name == "reference"
     assert ROOT.name == "padiem-parliament-ai-design-v1"
