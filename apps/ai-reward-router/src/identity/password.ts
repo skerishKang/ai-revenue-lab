@@ -21,6 +21,8 @@
  * that swap has no legacy hashes to migrate.
  */
 
+import { timingSafeEqualBytes } from './hmac.js';
+
 /** The ceiling the hosted Workers runtime enforces on one PBKDF2 call. */
 export const WORKERS_PBKDF2_MAX_ITERATIONS = 100_000;
 
@@ -144,13 +146,6 @@ export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(PBKDF2_SALT_BYTES));
   const derived = await derive(password, salt, PASSWORD_KDF_ITERATIONS);
   return `${PASSWORD_HASH_PREFIX}$${PASSWORD_KDF_ITERATIONS}$${toBase64(salt)}$${toBase64(derived)}`;
-}
-
-function timingSafeEqualBytes(left: Uint8Array, right: Uint8Array): boolean {
-  if (left.length !== right.length) return false;
-  let diff = 0;
-  for (let index = 0; index < left.length; index += 1) diff |= left[index]! ^ right[index]!;
-  return diff === 0;
 }
 
 /**
