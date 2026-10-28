@@ -14,7 +14,7 @@ from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 from app.saved_outputs import (
     D1SavedOutputStore,
-    MAX_OUTPUT_CONTENT_CHARS,
+    MAX_OUTPUT_ROW_BYTES,
     SavedOutputRecord,
     validate_output_content,
     validate_output_id,
@@ -130,15 +130,21 @@ def test_output_id_is_strict_hex(value, ok):
             validate_output_id(value)
 
 
-def test_output_title_and_content_are_bounded():
+def test_output_title_is_bounded_and_content_is_kept_whole():
     assert validate_output_title("  제주   여행 일정  ") == "제주 여행 일정"
     assert validate_output_content("  답변 내용  ") == "답변 내용"
     with pytest.raises(ValueError):
         validate_output_title("")
     with pytest.raises(ValueError):
         validate_output_title("x" * 101)
+    # #5895-C: a saved answer keeps its whole text; there is no character
+    # ceiling, only the store's own row bound.
+    assert validate_output_content("x" * 200_000) == "x" * 200_000
+    with pytest.raises(ValueError) as row_bound:
+        validate_output_content("x" * (MAX_OUTPUT_ROW_BYTES + 1))
+    assert "파일로 내려받아" in str(row_bound.value)
     with pytest.raises(ValueError):
-        validate_output_content("x" * (MAX_OUTPUT_CONTENT_CHARS + 1))
+        validate_output_content("   ")
     with pytest.raises(ValueError):
         validate_output_content("bad\x00text")
 

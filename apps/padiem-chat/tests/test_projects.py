@@ -245,7 +245,13 @@ async def test_project_crud_is_strict_and_owner_scoped():
 
         assert (await owner_client.post("/api/projects", json={"name": "x", "endpoint": "https://evil.example"})).status_code == 422
         assert (await owner_client.post("/api/projects", json={"name": "x" * 81})).status_code == 422
-        assert (await owner_client.post("/api/projects", json={"name": "x", "instructions": "z" * 1801})).status_code == 422
+        # #5895-C: project instructions carry no character ceiling. The old
+        # 1800 was a composer clamp, so a longer instruction now saves whole.
+        long_instructions = await owner_client.post(
+            "/api/projects", json={"name": "long", "instructions": "z" * 1801}
+        )
+        assert long_instructions.status_code == 201
+        assert len(long_instructions.json()["project"]["instructions"]) == 1801
     finally:
         await owner_client.aclose()
         await other_client.aclose()

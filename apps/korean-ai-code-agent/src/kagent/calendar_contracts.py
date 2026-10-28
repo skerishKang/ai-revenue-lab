@@ -15,7 +15,6 @@ from .security import redact_secrets
 MAX_CALENDAR_IDS = 32
 MAX_ATTENDEES = 50
 MAX_RECURRENCE_RULES = 16
-MAX_REMINDERS = 8
 MAX_SUMMARY_CHARS = 998
 MAX_LOCATION_CHARS = 1024
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
@@ -386,7 +385,9 @@ class CalendarMutationMaterial:
         if len(rules) > MAX_RECURRENCE_RULES:
             raise ContractError("recurrence rule count exceeds bound")
         object.__setattr__(self, "recurrence_rules", rules)
-        if len(self.reminders) > MAX_REMINDERS or any(not isinstance(item, CalendarReminder) for item in self.reminders):
+        # #5895-C: no reminder-count ceiling. Each reminder still carries the
+        # provider's own 0..40320 minutes bound (see CalendarReminder).
+        if any(not isinstance(item, CalendarReminder) for item in self.reminders):
             raise ContractError("calendar reminders exceed bounded contract")
         if not isinstance(self.conference_policy, CalendarConferencePolicy):
             try:

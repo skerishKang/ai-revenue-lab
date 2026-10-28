@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from app.b66_saved_quote_skill_store import (
-    MAX_SAVED_QUOTE_SKILLS,
+    DEFAULT_SAVED_QUOTE_SKILL_LIST,
     ApprovedSavedQuoteSkillArtifact,
     D1SavedQuoteSkillStore,
     SavedQuoteSkillStoreError,
@@ -318,6 +318,21 @@ class _D1:
 
 
 @pytest.mark.asyncio
+async def test_the_skill_list_honours_the_requested_page_size() -> None:
+    """#5895-C: 20 was a silent ceiling on how many saved skills could be read."""
+    db = _D1()
+    store = D1SavedQuoteSkillStore(db)
+    for index in range(25):
+        await store.put_approved_skill(
+            user_id="usr_owner",
+            workspace_id="ws_one",
+            artifact=_artifact(skill_id=f"saved-skill-{index:02d}"),
+        )
+    own = await store.list_skills(user_id="usr_owner", workspace_id="ws_one", limit=999)
+    assert len(own) == 25
+
+
+@pytest.mark.asyncio
 async def test_d1_store_is_owner_workspace_scoped_and_nondisclosing() -> None:
     db = _D1()
     store = D1SavedQuoteSkillStore(db)
@@ -336,7 +351,6 @@ async def test_d1_store_is_owner_workspace_scoped_and_nondisclosing() -> None:
     )
     assert len(own) == 1
     assert "skill" not in own[0]
-    assert len(own) <= MAX_SAVED_QUOTE_SKILLS
 
     detail = await store.get_skill(
         user_id="usr_owner",
