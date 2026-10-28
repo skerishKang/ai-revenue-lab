@@ -67,8 +67,11 @@ $Copy = @{
 # folder under Program Files is this script's job, and -install runs from
 # there - never -fullinstall, never out of a temp folder.
 $PadiemAgentServiceName = "Mesh Agent"
-$PadiemAgentDurableDir = Join-Path $env:ProgramFiles "PADIEM"
-$PadiemAgentDurableExe = Join-Path $PadiemAgentDurableDir "MeshAgent.exe"
+# The durable folder lives under the real Program Files. A validation-only
+# run on a host without it (CI Linux, pwsh) must reach its own refusal, not
+# die here: the install walk below only runs on a Windows PC that has it.
+$PadiemAgentDurableDir = if ($env:ProgramFiles) { Join-Path $env:ProgramFiles "PADIEM" } else { $null }
+$PadiemAgentDurableExe = if ($PadiemAgentDurableDir) { Join-Path $PadiemAgentDurableDir "MeshAgent.exe" } else { $null }
 
 function Install-PadiemAgentService {
   # Stops an existing service through the binary its own record names, copies
