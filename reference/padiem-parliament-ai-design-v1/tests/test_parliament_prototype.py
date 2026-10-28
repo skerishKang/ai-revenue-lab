@@ -40,7 +40,7 @@ RAIL = frozenset({"--rail-display", "--rail-w", "--rail-active-bg", "--rail-acti
 # 카드 골격(세로/2열/중앙)과 배지·언더라인·스트립 존재도 원본별 구성 차이로 토큰화한다.
 SHELL = frozenset({"--work-display", "--work-cols", "--work-body-display", "--work-icon-rule",
                    "--work-badge-display", "--work-align", "--work-items", "--work-icon-self", "--strip-display",
-                   "--works-lift", "--works-head-display", "--works-note-display"})
+                   "--works-lift", "--works-head-display", "--works-note-display", "--hero-actions-display"})
 IDENTITY = frozenset({"--accent", "--accent-contrast", "--accent-soft", "--gold", "--gold-soft", "--danger", "--success", "--font-display", "--font-body", "--font-label"})
 ROLES = frozenset({"--bg", "--page-bg", "--panel", "--text", "--muted", "--line", "--paper", "--ink", "--ink-muted", "--glass", "--shadow", "--focus-ring", "--hero-scrim", "--hero-text", "--pa-scene-op",
                    # 2차 해석표 반영: 전폭 사진 위의 읽기 오버레이와 헤더/밴드/스트립 위계

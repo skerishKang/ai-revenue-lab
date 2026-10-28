@@ -195,6 +195,7 @@ html[data-country="kr"] {
   --works-lift: 0px;
   --works-head-display: flex;
   --works-note-display: block;
+  --hero-actions-display: block;
   --strip-display: block;
   --work-arrow-inline-display: inline;
   /* B2 확정안: 제목은 마루부리(원본 04의 명조 결을 보존), 본문·메뉴·카드·에디터는 Pretendard.
@@ -282,9 +283,10 @@ html[data-country="us"] {
   --work-align: start;
   --work-items: stretch;
   --work-icon-self: start;
-  --works-lift: 344px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
   --works-head-display: none;
   --works-note-display: none;
+  --hero-actions-display: none;
   --strip-display: none;
   /* 해외 테마도 이 페이지가 배포한 두 면으로 확정한다(장비별 fallback 차이 제거).
      Tail 의 의도 서체는 웹폰트가 실패한 환경에서만 쓰인다. */
@@ -372,6 +374,7 @@ html[data-country="fr"] {
   --works-lift: 0px;
   --works-head-display: flex;
   --works-note-display: block;
+  --hero-actions-display: block;
   --strip-display: block;
   --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
@@ -457,9 +460,10 @@ html[data-country="uk"] {
   --work-align: start;
   --work-items: stretch;
   --work-icon-self: start;
-  --works-lift: 344px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
   --works-head-display: none;
   --works-note-display: none;
+  --hero-actions-display: none;
   --strip-display: none;
   --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
@@ -948,7 +952,7 @@ html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-c
 }
 .pa-hero h1 em { font-style: normal; color: var(--gold); }
 .pa-hero-lead { font-size: clamp(14px, 1.11vw, 16px); line-height: 1.45; opacity: .9; word-break: keep-all; }
-.pa-hero-actions { margin-top: 10px; }
+.pa-hero-actions { margin-top: 10px; display: var(--hero-actions-display); }
 
 .pa-cta {
   min-height: var(--pa-target);
@@ -1052,20 +1056,27 @@ html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-c
 /* ══ 업무 밴드: 왼쪽 소개 컬럼 + 오른쪽 카드 3열 (04 시안) ════════════════ */
 .pa-works {
   display: grid;
+  /* us/uk는 카드가 사진 위에 앉도록 밴드를 끌어올린다(01/02 계측). kr/fr은 0. */
+  margin-top: calc(0px - var(--works-lift));
   grid-template-columns: minmax(0, 15.8%) minmax(0, 1fr);
   grid-template-areas: "head head" "note cards";
   gap: 0 clamp(8px, .8vw, 12px);
   align-items: start;
   padding: clamp(16px, 2.7svh, 28px) clamp(20px, 3.35vw, 48px) 0;
   max-width: var(--pa-shell);
-  margin: 0 auto;
+  /* 가운데 정렬은 좌우만 맡는다. 예전 `margin: 0 auto` 셰이프핸드가 위의 margin-top 을 덮어써
+     밴드 상승이 조용히 0 이 됐다(실측: CSSOM 규칙에 margin-top 이 남지 않았다). */
+  margin-right: auto;
+  margin-left: auto;
   width: 100%;
   box-sizing: border-box;
 }
-.pa-works-head { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: var(--pa-gap); flex-wrap: wrap;   display: var(--works-head-display);
+.pa-works-head { grid-area: head; align-items: flex-end; justify-content: space-between; gap: var(--pa-gap); flex-wrap: wrap;
+  display: var(--works-head-display);
 }
 .pa-works-head h2 { font-family: var(--font-display); font-size: clamp(24px, 2.64vw, 38px); font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; line-height: 1.15; }
-.pa-works-note { grid-area: note; align-self: start; color: var(--muted); font-size: 14px; line-height: 1.6; margin: 6px 0 0; word-break: keep-all;   display: var(--works-note-display);
+.pa-works-note { grid-area: note; align-self: start; color: var(--muted); font-size: 14px; line-height: 1.6; margin: 6px 0 0; word-break: keep-all;
+  display: var(--works-note-display);
 }
 .pa-works-side { display: grid; gap: 4px; justify-items: end; text-align: right; font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--muted); }
 .pa-works-side::before { content: ""; width: 34px; height: var(--pa-hair); background: var(--line); margin-bottom: 6px; }
@@ -1383,23 +1394,23 @@ html[data-country=uk] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-c
   .pa-meta, .pa-paper, .pa-strip { border-width: 2px; }
 }
 
-/* us/uk만: 카드가 사진 위에 앉도록 업무 밴드를 끌어올린다(01/02).
-   이 규칙을 .pa-works 기본 규칙의 첫 선언으로 넣으면 파서가 그 선언을 버린다
-   (실측: margin-top 만 0px 로 남았다). 파일 끝의 독립 규칙은 그 자리의 영향을 받지 않는다. */
-html[data-country="us"] .pa-works,
-html[data-country="uk"] .pa-works {
-  margin-top: calc(0px - var(--works-lift));
-  /* 01/02 에는 좌측 소개 컬럼이 없다: 카드가 본문 전폭을 쓴다. */
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "cards";
-}
 
 /* us/uk 히어로는 01/02 의 사진 밴드처럼 더 길고, 카피는 상단에서 시작한다. */
 html[data-country="us"] .pa-hero,
-html[data-country="uk"] .pa-hero { min-height: clamp(560px, 74svh, 780px); align-content: start; }
+html[data-country="uk"] .pa-hero {
+  /* 01: 사진 밴드 46.9%H, 카드는 카피에서 30px 아래에서 시작해 밴드 바닥보다 55px 위에서 끝난다.
+     우리 카피는 2줄 제목(03 현지어) + 리드로 더 길무로 히어로를 줄여 같은 관계를 맞춘다. */
+  /* 카피 끝(268) + 간격 30 + 카드 173 + 사진 여백 55 = 526. 실제 높이로 고정해 뷰포트가 커져도 구도가 늘어나지 않게 한다. */
+  min-height: 526px;
+  align-content: start;
+}
 
 /* 02 미국 레일의 세부 항목은 기능 의미가 다르다(최근 작업=시계, 템플릿=책).
    01 영국은 그리드·기어다. 마크업에 두 벌을 같이 두고 국가가 하나를 고른다. */
 .pa-rail-ico .alt { display: none; }
 html[data-country="us"] .pa-rail-ico .main { display: none; }
 html[data-country="us"] .pa-rail-ico .alt { display: block; }
+
+/* us/uk 에는 좌측 소개 컬럼이 없다: 카드가 본문 전폭을 쓴다(01/02). */
+html[data-country="us"] .pa-works,
+html[data-country="uk"] .pa-works { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cards"; }
