@@ -104,7 +104,8 @@ body.council-body {
   border: 1px solid var(--council-border);
   background: var(--council-surface, transparent);
   color: inherit;
-  min-height: 32px;
+  /* 높이는 이 파일의 44px 하한 블록 한 곳에서만 선언한다(#6075). 여기에 값을 다시
+     적으면 두 곳이 서로 다른 값을 갖는 순간이 생기므로 선언 자체를 두지 않는다. */
 }
 
 #councilMain {
@@ -440,7 +441,15 @@ body.council-body {
 .council-result h3 { margin: 0; font-size: 15px; display: flex; align-items: center; }
 
 @media (max-width: 900px) {
-  .council-topbar { padding: 10px 14px; }
+  /* 열이 좁아지면 헤더는 감싼다. 한 줄로 버티면 상태 배지가 최소 내용 폭(실측 34px,
+     "로그인 필요" 5줄 = 높이 114px)까지 눌리고 로그인 단추까지 합쳐 320 화면을
+     30px 넘긴다. 이름·배지는 줄바꿈을 막아 한 항목이 세로로 서는 것을 막는다. */
+  .council-topbar { padding: 10px 14px; flex-wrap: wrap; row-gap: 8px; }
+  .council-topbar-actions { flex-wrap: wrap; justify-content: flex-end; row-gap: 8px; }
+  .council-brand-name,
+  .council-badge { white-space: nowrap; }
+  .council-badge-action,
+  .council-country { white-space: nowrap; }
   #councilMain { padding: 16px 14px 40px; }
   .council-title { font-size: 21px; margin-bottom: 12px; }
   .council-menu { grid-template-columns: 1fr; gap: 12px; }
