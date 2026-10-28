@@ -358,6 +358,7 @@ class D1ProjectFileStore:
         text: str,
         *,
         source_media_type: str | None = None,
+        country: str = "kr",
     ) -> ProjectFileRecord:
         if len(text) > PROJECT_FILE_MAX_CONTENT_CHARS:
             raise ProjectFileLimitError(
