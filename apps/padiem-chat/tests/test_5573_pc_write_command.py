@@ -65,7 +65,8 @@ def test_overwrite_copies_the_original_before_the_new_bytes_land():
                        content="본문")
     backup = command.index("$backup = Join-Path")
     written = command.index("[IO.File]::WriteAllBytes")
-    assert "Copy-Item -LiteralPath $target -Destination $backup -Force" in command
+    assert "Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force" in command
+    assert "$source_to_keep = $target" in command
     assert backup < written, "the change must never precede the backup"
 
 
@@ -94,7 +95,8 @@ def test_a_move_backs_up_the_file_it_would_replace():
     command = _command("move", target="C:" + BS + "a.txt", relative="a.txt",
                        destination="C:" + BS + "b.txt")
     assert "if (Test-Path -LiteralPath $destination)" in command
-    assert "Copy-Item -LiteralPath $destination -Destination $backup -Force" in command
+    assert "$source_to_keep = $destination" in command
+    assert "Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force" in command
     assert "Move-Item -LiteralPath $target -Destination $destination -Force" in command
 
 
@@ -128,10 +130,59 @@ def test_every_step_prints_one_account_line_and_no_confirmation_prompt():
         ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
     ):
         command = _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
-        assert command.count("Write-Output '" + PC_WRITE_ACCOUNT_PREFIX + "'") == 1
+        assert command.count("Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)") == 1
         lowered = command.lower()
         for prompt in ("read-host", "confirm", "shouldcontinue", "-whatif"):
             assert prompt not in lowered, (op, prompt)
+
+
+def test_the_command_is_one_line_because_the_agent_cannot_finish_more():
+    """A newline in the script is not a formatting choice; it is a stuck PC.
+
+    The agent runs the console command as ``powershell -noprofile -nologo -command
+    -`` and feeds the script through that process's standard input. Measured on
+    the two real PCs on 2026-10-28: this script on one line answered in under two
+    seconds and wrote the file with its backup; the same statements spread over
+    two lines never answered, that PowerShell stayed alive, and because the agent
+    serves one console task at a time every later operation on that PC - a plain
+    folder listing included - waited behind it. Nothing in the product ends that
+    wait, so the check has to be here, where the script is built.
+    """
+    for op, kwargs in (
+        ("write", {"target": "C:" + BS + "a.txt", "relative": "a.txt",
+                   "content_b64": base64.b64encode("x".encode("utf-8")).decode("ascii")}),
+        ("move", {"target": "C:" + BS + "a.txt", "relative": "a.txt",
+                  "destination": "C:/b.txt"}),
+        ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
+    ):
+        command = _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
+        assert "\n" not in command and "\r" not in command, op
+        # One line is only readable if the statements are separated, and the
+        # concatenation has to be an expression: bare ``Write-Output 'a' + $b``
+        # would reach PowerShell as three arguments, not one line.
+        assert "; " in command
+        assert "Write-Output '" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)" not in command
+
+
+def test_the_parent_folder_is_taken_where_the_pc_can_understand_it():
+    """``Split-Path -LiteralPath X -Parent`` is refused by the PC's own shell.
+
+    Measured on the real PC on 2026-10-28: Windows PowerShell 5.1 answers that
+    combination with ``AmbiguousParameterSet``, so the parent check would fail for
+    every file the owner has not written yet - a refusal the account would report
+    as ``path_invalid`` for a folder that plainly exists. .NET's directory name has
+    no parameter sets to choose between and treats the path as data.
+    """
+    command = _command("write", target="C:" + BS + "new.txt", relative="new.txt",
+                       content="x")
+    assert "Split-Path" not in command
+    assert "[IO.Path]::GetDirectoryName($target)" in command
+    for op, kwargs in (
+        ("move", {"target": "C:" + BS + "a.txt", "relative": "a.txt",
+                  "destination": "C:/b.txt"}),
+        ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
+    ):
+        assert "Split-Path" not in _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
 
 
 def test_the_account_round_trips_through_the_engine_marker_shape():
@@ -157,7 +208,9 @@ def test_a_refused_change_reports_why_instead_of_silently_doing_nothing():
     assert "$reason = 'backup_failed'" in command
     assert "$reason = 'path_invalid'" in command
     # The account is printed after the catch, so a refusal is still an answer.
-    assert command.index("} catch {") < command.index("Write-Output '" + PC_WRITE_ACCOUNT_PREFIX)
+    assert command.index("} catch {") < command.index(
+        "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX
+    )
 
 
 @pytest.mark.parametrize("op", ["write", "move", "delete"])
