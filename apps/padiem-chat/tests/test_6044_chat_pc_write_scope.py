@@ -92,6 +92,12 @@ def test_move_moves_one_file_with_the_backup_that_comes_first(monkeypatch):
     # owner is told is still that one marked line, however it is concatenated.
     assert "PADIEM_PC_ACCOUNT=" in command
     assert "Write-Output" in command
+    # And the whole command is one line, which is not a style rule: the agent on
+    # the customer's PC never finishes a multi-line script through
+    # `powershell -command -`, so a builder that spreads statements cannot run
+    # there at all (#5573, measured 2026-10-28).
+    assert "\n" not in command
+    assert "\r" not in command
 
 
 def test_delete_deletes_one_file_already_copied_to_the_backup(monkeypatch):

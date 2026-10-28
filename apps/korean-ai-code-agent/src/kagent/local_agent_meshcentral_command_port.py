@@ -32,12 +32,17 @@ itself travels as MeshCentral's own UTF-8 JSON, which the server encodes.
 from __future__ import annotations
 
 import base64
+import os
 import re
+import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
 from .contracts import ContractError
-from .local_agent_meshcentral_private_reader import _MESHCTRL_STDIN_BOOTSTRAP
+from .local_agent_meshcentral_private_reader import (
+    _MESHCTRL_STDIN_BOOTSTRAP,
+    _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+)
 
 #: Marker appended to the requested command so the PC reports its own exit code.
 EXIT_SENTINEL = "__PADIEM_EXIT__"
@@ -110,7 +115,62 @@ def _bounded_command(value: Any) -> str:
     return value.rstrip(" \t\r\n")
 
 
-def _wrap(command: str) -> str:
+#: #5895: how a stopped command is ended ON THE PC. Every command this lane runs
+#: leaves one file behind, named by its own dispatch id and holding its process id,
+#: and removes it on the way out. The stop reads that file and kills that process
+#: tree - nothing else. A name rather than a search, because the agent's console
+#: task queue is serial: a stop that had to look for the process would be queued
+#: behind the very command it is trying to end, which is the failure measured on
+#: 2026-10-28 (a cancelled sweep held every later PC operation for minutes until a
+#: person killed it by hand).
+PC_CANCEL_PID_FILE_PREFIX = "padiem-dispatch-"
+#: A dispatch id is this module's own identifier, and it is interpolated into a
+#: PowerShell literal on the customer's PC, so it is refused unless it is exactly
+#: what the server issues. No customer text reaches this position.
+_DISPATCH_ID = re.compile(r"^dsp_[0-9a-f]{16,64}$")
+#: The stop itself is a short console session, bounded so a wedged agent tunnel can
+#: never become the new way to hold a PC.
+CANCEL_KILL_WAIT_SECONDS = 15
+
+
+def _checked_dispatch_id(value: Any) -> str:
+    if not isinstance(value, str) or _DISPATCH_ID.fullmatch(value) is None:
+        raise MeshCentralCommandRefused("dispatch_id is not a dispatch identifier")
+    return value
+
+
+def _pid_file_literal(dispatch_id: str) -> str:
+    """The PowerShell expression for this dispatch's own marker file on the PC.
+
+    ``GetTempPath`` is the folder the agent's own account writes its scratch to, so
+    the command that starts and the stop that ends it resolve the same path without
+    either one being told where the PC keeps its temporary files.
+    """
+    return ("[IO.Path]::GetTempPath()+'" + PC_CANCEL_PID_FILE_PREFIX
+            + _checked_dispatch_id(dispatch_id) + ".pid'")
+
+
+def cancel_kill_command(dispatch_id: str) -> str:
+    """The one-liner that ends exactly one stopped dispatch, and its marker.
+
+    Scoped by construction: it reads that dispatch's own pid file, kills that
+    process tree, and deletes the file. It never names an image, a service or a
+    window title, so the agent and any other customer work on the PC cannot be
+    reached through it. When the file is absent the command does nothing, which is
+    the normal case - a command that finished on its own has already removed it.
+    """
+    marker = "$__padiem_stop"
+    return (
+        "$ErrorActionPreference='SilentlyContinue';"
+        f"{marker}={_pid_file_literal(dispatch_id)};"
+        f"if (Test-Path -LiteralPath {marker}) {{"
+        f"$__padiem_kill=(Get-Content -LiteralPath {marker} | Select-Object -First 1);"
+        "if ($__padiem_kill) { & taskkill /T /F /PID $__padiem_kill | Out-Null };"
+        f"Remove-Item -LiteralPath {marker} -Force }}"
+    )
+
+
+def _wrap(command: str, dispatch_id: str | None = None) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -134,11 +194,28 @@ def _wrap(command: str) -> str:
     or never returns a transcript at all. ``$LASTEXITCODE`` is PowerShell's
     record of the last native command, so the sentinel reports the real remote
     exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
+
+    With a dispatch id the wrapped script also leaves, and removes, that
+    dispatch's marker file - see ``cancel_kill_command``. Without one it is the
+    same bytes as before, so nothing about a command's own result can change.
     """
+    marks = ""
+    clears = ""
+    if dispatch_id is not None:
+        marker = _pid_file_literal(dispatch_id)
+        marks = (
+            " $__padiem_pidfile=" + marker
+            + "; Set-Content -LiteralPath $__padiem_pidfile -Value $PID -Encoding ascii;"
+        )
+        clears = (
+            " if ($__padiem_pidfile) {"
+            " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
+        )
     return (
         "[Console]::OutputEncoding=[Text.Encoding]::UTF8;"
-        " $__padiem=$null; try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
-        " } catch { $__padiem=($_ | Out-String) };"
+        " $__padiem=$null;" + marks +
+        " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
+        " } catch { $__padiem=($_ | Out-String) };" + clears +
         ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
         "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
         ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
@@ -255,6 +332,42 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     return "exited", int(raw_code), body
 
 
+class _TerminalHandoff:
+    """The pty ``meshctrl shell`` insists on, with its input already queued.
+
+    The client reads the credential from standard input and then pipes that same
+    stream into the PC's terminal, so the password is one line and the command is
+    the bytes after it, and closing the handle ends the session. ``setRawMode`` is
+    not a function on a pipe, which is why a terminal device is needed at all.
+    """
+
+    def __init__(self, write_bytes: bytes) -> None:
+        import pty
+
+        self._master, self.slave = pty.openpty()
+        os.write(self._master, write_bytes)
+
+    def wait_closed(self, seconds: float) -> None:
+        import select
+
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            if select.select([self._master], [], [], 0.2)[0]:
+                try:
+                    if os.read(self._master, 65536) == b"":
+                        break
+                except OSError:
+                    break
+        self.close()
+
+    def close(self) -> None:
+        for handle in (self._master, self.slave):
+            try:
+                os.close(handle)
+            except OSError:
+                pass
+
+
 class MeshCentralCliCommandPort:
     """The concrete command run over the official ``meshctrl.js`` client.
 
@@ -274,6 +387,7 @@ class MeshCentralCliCommandPort:
         url: str = "wss://127.0.0.1:4443",
         work_dir: str | None = None,
         popen_factory: Callable[..., Any] | None = None,
+        pty_factory: Callable[[], Any] | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
@@ -281,6 +395,9 @@ class MeshCentralCliCommandPort:
         # read in chunks and killed the moment the transcript passes the wire
         # envelope, so a runaway command can never be buffered whole first.
         self._popen_factory = popen_factory
+        # The stop needs a terminal device for the official client's shell; a test
+        # injects a stand-in, and production uses the pty above.
+        self._pty_factory = pty_factory if callable(pty_factory) else _TerminalHandoff
         if not isinstance(meshctrl_js, str) or not meshctrl_js.strip():
             raise ContractError("the official meshctrl.js path is required")
         if not isinstance(login_user, str) or not login_user.strip():
@@ -304,6 +421,7 @@ class MeshCentralCliCommandPort:
         timeout_seconds: int | None = None,
         phase_observer: Callable[[str], None] | None = None,
         cancel_probe: Callable[[], bool] | None = None,
+        dispatch_id: str | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -339,7 +457,11 @@ class MeshCentralCliCommandPort:
             if timeout_seconds < 1:
                 raise MeshCentralCommandRefused("timeout_seconds is out of range")
         body = _bounded_command(command)
-        wrapped = _wrap(body)
+        # The marker is what makes a stop able to find this exact command on the
+        # PC. Refusing a malformed id here is also the only thing standing between
+        # a caller-supplied string and a PowerShell literal on a customer machine.
+        checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
+        wrapped = _wrap(body, checked_dispatch)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -391,13 +513,19 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        return self._run_streaming(argv, password, timeout_seconds, phase, cancelled)
+        return self._run_streaming(
+            argv, password, timeout_seconds, phase, cancelled,
+            node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
+        )
 
     # ---- streaming execution -------------------------------------------
     def _run_streaming(
         self, argv: list[str], password: str, timeout_seconds: int | None,
         phase: Callable[[str], None],
         cancelled: Callable[[], bool] | None = None,
+        *,
+        node_ref: str | None = None,
+        dispatch_id: str | None = None,
     ) -> MeshCentralCommandOutcome:
         """Read the child's transcript in bounded chunks.
 
@@ -454,6 +582,12 @@ class MeshCentralCliCommandPort:
                     # console that may never answer (#5995 removed the deadline,
                     # and a silent PC held every later operation behind it).
                     if cancelled is not None and cancelled():
+                        # Two ends, in this order: first ask the PC to stop the work
+                        # it is running, then stop waiting here. Ending only the
+                        # client left the customer's process running behind a
+                        # serial console queue, which is what held every later
+                        # operation on that PC after a stop (measured 2026-10-28).
+                        self._stop_on_pc(node_ref, dispatch_id, phase)
                         process.kill()
                         phase("cancel")
                         return MeshCentralCommandOutcome(
@@ -481,6 +615,66 @@ class MeshCentralCliCommandPort:
         outcome = self._from_transcript(raw)
         phase("reply")
         return outcome
+
+    def _stop_on_pc(
+        self, node_ref: str | None, dispatch_id: str | None, phase: Callable[[str], None],
+    ) -> bool:
+        """End the stopped command on the PC, best effort, and say which happened.
+
+        A failed stop is reported and never turns into a refusal here: the owner's
+        stop has already been honoured on this host, and the row's own result is on
+        its way. Silent failure is the thing to avoid, so the phase names it.
+        """
+        if node_ref is None or dispatch_id is None:
+            return False
+        try:
+            self.kill_command_process(node_ref=node_ref, dispatch_id=dispatch_id)
+        except Exception:
+            phase("cancel_kill_refused")
+            return False
+        phase("cancel_kill")
+        return True
+
+    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
+        """End exactly one dispatch's own process tree on the PC.
+
+        ``runcommand`` cannot carry a stop: it is the queue the running command is
+        holding. ``meshctrl shell`` opens the agent's terminal over its own session,
+        which is the channel that worked by hand on 2026-10-28 while the queue was
+        wedged. The command sent through it names only the stopped dispatch's pid
+        marker - no image name, no service, no window title - and the whole session
+        is bounded, so an unreachable agent cannot make this the new way to hang.
+        """
+        import subprocess
+
+        checked = _checked_dispatch_id(dispatch_id)
+        if not isinstance(node_ref, str) or not node_ref.strip():
+            raise MeshCentralCommandRefused("node_ref is required")
+        if self._popen_factory is None:
+            raise MeshCentralCommandRefused("stopping a command needs the streaming client")
+        password = self._password_provider()
+        if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
+            raise MeshCentralCommandRefused(
+                "the protected MeshCentral operator credential is invalid"
+            )
+        argv = [
+            "node", "-e", _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+            self._meshctrl_js, "shell",
+            "--url", self._url,
+            "--loginuser", self._login_user,
+            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+            "--id", node_ref.strip(),
+            "--powershell",
+        ]
+        handoff = self._pty_factory(
+            (password + "\n" + cancel_kill_command(checked) + "\n").encode("utf-8"),
+        )
+        child = self._popen_factory(
+            argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+        )
+        handoff.wait_closed(CANCEL_KILL_WAIT_SECONDS)
+        if child.poll() is None:
+            child.kill()
 
     def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
         if not raw:
