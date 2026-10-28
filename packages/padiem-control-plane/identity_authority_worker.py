@@ -24,7 +24,7 @@ from padiem_control_plane.contracts import (
 from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
