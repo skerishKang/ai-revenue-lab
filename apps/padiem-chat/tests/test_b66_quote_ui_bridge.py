@@ -83,11 +83,26 @@ def test_signed_out_startup_is_network_silent_for_b66() -> None:
     assert source.count('readJson("/api/b66/runtime-config")') == 1
 
 
-def test_launcher_remains_hidden_without_runtime_and_assigned_skills() -> None:
+def test_launcher_stays_hidden_without_a_runtime_skills_or_a_linked_pc() -> None:
     source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert "launcher.hidden = !(runtime && skills.length > 0)" in source
+    # #6056: one condition, and the PC flag it reads. Nothing else may turn the
+    # launcher on: no runtime, no saved skill and no linked PC keeps it hidden.
+    assert "launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));" in source
     assert "launcher.disabled = launcher.hidden" in source
     assert "skills = safeSkills(listResult.data)" in source
+    assert "let pcAccountLinked = false;" in source
+    assert "const next = linked === true;" in source
+
+
+def test_a_linked_pc_alone_shows_the_launcher_for_its_own_excel_form() -> None:
+    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    # #5895: with a linked PC and no saved skill the screen still opens, says what it
+    # is for, and the skill-only controls step aside so the PC form is the action.
+    assert "const entryOnly = skills.length === 0 && pcAccountLinked;" in source
+    assert "launcherLabel.textContent = entryOnly ? pcCopy().entry : copy().launcher;" in source
+    assert "selectLabelNode.hidden = entryOnly" in source
+    assert "generateButton.hidden = entryOnly" in source
+    assert "void refreshPcAccount();" in source
 
 def test_quote_ui_bridge_loads_only_bounded_private_quote_assets() -> None:
     source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
