@@ -91,11 +91,26 @@ No stage in this list deploys to production; production release stays with CENTR
   floor is stated once (rendered height unchanged, measured).
   Files: `static/council-app.css`, `tests/test_6065_mobile_header_contract.py`,
   `docs/6065/mobile-header-before-after.png`, `README.md`.
-- **S1 — header and nav skin, no new controls.** Adopt the design's brand/badge/action treatment on
-  the existing five roles, and introduce the country/style axis as an *additional* alias layer
-  inside `council-app.css` (constraint 3 forbids re-deriving colours, constraint 8 forbids editing
-  the shared sheet). Acceptance: 24 cells unchanged, plus a new test that the axis cannot paint a
-  colour literal.
+- **S1 — header skin, no new controls (implemented in this PR).** Adopted: the design's fluid
+  gutter and gap (`12px clamp(20px,4.85vw,70px)` / `clamp(8px,1.2vw,18px)`), its 30×30 stroke brand
+  mark drawn in `currentColor` (inline SVG, so no asset and no `url()`), its brand type scale
+  (16.5px/700/-0.01em/1.2), and its open-tool marker — a 2px accent outline with 2px offset,
+  replacing the inset 3px bar nobody could see. `council-app.js` is byte-identical, so the prompt,
+  payload, save and auth paths are untouched by construction.
+  Deliberately **not** adopted: the design's `position: absolute` transparent bar. It is readable
+  only because it sits on a photograph, and S1 adds none — production keeps its surface fill and
+  hairline. The country/style axis is also not introduced, per CENTRAL's decision that the five
+  styles stay internal; `test_the_five_styles_stay_internal` now fails if `data-style` or the
+  design's theme key ever appears in this app.
+  Measured: 32 cells (2 auth states × 4 widths × 4 views) overflow 0, occlusion 0; the active-card
+  ring stays inside the viewport (320: card 14..306, ring 10..310). At ≤767 the mark's left edge
+  (14px) equals the content column's (14px); at 1440 the header keeps the design's full-bleed
+  gutter (mark 69.8) while the content stays a centred 920px column (title 260) — the design has
+  the same relationship (mark 69.8, cards 271.9).
+  Accepted limitation, corrected here: the design renders Pretendard because it self-hosts it
+  (canvas differential 118.1px against a 127.7px fallback); this app has no `@font-face`, so the
+  same string renders at 127.7px. S1 matches the type *scale*, not the *face*. §6-1 covers the
+  font decision.
 - **S2 — tool entry card anatomy + document list floor.** Build icon/badge/index in JS behind the
   existing classes; give `.council-book-check` a 44 px hit area. Acceptance: the harness tests
   (`test_module_harness.py`) still see the same endpoint set, and the archive list is keyboard

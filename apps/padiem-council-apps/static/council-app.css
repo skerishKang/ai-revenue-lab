@@ -49,25 +49,35 @@ body.council-body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 20px;
+  gap: clamp(8px, 1.2vw, 18px);
+  padding: 12px clamp(20px, 4.85vw, 70px);
   border-bottom: 1px solid var(--council-border);
   background: var(--council-surface);
 }
 .council-topbar-actions { display: flex; align-items: center; gap: 10px; }
 .council-brand { display: flex; align-items: center; gap: 10px; }
 .council-brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--council-radius);
-  background: var(--council-accent);
-  color: var(--council-accent-ink);
-  font-weight: 700;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  color: inherit;
 }
-.council-brand-name { font-weight: 700; }
+.council-brand-mark svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.council-brand-name {
+  font-weight: 700;
+  font-size: 16.5px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
 .council-badge {
   font-size: 13px;
   padding: 4px 10px;
@@ -80,7 +90,7 @@ body.council-body {
   font-size: 13px;
   min-height: 44px;
   padding: 0 14px;
-  border-radius: var(--council-radius);
+  border-radius: 14px;
   border: 1px solid var(--council-border);
   background: var(--council-accent-soft);
   color: var(--council-accent);
@@ -100,7 +110,7 @@ body.council-body {
   font: inherit;
   font-size: 13px;
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: 14px;
   border: 1px solid var(--council-border);
   background: var(--council-surface, transparent);
   color: inherit;
@@ -165,8 +175,10 @@ body.council-body {
   padding: 16px;
 }
 .council-card.active {
-  border-color: var(--council-accent);
-  box-shadow: inset 3px 0 0 var(--council-accent);
+  /* 시안의 열린 카드 표식은 테두리 색이 아니라 바깥 2px 링이다(parliament-theme.css
+     `.pa-work.is-open`). 안쪽 3px 막대는 카드 모서리에 붙어 선택 표시로 잘 안 보였다. */
+  outline: 2px solid var(--council-accent);
+  outline-offset: 2px;
   /* The open tool needs the row, not its 297px column: an active card spans the
      grid so a meeting textarea is the same measure as Chat's util view. */
   grid-column: 1 / -1;
