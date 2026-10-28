@@ -561,6 +561,8 @@
           content: typeof body.content === "string" ? body.content : null,
           fileId: body.file_id || null,
           sizeBytes: Number.isFinite(body.size_bytes) ? body.size_bytes : null,
+          // The folder it was found in, so a result can be offered back beside it.
+          folder: state.path,
         };
         close();
         onSelect(picked);
@@ -617,8 +619,12 @@
     state.open = true;
     state.mode = saving ? "save" : "import";
     state.linkId = null;
-    state.path = ".";
-    state.folderName = "";
+    // A save can name the folder it starts in, so a converted result lands
+    // beside the document it came from instead of at the top of the drive.
+    state.path = (typeof settings.startFolder === "string" && settings.startFolder)
+      ? settings.startFolder : ".";
+    state.folderName = state.path === "."
+      ? "" : state.path.replace(/\/+$/, "").split("/").pop();
     state.items = [];
     state.shown = PAGE;
     state.selection = null;
@@ -631,7 +637,7 @@
     state.nodes = build(settings);
     root.document.body.append(state.nodes.overlay);
     state.nodes.dialog.focus();
-    void start(BROWSE, { path: "." }, listed);
+    void start(BROWSE, { path: state.path }, listed);
     return { close: close };
   }
 
