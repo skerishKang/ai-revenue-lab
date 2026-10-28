@@ -986,6 +986,7 @@ def create_app(
         # no such routes.
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
+                ORACLE_MESH_READ_CANCEL_PATH,
                 ORACLE_MESH_READ_ORIGINAL_PATH,
                 ORACLE_MESH_READ_POLL_PATH,
                 ORACLE_MESH_READ_REQUEST_PATH,
@@ -993,6 +994,7 @@ def create_app(
                 oracle_chat_engine_pc_drive_call,
                 oracle_mesh_engine_chat_files_call,
                 oracle_mesh_engine_claw_files_call,
+                oracle_mesh_read_cancel_check,
                 oracle_mesh_read_original,
                 oracle_mesh_read_poll,
                 oracle_mesh_read_request,
@@ -1008,6 +1010,7 @@ def create_app(
                 Route("/internal/chat/engine-pc-files", oracle_mesh_engine_chat_files_call, methods=["POST"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
+                Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)

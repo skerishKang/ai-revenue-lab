@@ -116,6 +116,39 @@ class VerifiedWebXlsxEnginePause:
             raise WebXlsxP01RequestError("invalid Engine pause lifetime")
 
 
+@dataclass(frozen=True, slots=True)
+class VerifiedWebXlsxEngineCompletion:
+    """A pre-delegated Engine completion: the tool ran with no pause."""
+    engine_run_id: str
+
+    def __post_init__(self):
+        if not isinstance(self.engine_run_id, str) or not _ID.fullmatch(self.engine_run_id):
+            raise WebXlsxP01RequestError("invalid Engine run")
+
+
+def parse_engine_completion(
+    result: Any, *, original: TrustedWebXlsxP01Request,
+) -> VerifiedWebXlsxEngineCompletion:
+    """Accept only the Engine tool's completed projection (no approval pause)."""
+    if (not isinstance(result, dict) or set(result) != {"ok", "tool"}
+            or result.get("ok") is not True
+            or not isinstance(result.get("tool"), dict)):
+        raise WebXlsxP01RequestError("unrecognized Engine tool result")
+    tool = result["tool"]
+    if (
+        tool.get("contract_version") != "padiem.engine.tools/1.0"
+        or tool.get("agent_id") != "agent:padiem:web-xlsx-confirm@1"
+        or tool.get("canonical_tool_id") != "tool:padiem:web-xlsx-confirm@1"
+        or tool.get("status") != "completed"
+        # A completed projection carries no pause: a pause-shaped body relabelled
+        # "completed" is a client-side forgery, never an Engine answer.
+        or "approval_pause" in tool
+        or "continuation_ref" in tool
+    ):
+        raise WebXlsxP01RequestError("Engine tool did not complete")
+    return VerifiedWebXlsxEngineCompletion(engine_run_id=tool.get("run_id"))
+
+
 def parse_engine_pause(result: Any, *, original: TrustedWebXlsxP01Request) -> VerifiedWebXlsxEnginePause:
     """Accept only the real Engine /internal/v1/tools/execute pause contract.
 
@@ -235,6 +268,38 @@ class D1WebXlsxP01RequestStore:
                     and row.get("pause_id") == pause.pause_id)
 
 
+    async def commit_completion(
+        self, *, request: TrustedWebXlsxP01Request, request_ref: str,
+        completion: VerifiedWebXlsxEngineCompletion,
+    ) -> bool:
+        """Record a pre-delegated completion (no pause, no continuation)."""
+        if (not isinstance(request, TrustedWebXlsxP01Request)
+                or not isinstance(completion, VerifiedWebXlsxEngineCompletion)
+                or not isinstance(request_ref, str)
+                or not re.fullmatch(r"wpr_[0-9a-f]{32}", request_ref)):
+            raise WebXlsxP01RequestError("invalid completion scope")
+        now = datetime.now(timezone.utc).isoformat()
+        # The 030 CHECK admits only 'dispatching'/'waiting_p01'; a completed
+        # pre-delegated run stays 'dispatching' (the one-shot reservation is
+        # consumed) and is identified by its Engine run id. No schema migration
+        # is needed, and the start response already told the caller 'completed'.
+        statement = self.db.prepare(
+            "UPDATE claw_web_xlsx_p01_requests SET "
+            "engine_run_id=?,updated_at=? "
+            "WHERE request_ref=? AND selection_ref=? AND user_id=? AND workspace_id=? "
+            "AND run_id=? AND document_id=? AND source_sha256=? AND status='dispatching'"
+        ).bind(completion.engine_run_id, now, request_ref, request.selection_ref,
+               request.owner_id, request.workspace_id, request.run_id,
+               request.document_id, request.source_sha256)
+        await statement.run()
+        check = self.db.prepare(
+            "SELECT status,engine_run_id FROM claw_web_xlsx_p01_requests "
+            "WHERE request_ref=? AND user_id=? AND workspace_id=? AND run_id=?"
+        ).bind(request_ref, request.owner_id, request.workspace_id, request.run_id)
+        row = _row_to_dict(await check.first())
+        return bool(row and row.get("engine_run_id") == completion.engine_run_id)
+
+
 async def dispatch_owner_web_xlsx_p01(
     *, request: TrustedWebXlsxP01Request, store: Any, client: Any,
 ) -> dict[str, Any]:
@@ -261,7 +326,34 @@ async def dispatch_owner_web_xlsx_p01(
     result = client.start_pause(request)
     if inspect.isawaitable(result):
         result = await result
-    pause = parse_engine_pause(result, original=request)
+    try:
+        pause = parse_engine_pause(result, original=request)
+    except WebXlsxP01RequestError as pause_error:
+        # Owner decision 2026-10-28: the lane is pre-delegated, so a completed
+        # tool projection is the normal answer; commit it as such. Anything
+        # else keeps the pause contract's own refusal and stage.
+        try:
+            completion = parse_engine_completion(result, original=request)
+        except WebXlsxP01RequestError:
+            raise pause_error from None
+        committed = store.commit_completion(
+            request=request, request_ref=request_ref, completion=completion,
+        )
+        if inspect.isawaitable(committed):
+            committed = await committed
+        if committed is not True:
+            raise WebXlsxP01RequestError(
+                "durable Engine completion write unavailable",
+                stage=STAGE_PAUSE_COMMIT_FAILED,
+            )
+        return {
+            "request_ref": request_ref, "run_id": request.run_id,
+            "selection_ref": request.selection_ref,
+            "status": "completed",
+            "pause_expires_at": None,
+            "processing_started": False, "workcopy_created": False,
+            "owner_decision_enabled": False,
+        }
     try:
         committed = store.commit_pause(
             request=request, request_ref=request_ref, pause=pause,
