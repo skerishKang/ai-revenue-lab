@@ -711,6 +711,19 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
+                    if (
+                        content_bytes > PC_FILES_READ_MAX_BYTES
+                        or len(encoded) > PC_FILES_READ_MAX_BYTES
+                    ):
+                        # 플랫폼 메모리 보호(임의 상한 아님): Worker 메모리는 128MB,
+                        # 이 본문은 base64(4/3) + Chat 텍스트 + Engine의 UTF-8 사본 +
+                        # JSON 오버헤드로 동시에 메모리에 있고, Chat 읽기 레인이 요청하는
+                        # 최대치가 20MB라 더 큰 본문은 정당한 PC 파일 읽기가 아니다.
+                        # 64MB 이상 파일은 컴2 파일 레인으로 넘길 예정(경로 미구현).
+                        raise ToolHandlerError(
+                            "pc_files_output_too_large",
+                            "파일이 커서 이 경로로 읽지 못했습니다 — 컴2 파일 처리 예정",
+                        )
                 else:
                     if termination not in (
                         "exited", "no_exit_code", "output_too_large",
