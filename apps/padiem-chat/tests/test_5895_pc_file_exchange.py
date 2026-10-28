@@ -22,7 +22,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
 import test_5573_pc_device_pairing as pairing                       # noqa: E402
-from app.oracle_mesh_read_return_routes import _response            # noqa: E402
+from app.oracle_mesh_read_return_routes import (                       # noqa: E402
+    PC_FILES_LIST_DEFAULT_LIMIT, _pc_files_command, _response,
+)
 
 OWNER = pairing.OWNER
 OUTSIDER = "usr_" + "b" * 32
@@ -54,14 +56,53 @@ class _Request:
 
 
 class _Store:
+    """The calls these routes make on the owner store, kept honest.
+
+    A staged dispatch is recorded as a row, so cancelling one goes through the same
+    condition the SQL uses — pending, never handed out, this owner, this run — and a
+    route that stopped the wrong row would be caught here rather than in production.
+    """
+
+    FAR = "2099-01-01T00:00:00.000Z"
+
     def __init__(self, *, dispatches=None, originals=None, runs=None):
         self.staged = []
         self.dispatches = dispatches if dispatches is not None else {}
         self.originals = originals if originals is not None else {}
         self.runs = runs if runs is not None else {}
+        self.staged_rows = 0
+
+    def stage(self, *, user_id, run_id, kind, command=None, tool_call_ref=None,
+              file_path="command"):
+        self.staged_rows += 1
+        dispatch_id = "dsp_" + format(self.staged_rows, "032x")
+        self.dispatches[dispatch_id] = {
+            "dispatch_id": dispatch_id, "user_id": user_id, "run_id": run_id, "kind": kind,
+            "state": "pending", "expires_at": self.FAR, "command_text": command,
+            "command_id": "cmd-" + str(self.staged_rows),
+            "revision_ref": "rev-" + str(self.staged_rows),
+            "tool_call_ref": tool_call_ref, "file_path": file_path, "nonce_sha256": None,
+        }
+        return dispatch_id
+
+    async def cancel_oracle_mesh_dispatches_for_run(self, *, user_id, run_id):
+        stopped = 0
+        for row in self.dispatches.values():
+            if (row.get("user_id") != user_id or row.get("run_id") != run_id
+                    or row.get("state") != "pending" or row.get("nonce_sha256") is not None):
+                continue
+            row["state"] = "failed"
+            row["termination"] = "cancelled"
+            stopped += 1
+        return stopped
 
     async def record_chat_pc_drive_run(self, **fields):
         self.staged.append(fields)
+        self.runs[fields["run_id"]] = {
+            "run_id": fields["run_id"], "user_id": fields["user_id"],
+            "workspace_id": fields["workspace_id"], "conversation_id": "chat_" + "c" * 32,
+            "status": "pending",
+        }
         return "chat_" + "c" * 32
 
     async def get_claw_run(self, user_id, run_id):
@@ -151,17 +192,23 @@ def _state(monkeypatch, *, links=None, uid=OWNER, roots=(QUARTERLY,), store=None
     async def stage_command(request, *, command, wire, trusted_owner, tool_call_ref, files_target):
         captured.append({"command": command, "wire": wire, "owner": trusted_owner,
                          "ref": tool_call_ref, "target": files_target})
+        dispatch_id = state.history_store.stage(
+            user_id=trusted_owner[1], run_id=wire["run_id"], kind="command",
+            command=command, tool_call_ref=tool_call_ref)
         return _response({"ok": True, "dispatch": {
-            "dispatch_id": "dsp_" + "a" * 32, "run_id": wire["run_id"], "state": "pending",
-            "expires_at": "2099-01-01T00:00:00.000Z", "kind": "command",
+            "dispatch_id": dispatch_id, "run_id": wire["run_id"], "state": "pending",
+            "expires_at": _Store.FAR, "kind": "command",
         }})
 
     async def stage_read(request, *, wire, trusted_owner, tool_call_ref, target, root, relative):
         captured.append({"read": True, "wire": wire, "root": root, "relative": relative,
                          "ref": tool_call_ref, "target": target})
+        dispatch_id = state.history_store.stage(
+            user_id=trusted_owner[1], run_id=wire["run_id"], kind="read",
+            tool_call_ref=tool_call_ref, file_path=root + "/" + relative)
         return _response({"ok": True, "dispatch": {
-            "dispatch_id": "dsp_" + "b" * 32, "run_id": wire["run_id"], "state": "pending",
-            "expires_at": "2099-01-01T00:00:00.000Z", "kind": "read",
+            "dispatch_id": dispatch_id, "run_id": wire["run_id"], "state": "pending",
+            "expires_at": _Store.FAR, "kind": "read",
         }})
 
     monkeypatch.setattr(exchange, "dispatch_oracle_mesh_command_intent", stage_command)
@@ -189,7 +236,7 @@ def test_browse_lists_the_owner_folder_on_the_owner_pc(monkeypatch):
     )))
 
     assert status == 200 and body["ok"] is True and body["state"] == "working", body
-    assert body["dispatch_id"] == "dsp_" + "a" * 32
+    assert exchange.DISPATCH_ID.fullmatch(body["dispatch_id"])
     assert body["run_id"].startswith("chat_pcq_") and body["conversation_id"]
     staged = captured[0]
     assert staged["target"] is not None
@@ -269,7 +316,7 @@ def test_a_link_without_an_approved_folder_reads_nothing(monkeypatch):
 
 # ── what each verb asks the PC for ───────────────────────────────────────
 
-def test_find_searches_every_granted_folder_and_caps_nothing(monkeypatch):
+def test_a_search_starts_at_the_granted_folders_and_caps_nothing(monkeypatch):
     pairing_store, created = _links(second=True)
     state, captured, first, second = _state(monkeypatch, links=(pairing_store, created))
 
@@ -278,10 +325,101 @@ def test_find_searches_every_granted_folder_and_caps_nothing(monkeypatch):
     )))
     assert status == 200, body
     command = captured[0]["command"]
-    assert " -Recurse " in command and QUARTERLY in command
     # The CTO rule: an answer that silently stops at a number is a wrong answer.
+    for forbidden in ("-First", "Select-Object -First"):
+        assert forbidden not in command, forbidden
+    assert QUARTERLY in command and PICTURES not in command
+    # The first look does not descend: its folder rows are the plan for the rest.
+    assert " -Recurse " not in command and "$_.PSIsContainer -or" in command
+    assert body["folder"] is None and body["remaining"] == []
+    assert body["run_id"].startswith("chat_pcq_")
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": second})
+    )))
+    assert status == 200 and PICTURES in captured[1]["command"]
+    assert QUARTERLY not in captured[1]["command"]
+
+
+def test_a_search_sweeps_one_folder_at_a_time_inside_one_run(monkeypatch):
+    state, captured, link_id, _ = _state(monkeypatch)
+    _status, first = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id})
+    )))
+    run_id = first["run_id"]
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id, "run_id": run_id,
+                              "folder": QUARTERLY + "/2026",
+                              "remaining": [QUARTERLY + "/사진"]})
+    )))
+    assert status == 200 and body["ok"] is True, body
+    command = captured[1]["command"]
+    assert " -Recurse " in command and QUARTERLY + "/2026" in command
     assert "-First" not in command
-    assert "Select-Object -First" not in command
+    assert body["run_id"] == run_id and body["folder"] == QUARTERLY + "/2026"
+    assert body["remaining"] == [QUARTERLY + "/사진"]
+    # One operation, one record: the whole sweep stays in the run the first call made,
+    # and each folder is its own call the lane can hand out on its own.
+    assert len(state.history_store.staged) == 1
+    assert captured[0]["ref"] != captured[1]["ref"]
+    assert len(state.history_store.dispatches) == 2
+
+
+def test_a_queue_entry_outside_the_granted_folders_is_not_searched(monkeypatch):
+    state, captured, link_id, _ = _state(monkeypatch, roots=("C:/Users/qa",))
+    _status, first = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id})
+    )))
+    run_id = first["run_id"]
+    for body in (
+        {"name": "견적서", "link_id": link_id, "run_id": run_id,
+         "folder": "C:/Windows", "remaining": []},
+        {"name": "견적서", "link_id": link_id, "run_id": run_id,
+         "folder": "C:/Users/qa/2026", "remaining": ["C:/Windows"]},
+        {"name": "견적서", "link_id": link_id, "run_id": run_id, "folder": "C:/Users/qa/2026"},
+        {"name": "견적서", "link_id": link_id, "run_id": run_id, "remaining": []},
+    ):
+        status, answer = _answer(pairing.run(exchange.pc_file_exchange_find(
+            _Request(state, body=body)
+        )))
+        assert status == 422, (body, answer)
+    # Only the first look was staged. The folder now, or one of the folders still
+    # waiting, is not allowed to reach past what this account granted.
+    assert len(captured) == 1
+
+
+def test_another_account_cannot_sweep_inside_someone_elses_search(monkeypatch):
+    state, _captured, link_id, _ = _state(monkeypatch)
+    owner_run = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id})
+    )))[1]["run_id"]
+
+    # The outsider has a PC of their own — the same machine, linked by another
+    # account — so this is not a "no PC" answer: it is the run that is not theirs.
+    outsider_store = pairing.store()
+
+    async def build():
+        issued = await outsider_store.issue_code(user_id=OUTSIDER, issued_at=pairing._now())
+        row = await outsider_store.redeem_code(
+            code=issued["code"], mesh_node_id=OTHER_NODE, label="다른 계정 PC",
+            now=pairing._now(), verified=True,
+        )
+        await outsider_store.approve_root(user_id=OUTSIDER, link_id=row["link_id"],
+                                          path=PICTURES, now=pairing._now())
+        return row
+
+    outsider_state, outsider_captured, outsider_link, _ = _state(
+        monkeypatch, links=(outsider_store, (pairing.run(build()), None)), uid=OUTSIDER,
+    )
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(outsider_state, body={"name": "견적서", "link_id": outsider_link,
+                                       "run_id": owner_run})
+    )))
+    # The run id is only a handle: the row, its owner and its workspace are read back,
+    # so another account's search is not found rather than explained.
+    assert status == 404 and body["error"]["code"] == "pc_run_not_found", body
+    assert outsider_captured == []
 
 
 def test_a_name_with_wildcards_stays_the_name_the_owner_typed(monkeypatch):
@@ -305,7 +443,8 @@ def test_fetch_reads_a_file_and_never_a_folder(monkeypatch):
         _Request(state, body={"path": "1분기.md", "link_id": link_id})
     )))
     assert status == 200 and body["ok"] is True
-    assert body["name"] == "1분기.md" and body["dispatch_id"] == "dsp_" + "b" * 32
+    assert body["name"] == "1분기.md"
+    assert exchange.DISPATCH_ID.fullmatch(body["dispatch_id"])
     assert captured[0]["read"] is True and captured[0]["relative"] == "1분기.md"
 
 
@@ -373,22 +512,148 @@ def test_a_picker_operation_is_a_real_run_with_a_durable_record(monkeypatch):
     assert captured[0]["ref"].startswith(body["run_id"] + ":pc_file_exchange:")
 
 
+def test_cancel_stops_the_owners_own_queued_command(monkeypatch):
+    state, _captured, link_id, _ = _state(monkeypatch)
+    run_id = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id})
+    )))[1]["run_id"]
+    _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id, "run_id": run_id,
+                              "folder": QUARTERLY + "/2026", "remaining": []})
+    )))
+    rows = [row for row in state.history_store.dispatches.values()
+            if row["run_id"] == run_id]
+    assert len(rows) == 2 and all(row["state"] == "pending" for row in rows)
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_cancel(
+        _Request(state, body={"run_id": run_id})
+    )))
+    assert status == 200 and body["ok"] is True and body["state"] == "cancelled", body
+    assert body["stopped"] == 2 and body["run_id"] == run_id
+    assert all(row["state"] == "failed" and row["termination"] == "cancelled"
+               for row in rows)
+
+
+def test_a_command_the_pc_already_holds_is_left_to_finish(monkeypatch):
+    state, _captured, link_id, _ = _state(monkeypatch)
+    run_id = _answer(pairing.run(exchange.pc_file_exchange_find(
+        _Request(state, body={"name": "견적서", "link_id": link_id})
+    )))[1]["run_id"]
+    held = next(iter(state.history_store.dispatches.values()))
+    held["nonce_sha256"] = "e" * 64
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_cancel(
+        _Request(state, body={"run_id": run_id})
+    )))
+    # The executor holds this one: refusing it would make the connector resend a
+    # result nobody is waiting for, which holds the queue longer than letting it end.
+    assert status == 200 and body["ok"] is True and body["stopped"] == 0
+    assert held["state"] == "pending" and held["nonce_sha256"] == "e" * 64
+
+
+def test_a_run_that_is_not_a_picker_run_is_not_cancelled(monkeypatch):
+    state, _captured, _link_id, _ = _state(monkeypatch)
+    for run_id in ("chat_" + "c" * 32, "run-5895", 42):
+        status, body = _answer(pairing.run(exchange.pc_file_exchange_cancel(
+            _Request(state, body={"run_id": run_id})
+        )))
+        assert status == 400, (run_id, body)
+        assert body["error"]["code"] == "pc_exchange_run_id_invalid", run_id
+    assert [row for row in state.history_store.dispatches.values()
+            if row.get("termination") == "cancelled"] == []
+
+
+def test_a_cancelled_command_is_told_as_stopped_not_as_a_failed_pc(monkeypatch):
+    dispatch = "dsp_" + "3" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command", text="{}",
+              state_name="failed", termination="cancelled")
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    assert status == 200 and body["ok"] is True and body["state"] == "cancelled", body
+    assert "found" not in body and "items" not in body
+
+
+def test_a_pc_that_really_did_not_answer_is_still_a_failure(monkeypatch):
+    dispatch = "dsp_" + "2" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command", text="{}",
+              state_name="failed", termination="no_reply")
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    assert status == 502 and body["error"]["code"] == "pc_dispatch_failed"
+
+
+def test_the_first_look_answers_what_matched_and_which_folders_are_left(monkeypatch):
+    dispatch = "dsp_" + "1" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command", command=_seed((QUARTERLY,)),
+              text=('[{"FullName":"' + QUARTERLY + '/2026","Name":"2026","Length":null,'
+                    '"PSIsContainer":true},'
+                    '{"FullName":"' + QUARTERLY + '/견적서.xlsx","Name":"견적서.xlsx",'
+                    '"Length":9000,"PSIsContainer":false}]'))
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    assert status == 200 and body["state"] == "ready", body
+    assert [row["name"] for row in body["found"]] == ["견적서.xlsx"]
+    assert body["folders"] == [QUARTERLY + "/2026"]
+
+
+def test_a_folder_sweep_answers_only_its_own_matches(monkeypatch):
+    dispatch = "dsp_" + "0" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command",
+              command=_sweep(QUARTERLY + "/2026"),
+              text=('[{"FullName":"' + QUARTERLY + '/2026/견적서.xlsx",'
+                    '"Name":"견적서.xlsx","Length":9000,"PSIsContainer":false}]'))
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+    assert status == 200 and len(body["found"]) == 1
+    assert "folders" not in body
+    assert body["found"][0]["folder"] == QUARTERLY + "/2026"
+
+
 # ── the durable read the progress display watches ────────────────────────
 
-def _finished(state, *, dispatch_id, kind, text, extra=None):
+def _finished(state, *, dispatch_id, kind, text, command=None, state_name="done",
+              termination=None):
+    """One dispatch row exactly as the lane's own SQL would leave it.
+
+    The command text is built by the shipped builders, not copied by hand: which
+    answer is a listing, a first look or a subtree sweep is decided by what the PC
+    was really asked, so a test that invented the text could pass against a command
+    the route no longer sends.
+    """
+
     data = text if isinstance(text, bytes) else text.encode("utf-8")
     row = {
         "dispatch_id": dispatch_id, "user_id": OWNER, "run_id": "run-5895",
-        "kind": kind, "state": "done", "expires_at": "2099-01-01T00:00:00.000Z",
+        "kind": kind, "state": state_name, "expires_at": "2099-01-01T00:00:00.000Z",
         "command_id": "cmd-1", "revision_ref": "rev-1", "result_sha256": _sha(data),
     }
     if kind == "command":
-        row["command_text"] = "Get-ChildItem ... " + ("-Recurse " if extra == "search" else "")
+        row["command_text"] = command if command is not None else _pc_files_command(
+            op="list", root=QUARTERLY, relative="", limit=PC_FILES_LIST_DEFAULT_LIMIT,
+        )
+    if termination is not None:
+        row["termination"] = termination
     state.history_store.dispatches[dispatch_id] = row
     state.history_store.originals[dispatch_id] = data
     state.history_store.runs["run-5895"] = {
         "user_id": OWNER, "conversation_id": "chat_" + "c" * 32,
     }
+
+
+def _seed(roots: tuple[str, ...] = (QUARTERLY,), name: str = "명함") -> str:
+    return exchange._seed_search_command([{"path": path} for path in roots], name)
+
+
+def _sweep(folder: str, name: str = "명함") -> str:
+    return exchange._sweep_command(folder, name)
 
 
 def _sha(data: bytes) -> str:
@@ -578,7 +843,8 @@ def test_the_listing_answer_is_the_folders_own_entries(monkeypatch):
 def test_the_search_answer_keeps_the_folder_each_name_was_found_in(monkeypatch):
     dispatch = "dsp_" + "f" * 32
     state, _captured, _link, _ = _state(monkeypatch)
-    _finished(state, dispatch_id=dispatch, kind="command", text=JSON_FOUND, extra="search")
+    _finished(state, dispatch_id=dispatch, kind="command", text=JSON_FOUND,
+              command=_sweep("D:/그림"))
     status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
         _Request(state, query={"dispatch_id": dispatch}, method="GET")
     )))
@@ -591,7 +857,7 @@ def test_the_search_answer_keeps_the_folder_each_name_was_found_in(monkeypatch):
 def test_two_files_of_one_name_each_keep_their_own_folder(monkeypatch):
     dispatch = "dsp_" + "e" * 32
     state, _captured, _link, _ = _state(monkeypatch)
-    _finished(state, dispatch_id=dispatch, kind="command", extra="search", text=(
+    _finished(state, dispatch_id=dispatch, kind="command", command=_sweep("C:/바탕화면"), text=(
         '[{"FullName":"C:/명함.png","Name":"명함.png","Length":10,'
         '"PSIsContainer":false},'
         '{"FullName":"D:/그림/명함.png","Name":"명함.png","Length":20,'

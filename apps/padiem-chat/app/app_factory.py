@@ -338,12 +338,14 @@ from .pc_device_pairing_routes import (
 )
 from .pc_file_exchange_routes import (
     PC_BROWSE_PATH,
+    PC_CANCEL_PATH,
     PC_FETCH_PATH,
     PC_FILE_PATH,
     PC_FIND_PATH,
     PC_RESULT_PATH,
     PC_SAVE_PATH,
     pc_file_exchange_browse,
+    pc_file_exchange_cancel,
     pc_file_exchange_fetch,
     pc_file_exchange_file,
     pc_file_exchange_find,
@@ -917,6 +919,7 @@ def create_app(
         Route(PC_FIND_PATH, pc_file_exchange_find, methods=["POST"]),
         Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
         Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
+        Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
         Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),

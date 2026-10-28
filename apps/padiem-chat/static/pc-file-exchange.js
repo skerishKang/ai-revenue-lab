@@ -7,9 +7,13 @@
 //
 // What the owner sees is only their own words: which PC, which folder, which file. No
 // path box, no device identifier, no technical term. Nothing here decides how long a
-// PC may take, how many entries a folder holds, or when to stop asking: the server's
-// own record ends the wait, and while it runs the screen says what is true in the same
-// words #5895 uses everywhere else — still working, with the time that has passed.
+// PC may take or how many entries a folder holds; the server's own record ends the
+// wait, and while it runs the screen says what is true in the same words #5895 uses
+// everywhere else — still working, with the time that has passed. The owner can always
+// press 그만, which stops asking and takes what has not reached the PC out of its queue.
+//
+// A search is spread over the folders instead of run as one long command, so the
+// matches arrive as they are found and the PC is never held by one huge sweep.
 (function (root) {
   "use strict";
 
@@ -17,6 +21,7 @@
   const FIND = "/api/pc/find";
   const FETCH = "/api/pc/fetch";
   const SAVE = "/api/pc/save";
+  const CANCEL = "/api/pc/cancel";
   const RESULT = "/api/pc/result";
   // How many already-received entries are shown before "더 보기". It splits the
   // answer on the screen; it never discards part of it.
@@ -24,9 +29,13 @@
 
   const state = {
     open: false, nodes: null, mode: "import", linkId: null, path: ".", folderName: "",
-    items: [], shown: PAGE, selection: null, waiting: false, error: null,
+    items: [], shown: PAGE, selection: null, waiting: false, error: null, note: null,
     startedAt: 0, timer: null, focusBefore: null, dispatchId: null, onFileName: null,
+    runId: null, sweep: null,
   };
+  // Every stop raises this, so a wait that is still in flight notices it and returns
+  // instead of polling on for an operation the owner has left behind.
+  let waitToken = 0;
 
   function copy(key, variables) {
     const locale = root.__padiemLocale;
@@ -75,6 +84,18 @@
   function paintStatus() {
     const nodes = state.nodes;
     if (!nodes) return;
+    const sweeping = state.sweep !== null;
+    nodes.stop.hidden = !(sweeping || state.waiting);
+    if (state.waiting && sweeping) {
+      // What is true while the search walks the folders: how many it has been through
+      // and how many matches it has so far. Not a failure, not a count of what is left.
+      nodes.status.textContent = copy("pc-exchange-searching", {
+        folders: state.sweep.asked + 1, files: state.items.length,
+      });
+      nodes.status.dataset.state = "status";
+      nodes.status.hidden = false;
+      return;
+    }
     if (state.waiting) {
       nodes.status.textContent = copy("pc-exchange-working", { elapsed: elapsedText() });
       nodes.status.dataset.state = "status";
@@ -87,6 +108,12 @@
       nodes.status.hidden = false;
       return;
     }
+    if (state.note) {
+      nodes.status.textContent = copy(state.note);
+      nodes.status.dataset.state = "note";
+      nodes.status.hidden = false;
+      return;
+    }
     nodes.status.hidden = true;
     nodes.status.textContent = "";
   }
@@ -94,6 +121,7 @@
   function busy() {
     state.waiting = true;
     state.error = null;
+    state.note = null;
     state.startedAt = root.Date.now();
     paintStatus();
     if (state.timer === null) state.timer = root.setInterval(paintStatus, 1000);
@@ -101,11 +129,14 @@
 
   function done() {
     state.waiting = false;
+    if (state.sweep === null) state.runId = null;
     stopClock();
     paintStatus();
   }
 
   function refused(code) {
+    // An operation that came back refused leaves nothing else waiting behind it.
+    stopSweep({ quiet: true });
     state.waiting = false;
     state.error = code || "pc-exchange-no-answer";
     stopClock();
@@ -113,16 +144,20 @@
   }
 
   // No attempt count and no give-up time: the operation is over when the server's
-  // own record says it is, and the clock keeps counting until then.
+  // own record says it is, and the clock keeps counting until then. The one thing that
+  // ends a wait early is the owner's own 그만, which raises the token below.
   async function wait(id, onReady) {
+    const token = waitToken;
     busy();
     for (;;) {
+      if (token !== waitToken) return;
       let answer = null;
       try {
         answer = await read(id);
       } catch (_) {
         answer = null;
       }
+      if (token !== waitToken) return;
       if (answer === null) continue;
       const body = answer.body;
       if (answer.status === 200 && body && body.state === "working") {
@@ -133,6 +168,12 @@
       if (answer.status === 200 && body && body.state === "ready") {
         done();
         onReady(body);
+        return;
+      }
+      if (answer.status === 200 && body && body.state === "cancelled") {
+        // The server's record already says the owner stopped this. It is a state of
+        // the operation, not a PC that failed, so nothing is shown as an error.
+        done();
         return;
       }
       refused("pc-exchange-no-answer");
@@ -162,6 +203,87 @@
     paintList();
   }
 
+  // A search is one operation spread over folders instead of one command over a whole
+  // drive. The screen asks for one folder at a time, so every match shows up as soon as
+  // its folder has been looked through, and a PC is never held by one huge sweep while
+  // the owner waits for a folder listing. Stopping is the same thing as stopping asking.
+  function startSearch(name) {
+    stopSweep({ quiet: true });
+    state.sweep = { name: name, folder: null, remaining: [], asked: 0, running: true,
+                    stopped: false };
+    state.folderName = "";
+    state.selection = null;
+    state.items = [];
+    state.shown = PAGE;
+    state.note = null;
+    paintList();
+    void sweepStep();
+  }
+
+  function sweepStep() {
+    const sweep = state.sweep;
+    if (!sweep || sweep.stopped) return;
+    const payload = { name: sweep.name };
+    if (sweep.folder) {
+      payload.run_id = state.runId;
+      payload.folder = sweep.folder;
+      payload.remaining = sweep.remaining;
+    }
+    void start(FIND, payload, (body) => {
+      if (sweep.stopped) return;
+      appendFound(body.found || []);
+      if (!sweep.folder) sweep.remaining = (body.folders || []).slice();
+      if (sweep.remaining.length > 0) {
+        sweep.folder = sweep.remaining.shift();
+        sweep.asked += 1;
+        void sweepStep();
+        return;
+      }
+      // Nothing is left to look in, so there is nothing to stop either.
+      state.sweep = null;
+      state.note = state.items.length
+        ? "pc-exchange-searched" : "pc-exchange-searched-empty";
+      done();
+    }, { keep: true, retry: sweepStep });
+  }
+
+  function appendFound(rows) {
+    if (rows.length === 0) return;
+    state.items = state.items.concat(rows);
+    paintList();
+  }
+
+  // The owner pressed 그만: the screen stops waiting, and the server takes out of the
+  // queue whatever has not reached a PC yet. A command the PC is already running is
+  // left to finish — refusing it would only make the connector hold the queue longer.
+  function stopAsking() {
+    const runId = state.runId;
+    waitToken += 1;
+    if (state.sweep) {
+      state.sweep.stopped = true;
+      state.sweep.running = false;
+    }
+    state.sweep = null;
+    state.runId = null;
+    return runId;
+  }
+
+  function stopSweep(options) {
+    const settings = options || {};
+    const runId = stopAsking();
+    // Whatever the owner is doing next — pressing 그만, stepping into a folder, or
+    // searching again — the folder that has not reached a PC yet must not sit in the
+    // queue behind it. Only the screen state differs between those cases.
+    if (runId) void post(CANCEL, { run_id: runId }).catch(() => null);
+    if (settings.quiet) return;
+    state.waiting = false;
+    state.error = null;
+    state.note = "pc-exchange-stopped";
+    stopClock();
+    paintStatus();
+    paintList();
+  }
+
   function hideChoices() {
     if (state.nodes) state.nodes.pcs.hidden = true;
   }
@@ -184,7 +306,7 @@
     nodes.pcs.hidden = false;
   }
 
-  function askForPc(links) {
+  function askForPc(links, retry) {
     if (links.length === 0) {
       refused("pc-exchange-no-pc");
       return;
@@ -193,6 +315,10 @@
       label: link.label || copy("pc-exchange-my-pc"), value: link.link_id,
     })), (choice) => {
       state.linkId = choice.value;
+      if (retry) {
+        retry();
+        return;
+      }
       state.path = ".";
       state.folderName = "";
       state.selection = null;
@@ -227,6 +353,9 @@
     }
     button.addEventListener("click", () => {
       if (item.kind === "folder") {
+        // Stepping into a folder is the short request the sweep must not be holding:
+        // the search stops asking, and the listing is asked for on its own.
+        stopSweep({ quiet: true });
         state.path = pathOf(item);
         state.folderName = item.name;
         state.selection = null;
@@ -265,8 +394,11 @@
       : copy("pc-exchange-open-file", { name: "" });
   }
 
-  // One request shape for all four verbs: ask, then watch the server's record.
-  async function start(url, payload, onReady) {
+  // One request shape for every verb: ask, then watch the server's record. `keep`
+  // leaves the entries already on the screen where they are, which is what a search
+  // needs as it moves from folder to folder.
+  async function start(url, payload, onReady, options) {
+    const settings = options || {};
     if (state.linkId) payload.link_id = state.linkId;
     let answer;
     try {
@@ -277,7 +409,7 @@
     }
     const code = answer.body && answer.body.error && answer.body.error.code;
     if (code === "pc_link_selection_required") {
-      askForPc((answer.body.links || []).filter((link) => link && link.link_id));
+      askForPc((answer.body.links || []).filter((link) => link && link.link_id), settings.retry);
       return;
     }
     if (code === "pc_folder_selection_required") {
@@ -294,9 +426,12 @@
       return;
     }
     state.dispatchId = answer.body.dispatch_id;
-    state.items = [];
-    state.shown = PAGE;
-    paintList();
+    state.runId = answer.body.run_id || null;
+    if (!settings.keep) {
+      state.items = [];
+      state.shown = PAGE;
+      paintList();
+    }
     await wait(answer.body.dispatch_id, onReady);
   }
 
@@ -354,10 +489,16 @@
     const footer = element("div", "pc-exchange-footer");
     const cancel = element("button", "pc-exchange-cancel", copy("pc-exchange-close"));
     cancel.type = "button";
+    // The one control that ends a wait early: it stops this account's own operation,
+    // and what the PC has already answered stays on the screen. No question is asked
+    // first, because the owner already said so by pressing it.
+    const stop = element("button", "pc-exchange-stop", copy("pc-exchange-stop"));
+    stop.type = "button";
+    stop.hidden = true;
     const pick = element("button", "pc-exchange-pick", copy("pc-exchange-open-file", { name: "" }));
     pick.type = "button";
     pick.hidden = true;
-    footer.append(cancel, pick);
+    footer.append(cancel, stop, pick);
 
     dialog.append(heading, note, pcs, tools, folderLabel, list, more, status, footer);
     overlay.append(dialog);
@@ -365,6 +506,9 @@
     back.addEventListener("click", () => {
       const parent = parentOf(state.path);
       if (parent === state.path) return;
+      // One short request at a time: stepping out stops the search that was walking the
+      // folders, so the listing the owner asked for is not queued behind it.
+      stopSweep({ quiet: true });
       state.path = parent;
       const text = parent.replace(/\/+$/, "");
       state.folderName = text ? text.slice(text.lastIndexOf("/") + 1) : "";
@@ -376,15 +520,13 @@
       paintList();
     });
     cancel.addEventListener("click", close);
+    stop.addEventListener("click", () => stopSweep({}));
     overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
     searchButton.addEventListener("click", () => {
       const name = search.value.trim();
       if (!name) return;
       state.folderName = "";
-      void start(FIND, { name }, (body) => {
-        state.items = body.found || [];
-        paintList();
-      });
+      startSearch(name);
     });
     search.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -443,12 +585,15 @@
 
     return {
       overlay, dialog, heading, list, more, status, search, searchButton, back, pcs, pick,
-      fileName, folderLabel,
+      fileName, folderLabel, stop,
     };
   }
 
   function close() {
     if (!state.open) return;
+    // Leaving the dialog is also a stop: a folder the PC has not started looking in
+    // must not sit in the queue for whoever uses this PC next.
+    stopSweep({ quiet: true });
     state.open = false;
     state.waiting = false;
     state.onFileName = null;
@@ -478,7 +623,10 @@
     state.shown = PAGE;
     state.selection = null;
     state.error = null;
+    state.note = null;
     state.dispatchId = null;
+    state.runId = null;
+    state.sweep = null;
     state.focusBefore = root.document.activeElement;
     state.nodes = build(settings);
     root.document.body.append(state.nodes.overlay);
@@ -490,11 +638,14 @@
   root.PadiemPcFileExchange = Object.freeze({
     open: open,
     close: close,
+    stop: function () { stopSweep({}); },
     isOpen: function () { return state.open; },
     current: function () {
       return {
         path: state.path, linkId: state.linkId, waiting: state.waiting,
         items: state.items.length, dispatchId: state.dispatchId,
+        runId: state.runId, sweeping: state.sweep !== null,
+        foldersLookedIn: state.sweep ? state.sweep.asked : 0,
       };
     },
   });
