@@ -161,6 +161,8 @@ async function main() {
         paused_at: "2026-10-27T01:30:00Z" } } },
     [`POST /api/pc/pairings/${LINK.link_id}/resume`]: { status: 200,
       body: { ok: true, link: { ...LINK, paused: false, paused_at: null } } },
+    [`POST /api/pc/pairings/${LINK.link_id}/label`]: { status: 200, body: { ok: true,
+      link: { ...LINK, label: "직장 PC" } } },
     [`POST /api/pc/pairings/${LINK.link_id}/roots`]: { status: 201, body: { ok: true,
       root: { root_ref: "pcroot_ffff0000ffff0000", label: "경리", path: "C:/Users/me/경리",
               state: "active", approved_at: "2026-10-27T01:20:00Z" } } },
@@ -177,7 +179,7 @@ async function main() {
     listed.calls.some((call) => call.method === "DELETE"
       && call.url === "/api/pc/pairings/" + LINK.link_id), JSON.stringify(listed.calls));
   const add = shown.ids().find((n) => (n.className || "") === "pc-pairing-root-add");
-  const field = shown.ids().find((n) => n.tagName === "INPUT");
+  const field = shown.ids().find((n) => (n.className || "") === "pc-pairing-path");
   field.value = "C:/Users/me/경리";
   add.click();
   await settle();
@@ -191,6 +193,16 @@ async function main() {
   const pauseButton = shown.ids().find((n) => (n.className || "") === "pc-pairing-pause");
   const resumeButton = shown.ids().find((n) => (n.className || "") === "pc-pairing-resume");
   const liveRevoke = shown.ids().find((n) => (n.className || "") === "pc-pairing-revoke");
+  const nameField = shown.ids().find((n) => (n.className || "") === "pc-pairing-name-input");
+  const nameButton = shown.ids().find((n) => (n.className || "") === "pc-pairing-name-save");
+  nameField.value = "직장 PC";
+  nameButton.click();
+  await settle();
+  check("the owner names a linked PC through the label route",
+    listed.calls.some((call) => call.method === "POST"
+      && call.url === "/api/pc/pairings/" + LINK.link_id + "/label"
+      && JSON.parse(call.body).label === "직장 PC")
+    && shown.allText().includes("저장했습니다"), JSON.stringify(listed.calls));
   check("each linked PC carries pause, resume and disconnect controls",
     Boolean(pauseButton && resumeButton && liveRevoke), shown.allText());
   pauseButton.click();
