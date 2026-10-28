@@ -363,7 +363,7 @@ class CommandPortTests(unittest.TestCase):
 
         class _RefusingPort:
             def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
-                    cancel_probe=None, dispatch_id=None):
+                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=()):
                 raise MeshCentralCommandRefused(
                     "the wrapped command exceeds the OS single-argument limit"
                 )
@@ -388,7 +388,7 @@ class _FakeCommandPort:
         self.calls = []
 
     def run_command(self, *, node_ref, command, timeout_seconds, phase_observer=None,
-                    cancel_probe=None, dispatch_id=None):
+                    cancel_probe=None, dispatch_id=None, keep_dispatch_ids=()):
         self.calls.append((node_ref, command, timeout_seconds))
         return self._outcome
 
@@ -680,7 +680,8 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
                 self.answer = None
 
             def run_command(self, *, node_ref, command, timeout_seconds,
-                            phase_observer=None, cancel_probe=None, dispatch_id=None):
+                            phase_observer=None, cancel_probe=None, dispatch_id=None,
+                            keep_dispatch_ids=()):
                 self.answer = cancel_probe() if cancel_probe is not None else None
                 return MeshCentralCommandOutcome(
                     termination="cancelled", exit_code=None, output=b"",
@@ -714,7 +715,8 @@ class TestTheExecutorProbesTheChannel(unittest.TestCase):
                 self._transport = transport
 
             def run_command(self, *, node_ref, command, timeout_seconds,
-                            phase_observer=None, cancel_probe=None, dispatch_id=None):
+                            phase_observer=None, cancel_probe=None, dispatch_id=None,
+                            keep_dispatch_ids=()):
                 self.answer = cancel_probe()
                 return MeshCentralCommandOutcome(
                     termination="no_reply", exit_code=None, output=b"",
@@ -799,13 +801,19 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         def pty_factory(payload):
             class _Handoff:
                 slave = 77
-                waits = []
 
                 def __init__(self, data):
                     self.data = data
+                    self.waits = []
 
                 def wait_closed(self, seconds):
-                    type(self).waits.append(seconds)
+                    self.waits.append(seconds)
+
+                def wait_for(self, done, seconds):
+                    # The probe asks; this double answers nothing, which the port
+                    # reports as an unobserved console rather than a clean one.
+                    self.waits.append(seconds)
+                    return b""
 
             handoffs.append(_Handoff(payload))
             return handoffs[-1]
@@ -826,14 +834,22 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertEqual(outcome.termination, "cancelled")
         self.assertIsNone(outcome.exit_code)
         self.assertTrue(seen["run"][0][2].killed, "this host stops waiting")
-        self.assertEqual(len(seen["stop"]), 1, "one terminal session, not a queue of them")
-        argv, kwargs, stop_child = seen["stop"][0]
+        # Two terminal sessions on one command, and each is a single one: the
+        # pre-flight look at the console line, then this stop. Neither becomes a
+        # queue, and only the stop carries the kill.
+        stops = [h for h in handoffs if b"taskkill /T /F /PID $__padiem_kill" in h.data]
+        probes = [h for h in handoffs if b"Get-CimInstance" in h.data]
+        self.assertEqual(len(stops), 1, "one stop session, not a queue of them")
+        self.assertEqual(len(probes), 1, "one console look before the command")
+        stop_index = handoffs.index(stops[0])
+        argv, kwargs, stop_child = seen["stop"][stop_index]
         self.assertIn("shell", argv)
         self.assertIn("--powershell", argv)
-        self.assertIn(self.MARKED, handoffs[0].data.decode("utf-8"))
+        self.assertIn(self.MARKED, stops[0].data.decode("utf-8"))
         self.assertEqual(handoffs[0].data.decode("utf-8").splitlines()[0], PASSWORD,
                          "the credential still never enters argv")
-        self.assertEqual(handoffs[0].waits, [15])
+        self.assertEqual(stops[0].waits, [15], "the stop is bounded")
+        self.assertEqual(probes[0].waits, [15], "and so is the look before it")
         self.assertIsNone(stop_child.poll())
         self.assertIn("cancel_kill", phases)
 
