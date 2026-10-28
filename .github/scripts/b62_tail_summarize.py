@@ -134,6 +134,16 @@ def key_shape(node, depth: int = 0, prefix: str = "") -> list[str]:
 
 
 def colo_of(row: dict) -> str | None:
+    """The colo that served the request.
+
+    The row does not name a colo at the top level; `event.request.cf` carries the
+    Cloudflare request metadata, and the colo in it is what separates "one edge is
+    sick" from "the Worker is sick everywhere". Only the three-letter code is read.
+    """
+
+    for value in _texts(row, {"colo", "coloCode"}):
+        if value.strip():
+            return value.strip().upper()[:8]
     for key in ("cololo", "colo", "coloCode", "colo_code"):
         value = row.get(key)
         if isinstance(value, str) and value.strip():

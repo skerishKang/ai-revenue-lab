@@ -186,6 +186,16 @@ class RealRowShapeTests(unittest.TestCase):
         summary = summ.summarize([dict(self.ROW)])
         self.assertEqual(summary["statuses"]["500"], 1)
 
+    def test_the_colo_comes_from_the_request_cf_metadata(self):
+        row = dict(self.ROW)
+        row["event"] = dict(row["event"])
+        row["event"]["request"] = dict(row["event"]["request"])
+        row["event"]["request"]["cf"] = {"colo": "lax", "city": "somewhere",
+                                         "asn": 9999, "botManagement": {"verdict": "x"}}
+        printed = _capture([row])
+        self.assertIn("LAX=1", printed)
+        self.assertNotIn("somewhere", printed)
+
     def test_a_python_worker_that_only_fills_the_stack_still_gives_a_line(self):
         row = {"outcome": "exception",
                "exceptions": [{"name": "", "message": "",
