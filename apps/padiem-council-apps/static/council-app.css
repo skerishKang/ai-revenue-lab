@@ -416,8 +416,14 @@ body.council-body {
 .council-photo-add,
 .council-photo-controls button,
 .council-photo-pos-select,
-.council-result h3 {
+.council-result h3,
+.council-country select {
   min-height: 44px;
+}
+/* 390px 실측에서 빠진 두 개: 언어 선택 32px, 활동 기록 체크박스 13px. */
+.council-book-check {
+  width: 24px;
+  height: 24px;
 }
 .council-archive-item button,
 .council-saved-item .council-saved-open,
