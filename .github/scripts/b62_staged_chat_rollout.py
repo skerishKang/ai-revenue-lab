@@ -119,6 +119,10 @@ def rollout(
             failed = True
             log("STAGED_SMOKE=FAIL")
             log(_last_lines(getattr(result, "stdout", "")))
+            # Both proofs write their own refusal marker to standard error - the
+            # one thing a reader needs to tell "Chat is broken" from "this proof
+            # could not run". They carry marker names only, no bodies.
+            log(_last_lines(getattr(result, "stderr", "")))
             break
     if failed:
         if previous_version:

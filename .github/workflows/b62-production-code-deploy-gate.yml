@@ -891,6 +891,13 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ALLOW_BINDING_REMOVAL: ${{ inputs.allow_binding_removal }}
+      # The staged proof signs in as the QA account the long-context canary
+      # already uses, so that identity has to reach the step that runs it. Names
+      # only: the values stay in vars/secrets, and no step body interpolates them
+      # into a command. Without these the signed-in proof can only ever answer
+      # "cannot sign in" - which is a failure to read, not a result about Chat.
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
