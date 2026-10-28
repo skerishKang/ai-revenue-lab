@@ -1241,6 +1241,9 @@
     if (!select) return;
     const country = currentCountry();
     select.value = country;
+    // init()(평소 로드)과 enterSignedIn()(로그인 후) 이 모두 부른다. 리스너는 한 번만 건다.
+    if (session.countryBound) return;
+    session.countryBound = true;
     select.addEventListener("change", () => {
       const next = COUNTRY_INSTRUCTIONS[select.value] === undefined ? "kr" : select.value;
       try { if (window.localStorage) window.localStorage.setItem(COUNTRY_KEY, next); } catch (_) {}
@@ -1488,6 +1491,7 @@
     }
     setBadge("로그인됨");
     hideAuthPanel();
+    syncCountrySelect();
     buildToolPanels();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
