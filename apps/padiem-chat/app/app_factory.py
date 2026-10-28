@@ -342,6 +342,7 @@ from .pc_file_exchange_routes import (
     PC_FETCH_PATH,
     PC_FILE_PATH,
     PC_FIND_PATH,
+    PC_REFERENCE_PATH,
     PC_RESULT_PATH,
     PC_SAVE_PATH,
     pc_file_exchange_browse,
@@ -349,6 +350,7 @@ from .pc_file_exchange_routes import (
     pc_file_exchange_fetch,
     pc_file_exchange_file,
     pc_file_exchange_find,
+    pc_file_exchange_reference,
     pc_file_exchange_result,
     pc_file_exchange_save,
 )
@@ -920,6 +922,7 @@ def create_app(
         Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
         Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
         Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
+        Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
         Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),

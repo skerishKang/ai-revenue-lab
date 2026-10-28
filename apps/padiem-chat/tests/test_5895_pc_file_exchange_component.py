@@ -42,8 +42,14 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
     html = (STATIC / "index.html").read_text(encoding="utf-8")
     script = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
 
-    assert html.count('<script src="./pc-file-exchange.js" defer></script>') == 1
-    assert html.count('<link rel="stylesheet" href="./pc-file-exchange.css" />') == 1
+    # #5895 menu connection: the part is no longer loaded with every page. The
+    # authoring screens load it the first time an owner asks for it, which is also
+    # what keeps a page that never touches a PC from paying for it.
+    assert 'pc-file-exchange.js' not in html and 'pc-file-exchange.css' not in html
+    menu = (STATIC / "util-menu.js").read_text(encoding="utf-8")
+    assert 'script.src = "./pc-file-exchange.js"' in menu
+    assert 'css.href = "./pc-file-exchange.css"' in menu
+    assert menu.count("loadPcExchange()") >= 2
     # The part speaks only to the six new owner routes: nothing older, nothing the
     # composer owns, and no second pairing or dispatch surface.
     assert sorted({found for found in script.split('"') if found.startswith("/api/")}) == [

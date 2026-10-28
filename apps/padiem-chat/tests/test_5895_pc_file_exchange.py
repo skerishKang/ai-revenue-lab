@@ -617,6 +617,55 @@ def test_a_folder_sweep_answers_only_its_own_matches(monkeypatch):
     assert body["found"][0]["folder"] == QUARTERLY + "/2026"
 
 
+def test_a_reference_read_hands_back_the_words_of_the_owners_file(monkeypatch):
+    dispatch = "dsp_" + "4" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="read", text="작년 신년사 본문입니다")
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/작년 신년사.txt"
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": dispatch})
+    )))
+    assert status == 200 and body["ok"] is True, body
+    assert body["text"] == "작년 신년사 본문입니다"
+    assert body["name"] == "작년 신년사.txt"
+    assert body["chars"] == len("작년 신년사 본문입니다")
+
+
+def test_a_reference_read_refuses_a_file_it_cannot_read(monkeypatch):
+    dispatch = "dsp_" + "5" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="read",
+                  text=bytes([0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFE]) + b"binary")
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/낡은 파일.bin"
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": dispatch})
+    )))
+    assert status == 422 and body["error"]["code"] == "pc_reference_unreadable"
+
+
+def test_a_reference_read_is_owner_scoped_and_needs_a_finished_fetch(monkeypatch):
+    done = "dsp_" + "6" * 32
+    waiting = "dsp_" + "7" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=done, kind="read", text="본문")
+    state.history_store.dispatches[waiting] = {
+        "dispatch_id": waiting, "user_id": OWNER, "kind": "read", "state": "pending",
+        "expires_at": "2099-01-01T00:00:00.000Z",
+    }
+
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(state, body={"file_id": waiting})
+    )))
+    assert status == 409 and body["error"]["code"] == "oracle_mesh_result_not_ready"
+
+    outsider = _state(monkeypatch, uid=OUTSIDER)[0]
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
+        _Request(outsider, body={"file_id": done})
+    )))
+    # Another account's fetch is not found, exactly like a missing one.
+    assert status == 404 and body["error"]["code"] == "pc_dispatch_not_found"
+
+
 # ── the durable read the progress display watches ────────────────────────
 
 def _finished(state, *, dispatch_id, kind, text, command=None, state_name="done",
@@ -879,7 +928,8 @@ def test_text_arrives_as_text_and_everything_else_arrives_as_a_file(monkeypatch)
     state, _captured, _link, _ = _state(monkeypatch)
     _finished(state, dispatch_id=text_dispatch, kind="read", text="본문입니다")
     # A zip header, not text: the sheet a menu wants to keep as a file.
-    _finished(state, dispatch_id=binary_dispatch, kind="read", text=b"PK\x03\x04\xff\xfebinary")
+    _finished(state, dispatch_id=binary_dispatch, kind="read",
+              text=bytes([0x50, 0x4B, 0x03, 0x04, 0xFF, 0xFE]) + b"binary")
 
     _status, body = _answer(pairing.run(exchange.pc_file_exchange_result(
         _Request(state, query={"dispatch_id": text_dispatch}, method="GET")

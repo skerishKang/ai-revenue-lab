@@ -125,6 +125,7 @@ PC_SAVE_PATH = "/api/pc/save"
 PC_CANCEL_PATH = "/api/pc/cancel"
 PC_RESULT_PATH = "/api/pc/result"
 PC_FILE_PATH = "/api/pc/file"
+PC_REFERENCE_PATH = "/api/pc/reference"
 LINK_ID = re.compile(r"\Apclink_[0-9a-f]{32}\Z")
 DISPATCH_ID = re.compile(r"\Adsp_[0-9a-f]{32}\Z")
 #: The lane's own run identity, as `_new_lane_run_id` mints it. A screen may name a
@@ -1065,6 +1066,73 @@ async def pc_file_exchange_file(request: Request) -> Response:
             "X-Padiem-PC-Content-SHA256": str(dispatch.get("result_sha256")),
         },
     )
+
+
+def _reference_text(name: str, content: bytes) -> str | None:
+    """The words inside one owner-verified PC file, or None when they cannot be read.
+
+    The extractors are the same pure-Python ones the document lane already uses (no
+    external parser, no second authority), and they are imported here — inside the
+    request — so no document parser joins the Worker's cold init (#6034). A file this
+    build cannot read is refused by name; nothing is guessed at or passed through raw.
+    """
+
+    if _is_text(content):
+        return content.decode("utf-8")
+    suffix = "." + name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    try:
+        if suffix == ".docx":
+            from padiem_ai_core.document_normalization import extract_docx_text
+
+            return extract_docx_text(content)
+        if suffix == ".hwpx":
+            from padiem_ai_core.document_normalization import extract_hwpx_text
+
+            return extract_hwpx_text(content)
+        if suffix == ".pdf":
+            # The core keeps one PDF text path and the document lane is its only
+            # public entry today; the reference read reuses that one parser rather
+            # than growing a second copy of it.
+            from padiem_ai_core.document_normalization import _extract_pdf_text
+
+            return _extract_pdf_text(content)
+    except Exception:
+        return None
+    return None
+
+
+async def pc_file_exchange_reference(request: Request) -> JSONResponse:
+    """One PC file as the owner can read it — the words a menu uses as reference.
+
+    Only the fetch's dispatch id comes from the browser; the bytes are re-read through
+    the same owner-verified, digest-pinned path `/api/pc/file` uses. There is no count
+    or length ceiling here: the owner's own files are handed back whole, and a format
+    this build cannot read is refused plainly instead of being guessed at.
+    """
+
+    body = await _read_body(request, frozenset({"file_id"}))
+    if body is None:
+        return _error(400, "pc_exchange_invalid_body")
+    file_id = body.get("file_id")
+    if not isinstance(file_id, str) or DISPATCH_ID.fullmatch(file_id) is None:
+        return _error(404, "pc_dispatch_not_found")
+    owner = await _readable_owner(request)
+    if isinstance(owner, JSONResponse):
+        return owner
+    uid, _store = owner
+    dispatch = await _dispatch_row(request, uid, file_id)
+    if isinstance(dispatch, JSONResponse):
+        return dispatch
+    if dispatch.get("state") != "done":
+        return _error(409, "oracle_mesh_result_not_ready")
+    content, refusal = await _stored_output(request, uid, dispatch)
+    if refusal is not None:
+        return refusal
+    name = str(dispatch.get("file_path") or "").replace("\\", "/").rsplit("/", 1)[-1] or "파일"
+    text = _reference_text(name, content)
+    if not isinstance(text, str) or not text.strip():
+        return _error(422, "pc_reference_unreadable")
+    return _response({"ok": True, "name": name, "text": text, "chars": len(text)})
 
 
 def _link_id(value: Any) -> tuple[str | None, JSONResponse | None]:

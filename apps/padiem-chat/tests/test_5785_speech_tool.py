@@ -114,6 +114,8 @@ def test_the_group_touches_only_the_existing_endpoints(speech: dict) -> None:
         "GET /api/projects/p1/files",
         "POST /api/projects/p1/files",
         "POST /api/chat",
+        # #5895: whether a PC is linked, read through the existing pairing list.
+        "GET /api/pc/pairings",
     }
     # Reopening reads the one stored draft through the existing detail route.
     allowed.add("GET /api/projects/p1/files/f1")

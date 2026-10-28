@@ -386,3 +386,77 @@ html[data-theme="cinematic"] .pdfmd-warn { color: #f0c48a; }
   .pdfmd-history-list button { align-items: flex-start; }
   .pdfmd-history-list button .pdfmd-status-chip { flex: 0 0 auto; }
 }
+
+/* #5895: the shared "from my PC" part inside the authoring forms. The picker itself
+   is its own dialog; this only lays out the button, the preview of what came over,
+   and the one-line notice a screen shows when no PC is linked yet. */
+.util-pc-ref {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.util-pc-ref-mount:empty { display: none; }
+
+.util-pc-ref-pick,
+.util-pc-ref-connect,
+.util-pc-ref-remove {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  background: var(--surface, rgba(255, 255, 255, 0.8));
+  color: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.util-pc-ref-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted, #5a7488);
+}
+
+.util-pc-ref-status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--danger, #a1303f);
+}
+
+.util-pc-ref-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.util-pc-ref-item {
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.22));
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.6));
+}
+
+.util-pc-ref-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.util-pc-ref-name { font-size: 0.92rem; }
+.util-pc-ref-chars { font-size: 0.8rem; color: var(--muted, #5a7488); }
+
+.util-pc-ref-preview {
+  margin: 6px 0 0;
+  max-height: 140px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+  color: var(--muted, #4a6a80);
+}
