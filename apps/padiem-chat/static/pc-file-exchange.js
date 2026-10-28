@@ -392,6 +392,9 @@
     shown.forEach((item) => nodes.list.append(rowFor(item)));
     nodes.more.hidden = state.items.length <= shown.length;
     nodes.folderLabel.textContent = state.folderName || copy("pc-exchange-contents");
+    // Every path change lands here: the root disables 이전 폴더, any folder
+    // inside re-arms it — in save mode too.
+    nodes.back.disabled = state.path === ".";
     if (state.mode === "save") {
       nodes.pick.hidden = false;
       return;
@@ -467,6 +470,12 @@
     const tools = element("div", "pc-exchange-tools");
     const back = element("button", "pc-exchange-back", copy("pc-exchange-up"));
     back.type = "button";
+    // The dialog opens at the root, where there is no parent folder: the button
+    // is born disabled and paintList keeps the state glued to the path the
+    // owner is actually in. The name stays on the button for assistive tech
+    // even on the phone, where the row only has room for the arrow.
+    back.setAttribute("aria-label", copy("pc-exchange-up"));
+    back.disabled = state.path === ".";
     const search = element("input", "pc-exchange-search");
     search.type = "search";
     search.setAttribute("aria-label", copy("pc-exchange-search-placeholder"));
