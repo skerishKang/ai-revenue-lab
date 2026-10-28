@@ -157,7 +157,8 @@ class RealRowShapeTests(unittest.TestCase):
         "scriptName": "padiem-chat",
         "truncated": False,
         "event": {"request": {"url": "https://chat.padiem.net/api/pc/pairings?t=QUERYSECRET",
-                              "headers": {"cookie": COOKIE}}},
+                              "headers": {"cookie": COOKIE}},
+                  "response": {"status": 500}},
         "exceptions": [{"name": "Error", "pattern": "PythonException: import blew up",
                         "message": "import blew up"}],
         "diagnosticsChannelEvents": [{"body": {"kind": "exception"}}],
@@ -169,10 +170,41 @@ class RealRowShapeTests(unittest.TestCase):
         self.assertIn("PythonException: import blew up", printed)
         self.assertIn("/api/pc/pairings", printed)
         self.assertIn("SHAPE_KEYS=", printed)
-        self.assertIn("exceptions[].pattern", printed)
+        self.assertIn("exceptions[].message", printed)
+        self.assertIn("TAIL_TRUNCATED=0/1", printed)
         self.assertNotIn("QUERYSECRET", printed)
         self.assertNotIn(COOKIE, printed)
         self.assertNotIn(BODY, printed)
+
+    def test_the_shape_report_shows_field_lengths_not_field_text(self):
+        printed = _capture([dict(self.ROW)])
+        self.assertIn("event.request.url=53ch", printed)
+        self.assertIn("event.request.<hidden>", printed)
+        self.assertNotIn("chat.padiem.net", printed)
+
+    def test_the_response_status_is_read_from_where_the_row_keeps_it(self):
+        summary = summ.summarize([dict(self.ROW)])
+        self.assertEqual(summary["statuses"]["500"], 1)
+
+    def test_the_colo_comes_from_the_request_cf_metadata(self):
+        row = dict(self.ROW)
+        row["event"] = dict(row["event"])
+        row["event"]["request"] = dict(row["event"]["request"])
+        row["event"]["request"]["cf"] = {"colo": "lax", "city": "somewhere",
+                                         "asn": 9999, "botManagement": {"verdict": "x"}}
+        printed = _capture([row])
+        self.assertIn("LAX=1", printed)
+        self.assertNotIn("somewhere", printed)
+
+    def test_a_python_worker_that_only_fills_the_stack_still_gives_a_line(self):
+        row = {"outcome": "exception",
+               "exceptions": [{"name": "", "message": "",
+                               "stack": "KeyError: something\n  at module.py line 1\n"}],
+               "event": {"request": {"url": ""}}}
+        printed = _capture([row])
+        self.assertIn("KeyError: something", printed)
+        self.assertNotIn("module.py", printed)
+        self.assertIn("TAIL_TRUNCATED=0/1", printed)
 
 
 class WorkflowContractTests(unittest.TestCase):

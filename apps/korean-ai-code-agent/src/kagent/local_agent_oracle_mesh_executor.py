@@ -234,6 +234,17 @@ class OracleMeshExecutor:
         self._last_round_at = time.monotonic()
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
+        #: The connector's own answer to "is a dispatch running on this PC right now".
+        #: One entry per PC, written when a claim starts and removed when the console
+        #: has answered, so the line sweep can be told "busy" from "abandoned" from a
+        #: real field instead of a text match. A held result is NOT in here: the work
+        #: on the PC already finished, so that PC's console is free.
+        self._active_by_node: dict[str, str] = {}
+        self._active_lock = threading.Lock()
+        #: Line-blockage observations, counted here so the journal and the report can
+        #: say how often a PC needed clearing without anyone being asked.
+        self._line_blocked = 0
+        self._line_cleared = 0
         self._rejections = 0
         self._transients = 0
         self._pending_dir = pending_dir
@@ -653,6 +664,9 @@ class OracleMeshExecutor:
                 cancel_probe=self._cancel_probe(dispatch),
                 # The marker the PC-side stop needs: this command's own dispatch.
                 dispatch_id=getattr(dispatch, "dispatch_id", None),
+                # What the console sweep may never touch: the dispatches this
+                # connector is running, read from its own state.
+                keep_dispatch_ids=self.active_dispatch_ids(),
             )
         except Exception as exc:
             if type(exc).__name__ == "MeshCentralCommandRefused":
@@ -684,9 +698,17 @@ class OracleMeshExecutor:
         if not isinstance(body, (bytes, bytearray)):
             body = b""
         raw = bytes(body)
+        blocked = getattr(observed, "line_blocked", 0)
+        cleared = getattr(observed, "line_cleared", 0)
+        blocked = blocked if isinstance(blocked, int) and not isinstance(blocked, bool) else 0
+        cleared = cleared if isinstance(cleared, int) and not isinstance(cleared, bool) else 0
+        self._line_blocked += max(0, blocked)
+        self._line_cleared += max(0, cleared)
         self._trace_command(
             dispatch, "result", started, termination=termination,
             output_bytes=len(raw),
+            line_blocked=blocked or None,
+            line_cleared=cleared or None,
         )
         return OracleMeshExecutionOutcome(
             termination=termination, exit_code=exit_code, body=raw,
@@ -1328,6 +1350,49 @@ class OracleMeshExecutor:
         dispatch, outcome = self._pending
         return self.submit(dispatch, outcome)
 
+    # ---- which PC is busy, in the connector's own words -----------------
+    def active_dispatch_id(self, node_ref: str) -> Optional[str]:
+        """The dispatch this connector is running on that PC right now, or None."""
+        with self._active_lock:
+            return self._active_by_node.get(node_ref)
+
+    def active_dispatch_ids(self) -> tuple[str, ...]:
+        """Every dispatch this connector is running, on any PC.
+
+        The line sweep protects exactly these. Nothing here is inferred from a
+        transcript or a log line, so a PC cannot talk its way out of being skipped.
+        """
+        with self._active_lock:
+            return tuple(self._active_by_node.values())
+
+    def line_observations(self) -> dict[str, int]:
+        """How often a held console line was found, and how often it was freed.
+
+        Totals for this process, not for one round: a monitor watching for a PC that
+        needs clearing more than once an hour reads a counter, and a counter has to
+        say so in its own name.
+        """
+        return {
+            "line_blocked_total": self._line_blocked,
+            "line_cleared_total": self._line_cleared,
+        }
+
+    def _mark_active(self, dispatch: OracleMeshDispatch) -> None:
+        node_ref = str(getattr(dispatch, "node_ref", "") or "")
+        dispatch_id = str(getattr(dispatch, "dispatch_id", "") or "")
+        if not node_ref or not dispatch_id:
+            return
+        with self._active_lock:
+            self._active_by_node[node_ref] = dispatch_id
+
+    def _clear_active(self, dispatch: OracleMeshDispatch) -> None:
+        node_ref = str(getattr(dispatch, "node_ref", "") or "")
+        with self._active_lock:
+            if self._active_by_node.get(node_ref) == str(
+                getattr(dispatch, "dispatch_id", "") or ""
+            ):
+                self._active_by_node.pop(node_ref, None)
+
     def run_once(self) -> Optional[dict[str, Any]]:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
@@ -1342,12 +1407,33 @@ class OracleMeshExecutor:
         if dispatch is None:
             return None
         renewer = self.start_lease_renewal(dispatch)
+        self._mark_active(dispatch)
         try:
             outcome = self.execute(dispatch)
         finally:
+            # The PC owns its console again the moment the console has answered,
+            # not when the result is finally accepted: a held result is bytes this
+            # host already has, and the line sweep must not be told a finished PC
+            # is busy.
+            self._clear_active(dispatch)
             if renewer is not None:
                 renewer.set()
-        return self.submit(dispatch, outcome)
+        return self._with_line_observations(self.submit(dispatch, outcome))
+
+    def _with_line_observations(self, report: Any) -> Any:
+        """Put the line-blockage counts on the round's own report.
+
+        Only when there is something to say: an idle queue and a healthy PC keep the
+        report exactly as it was, so a monitor reads a number as an event and not as
+        noise on every line.
+        """
+        if not isinstance(report, dict):
+            return report
+        observations = self.line_observations()
+        if (observations["line_blocked_total"]
+                or observations["line_cleared_total"]):
+            report.update(observations)
+        return report
 
     def start_lease_renewal(self, dispatch: OracleMeshDispatch) -> Optional[threading.Event]:
         """#5997 — hold this claim for as long as the command actually runs.
@@ -1699,10 +1785,13 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # Brief idle gap prevents a retry storm on older Chat versions.
             time.sleep(1)
             continue
+        observations = executor.line_observations()
         print(
             f"oracle-mesh-executor result ok={result.get('ok')} "
             f"retryable={result.get('retryable', False)} "
-            f"quarantined={result.get('quarantined', False)}",
+            f"quarantined={result.get('quarantined', False)} "
+            f"line_blocked_total={observations['line_blocked_total']} "
+            f"line_cleared_total={observations['line_cleared_total']}",
             flush=True,
         )
         if result.get("ok") is True:

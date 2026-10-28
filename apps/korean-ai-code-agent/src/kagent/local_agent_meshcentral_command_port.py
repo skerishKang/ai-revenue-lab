@@ -21,6 +21,15 @@ The bytes returned here are the PC output verbatim, including CR/LF and any
 leading/trailing whitespace, minus the envelope line and the sentinel line this
 module itself added.
 
+One more fact governs the shape of this module: the agent runs one command child at
+a time and answers a later ``runcommand`` with "already busy" while that child
+lives, so a command that never finished leaves every later operation on that PC
+without a reply. ``meshctrl shell`` reaches the same agent over a terminal tunnel,
+which is the channel that kept working while the console was held; the owner's stop
+(#6059) and the console sweep below both travel it. The wait for an answer carries a
+deadline and the work on the PC never does, and the sweep is what tells the two
+apart on the PC itself rather than by guesswork here.
+
 The envelope exists because of what the PC's own console does with Korean. A
 Windows console answers in its code page (cp949 on 한국어 installations), the
 MeshCentral agent puts that reply on a WebSocket *text* frame, and MeshCentral
@@ -32,6 +41,7 @@ itself travels as MeshCentral's own UTF-8 JSON, which the server encodes.
 from __future__ import annotations
 
 import base64
+import json
 import os
 import re
 import time
@@ -95,6 +105,38 @@ class MeshCentralCommandOutcome:
     output: bytes
     method: str = METHOD_LABEL
     merged_streams: bool = MERGED_STREAMS
+    #: How many times this command found the PC's console held by a process that
+    #: no dispatch owns. Communication state, not a judgement about the work.
+    line_blocked: int = 0
+    #: How many times such a process was actually ended. A detection without a
+    #: clearing is reported as it happened, never as a recovery.
+    line_cleared: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class MeshCentralLineSweep:
+    """What one out-of-band console sweep observed on the PC.
+
+    ``observed`` is the honest split the owner rule requires: a session that could
+    not bring its answer back is ``observed=False`` and is reported as unobserved,
+    never as a clean console. The ending decision itself is taken on the PC, so a
+    lost answer cannot make this sweep kill more than an answer.
+    """
+
+    #: Which scope this sweep was allowed to reach: see ``SWEEP_MODE_ABANDONED``.
+    mode: str
+    #: The terminal session reached the PC and its bound expired or answered.
+    ran: bool
+    #: A verdict frame came back and was read.
+    observed: bool
+    #: The PC answered "a dispatch this connector owns is running right now".
+    running: bool
+    #: Agent children that were holding the console when the sweep ran.
+    found: tuple[dict[str, Any], ...] = ()
+    #: Process ids whose tree the PC ended.
+    killed: tuple[int, ...] = ()
+    #: Bounded reason for a sweep that produced nothing; never an output blob.
+    error: str = ""
 
 
 def _bounded_command(value: Any) -> str:
@@ -135,6 +177,25 @@ def _checked_dispatch_id(value: Any) -> str:
     return value
 
 
+#: A host tag is this connector's own name, written into a file on the customer's
+#: PC and read back into a comparison. Anything that is not a hostname character is
+#: dropped rather than escaped, so a tag can never carry a quote into a literal.
+_HOST_TAG = re.compile(r"[^0-9A-Za-z._-]")
+
+
+def _checked_host_tag(value: Any) -> str:
+    if not isinstance(value, str):
+        raise MeshCentralCommandRefused("the executor host tag must be text")
+    return _HOST_TAG.sub("", value)[:64]
+
+
+def _local_host_tag() -> str:
+    """This executor's own name, the only thing that may claim a marker as ours."""
+    import socket
+
+    return _checked_host_tag(socket.gethostname())
+
+
 def _pid_file_literal(dispatch_id: str) -> str:
     """The PowerShell expression for this dispatch's own marker file on the PC.
 
@@ -166,7 +227,247 @@ def cancel_kill_command(dispatch_id: str) -> str:
     )
 
 
-def _wrap(command: str, dispatch_id: str | None = None) -> str:
+#: Owner decision 2026-10-29, connector stability standard 2 and 3: the wait for an
+#: ANSWER on the PC's console carries a deadline, the work on the PC does not. This
+#: is the communication bound only - a command the PC is actually running is never
+#: interrupted by it, because the sweep asks the PC whether that command is alive
+#: before it touches anything.
+LINE_STALL_WAIT_SECONDS = 120
+#: The sweep rides the same terminal session the stop rides, so it inherits the
+#: stop's bound: a sweep that cannot reach the PC must never become the new way to
+#: hold that PC.
+LINE_SWEEP_WAIT_SECONDS = CANCEL_KILL_WAIT_SECONDS
+#: How many in-progress dispatches may be named as protected on one sweep. The
+#: executor's own active set is one in the normal case; the bound keeps a
+#: malformed caller from stretching a script line on a customer machine.
+LINE_SWEEP_KEEP_LIMIT = 8
+#: The marker file's own prefix length, used to read a dispatch id back out of the
+#: file name the command left behind.
+_MARKER_PREFIX_LENGTH = len(PC_CANCEL_PID_FILE_PREFIX)
+#: Answer frame for the sweep. The script builds it from two literals so the
+#: terminal's echo of the script itself can never read back as an answer.
+SWEEP_SENTINEL = "__PADIEM_SWEEP__"
+_BASE64_BODY = re.compile(rb"[A-Za-z0-9+/=]+")
+#: What one terminal session may accumulate on this host. The answer line is a
+#: few hundred bytes; the limit only bounds a chatty terminal, and a session that
+#: runs past it reports its verdict as unobserved instead of growing without end.
+HANDOFF_CAPTURE_LIMIT = 262_144
+
+
+def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
+    """The dispatch ids whose work on the PC this sweep must never touch.
+
+    Every id passes the same grammar the stop applies, so nothing that is not a
+    dispatch identifier this module understands can reach a PowerShell literal.
+    """
+    ids: list[str] = []
+    for value in ((dispatch_id,) if dispatch_id is not None else ()) + tuple(
+        keep_dispatch_ids or ()
+    ):
+        checked = _checked_dispatch_id(value)
+        if checked not in ids:
+            ids.append(checked)
+        if len(ids) >= LINE_SWEEP_KEEP_LIMIT:
+            break
+    return ids
+
+
+#: Two scopes, because the two moments that ask for them know different things.
+#: ``abandoned`` is the pre-flight scope: it ends only a process a PADIEM dispatch
+#: left its own marker on, so a person's terminal on the same PC is never touched
+#: while the line is provably idle. ``held`` is the scope after the wait cap: the
+#: command this connector sent produced nothing and the PC says it never started,
+#: which means whatever holds the console is holding it for no dispatch - measured
+#: on 2026-10-29 as a diagnostic PowerShell that survived eleven hours.
+SWEEP_MODE_ABANDONED = "abandoned"
+SWEEP_MODE_HELD = "held"
+SWEEP_MODES = (SWEEP_MODE_ABANDONED, SWEEP_MODE_HELD)
+
+
+def _sweep_head(dispatch_id: str | None, keep: list[str]) -> str:
+    """The part both sweep scopes share: name the agent, the markers, the protected set.
+
+    Everything is read from OS process records and from the marker file each command
+    leaves for itself. No image name, service name, window title or output text is
+    matched anywhere, so a verdict cannot be talked into firing by a string that
+    happens to appear on the screen.
+    """
+    own = (
+        "$__padiem_own=" + _pid_file_literal(dispatch_id) + ";"
+        "if (Test-Path -LiteralPath $__padiem_own) {"
+        " $__padiem_ours=[uint32]((Get-Content -LiteralPath $__padiem_own"
+        " | Select-Object -First 1))};"
+    ) if dispatch_id is not None else ""
+    return (
+        "$ErrorActionPreference='SilentlyContinue';"
+        "$__padiem_self=$PID;"
+        "$__padiem_agent=(Get-CimInstance Win32_Process -Filter "
+        '"ProcessId=$__padiem_self").ParentProcessId;'
+        "$__padiem_temp=[IO.Path]::GetTempPath();"
+        "$__padiem_ours=$null;" + own +
+        "$__padiem_live=$null;"
+        "if ($__padiem_ours) { $__padiem_live=Get-CimInstance Win32_Process "
+        '-Filter "ProcessId=$__padiem_ours" };'
+        "$__padiem_keep=@(" + ",".join("'" + i + "'" for i in keep) + ");"
+        "$__padiem_safe=@($__padiem_self);$__padiem_orphan=@();"
+        # The agent is named by walking up from this session's own process, so the
+        # family chain is protected whatever the agent put between itself and this
+        # shell. A sweep that ended its own session would answer nothing, which is
+        # the failure mode this whole lane exists to avoid.
+        "$__padiem_walk=$__padiem_self;$__padiem_hop=0;"
+        "while ($__padiem_walk -and $__padiem_hop -lt 8) {"
+        " $__padiem_pp=(Get-CimInstance Win32_Process -Filter "
+        '"ProcessId=$__padiem_walk").ParentProcessId;'
+        " if (-not $__padiem_pp) { break };"
+        " $__padiem_safe += $__padiem_pp;"
+        " $__padiem_walk=$__padiem_pp;$__padiem_hop++};"
+        # Every command names itself in the agent's own temporary folder. Read the
+        # folder: a marker this connector still owns protects that tree, and a
+        # marker nobody owns is the orphan this sweep exists to find. The counter is
+        # cleared per file, because a read that failed must not carry the previous
+        # file's process id onto the next one.
+        "foreach ($__padiem_f in Get-ChildItem -LiteralPath $__padiem_temp "
+        "-Filter '" + PC_CANCEL_PID_FILE_PREFIX + "*.pid') {"
+        " $__padiem_id=$__padiem_f.BaseName.Substring(" + str(_MARKER_PREFIX_LENGTH)
+        + ");$__padiem_p=$null;$__padiem_h='';"
+        "$__padiem_v=@((Get-Content -LiteralPath $__padiem_f.FullName "
+        "| Select-Object -First 2));"
+        "$__padiem_p=[uint32]$__padiem_v[0];$__padiem_h=[string]$__padiem_v[1];"
+        " if ($__padiem_keep -contains $__padiem_id) {"
+        " if ($__padiem_p) { $__padiem_safe += $__padiem_p } }"
+        " elseif ($__padiem_p) { $__padiem_orphan +="
+        " @{id=$__padiem_id;pid=$__padiem_p;host=$__padiem_h;"
+        "file=$__padiem_f.FullName} }};"
+        "$__padiem_found=@();$__padiem_killed=@();"
+    )
+
+
+def _sweep_frame(mode: str) -> str:
+    return (
+        "$__padiem_out=@{mode='" + mode + "';agent=$__padiem_agent;"
+        " running=[bool]($__padiem_live -ne $null);"
+        " found=$__padiem_found; killed=$__padiem_killed;"
+        " self=[uint32]$__padiem_self} | ConvertTo-Json -Compress -Depth 5;"
+        ' Write-Output ("__PADIEM_" + "SWEEP__"'
+        " + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem_out)))"
+    )
+
+
+def sweep_script(
+    *,
+    dispatch_id: str | None = None,
+    keep_dispatch_ids=(),
+    mode: str = SWEEP_MODE_ABANDONED,
+    host_tag: str | None = None,
+) -> str:
+    """Free the PC's serial console from a process that no dispatch owns.
+
+    The agent runs one command child at a time and drops a later request as
+    "already busy" while it lives, so a PowerShell left behind by an abandoned
+    command leaves every later operation on that PC without a reply - measured twice
+    on 2026-10-28 and 2026-10-29, and ended by hand both times. The script decides on
+    the PC, so the safety never depends on an answer that may not come back:
+
+    * the agent itself is never a candidate. It is read as the parent, and the
+      parent chain of this very session is how that parent is named - no image
+      name is written here;
+    * when the marker of a dispatch this connector owns points at a live process,
+      the PC is running real work and NOTHING is ended. That single condition is
+      the whole difference between a ceiling on the work and a ceiling on the
+      wait for an answer;
+    * a process whose own dispatch is named in the protected set is skipped, so a
+      command another lane runs on the same PC keeps running;
+    * this session's own process is skipped, because ending it would end the
+      answer the script is about to print;
+    * in the pre-flight scope, a marker left by the other executor host is skipped
+      too. Two hosts can hold a claim on one PC during a failover handover, and a
+      command that is running on the partner's authority is not this one's to
+      clear;
+    * an orphan marker is removed with its tree, so the next sweep can never aim a
+      stale process id at a process that was started later under that number.
+
+    The verdict comes back as one Base64 line. Only ASCII may cross that frame:
+    a Korean process name in a UTF-8 reply frame is what MeshCentral drops, and a
+    dropped frame is a PC that looks healthy while its answer is gone.
+    """
+    if mode not in SWEEP_MODES:
+        raise MeshCentralCommandRefused("the sweep scope is not one this module knows")
+    keep = _keep_id_literals(dispatch_id, keep_dispatch_ids)
+    head = _sweep_head(dispatch_id, keep)
+    if mode == SWEEP_MODE_ABANDONED:
+        # Nothing here is proven blocked, so the reach is only ever this host's own
+        # abandoned work.
+        if host_tag:
+            mine = (
+                " if ($__padiem_o.host -ne '"
+                + _checked_host_tag(host_tag) + "') { continue };"
+            )
+        else:
+            # Without a tag there is no way to tell our own leftover from the
+            # failover partner's running command, so this scope ends nothing at all.
+            # The held scope, taken only once a line is provably dead, is the
+            # recovery path for a port that does not name itself.
+            mine = " continue;"
+        body = (
+            "if (-not $__padiem_live) {"
+            " foreach ($__padiem_o in $__padiem_orphan) {"
+            + mine +
+            ' $__padiem_c=Get-CimInstance Win32_Process -Filter '
+            '"ProcessId=$($__padiem_o.pid)";'
+            " if ($__padiem_safe -contains $__padiem_o.pid) { continue };"
+            " if ($__padiem_c) {"
+            " $__padiem_found += @{pid=$__padiem_o.pid; name=[string]$__padiem_c.Name;"
+            " created=[string]$__padiem_c.CreationDate; dispatch=$__padiem_o.id};"
+            " & taskkill /T /F /PID $__padiem_o.pid | Out-Null;"
+            " $__padiem_killed += $__padiem_o.pid };"
+            " Remove-Item -LiteralPath $__padiem_o.file -Force }};"
+        )
+    else:
+        # The held-line scope: nothing this connector owns is running, so every
+        # console process the agent spawned is holding that console for work no
+        # dispatch claims. Their markers go with them, for the same stale-pid reason.
+        body = (
+            "if (-not $__padiem_live) {"
+            " foreach ($__padiem_k in Get-CimInstance Win32_Process -Filter"
+            ' "ParentProcessId=$__padiem_agent") {'
+            " if ($__padiem_safe -contains $__padiem_k.ProcessId) { continue };"
+            " $__padiem_found += @{pid=[uint32]$__padiem_k.ProcessId;"
+            " name=[string]$__padiem_k.Name; created=[string]$__padiem_k.CreationDate};"
+            " & taskkill /T /F /PID $__padiem_k.ProcessId | Out-Null;"
+            " $__padiem_killed += [uint32]$__padiem_k.ProcessId }};"
+            " foreach ($__padiem_o in $__padiem_orphan) {"
+            " Remove-Item -LiteralPath $__padiem_o.file -Force };"
+        )
+    return head + body + _sweep_frame(mode)
+
+
+def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
+    """Read one sweep verdict frame out of a terminal session, or say it is unreadable.
+
+    A terminal echoes what was typed and interleaves prompts with the answer, so
+    the frame is taken from its LAST occurrence and only for as far as Base64 runs.
+    ``None`` means no verdict came back. It is never read as "nothing was left
+    behind": the caller reports the sweep as unobserved instead of clean.
+    """
+    if not isinstance(raw, (bytes, bytearray)):
+        return None
+    data = bytes(raw)
+    marker = SWEEP_SENTINEL.encode("ascii")
+    position = data.rfind(marker)
+    if position < 0:
+        return None
+    body = _BASE64_BODY.match(data, position + len(marker))
+    if body is None:
+        return None
+    try:
+        decoded = base64.b64decode(body.group(0), validate=True).decode("utf-8")
+        verdict = json.loads(decoded)
+    except Exception:
+        return None
+    return verdict if isinstance(verdict, dict) else None
+
+
+def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -192,8 +493,13 @@ def _wrap(command: str, dispatch_id: str | None = None) -> str:
     exit code, and a cmdlet-only pipeline still leaves it empty rather than 0.
 
     With a dispatch id the wrapped script also leaves, and removes, that
-    dispatch's marker file - see ``cancel_kill_command``. Without one it is the
-    same bytes as before, so nothing about a command's own result can change.
+    dispatch's marker file - see ``cancel_kill_command``. The marker is two lines:
+    the process id first, because that is all the stop has ever read and all it
+    will read, and this executor host's own tag second. The tag is what lets a
+    console sweep tell its own leftover from the leftover of the failover partner
+    that claimed the same PC during a handover - a distinction that has to exist
+    before anything on a customer machine may be ended. Without a dispatch id it is
+    the same bytes as before, so nothing about a command's own result can change.
     """
     marks = ""
     clears = ""
@@ -203,6 +509,11 @@ def _wrap(command: str, dispatch_id: str | None = None) -> str:
             " $__padiem_pidfile=" + marker
             + "; Set-Content -LiteralPath $__padiem_pidfile -Value $PID -Encoding ascii;"
         )
+        if host_tag:
+            marks += (
+                " Add-Content -LiteralPath $__padiem_pidfile -Value '"
+                + _checked_host_tag(host_tag) + "' -Encoding ascii;"
+            )
         clears = (
             " if ($__padiem_pidfile) {"
             " Remove-Item -LiteralPath $__padiem_pidfile -Force -ErrorAction SilentlyContinue };"
@@ -337,20 +648,38 @@ class _TerminalHandoff:
         import pty
 
         self._master, self.slave = pty.openpty()
+        self.received = bytearray()
         os.write(self._master, write_bytes)
 
-    def wait_closed(self, seconds: float) -> None:
+    def _pump(
+        self,
+        seconds: float,
+        done: Callable[[bytes], bool] | None = None,
+    ) -> None:
         import select
 
         deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
             if select.select([self._master], [], [], 0.2)[0]:
                 try:
-                    if os.read(self._master, 65536) == b"":
-                        break
+                    chunk = os.read(self._master, 65536)
                 except OSError:
                     break
+                if chunk == b"":
+                    break
+                if len(self.received) < HANDOFF_CAPTURE_LIMIT:
+                    self.received.extend(chunk)
+                if done is not None and done(bytes(self.received)):
+                    break
         self.close()
+
+    def wait_closed(self, seconds: float) -> None:
+        self._pump(seconds)
+
+    def wait_for(self, done: Callable[[bytes], bool], seconds: float) -> bytes:
+        """Read the session until the answer is complete, or until the bound ends."""
+        self._pump(seconds, done)
+        return bytes(self.received)
 
     def close(self) -> None:
         for handle in (self._master, self.slave):
@@ -380,6 +709,7 @@ class MeshCentralCliCommandPort:
         work_dir: str | None = None,
         popen_factory: Callable[..., Any] | None = None,
         pty_factory: Callable[[], Any] | None = None,
+        host_tag: str | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
@@ -404,6 +734,12 @@ class MeshCentralCliCommandPort:
         self._password_provider = password_provider
         self._url = url
         self._work_dir = work_dir
+        #: Which executor wrote a marker. The failover partner (#5462) can hold a
+        #: claim on the same PC during a handover, and its running command is not
+        #: this host's to clear, so a leftover is only "ours" when the tag matches.
+        self._host_tag = (
+            _checked_host_tag(host_tag) if host_tag is not None else _local_host_tag()
+        )
 
     def run_command(
         self,
@@ -414,6 +750,7 @@ class MeshCentralCliCommandPort:
         phase_observer: Callable[[str], None] | None = None,
         cancel_probe: Callable[[], bool] | None = None,
         dispatch_id: str | None = None,
+        keep_dispatch_ids=(),
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -453,7 +790,7 @@ class MeshCentralCliCommandPort:
         # PC. Refusing a malformed id here is also the only thing standing between
         # a caller-supplied string and a PowerShell literal on a customer machine.
         checked_dispatch = None if dispatch_id is None else _checked_dispatch_id(dispatch_id)
-        wrapped = _wrap(body, checked_dispatch)
+        wrapped = _wrap(body, checked_dispatch, self._host_tag)
         # The NUL the C execve boundary appends is counted, so a refusal here
         # is the kernel's own limit, not a product rule. The aggregate argv and
         # environment ceiling depends on this host's stack rlimit and is not
@@ -505,12 +842,72 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
-        return self._run_streaming(
+        return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
+            keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
         )
 
     # ---- streaming execution -------------------------------------------
+    def _stream_with_line_selfheal(
+        self, argv: list[str], password: str, timeout_seconds: int | None,
+        phase: Callable[[str], None],
+        cancelled: Callable[[], bool] | None,
+        *,
+        node_ref: str,
+        dispatch_id: str | None,
+        keep_dispatch_ids: tuple[str, ...],
+    ) -> MeshCentralCommandOutcome:
+        """Run one command, and free the console line when something else holds it.
+
+        Two waits are kept apart here because the owner rule keeps them apart: the
+        work on the PC has no ceiling, while the wait for an answer does. The
+        pre-flight sweep is what stops a leftover process from costing the
+        ``LINE_STALL_WAIT_SECONDS`` detection at all, and the in-flight sweep is what
+        catches a line that wedges while this command waits. One retry, because a
+        second one would be a queue of guesses against a machine already answered
+        once.
+        """
+        sweeps: list[MeshCentralLineSweep] = []
+        if dispatch_id is not None:
+            sweeps.append(self.sweep_agent_children(
+                node_ref=node_ref, dispatch_id=dispatch_id,
+                keep_dispatch_ids=keep_dispatch_ids,
+                mode=SWEEP_MODE_ABANDONED, phase_observer=phase,
+            ))
+        # An explicit deadline already bounds the wait, so the line watch rides the
+        # no-decision case only: it is the shape the operational lane actually uses.
+        line_watch = timeout_seconds is None and dispatch_id is not None
+        attempts = 0
+        outcome: MeshCentralCommandOutcome | None = None
+        while True:
+            attempts += 1
+            outcome, report = self._run_streaming(
+                argv, password, timeout_seconds, phase, cancelled,
+                node_ref=node_ref, dispatch_id=dispatch_id,
+                keep_dispatch_ids=keep_dispatch_ids, line_watch=line_watch,
+            )
+            if report is None:
+                break
+            sweeps.append(report)
+            if attempts >= 2:
+                break
+            phase("line_retry")
+        blocked = sum(
+            1 for sweep in sweeps
+            if sweep.observed and not sweep.running and sweep.found
+        )
+        cleared = sum(len(sweep.killed) for sweep in sweeps)
+        return MeshCentralCommandOutcome(
+            termination=outcome.termination,
+            exit_code=outcome.exit_code,
+            output=outcome.output,
+            method=outcome.method,
+            merged_streams=outcome.merged_streams,
+            line_blocked=blocked,
+            line_cleared=cleared,
+        )
+
     def _run_streaming(
         self, argv: list[str], password: str, timeout_seconds: int | None,
         phase: Callable[[str], None],
@@ -518,7 +915,9 @@ class MeshCentralCliCommandPort:
         *,
         node_ref: str | None = None,
         dispatch_id: str | None = None,
-    ) -> MeshCentralCommandOutcome:
+        keep_dispatch_ids: tuple[str, ...] = (),
+        line_watch: bool = False,
+    ) -> tuple[MeshCentralCommandOutcome, MeshCentralLineSweep | None]:
         """Read the child's transcript in chunks and return it whole.
 
         #5895: the transcript carries no PADIEM byte ceiling — the chunked
@@ -540,6 +939,9 @@ class MeshCentralCliCommandPort:
         )
         phase("spawn")
         chunks: list[bytes] = []
+        #: When an answer-less wait becomes a line that is held by something else.
+        #: Absolute, and pushed forward every time the PC proves the work is running.
+        stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
         try:
             if process.stdin is not None:
                 process.stdin.write((password + "\n").encode("utf-8"))
@@ -552,7 +954,7 @@ class MeshCentralCliCommandPort:
                     phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
-                    )
+                    ), None
                 # None deadline: wait on the console with a fixed read slice so
                 # the loop stays responsive to the child finishing.
                 remaining = 1.0 if deadline is None else deadline - time.monotonic()
@@ -561,7 +963,7 @@ class MeshCentralCliCommandPort:
                     phase("timeout")
                     return MeshCentralCommandOutcome(
                         termination="timed_out", exit_code=None, output=b"",
-                    )
+                    ), None
                 chunk = _read_some(process, max(0.05, min(1.0, remaining)))
                 if not chunk:
                     if process.poll() is not None:
@@ -582,7 +984,25 @@ class MeshCentralCliCommandPort:
                         phase("cancel")
                         return MeshCentralCommandOutcome(
                             termination="cancelled", exit_code=None, output=b"",
+                        ), None
+                    if line_watch and time.monotonic() >= stall_at:
+                        stall_at = time.monotonic() + LINE_STALL_WAIT_SECONDS
+                        report = self.sweep_agent_children(
+                            node_ref=str(node_ref), dispatch_id=str(dispatch_id),
+                            keep_dispatch_ids=keep_dispatch_ids,
+                            mode=SWEEP_MODE_HELD, phase_observer=phase,
                         )
+                        if report.running:
+                            # The PC names this command's own process as alive. The
+                            # wait is then a wait for the work, and the work carries
+                            # no ceiling: ask again after another window, touch
+                            # nothing.
+                            continue
+                        phase("line_stalled")
+                        process.kill()
+                        return MeshCentralCommandOutcome(
+                            termination="no_reply", exit_code=None, output=b"",
+                        ), report
                     continue
                 chunks.append(chunk)
         except Exception:
@@ -594,7 +1014,7 @@ class MeshCentralCliCommandPort:
         raw = b"".join(chunks)
         outcome = self._from_transcript(raw)
         phase("reply")
-        return outcome
+        return outcome, None
 
     def _stop_on_pc(
         self, node_ref: str | None, dispatch_id: str | None, phase: Callable[[str], None],
@@ -615,23 +1035,32 @@ class MeshCentralCliCommandPort:
         phase("cancel_kill")
         return True
 
-    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
-        """End exactly one dispatch's own process tree on the PC.
+    def _run_shell_session(
+        self,
+        node_ref: str,
+        script: str,
+        *,
+        answer: Callable[[bytes], bool] | None = None,
+        wait_seconds: float = CANCEL_KILL_WAIT_SECONDS,
+    ) -> bytes:
+        """One bounded command on the agent's terminal channel, never on its console.
 
-        ``runcommand`` cannot carry a stop: it is the queue the running command is
-        holding. ``meshctrl shell`` opens the agent's terminal over its own session,
-        which is the channel that worked by hand on 2026-10-28 while the queue was
-        wedged. The command sent through it names only the stopped dispatch's pid
-        marker - no image name, no service, no window title - and the whole session
-        is bounded, so an unreachable agent cannot make this the new way to hang.
+        ``runcommand`` cannot carry either of these. The agent holds one global
+        command child, and while that child lives a later ``runcommand`` is answered
+        with "already busy" and dropped - it is not queued, so no amount of waiting
+        produces an answer for it. ``meshctrl shell`` opens the agent's terminal as a
+        tunnel instead, which is the channel that worked by hand on 2026-10-28 and
+        2026-10-29 while that console was held. The session is bounded in both shapes,
+        so an unreachable agent cannot turn a repair into the new way to hang a PC.
         """
         import subprocess
 
-        checked = _checked_dispatch_id(dispatch_id)
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
         if self._popen_factory is None:
-            raise MeshCentralCommandRefused("stopping a command needs the streaming client")
+            raise MeshCentralCommandRefused(
+                "the agent's terminal channel needs the streaming client"
+            )
         password = self._password_provider()
         if not isinstance(password, str) or not password or "\n" in password or "\r" in password:
             raise MeshCentralCommandRefused(
@@ -647,14 +1076,106 @@ class MeshCentralCliCommandPort:
             "--powershell",
         ]
         handoff = self._pty_factory(
-            (password + "\n" + cancel_kill_command(checked) + "\n").encode("utf-8"),
+            (password + "\n" + script + "\n").encode("utf-8"),
         )
         child = self._popen_factory(
             argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
         )
-        handoff.wait_closed(CANCEL_KILL_WAIT_SECONDS)
-        if child.poll() is None:
-            child.kill()
+        # The client is ended on every path out of this session, including a pump
+        # that raised: an abandoned node process on this host would be exactly the
+        # thing this whole lane exists to stop leaving behind on the PC.
+        try:
+            if answer is None:
+                handoff.wait_closed(wait_seconds)
+            else:
+                return handoff.wait_for(answer, wait_seconds)
+        finally:
+            if child.poll() is None:
+                child.kill()
+        return b""
+
+    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
+        """End exactly one dispatch's own process tree on the PC.
+
+        ``runcommand`` cannot carry a stop: it is the queue the running command is
+        holding. ``meshctrl shell`` opens the agent's terminal over its own session,
+        which is the channel that worked by hand on 2026-10-28 while the queue was
+        wedged. The command sent through it names only the stopped dispatch's pid
+        marker - no image name, no service, no window title - and the whole session
+        is bounded, so an unreachable agent cannot make this the new way to hang.
+        """
+        checked = _checked_dispatch_id(dispatch_id)
+        self._run_shell_session(node_ref, cancel_kill_command(checked))
+
+    def sweep_agent_children(
+        self,
+        *,
+        node_ref: str,
+        dispatch_id: str | None = None,
+        keep_dispatch_ids=(),
+        mode: str = SWEEP_MODE_ABANDONED,
+        phase_observer: Callable[[str], None] | None = None,
+    ) -> MeshCentralLineSweep:
+        """Free the PC's console line from a process that no dispatch owns.
+
+        The sweep always runs, and the decision to end anything is taken on the PC by
+        ``sweep_script`` - so an answer that never comes back costs evidence, not a
+        safety property. A refusal here is reported as ``ran=False`` and never raised
+        into the command's own result: a PC that cannot be asked about its console is
+        still a PC whose command must be sent.
+        """
+        def phase(name: str) -> None:
+            if callable(phase_observer):
+                try:
+                    phase_observer(name)
+                except Exception:
+                    pass
+
+        script = sweep_script(
+            dispatch_id=dispatch_id, keep_dispatch_ids=keep_dispatch_ids,
+            mode=mode, host_tag=self._host_tag,
+        )
+        phase("line_probe")
+        try:
+            raw = self._run_shell_session(
+                node_ref, script,
+                answer=lambda buf: parse_sweep_reply(buf) is not None,
+                wait_seconds=LINE_SWEEP_WAIT_SECONDS,
+            )
+        except Exception:
+            phase("line_probe_refused")
+            return MeshCentralLineSweep(
+                mode=mode, ran=False, observed=False, running=False,
+                error="the terminal channel refused the sweep",
+            )
+        verdict = parse_sweep_reply(raw)
+        if verdict is None:
+            # The session ran; its answer did not come back. Say so instead of
+            # calling an unreadable console a clean one.
+            phase("line_probe_unobserved")
+            return MeshCentralLineSweep(
+                mode=mode, ran=True, observed=False, running=False,
+                error="the sweep answer was not readable",
+            )
+        running = verdict.get("running") is True
+        found = verdict.get("found")
+        killed = verdict.get("killed")
+        reports = tuple(
+            entry for entry in (found if isinstance(found, list) else ())
+            if isinstance(entry, dict)
+        )
+        ended = tuple(
+            int(entry) for entry in (killed if isinstance(killed, list) else ())
+            if str(entry).isdigit()
+        )
+        if ended:
+            phase("line_cleared")
+        elif running:
+            phase("line_running")
+        return MeshCentralLineSweep(
+            mode=mode, ran=True, observed=True, running=running,
+            found=reports, killed=ended,
+        )
 
     def _from_transcript(self, raw: bytes) -> MeshCentralCommandOutcome:
         if not raw:
@@ -676,12 +1197,19 @@ class MeshCentralCliCommandPort:
 __all__ = [
     "ENVELOPE_PREFIX",
     "EXIT_SENTINEL",
+    "LINE_STALL_WAIT_SECONDS",
+    "LINE_SWEEP_WAIT_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_TRANSCRIPT_BYTES",
     "MERGED_STREAMS",
     "METHOD_LABEL",
+    "SWEEP_SENTINEL",
     "MeshCentralCliCommandPort",
     "MeshCentralCommandOutcome",
     "MeshCentralCommandRefused",
+    "MeshCentralLineSweep",
+    "cancel_kill_command",
+    "parse_sweep_reply",
     "parse_transcript",
+    "sweep_script",
 ]

@@ -31,6 +31,8 @@
   <link rel="stylesheet" href="./padiem-themes.css" />
   <link rel="stylesheet" href="./sidebar-utility.css" />
   <link rel="stylesheet" href="./capability-nav.css" />
+  <link rel="stylesheet" href="./pc-pairing-card.css" />
+  <link rel="stylesheet" href="./pc-connect-flow.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./util-menu.css" />
@@ -329,7 +331,7 @@
           <button id="connectorsRetry" class="connector-retry" type="button" data-locale-key="retry" hidden>다시 시도</button>
         </div>
         <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="Connectors 지원 및 워크스페이스 연결 상태">
-          <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector="computer" data-connector-status="preparing" data-service-mark="PC"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><span class="capability-read" data-locale-key="claw-home-computer-setup">Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.</span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
+          <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector="computer" data-connector-status="preparing" data-service-mark="PC"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><span class="capability-read" data-locale-key="claw-home-computer-setup">PC 작업은 별도 승인 후 진행됩니다.</span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
           <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading" data-service-mark="D"><strong>Google Drive</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button><button class="connector-retry connector-connect" type="button" id="connectorDriveRemove" hidden>연결 삭제</button><span class="capability-workspace" id="connectorDriveFeedback" role="status" hidden></span></div>
           <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector="github" data-connector-status="loading" data-service-mark="GH"><strong>GitHub</strong><span class="capability-workspace" id="connectorGithubState" role="status" aria-live="polite">연결 상태 확인 중</span><button type="button" class="connector-retry connector-connect" id="connectorGithubPrimary" hidden>GitHub 연결</button><button type="button" class="connector-retry connector-connect" id="connectorGithubRemove" hidden>연결 삭제</button><a href="/api/connectors/github/installations" rel="noopener noreferrer" target="_blank" class="connector-retry connector-connect" id="connectorGithubPermissions" hidden>저장소 권한 관리</a><span class="capability-workspace" id="connectorGithubFeedback" role="status" hidden></span></div>
           <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading" data-service-mark="M"><strong>Gmail</strong><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span></div>
@@ -572,9 +574,19 @@
         </nav>
         <div class="util-panel" id="utilSpeechPanel">
           <form class="util-form" id="utilSpeechForm">
+            <!-- 참고 글 leads the form — the SNS tool's #6098 lane language: the
+                 PC reference lives in its own titled fieldset, before 기본 정보.
+                 The #5799 grouping continues below: basics, content, tone. -->
+            <fieldset class="util-fieldset" id="utilSpeechRef">
+              <legend>참고 글</legend>
+              <!-- #5895: the shared "from my PC" picker mounts here. The button,
+                   the preview of what was brought over, and the one-line "connect
+                   your PC" notice all live in this container. -->
+              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
+            </fieldset>
             <!-- #5799: the speech form follows the meeting-modes grouping
-                 pattern — same legend/border family, three sections: basics,
-                 content, tone/reference. Field names and behavior unchanged. -->
+                 pattern — same legend/border family: basics, content,
+                 tone/reference. Field names and behavior unchanged. -->
             <fieldset class="util-fieldset">
               <legend>기본 정보</legend>
               <label>행사명 <input name="event" type="text" required /></label>
@@ -594,10 +606,6 @@
               <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
               <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
               <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
-              <!-- #5895: the shared "from my PC" picker mounts here. The button,
-                   the preview of what was brought over, and the one-line "connect
-                   your PC" notice all live in this container. -->
-              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
             </fieldset>
             <!-- #5727: the form area owns the two authoring actions — generate
                  and save. The result area below carries only copy/download. -->
@@ -802,7 +810,7 @@
           </h1>
           <p class="empty-copy chat-hero-line" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
           <div class="starter-grid" aria-label="추천 질문">
-            <button type="button" class="starter" id="pcConnectStarter" aria-haspopup="dialog" aria-controls="clawDeviceManagerPanel" aria-expanded="false" data-pc-connect-starter="true"><span class="starter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span><strong data-locale-key="pc-connect-title">컴퓨터 연결</strong><small data-locale-key="pc-connect-copy">컴퓨터 연결 패널 열기</small></span></button>
+            <button type="button" class="starter" id="pcConnectStarter" aria-haspopup="dialog" aria-expanded="false" data-pc-connect-starter="true"><span class="starter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span><strong data-locale-key="pc-connect-title">컴퓨터 연결</strong><small data-pc-connect-state aria-live="polite">연결 상태를 확인하는 중…</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
             <div class="document-starter-shell">
               <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong data-locale-key="document-upload-title">파일 업로드</strong><small data-locale-key="document-upload-copy">파일을 첨부하여 질문하기</small></span></button>
@@ -1332,6 +1340,7 @@
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
   <script src="./pc-pairing-card.js"></script>
+  <script src="./pc-connect-flow.js"></script>
   <!-- The composer computer connection status. It is a view over the snapshot
        the existing device directory module published and it opens the existing
        management panel; it adds no endpoint, no pairing and no polling loop. -->

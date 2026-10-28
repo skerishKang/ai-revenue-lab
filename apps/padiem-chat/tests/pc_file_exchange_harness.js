@@ -187,6 +187,9 @@ async function main() {
   let duringWait = "";
   dom.window.PadiemPcFileExchange.open({ onSelect: () => {} });
   await settle();
+  check("at the root, 이전 폴더 sits disabled — the owner is already at the top",
+    buttonOf(dom, "pc-exchange-back").disabled === true,
+    String(buttonOf(dom, "pc-exchange-back").disabled));
   check("opening asks the owner's PC for one folder listing",
     browseCalls(dom.calls).length === 1
     && bodyOf(browseCalls(dom.calls)[0]).path === "."
@@ -209,6 +212,9 @@ async function main() {
     browseCalls(dom.calls).length === 2
     && bodyOf(browseCalls(dom.calls)[1]).path === "견적",
     JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
+  check("stepping into a folder re-enables 이전 폴더",
+    buttonOf(dom, "pc-exchange-back").disabled === false,
+    String(buttonOf(dom, "pc-exchange-back").disabled));
 
   buttonOf(dom, "pc-exchange-back").click();
   await settle();
@@ -216,6 +222,16 @@ async function main() {
     browseCalls(dom.calls).length === 3
     && bodyOf(browseCalls(dom.calls)[2]).path === "."
     && entriesOf(dom).some((node) => node.allText().includes("1분기.md")),
+    JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
+  check("back at the root, 이전 폴더 is disabled again",
+    buttonOf(dom, "pc-exchange-back").disabled === true,
+    String(buttonOf(dom, "pc-exchange-back").disabled));
+  // Disabled also means quiet: a press at the root asks the PC for nothing.
+  const browsesAtRoot = browseCalls(dom.calls).length;
+  buttonOf(dom, "pc-exchange-back").click();
+  await settle();
+  check("a press on the disabled root 이전 폴더 asks the PC for nothing",
+    browseCalls(dom.calls).length === browsesAtRoot,
     JSON.stringify(browseCalls(dom.calls).map((call) => call.body)));
 
   // ── searching by name: the sweep walks the folders and the list grows as it goes ──

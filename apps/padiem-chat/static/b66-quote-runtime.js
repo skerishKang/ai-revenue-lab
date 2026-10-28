@@ -263,6 +263,15 @@
   }
 
   function openPcConnect() {
+    // #5573 step 1: the PC-request guidance connects through the one connect
+    // flow (modal + download + self-closing wait) instead of walking the
+    // person into the Connectors dialog. The dialog path stays as the fallback
+    // for a page where the connect-flow module did not load.
+    const flow = window.PadiemPcConnectFlow;
+    if (flow && typeof flow.open === "function") {
+      void flow.open();
+      return;
+    }
     const opener = document.getElementById("connectorsNavButton");
     if (!opener) return;
     opener.click();

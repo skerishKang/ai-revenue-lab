@@ -389,10 +389,10 @@
   // reads the existing device directory snapshot, so this card opens no
   // connection of its own and the two surfaces cannot disagree.
   const COMPUTER_STATE_COPY = {
-    connected: ["컴퓨터가 연결되어 있습니다.", "A computer is connected."],
+    connected: ["연결된 PC가 있습니다.", "A PC is connected."],
     connecting: ["컴퓨터 연결 상태를 확인하는 중입니다.", "Checking the computer connection status."],
-    disconnected: ["컴퓨터가 연결되어 있지 않습니다.", "No computer is connected."],
-    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다.", "The computer connection status could not be confirmed."],
+    disconnected: ["연결된 PC가 없습니다.", "No PC is connected."],
+    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.", "The computer connection status could not be confirmed. Please retry."],
     preparing: ["컴퓨터 연결 기능은 아직 준비 중입니다.", "The computer connection feature is not available yet."],
   };
   function renderComputerState(state) {
