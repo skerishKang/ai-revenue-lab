@@ -649,10 +649,11 @@ class _CaptureClient:
 
 
 class _NoopAutoGrounding:
-    def decide(self, messages, *, skill):
+    def decide(self, messages, *, skill, explicit_search=False, util_scope=None):
         return None
 
-    async def prepare(self, messages, *, skill, additional_system_context):
+    async def prepare(self, messages, *, skill, additional_system_context=None,
+                    explicit_search=False, util_scope=None):
         return None
 
 

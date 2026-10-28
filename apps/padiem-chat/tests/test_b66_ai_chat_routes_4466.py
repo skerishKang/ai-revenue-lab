@@ -250,7 +250,8 @@ def test_live_fact_search_is_unavailable_without_server_approval_even_when_provi
     sign_in(settings, client)
 
     class NoProviderIO:
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             raise AssertionError("unapproved web search must never execute")
 
     client.app.state.auto_grounding = NoProviderIO()
@@ -273,7 +274,8 @@ def test_a_public_freshness_turn_reaches_the_model_with_the_server_search_envelo
         def __init__(self):
             self.seen = []
 
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             self.seen.append(messages[0]["content"])
             return SimpleNamespace(
                 decision=SimpleNamespace(reason="freshness_sensitive"),
@@ -331,7 +333,8 @@ def test_a_withheld_private_turn_sends_no_query_and_tells_the_model_it_did_not_s
     sign_in(settings, client)
 
     class RefusingGrounding:
-        async def prepare(self, messages, *, skill, additional_system_context):
+        async def prepare(self, messages, *, skill, additional_system_context=None,
+                        explicit_search=False, util_scope=None):
             raise AssertionError("a withheld turn must never reach the provider")
 
     client.app.state.auto_grounding = RefusingGrounding()

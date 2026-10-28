@@ -636,7 +636,7 @@ class _PcHarness:
 
 
 class _NoopAutoGrounding:
-    def decide(self, messages, *, skill):  # noqa: ANN201
+    def decide(self, messages, *, skill, explicit_search=False, util_scope=None):  # noqa: ANN201
         return None
 
     async def prepare(self, messages, *, skill, additional_system_context,
