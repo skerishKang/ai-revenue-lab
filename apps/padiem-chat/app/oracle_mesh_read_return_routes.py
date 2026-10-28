@@ -1774,7 +1774,11 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     import asyncio
     import time
     wait_header = request.headers.get("x-oracle-mesh-wait", "")
-    wait_seconds = 20 if wait_header == "20" else 0
+    # #5479: a long wait held a Worker request open for 20 seconds, re-reading
+    # D1 every couple of seconds, so concurrent polls piled onto one event loop.
+    # The executor already re-requests as soon as an empty answer comes back, so
+    # the ceiling is now five seconds and a legacy "20" is capped to it too.
+    wait_seconds = 5 if wait_header in ("5", "20") else 0
     deadline = time.monotonic() + wait_seconds
     while True:
         try:
@@ -3360,8 +3364,37 @@ def _pc_write_command(
     The command is cmdlet and .NET calls only, like the listing command: no
     native program runs, so the PC reports no exit code and the existing result
     lane stays truthful.
+
+    It is also exactly ONE line, which is not a style choice. The agent runs a
+    console command as ``powershell -noprofile -nologo -command -`` and feeds the
+    script through that process's standard input: a script carrying a newline
+    never completes there, so its PowerShell stays alive, and because that agent
+    serves one console task at a time every later PC operation - reads included -
+    waits behind it. Measured on the real machines on 2026-10-28: one line
+    answered in under two seconds and wrote the file with its backup; the same
+    statements on two lines never answered at all. Semicolons are what PowerShell
+    needs on one line, so nothing here changed meaning.
+
+    For the same reason the parent folder is taken with
+    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
+    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
+    with ``AmbiguousParameterSet``, which would turn every new file into a
+    refusal. Both rules are about what the customer's PC actually accepts, so
+    they are checked here where the script is built.
     """
-    lines = [
+    backup_step = (
+        "New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; "
+        "$backup = Join-Path $backupDir ($stamp + '-' + ("
+        + _pc_ps_literal(relative) + " -replace '[^\\w.-]','_'));"
+        " try { Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force }"
+        " catch { $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed' }"
+    )
+    target_missing = (
+        "if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {"
+        " $reason = 'path_invalid'; throw 'padiem target missing' }"
+    )
+
+    statements = [
         "$ErrorActionPreference = 'Stop'",
         "$ok = $false",
         "$reason = 'failed'",
@@ -3374,77 +3407,57 @@ def _pc_write_command(
         "([Guid]::NewGuid().ToString('N')).Substring(0,8)",
     ]
     if content_b64 is not None:
-        lines.append("$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")")
+        statements.append(
+            "$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")"
+        )
     if destination is not None:
-        lines.append("$destination = " + _pc_ps_literal(destination))
-
-    back_up = (
-        "  New-Item -ItemType Directory -Force -Path $backupDir | Out-Null\n"
-        "  $backup = Join-Path $backupDir ($stamp + '-' + (" + _pc_ps_literal(relative)
-        + " -replace '[^\\w.-]','_'))\n"
-        "  try {\n"
-        "    Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force\n"
-        "  } catch {\n"
-        "    $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed'\n"
-        "  }\n"
-    )
-    missing = (
-        "  if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {\n"
-        "    $reason = 'path_invalid'; throw 'padiem target missing'\n"
-        "  }\n"
-    )
-    tail = (
-        "  $ok = $true; $reason = $null\n"
-        "} catch {\n"
-        "  if ($reason -eq 'failed') { $reason = 'path_invalid' }\n"
-        "}\n"
-    )
+        statements.append("$destination = " + _pc_ps_literal(destination))
 
     if op == "write":
         body = (
-            "try {\n"
-            "  if (Test-Path -LiteralPath $target -PathType Leaf) {\n"
-            + back_up.replace("$source_to_keep", "$target")
-            + "  } elseif (-not (Test-Path -LiteralPath (Split-Path -LiteralPath $target "
-              "-Parent))) {\n"
-            "    $reason = 'path_invalid'; throw 'padiem parent missing'\n"
-            "  }\n"
-            "  $temp = $target + '.padiem-write'\n"
-            "  [IO.File]::WriteAllBytes($temp, $payload)\n"
-            "  Move-Item -LiteralPath $temp -Destination $target -Force\n"
-            "  $bytes = $payload.Length\n"
-            + tail
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf) {"
+            " $source_to_keep = $target; " + backup_step +
+            " } elseif (-not (Test-Path -LiteralPath "
+            "([IO.Path]::GetDirectoryName($target)))) {"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
     elif op == "move":
         body = (
-            "try {\n"
-            "  $source_to_keep = $target\n"
-            + missing
-            + "  if (Test-Path -LiteralPath $destination) {\n"
-            + back_up.replace("$source_to_keep", "$destination")
-            + "  }\n"
-            "  Move-Item -LiteralPath $target -Destination $destination -Force\n"
-            "  $target = $destination\n"
-            + tail
+            "try { $source_to_keep = $target;"
+            + target_missing
+            + "; if (Test-Path -LiteralPath $destination) { $source_to_keep = $destination; "
+            + backup_step +
+            " }; Move-Item -LiteralPath $target -Destination $destination -Force;"
+            " $target = $destination;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
     else:
         body = (
-            "try {\n"
-            "  $source_to_keep = $target\n"
-            + missing
-            + back_up
-            + "  Remove-Item -LiteralPath $target -Force\n"
-            + tail
+            "try { $source_to_keep = $target;"
+            + target_missing
+            + "; " + backup_step +
+            "; Remove-Item -LiteralPath $target -Force;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
 
-    account = (
+    statements.append(body)
+    statements.extend([
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
-        "backup=$backup; bytes=$bytes}\n"
-        "  $json = ConvertTo-Json -InputObject $account -Compress\n"
-        "  $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))\n"
-        "  Write-Output '" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded"
-    )
-    return "\n".join(lines) + "\n" + body + account
+        "backup=$backup; bytes=$bytes}",
+        "$json = ConvertTo-Json -InputObject $account -Compress",
+        "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
+        "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
+    ])
+    return "; ".join(statements)
 
 
 

@@ -19,6 +19,10 @@ existing proof, this step runs AFTER the auto-rollback step, so a failure is
 read by a person and never rolls a release back on its own. The one
 provider-side excuse the chat lane has (429/503 from the model upstream) stays,
 and only there: a 503 from our own session path is the bug this catches.
+A step that gets no answer at all - a refused connection or a timeout, not an
+HTTP status - is asked once more three seconds later, and two missing answers is
+still red. That is the whole retry rule; see
+``_call_once_more_without_an_answer`` for why the two cases are told apart.
 
 No credential, no answer text and no response body is ever printed.
 """
@@ -26,6 +30,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from http.cookiejar import CookieJar
 from pathlib import Path
 from typing import Any
@@ -139,6 +144,31 @@ def _call(opener, path: str, *, method: str = "GET", payload: dict | None = None
         return status, None
 
 
+TRANSPORT_RETRY_WAIT_SECONDS = 3
+TRANSPORT_FAILURE = "http_transport_unavailable"
+
+
+def _call_once_more_without_an_answer(opener, path: str, *, method: str = "GET",
+                                      payload: dict | None = None,
+                                      sleeper=time.sleep):
+    """Ask again, three seconds later, and only when nothing answered at all.
+
+    A missing answer and a bad answer are different facts. On 2026-10-28 the served
+    version answered every session read correctly while the edge blinked for a
+    second or two at a time, and a smoke that cannot tell the two apart turns a
+    healthy deploy red and teaches people to ignore the red. One retry says which
+    case this is: the second missing answer is still failure, and any HTTP response -
+    5xx included - is judged immediately with no second try, because Chat answered.
+    """
+    try:
+        return _call(opener, path, method=method, payload=payload)
+    except CanaryError as failure:
+        if str(failure) != TRANSPORT_FAILURE:
+            raise
+        sleeper(TRANSPORT_RETRY_WAIT_SECONDS)
+        return _call(opener, path, method=method, payload=payload)
+
+
 def run() -> int:
     username = os.environ.get(QA_USERNAME_ENV, "")
     password = os.environ.get(QA_PASSWORD_ENV, "")
@@ -149,13 +179,16 @@ def run() -> int:
     results: list[tuple[str, int, Any]] = []
     saved: str | None = None
     try:
-        results.append(("login", *_call(
+        results.append(("login", *_call_once_more_without_an_answer(
             opener, LOGIN, method="POST",
             payload={"identifier": username, "password": password},
         )))
-        results.append(("auth_status", *_call(opener, STATUS)))
-        results.append(("conversations", *_call(opener, CONVERSATION.rstrip("/"))))
-        status, payload = _call(opener, ORCHESTRATION, method="POST", payload=turn_payload())
+        results.append(("auth_status", *_call_once_more_without_an_answer(opener, STATUS)))
+        results.append(("conversations", *_call_once_more_without_an_answer(
+            opener, CONVERSATION.rstrip("/"))))
+        status, payload = _call_once_more_without_an_answer(
+            opener, ORCHESTRATION, method="POST", payload=turn_payload(),
+        )
         saved = conversation_id(payload)
         results.append(("chat", status, payload))
     except CanaryError as failure:

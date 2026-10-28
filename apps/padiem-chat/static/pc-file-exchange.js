@@ -21,6 +21,8 @@
   const FIND = "/api/pc/find";
   const FETCH = "/api/pc/fetch";
   const SAVE = "/api/pc/save";
+  const MOVE = "/api/pc/move";
+  const DELETE = "/api/pc/delete";
   const CANCEL = "/api/pc/cancel";
   const RESULT = "/api/pc/result";
   // How many already-received entries are shown before "더 보기". It splits the
@@ -29,7 +31,7 @@
 
   const state = {
     open: false, nodes: null, mode: "import", linkId: null, path: ".", folderName: "",
-    items: [], shown: PAGE, selection: null, waiting: false, error: null, note: null,
+    items: [], shown: PAGE, selection: null, chosenPath: null, waiting: false, error: null, note: null,
     startedAt: 0, timer: null, focusBefore: null, dispatchId: null, onFileName: null,
     runId: null, sweep: null,
   };
@@ -365,9 +367,15 @@
       state.selection = item;
       if (state.mode === "save" && typeof state.onFileName === "function") {
         // The owner is naming a file, not opening one: the list is only showing
-        // what already lives in this folder.
+        // what already lives in this folder. The chosen file is remembered so
+        // moving or deleting it acts on the file the owner actually clicked.
         state.onFileName(item.name);
+        state.chosenPath = pathOf(item);
         state.selection = null;
+        if (state.nodes && state.nodes.move) {
+          state.nodes.move.hidden = false;
+          state.nodes.erase.hidden = false;
+        }
         return;
       }
       paintList();
@@ -568,11 +576,50 @@
         onSelect(picked);
       });
     });
+    let moveButton = null;
+    let eraseButton = null;
     if (mode === "save") {
       // A file already on the PC is a name worth offering, not a thing to open:
       // choosing it only fills in the name box, and saving over it is what the
       // backup that #5573 takes first is for.
       tools.append(naming);
+      // The same file the name box is describing can also be moved under the new
+      // name, or taken off the PC. Both go through #5573's write, so the copy that
+      // is replaced is backed up first, exactly as saving over it would be.
+      const manage = element("div", "pc-exchange-manage");
+      const move = element("button", "pc-exchange-move", copy("pc-exchange-move-button"));
+      move.type = "button";
+      move.hidden = true;
+      const erase = element("button", "pc-exchange-delete", copy("pc-exchange-delete-button"));
+      erase.type = "button";
+      erase.hidden = true;
+      moveButton = move;
+      eraseButton = erase;
+      manage.append(move, erase);
+      tools.append(manage);      move.addEventListener("click", () => {
+        const wanted = fileName.value.trim();
+        if (!state.chosenPath || !wanted) return;
+        const folder = state.path === "." ? "" : state.path.replace(/\/+$/, "") + "/";
+        void start(MOVE, { path: state.chosenPath, destination: folder + wanted }, (body) => {
+          if (body.ok !== true) {
+            refused("pc-exchange-move-failed");
+            return;
+          }
+          close();
+          onSave(body.moved || {});
+        });
+      });
+      erase.addEventListener("click", () => {
+        if (!state.chosenPath) return;
+        void start(DELETE, { path: state.chosenPath }, (body) => {
+          if (body.ok !== true) {
+            refused("pc-exchange-delete-failed");
+            return;
+          }
+          close();
+          onSave(body.deleted || {});
+        });
+      });
       search.hidden = true;
       searchButton.hidden = true;
       pick.hidden = false;
@@ -587,7 +634,7 @@
 
     return {
       overlay, dialog, heading, list, more, status, search, searchButton, back, pcs, pick,
-      fileName, folderLabel, stop,
+      fileName, folderLabel, stop, move: moveButton, erase: eraseButton,
     };
   }
 
@@ -628,6 +675,7 @@
     state.items = [];
     state.shown = PAGE;
     state.selection = null;
+    state.chosenPath = null;
     state.error = null;
     state.note = null;
     state.dispatchId = null;

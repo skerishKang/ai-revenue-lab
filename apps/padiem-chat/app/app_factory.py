@@ -340,17 +340,21 @@ from .pc_device_pairing_routes import (
 from .pc_file_exchange_routes import (
     PC_BROWSE_PATH,
     PC_CANCEL_PATH,
+    PC_DELETE_PATH,
     PC_FETCH_PATH,
     PC_FILE_PATH,
     PC_FIND_PATH,
+    PC_MOVE_PATH,
     PC_REFERENCE_PATH,
     PC_RESULT_PATH,
     PC_SAVE_PATH,
     pc_file_exchange_browse,
     pc_file_exchange_cancel,
+    pc_file_exchange_delete,
     pc_file_exchange_fetch,
     pc_file_exchange_file,
     pc_file_exchange_find,
+    pc_file_exchange_move,
     pc_file_exchange_reference,
     pc_file_exchange_result,
     pc_file_exchange_save,
@@ -925,6 +929,8 @@ def create_app(
         Route(PC_FIND_PATH, pc_file_exchange_find, methods=["POST"]),
         Route(PC_FETCH_PATH, pc_file_exchange_fetch, methods=["POST"]),
         Route(PC_SAVE_PATH, pc_file_exchange_save, methods=["POST"]),
+        Route(PC_MOVE_PATH, pc_file_exchange_move, methods=["POST"]),
+        Route(PC_DELETE_PATH, pc_file_exchange_delete, methods=["POST"]),
         Route(PC_CANCEL_PATH, pc_file_exchange_cancel, methods=["POST"]),
         Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
@@ -995,6 +1001,11 @@ def create_app(
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
             )
+            # #5997: the executor renews a live claim while a long command runs.
+            from .oracle_mesh_lease_renew_routes import (
+                ORACLE_MESH_READ_RENEW_PATH,
+                oracle_mesh_read_renew,
+            )
             routes[-1:-1] = [
                 Route(ORACLE_MESH_READ_REQUEST_PATH, oracle_mesh_read_request, methods=["POST"]),
                 Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
@@ -1005,6 +1016,7 @@ def create_app(
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
     app = Starlette(routes=routes)

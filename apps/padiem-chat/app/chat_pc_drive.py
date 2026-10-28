@@ -197,6 +197,36 @@ def build_chat_pc_files_agent_plan(*, list_only: bool = False) -> dict[str, Any]
     return {"agent_id": CHAT_PC_QUERY_AGENT_ID, "steps": steps}
 
 
+def build_chat_pc_files_write_agent_plan() -> dict[str, Any]:
+    """The write plan the Claw product sends when the owner asks to change a file.
+
+    The three steps are the canonical write shape the Engine admits as
+    ``files_write``. The owner's request is the authority: no confirmation step
+    is staged here, and each step's own command copies what it replaces before
+    anything changes.
+    """
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {
+                "step_id": "write_file",
+                "objective": "Create or replace one file inside the approved folder",
+                "tool_id": "claw.pc.write_file",
+            },
+            {
+                "step_id": "move_file",
+                "objective": "Move or rename one file inside the approved folder",
+                "tool_id": "claw.pc.move_file",
+            },
+            {
+                "step_id": "delete_file",
+                "objective": "Delete one file already copied to the backup folder",
+                "tool_id": "claw.pc.delete_file",
+            },
+        ],
+    }
+
+
 # #5573 (3-B-2): the closed PC tool set offered to a model on the streaming
 # lane. These names mirror the canonical Engine plan keys; the model's
 # arguments carry no authority, and the lane re-verifies the PC on entry.
@@ -224,6 +254,39 @@ CHAT_PC_TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
     ),
 )
 
+#: The one extra tool a turn that asks for a change is offered. It is kept out
+#: of the read set above, so a turn that only asks what is there can never
+#: select a write.
+PC_WRITE_TOOL_DEFINITION = ToolDefinition(
+    name="files_write",
+    description=(
+        "Save, change, fix, move, rename or delete a file on the user's "
+        "verified PC when the user asks to write one. The previous contents "
+        "are kept as a backup, and the answer says which file changed and "
+        "where the backup is."
+    ),
+)
+
+#: The owner's own words that ask for a change. A request that only reads
+#: never matches, so opening the write lane is the request's own decision.
+_PC_WRITE_INTENT = re.compile(
+    r"(저장|써\s*줘|작성|고쳐|수정|바꿔|변경|옮겨|이동|이름.{0,6}바|지워|삭제"
+    r"|\b(save|write|fix|edit|rename|move|delete|remove)\b)",
+    re.IGNORECASE,
+)
+
+
+def pc_write_intent(user_text: Any) -> bool:
+    """True only when this turn's own words asked for a change."""
+    return isinstance(user_text, str) and bool(_PC_WRITE_INTENT.search(user_text))
+
+
+def pc_tools_for_turn(user_text: Any) -> tuple[ToolDefinition, ...]:
+    """The declared PC tools: always the read set, plus write when asked."""
+    return CHAT_PC_TOOL_DEFINITIONS + (
+        (PC_WRITE_TOOL_DEFINITION,) if pc_write_intent(user_text) else ()
+    )
+
 
 def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
     """The canonical Engine plan a model-requested PC tool selects."""
@@ -233,6 +296,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_agent_plan(list_only=True)
     if tool_name == "files":
         return build_chat_pc_files_agent_plan(list_only=False)
+    if tool_name == "files_write":
+        return build_chat_pc_files_write_agent_plan()
     return None
 
 
@@ -280,6 +345,8 @@ def _tool_arguments_for_plan(
         key = "files"
     elif "claw.pc.list_files" in tool_ids:
         key = "files_list"
+    elif "claw.pc.write_file" in tool_ids:
+        key = "files_write"
     else:
         return None
     return {key: {"device_id": device_id}}
@@ -510,6 +577,10 @@ async def resolve_chat_pc_stream_context(
         scopes = ["query_drives"]
         if error is None and target is not None:
             scopes.extend(["files_list", "files"])
+            # The owner asked to change something: the same turn may write,
+            # move or delete, and each step's command backs up first.
+            if pc_write_intent(user_text):
+                scopes.append("files_write")
         return {"pc_tools": {"device_id": device_id, "allowed_scopes": scopes},
                 "subject_id": subject_id, "workspace_id": workspace_id}
     except Exception:

@@ -214,3 +214,17 @@ def test_the_quote_screen_offers_the_shared_part_and_a_connect_line():
         assert path in script, path
     # The connect entry is the existing connectors surface, not a second pairing screen.
     assert 'getElementById("connectorsNavButton")' in script
+
+
+def test_a_linked_pc_alone_reaches_the_quote_screen():
+    """#5895: no saved skill yet, but a linked PC — the entry is still there."""
+
+    from pathlib import Path
+
+    script = (Path(__file__).resolve().parents[1] / "static" / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    assert "launcher.hidden = !(runtime && (skills.length > 0 || pcAccountLinked));" in script
+    assert "내 PC 엑셀 양식으로 견적서" in script
+    # The skill-only controls step aside so the PC form is the one action.
+    assert "selectLabelNode.hidden = entryOnly" in script
+    assert "generateButton.hidden = entryOnly" in script
+    assert "void refreshPcAccount();" in script
