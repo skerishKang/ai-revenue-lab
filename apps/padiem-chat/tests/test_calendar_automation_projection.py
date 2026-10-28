@@ -270,6 +270,8 @@ async def test_unavailable_automation_store_fails_closed_without_killing_calenda
         tz_name="UTC",
         calendar_store=cal_store,
         automation_store=_BrokenAutomationStore(),
+        # #2952: native calendar rows are owner-scoped.
+        user_id="usr_1",
     )
     types = {i["item_type"] for i in result["items"]}
     assert "work_log" in types
