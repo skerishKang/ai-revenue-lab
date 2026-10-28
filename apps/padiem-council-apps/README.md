@@ -249,6 +249,10 @@ deployed SHA `9430f3993`, cloud version `302b33f6-0c28-4b22-a16a-f2d1c7acdea8`):
 별도로 필요하다. 5단계의 "기존 사용자 문서 보존"은 현재 *이번 배포에 저장 쓰기 없었다*
 (`D1_SCHEMA_QUERY=READ_ONLY`, `D1_IDENTIFIER_OUTPUT=0`, `B62_D1_PLAN_APPLY=0`)와 배포 전 게이트 실측
 `project_files=14`까지만 근거이고, 재측정은 같은 인증 읽기가 필요하다.
+- 화면 근거(운영 재촬영): `docs/6065/s5-live-home-1440.png`, `s5-live-home-390.png`,
+  `s5-live-tooltap-1440.png`, `s5-live-tooltap-390.png` — stroke 표장·아이콘 열(22×2 규칙선)·알약형
+  동작·패널 표면이 운영에서 실제로 렌더되고, 390에서 한글이 단어 경계로 줄바꿈한다. 로그아웃에서 카드
+  `열기`를 눌러도 `.council-form`은 **1개(로그인 폼)** 그대로 — fail-closed 게이트가 운영에서 유지된다.
 
 readback이 거짓말하는 다섯 가지 경우를 각각 막았고, 변형 테스트로 확인했다:
 

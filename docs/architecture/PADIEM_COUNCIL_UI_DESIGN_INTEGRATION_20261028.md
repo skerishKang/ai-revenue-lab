@@ -89,9 +89,15 @@ Re-running the tool after that deploy: all three assets `MATCH`, `SERVING=9430f3
 `main is 0 commits ahead`, and every stage marker is present on production —
 `S1mark=True/30`, `S1name=16.5px/-0.165px`, `S2cols=30px <auto>` with `icon=30`, `S3field=14px`,
 `S4auth=14px`, `S0wrap` at 320/390/768 and `nowrap` at 1440, `countries=kr,us,uk,fr`, sign-in panel
-rendered signed-out at all four widths, and overflow 0 / out-of-viewport 0 / sub-44px 0 in all 16
-measurements. → `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES`,
+rendered signed-out at all four widths, and overflow 0 / out-of-viewport 0 / sub-44px 0 at every one of
+the four widths. → `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES`,
 **`LIVE_VERIFIED=YES` for the unauthenticated surface.**
+
+Visual proof, not only numbers: `docs/6065/s5-live-home-1440.png`, `s5-live-home-390.png`,
+`s5-live-tooltap-1440.png`, `s5-live-tooltap-390.png` — the production screen renders the stroke brand
+mark, the card icon column with its 22×2 rule, the pill actions and the panel surfaces, Korean wraps at
+word boundaries at 390, and tapping a tool while signed out still leaves **exactly one** `.council-form`
+(the login form) at all four widths, i.e. the fail-closed gate holds in production.
 
 Not yet verified, and not claimed: the **authenticated** pass over the three editors at the four
 widths, live KR/US/UK/FR generation, save-and-reentry, SNS media order, the activity book, copy/TXT and
