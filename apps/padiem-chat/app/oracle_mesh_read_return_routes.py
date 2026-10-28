@@ -1774,7 +1774,11 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     import asyncio
     import time
     wait_header = request.headers.get("x-oracle-mesh-wait", "")
-    wait_seconds = 20 if wait_header == "20" else 0
+    # #5479: a long wait held a Worker request open for 20 seconds, re-reading
+    # D1 every couple of seconds, so concurrent polls piled onto one event loop.
+    # The executor already re-requests as soon as an empty answer comes back, so
+    # the ceiling is now five seconds and a legacy "20" is capped to it too.
+    wait_seconds = 5 if wait_header in ("5", "20") else 0
     deadline = time.monotonic() + wait_seconds
     while True:
         try:
