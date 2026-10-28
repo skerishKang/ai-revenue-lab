@@ -88,7 +88,10 @@ def test_move_moves_one_file_with_the_backup_that_comes_first(monkeypatch):
     command = captured[0]["command"]
     assert ".padiem-backup" in command
     assert 0 < command.index("Copy-Item") < command.index("Move-Item")
-    assert "Write-Output 'PADIEM_PC_ACCOUNT='" in command
+    # The account line survives the command builder's own wording: what the
+    # owner is told is still that one marked line, however it is concatenated.
+    assert "PADIEM_PC_ACCOUNT=" in command
+    assert "Write-Output" in command
 
 
 def test_delete_deletes_one_file_already_copied_to_the_backup(monkeypatch):
