@@ -525,7 +525,7 @@ def test_health_handler_reads_the_async_readiness_signal() -> None:
 def test_worker_composes_the_async_authority_before_create_app() -> None:
     source = (ROOT / "worker.py").read_text(encoding="utf-8")
     compose_at = source.index("compose_worker_isolated_parser_authority_async(")
-    create_at = source.index("_worker_app = create_app(")
+    create_at = source.index("worker_app = create_app(")
     assert compose_at < create_at
     assert "CloudflareDocumentParserServiceTransport(" in source
     assert "reset_worker_isolated_parser_async_composition()" in source

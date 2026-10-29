@@ -104,7 +104,7 @@ def test_worker_real_fetch_seam_invoked_before_normal_app_asgi():
     code = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     assert "maybe_dispatch_connector_gateway" in code
     assert 'request=request, worker_env=self.env' in code
-    assert code.index("await maybe_dispatch_connector_gateway(") < code.index("if _worker_app is None:")
+    assert code.index("await maybe_dispatch_connector_gateway(") < code.index("app = await self._get_worker_app()")
     # Product route is intentionally ON by default; the Worker still requires
     # its existing canonical Identity/Broker binding on every upgrade.
     import tomllib
