@@ -1321,7 +1321,7 @@
   const TOOLS = Object.freeze(["speech", "sns", "meeting"]);
   const LABELS = Object.freeze({ speech: "축사·인사말", sns: "SNS 홍보", meeting: "회의정리·활동집" });
   const session = { signedIn: false, built: false, bound: false, selected: null, pending: null,
-                     unavailable: false };
+                     unavailable: false, themeBound: false };
   let bodies = {};
 
   function host(id) { return document.getElementById(id); }
@@ -1408,6 +1408,7 @@
       writeToolToUrl(tool);
       if (moveFocus) focusToolPanel(tool);
     }
+    paintWorkspace(tool || null);
     return session.selected;
   }
 
@@ -1489,6 +1490,8 @@
     setBadge("로그인됨");
     hideAuthPanel();
     syncCountrySelect();
+    // syncCountrySelect sets the value without dispatching, so the pills follow it here.
+    applyTheme(selectedCountry(), theme.style);
     buildToolPanels();
     const wanted = session.pending || toolFromUrl() || rememberedTool();
     const focusWanted = Boolean(session.pending);
@@ -1524,6 +1527,161 @@
     return true;
   }
 
+  // ── 디자인 축: 국가 4 · 스타일 5 ───────────────────────────────────────
+  // The two axes come from the #5967 정본 and stay as independent as it defines them: the
+  // country picks the tone ramp and the photography, the style picks where that material is
+  // used. 4 x 5 is therefore 4 + 5 CSS blocks, and the browser can reach all twenty.
+  //
+  // Neither axis becomes a new authority over data. The country still belongs to
+  // #councilCountry, so the existing change listeners keep filtering the saved lists and the
+  // archive and keep writing padiem-council-country; the pills above it are a mirror. The
+  // style is the only new value and it gets its own key, beside padiem-council-country and
+  // padiem-council-tool rather than replacing either.
+  const DESIGN_COUNTRIES = Object.freeze(["kr", "us", "uk", "fr"]);
+  const DESIGN_STYLES = Object.freeze(["classic", "modern", "dark", "light", "minimal"]);
+  const COUNTRY_NAMES = Object.freeze({ kr: "한국", us: "미국", uk: "영국", fr: "프랑스" });
+  const STYLE_NAMES = Object.freeze({ classic: "클래식", modern: "모던", dark: "다크", light: "라이트", minimal: "미니멀" });
+  const theme = { country: "kr", style: "light", open: false };
+
+  function rememberedStyle() {
+    try {
+      const value = store() && store().getItem("padiem-council-style");
+      return DESIGN_STYLES.indexOf(value) >= 0 ? value : "light";
+    } catch (_) { return "light"; }
+  }
+  function rememberStyle(style) {
+    try { if (store()) store().setItem("padiem-council-style", style); } catch (_) {}
+  }
+  function selectedCountry() {
+    const node = host("councilCountry");
+    const value = node && node.value;
+    return DESIGN_COUNTRIES.indexOf(value) >= 0 ? value : "kr";
+  }
+  function markGroup(group, attr, value) {
+    if (!group || typeof group.querySelectorAll !== "function") return;
+    // attribute-only: the only elements inside a group carrying the axis attribute are
+    // its radios, and the harness resolves one selector token, not a compound.
+    Array.from(group.querySelectorAll("[" + attr + "]")).forEach((button) => {
+      const on = button.getAttribute(attr) === value;
+      button.setAttribute("aria-checked", on ? "true" : "false");
+      if (button.tabIndex !== undefined) button.tabIndex = on ? 0 : -1;
+    });
+  }
+  function applyTheme(country, style) {
+    const root = document.documentElement;
+    theme.country = DESIGN_COUNTRIES.indexOf(country) >= 0 ? country : selectedCountry();
+    theme.style = DESIGN_STYLES.indexOf(style) >= 0 ? style : rememberedStyle();
+    if (root && root.dataset) {
+      root.dataset.country = theme.country;
+      root.dataset.style = theme.style;
+    }
+    markGroup(host("councilCountryGroup"), "data-country", theme.country);
+    markGroup(host("councilStyleGroup"), "data-style", theme.style);
+    const value = host("councilThemeValue");
+    if (value) value.textContent = "국가 " + COUNTRY_NAMES[theme.country] + " · 스타일 " + STYLE_NAMES[theme.style];
+    rememberStyle(theme.style);
+    return { country: theme.country, style: theme.style };
+  }
+  function chooseCountry(country) {
+    const node = host("councilCountry");
+    if (node && node.value !== country) {
+      node.value = country;
+      if (typeof node.dispatchEvent === "function" && typeof Event === "function") {
+        node.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+    applyTheme(country, theme.style);
+  }
+  // role=radio means the arrows move the choice, not the caret.
+  function bindGroup(group, attr, choose) {
+    if (!group || typeof group.querySelectorAll !== "function") return;
+    const buttons = Array.from(group.querySelectorAll("[" + attr + "]"));
+    buttons.forEach((button, index) => {
+      button.addEventListener("click", () => choose(button.getAttribute(attr)));
+      button.addEventListener("keydown", (event) => {
+        const key = event && event.key;
+        if (key !== "ArrowRight" && key !== "ArrowLeft" && key !== "ArrowDown" && key !== "ArrowUp") return;
+        if (typeof event.preventDefault === "function") event.preventDefault();
+        const step = (key === "ArrowRight" || key === "ArrowDown") ? 1 : -1;
+        const next = buttons[(index + step + buttons.length) % buttons.length];
+        if (!next) return;
+        choose(next.getAttribute(attr));
+        if (typeof next.focus === "function") next.focus();
+      });
+    });
+  }
+  function setThemePanel(open) {
+    const panel = host("councilThemePanel");
+    const trigger = host("councilThemeTrigger");
+    theme.open = !!open;
+    if (panel) panel.hidden = !open;
+    if (trigger) trigger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  function wireTheme() {
+    if (session.themeBound) return;
+    session.themeBound = true;
+    applyTheme(selectedCountry(), rememberedStyle());
+    bindGroup(host("councilCountryGroup"), "data-country", chooseCountry);
+    bindGroup(host("councilStyleGroup"), "data-style", (style) => applyTheme(theme.country, style));
+    const select = host("councilCountry");
+    if (select && select.addEventListener) {
+      select.addEventListener("change", () => applyTheme(selectedCountry(), theme.style));
+    }
+    const trigger = host("councilThemeTrigger");
+    if (trigger) trigger.addEventListener("click", () => setThemePanel(!theme.open));
+    const box = host("councilTheme");
+    if (box && box.addEventListener) {
+      box.addEventListener("click", (event) => { if (event) event.stopPropagation(); });
+    }
+    document.addEventListener("click", () => { if (theme.open) setThemePanel(false); });
+    document.addEventListener("keydown", (event) => {
+      if (!event || event.key !== "Escape") return;
+      // 정본의 순서: 팝오버가 먼저 닫히고, 그 다음에 작업실이 홈으로 물러난다.
+      if (theme.open) { setThemePanel(false); return; }
+      if (session.selected) leaveWorkspace();
+    });
+  }
+
+  // ── 작업실 전환 ────────────────────────────────────────────────────────
+  // The 정본 keeps the home and the editor as two screens. Production hosts each editor
+  // inside its own card, so the same result is reached by state, not by moving nodes: the
+  // hero and the strip step out, the bar returns to the flow, and the open card becomes the
+  // paper. Nothing here touches which panel is open — applySelection still owns that.
+  function paintWorkspace(tool) {
+    const root = document.documentElement;
+    const bar = host("councilWorkspaceBar");
+    const title = host("councilWorkspaceTitle");
+    if (root && root.classList) root.classList[tool ? "add" : "remove"]("council-in-workspace");
+    if (bar) bar.hidden = !tool;
+    if (title) title.textContent = tool ? (LABELS[tool] || "") : "";
+    // focusToolPanel brought the open card to the top, which carried this bar off the
+    // screen with it. The bar is in the flow, so the script brings the reader to it.
+    if (tool && bar && typeof bar.scrollIntoView === "function") {
+      try { bar.scrollIntoView({ block: "start" }); } catch (_) {}
+    }
+  }
+  function leaveWorkspace() {
+    applySelection(null, false);
+    const first = cardButtons()[0];
+    if (first && typeof first.focus === "function") first.focus();
+    if (typeof window.scrollTo === "function") { try { window.scrollTo(0, 0); } catch (_) {} }
+  }
+  function wireHome() {
+    const back = host("councilBack");
+    if (back) back.addEventListener("click", leaveWorkspace);
+    const cta = host("councilHeroCta");
+    if (!cta) return;
+    cta.addEventListener("click", () => {
+      if (!session.signedIn) { openLoginHere(null); return; }
+      const heading = host("councilWorksTitle");
+      if (heading && typeof heading.scrollIntoView === "function") {
+        try { heading.scrollIntoView({ block: "start" }); } catch (_) {}
+      }
+      const first = cardButtons()[0];
+      if (first && typeof first.focus === "function") first.focus();
+    });
+  }
+
   async function init() {
     bodies = {
       speech: host("councilSpeechBody"),
@@ -1532,6 +1690,10 @@
     };
     bindCards();
     bindAuthForm();
+    // The design axes belong to the page, not to the session: a signed-out visitor sees
+    // the cinematic home and may change country and style before logging in.
+    wireTheme();
+    wireHome();
     // The page runs init() once at load; a second call must not stack a second
     // set of listeners, or one click would open and immediately close the panel.
     session.bound = true;
@@ -1554,6 +1716,8 @@
     setBadge("로그인됨");
     hideAuthPanel();
     syncCountrySelect();
+    // syncCountrySelect sets the value without dispatching, so the pills follow it here.
+    applyTheme(selectedCountry(), theme.style);
     buildToolPanels();
     const tool = toolFromUrl() || rememberedTool();
     applySelection(TOOLS.indexOf(tool) >= 0 ? tool : null, false);
@@ -1574,6 +1738,10 @@
       pending: session.pending,
     }),
     select: (tool, moveFocus) => applySelection(tool, moveFocus),
+    theme: () => ({ country: theme.country, style: theme.style, open: theme.open,
+                    countries: DESIGN_COUNTRIES.slice(), styles: DESIGN_STYLES.slice() }),
+    setTheme: (country, style) => applyTheme(country, style),
+    workspace: () => (session.selected ? "workspace" : "home"),
     openLogin: (tool) => openLoginHere(tool),
     sessionLost: () => markSessionLost(),
     speech: speechModule,

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from _council_module import local_asset_targets
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 CSS = (APP_ROOT / "static" / "council-app.css").read_text(encoding="utf-8")
@@ -79,4 +80,8 @@ def test_the_named_breakpoints_and_the_floor_count_survive():
 def test_the_header_fix_stays_css_only_and_keeps_the_token_aliases():
     assert "--council-bg: var(--page-bg, var(--bg))" in CSS
     assert "--council-accent: var(--accent)" in CSS
-    assert "@import" not in CSS and "url(" not in CSS, "the staged bundle forbids fetched assets here"
+    # The aliases still resolve through Chat's theme sheet: the cinematic layer overrides
+    # the role tokens on this page only, and never re-declares an alias differently.
+    assert "@import" not in CSS, "the staged bundle may not import another sheet"
+    for target in local_asset_targets(CSS):
+        assert target.startswith("./assets/"), f"asset outside this app: {target}"

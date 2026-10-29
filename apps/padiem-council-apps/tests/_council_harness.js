@@ -288,6 +288,39 @@ function spawnSession(windowState = {}) {
   countrySelect.value = "kr";
   root.append(badge, note, countrySelect);
 
+  // The #6065 cinematic surface: the two design axes, the popover that carries them, the
+  // workspace bar the tool selection reveals, and the hero's entry control. The shipped
+  // module binds these by id, so a scenario can drive the axes for real.
+  const themePanel = mk("span", "councilThemePanel", "council-theme-panel");
+  themePanel.hidden = true;
+  const themeTrigger = mk("button", "councilThemeTrigger", "council-theme-trigger");
+  const themeValue = mk("span", "councilThemeValue", "council-theme-value");
+  const countryGroup = mk("span", "councilCountryGroup", "council-theme-group");
+  ["kr", "us", "uk", "fr"].forEach((code) => {
+    const pill = mk("button");
+    pill.setAttribute("data-country", code);
+    pill.setAttribute("role", "radio");
+    pill.setAttribute("aria-checked", code === "kr" ? "true" : "false");
+    countryGroup.append(pill);
+  });
+  const styleGroup = mk("span", "councilStyleGroup", "council-theme-group");
+  ["classic", "modern", "dark", "light", "minimal"].forEach((code) => {
+    const pill = mk("button");
+    pill.setAttribute("data-style", code);
+    pill.setAttribute("role", "radio");
+    pill.setAttribute("aria-checked", code === "light" ? "true" : "false");
+    styleGroup.append(pill);
+  });
+  themePanel.append(countryGroup, styleGroup);
+  themeTrigger.append(themeValue);
+  const workspaceBar = mk("div", "councilWorkspaceBar", "council-workspace-bar");
+  workspaceBar.hidden = true;
+  const backButton = mk("button", "councilBack", "council-back");
+  const workspaceTitle = mk("span", "councilWorkspaceTitle", "council-workspace-title");
+  workspaceBar.append(backButton, workspaceTitle);
+  const heroCta = mk("button", "councilHeroCta", "council-cta");
+  root.append(themeTrigger, themePanel, workspaceBar, heroCta);
+
   // The #5942 entry surface: three selectable cards and the in-page login panel,
   // mirroring static/index.html so the shipped module is driven against the markup
   // it actually runs on.
@@ -363,6 +396,99 @@ function endpointSet() {
 
 // ── scenarios ──────────────────────────────────────────────────────────────
 const SCENARIOS = {
+  async cinematic() {
+    // #6065: 4 countries x 5 styles must be switchable, and choosing a tool must move the
+    // page into the 작업실 and back. Driven through the shipped module on the fake document
+    // that carries the new surface, so this is executed behaviour, not a string match.
+    const sessionOf = (state) => {
+      authState = state;
+      const bag = {};
+      const s = spawnSession({ localStorage: { getItem: (k) => (k in bag ? bag[k] : null),
+                                               setItem: (k, v) => { bag[k] = String(v); } } });
+      s.bag = bag;
+      return s;
+    };
+    const pill = (s, group, attr, value) => find(s, group).querySelectorAll("[" + attr + "]")
+      .find((n) => n.getAttribute(attr) === value);
+    const checked = (s, group, attr) => find(s, group).querySelectorAll("[" + attr + "]")
+      .filter((n) => n.getAttribute("aria-checked") === "true").map((n) => n.getAttribute(attr));
+    const openBodies = (s) => ["councilSpeechBody", "councilSnsBody", "councilMeetingBody"]
+      .filter((id) => !find(s, id).hidden);
+
+    const s = sessionOf({ authenticated: true, user: { name: "테스트 사용자" } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    const out = { signedIn: { initialCountry: s.root.dataset.country, initialStyle: s.root.dataset.style } };
+
+    await pill(s, "councilCountryGroup", "data-country", "uk").dispatch("click");
+    await pill(s, "councilStyleGroup", "data-style", "classic").dispatch("click");
+    await sleep(20);
+    out.signedIn.afterPills = {
+      country: s.root.dataset.country, style: s.root.dataset.style,
+      // the pills are a mirror: the country authority stays the <select> the app already had
+      selectValue: find(s, "councilCountry").value,
+      checkedCountry: checked(s, "councilCountryGroup", "data-country"),
+      checkedStyle: checked(s, "councilStyleGroup", "data-style"),
+      storedStyle: s.bag["padiem-council-style"] || null,
+      triggerValue: text(find(s, "councilThemeValue")),
+    };
+
+    const seen = [];
+    for (const country of api.theme().countries) {
+      for (const style of api.theme().styles) {
+        api.setTheme(country, style);
+        seen.push(s.root.dataset.country + "/" + s.root.dataset.style);
+      }
+    }
+    out.signedIn.combos = { reached: seen.length, distinct: new Set(seen).size,
+                            sample: seen.slice(0, 3).concat(seen.slice(-1)) };
+    api.setTheme("kr", "light");
+
+    const selects = s.root.querySelectorAll(".council-card-select");
+    await selects[0].dispatch("click");
+    await sleep(40);
+    out.signedIn.workspace = {
+      on: s.root.classList.contains("council-in-workspace"),
+      barHidden: find(s, "councilWorkspaceBar").hidden,
+      title: text(find(s, "councilWorkspaceTitle")),
+      openBodies: openBodies(s),
+      selected: api.state().selected,
+      forms: s.root.querySelectorAll(".council-form").length,
+    };
+    await find(s, "councilBack").dispatch("click");
+    await sleep(30);
+    out.signedIn.afterBack = {
+      on: s.root.classList.contains("council-in-workspace"),
+      barHidden: find(s, "councilWorkspaceBar").hidden,
+      title: text(find(s, "councilWorkspaceTitle")),
+      openBodies: openBodies(s),
+      selected: api.state().selected,
+    };
+
+    // the design belongs to the page, not to the session: signed out, the axes still move
+    // and the tool builders still do not attach (the fail-closed gate is unchanged).
+    const off = sessionOf({ authenticated: false });
+    const offApi = off.ctx.window.PadiemCouncilApps;
+    await offApi.init();
+    await sleep(30);
+    await pill(off, "councilCountryGroup", "data-country", "fr").dispatch("click");
+    await pill(off, "councilStyleGroup", "data-style", "dark").dispatch("click");
+    await sleep(20);
+    await off.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(30);
+    out.signedOut = {
+      country: off.root.dataset.country, style: off.root.dataset.style,
+      selectValue: find(off, "councilCountry").value,
+      panelVisible: !find(off, "councilAuthPanel").hidden,
+      forms: off.root.querySelectorAll(".council-form").length,
+      workspaceOn: off.root.classList.contains("council-in-workspace"),
+      openBodies: openBodies(off),
+      badge: text(find(off, "councilAuthBadge")),
+    };
+    return out;
+  },
+
   async auth() {
     // #5942: the whole in-page sign-in path on one real execution of the shipped
     // module — signed-out visit, choosing a tool, a failed credential, a successful

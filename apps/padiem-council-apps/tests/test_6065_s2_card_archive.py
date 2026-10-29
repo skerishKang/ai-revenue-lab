@@ -57,7 +57,7 @@ def test_the_card_is_the_two_column_frame_with_an_icon_slot():
     assert "grid-column: 1 / -1" in block(".council-card-body")
 
 
-def test_every_tool_carries_its_own_inline_icon_and_none_of_them_is_an_asset():
+def test_every_tool_keeps_its_inline_icon_and_gains_its_own_card_photograph():
     cards = dict(re.findall(r'<section class="council-card" id="council-(\w+)"(.*?)</section>', HTML, re.S))
     assert set(cards) == {"speech", "sns", "meeting"}, sorted(cards)
     for tool, card in cards.items():
@@ -65,7 +65,12 @@ def test_every_tool_carries_its_own_inline_icon_and_none_of_them_is_an_asset():
         assert card.count('viewBox="0 0 32 32"') == 1, tool
         assert card.count("<svg") == 1, tool
     assert HTML.count('class="council-card-icon"') == 3
-    assert "url(" not in CSS and "@import" not in CSS and "@font-face" not in CSS
+    # the design puts a different photograph behind each card; one photo reused three times
+    # would read as a placeholder, so the three slots must name three files
+    slots = re.findall(r'--card-image-(\d):\s*url\("\./assets/([^"]+)"\)', CSS)
+    assert [n for n, _ in slots] == ["1", "2", "3"], slots
+    assert len({f for _, f in slots}) == 3, slots
+    assert "@import" not in CSS
 
 
 def test_the_card_title_uses_the_design_fluid_scale():
@@ -104,7 +109,8 @@ def test_the_skip_link_reaches_the_touch_floor_when_focused():
     assert "display: inline-flex" in focus, focus
 
 
-def test_no_style_axis_or_asset_leaked_in_with_the_card_frame():
+def test_the_card_frame_brought_no_foreign_asset_and_no_design_storage_key():
     for text, name in ((HTML, "index.html"), (JS, "council-app.js"), (CSS, "council-app.css")):
         assert "padiem-parliament-theme" not in text, name
-        assert "data-style" not in text, name
+        assert not re.search(r"https?://", text.replace(
+            "http://www.w3.org/2000/svg", "")), f"{name}: a remote reference appeared"

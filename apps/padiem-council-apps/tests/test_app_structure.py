@@ -17,6 +17,7 @@ import re
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
+from _council_module import local_asset_targets
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC_DIR = APP_ROOT / "static"
@@ -118,8 +119,11 @@ def test_the_entry_page_gates_the_tools_on_sign_in_and_declares_independence() -
 def test_the_entry_css_exists_and_does_not_import_chat_assets() -> None:
     css = COUNCIL_CSS.read_text(encoding="utf-8")
     assert "@import" not in css
-    # Naming the family is fine; importing or mutating a Chat asset is not.
-    assert "@import" not in css and "url(" not in css
+    # Naming the family is fine; importing or mutating a Chat asset is not. The cinematic
+    # layer may only reach files that ship inside this app's own static/assets/, so the
+    # bundle stays self-contained and no other origin is contacted at paint time.
+    for target in local_asset_targets(css):
+        assert target.startswith("./assets/"), f"asset outside this app: {target}"
 
 
 def test_the_app_declares_no_business_number() -> None:

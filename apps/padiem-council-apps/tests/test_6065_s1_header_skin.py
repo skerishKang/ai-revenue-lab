@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from _council_module import local_asset_targets
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 CSS = (APP_ROOT / "static" / "council-app.css").read_text(encoding="utf-8")
@@ -74,17 +75,35 @@ def test_the_open_tool_is_marked_by_the_design_outline_ring():
     assert "grid-column: 1 / -1" in active, "the open tool still takes the row (#5942)"
 
 
-def test_s1_added_no_asset_and_no_font_of_its_own():
-    assert "@font-face" not in CSS, "fonts are an owner decision; S1 ships none"
-    assert "url(" not in CSS and "@import" not in CSS
-    assert sorted(p.name for p in (APP_ROOT / "static").iterdir()) == [
-        "council-app.css", "council-app.js", "index.html"], "the staged bundle names are fixed"
+def test_the_cinematic_assets_are_the_designs_own_files_and_no_others():
+    """CENTRAL 2026-10-29 lifted the no-photography/no-font ban for #6065. The bundle is no
+    longer three files, so the guard becomes an exact-set check: the seven photographs and
+    seven faces of the #5967 정본, plus their licences, and nothing else."""
+    faces = re.findall(r"@font-face\s*\{[^}]*font-family:\s*\"([^\"]+)\"[^}]*\}", CSS)
+    assert sorted(set(faces)) == ["MaruBuri", "Playfair Display", "Pretendard"], sorted(set(faces))
+    assert len(faces) == 7, len(faces)
+    names = sorted(p.name for p in (APP_ROOT / "static").iterdir())
+    assert names == ["assets", "council-app.css", "council-app.js", "index.html"], names
+    staged = sorted(p.name for p in (APP_ROOT / "static" / "assets").rglob("*") if p.is_file())
+    assert sum(1 for n in staged if n.endswith(".jpg")) == 7, staged
+    assert sum(1 for n in staged if n.endswith(".woff2")) == 7, staged
+    assert sum(1 for n in staged if n.endswith(".txt")) == 3, "the three font licences stay bundled"
+    assert {"ATTRIBUTION.md", "IMAGE-SLOTS.md"} <= set(staged), "the photo provenance ships with them"
+    for target in local_asset_targets(CSS):
+        assert target.startswith("./assets/"), f"asset outside this app: {target}"
+    assert "@import" not in CSS
 
 
-def test_the_five_styles_stay_internal():
-    """CENTRAL 2026-10-28: the 5 style axis is not exposed to production users.
-    Nothing in this app may read or write the design's theme key or its axes."""
+def test_the_two_axes_are_user_facing_and_the_design_key_stays_out():
+    """CENTRAL 2026-10-29 reversed the 2026-10-28 decision: 4 countries x 5 styles must be
+    switchable in a real browser, so the axes are now on the page. What stays forbidden is
+    the prototype's own storage key - this app writes its own, and a reference prototype and
+    a production user must not share state."""
     for text, name in ((HTML, "index.html"), (JS, "council-app.js"), (CSS, "council-app.css")):
         assert "padiem-parliament-theme" not in text, name
-        assert "data-style" not in text, name
-        assert not re.search(r"\[data-country=", text), name
+    assert 'data-country="kr"' in HTML and 'data-style="light"' in HTML, "the axes start declared"
+    ramps = re.findall(r'html\[data-country="(kr|us|uk|fr)"\]\s*\{[^}]*--tone-1:', CSS, re.S)
+    assert sorted(ramps) == ["fr", "kr", "uk", "us"], f"one ramp block per country: {sorted(ramps)}"
+    assert len(re.findall(r'role="radio"[^>]*data-style=', HTML)) == 5, "five style pills"
+    assert len(re.findall(r'role="radio"[^>]*data-country=', HTML)) == 4, "four country pills"
+    assert 'padiem-council-style' in JS and 'padiem-council-country' in JS, "each axis keeps its own key"
