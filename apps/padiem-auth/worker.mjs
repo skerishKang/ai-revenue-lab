@@ -46,7 +46,12 @@ async function diagnosed(stage, operation) {
     catch (error) {
       const name = ['Error', 'TypeError', 'RangeError', 'SyntaxError'].includes(error?.name) ? error.name : 'OtherError';
       // Never log exception text: it may contain codes, tokens, cookies or URLs.
-      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed' }));
+      const message = typeof error?.message === 'string' ? error.message.toLowerCase() : '';
+      const reason = message.includes('illegal invocation') || message.includes('incompatible receiver') ? 'invocation' :
+        message.includes('fetch failed') ? 'fetch_failed' : message.includes('network connection lost') ? 'network_lost' :
+        message.includes('disallowed') ? 'disallowed' : message.includes('redirect') ? 'redirect' :
+        message.includes('request body') || message.includes('bodyinit') ? 'request_body' : 'other';
+      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed', reason }));
       throw error;
     }
 }
@@ -98,14 +103,14 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const googleToken = await diagnosed('google_token_exchange_failed', async () => {
-        const response = await fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'error', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) });
+        const response = await diagnosed('google_fetch_failed', () => fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'error', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) }));
         if (!response.ok) {
           let oauthError = 'other';
           try { const candidate = (await response.json())?.error; if (['invalid_client','invalid_grant','invalid_request','unauthorized_client','redirect_uri_mismatch'].includes(candidate)) oauthError = candidate; } catch {}
           console.error(JSON.stringify({ auth_stage: 'google_token_exchange_failed', google_error: oauthError, http_status: response.status }));
           throw new Error('google token endpoint failed');
         }
-        return response.json();
+        return diagnosed('google_response_parse_failed', () => response.json());
       });
       const identity = await diagnosed('google_id_token_verification_failed', async () => {
         const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'error' });
