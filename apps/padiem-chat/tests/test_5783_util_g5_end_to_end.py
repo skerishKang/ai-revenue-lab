@@ -51,6 +51,11 @@ def g5() -> dict:
     return run("g5")
 
 
+@pytest.fixture(scope="module")
+def g5fail() -> dict:
+    return run("g5fail")
+
+
 # ── 축사 ─────────────────────────────────────────────────────────────────────
 
 
@@ -122,6 +127,13 @@ def test_meeting_writes_saves_reopens_rewrites_and_exports(g5: dict) -> None:
 
     assert meeting["reopened"] == ANSWER + "\n[편집: 저장 전]"
 
+    # #6199: the meeting tab reuses the speech/SNS reopen row and edit state
+    # line verbatim — the row leads with the action, the line names the piece.
+    assert meeting["rowLabel"].startswith("고쳐 쓰기: ")
+    assert MEETING_NAME in meeting["rowLabel"]
+    assert MEETING_NAME in meeting["editState"]
+    assert "덮어쓰기" in meeting["editState"] and "버전" in meeting["editState"]
+
     assert meeting["askText"] == "같은 이름의 글이 이미 있습니다: " + MEETING_NAME
     assert meeting["askLabels"][0].startswith("새 이름으로 저장")
     assert meeting["askLabels"][1].startswith("덮어쓰기")
@@ -180,6 +192,67 @@ def test_the_chain_uses_only_the_existing_project_file_routes(g5: dict) -> None:
                                     "DELETE /api/projects/p1/files/")), endpoint
     assert g5["alerts"] == []
     assert g5["pageErrors"] == []
+
+
+# ── the save failure half: the tab says the status, the modal is gone ───────
+
+RETRY_TEXT = "잠시 저장하지 못했어요"
+
+
+def test_save_failures_say_the_status_inside_the_tab_and_never_alert(g5fail: dict) -> None:
+    cases = g5fail["cases"]
+
+    # 권한 없음 (403/404): the permission sentence, no retry, nothing stored.
+    for key in ("speech403", "speech404", "sns403", "meeting404"):
+        case = cases[key]
+        assert case["text"] == "이 글을 저장할 권한이 없어요", key
+        assert case["hidden"] is False
+        assert case["hasRetry"] is False
+        assert case["ariaLive"] == "polite"
+
+    # 크기 초과 (413, 그리고 본문 한도의 422 project_file_limit): pressing
+    # again cannot shrink the piece, so there is no 다시 시도 either.
+    for key in ("speech413", "speech422limit"):
+        case = cases[key]
+        assert case["text"] == "파일이 너무 커서 저장하지 못했어요", key
+        assert case["hasRetry"] is False
+        assert case["ariaLive"] == "polite"
+
+    # 네트워크·서버 오류: the 잠시 sentence rides the 다시 시도 button.
+    assert cases["speechOffline"]["text"].startswith(RETRY_TEXT)
+    assert cases["speechOffline"]["hasRetry"] is True
+    assert cases["speech500"]["text"].startswith(RETRY_TEXT)
+    assert cases["speech500"]["hasRetry"] is True
+    assert cases["speech500"]["buttonLabel"] == "다시 시도"
+
+    # 다시 시도 re-runs the SAME save: the failure gone, the row is really
+    # stored, the line clears and the button says the save happened.
+    retry = cases["speech500Retry"]
+    assert retry["lineHidden"] is True
+    assert retry["stored"] == {"name": "재시도 축사.txt", "kind": "speech", "content": "재시도 되는 본문"}
+    assert retry["saveButtonLabel"] == "저장됨"
+
+    # No failure case may reach a browser modal or break the page.
+    assert g5fail["alerts"] == []
+    assert g5fail["pageErrors"] == []
+
+
+def test_a_name_conflict_stores_nothing_until_the_owner_chooses(g5fail: dict) -> None:
+    ask = g5fail["noChoice409"]
+
+    # The ask is the existing two-button choice; the safe answer is first.
+    assert ask["askShown"] is True
+    assert ask["askText"] == "같은 이름의 글이 이미 있습니다: 선택 없이는 저장 없음.txt"
+    assert ask["askLabels"][0].startswith("새 이름으로 저장")
+    assert ask["askLabels"][1].startswith("덮어쓰기")
+
+    # Nothing saved and nothing failed: the status line stays out of the way,
+    # the row count does not move, and the only write was the refused POST.
+    assert ask["statusLineHidden"] is True
+    assert ask["rowsBefore"] >= 1
+    assert ask["rowsAfter"] == ask["rowsBefore"]
+    assert ask["writeRequestsAfter"] - ask["writeRequestsBefore"] == 1
+    assert g5fail["alerts"] == []
 
 
 # ── account isolation on the real project-file routes + fake D1 ────────────

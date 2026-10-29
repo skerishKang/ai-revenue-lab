@@ -104,6 +104,94 @@
     return data && data.project ? data.project.id : null;
   }
 
+  // #5783: a save that did not store anything says so inside the tab — one
+  // aria-live="polite" status line per tab, never a browser modal. One honest
+  // sentence per status: permission (403/404), size (413, and the 422 the
+  // store answers for an over-limit text body), session (401), and for what
+  // can genuinely change by pressing again a 다시 시도 that re-runs the SAME
+  // save. No sentence promises a save that has not happened.
+  const SAVE_PERMISSION_TEXT = "이 글을 저장할 권한이 없어요";
+  const SAVE_SIZE_TEXT = "파일이 너무 커서 저장하지 못했어요";
+  const SAVE_LOGIN_TEXT = "로그인이 필요합니다. 다시 로그인해 주세요.";
+  const SAVE_RETRY_TEXT = "잠시 저장하지 못했어요";
+
+  function saveFailureText(failure) {
+    const status = failure ? failure.status : undefined;
+    if (failure && failure.size) return SAVE_SIZE_TEXT;
+    if (status === 403 || status === 404) return SAVE_PERMISSION_TEXT;
+    if (status === 413) return SAVE_SIZE_TEXT;
+    if (status === 401) return SAVE_LOGIN_TEXT;
+    return SAVE_RETRY_TEXT;
+  }
+
+  function saveFailureRetries(failure) {
+    const status = failure ? failure.status : undefined;
+    if (failure && failure.size) return false;
+    // 다시 시도 answers what pressing again can change. Permission, session
+    // and size do not change by pressing — 413 and the store's 422 limit are
+    // the same too-big piece either way.
+    return !(status === 401 || status === 403 || status === 404 || status === 413);
+  }
+
+  function saveStatusLine(id) {
+    const line = el("p", "util-save-status");
+    line.id = id;
+    line.hidden = true;
+    line.setAttribute("aria-live", "polite");
+    return line;
+  }
+
+  function showSaveStatus(line, failure, run) {
+    line.replaceChildren();
+    line.textContent = saveFailureText(failure);
+    if (saveFailureRetries(failure) && typeof run === "function") {
+      line.textContent += " · ";
+      const retry = el("button", "util-retry", GEN_RETRY_LABEL);
+      retry.type = "button";
+      retry.addEventListener("click", () => {
+        hideSaveStatus(line);
+        run();
+      });
+      line.appendChild(retry);
+    }
+    line.hidden = false;
+  }
+
+  function hideSaveStatus(line) {
+    line.hidden = true;
+    line.textContent = "";
+  }
+
+  // The read paths may reuse ensureProject, but a save must say why nothing
+  // was stored, so this variant keeps the HTTP status of whichever step
+  // failed instead of collapsing it to null.
+  async function ensureProjectForSave() {
+    let res;
+    try {
+      res = await fetch("/api/projects", { credentials: "include" });
+    } catch (_error) {
+      return { status: 0 };
+    }
+    if (!res.ok) return { status: res.status };
+    const data = await res.json().catch(() => null);
+    const projects = data && data.projects ? data.projects : [];
+    if (projects.length) return { pid: projects[0].id };
+    let create;
+    try {
+      create = await fetch("/api/projects", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "유틸 작업" }),
+      });
+    } catch (_error) {
+      return { status: 0 };
+    }
+    if (!create.ok) return { status: create.status };
+    const created = await create.json().catch(() => null);
+    return created && created.project ? { pid: created.project.id } : { status: 0 };
+  }
+
   // #5731: a stored writing carries the kind its screen saved it as
   // (speech/sns/meeting/book), so a list asks for its own kind instead of
   // reading every .txt in the project. A name already used by the same kind
@@ -112,22 +200,35 @@
   async function saveProjectFile(pid, name, text, mediaType, docKind) {
     const payload = { name: name, media_type: mediaType || "text/plain", text: text };
     if (docKind) payload.doc_kind = docKind;
-    const res = await fetch("/api/projects/" + pid + "/files", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      // The server refuses a file whose media type contradicts its
-      // extension; callers that store .json payloads must say so.
-      body: JSON.stringify(payload),
-    });
+    let res;
+    try {
+      res = await fetch("/api/projects/" + pid + "/files", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        // The server refuses a file whose media type contradicts its
+        // extension; callers that store .json payloads must say so.
+        body: JSON.stringify(payload),
+      });
+    } catch (_error) {
+      // The request never reached an answer — the screen says 잠시 + 다시 시도.
+      return { failure: { status: 0 } };
+    }
     if (res.status === 409) {
       const body = await res.json().catch(() => null);
       const existing = body && body.error && body.error.existing;
-      return existing && existing.id ? { conflict: existing } : null;
+      return existing && existing.id ? { conflict: existing } : { failure: { status: res.status } };
     }
-    if (!res.ok) return null;
+    if (!res.ok) {
+      // The request body bound answers 413; an over-limit text body is the
+      // store's 422 project_file_limit. Both say the same thing to the person
+      // typing: the piece is too big, and pressing again cannot shrink it.
+      const body = await res.json().catch(() => null);
+      const size = res.status === 422 && !!(body && body.error && body.error.code === "project_file_limit");
+      return { failure: { status: res.status, size: size } };
+    }
     const data = await res.json();
-    return data && data.file ? { file: data.file } : null;
+    return data && data.file ? { file: data.file } : { failure: { status: res.status } };
   }
 
   // #5731: overwriting keeps the displaced body on the server, so the same
@@ -135,18 +236,23 @@
   async function overwriteProjectFile(pid, fileId, text, docKind) {
     const payload = { text: text };
     if (docKind) payload.doc_kind = docKind;
-    const res = await fetch(
-      "/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(fileId),
-      {
-        method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      },
-    );
-    if (!res.ok) return null;
+    let res;
+    try {
+      res = await fetch(
+        "/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(fileId),
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+    } catch (_error) {
+      return { failure: { status: 0 } };
+    }
+    if (!res.ok) return { failure: { status: res.status } };
     const data = await res.json().catch(() => null);
-    return data && data.file ? { file: data.file, previous: data.previous || null } : null;
+    return data && data.file ? { file: data.file, previous: data.previous || null } : { failure: { status: res.status } };
   }
 
   // `행사.txt` -> `행사 (2).txt`, first free number. The default the owner is
@@ -191,26 +297,28 @@
   /**
    * The one save path for a util writing: POST with its kind, and on a name
    * collision ask the owner (new name is the default) before writing again.
-   * Returns the stored file, or null when nothing was saved.
+   * Returns what happened, so the tab can say it: { file } when stored,
+   * { failure: { status, size? } } when a request failed, { none: true } when
+   * nothing was saved and nothing failed — the owner has not chosen yet.
    */
   async function saveUtilText(options) {
     const pid = options.pid;
-    if (!pid) return null;
+    if (!pid) return { none: true };
     const first = await saveProjectFile(pid, options.name, options.text, "text/plain", options.kind);
-    if (!first) return null;
-    if (!first.conflict) return first.file;
+    if (first.failure) return first;
+    if (!first.conflict) return { file: first.file };
     const files = await listProjectFiles(pid);
     const suggested = nextFreeName(options.name, files.map((f) => f.name));
     const choice = await askSaveChoice(options.anchor, options.name, suggested);
     if (choice === "overwrite") {
       const replaced = await overwriteProjectFile(pid, first.conflict.id, options.text, options.kind);
-      return replaced ? replaced.file : null;
+      return replaced.failure ? replaced : { file: replaced.file };
     }
     if (choice === "new") {
       const second = await saveProjectFile(pid, suggested, options.text, "text/plain", options.kind);
-      return second && second.file ? second.file : null;
+      return second.failure ? second : { file: second.file };
     }
-    return null;
+    return { none: true };
   }
 
   // #6199: re-opening a stored piece reads its body from the existing detail
@@ -826,11 +934,22 @@
       void saveTextToPc(speechOutput.value, eventName || "축사");
     });
 
-    if (saveBtn) saveBtn.addEventListener("click", async () => {
+    // #5783: the speech tab's save status lives in the form, above the two
+    // buttons — the same place the 409 ask appears.
+    const speechSaveState = saveStatusLine("utilSpeechSaveState");
+    if (saveBtn && saveBtn.parentNode && saveBtn.parentNode.parentNode) {
+      saveBtn.parentNode.parentNode.insertBefore(speechSaveState, saveBtn.parentNode);
+    }
+
+    async function runSpeechSave() {
       const text = speechOutput.value.trim();
       if (!text) return;
-      if (!currentPid) currentPid = await ensureProject();
-      if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+      hideSaveStatus(speechSaveState);
+      if (!currentPid) {
+        const ensured = await ensureProjectForSave();
+        if (!ensured.pid) { showSaveStatus(speechSaveState, { status: ensured.status }, runSpeechSave); return; }
+        currentPid = ensured.pid;
+      }
       // #6199: an edited stored speech saves under its OWN name and kind, so
       // the existing 409 (새 이름으로 저장 / 덮어쓰기) runs instead of a second
       // row appearing under the form's event name.
@@ -839,16 +958,19 @@
       const name = editing ? editing.name : (eventName || "축사") + ".txt";
       // #5731: the kind is what makes this row a 축사 for every later list.
       const kind = editing && editing.kind ? editing.kind : "speech";
-      const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: kind, anchor: saveBtn });
-      if (file) {
+      const outcome = await saveUtilText({ pid: currentPid, name: name, text: text, kind: kind, anchor: saveBtn });
+      if (outcome.file) {
         saveBtn.textContent = "저장됨";
         setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
         setSpeechEditing(null);
+        hideSaveStatus(speechSaveState);
         await refreshSpeechList();
-      } else {
-        alert("저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      } else if (outcome.failure) {
+        showSaveStatus(speechSaveState, outcome.failure, runSpeechSave);
       }
-    });
+      // outcome.none: the 409 ask is on screen and owns the next move.
+    }
+    if (saveBtn) saveBtn.addEventListener("click", () => runSpeechSave());
 
     // #6199: the line above the draft says an edit of a stored piece is open,
     // not a fresh generation.
@@ -1379,6 +1501,10 @@
       const formSaveB = el("button", "util-save", "저장");
       formSaveB.type = "button"; formSaveB.id = "utilSnsSave";
       formActions.append(submitBtn, formSaveB);
+      // #5783: the save status lives in the form, above the two buttons — the
+      // same place the 409 ask appears.
+      const snsSaveState = saveStatusLine("utilSnsSaveState");
+      form.insertBefore(snsSaveState, formActions);
       form.appendChild(formActions);
 
       const result = el("div", "util-result");
@@ -1585,19 +1711,23 @@
         const eventName = String(document.querySelector("#utilSnsForm [name=event]")?.value || "SNS").trim();
         void saveTextToPc(output.value, eventName || "SNS");
       });
-      formSaveB.addEventListener("click", async () => {
+      async function runSnsSave() {
         const text = output.value.trim();
         if (!text) return;
-        if (!currentPid) currentPid = await ensureProject();
-        if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+        hideSaveStatus(snsSaveState);
+        if (!currentPid) {
+          const ensured = await ensureProjectForSave();
+          if (!ensured.pid) { showSaveStatus(snsSaveState, { status: ensured.status }, runSnsSave); return; }
+          currentPid = ensured.pid;
+        }
         const name = (h3.textContent || "sns").trim() + ".txt";
         // #6199: an edited stored SNS piece saves under its own name and kind,
         // so the existing 409 asks 새 이름/덮어쓰기 instead of stacking a row.
         const editing = snsEditing;
         const saveName = editing ? editing.name : name;
         const kind = editing && editing.kind ? editing.kind : "sns";
-        const file = await saveUtilText({ pid: currentPid, name: saveName, text: text, kind: kind, anchor: formSaveB });
-        if (file) {
+        const outcome = await saveUtilText({ pid: currentPid, name: saveName, text: text, kind: kind, anchor: formSaveB });
+        if (outcome.file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
           // #5728: the saved draft rides in the roster so re-entry restores
@@ -1605,11 +1735,14 @@
           lastSavedDraft = { text: text, platform: platform };
           writePhotoRoster(currentPid, lastSavedDraft);
           setSnsEditing(null);
+          hideSaveStatus(snsSaveState);
           void refreshSnsList();
-        } else {
-          alert("저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        } else if (outcome.failure) {
+          showSaveStatus(snsSaveState, outcome.failure, runSnsSave);
         }
-      });
+        // outcome.none: the 409 ask is on screen and owns the next move.
+      }
+      formSaveB.addEventListener("click", () => runSnsSave());
 
     }
 
@@ -1648,6 +1781,10 @@
       const formSaveB = el("button", "util-save", "저장");
       formSaveB.type = "button"; formSaveB.id = "utilMeetingSave";
       formActions.append(submitBtn, formSaveB);
+      // #5783: the save status lives in the form, above the two buttons — the
+      // same place the 409 ask appears.
+      const meetingSaveState = saveStatusLine("utilMeetingSaveState");
+      form.insertBefore(meetingSaveState, formActions);
       form.appendChild(formActions);
 
       const result = el("div", "util-result");
@@ -1657,12 +1794,24 @@
       const output = document.createElement("textarea");
       output.id = "utilMeetingOutput";
       output.rows = 12;
+      // #6199: the stored record currently in the editor, if any, plus the
+      // line that states the save will ask about its name — the same component
+      // and wording the speech and SNS tabs use.
+      let meetingEditing = null;
+      const meetingEditState = el("p", "util-edit-state");
+      meetingEditState.id = "utilMeetingEditState";
+      meetingEditState.hidden = true;
+      function setMeetingEditing(target) {
+        meetingEditing = target;
+        meetingEditState.hidden = !target;
+        meetingEditState.textContent = target ? editingStateText(target) : "";
+      }
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilMeetingCopy";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilMeetingDownload";
       const meetingRetry = retryButton("utilMeetingRetry", () => { void gen(); });
       actions.append(copyB, dlB, meetingRetry);
-      result.append(h3, output, actions);
+      result.append(h3, meetingEditState, output, actions);
 
       const archive = el("div", "util-archive");
       archive.id = "utilMeetingArchive";
@@ -1678,6 +1827,8 @@
         const when = (d.get("when") || "").trim();
         const attendees = (d.get("attendees") || "").trim();
         const content = (d.get("content") || "").trim();
+        // A fresh generation is no longer an edit of the stored record.
+        setMeetingEditing(null);
         let prompt = "다음 회의 내용을 정리해 주세요.\n\n";
         prompt += `회의명: ${title}\n`;
         if (when) prompt += `회의 일시: ${when}\n`;
@@ -1693,22 +1844,48 @@
       copyB.addEventListener("click", async () => {
         try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
       });
-      formSaveB.addEventListener("click", async () => {
+      async function runMeetingSave() {
         const text = output.value.trim();
         if (!text) return;
-        if (!currentPid) currentPid = await ensureProject();
-        if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-        const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
-        const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "meeting", anchor: formSaveB });
-        if (file) {
+        hideSaveStatus(meetingSaveState);
+        if (!currentPid) {
+          const ensured = await ensureProjectForSave();
+          if (!ensured.pid) { showSaveStatus(meetingSaveState, { status: ensured.status }, runMeetingSave); return; }
+          currentPid = ensured.pid;
+        }
+        // #6199: an edited stored record saves under its own name and kind, so
+        // the existing 409 asks 새 이름/덮어쓰기 instead of stacking a row.
+        const editing = meetingEditing;
+        const name = editing ? editing.name : (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
+        const kind = editing && editing.kind ? editing.kind : "meeting";
+        const outcome = await saveUtilText({ pid: currentPid, name: name, text: text, kind: kind, anchor: formSaveB });
+        if (outcome.file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          setMeetingEditing(null);
+          hideSaveStatus(meetingSaveState);
           await refreshArchive(archive);
-        } else {
-          alert("저장 실패");
+        } else if (outcome.failure) {
+          showSaveStatus(meetingSaveState, outcome.failure, runMeetingSave);
         }
-      });
+        // outcome.none: the 409 ask is on screen and owns the next move.
+      }
+      formSaveB.addEventListener("click", () => runMeetingSave());
       dlB.addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
+
+      // #6199: [고쳐 쓰기] puts a stored record back into the SAME draft
+      // editor — no second editor, no second store — so the owner can change
+      // it and save. Same component and wording as the speech and SNS tabs.
+      async function openMeetingForEdit(file) {
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+        const stored = await readStoredBody(currentPid, file.id);
+        if (!stored.ok) { alert(storedOpenFailureText("저장된 회의 기록", stored)); return; }
+        setMeetingEditing({ id: file.id, name: file.name, kind: file.doc_kind || "meeting" });
+        result.hidden = false;
+        output.value = stored.text;
+        output.focus();
+      }
 
       async function refreshArchive(arc) {
         if (!currentPid) currentPid = await ensureProject();
@@ -1765,24 +1942,13 @@
             li.appendChild(cb);
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            // #6199: the row leads with the action — a stored record reopens
+            // in the editable draft instead of only being displayed.
+            btn.className = "util-edit-stored";
+            btn.dataset.fileId = f.id;
+            btn.textContent = "고쳐 쓰기: " + f.name + " (" + (f.content_chars || 0) + "자)";
             btn.style.flex = "1";
-            btn.addEventListener("click", async () => {
-              const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
-              if (res.ok) {
-                const data = await res.json();
-                const out = document.getElementById("utilMeetingOutput");
-                const content = data && data.file && (data.file.content || data.file.text);
-                if (out && typeof content === "string") {
-                  out.value = content;
-                  result.hidden = false;
-                } else {
-                  alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
-                }
-              } else {
-                alert("저장된 회의 기록을 열지 못했습니다.");
-              }
-            });
+            btn.addEventListener("click", async () => { await openMeetingForEdit(f); });
             li.appendChild(btn);
             const up = document.createElement("button");
             up.type = "button";
@@ -1838,7 +2004,10 @@
         // re-entering the tool restores and re-edits it.
         const bookSave = el("button", "util-save", "활동집 저장"); bookSave.type = "button"; bookSave.id = "utilBookSave";
         bookActions.append(bookCopy, bookDl, bookSave, bookRetry);
-        bookResult.append(bookH, bookOutput, bookActions);
+        // #5783: the book's save status sits between the draft and the actions,
+        // rebuilt with this section on every refresh.
+        const bookSaveState = saveStatusLine("utilBookSaveState");
+        bookResult.append(bookH, bookOutput, bookSaveState, bookActions);
         arc.appendChild(bookResult);
 
         bookBtn.addEventListener("click", async () => {
@@ -1886,23 +2055,30 @@
         // with meeting records in the list — the book section reads only
         // names starting with BOOK_PREFIX. The title comes from the draft's
         // first line (what the user edited); fallback keeps a safe name.
-        bookSave.addEventListener("click", async () => {
+        async function runBookSave() {
           const text = bookOutput.value.trim();
           if (!text) return;
-          if (!currentPid) currentPid = await ensureProject();
-          if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+          hideSaveStatus(bookSaveState);
+          if (!currentPid) {
+            const ensured = await ensureProjectForSave();
+            if (!ensured.pid) { showSaveStatus(bookSaveState, { status: ensured.status }, runBookSave); return; }
+            currentPid = ensured.pid;
+          }
           const firstLine = text.split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
           const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
           const name = BOOK_PREFIX + (safe || "제목 미정") + ".txt";
-          const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "book", anchor: bookSave });
-          if (file) {
+          const outcome = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "book", anchor: bookSave });
+          if (outcome.file) {
             bookSave.textContent = "저장됨";
             setTimeout(() => { bookSave.textContent = "활동집 저장"; }, 1500);
+            hideSaveStatus(bookSaveState);
             await refreshArchive(arc);
-          } else {
-            alert("활동집 저장 실패");
+          } else if (outcome.failure) {
+            showSaveStatus(bookSaveState, outcome.failure, runBookSave);
           }
-        });
+          // outcome.none: the 409 ask is on screen and owns the next move.
+        }
+        bookSave.addEventListener("click", () => runBookSave());
 
         // Stored books reopen into the editor for editing and re-saving.
         if (bookFiles.length) {

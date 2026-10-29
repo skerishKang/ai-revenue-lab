@@ -145,6 +145,35 @@ html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disab
   line-height: 1.5;
 }
 
+/* #5783: a save that stored nothing says so in the tab — this polite live
+ * line, never a browser modal. The 다시 시도 button only rides the statuses
+ * that can actually change by pressing again. */
+.util-save-status {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--danger, #b3261e);
+  border-radius: 8px;
+  background: var(--danger-soft, rgba(179, 38, 30, .08));
+  color: var(--text, #17202a);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.util-save-status .util-retry {
+  min-height: 32px;
+  margin-left: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 8px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font-size: 12px;
+  cursor: pointer;
+}
+.util-save-status .util-retry:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .32));
+  outline-offset: 2px;
+}
+
 /* #5731: a same-name save asks instead of stacking a second row. The safe
  * answer (new name) is the first control; overwriting states what it keeps. */
 .util-save-choice {
