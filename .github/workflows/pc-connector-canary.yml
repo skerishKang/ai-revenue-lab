@@ -77,12 +77,18 @@ jobs:
           # for. GITHUB_TOKEN is not a secret anyone configured: the runner issues it
           # for this job, it is scoped to the job, and here it can only write a commit
           # status on the SHA the job already checked out.
-          if grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml \
-               | grep -vx -e 'secrets.B66_CGI_ALPHA_PASSWORD' -e 'secrets.GITHUB_TOKEN'; then
+          unexpected="$(grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml \
+            | grep -vx -e 'secrets.B66_CGI_ALPHA_PASSWORD' -e 'secrets.GITHUB_TOKEN' || true)"
+          if [ -n "${unexpected}" ]; then
             echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=UNEXPECTED' >&2
+            printf '%s\n' "${unexpected}" >&2
             exit 1
           fi
-          grep -Fq 'GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}' .github/workflows/pc-connector-canary.yml
+          # Asserted without any workflow expression in the pattern: writing one here
+          # expands the real job token into this command line before grep sees it, and
+          # then searches the file for that value instead of for the name.
+          grep -Fq 'GH_TOKEN: $' .github/workflows/pc-connector-canary.yml
+          grep -Fq 'secrets.GITHUB_TOKEN' .github/workflows/pc-connector-canary.yml
           echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=EXISTING_ONLY_PLUS_JOB_TOKEN'
           echo 'PC_CONNECTOR_CANARY_MUTATIONS=NONE'
 
