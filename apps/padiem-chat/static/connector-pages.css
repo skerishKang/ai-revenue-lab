@@ -215,3 +215,62 @@
     align-items: flex-start;
   }
 }
+
+/* The computer page owns the head: the moved card contributes only its PC
+ * list and advanced lane, never a second title, status line or big button. */
+.connector-detail-body .capability-card::before,
+.connector-detail-body .capability-card > strong,
+.connector-detail-body .capability-card > .capability-workspace,
+.connector-detail-body .capability-card > .capability-read,
+.connector-detail-body .capability-card > .capability-read-state,
+.connector-detail-body #clawComputerDeviceStatusButton {
+  display: none !important;
+}
+
+.connector-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.connector-detail-retry {
+  border: 0;
+  background: transparent;
+  color: var(--muted, #5b6672);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+/* The advanced lane shows its fold state: ▸ closed, ▾ open, closed by default. */
+.pc-connector-advanced-summary::before {
+  content: "▸";
+  margin-right: 6px;
+}
+
+.pc-connector-advanced[open] > .pc-connector-advanced-summary::before {
+  content: "▾";
+}
+
+/* Phone widths: the Claw tile keeps its one-line description instead of
+ * hiding it, and the card grows to fit the name, the description and the
+ * switch without any of them sitting on another. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .conversation .claw-home-card .claw-workspace-starter small {
+    display: block !important;
+    font-size: 10px;
+    line-height: 1.35;
+    opacity: .9;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
+    min-height: 186px;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
