@@ -221,6 +221,10 @@
         failed: "That did not work. Please try again in a moment.",
         noPc: "Connect your PC to bring your own form.", connect: "Connect this PC",
         entry: "Quote from my PC Excel form",
+        reviewClient: "Customer:", reviewTitle: "What was filled into your form",
+        reviewEmpty: "No cell was filled. Check the request and the form.",
+        reviewExtend: "Item rows added by copying the form's own row:",
+        reviewTotals: "Totals and tax come from your form's own formulas. Check each value and cell before saving.",
       };
     }
     return {
@@ -232,6 +236,10 @@
       failed: "지금은 되지 않았어요. 잠시 후 다시 시도해 주세요.",
       noPc: "PC를 연결하면 내 양식을 가져올 수 있습니다.", connect: "이 PC 연결",
       entry: "내 PC 엑셀 양식으로 견적서",
+      reviewClient: "거래처:", reviewTitle: "양식에 채운 값",
+      reviewEmpty: "채운 셀이 없습니다. 요청과 양식을 확인해 주세요.",
+      reviewExtend: "양식의 품목 행 서식을 복사해 늘린 행:",
+      reviewTotals: "합계·세금은 양식의 수식이 계산합니다. 저장 전에 값과 셀 위치를 확인해 주세요.",
     };
   }
 
@@ -299,6 +307,58 @@
       nodes.status.textContent = text || "";
       nodes.status.hidden = !text;
     };
+    // #3180: the dialog used to go straight from "the model filled it" to
+    // "save to my PC", so the owner never saw which cell received which value.
+    // The fill answer already carries the mapping; showing it is the review
+    // step, and the check belongs before a file lands on someone's disk.
+    const clearReview = () => {
+      if (!nodes.review) return;
+      nodes.review.replaceChildren();
+      nodes.review.hidden = true;
+    };
+    const renderReview = (body) => {
+      const review = nodes.review;
+      if (!review) return;
+      review.replaceChildren();
+      const mapping = body && body.mapping && typeof body.mapping === "object" ? body.mapping : null;
+      const rows = [];
+      Object.keys(mapping || {}).forEach((sheet) => {
+        const cells = mapping[sheet];
+        if (!cells || typeof cells !== "object") return;
+        Object.keys(cells).forEach((address) => {
+          const raw = cells[address];
+          const text = typeof raw === "number" ? String(raw)
+            : String(raw === null || raw === undefined ? "" : raw);
+          rows.push(String(sheet) + "!" + String(address) + " ← "
+            + (text.length > 60 ? text.slice(0, 60) + "…" : text));
+        });
+      });
+      if (body && body.client) {
+        review.append(el("p", "b66-quote-pcform-review-lead",
+          pcCopy().reviewClient + " " + String(body.client)));
+      }
+      if (!rows.length) {
+        review.append(el("p", "b66-quote-pcform-review-empty", pcCopy().reviewEmpty));
+        review.hidden = false;
+        return;
+      }
+      review.append(el("p", "b66-quote-pcform-review-title", pcCopy().reviewTitle));
+      const list = document.createElement("ul");
+      list.className = "b66-quote-pcform-review-list";
+      rows.forEach((text) => list.appendChild(el("li", "", text)));
+      review.append(list);
+      const extend = Array.isArray(body && body.extend) ? body.extend : [];
+      if (extend.length) {
+        const added = extend.reduce((sum, item) => {
+          const count = item && Number(item.count) > 0 ? Math.floor(Number(item.count)) : 0;
+          return sum + count;
+        }, 0);
+        review.append(el("p", "b66-quote-pcform-review-extend",
+          pcCopy().reviewExtend + " " + String(added)));
+      }
+      review.append(el("p", "b66-quote-pcform-review-note", pcCopy().reviewTotals));
+      review.hidden = false;
+    };
     nodes.pick.addEventListener("click", async () => {
       say(pcCopy().choosing);
       let component = null;
@@ -324,6 +384,7 @@
           };
           filled = null;
           nodes.save.hidden = true;
+          clearReview();
           nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
           nodes.chosen.hidden = false;
           nodes.make.hidden = false;
@@ -339,6 +400,7 @@
         return;
       }
       say(pcCopy().filling);
+      clearReview();
       try {
         const response = await nativeFetch(PC_QUOTE_FILL_PATH, {
           method: "POST", credentials: "same-origin", cache: "no-store",
@@ -351,6 +413,7 @@
         }
         filled = body;
         nodes.save.hidden = false;
+        renderReview(body);
         say(pcCopy().made);
       } catch (_) {
         say(pcCopy().failed);
@@ -582,6 +645,10 @@
     pcMake.id = "b66QuotePcMake";
     pcMake.type = "button";
     pcMake.hidden = true;
+    const pcReview = el("section", "b66-quote-pcform-review");
+    pcReview.id = "b66QuotePcReview";
+    pcReview.setAttribute("aria-live", "polite");
+    pcReview.hidden = true;
     const pcSave = el("button", "b66-quote-pcform-save", pcCopy().save);
     pcSave.id = "b66QuotePcSave";
     pcSave.type = "button";
@@ -591,13 +658,13 @@
     pcFormStatus.setAttribute("role", "status");
     pcFormStatus.setAttribute("aria-live", "polite");
     pcFormStatus.hidden = true;
-    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcSave, pcFormStatus);
+    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcSave, pcFormStatus);
     // #5895: the section rides the form's own append below. Calling after() on
     // the still-detached pair was a per-DOM no-op, so the dialog shipped
     // without the PC form its launcher promises.
     wirePcForm({
       pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
-      status: pcFormStatus, request: () => message.value,
+      review: pcReview, status: pcFormStatus, request: () => message.value,
     });
 
     const submit = el("button", "b66-quote-generate", copy().generate);

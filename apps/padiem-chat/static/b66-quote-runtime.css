@@ -266,3 +266,39 @@
   font-size: 0.86rem;
   color: var(--muted, #5a7488);
 }
+
+/* #3180: what the fill put where, before the owner saves the workbook. */
+.b66-quote-pcform-review {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.28));
+  border-radius: 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.7));
+}
+
+.b66-quote-pcform-review-lead,
+.b66-quote-pcform-review-title,
+.b66-quote-pcform-review-extend,
+.b66-quote-pcform-review-note,
+.b66-quote-pcform-review-empty {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.b66-quote-pcform-review-title {
+  font-weight: 600;
+}
+
+.b66-quote-pcform-review-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.b66-quote-pcform-review-note {
+  color: var(--muted, #5a7488);
+}

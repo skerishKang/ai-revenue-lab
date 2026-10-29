@@ -239,8 +239,28 @@ const firstNav = doc.makeElement("nav");
 firstNav.className = "side-nav";
 doc.body.append(firstNav);
 // An actively linked PC keeps the pick button visible (#5895's own scenario).
+// The picker is answered here instead of loading the real component script, so
+// the fill half (#3180's review list) runs on the shipped bytes too.
+const FILL_ANSWER = {
+  ok: true,
+  filled_file_id: "file_" + "b".repeat(32),
+  filled_name: "견적서_대한건설_2026-10-29.xlsx",
+  template_name: "견적서 양식.xlsx",
+  client: "대한건설",
+  mapping: { Sheet1: { B5: "대한건설", B6: "2026-10-29", D9: 30000 } },
+  extend: [{ sheet: "Sheet1", template_row: 12, at_row: 13, count: 2 }],
+};
 const windowStub = {
-  fetch: async () => ({ ok: true, status: 200, json: async () => ({ links: [{ state: "active" }] }) }),
+  fetch: async (url) => {
+    const target = String(url || "");
+    if (target.includes("/api/b66/pc-quote/fill")) {
+      return { ok: true, status: 200, json: async () => FILL_ANSWER };
+    }
+    return { ok: true, status: 200, json: async () => ({ links: [{ state: "active" }] }) };
+  },
+  PadiemPcFileExchange: {
+    open: ({ onSelect }) => onSelect({ fileId: "file_" + "a".repeat(32), name: "견적서 양식.xlsx", path: "C:/견적/견적서 양식.xlsx" }),
+  },
   addEventListener: () => {},
   setTimeout,
   clearTimeout,
@@ -296,4 +316,44 @@ test("the opened quote dialog contains the PC Excel form section and its pick bu
 test("the PC form section exists exactly once in the opened dialog", () => {
   const seen = doc.querySelectorAll("section.b66-quote-pcform");
   assert.equal(seen.length, 1, "ensureUi builds the PC form section exactly once");
+});
+
+// #3180: between "the model filled the form" and "save to my PC" the owner
+// must see which cell received which value. The fill answer already carries the
+// mapping, so this test drives the shipped buttons and reads what the dialog
+// rendered — no new endpoint, no new store.
+test("filling my PC form shows what went into which cell before saving", async () => {
+  const request = doc.getElementById("b66QuoteRequest");
+  assert.ok(request, "the quote request field exists");
+  request.value = "대한건설에 배관 20개 개당 3만원으로 견적서 만들어줘";
+
+  const review = doc.getElementById("b66QuotePcReview");
+  assert.ok(review, "the review section exists in the PC form");
+  assert.equal(review.hidden, true, "nothing is reviewed before a fill");
+
+  doc.getElementById("b66QuotePcPick").click();
+  await new Promise((resolve) => setImmediate(resolve));
+  const make = doc.getElementById("b66QuotePcMake");
+  assert.equal(make.hidden, false, "picking a form enables the make button");
+
+  make.click();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(review.hidden, false, "a fill opens the review");
+  const lines = [];
+  walk(review, (node) => { if (node.tagName === "li") lines.push(node.textContent); });
+  assert.deepEqual(lines, ["Sheet1!B5 ← 대한건설", "Sheet1!B6 ← 2026-10-29", "Sheet1!D9 ← 30000"],
+    "each filled cell is listed as sheet!cell ← value");
+
+  const text = descendantText(review);
+  assert.ok(text.includes("거래처: 대한건설"), "the customer the fill used is shown");
+  assert.ok(text.includes("늘린 행: 2"), "added item rows are reported");
+  assert.ok(text.includes("합계·세금은 양식의 수식이 계산합니다"),
+    "the review says where the totals come from");
+
+  const save = doc.getElementById("b66QuotePcSave");
+  assert.equal(save.hidden, false, "saving is offered next to the review");
+  // The review is plain text, never markup built from the fill answer.
+  assert.equal(review.innerHTML, undefined, "no markup is written from the model's values");
 });
