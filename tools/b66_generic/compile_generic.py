@@ -65,11 +65,21 @@ TOTAL_LABELS = {"subtotal": ["소계", "소 계", "합계(부가세별도)"],
                 "vat": ["부가세", "부 가 세", "v.a.t", "vat"],
                 "grand_total": ["합계", "총계", "총 계", "합 계", "종합금액"]}
 WRITTEN_MARKERS = ["합계금액", "일금"]
+# One entry per slot font family: the first file that exists on this host is
+# copied into the template. Windows keeps the source families; a Linux
+# certification host installs the OFL Nanum Gothic family (``fonts-nanum``),
+# which has the same full-width Hangul and half-width digit metrics the
+# isolation gates measure. Missing everywhere = no font in the template, and a
+# mutation render then refuses instead of substituting a wider font.
 SYSTEM_FONTS = {
-    "MalgunGothic": r"C:\Windows\Fonts\malgun.ttf",
-    "MalgunGothicBold": r"C:\Windows\Fonts\malgunbd.ttf",
-    "GulimChe": r"C:\Windows\Fonts\gulim.ttc",
-    "Gulim": r"C:\Windows\Fonts\gulim.ttc",
+    "MalgunGothic": (r"C:\Windows\Fonts\malgun.ttf",
+                     "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"),
+    "MalgunGothicBold": (r"C:\Windows\Fonts\malgunbd.ttf",
+                         "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf"),
+    "GulimChe": (r"C:\Windows\Fonts\gulim.ttc",
+                 "/usr/share/fonts/truetype/nanum/NanumGothicCoding.ttf"),
+    "Gulim": (r"C:\Windows\Fonts\gulim.ttc",
+              "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"),
 }
 ROW_TOL = 3.0  # pt: same-text-row tolerance
 
@@ -171,9 +181,9 @@ def compile_template(evidence_dir: Path, sheet_name: str, page_index: int,
     fonts_dir = outdir / "fonts"
     fonts_dir.mkdir(parents=True, exist_ok=True)
     font_resources = {}
-    for family, src in SYSTEM_FONTS.items():
-        p = Path(src)
-        if not p.exists():
+    for family, candidates in SYSTEM_FONTS.items():
+        p = next((Path(c) for c in candidates if Path(c).exists()), None)
+        if p is None:
             continue
         dst = fonts_dir / p.name
         if not dst.exists() or sha256_file(dst) != sha256_file(p):
