@@ -92,6 +92,29 @@ ORACLE_MESH_READ_ORIGINAL_PATH = "/api/claw/connector/mesh-results/{dispatch_id}
 #: file_path}. Absent or invalid keeps the source unconfigured; the routes
 #: stay unmounted.
 ORACLE_MESH_OWNERSHIP_MAP_ENV = "ORACLE_MESH_OWNERSHIP_MAP"
+#: #5573 follow-up: retire the legacy map lane. "off" means a TXT request that would have
+#: been answered from the deployment map is refused with a guidance error (never a 403),
+#: and the channel source composes **without** the map at all - so a deployment that has
+#: no ownership map (or no V2 to build) still runs poll/renew/cancel/busy. Any other value
+#: or absence keeps today's behaviour, which is also the rollback.
+ORACLE_MESH_LEGACY_MAP_LANE_ENV = "ORACLE_MESH_LEGACY_MAP_LANE"
+#: One inert row, valid by the source's own rules and authorizing nobody: classify() says
+#: "none" for every request and command_target() finds no grant, which is exactly the
+#: retired lane's meaning. It exists because the channel source cannot be built without
+#: rows, and it is never written anywhere.
+RETIRED_OWNERSHIP_MAP = (
+    {"account_ref": "__retired__", "node_ref": "__retired__",
+     "root_ref": "__retired__", "path_relative": "__retired__.txt",
+     "file_path": "__retired__.txt", "command_exec": False},
+)
+
+
+def legacy_map_lane_enabled(env: Any) -> bool:
+    """``ORACLE_MESH_LEGACY_MAP_LANE=off`` retires the lane; anything else keeps it."""
+
+    from .worker_config import binding_value
+
+    return str(binding_value(env, ORACLE_MESH_LEGACY_MAP_LANE_ENV) or "").strip().lower() != "off"
 #: Which execution lane a TXT request takes:
 #:   "off"    — Mesh execution disabled; the request stays on the native lane.
 #:   "mesh"   — the request runs on the management host through the Mesh
@@ -581,12 +604,16 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
         raw_watch = binding_value(env, CONNECTOR_WATCH_READ_SECRET_ENV)
     except Exception:
         return _mesh_source_unconfigured("binding_read_failed")
-    if not isinstance(raw_map, str) or not raw_map.strip():
-        return _mesh_source_unconfigured("ownership_map_unavailable")
-    try:
-        mapping = json.loads(raw_map)
-    except (ValueError, TypeError):
-        return _mesh_source_unconfigured("ownership_map_malformed")
+    if legacy_map_lane_enabled(env):
+        if not isinstance(raw_map, str) or not raw_map.strip():
+            return _mesh_source_unconfigured("ownership_map_unavailable")
+        try:
+            mapping = json.loads(raw_map)
+        except (ValueError, TypeError):
+            return _mesh_source_unconfigured("ownership_map_malformed")
+    else:
+        # The retired lane authorizes nobody, so the map is neither read nor required.
+        mapping = list(RETIRED_OWNERSHIP_MAP)
     if not isinstance(raw_secret, str):
         getter = getattr(raw_secret, "get", None)
         if not callable(getter):
@@ -619,6 +646,15 @@ async def resolve_oracle_mesh_execution(
     Consent, consent withdrawal and the OFF switch are still enforced here —
     only the *native binding* requirement is dropped, never the checks.
     """
+
+    if not getattr(request.app.state, "oracle_mesh_legacy_map_lane", True):
+        # Retired on purpose: this request names a file for the deployment map, which
+        # is no longer an authority. Tell the owner where the working path is instead
+        # of a 403 that says "not yours" about a file that is theirs.
+        return None, _error(
+            409, "oracle_mesh_map_lane_retired",
+            "이 방식은 더 이상 쓰지 않아요 — 내 컴퓨터 연결에서 폴더를 고르세요.",
+        )
     source = getattr(request.app.state, "oracle_mesh_return_source", None)
     if getattr(source, "configured", False) is not True:
         return None, None
@@ -706,8 +742,11 @@ def _response(payload: dict[str, Any], status: int = 200) -> JSONResponse:
     return JSONResponse(dict(payload), status_code=status, headers=_NO_STORE)
 
 
-def _error(status: int, code: str) -> JSONResponse:
-    return _response({"ok": False, "error": {"code": code}}, status)
+def _error(status: int, code: str, message: str | None = None) -> JSONResponse:
+    error: dict[str, Any] = {"code": code}
+    if message is not None:
+        error["message"] = message
+    return _response({"ok": False, "error": error}, status)
 
 
 def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES,

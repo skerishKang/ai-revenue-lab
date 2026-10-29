@@ -410,7 +410,57 @@ restore direction. **No token permission was changed here, and none is changed b
 runbook.** Until one is, the export above is the restore material for a rebuild, which is
 why section 8 makes it a precondition rather than a nicety.
 
-## 9. What is deliberately not here
+## 9. Retiring the legacy ownership-map lane
+
+The deployment map (`ORACLE_MESH_OWNERSHIP_MAP`) named a Mesh target for a TXT request
+before the owner's linked PC did. Its value lives in a write-only store, so a successor
+(`…_V2`) cannot be authored by reading it — and history cannot reproduce it either: one
+relative path in production already carries two distinct targets, and the map's
+`command_exec` grants leave no trace in dispatch rows.
+
+Measured use (2026-10-17 → 2026-10-29, read-only): **40 dispatches** went through the map
+lane (7 TXT reads + 33 commands), the last one at **2026-10-20T11:30Z**; every one targeted
+the single node that is now an active linked PC, and both kinds of work have a native
+route (open the file from 내 컴퓨터 연결; run the command from the same window). No case
+was found where the native lane could not do the same job.
+
+The lane is therefore retired by a switch, not by recreating a map:
+
+| Where | Key | Today | Retired |
+|---|---|---|---|
+| Chat Worker | `ORACLE_MESH_LEGACY_MAP_LANE` | absent / `on` | `off` |
+| Queue service | `MESH_QUEUE_LEGACY_MAP_LANE` (installer preserves it) | `on` | `off` |
+
+With `off`:
+
+* a request that names a file for the map is answered **409
+  `oracle_mesh_map_lane_retired`** with the sentence "이 방식은 더 이상 쓰지 않아요 — 내
+  컴퓨터 연결에서 폴더를 고르세요." — a guidance error, never a 403 about a file that is
+  the owner's;
+* the channel source composes **without reading an ownership map at all**, so the queue's
+  cutover does not wait for a `V2` that nobody will use (`test_the_queue_runs_without_an_
+  ownership_map_when_the_lane_is_retired`), and poll/renew/cancel/busy keep working;
+* the existing map value is untouched; turning the flag back to `on` is the rollback.
+
+### Turning it off, and what to watch for 30 minutes
+
+1. Chat: set `ORACLE_MESH_LEGACY_MAP_LANE=off` through the deploy gate and publish.
+2. Queue: set `MESH_QUEUE_LEGACY_MAP_LANE=off` in `queue.env`, then restart that one unit.
+3. Watch, and write the numbers down:
+   * count of `oracle_mesh_map_lane_retired` (should appear only for a caller still using
+     the old path; zero from the browser lane),
+   * PC reads through 내 컴퓨터 연결 (browse → open file): success rate and latency,
+   * any new `oracle_mesh_ownership_unverified` 403 (should be zero — that would mean
+     something still expects the map),
+   * channel 5xx / `exceededCpu` from the tail lane, and the queue `/health` three counts.
+4. Rollback: set the flag back to `on` (gate publish; queue `queue.env` + restart). No data
+   moves, so the rollback is a configuration change only.
+
+The authored `ownership-map-v2.json` stays at `/opt/padiem/mesh-queue/` as 0600 material,
+marked unused beside it; it is never uploaded, and the live `ORACLE_MESH_OWNERSHIP_MAP` is
+not overwritten.
+
+## 10. What is deliberately not here
 
 * No JS Worker. The `padiem-mesh-channel` port was cancelled: a second
   implementation of a channel that is being moved is a thing to throw away, not a

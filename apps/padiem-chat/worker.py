@@ -1168,7 +1168,7 @@ class Default(WorkerEntrypoint):
                 # invalid keeps the fail-closed unconfigured source: the route
                 # stays unmounted and every return is refused.
                 from app.oracle_mesh_read_return_routes import (
-                    build_oracle_mesh_return_source_from_env,
+                    build_oracle_mesh_return_source_from_env, legacy_map_lane_enabled,
                 )
                 _oracle_mesh_return_source = await (
                     build_oracle_mesh_return_source_from_env(self.env)
@@ -1204,6 +1204,7 @@ class Default(WorkerEntrypoint):
                     github_oauth_store=github_store,
                     github_oauth_provider=github_provider,
                     oracle_mesh_return_source=_oracle_mesh_return_source,
+                    oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(self.env),
                     claw_engine_desktop_secret=(
                         _claw_desktop_secret if isinstance(_claw_desktop_secret, str)
                         and len(_claw_desktop_secret) >= 32 else None

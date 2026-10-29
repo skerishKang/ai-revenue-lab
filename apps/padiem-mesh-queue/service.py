@@ -34,6 +34,9 @@ Configuration is files and environment, mirroring the executor's own unit:
     MESH_QUEUE_SERVICE_SECRET_FILE   mode-0600 file; absent means no store door
     MESH_QUEUE_WATCH_READ_SECRET_FILE mode-0600 file; absent means the read-only leg
                                     keeps the channel-secret-only behaviour (#82)
+    MESH_QUEUE_LEGACY_MAP_LANE      "off" composes the channel source without any
+                                    ownership map (the retired lane authorizes nobody),
+                                    so the queue never depends on a map it does not use
 
 The service binds 127.0.0.1:8797. The executor reaches it there with
 `ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither
@@ -66,7 +69,7 @@ from app.oracle_mesh_lease_renew_routes import (
 from app.oracle_mesh_read_return_routes import (
     ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH,
     ORACLE_MESH_READ_LANE_STATUS_PATH, ORACLE_MESH_READ_POLL_PATH,
-    build_oracle_mesh_return_source, oracle_mesh_read_busy_check,
+    RETIRED_OWNERSHIP_MAP, build_oracle_mesh_return_source, oracle_mesh_read_busy_check,
     oracle_mesh_read_cancel_check, oracle_mesh_read_lane_status,
     oracle_mesh_read_poll,
 )
@@ -134,19 +137,24 @@ def _no_store(content: dict[str, Any]) -> JSONResponse:
 
 
 def create_app(*, db_path: str | None = None, channel_secret: str,
-               ownership_map: str, mode: str = "mesh", service_secret: str | None = None,
-               watch_secret: str | None = None,
-               connection: Any = None) -> Starlette:
+               ownership_map: str | None = None, mode: str = "mesh",
+               service_secret: str | None = None, watch_secret: str | None = None,
+               connection: Any = None, legacy_map_lane: bool = True) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
     if not isinstance(channel_secret, str) or not 16 <= len(channel_secret) <= 256:
         raise ValueError("the deployment channel secret is required")
-    try:
-        mapping = json.loads(ownership_map)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("the ownership map must be JSON text") from exc
-    if not isinstance(mapping, list) or not mapping:
-        raise ValueError("the ownership map must be a non-empty JSON array")
+    if legacy_map_lane:
+        try:
+            mapping = json.loads(ownership_map)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("the ownership map must be JSON text") from exc
+        if not isinstance(mapping, list) or not mapping:
+            raise ValueError("the ownership map must be a non-empty JSON array")
+    else:
+        # #5573 follow-up: the retired lane authorizes nobody, so this service composes
+        # without a map at all - a cutover must not wait for a V2 nobody will read.
+        mapping = list(RETIRED_OWNERSHIP_MAP)
 
     if connection is not None:
         database = connection if isinstance(connection, SqliteD1) else SqliteD1(connection)
@@ -298,16 +306,19 @@ def app_from_environment() -> Starlette:
 
     service_secret_file = os.environ.get("MESH_QUEUE_SERVICE_SECRET_FILE", "").strip()
     watch_secret_file = os.environ.get("MESH_QUEUE_WATCH_READ_SECRET_FILE", "").strip()
+    legacy_map_lane = (os.environ.get("MESH_QUEUE_LEGACY_MAP_LANE", "").strip().lower()
+                       != "off")
     app = create_app(
         db_path=os.environ.get("MESH_QUEUE_DB_PATH", DEFAULT_DB_PATH),
         channel_secret=read_secret_file(
             os.environ.get("MESH_QUEUE_CHANNEL_SECRET_FILE",
                            "/opt/padiem/oracle-mesh/channel-secret.txt"),
             label="channel secret"),
-        ownership_map=read_secret_file(
+        ownership_map=(read_secret_file(
             os.environ.get("MESH_QUEUE_OWNERSHIP_MAP_FILE",
                            "/opt/padiem/mesh-queue/ownership-map.json"),
-            label="ownership map"),
+            label="ownership map") if legacy_map_lane else None),
+        legacy_map_lane=legacy_map_lane,
         mode=os.environ.get("MESH_QUEUE_EXECUTION_MODE", "mesh"),
         service_secret=(read_secret_file(service_secret_file, label="queue service secret")
                         if service_secret_file else None),
