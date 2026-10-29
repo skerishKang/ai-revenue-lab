@@ -54,6 +54,13 @@
   background: transparent;
 }
 
+/* padiem-foundation.css, imported through padiem-cinematic-chat.css, floors the shell at
+ * min-width: 320px. On a 320px phone a classic scrollbar leaves a 310px content box, so that
+ * floor made the whole page pan 10px sideways - measured in the user's Tabbit browser, and
+ * invisible in headless Chromium, whose scrollbars overlay the content. This page is fluid
+ * (--cine-measure is percentage based), so it has no use for the app shell's floor. */
+.councillor-body { min-width: 0; }
+
 .councillor-skip {
   position: absolute;
   left: -9999px;
