@@ -124,11 +124,15 @@
     if (!status) return;
     // One row of truth: the shared vocabulary, plus how many PCs are linked
     // when at least one is (the page head reads “● 3대 연결됨”).
-    const rows = card.querySelectorAll(".pc-pairing-link").length;
+    // Only the server's active rows count as connected; paused rows are
+    // named beside them instead of being folded into the connected number.
+    const active = card.querySelectorAll('.pc-pairing-link .pc-pairing-state[data-state="active"]').length;
+    const paused = card.querySelectorAll('.pc-pairing-link .pc-pairing-state[data-state="paused"]').length;
     const vocab = window.PadiemConnectorVocabulary;
-    if (rows > 0 && vocab) {
+    if (active > 0 && vocab) {
       const ko = !String(document.documentElement.lang || "ko").toLowerCase().startsWith("en");
-      const line = ko ? "● " + rows + "대 연결됨" : "● " + rows + " connected";
+      let line = ko ? "● " + active + "대 연결됨" : "● " + active + " connected";
+      if (paused > 0) line += ko ? " · " + paused + "대 멈춤" : " · " + paused + " paused";
       if (status.textContent !== line) status.textContent = line;
       return;
     }

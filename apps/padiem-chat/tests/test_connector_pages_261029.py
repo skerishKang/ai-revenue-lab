@@ -43,6 +43,13 @@ def test_the_tile_speaks_only_the_shared_four_state_vocabulary():
         assert state in PAGES
 
 
+def test_only_active_pcs_count_as_connected_and_paused_are_named():
+    assert 'pc-pairing-state[data-state="active"]' in PAGES
+    assert '"대 멈춤"' in PAGES
+    # Zero connected rows fall back to the shared disconnected word.
+    assert "const text = statusText(card);" in PAGES
+
+
 def test_the_computer_page_folds_the_card_head_and_offers_a_small_retry():
     assert ".connector-detail-body .capability-card > strong" in CSS
     assert ".connector-detail-body #clawComputerDeviceStatusButton" in CSS
