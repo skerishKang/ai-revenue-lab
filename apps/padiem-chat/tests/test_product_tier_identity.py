@@ -11,7 +11,7 @@ from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.main import create_app
-from app.model_policy import HIGH_B14_MODEL_ID, LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
 
 
 _SETTINGS_KWARGS = dict(
@@ -74,8 +74,8 @@ async def test_identity_questions_answer_with_padiem_tier_without_provider_call(
         # Auth-mocked member session (no real login): the verified member
         # grade authorizes the tier, the identity answer itself stays local.
         _login(client, settings)
-        # The grade follows the validated browser tier field, never a bare
-        # message alias: an alias alone cannot grant a paid tier.
+        # The grade follows the validated browser tier field, never bare
+        # prompt text: slash-prefixed text cannot grant a paid tier.
         response = await client.post(
             "/api/chat",
             json={"messages": [{"role": "user", "content": prompt}], "tier": tier},
@@ -125,7 +125,7 @@ async def test_underlying_model_question_declines_internal_route_details_without
 
 
 @pytest.mark.asyncio
-async def test_executable_tier_selectors_survive_browser_validation_then_strip_before_b14_dispatch():
+async def test_executable_tier_selectors_survive_browser_validation_then_forward_before_b14_dispatch():
     seen: list[dict] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -151,8 +151,8 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
     )
     app.state.b66_member_admin_store = _grade_members("plus")
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        # The browser tier field decides the dispatch model; the request
-        # alias is stripped before B14 and never grants a tier by itself.
+        # The browser tier field decides the dispatch model; prompt text is
+        # forwarded unchanged and never grants a tier by itself.
         _login(client, settings)
         response = await client.post(
             "/api/chat",
@@ -175,23 +175,19 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("alias", "expected_hold_model"),
-    [
-        ("/pro", MEDIUM_B14_MODEL_ID),
-        ("/max", HIGH_B14_MODEL_ID),
-    ],
-)
-async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
-    alias: str,
-    expected_hold_model: str,
+@pytest.mark.parametrize("slash_text", ["/pro", "/max"])
+async def test_slash_prefixed_question_is_ordinary_text_and_keeps_free_dispatch(
+    slash_text: str,
 ):
     calls = 0
+    content = f"{slash_text} 테스트 질문"
+    seen: list[dict] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
         body = json.loads(request.content)
+        seen.append(body)
         return httpx.Response(
             200,
             json={
@@ -212,12 +208,13 @@ async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}]},
+            json={"messages": [{"role": "user", "content": content}]},
         )
 
     assert response.status_code == 200
     assert calls == 1
-    assert expected_hold_model in {MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID}
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": content}
 
 
 @pytest.mark.asyncio

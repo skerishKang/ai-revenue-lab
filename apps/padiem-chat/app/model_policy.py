@@ -241,30 +241,13 @@ EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODE
 # Retired Space Bunny metadata is not an executable fallback.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
-# Slash aliases remain compatibility/test inputs. The browser's tier picker
-# uses a separately validated server-side tier; an alias cannot grant that
-# entitlement. `/max` resolves to Max's active route when authorized.
-MODEL_ALIASES: dict[str, str] = {
-    "/plus": LOW_B14_MODEL_ID,
-    "/pro": MEDIUM_B14_MODEL_ID,
-    "/max": HIGH_B14_MODEL_ID,
-    # Legacy `/kilo` test alias; it now resolves through the Pro tier route.
-    "/kilo": MEDIUM_B14_MODEL_ID,
-    # There is deliberately no "/poolside" key. Poolside Laguna is HOLD_AS_DATA_ONLY in the
-    # canonical shared declaration, so an alias naming it could only ever dispatch a
-    # different provider under a Poolside label. Unknown provider aliases fail closed as
-    # unknown_model_alias, and Poolside becomes selectable only when an owner gives it an
-    # executable tier route in that declaration — not by inventing a hold identity here.
-}
-
 # These entries describe reported model capabilities, not tier entitlement or
-# provider availability. A fallback entry does not grant model execution.
+# provider availability. Rows are keyed by product-tier model identity only;
+# raw provider model ids are deliberately not catalog rows. A fallback entry
+# does not grant model execution.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
     FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
-    "google/gemini-3.5-flash-lite": frozenset({"chat", "image"}),
-    "opencode-go/muse-spark-1.2-contributor": frozenset({"chat", "coding"}),
-    "opencode-go/muse-spark-1.3-contributor": frozenset({"chat", "coding"}),
 }
 
 
@@ -272,7 +255,6 @@ MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
 class ResolvedModelPolicy:
     model_id: str
     messages: list[dict[str, str]]
-    alias: str | None = None
     profile: str = DEFAULT_CHAT_PROFILE
 
 
@@ -283,41 +265,12 @@ class ModelPolicyError(ValueError):
         super().__init__(message)
 
 
-def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
-    for index in range(len(messages) - 1, -1, -1):
-        if messages[index].get("role") == "user":
-            return index
-    return None
-
-
 def product_tier_name(model_id: str) -> str:
     """Return the user-facing Padiem tier for a known product-tier identity."""
     try:
         return PRODUCT_TIER_NAMES[model_id]
     except KeyError as exc:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
-
-
-def _strip_hidden_tier_alias(messages: list[dict[str, str]]) -> list[dict[str, str]]:
-    """Remove an owner/test slash alias from the user message before dispatch.
-
-    The slash selector remains a compatibility/test surface. It never grants
-    product identity or dispatch tier by itself when a server-validated browser
-    tier is present; this only keeps provider-bound prompt content clean.
-    """
-    out = [dict(message) for message in messages]
-    index = _latest_user_index(out)
-    if index is None:
-        return out
-    content = out[index].get("content", "")
-    stripped = content.lstrip() if isinstance(content, str) else ""
-    if not stripped.startswith("/"):
-        return out
-    token, separator, remainder = stripped.partition(" ")
-    if token.lower() not in MODEL_ALIASES or not separator or not remainder.strip():
-        return out
-    out[index]["content"] = remainder.strip()
-    return out
 
 
 def resolve_tier_policy(
@@ -332,6 +285,7 @@ def resolve_tier_policy(
     remains server-side in the shared product-tier declaration.
     """
 
+    out = [dict(message) for message in messages]
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
@@ -341,7 +295,7 @@ def resolve_tier_policy(
         override = _request_route_override("free")
         return ResolvedModelPolicy(
             model_id=override or FREE_B14_MODEL_ID,
-            messages=_strip_hidden_tier_alias(messages),
+            messages=out,
             profile="free",
         )
     if normalized == "admin":
@@ -352,7 +306,7 @@ def resolve_tier_policy(
         # transport profile that matches the resolved model.
         return ResolvedModelPolicy(
             model_id=ADMIN_B14_MODEL_ID,
-            messages=_strip_hidden_tier_alias(messages),
+            messages=out,
             profile="free" if ADMIN_B14_MODEL_ID == FREE_B14_MODEL_ID else "high",
         )
     label = TIER_ID_TO_LABEL.get(normalized)
@@ -365,7 +319,7 @@ def resolve_tier_policy(
         # the central route; B14 still rejects an unavailable exact model.
         return ResolvedModelPolicy(
             model_id=override,
-            messages=_strip_hidden_tier_alias(messages),
+            messages=out,
             profile=TIER_ID_TO_PROFILE[normalized],
         )
 
@@ -396,7 +350,7 @@ def resolve_tier_policy(
 
     return ResolvedModelPolicy(
         model_id=model_id,
-        messages=_strip_hidden_tier_alias(messages),
+        messages=out,
         profile=TIER_ID_TO_PROFILE[normalized],
     )
 
@@ -453,57 +407,23 @@ def resolve_model_policy(
     *,
     require_executable: bool = True,
 ) -> ResolvedModelPolicy:
-    """Resolve ordinary B62 chat to a Padiem product tier.
+    """Resolve ordinary B62 chat to the default Padiem product tier.
 
-    Ordinary chat defaults to the Free product tier. Hidden ``/plus``, ``/pro``
-    and ``/max`` selectors are compatibility/test controls and cannot grant
-    membership. Callers that only need to recognize a tier may set
-    ``require_executable=False``; dispatch retains the fail-closed route gate.
+    Ordinary chat always uses the default product tier. Text beginning with a
+    slash (for example ``/max``) is ordinary prompt text and never selects or
+    changes the dispatch tier; only the browser-supplied, server-validated tier
+    field selects a product tier. Callers that only need to recognize a tier may
+    set ``require_executable=False``; dispatch retains the fail-closed route gate.
     """
-    out = [dict(message) for message in messages]
-    user_index = _latest_user_index(out)
-    if user_index is None:
-        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
-            raise ModelPolicyError(
-                "tier_unavailable",
-                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
-            )
-        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
-
-    content = out[user_index].get("content", "")
-    stripped = content.lstrip()
-    if not stripped.startswith("/"):
-        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
-            raise ModelPolicyError(
-                "tier_unavailable",
-                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
-            )
-        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
-
-    token, separator, remainder = stripped.partition(" ")
-    alias = token.lower()
-    model_id = MODEL_ALIASES.get(alias)
-    if model_id is None:
-        raise ModelPolicyError(
-            "unknown_model_alias",
-            "현재 지원하지 않는 AI 등급입니다. 질문만 입력하거나 지원되는 등급을 선택해 주세요.",
-        )
-    if not separator or not remainder.strip():
-        raise ModelPolicyError(
-            "model_alias_requires_prompt",
-            "AI 등급 선택 뒤에 질문을 입력해 주세요.",
-        )
-    if require_executable and not model_policy_is_executable(model_id):
+    if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
         raise ModelPolicyError(
             "tier_unavailable",
             "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
         )
-
-    out[user_index]["content"] = remainder.strip()
-    # Derive the grade from the explicit alias, never by reverse-mapping a
-    # shared upstream model ID; one model may serve more than one grade.
-    profile = {"/plus": "low", "/pro": "medium", "/max": "high", "/kilo": "medium"}[alias]
-    return ResolvedModelPolicy(model_id, out, alias=alias, profile=profile)
+    return ResolvedModelPolicy(
+        DEFAULT_B14_MODEL_ID,
+        [dict(message) for message in messages],
+    )
 
 
 def model_supports(model_id: str, capability: str) -> bool:

@@ -63,11 +63,9 @@ EXCLUDED_CLASSES = (
     # In real Production B62 Plus is HOLD; this synthetic diagnostic fixture
     # is not proof that model_profile_unassigned is unreachable from B66.
     (503, "model_profile_unassigned"),
-    # Reachable only when the quote text itself begins with a slash alias; these
-    # are product policy rejections, not upstream failures.
+    # Product policy rejection, not an upstream failure. Slash-prefixed text
+    # is ordinary prompt text now, so no alias-specific codes exist here.
     (422, "tier_unavailable"),
-    (422, "unknown_model_alias"),
-    (422, "model_alias_requires_prompt"),
     # Core request-contract rejection, not a provider/upstream class.
     (422, "invalid_request"),
 )

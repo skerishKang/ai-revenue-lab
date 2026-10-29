@@ -745,9 +745,8 @@ async def execute_chat_pc_drive_lane(
     here, so both the JSON and the SSE call sites share them.
 
     ``user_text`` remains the stored user turn. ``execution_user_text`` is the
-    resolved policy text used for model and Engine prompts, so a hidden alias
-    removed by the policy never reaches the model; absent, it falls back to
-    ``user_text`` for existing callers.
+    resolved policy text used for model and Engine prompts; absent, it falls
+    back to ``user_text`` for existing callers.
 
     ``selected_tool`` is the tool name the model requested — the only entry
     this lane has (#5573 3-C-2). The plan is derived from the name and

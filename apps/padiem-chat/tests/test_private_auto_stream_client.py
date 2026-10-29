@@ -142,7 +142,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
+def test_private_compat_stream_slash_text_is_ordinary_and_reaches_transport():
     async def scenario():
         calls = 0
 
@@ -152,15 +152,16 @@ def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
             return httpx.Response(503, json={"error": {"code": "upstream_unavailable"}})
 
         # The owner-tier-pair primary (beam-free) streams via bounded
-        # completion, so the single-attempt fail-closed probe rides the
-        # completion transport, not the manual stream-preview transport.
+        # completion, so the single-attempt probe rides the completion
+        # transport, not the manual stream-preview transport.
         client = B14Client(_settings(), transport=httpx.MockTransport(handler))
-        with pytest.raises(ChatRuntimeError):
+        with pytest.raises(ChatRuntimeError) as info:
             async for _ in client.stream_text_auto(
                 [{"role": "user", "content": "/pro �ѱ���� ������"}]
             ):
                 pass
-        assert calls == 0
+        assert info.value.code == "provider_server_error"
+        assert calls == 1
 
     asyncio.run(scenario())
 

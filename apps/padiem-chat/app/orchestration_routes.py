@@ -198,8 +198,8 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
         # #5015: an explicit browser tier is a preference, not authority.
         # Reuse the same server-side grade/administrator gates and resolver the
-        # Chat stream route applies. A legacy request without a tier keeps the
-        # existing alias/default resolution.
+        # Chat stream route applies. A request without a tier resolves the
+        # default product tier; slash-prefixed text stays ordinary prompt text.
         if custom is not None:
             policy = ResolvedModelPolicy(model_id=byok_model, messages=messages)
             product_identity = PADIEM_IDENTITY_INSTRUCTION

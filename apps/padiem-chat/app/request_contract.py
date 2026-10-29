@@ -249,8 +249,8 @@ def _apply_b62_model_policy(
     """Resolve browser tier selection without exposing provider/model authority.
 
     Explicit browser tier ids are resolved server-side through the shared Padiem
-    product-tier contract. With no tier field, hidden slash aliases remain a
-    compatibility/test surface.
+    product-tier contract. With no tier field, ordinary chat resolves the
+    default product tier; slash-prefixed text is ordinary prompt text.
     """
     try:
         if tier_id is None:
@@ -263,7 +263,6 @@ def _apply_b62_model_policy(
             policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
-    # Preserve validated browser messages until the B14/tier-identity dispatch
-    # boundary. Hidden slash selectors are stripped by the existing client-side
-    # model policy there; explicit browser tier selection rides request context.
+    # Preserve validated browser messages verbatim; explicit browser tier
+    # selection rides request context and prompt text is never rewritten.
     return policy.model_id, [dict(message) for message in messages]
