@@ -13,6 +13,9 @@ class FreezeContract(unittest.TestCase):
         for method in ('GET', 'HEAD', 'OPTIONS'):
             self.assertFalse(freeze.reject_request('true', method))
         self.assertTrue(freeze.reject_request('true', 'GET', 'websocket'))
+        for path in ('/auth/google/callback', '/auth/lovetree/start'):
+            self.assertTrue(freeze.reject_request('true', 'GET', path=path))
+            self.assertFalse(freeze.reject_request('off', 'GET', path=path))
     def test_absent_off_and_invalid(self):
         for value in (None, '', 'off', 'false', '0'):
             self.assertFalse(freeze.freeze_active(value))

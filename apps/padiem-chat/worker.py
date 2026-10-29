@@ -953,7 +953,7 @@ class Default(WorkerEntrypoint):
         global _worker_app
         path = urlparse(request.url).path
         freeze = binding_value(self.env, "PADIEM_CHAT_WRITE_FREEZE")
-        if reject_request(freeze, request.method, request.headers.get("Upgrade")):
+        if reject_request(freeze, request.method, request.headers.get("Upgrade"), path):
             return Response(
                 '{"error":{"code":"maintenance","message":"잠시 점검 중입니다."}}',
                 status=503, headers={"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"},

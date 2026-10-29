@@ -9,7 +9,10 @@ def freeze_active(value):
     return True
 
 
-def reject_request(value, method, upgrade=None):
+WRITE_ON_GET = frozenset({"/auth/google/callback", "/auth/lovetree/start"})
+
+
+def reject_request(value, method, upgrade=None, path=""):
     if not freeze_active(value):
         return False
-    return str(method).upper() not in ('GET', 'HEAD', 'OPTIONS') or str(upgrade or '').lower() == 'websocket'
+    return str(method).upper() not in ('GET', 'HEAD', 'OPTIONS') or str(upgrade or '').lower() == 'websocket' or path in WRITE_ON_GET
