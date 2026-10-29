@@ -54,11 +54,14 @@ jobs:
           python .github/tests/test_connector_lane_watch.py
           echo 'CONNECTOR_WATCH_OFFLINE_ONLY=YES'
 
-      - name: The watch cannot deploy and asks for no configured secret
+      - name: The watch cannot change production and asks for no configured secret
         shell: bash
         run: |
           set -euo pipefail
-          lowered="$(tr '[:upper:]' '[:lower:]' < .github/workflows/connector-lane-watch.yml)"
+          # Only executable lines are inspected: this workflow's own prose explains
+          # that it does not deploy, and the token list below contains the words it
+          # forbids. Checking raw text would make the guard fail on itself.
+          lowered="$(sed -E '/^[[:space:]]*#/d' .github/workflows/connector-lane-watch.yml             | grep -vE 'FORBIDDEN|for forbidden in|^[[:space:]]*(name|description):'             | tr '[:upper:]' '[:lower:]' || true)"
           for forbidden in deploy rollback promote set_var delete_deployment; do
             case "${lowered}" in
               *"${forbidden}"*) echo "CONNECTOR_WATCH_FORBIDDEN_TOKEN=${forbidden}" >&2; exit 1 ;;
