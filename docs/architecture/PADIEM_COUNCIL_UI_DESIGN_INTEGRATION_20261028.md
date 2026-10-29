@@ -42,6 +42,119 @@ passes above because nobody had redeployed in between. Rule for later stages: re
 sha256 comparison at the start of every stage, and when it differs, say *deploy drift* — not
 *measurement of production*.
 
+### 1.1 S5: which commit production is serving, positively identified
+
+`tools/council_s5_live_verify.py` now attributes the served bytes instead of only reporting drift: it
+takes the git blob id of each served asset (after removing Cloudflare's injected analytics tag from
+the HTML) and returns the newest commit on `main` whose three blobs equal all three served blobs.
+Measured 2026-10-29 with `main` at `b884ab7b9`:
+
+```
+SERVING=71a74dee29ea119b98b08a1391c579b9bf76651b
+        (2026-10-28 21:00:12 +0900, fix(5573) … (#6082)) — main is 26 commits ahead of it
+MERGED_BUT_NOT_SERVED:
+    81813dbc8 feat(council): style auth and archive surfaces S4 (#6103)
+    d849c4a18 feat(council): integrate three editor visual skins S3 (#6095)
+    d941fb33a feat(council): integrate design cards and archive touch targets S2 (#6088)
+    17b9cc65f feat(council): apply global design header skin S1 (#6083)
+```
+
+That commit is the last `B62 Production Code Deploy Gate` dispatch (`run 40684361588`,
+2026-10-28T12:00:43Z, success), so the deploy history and the served bytes agree. S0 (`14ab16d81`)
+is an ancestor of `71a74dee2`; S1 is not. **The live design state is exactly S0, and #6065 S1–S4 are
+merged but not served.**
+
+Still not claimed: that blob attribution proves *who* deployed. It identifies which code is live from
+its bytes; Cloudflare's own version metadata attaches no source SHA (`Source: Unknown`), so the
+deployment path is read from the Actions run, not inferred from the content. And the rule for the
+HTML hash is now fixed: the served `index.html` carries one extra Cloudflare Web Analytics
+`<script>` — measured 366 bytes on its own line, so 367 including that newline — and removing
+exactly that makes the served HTML **byte-identical** to the `index.html` committed at
+`0027fc413` (#6052, the last commit to touch that file before S1), git blob `daeb754fbc7f`. That
+exactness is what makes the attribution above trustworthy rather than approximate.
+
+### 1.2 S5 post-deploy readback — the design is live
+
+The release owner (not this lane) deployed current main while this contract was being written:
+
+| fact | value |
+| --- | --- |
+| deployed SHA | `9430f39931616542a298dfe0d15a5a2c84813845` (#6112) — council assets identical to S4 `81813dbc8` |
+| workflow run | `B62 Production Code Deploy Gate` run `40786832140`, success, 2026-10-28T23:21:54Z |
+| cloud version | `DEPLOYED_VERSION_ID=302b33f6-0c28-4b22-a16a-f2d1c7acdea8` |
+| refused first dispatch | run `40786525919` failed on `Require explicit production code deploy authorization` with `CONFIRMATION:` empty; the rollback step logged `No recorded previous version; manual rollback required` and **nothing was republished** — production stayed on `9a561b5e-e4f0-46b9-9a7d-f4479c038ba5` until the authorised run |
+| D1 in this release | `D1_SCHEMA_QUERY=READ_ONLY`, `D1_IDENTIFIER_OUTPUT=0`; the last sanctioned plan (`B62 general D1 migration gate (Chat)`, run `40679268473`) recorded `B62_D1_PLAN_APPLY=0`, so no migration travelled with the deploy |
+
+Re-running the tool after that deploy: all three assets `MATCH`, `SERVING=9430f3993`,
+`main is 0 commits ahead`, and every stage marker is present on production —
+`S1mark=True/30`, `S1name=16.5px/-0.165px`, `S2cols=30px <auto>` with `icon=30`, `S3field=14px`,
+`S4auth=14px`, `S0wrap` at 320/390/768 and `nowrap` at 1440, `countries=kr,us,uk,fr`, sign-in panel
+rendered signed-out at all four widths, and overflow 0 / out-of-viewport 0 / sub-44px 0 at every one of
+the four widths. → `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES`,
+**`LIVE_VERIFIED=YES` for the unauthenticated surface.**
+
+Visual proof, not only numbers: `docs/6065/s5-live-home-1440.png`, `s5-live-home-390.png`,
+`s5-live-tooltap-1440.png`, `s5-live-tooltap-390.png` — the production screen renders the stroke brand
+mark, the card icon column with its 22×2 rule, the pill actions and the panel surfaces, Korean wraps at
+word boundaries at 390, and tapping a tool while signed out still leaves **exactly one** `.council-form`
+(the login form) at all four widths, i.e. the fail-closed gate holds in production.
+
+Not yet verified, and not claimed: the **authenticated** pass over the three editors at the four
+widths, live KR/US/UK/FR generation, save-and-reentry, SNS media order, the activity book, copy/TXT and
+keyboard focus (S5 steps 3–4). Those need an authorised test account, consent for paid model calls and
+real file writes; they are a separate bounded run, and step 5's "the existing user documents survived"
+is currently supported only by *no storage write happened* plus the gate's pre-deploy
+`project_files=14` count — a re-measure needs the same authorised read.
+
+### 1.3 S5 authenticated live run — what it proved and what blocked it
+
+Run under CENTRAL's authorization on the existing test account (no account or secret created, no
+deploy, no migration). Charged: at most 3 of 8 model calls, 3 of 4 files created, all deleted.
+
+Proved on production while the service was answering — `[직접]`:
+
+- signed in through the app's own login form; badge `로그인됨`, four `.council-form` (login + 3
+  builders attached only after the server confirms the session).
+- the three editors at 320/390/768/1440 (12 cells): horizontal overflow 0, out-of-viewport 0,
+  occlusion by `elementFromPoint` 0, sub-44px targets 0, self-clipping 0, header `wrap` ≤768 and
+  `nowrap` at 1440, fields 11 / 7 / 4.
+- real generation in two countries: **kr** → `country` absent from the payload (the contract: no
+  value means kr), `util=speech`, reply in Korean; **us** → `country=us` sent, reply Latin 1304 vs
+  Hangul 6, i.e. the result language actually switches.
+- save tags the document with its country (`country=kr`, `country=us`) and
+  `DELETE /api/projects/{pid}/files/{id}` answers 204.
+- existing data: read-only SQL on the sanctioned D1 path gave `project_files` = 14 (all kr) before
+  and **14 (all kr) after**, `S5TEST-` rows 0, `rows_written=0`, `changed_db=false`.
+
+Blocked by a production fault outside this contract's diff — `[사실]`: `GET /api/auth/status` and
+`GET /api/projects` return **HTTP 500 intermittently** (measured 3 of 6 and 3 of 6 in one minute,
+2 of 6 earlier, and 6 of 6 in the run that needed a session), while `/apps/council/` and `/` served
+200 ten times out of ten. No deploy was in flight during any of it. Static assets fine, dynamic
+routes throwing ⇒ the Worker runtime or its dependency, not the council bundle. Consequently uk/fr
+generation, SNS generation, the activity-book draft, per-country list filtering, re-entry, copy/TXT
+and signed-in keyboard focus are **unverified and not claimed**.
+
+Two findings worth a decision:
+
+1. `checkSignedIn()` (`static/council-app.js:1261-1271`) maps `!res.ok` to `{signedIn:false}` —
+   indistinguishable from a genuine signed-out `200` — and `init()` then opens the panel with **no
+   message**. The fail-closed direction is right; the reporting is not: a logged-in user reads as
+   logged out. `enterSignedIn()` already has the correct string at `council-app.js:1437`. Minimal
+   fix is to return an `unavailable` state on 5xx/thrown fetch, keep the gate closed, show that
+   message with a retry. Not shipped here: S4 was told not to extend the sign-in surface, and it
+   would not restore service while the 500s continue.
+2. The 500s themselves belong to the release/engine lane, not to #6065.
+
+Harness corrections recorded so the numbers above are trusted: the `us` document was stored named
+`S5TEST-kr-축사.txt` because the fill step only wrote empty fields and the form still held the
+previous event name (the app names the file from that field, `council-app.js:468` — normal
+behaviour); `.council-card-select` **toggles**, so a blind second click closes the editor; and the
+first UI pass reported 5 "overflow offenders" per cell by counting pages that scroll vertically, and
+missed the auto-focused first field in the Tab walk. Both were probe bugs, re-measured. Two focus
+observations survived the re-measure and are **pre-existing** (the `:focus-visible` rule and the
+`type=date` field both exist at `68ead1f0f`, before S0): the native date input's 4th tab stop gets
+no outline, and at 390 two focused textareas sit 13–18px below the fold with scroll room left.
+
 ## 2. Constraints a visual integration may not break
 
 Each of these is a literal-string assertion that already fails CI if violated. They are the reason
@@ -169,7 +282,47 @@ No stage in this list deploys to production; production release stays with CENTR
   file was reverted and every rule rewritten by its own selector, then re-verified through computed
   style; and a `border-radius: 999px` on the reference chip was deleted because the shared 44px
   floor block declares 10px later and always won.
-- **S5 — hero, photography, and localised chrome.** Blocked on §6.
+- **S5 — release the integrated design and verify it live (this PR ships the verification, not the
+  release).** CENTRAL's order for S5 is: confirm main and the active release owner → protected
+  deploy of main by the release owner → three-asset readback + authenticated/unauthenticated browser
+  at 320/390/768/1440 → live KR/US/UK/FR generation, country filtering, saved-document re-entry, SNS
+  media order, activity book, copy/TXT, touch and keyboard focus → confirm the existing user files
+  survived and the test artifacts are gone. LOCAL 1 owns the readback, the browser evidence and the
+  post-deploy regression; the deploy itself is LOCAL0/CENTRAL's, so **this PR touches no runtime
+  code** — `tools/council_s5_live_verify.py` is read-only (it never signs in, generates or stores)
+  and the tests pin the rules that keep the readback from lying.
+  Rules S5 had to discover, each now guarded (§1.1 for the beacon, and
+  `tests/test_6065_s5_readback_rules.py`):
+  1. an empty response must never read as a match — two empty bodies hash equal, so the verdict
+     ladder checks non-empty before it compares anything;
+  2. the served HTML is not the source HTML — Cloudflare injects one analytics tag, normalised out
+     by a pattern that takes the tag **plus the newline it arrives on** and never the source's
+     newline before it (a leading `\s*` put a byte-perfect deploy one byte short of MATCH forever);
+  3. drift must be *attributed*, not just reported — hence `SERVING=<sha>`;
+  4. the skip link is parked at `left:-9999px` until focused, so counting it as an overflow offender
+     or a 44px target fails a clean page forever;
+  5. the marker harness must wait on `#councilAuthPanel` losing its `hidden` attribute, not on a
+     fixed sleep — the panel unhides only after `/api/auth/status` resolves, and a 700 ms sleep
+     reported a hidden sign-in panel at 390 on a page that was fine.
+  Baseline measured 2026-10-29 (`main` = `b884ab7b9`, tool run exit 1 by design): three assets
+  `DRIFT`, `SERVING=71a74dee2`, S0 live and S1–S4 merged-not-served, and the live page geometry
+  already clean — overflow 0, offenders 0, sub-44px targets 0 at 320/390/768/1440,
+  `countries=kr,us,uk,fr`, sign-in panel visible in the signed-out state at all four widths.
+  **`LIVE_VERIFIED=NO` at that moment** — and the release owner deployed current main shortly after,
+  so §1.2 carries the post-deploy read (`LIVE_VERIFIED=YES` on the unauthenticated surface, with the
+  authenticated steps 3–4 still open). The tool is the re-check: it exits 1 unless
+  `DEPLOYED_TO_MAIN_BYTES`, `S1_S4_MARKERS` and `GEOMETRY_CLEAN` are all YES.
+  Guard strength, measured by mutation (each mutation applied alone, then reverted and byte-checked
+  against the snapshot): beacon eats the source newline → 1 test red; beacon leaves its own newline →
+  2 red; empty-response branch removed → 1 red; skip-link exclusion removed → 1 red; settle-wait
+  removed → 1 red; settle sleep lengthened past 500 ms → 1 red. Two are honestly disclosed as **not**
+  load-bearing: dropping the `length_equal` conjunct from MATCH stays green (a full SHA-256 compare
+  already implies it — kept as a second, independent statement of the empty-response rule the release
+  owner asked for), and the skip-link `continue` in the *overflow* loop changes nothing on today's DOM
+  because the inline `!parked(el)` predicate already excludes a left-parked element; the same guard
+  in the *touch* loop is load-bearing on the real page (sub-44 count 1 → 0 at all widths).
+- **Deferred behind §6 — hero, photography, localised chrome.** Not part of #6065 S5; the CTO's
+  S5 order explicitly bans new visual features, photos or fonts without a discrete issue.
 
 ## 5. Non-goals
 
@@ -200,7 +353,6 @@ proof that generation or saving works.
    must extend that one block rather than restate it.
 
 ## 7. Evidence index
-
 - Harness: `council6065_harness.py` (local, read-only; `/api/chat` answered from a canned string,
   so no model call leaves the machine).
 - Measurement: `council6065_measure.py` → `live_measure.json`, 2 states × 4 widths × 4 views, with
@@ -208,3 +360,10 @@ proof that generation or saving works.
 - Occlusion pass: 24 cells × 14 controls, `elementFromPoint` at each control's centre — 0 occluded,
   0 off-viewport, 0 horizontal overflow.
 - Mutation check of the four new guards: 6 mutations, each detected by exactly one test.
+- S5 readback: `tools/council_s5_live_verify.py` (read-only) → `s5_live_verification.json` in the
+  system temp dir, holding the three-asset table with `cf_injected_bytes` and the per-width marker
+  set. Re-run it after the release-owner deploy; the exit code is 1 while any of
+  `DEPLOYED_TO_MAIN_BYTES` / `S1_S4_MARKERS` / `GEOMETRY_CLEAN` is NO.
+- S5 deploy provenance: last `B62 Production Code Deploy Gate` dispatch `run 40684361588`
+  (2026-10-28T12:00:43Z, success, head `71a74dee2`) — the Actions record, independent of the
+  byte attribution in §1.1.

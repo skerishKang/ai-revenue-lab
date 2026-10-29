@@ -210,6 +210,64 @@ PADIEM 의원3종(축사·인사말 / SNS 홍보 / 회의정리·활동집)을 C
 - 근거 캡처: `docs/6065/s4-sign-in-1440-before-after.png`,
   `docs/6065/s4-record-list-1440-before-after.png`, `docs/6065/s4-record-list-320-before-after.png`
 
+## 배포 특정·라이브 검증 규칙 (#6065 S5, 2026-10-29)
+
+S5는 코드 단계가 아니라 **배포 단계**다. 운영 릴리스는 릴리스 오너(LOCAL0/CENTRAL) 권한이고, 여기는
+검증 도구만 추가한다 — `tools/council_s5_live_verify.py`는 읽기 전용(로그인·생성·저장을 하지 않는다).
+운영 화면을 고친 diff는 이 PR에 없다.
+
+**운영이 실제로 서빙 중인 커밋을 특정했다.** `DRIFT`만으로는 "뭔가 다르다"일 뿐이라, 서빙 바이트를
+git blob으로 `main` 이력과 대조해 세 애셋이 모두 일치하는 가장 최근 커밋을 돌려준다.
+
+배포 전 기준선 (2026-10-29, `main` = `b884ab7b9`):
+
+| 확인 | 실측 |
+| --- | --- |
+| 서빙 커밋 | `71a74dee2` (#6082, 2026-10-28 21:00 +0900) — main이 **26커밋** 앞 |
+| 배포 근거 | `B62 Production Code Deploy Gate` run `40684361588` (2026-10-28T12:00:43Z, success) |
+| index.html | 5733b (cf-injected 367b) → `9026d1cd…` vs main `754318cb…` = DRIFT |
+| council-app.css | 14873b → `43793ed8…` vs main `5606458…` = DRIFT |
+| council-app.js | 70711b → `cabb44af…` vs main `8711a15…` = DRIFT |
+| 라이브 마커 | S0만 라이브 (320/390/768 `flex-wrap: wrap`, 1440 `nowrap`, 브랜드 16px·28px 마크, 카드 아이콘 없음, 필드 8px, 인증 패널 16px) |
+| 라이브 지오메트리 | 320/390/768/1440 가로 넘침 0 · 오버플로 요소 0 · 44px 미만 0 · 언어 4종 · 로그아웃에서 로그인 패널 표시 |
+
+즉 **S1–S4는 병합됐지만 운영에 없었다. `LIVE_VERIFIED=NO`.** 그리고 릴리스 오너(LOCAL0/CENTRAL)가
+같은 날 current main을 배포했다 — 이 레인이 배포한 것이 아니다.
+
+배포 후 재측정 (`B62 Production Code Deploy Gate` run `40786832140` success,
+deployed SHA `9430f3993`, cloud version `302b33f6-0c28-4b22-a16a-f2d1c7acdea8`):
+
+| 확인 | 실측 |
+| --- | --- |
+| 서빙 커밋 | `9430f3993` — main과 **0커밋 차이**, 세 애셋 전부 `MATCH` |
+| 라이브 마커 | S0(≤900 wrap) + S1(stroke 마크 30px, 16.5px/−0.165px) + S2(30px 아이콘 열) + S3(필드 14px) + S4(인증 패널 14px) 전부 운영 화면에서 확인 |
+| 지오메트리 | 320/390/768/1440 가로 넘침 0 · 오버플로 요소 0 · 44px 미만 0, `countries=kr,us,uk,fr`, 로그아웃에서 로그인 패널 표시 |
+| 판정 | `DEPLOYED_TO_MAIN_BYTES=YES S1_S4_MARKERS=YES GEOMETRY_CLEAN=YES` → **`LIVE_VERIFIED=YES` (로그아웃 표면)** |
+
+미검증으로 남기는 것: **로그인 후** 편집기 3종 × 4폭, 실서비스 KR/US/UK/FR 생성, 저장·재진입, SNS 사진
+순서, 활동집, 복사/TXT, 키보드 포커스(S5 3–4단계). 인증 테스트 계정과 유료 모델 호출·실 파일 기록 동의가
+별도로 필요하다. 5단계의 "기존 사용자 문서 보존"은 현재 *이번 배포에 저장 쓰기 없었다*
+(`D1_SCHEMA_QUERY=READ_ONLY`, `D1_IDENTIFIER_OUTPUT=0`, `B62_D1_PLAN_APPLY=0`)와 배포 전 게이트 실측
+`project_files=14`까지만 근거이고, 재측정은 같은 인증 읽기가 필요하다.
+- 화면 근거(운영 재촬영): `docs/6065/s5-live-home-1440.png`, `s5-live-home-390.png`,
+  `s5-live-tooltap-1440.png`, `s5-live-tooltap-390.png` — stroke 표장·아이콘 열(22×2 규칙선)·알약형
+  동작·패널 표면이 운영에서 실제로 렌더되고, 390에서 한글이 단어 경계로 줄바꿈한다. 로그아웃에서 카드
+  `열기`를 눌러도 `.council-form`은 **1개(로그인 폼)** 그대로 — fail-closed 게이트가 운영에서 유지된다.
+
+readback이 거짓말하는 다섯 가지 경우를 각각 막았고, 변형 테스트로 확인했다:
+
+1. 빈 응답은 절대 MATCH가 될 수 없다 — 빈 본문 두 개는 해시가 같으므로 해시 비교 전에 비어있지 않음을 본다.
+2. 서빙 HTML은 소스 HTML과 **처음부터 같을 수 없다** — Cloudflare가 웹 애널리틱스 `<script>` 하나를 삽입한다(실측 366바이트, 자기 줄을 갖고 오므로 줄바꿈까지 367). 정규화 패턴은 태그+그 줄바꿈만 지우고 **앞줄 줄바꿈은 절대 먹지 않는다** — 앞 `\s*`로 썼을 때 완전 일치 배포가 영구 1바이트 부족으로 DRIFT났다.
+3. drift는 보고가 아니라 **특정**으로 바꿔준다 (`SERVING=<sha>`).
+4. skip 링크는 포커스 전까지 `left:-9999px`에 주차돼 있다 — 이를 오버플로/터치 집계에 넣으면 깨끗한 화면이 영원히 실패한다.
+5. 마커 하니스는 `#councilAuthPanel`에서 `hidden`이 벗겨지는 상태를 기다린다(고정 sleep이 아님) — 700ms sleep은 `/api/auth/status`와 경주해서, 아무 문제없는 화면에서 390만 "로그인 패널 숨음"으로 보고했다.
+
+변형 검출(각 변형은 하나만 적용한 뒤 스냅샷과 바이트 비교로 되돌렸다): beacon이 앞 줄바꿈까지 먹음 → 1건 실패, beacon 뒤 줄바꿈을 지우지 않음 → 2건 실패, 빈 응답 분기 삭제 → 1건 실패, skip 제외 삭제 → 1건 실패, settle 대기 삭제 → 1건 실패, settle sleep을 500ms 초과로 늘림 → 1건 실패.
+**부하가 걸리지 않는 두 개는 감추지 않는다.** MATCH에서 `length_equal` 조건을 빼도 초록이다 — 전체 SHA-256 비교가 이미 바이트 길이까지 함께 보장하므로, CENTRAL이 요구한 "빈 응답 오검출 금지"를 두 번째 독립 진술로 명시적으로 남긴 것이다. 또 오버플로 루프의 skip 제외 `continue`는 오늘의 DOM에서 값이 안 변한다 — 같은 루프 조건에 `!parked(el)`가 이미 왼쪽 주차를 걸러내고 있기 때문이다. 터치 루프 쪽 `continue`는 실제 화면에서 부하가 걸린다(44px 미만 집계 1 → 0, 4폭 모두).
+- 계약 테스트 8건 신규(`test_6065_s5_readback_rules.py`) — `readback()` 자체를 합성 응답으로 구동한다(도구 소스를 grep하는 테스트는 가드를 꺼도 통과하므로). 92 passed.
+- **S5 인증 런(승인 후 실행)**: 로그인 후 편집기 3종 × 4폭 12셀 넘침 0·가림 0·44px 미만 0·잘림 0, kr은 페이로드에 `country` 없음·us는 `country=us`로 **결과 언어가 실제로 영어로 전환**, 저장은 국가 태그 보존, `DELETE` 204, `project_files` 14 → **14 유지·`S5TEST-` 잔여 0**(읽기 전용 SQL, `rows_written=0`).
+  다만 **`/api/auth/status`·`/api/projects`의 간헐 500**(실측 6회 중 3회, 세션 복원 런에서는 6/6)으로 uk/fr 생성·SNS·활동집·국가별 목록·재진입·복사/TXT·로그인 후 키보드는 **미검증**이다. 정적 자산은 10/10 200이라 원인은 정적 번들이 아니라 Worker 런타임 쪽 — `[사실]` 차단, `[미확인]` 원인. 상세: `docs/architecture/PADIEM_COUNCIL_UI_DESIGN_INTEGRATION_20261028.md` §1.3
+
 ## 실행
 
 ```bash
