@@ -617,7 +617,7 @@ def test_the_device_rows_lead_with_the_name_and_the_id_stays_readable(static_url
             )
             assert len(rows) == 12
             assert rows[0]["name"] == "내 데스크톱"
-            assert rows[0]["state"] == "온라인 · 작업 승인 필요"
+            assert rows[0]["state"] == "온라인 · 바로 작업"
             assert rows[1]["state"] == "오프라인"
             assert rows[0]["choose"] == "작업 대상 후보로 선택"
             assert rows[0]["chooseEnabled"] is True
