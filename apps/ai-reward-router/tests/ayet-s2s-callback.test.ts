@@ -18,6 +18,8 @@ import {
   buildStoredRewardEvent,
   D1RewardEventStore,
   UnboundRewardEventStore,
+  type RewardEventStore,
+  type StoredRewardEvent,
 } from '../src/ad-click-first/reward-event-store.js';
 import { applyProviderRewardEvent, type RewardStateRecord } from '../src/ad-click-first/reward-events.js';
 import { createSqliteD1Binding, readAllMigrationsSql } from './d1-binding-helper.js';
@@ -376,6 +378,83 @@ test('without the D1 binding the callback is refused for retry rather than answe
   const subject = await subjectFor(newB64MemberId());
   const parameters = conversionParams(subject, 'tx-nostore');
   assert.equal((await postback(handler, parameters, signed(parameters))).status, 503);
+});
+
+/**
+ * The two CONFLICT branches are the only thing standing between two postbacks
+ * for one provider transaction and two writes. No sequence of real requests
+ * reaches them: the second callback reads the row the first one committed and
+ * takes the idempotent path. They are reached here by handing a handler the read
+ * it would have taken a moment before the other callback committed, against the
+ * same binding — which is exactly the interleaving the guard exists for.
+ */
+function storeThatReads(
+  inner: D1RewardEventStore,
+  staleRead: () => StoredRewardEvent | null,
+): RewardEventStore {
+  return {
+    load: () => Promise.resolve(staleRead()),
+    insert: (record) => inner.insert(record),
+    transition: (record, expectedState) => inner.transition(record, expectedState),
+    listForMember: (memberId) => inner.listForMember(memberId),
+  };
+}
+
+function handlerOnTheSameStore(
+  binding: ReturnType<typeof createSqliteD1Binding>['binding'],
+  rewardEvents: RewardEventStore,
+) {
+  return createConsumerHttpHandler({
+    loadCandidates: () => [],
+    loadPublicOpportunities: () => [],
+    memberStore: new D1B64MemberStore(binding),
+    sessionSecret: TEST_SESSION_SECRET,
+    incomeRepository: new D1UserIncomeRepository(binding),
+    expectedBrowserOrigin: TEST_ORIGIN,
+    rewardEvents,
+    ayetMode: 'CONFIGURED',
+    ayetPublisherApiKey: PUBLISHER_API_KEY,
+  });
+}
+
+test('the loser of an insert race is asked to retry and writes no second row', async () => {
+  const { handler, events, binding } = createCallbackHarness();
+  const memberId = newB64MemberId();
+  const subject = await subjectFor(memberId);
+  const parameters = conversionParams(subject, 'tx-race-create');
+  assert.equal((await postback(handler, parameters, signed(parameters))).status, 200);
+
+  // A second callback that still believes the transaction is unseen.
+  const racing = handlerOnTheSameStore(binding, storeThatReads(events, () => null));
+  const response = await postback(racing, parameters, signed(parameters));
+  assert.equal(response.status, 503, 'CONFLICT on insert is recoverable, so ayeT must be allowed to retry');
+  await response.text();
+  assert.equal(await rowCount(binding), 1, 'one provider transaction stays one row');
+  assert.equal((await events.listForMember(memberId)).length, 1);
+});
+
+test('a transition built on a stale read cannot overwrite the newer state', async () => {
+  const { handler, events, binding } = createCallbackHarness();
+  const memberId = newB64MemberId();
+  const subject = await subjectFor(memberId);
+  const conversion = conversionParams(subject, 'tx-race-transition');
+  assert.equal((await postback(handler, conversion, signed(conversion))).status, 200);
+
+  const confirmed = await events.load(PROVIDER_ID, 'tx-race-transition');
+  assert.ok(confirmed, 'the conversion left a row to reverse');
+
+  const reversal = chargebackParams(subject, 'tx-race-transition');
+  assert.equal((await postback(handler, reversal, signed(reversal))).status, 200);
+  assert.equal((await events.load(PROVIDER_ID, 'tx-race-transition'))?.state, 'REVERSED');
+
+  // The same reversal, decided from the pre-reversal snapshot.
+  const racing = handlerOnTheSameStore(binding, storeThatReads(events, () => confirmed));
+  const response = await postback(racing, reversal, signed(reversal));
+  assert.equal(response.status, 503, 'CONFLICT on transition is a stale write, not a permanent refusal');
+  await response.text();
+  assert.equal((await events.load(PROVIDER_ID, 'tx-race-transition'))?.state, 'REVERSED',
+    'the guarded write left the newer state alone');
+  assert.equal(await rowCount(binding), 1);
 });
 
 test('the callback is a GET route and keeps the consumer CSP', async () => {
