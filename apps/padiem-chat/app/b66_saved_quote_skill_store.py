@@ -533,13 +533,17 @@ class D1SavedQuoteSkillStore:
         else:
             row_id = _row_id()
             await self._run(
+                # `skill_kind` is appended last so the shape this table has
+                # always had (migration 079 adds the column at the end) reads
+                # first, exactly as the provisioning gate contract expects.
                 "INSERT INTO b66_saved_quote_skill "
                 "(id, user_id, workspace_id, skill_id, skill_name, skill_fingerprint, "
-                "skill_version, skill_json, skill_kind, status, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?)",
+                "skill_version, skill_json, status, created_at, updated_at, "
+                "skill_kind) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?)",
                 row_id, owner, workspace, artifact.skill_id, artifact.skill_name,
                 artifact.fingerprint, artifact.version, artifact.serialized_json,
-                artifact.kind, now, now,
+                now, now, artifact.kind,
             )
 
         row = await self._first(
