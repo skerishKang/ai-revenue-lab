@@ -46,6 +46,11 @@ LANE_STATUS_HEADER = "X-Oracle-Mesh-Secret"
 #: a dispatch and submit a result on a customer PC, and a scheduled workflow is the
 #: last place to keep it.
 WATCH_SECRET_ENV = "CONNECTOR_WATCH_READ_SECRET"
+#: Where the queue's lane-status is reachable, when it is reachable at all. The queue
+#: binds loopback, so this stays empty until an operator exposes a read path; empty is
+#: not a failure — it means the COM2 host timer owns this judgement.
+QUEUE_ORIGIN_ENV = "CONNECTOR_WATCH_QUEUE_ORIGIN"
+QUEUE_HEALTH_PATH = "/health"
 CHAT_HEALTH_PATH = "/health"
 #: The product's own presence freshness is 180 s (#5553). The monitor uses a wider
 #: window on purpose: one slow poll must not page anyone, while a lane that has not
@@ -244,8 +249,44 @@ def source_verdict(configured: Any) -> tuple[str, str]:
     if value == SOURCE_D1:
         return OK, "source_d1"
     if value == SOURCE_COM2:
-        return UNKNOWN, "source_com2_read_queue_side"
+        # The queue is the live store now. Whether THIS client can see it is a separate
+        # question, answered in run(): without a reachable queue origin the judgement
+        # belongs to the COM2 host timer and is reported as itself.
+        return OK, "source_com2"
     return UNKNOWN, "source_unnamed"
+
+
+def queue_health_verdict(status: Any) -> tuple[str, str]:
+    """The queue's own health read: no secret, and not an external surface."""
+    code = _count(status)
+    if code is None:
+        return UNKNOWN, "queue_health_unreadable"
+    if code == 200:
+        return OK, "queue_health_200"
+    if code >= 500:
+        return STALL, f"queue_health_{code}"
+    return UNKNOWN, f"queue_health_{code}"
+
+
+def queue_counts_agree(lane: Any, health: Any) -> tuple[str, str]:
+    """Two views of one store must agree, or neither is evidence.
+
+    `/health` counts unclaimed and claimed rows; lane-status returns the same two
+    buckets with ages. A disagreement means the two answers did not describe one
+    moment, and a verdict built on that would be a guess.
+    """
+    if not isinstance(health, dict) or health.get("ok") is not True:
+        return UNKNOWN, "queue_health_shape"
+    if not isinstance(lane, dict):
+        return UNKNOWN, "queue_lane_shape"
+    for lane_key, health_key in (("unclaimed", "pending_unclaimed"),
+                                 ("claimed", "pending_claimed")):
+        bucket = lane.get(lane_key)
+        if not isinstance(bucket, dict):
+            return UNKNOWN, "queue_lane_shape"
+        if _count(bucket.get("count")) != _count(health.get(health_key)):
+            return UNKNOWN, f"queue_counts_disagree_{lane_key}"
+    return OK, "queue_counts_agree"
 
 
 def combine(named: dict[str, tuple[str, str]]) -> tuple[str, list[str]]:
@@ -327,6 +368,22 @@ class _RefuseRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def _get_queue_health(origin: str) -> tuple[int | None, Any]:
+    request = urllib.request.Request(
+        f"{origin}{QUEUE_HEALTH_PATH}", method="GET",
+        headers={"Accept": "application/json",
+                 "User-Agent": "PadiemConnectorWatch/1.0 (#82)"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+            return response.status, json.loads(
+                response.read(_HEALTH_BODY_BYTES).decode("utf-8", "replace"))
+    except urllib.error.HTTPError as exc:
+        return exc.code, None
+    except Exception:
+        return None, None
+
+
 def _device_ids(raw: str | None) -> list[str]:
     """The devices to ask about, bounded by the route's own presence limit."""
     if not raw:
@@ -353,17 +410,33 @@ def run(env: dict[str, str]) -> int:
 
     source_state, source_reason = source_verdict(env.get("PC_QUEUE_BACKEND"))
     checks["source"] = (source_state, source_reason)
-    if source_state is not OK:
+    queue_origin = (env.get(QUEUE_ORIGIN_ENV) or "").strip().rstrip("/")
+    com2 = source_reason == "source_com2"
+    refused_origin = bool(com2 and queue_origin and not queue_origin.startswith("http"))
+    if refused_origin:
+        # A queue origin is a local or tunnel address; anything else is refused here,
+        # and nothing is read at all — reading the other store instead would report a
+        # frozen copy as the live lane.
+        checks["source"] = (UNKNOWN, "queue_origin_refused")
+    lane_origin = queue_origin if com2 else origin
+    if source_state is not OK or refused_origin:
         # Reading the wrong store is not a verdict about the lane at all.
         checks["queue"] = (UNKNOWN, "not_read")
         checks["pc"] = (UNKNOWN, "not_read")
         checks["beat"] = (UNKNOWN, "not_read")
+    elif com2 and not queue_origin:
+        # The queue binds loopback and no read path was exposed, so this judgement is
+        # the COM2 host timer's. Said plainly, never as "ok".
+        checks["source"] = (UNKNOWN, "com2_delegated_to_host_watch")
+        checks["queue"] = (UNKNOWN, "host_watch_delegated")
+        checks["pc"] = (UNKNOWN, "host_watch_delegated")
+        checks["beat"] = (UNKNOWN, "host_watch_delegated")
     elif not secret or not devices:
         checks["queue"] = (UNKNOWN, "read_secret_absent" if not secret else "devices_unset")
         checks["pc"] = (UNKNOWN, "not_read")
         checks["beat"] = (UNKNOWN, "read_secret_absent" if not secret else "devices_unset")
     else:
-        status, lane = _post_lane_status(origin, secret, devices)
+        status, lane = _post_lane_status(lane_origin, secret, devices)
         if status != 200 or not isinstance(lane, dict) or lane.get("ok") is not True:
             # A 404 here means the route is not deployed yet. That is "cannot tell",
             # and it is reported as such instead of "zero work is waiting".
@@ -374,6 +447,11 @@ def run(env: dict[str, str]) -> int:
             checks["queue"] = queue_verdict(lane)
             checks["pc"] = pc_silence_verdict(lane)
             checks["beat"] = liveness_verdict(lane, now=now)
+            if com2:
+                # On the queue, /health is a second view of the same rows.
+                queue_status, queue_health = _get_queue_health(queue_origin)
+                checks["queue_health"] = queue_health_verdict(queue_status)
+                checks["queue_counts"] = queue_counts_agree(lane, queue_health)
     health_status, health_edge_error = _get_health(origin)
     checks["chat"] = chat_health_verdict(health_status, health_edge_error)
 

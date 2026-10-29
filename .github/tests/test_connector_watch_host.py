@@ -111,5 +111,69 @@ class TestSystemdParse(unittest.TestCase):
                          {"active": "active", "restarts": None, "exit_status": None})
 
 
+class TestTheQueueSideOnTheHost(unittest.TestCase):
+    """After the cutover this host is the only place that can see the queue.
+
+    The verdicts are not re-implemented here: the host imports the same module the
+    GitHub-side watch uses, and these tests hold that wiring — including the case
+    where the module is missing, which must read as UNKNOWN rather than clean.
+    """
+
+    def setUp(self) -> None:
+        import sys
+        sys.path.insert(0, str(ROOT / ".github" / "scripts"))
+        import connector_lane_watch as lane
+        self.lane = lane
+        self._saved = (host.lane_watch, host.QUEUE_BACKEND)
+
+    def tearDown(self) -> None:
+        host.lane_watch, host.QUEUE_BACKEND = self._saved
+
+    def test_a_queue_read_uses_the_shared_verdicts(self) -> None:
+        from unittest import mock
+        host.lane_watch = self.lane
+        lane_body = {"ok": True,
+                     "unclaimed": {"count": 1, "oldest_seconds": 30},
+                     "claimed": {"count": 0, "oldest_seconds": None},
+                     "nodes": [{"node_ref": "n1", "open": 1, "oldest_seconds": 30,
+                                "waiting": 1, "waiting_oldest_seconds": 30}]}
+        with mock.patch.object(host, "_lane_read",
+                               lambda origin, secret, devices: (200, lane_body)),                 mock.patch.object(host, "_queue_health",
+                                  lambda origin: {"ok": True, "pending_unclaimed": 1,
+                                                  "pending_claimed": 0}):
+            checks = host.queue_checks(secret="w" * 32, device_ids="device-1")
+        self.assertEqual(checks["queue"], ("ok", "queue_claimed_recently"))
+        self.assertEqual(checks["pc"], ("ok", "pc_waiting_recently"))
+        self.assertEqual(checks["queue_counts"], ("ok", "queue_counts_agree"))
+
+    def test_a_missing_or_refusing_read_is_unknown_by_name(self) -> None:
+        from unittest import mock
+        host.lane_watch = self.lane
+        with mock.patch.object(host, "_lane_read", lambda *a: (403, None)):
+            checks = host.queue_checks(secret="w" * 32, device_ids="device-1")
+        self.assertEqual(checks["queue"], ("unknown", "lane_status_http_403"))
+        with mock.patch.object(host, "_lane_read", lambda *a: (None, None)):
+            checks = host.queue_checks(secret="", device_ids="device-1")
+        self.assertEqual(checks["queue"], ("unknown", "read_secret_absent"))
+
+        host.lane_watch = None
+        checks = host.queue_checks(secret="w" * 32, device_ids="device-1")
+        self.assertEqual(checks["queue"], ("unknown", "lane_verdicts_not_installed"))
+
+    def test_the_queue_checks_run_only_after_the_cutover(self) -> None:
+        from unittest import mock
+        host.lane_watch = self.lane
+        host.QUEUE_BACKEND = "com2"
+        seen = {}
+
+        def fake_queue_checks():
+            seen["called"] = True
+            return {"queue": ("ok", "queue_idle")}
+
+        with mock.patch.object(host, "read_properties", lambda unit: {}),                 mock.patch.object(host, "read_journal", lambda unit, minutes: ""),                 mock.patch.object(host, "read_health", lambda url: 200),                 mock.patch.object(host, "queue_checks", fake_queue_checks),                 mock.patch.object(host, "should_notify", lambda state, prev: False),                 mock.patch.object(host, "_previous", lambda: None),                 mock.patch.object(host, "_remember", lambda payload: None),                 mock.patch("sys.stdout", new_callable=lambda: __import__("io").StringIO()):
+            host.run()
+        self.assertTrue(seen.get("called"), "com2 asks the queue")
+
+
 if __name__ == "__main__":
     unittest.main()

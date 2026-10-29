@@ -19,6 +19,9 @@ fi
 id -u padiem-connector-watch >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin padiem-connector-watch
 install -d -m 0750 -o padiem-connector-watch -g padiem-connector-watch "${APP_DIR}" "${STATE_DIR}"
 install -m 0755 "${HERE}/connector_watch_host.py" "${APP_DIR}/connector_watch_host.py"
+# The lane verdicts live once, in the GitHub-side watch module, and are installed
+# beside the host script so both read the queue the same way.
+install -m 0755 "${HERE}/../../../.github/scripts/connector_lane_watch.py" "${APP_DIR}/connector_lane_watch.py"
 if [ ! -f "${APP_DIR}/.env" ]; then
   install -m 0600 -o padiem-connector-watch -g padiem-connector-watch "${HERE}/connector-watch.env.example" "${APP_DIR}/.env"
   echo "wrote ${APP_DIR}/.env from the example: fill the notifier names, then run this again"
