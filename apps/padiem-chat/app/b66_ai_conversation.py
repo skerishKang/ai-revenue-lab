@@ -54,7 +54,10 @@ TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 # are the product's own quote shape (item count, field lengths) and the
 # persisted-state size guard.
 MAX_HISTORY_TURNS = 8
-MAX_STATE_BYTES = 32_768
+# B6: 32 KiB was a self-declared ceiling with no platform basis, and it refused
+# long quoted conversations. Align with the sibling guided-draft store (1 MiB);
+# the guard remains a storage sanity bound, not a product character ceiling.
+MAX_STATE_BYTES = 1024 * 1024
 MAX_ITEMS = 20
 MAX_ITEM_NAME_CHARS = 240
 MAX_TEXT_CHARS = 240
