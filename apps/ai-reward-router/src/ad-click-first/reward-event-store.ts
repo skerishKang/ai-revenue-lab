@@ -139,7 +139,11 @@ export class D1RewardEventStore implements RewardEventStore {
       .prepare(
         'INSERT INTO b64_reward_event (provider_id, provider_transaction_id, member_id, external_subject, '
         + 'amount, unit, state, provider_verified, first_observed_at, last_observed_at, confirmed_at, reversed_at) '
-        + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '
+        // The primary key is the provider transaction itself, so a second create
+        // for one transaction is a conflict the caller must see — not a storage
+        // outage. DO NOTHING on that key only; anything else still raises.
+        + 'ON CONFLICT (provider_id, provider_transaction_id) DO NOTHING',
       )
       .bind(
         record.providerId,
@@ -157,7 +161,8 @@ export class D1RewardEventStore implements RewardEventStore {
       )
       .run();
     if (result.success === false) throw new RewardEventStorageError('reward event insert failed');
-    return 'WRITTEN';
+    const inserted = Number((result.meta as { changes?: number } | undefined)?.changes ?? 0);
+    return inserted > 0 ? 'WRITTEN' : 'CONFLICT';
   }
 
   async transition(record: StoredRewardEvent, expectedState: RewardState): Promise<RewardEventWrite> {
