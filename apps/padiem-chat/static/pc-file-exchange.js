@@ -38,7 +38,7 @@
     // where the next page starts, and whether a page failed — so the screen can say
     // "남은 N개" and never present a part of a folder as the whole of it.
     total: null, hasMore: false, nextCursor: null, loadingMore: false, partial: false,
-    filter: "",
+    filter: "", query: "", seen: null,
   };
   // Every stop raises this, so a wait that is still in flight notices it and returns
   // instead of polling on for an operation the owner has left behind.
@@ -224,13 +224,27 @@
 
   function pageInto(body, append) {
     const items = Array.isArray(body.items) ? body.items : [];
-    state.items = append ? state.items.concat(items) : items;
+    if (!append) state.seen = new Set();
+    // A folder can change between two pages: a row that has already been shown is not
+    // shown again, so the list never carries the same name twice.
+    const fresh = items.filter((item) => {
+      const name = String((item && item.name) || "");
+      if (!state.seen || state.seen.has(name)) return false;
+      state.seen.add(name);
+      return true;
+    });
+    state.items = append ? state.items.concat(fresh) : fresh;
     state.total = typeof body.total === "number" ? body.total : null;
     state.hasMore = body.has_more === true;
     state.nextCursor = typeof body.next_cursor === "string" ? body.next_cursor : null;
     state.loadingMore = false;
     state.partial = false;
     if (!append) state.shown = PAGE;
+    if (state.query && state.items.length === 0 && !state.hasMore) {
+      // The PC looked through the whole folder for the name and found nothing. That is
+      // said as such, never as an empty folder.
+      state.note = "pc-exchange-folder-search-empty";
+    }
     paintList();
     paintStatus();
   }
@@ -253,8 +267,42 @@
     state.loadingMore = true;
     state.partial = false;
     paintStatus();
-    void start(BROWSE, { path: state.path, cursor: state.nextCursor },
-      (body) => pageInto(body, true), { keep: true });
+    const payload = { path: state.path, cursor: state.nextCursor };
+    if (state.query) payload.filter = state.query;
+    void start(BROWSE, payload, (body) => pageInto(body, true), { keep: true });
+  }
+
+  // The whole folder, searched by the PC itself. The screen only ever holds the pages
+  // it was given, so a name that lives on a page nobody fetched is found here — not by
+  // pretending the received page is the folder.
+  function searchWholeFolder() {
+    const term = state.filter.trim();
+    if (!term) return;
+    stopSweep({ quiet: true });
+    state.query = term;
+    state.items = [];
+    state.shown = PAGE;
+    state.total = null;
+    state.hasMore = false;
+    state.nextCursor = null;
+    state.loadingMore = false;
+    state.partial = false;
+    state.note = null;
+    paintList();
+    void start(BROWSE, { path: state.path, filter: term }, listed);
+  }
+
+  function backToWholeFolder() {
+    state.query = "";
+    state.items = [];
+    state.shown = PAGE;
+    state.total = null;
+    state.hasMore = false;
+    state.nextCursor = null;
+    state.partial = false;
+    state.note = null;
+    paintList();
+    void start(BROWSE, { path: state.path }, listed);
   }
 
   // A search is one operation spread over folders instead of one command over a whole
@@ -274,6 +322,7 @@
     state.nextCursor = null;
     state.loadingMore = false;
     state.partial = false;
+    state.query = "";
     state.note = null;
     paintList();
     void sweepStep();
@@ -416,6 +465,7 @@
         // the search stops asking, and the listing is asked for on its own.
         stopSweep({ quiet: true });
         clearFilter();
+        state.query = "";
         state.path = pathOf(item);
         state.folderName = item.name;
         state.selection = null;
@@ -456,6 +506,23 @@
     shown.forEach((item) => nodes.list.append(rowFor(item)));
     const canReveal = visible.length > shown.length;
     nodes.more.hidden = !(canReveal || state.hasMore);
+    // What the search box is actually looking at: only the rows received so far, which
+    // is not the folder. Said plainly whenever a filter is typed.
+    const term = state.filter.trim();
+    if (nodes.scope) {
+      nodes.scope.hidden = !term;
+      if (term) {
+        nodes.scope.textContent = copy("pc-exchange-filter-scope", {
+          received: state.items.length,
+          total: state.total === null ? "?" : state.total,
+        });
+      }
+    }
+    if (nodes.searchAll) {
+      // Nothing matched among what arrived, and the PC still holds rows nobody asked
+      // for: offer the whole-folder search instead of an "empty" the folder may not be.
+      nodes.searchAll.hidden = !(term && visible.length === 0 && state.hasMore);
+    }
     const remaining = state.total === null ? null : Math.max(0, state.total - state.items.length);
     nodes.more.textContent = remaining === null || remaining === 0
       ? copy("pc-exchange-more")
@@ -562,6 +629,8 @@
     naming.append(fileName);
     tools.append(back, search, searchButton);
 
+    const scope = element("p", "pc-exchange-scope");
+    scope.hidden = true;
     const list = element("ul", "pc-exchange-list");
     // The dialog keeps its own title and says which folder is open on its own line,
     // so browsing never replaces the words that named what the owner is doing.
@@ -569,6 +638,9 @@
     const more = element("button", "pc-exchange-more", copy("pc-exchange-more"));
     more.type = "button";
     more.hidden = true;
+    const searchAll = element("button", "pc-exchange-search-all", copy("pc-exchange-search-all"));
+    searchAll.type = "button";
+    searchAll.hidden = true;
     const status = element("p", "pc-exchange-status");
     status.hidden = true;
 
@@ -586,7 +658,8 @@
     pick.hidden = true;
     footer.append(cancel, stop, pick);
 
-    dialog.append(heading, note, pcs, tools, folderLabel, list, more, status, footer);
+    dialog.append(heading, note, pcs, tools, scope, folderLabel, list, more, searchAll,
+      status, footer);
     overlay.append(dialog);
 
     back.addEventListener("click", () => {
@@ -596,12 +669,14 @@
       // folders, so the listing the owner asked for is not queued behind it.
       stopSweep({ quiet: true });
       clearFilter();
+      state.query = "";
       state.path = parent;
       const text = parent.replace(/\/+$/, "");
       state.folderName = text ? text.slice(text.lastIndexOf("/") + 1) : "";
       state.selection = null;
       void start(BROWSE, { path: parent }, listed);
     });
+    searchAll.addEventListener("click", () => searchWholeFolder());
     more.addEventListener("click", () => {
       // Already-received rows first (it splits the answer on the screen), then the
       // next page from the PC — a folder is never cut off at one page.
@@ -646,6 +721,11 @@
       state.filter = search.value;
       state.shown = PAGE;
       paintList();
+      if (state.query && !state.filter.trim()) {
+        // Clearing the box means the owner is done with the search: go back to the
+        // folder itself rather than leave a filtered listing behind an empty box.
+        backToWholeFolder();
+      }
     });
     pick.addEventListener("click", () => {
       if (mode === "save") {
@@ -739,7 +819,7 @@
 
     return {
       overlay, dialog, heading, list, more, status, search, searchButton, back, pcs, pick,
-      fileName, folderLabel, stop, move: moveButton, erase: eraseButton,
+      fileName, folderLabel, stop, move: moveButton, erase: eraseButton, scope, searchAll,
     };
   }
 
@@ -785,6 +865,8 @@
     state.loadingMore = false;
     state.partial = false;
     state.filter = "";
+    state.query = "";
+    state.seen = null;
     state.selection = null;
     state.chosenPath = null;
     state.error = null;

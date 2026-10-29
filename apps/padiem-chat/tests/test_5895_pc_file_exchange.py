@@ -961,6 +961,66 @@ def test_every_page_sums_to_the_total_without_gaps_or_repeats(monkeypatch, count
     assert len(seen) == len(set(seen)) == count
 
 
+def test_a_name_search_travels_as_a_name_and_never_as_a_pattern():
+    # A plain word may ride the provider's own -Filter as a coarse pre-filter; the exact
+    # -like test still decides, and the term itself is wildcard-escaped on the PC.
+    plain = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term="보고서")
+    assert "WildcardPattern]::Escape('보고서')" in plain
+    assert "-Filter '*보고서*'" in plain
+    assert "$_.Name -like ('*'+$pat+'*')" in plain
+
+    # A wildcard, a quote or a semicolon is never a pattern: the pre-filter falls back to
+    # '*' and the literal carries the text with its quotes doubled.
+    for term in ("a*b", "it's", "q'; Remove-Item x", "x[y]", "a/b"):
+        command = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=term)
+        assert "-Filter '*'" in command, term
+        assert command.count("Remove-Item") == (1 if "Remove-Item" in term else 0), term
+        assert "''" in command or "'" not in term, term
+    injected = _pc_files_command(op="list", root=QUARTERLY, relative="",
+                                 filter_term="q'; Remove-Item x")
+    assert "Escape('q''; Remove-Item x')" in injected
+
+    for bad in ("", None, "line" + chr(10) + "break", "nul" + chr(0)):
+        if bad is None:
+            # Absent is the plain listing, not an error.
+            assert "Escape(" not in _pc_files_command(op="list", root=QUARTERLY, relative="")
+            continue
+        with pytest.raises(ValueError, match="filter term"):
+            _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=bad)
+
+
+def test_a_browse_filter_is_refused_when_it_carries_control_characters(monkeypatch):
+    for bad in ("", "a" + chr(10) + "b", "a" + chr(127) + "b", 7, True):
+        state, captured, _link, _ = _state(monkeypatch)
+        status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+            _Request(state, body={"path": ".", "filter": bad})
+        )))
+        assert status == 400 and body["error"]["code"] == "pc_exchange_invalid_body", bad
+        assert captured == []
+    state, captured, _link, _ = _state(monkeypatch)
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+        _Request(state, body={"path": ".", "filter": "보고서"})
+    )))
+    assert status == 200 and body["state"] == "working" and body["filter"] == "보고서"
+    assert "WildcardPattern]::Escape('보고서')" in captured[0]["command"]
+
+
+def test_a_filtered_page_reports_the_number_of_matches_and_pages_them(monkeypatch):
+    matches = [_row("match%03d" % n) for n in range(204)]
+    seen, offset = [], 0
+    while True:
+        window = matches[offset:offset + PC_FILES_LIST_PAGE_SIZE]
+        has_more = offset + len(window) < 204
+        _status, body = _listing_body(monkeypatch, _page_envelope(
+            window, offset=offset, total=204, has_more=has_more))
+        assert body["total"] == 204
+        seen.extend(item["name"] for item in body["items"])
+        if not body["has_more"]:
+            break
+        offset = int(body["next_cursor"])
+    assert seen == [row["Name"] for row in matches]
+
+
 def test_a_page_two_asks_the_pc_to_skip_the_page_already_shown(monkeypatch):
     state, captured, _link, _ = _state(monkeypatch)
     status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(

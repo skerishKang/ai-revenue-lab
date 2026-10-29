@@ -488,6 +488,23 @@ _LISTING_CURSOR = re.compile(r"(?:0|[1-9][0-9]{0,9})\Z")
 _LISTING_CURSOR_MAX = 1_000_000_000
 
 
+def _listing_filter(raw: Any) -> tuple[str | None, JSONResponse | None]:
+    """A name fragment, or nothing. Control characters are refused; length is not capped.
+
+    The term is never a pattern: the PC escapes it and matches with -like. No product
+    length limit is applied here — the executor's own argv guard is the only bound —
+    but an empty or control-bearing value is refused before anything is staged.
+    """
+
+    if raw is None:
+        return None, None
+    if not isinstance(raw, str) or not raw:
+        return None, _error(400, "pc_exchange_invalid_body")
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in raw):
+        return None, _error(400, "pc_exchange_invalid_body")
+    return raw, None
+
+
 def _listing_cursor(raw: Any) -> tuple[int, JSONResponse | None]:
     if raw is None:
         return 0, None
@@ -741,10 +758,13 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
     """One folder's entries on the owner's own PC."""
 
     body = await _read_body(request, frozenset(),
-                            optional=frozenset({"link_id", "path", "cursor"}))
+                            optional=frozenset({"link_id", "path", "cursor", "filter"}))
     if body is None:
         return _error(400, "pc_exchange_invalid_body")
     offset, refusal = _listing_cursor(body.get("cursor"))
+    if refusal is not None:
+        return refusal
+    term, refusal = _listing_filter(body.get("filter"))
     if refusal is not None:
         return refusal
     owner = await _owner(request)
@@ -783,14 +803,17 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
         request,
         command=_pc_files_command(
             op="list", root=root, relative=relative,
-            offset=offset, page_size=_page_size(),
+            offset=offset, page_size=_page_size(), filter_term=term,
         ),
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
-        tool_call_ref=_call_ref(run[0], "browse", root, relative),
+        # A name search is its own call: the same folder asked twice for the same
+        # word is the same call, a different word is not.
+        tool_call_ref=_call_ref(run[0], "browse", root, relative, term or ""),
         files_target=target,
     )
-    return await _staged(answer, run=run, extra={"path": path, "cursor": str(offset)})
+    return await _staged(answer, run=run,
+                         extra={"path": path, "cursor": str(offset), "filter": term})
 
 
 async def pc_file_exchange_find(request: Request) -> JSONResponse:

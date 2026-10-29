@@ -3694,8 +3694,23 @@ def _pc_write_command(
 
 
 
+#: Characters the provider's own -Filter can carry harmlessly. Anything else (a
+#: wildcard, a quote, a path separator, a semicolon) makes the coarse pre-filter '*'
+#: and lets the exact -like test decide — so a term can never become a pattern or a
+#: second statement, and correctness never depends on which branch ran.
+_FILTER_PREFILTER_SAFE = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-.,()")
+
+
+def _pc_files_filter_prefilter(term: str) -> str:
+    if term and all(ch in _FILTER_PREFILTER_SAFE or ord(ch) > 127 for ch in term):
+        return "*" + term + "*"
+    return "*"
+
+
 def _pc_files_command(*, op: str, root: str, relative: str,
-                      offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE) -> str:
+                      offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE,
+                      filter_term: str | None = None) -> str:
     """Build the one command this server will execute for a file tool call.
 
     Only ``list`` uses the PowerShell command lane. ``read`` uses the existing
@@ -3719,6 +3734,15 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             or not isinstance(page_size, int) or isinstance(page_size, bool)
             or not 1 <= page_size <= 2000):
         raise ValueError("a paging offset and a page size are required")
+    if filter_term is not None:
+        # The term is a name fragment, never a pattern: it travels as a single-quoted
+        # literal and is escaped with the wildcard escaper before -like sees it. No
+        # length cap is imposed here — the exec boundary already refuses an argument
+        # the OS cannot carry — but a control character or an empty term is refused.
+        if not isinstance(filter_term, str) or not filter_term:
+            raise ValueError("a filter term must be non-empty text")
+        if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
+            raise ValueError("a filter term may not carry control characters")
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
     # Measured through the same wrapper the executor sends: one page of 200 rows on
@@ -3726,10 +3750,22 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
     # the folder at 200; `-Skip`/`-First` over a fixed sort is a page of the whole
     # list, and total/has_more make the cut visible.
+    if filter_term is None:
+        scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
+                + " -Force -ErrorAction Stop);")
+    else:
+        scan = (
+            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
+            + _pc_files_powershell_literal(filter_term) + ");"
+            "$p=@(Get-ChildItem -LiteralPath " + folder_literal
+            + " -Filter "
+            + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
+            + " -Force -ErrorAction Stop"
+            " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
+        )
     return (
-        "$p=@(Get-ChildItem -LiteralPath " + folder_literal
-        + " -Force -ErrorAction Stop);"
-        "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
+        scan
+        + "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
         "$n=$s.Count;"
         "$pg=@($s | Select-Object -Skip " + str(offset) + " -First " + str(page_size)
         + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer);"

@@ -575,6 +575,81 @@ async function main() {
       `rows=${entriesOf(paged).length} browses=${browseCalls(paged.calls).length}`);
   }
 
+  // ── a filter over a half-received folder: what it looks at, and the whole-folder offer ──
+  {
+    const received = Array.from({ length: 60 }, (_unused, index) => ({
+      name: `받은 ${index}.txt`, kind: "file", size_bytes: 10, modified_at: null,
+    }));
+    let answers = 0;
+    const searchDom = makeDom({
+      "/api/pc/browse": [staged(), staged()],
+      "/api/pc/result": [working, () => {
+        answers += 1;
+        return answers === 1
+          ? { status: 200, body: { ok: true, state: "ready", items: received, total: 100,
+                                   has_more: true, next_cursor: "60" } }
+          : { status: 200, body: { ok: true, state: "ready", items: [], total: 0,
+                                   has_more: false, next_cursor: null } };
+      }],
+    });
+    searchDom.window.PadiemPcFileExchange.open({ onSelect: () => {} });
+    await settle();
+    const filterInput = searchDom.body.find(
+      (node) => node.placeholder === copyOf("pc-exchange-search-placeholder"));
+    filterInput.value = "없는이름";
+    for (const handler of filterInput.listeners.input || []) handler({});
+    await settle();
+    const scope = searchDom.body.find(
+      (node) => node.className === "pc-exchange-scope" && !node.hidden);
+    check("a filter says it looks at the received rows out of the folder's total",
+      Boolean(scope) && scope.allText().includes("60") && scope.allText().includes("100"),
+      scope && scope.allText());
+    const whole = buttonOf(searchDom, "pc-exchange-search-all");
+    check("when nothing received matches, the whole folder is offered instead of a 'none'",
+      Boolean(whole) && whole.hidden === false, whole && String(whole.hidden));
+    whole.click();
+    await settle();
+    const wholeCalls = browseCalls(searchDom.calls);
+    check("the whole-folder search asks the PC for that name",
+      wholeCalls.length === 2 && bodyOf(wholeCalls[1]).filter === "없는이름"
+      && !("cursor" in bodyOf(wholeCalls[1])),
+      JSON.stringify(wholeCalls.map((call) => call.body)));
+    const searchStatus = statusOf(searchDom);
+    check("an empty whole-folder search is stated as searched and not found",
+      Boolean(searchStatus)
+      && searchStatus.allText() === copyOf("pc-exchange-folder-search-empty"),
+      searchStatus && searchStatus.allText());
+  }
+
+  // ── a folder that changes between pages: one name, one row ──
+  {
+    let answers = 0;
+    const page = (rows, total, hasMore, cursor) => ({
+      status: 200, body: { ok: true, state: "ready", items: rows, total, has_more: hasMore,
+                           next_cursor: cursor },
+    });
+    const dupDom = makeDom({
+      "/api/pc/browse": [staged(), staged()],
+      "/api/pc/result": [working, () => {
+        answers += 1;
+        return answers === 1
+          ? page([{ name: "같은이름.txt", kind: "file", size_bytes: 1, modified_at: null },
+                  { name: "첫째.txt", kind: "file", size_bytes: 1, modified_at: null }], 3, true, "2")
+          : page([{ name: "같은이름.txt", kind: "file", size_bytes: 1, modified_at: null },
+                  { name: "둘째.txt", kind: "file", size_bytes: 1, modified_at: null }], 3, false, null);
+      }],
+    });
+    dupDom.window.PadiemPcFileExchange.open({ onSelect: () => {} });
+    await settle();
+    buttonOf(dupDom, "pc-exchange-more").click();
+    await settle();
+    const shownNames = entriesOf(dupDom).map((node) => node.allText());
+    check("a name repeated by a changed folder appears once",
+      shownNames.filter((text) => text.includes("같은이름")).length === 1
+      && shownNames.length === 3,
+      `rows=${shownNames.length}`);
+  }
+
   // ── a PC that answers nothing is said as such, in plain words ──
   const silent = makeDom({
     "/api/pc/browse": [staged()],

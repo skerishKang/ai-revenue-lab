@@ -31,8 +31,16 @@
 .pc-exchange-dialog[hidden],
 .pc-exchange-pcs[hidden],
 .pc-exchange-more[hidden],
+.pc-exchange-search-all[hidden],
+.pc-exchange-scope[hidden],
 .pc-exchange-status[hidden] {
   display: none !important;
+}
+
+.pc-exchange-scope {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  color: var(--text-muted, #5b7385);
 }
 
 .pc-exchange-heading {
@@ -76,6 +84,7 @@
 .pc-exchange-back,
 .pc-exchange-search-button,
 .pc-exchange-more,
+.pc-exchange-search-all,
 .pc-exchange-pick,
 .pc-exchange-save,
 .pc-exchange-stop,
