@@ -214,7 +214,7 @@ S4 pc-read | com2 | — | NOT_MEASURED reason=pc_lane_unbound
 
 ### 9.3 쓰기 중지 창
 
-- 방법: 컴2 Chat에 **유지보수 모드**(센티널 파일) — 읽기(GET/HEAD)는 그대로, 변경 요청(POST/PUT/PATCH/DELETE)은 503 `maintenance` "잠시 점검 중". 플래그는 재시작 없이 켜고 끈다. (기능 구현은 후속 PR, 이 문서는 계약)
+- 방법: 컴2 Chat에 **유지보수 모드**(센티널 파일) — 읽기(GET/HEAD)는 그대로, 변경 요청(POST/PUT/PATCH/DELETE)은 503 `maintenance` "잠시 점검 중". 플래그는 재시작 없이 켜고 끈다. (구현: `app/maintenance_mode.py`, env `PADIEM_CHAT_MAINTENANCE_SENTINEL` — 파일 존재 여부를 요청마다 검사)
 - 순서: ① 쓰기 중지(센티널) ② 최종 D1 export(읽기 전용) ③ `plan` ④ `load` ⑤ `verify`(원천 포함) ⑥ 쓰기 재개 ⑦ 대표 시나리오 스모크.
 - 소요 산정: `초 ≈ 행수 ÷ 20,000 × 2(안전계수) + verify(≈load의 1/3)`. 100만 행이면 약 2~3분(컴2 실측으로 대체). 실제 행 수는 Qoder의 export 보고서가 채운다.
 - 원복: 창 실패 시 `export --live`로 컴2 변경분을 핸드백 → D1 재적재(Qoder 경로) → 장부 해시 대조 → 쓰기 재개. D1은 창 전까지 무변경이므로 최후 수단은 "컴2 적재 폐기 + 쓰기 재개"다.

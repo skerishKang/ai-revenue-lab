@@ -74,7 +74,8 @@ class Packaging(unittest.TestCase):
             name, _, value = line.partition("=")
             self.assertIn(
                 value, ("", "1", "true", "false", "mock", "off", "600",
-                        "https://chat-com2.padiem.net", "/mnt/d/padiem/chat-com2"),
+                        "https://chat-com2.padiem.net", "/mnt/d/padiem/chat-com2",
+                        "/mnt/d/padiem/chat-com2/MAINTENANCE"),
                 name,
             )
 
