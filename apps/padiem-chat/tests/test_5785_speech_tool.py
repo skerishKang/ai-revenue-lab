@@ -61,7 +61,8 @@ def test_a_pasted_style_sample_is_fenced_as_a_sample_not_an_instruction(
 
 def test_the_generation_call_uses_the_existing_chat_contract(speech: dict) -> None:
     payload = speech["chatPayload"]
-    assert payload["mode"] == "auto"
+    # `mode` was the chat-mode remnant; the shared contract now refuses it.
+    assert "mode" not in payload
     assert [m["role"] for m in payload["messages"]] == ["user"]
     assert payload["messages"][0]["content"] == speech["prompt"]
 
