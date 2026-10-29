@@ -776,6 +776,19 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         for forbidden in ("/IM", "Mesh Agent", "Stop-Process", "Get-Process", "taskkill /F /IM"):
             self.assertNotIn(forbidden, script)
 
+    def test_the_stops_echo_cannot_forge_its_own_evidence(self):
+        """2026-10-29: the measured shell answered with a mirror of the typed line.
+
+        The stop's proof token is assembled from two literals at run time, so the script
+        text never carries the joined token. An echo of what was typed therefore cannot
+        read back as evidence the PC ran it - only the PC's own execution can print it.
+        """
+        from kagent.local_agent_meshcentral_command_port import STOP_EVIDENCE
+
+        script = cancel_kill_command(self.MARKED)
+        self.assertIn("'__PADIEM_' + 'KILL__'", script)
+        self.assertNotIn(STOP_EVIDENCE, script)
+
     def test_the_stop_travels_the_terminal_channel_and_is_bounded(self):
         class _RunChild:
             def __init__(self):
@@ -812,9 +825,12 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
                     self.waits.append(seconds)
 
                 def wait_for(self, done, seconds):
-                    # The probe asks; this double answers nothing, which the port
-                    # reports as an unobserved console rather than a clean one.
+                    # The stop is answered with the evidence that the script ran; the
+                    # probe (when asked for) gets nothing, which is reported as an
+                    # unobserved console rather than a clean one.
                     self.waits.append(seconds)
+                    if b"taskkill /T /F /PID $__padiem_kill" in self.data:
+                        return b"__PADIEM_KILL__" + bytes([13, 10])
                     return b""
 
             handoffs.append(_Handoff(payload))
@@ -875,6 +891,61 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         )
         self.assertEqual(outcome.termination, "cancelled")
         self.assertIn("cancel_kill_refused", phases)
+
+
+    def test_a_stop_the_pc_never_ran_is_not_reported_as_done(self):
+        """2026-10-29: the shell echoed input instead of executing it on every agent.
+
+        An open session is not evidence. The stop now asks the PC for a token only its
+        own execution can print, and a reply that lacks it - a mirror of what was
+        typed, or silence - is reported as unverified, never as a stop.
+        """
+        from kagent.local_agent_meshcentral_command_port import (
+            STOP_EVIDENCE, MeshCentralStopUnconfirmed,
+        )
+
+        typed = []
+
+        class _MirroringPty:
+            slave = 77
+
+            def __init__(self, payload):
+                self.payload = payload
+
+            def wait_for(self, done, seconds):
+                # Exactly what the measured transport answered: the input, mirrored.
+                typed.append(self.payload)
+                return self.payload
+
+            def wait_closed(self, seconds):  # pragma: no cover - not used here
+                return None
+
+        port = MeshCentralCliCommandPort(
+            command_runner=lambda *a, **k: None,
+            meshctrl_js=MESHCTRL, login_user="padiemadmin",
+            password_provider=lambda: PASSWORD, url="wss://127.0.0.1:4443",
+            popen_factory=lambda argv, **kw: _NeverChild(),
+            pty_factory=lambda payload: _MirroringPty(payload),
+        )
+        with self.assertRaises(MeshCentralStopUnconfirmed):
+            port.kill_command_process(node_ref=NODE, dispatch_id="dsp_" + "a" * 32)
+
+        marked = "dsp_" + "a" * 32
+        self.assertEqual(
+            typed[0],
+            (PASSWORD + "\n" + cancel_kill_command(marked) + "\n").encode("utf-8"),
+        )
+        self.assertNotIn(STOP_EVIDENCE.encode("ascii"), typed[0])
+
+        phases = []
+        outcome = port.run_command(
+            node_ref=NODE, command="hostname.exe", timeout_seconds=None,
+            phase_observer=phases.append, cancel_probe=lambda: True,
+            dispatch_id="dsp_" + "a" * 32,
+        )
+        self.assertEqual(outcome.termination, "cancelled")
+        self.assertIn("cancel_kill_unverified", phases)
+        self.assertNotIn("cancel_kill", phases)
 
 
 class _NeverChild:
