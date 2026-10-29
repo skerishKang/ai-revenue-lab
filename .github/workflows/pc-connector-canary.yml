@@ -73,11 +73,17 @@ jobs:
           set -euo pipefail
           grep -Fq 'B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}' .github/workflows/pc-connector-canary.yml
           grep -Fq 'B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}' .github/workflows/pc-connector-canary.yml
-          if grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml | grep -vx 'secrets.B66_CGI_ALPHA_PASSWORD'; then
+          # The QA identity stays the only secret this workflow asks the repository
+          # for. GITHUB_TOKEN is not a secret anyone configured: the runner issues it
+          # for this job, it is scoped to the job, and here it can only write a commit
+          # status on the SHA the job already checked out.
+          if grep -Eo 'secrets\.[A-Z0-9_]+' .github/workflows/pc-connector-canary.yml \
+               | grep -vx -e 'secrets.B66_CGI_ALPHA_PASSWORD' -e 'secrets.GITHUB_TOKEN'; then
             echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=UNEXPECTED' >&2
             exit 1
           fi
-          echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=EXISTING_ONLY'
+          grep -Fq 'GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}' .github/workflows/pc-connector-canary.yml
+          echo 'PC_CONNECTOR_CANARY_SECRET_NAMES=EXISTING_ONLY_PLUS_JOB_TOKEN'
           echo 'PC_CONNECTOR_CANARY_MUTATIONS=NONE'
 
   live-canary:
@@ -85,9 +91,11 @@ jobs:
     needs: source-contract
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
-    # The runner's own ceiling, not a product deadline: the canary inside never stops
-    # waiting on account of it. Sized above one full dispatch life (600 s) plus a
-    # redelivery round, so an answered hour is always recorded as an answer.
+    # The runner's outer guard, not the wait's bound: the script ends its own wait at
+    # RESULT_WAIT_CEILING_SECONDS (600 s) and prints a verdict well before this, because
+    # a job the runner kills records nothing at all — which is how the 2026-10-29 stall
+    # went unseen. Sized above one full dispatch life (600 s) plus a redelivery round,
+    # so an answered hour is always recorded as an answer.
     timeout-minutes: 35
     environment: production
     env:
@@ -120,10 +128,34 @@ jobs:
           python .github/scripts/pc_connector_canary.py | tee "${RUNNER_TEMP}/pc-connector-canary.log" || status=$?
           line="$(grep -E '^CANARY=' "${RUNNER_TEMP}/pc-connector-canary.log" | tail -1 || true)"
           if [ -z "${line}" ]; then
-            line='CANARY=FAIL items=0 elapsed_seconds=0 code=canary_reported_nothing pc_state=unknown'
+            line='CANARY=FAIL items=0 elapsed_seconds=0 code=canary_reported_nothing pc_state=unknown last_status=unknown'
             status=1
           fi
           printf '%s\n' "${line}" | tee -a "${GITHUB_STEP_SUMMARY}"
           echo "PC_CONNECTOR_CANARY_MUTATIONS=NONE" >> "${GITHUB_STEP_SUMMARY}"
+          verdict="$(printf '%s' "${line}" | sed -nE 's/^CANARY=([A-Z_]+).*/\1/p')"
+          code="$(printf '%s' "${line}" | sed -nE 's/.* code=([a-z0-9_]+).*/\1/p')"
+          # #82 standard 4: a stop has to be KNOWN, not merely written to a log
+          # nobody opens. The verdict is published as a commit status on the exact
+          # main SHA this schedule checked out, using the token the runner already
+          # has — no new service, no new credential, no new Cloudflare cron. A
+          # repeated hour reports the same state, and GitHub notifies on the change,
+          # which is the duplicate suppression the owner asked for.
+          case "${verdict}" in
+            PASS) state="success"; ;;
+            SKIP_NO_PC) state="neutral"; ;;
+            *) state="failure"; ;;
+          esac
+          # Event fields and the verdict reach the shell only through quoted
+          # variables, and the description is bounded: nothing here interpolates a
+          # payload string into a command.
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="${state}" \
+            -f context="padiem/pc-connector-canary" \
+            -f description="$(printf '%.140s' "${verdict} ${code}")" \
+            || echo "PC_CONNECTOR_CANARY_STATUS_NOT_RECORDED=1"
           exit "${status}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         continue-on-error: false

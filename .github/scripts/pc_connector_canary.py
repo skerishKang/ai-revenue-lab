@@ -10,17 +10,20 @@ line: verdict, entry count, elapsed seconds, failure code.
 The lane is the one the composer itself uses (#4469): ``POST /api/orchestration`` with
 a client-minted ``chat_pcq_<32hex>`` run id, so the durable run row is addressable
 from the first instant. The wait is the #5983 read-back —
-``GET /api/claw/runs/<run_id>/pending-result`` — and it sets **no deadline**: the
-terminal status that ends the wait is the server's own verdict about its own run
-(#5997 keeps a claim from being lost forever, and the dispatch's own expiry bounds the
-rest). A stream that stops before its terminal frame is therefore not a failure here;
-it is exactly the case the durable read exists for (#5976).
+``GET /api/claw/runs/<run_id>/pending-result``. Two different waits are kept apart
+here, because the owner standard keeps them apart: the PC's WORK carries no ceiling
+(this canary never interrupts a running command, and #6073 accepts its result late),
+while this MONITOR's patience is bounded by ``RESULT_WAIT_CEILING_SECONDS`` (#82
+standard 4: a stop must be known within ten minutes). Before that bound existed, a
+stalled executor kept the run ``pending``, this script never printed a verdict, and
+the runner's own 35-minute ceiling ended the hour with nothing recorded anywhere.
 
 What is measured:
     PASS        the run completed with a verified PC command result, lines counted
     FAIL        any other end, named: no dispatch result behind the answer, the run
                 failed or was cancelled, the PC lane was never offered, a read that
-                cannot see the run
+                cannot see the run, or the monitor's own bound expiring while the
+                server still calls the run unfinished (code=pc_result_wait_ceiling)
     SKIP_NO_PC  the QA account has no active paired PC — not a failure
 
 Only the pre-existing QA identity is used (`B66_CGI_ALPHA_USERNAME` /
@@ -79,6 +82,23 @@ PROMPT = (
 POLL_INTERVAL_SECONDS = 2.0
 UNANSWERED_STATUSES = frozenset({"pending", "running"})
 TERMINAL_FAILURE_STATUSES = frozenset({"failed", "cancelled"})
+#: #82: how long this MONITOR is willing to wait for an answer. Standard 1 keeps the
+#: PC's own work free of any ceiling — the dispatch this canary started stays alive,
+#: keeps its lease (#5997) and is still accepted when it answers late (#6073) — and
+#: standard 4 requires a stop to be known within ten minutes. Those are two different
+#: objects, so only the second one gets a bound here. Before this, the wait ended on
+#: the server's terminal status or not at all: when the executor stalled on 2026-10-29
+#: the run stayed ``pending``, this step never printed a verdict, and the runner's own
+#: 35-minute ceiling swallowed the hour with no signal anywhere.
+RESULT_WAIT_CEILING_SECONDS = 600
+#: The status words the durable result route can actually name (#5983 read-back).
+#: A verdict reads one of these and nothing else: a safe-shaped string is not a safe
+#: value, and a long hex handle is exactly what was once misread out of log text.
+REPORTABLE_RUN_STATUSES = UNANSWERED_STATUSES | TERMINAL_FAILURE_STATUSES | frozenset({
+    "completed", "paused",
+})
+#: The status word the server itself reported last, when it reported one of these.
+_UNKNOWN_STATUS = "unknown"
 UNREADABLE_RUN_STATUSES = {401: "pc_result_unauthorized", 403: "pc_result_unauthorized",
                            404: "pc_run_not_staged", 503: "pc_result_unavailable"}
 
@@ -168,14 +188,31 @@ def pending_result_verdict(payload: Any) -> tuple[str, str, int, str]:
     return "FAIL", "pc_run_" + safe, 0, "none"
 
 
-def wait_for_result(opener, run_id: str, *, started: float | None = None,
-                    clock=time.monotonic, sleep=time.sleep) -> dict:
-    """Poll the owner's own durable run result until the server calls it terminal.
+def last_reported_status(payload: Any) -> str:
+    """The server's own status word for this run, or ``unknown``.
 
-    No deadline and no attempt count is chosen here. The wait ends on the server's
-    terminal status, on a named refusal that no retry can change, or on the runner's
-    own job ceiling — which is why the caller prints the run id before entering.
-    `started` lets the caller measure the whole turn, the stream included.
+    Only the ``status`` field is read, and only when it names a state the route can
+    report. Nothing is decided by matching text inside an answer, so a hex run id or a
+    Korean file name in the body cannot move a verdict.
+    """
+    result = payload.get("result") if isinstance(payload, dict) else None
+    if not isinstance(result, dict):
+        return _UNKNOWN_STATUS
+    status = result.get("status")
+    return status if status in REPORTABLE_RUN_STATUSES else _UNKNOWN_STATUS
+
+
+def wait_for_result(opener, run_id: str, *, started: float | None = None,
+                    clock=time.monotonic, sleep=time.sleep,
+                    ceiling_seconds: int | None = RESULT_WAIT_CEILING_SECONDS) -> dict:
+    """Poll the owner's own durable run result until it is terminal, or the bound ends.
+
+    Two endings are deliberately separated. The WORK has no ceiling: a PC command that
+    is still running is not interrupted, its lease keeps renewing and its result is
+    still accepted late. This monitor's PATIENCE has one, because a stop nobody notices
+    is the failure the owner reported on 2026-10-29. When the bound expires the answer
+    is a named FAIL carrying the last status the server itself reported — never an
+    implicit pass, and never a silent absence of a verdict.
     """
 
     started_at = clock() if started is None else started
@@ -186,11 +223,18 @@ def wait_for_result(opener, run_id: str, *, started: float | None = None,
         elapsed = max(0, int(round(clock() - started_at)))
         if state != "WAIT":
             return {"verdict": state, "code": code, "entries": entries,
-                    "answer_source": source, "elapsed_seconds": elapsed}
+                    "answer_source": source, "elapsed_seconds": elapsed,
+                    "last_status": last_reported_status(body)}
+        if ceiling_seconds is not None and elapsed >= ceiling_seconds:
+            return {"verdict": "FAIL", "code": "pc_result_wait_ceiling",
+                    "entries": 0, "answer_source": source,
+                    "elapsed_seconds": elapsed,
+                    "last_status": last_reported_status(body)}
         if status in UNREADABLE_RUN_STATUSES:
             # A run this read cannot see at all is a named end, never an endless loop.
             return {"verdict": "FAIL", "code": UNREADABLE_RUN_STATUSES[status],
-                    "entries": 0, "answer_source": "none", "elapsed_seconds": elapsed}
+                    "entries": 0, "answer_source": "none", "elapsed_seconds": elapsed,
+                    "last_status": _UNKNOWN_STATUS}
         sleep(POLL_INTERVAL_SECONDS)
 
 
@@ -304,10 +348,11 @@ def sign_in(opener) -> None:
         raise CanaryError("qa_session_unverified")
 
 
-def summary_line(verdict: str, *, entries: int, elapsed: int, code: str, pc_state: str) -> str:
+def summary_line(verdict: str, *, entries: int, elapsed: int, code: str, pc_state: str,
+                 last_status: str = _UNKNOWN_STATUS) -> str:
     return (
         f"CANARY={verdict} items={entries} elapsed_seconds={elapsed} "
-        f"code={code} pc_state={pc_state}"
+        f"code={code} pc_state={pc_state} last_status={last_status}"
     )
 
 
@@ -373,7 +418,9 @@ def run() -> int:
     except CanaryError as exc:
         return _fail(opener, conversation_id, exc.public_code, pc_state=pc_state)
     print(summary_line(outcome["verdict"], entries=outcome["entries"],
-                       elapsed=outcome["elapsed_seconds"], code=outcome["code"], pc_state=pc_state))
+                       elapsed=outcome["elapsed_seconds"], code=outcome["code"],
+                       pc_state=pc_state,
+                       last_status=outcome.get("last_status", _UNKNOWN_STATUS)))
     print(f"PC_CANARY_ANSWER_SOURCE={outcome['answer_source']} "
           f"PC_CANARY_STREAM_DONE={int(stream['done'])} PC_CANARY_STREAM_PENDING={int(stream['pc_pending'])}")
     print("PC_CANARY_ANSWER_TEXT_LOGGED=0 PC_CANARY_DEVICE_NAMES_LOGGED=0 CREDENTIAL_VALUES_LOGGED=0")
@@ -421,7 +468,21 @@ def self_test() -> int:
         },
         "one_summary_line": summary_line("PASS", entries=4, elapsed=41, code="none",
                                          pc_state="connected") == (
-            "CANARY=PASS items=4 elapsed_seconds=41 code=none pc_state=connected"),
+            "CANARY=PASS items=4 elapsed_seconds=41 code=none pc_state=connected "
+            "last_status=unknown"),
+        "the_ceiling_line_names_the_state_it_saw": summary_line(
+            "FAIL", entries=0, elapsed=600, code="pc_result_wait_ceiling",
+            pc_state="connected", last_status="running") == (
+            "CANARY=FAIL items=0 elapsed_seconds=600 code=pc_result_wait_ceiling "
+            "pc_state=connected last_status=running"),
+        # Standard 1 and standard 4 are different objects: the PC's work keeps no
+        # ceiling, this monitor's patience has one, and it is a named failure.
+        "the_monitor_wait_is_bounded_at_ten_minutes": RESULT_WAIT_CEILING_SECONDS == 600,
+        "a_last_status_is_read_from_the_status_field_only": (
+            last_reported_status({"result": {"status": "running"}}) == "running"
+            and last_reported_status({"result": {"status": "a" * 60}}) == _UNKNOWN_STATUS
+            and last_reported_status(None) == _UNKNOWN_STATUS
+        ),
     }
     failed = [name for name, passed in checks.items() if not passed]
     for name in failed:
