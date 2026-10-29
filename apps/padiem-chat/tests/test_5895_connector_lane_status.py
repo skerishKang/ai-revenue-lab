@@ -70,10 +70,11 @@ def test_queued_work_reads_as_waiting_for_a_claim(tmp_path):
     assert lane["claimed"]["count"] == 0
     assert lane["unclaimed"]["oldest_seconds"] is not None
     assert lane["unclaimed"]["oldest_seconds"] < 60, "it was staged a moment ago"
-    assert lane["nodes"] == [
-        {"node_ref": NODE_A, "open": 1, "oldest_seconds":
-            lane["unclaimed"]["oldest_seconds"]},
-    ]
+    assert lane["nodes"] == [{
+        "node_ref": NODE_A, "open": 1,
+        "oldest_seconds": lane["unclaimed"]["oldest_seconds"],
+        "waiting": 1, "waiting_oldest_seconds": lane["unclaimed"]["oldest_seconds"],
+    }]
 
 
 def test_a_claim_moves_the_same_row_out_of_waiting_and_into_working(tmp_path):
@@ -148,6 +149,42 @@ def test_per_pc_rows_are_grouped_and_the_oldest_pc_leads(tmp_path):
     assert by_node[NODE_A]["open"] == 1
     assert by_node[NODE_A]["oldest_seconds"] >= by_node[NODE_B]["oldest_seconds"]
     assert [row["node_ref"] for row in lane["nodes"]][0] == NODE_B, "oldest first"
+
+
+def test_a_claimed_row_stays_open_but_stops_being_waiting(tmp_path):
+    """The distinction a silence verdict has to make.
+
+    A long command under a live claim is unfinished work on that PC, and standard 1
+    forbids calling it a stop. Only work no claim covers may read as waiting, so a
+    claimed row drops out of `waiting` while it stays in `open` — and comes back the
+    instant its lease expires, which is when "nobody is claiming it" becomes true.
+    """
+    store, _bucket = fixture(tmp_path)
+    dispatch_id = _staged(store, "run-lane-waiting")
+    _claim(store, dispatch_id)
+    node = _lane(store)["nodes"][0]
+    assert node["open"] == 1
+    assert node["waiting"] == 0
+    assert node["waiting_oldest_seconds"] is None, "no age to report, not age zero"
+
+    asyncio.run(store._run(
+        "UPDATE oracle_mesh_dispatch SET claimed_until=? WHERE dispatch_id=?",
+        STALE, dispatch_id,
+    ))
+    node = _lane(store)["nodes"][0]
+    assert node["waiting"] == 1
+    assert node["waiting_oldest_seconds"] is not None
+
+
+def test_a_pc_with_only_claimed_work_never_looks_silent(tmp_path):
+    store, _bucket = fixture(tmp_path)
+    for index in range(3):
+        _claim(store, _staged(store, f"run-lane-busy-{index}"), f"poll-{index}")
+    lane = _lane(store)
+    assert lane["unclaimed"] == {"count": 0, "oldest_seconds": None}
+    assert lane["claimed"]["count"] == 3
+    node = lane["nodes"][0]
+    assert node["open"] == 3 and node["waiting"] == 0
 
 
 def test_the_pc_list_is_bounded_because_a_monitor_reads_it_on_a_schedule(tmp_path):

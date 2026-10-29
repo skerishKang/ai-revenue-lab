@@ -359,8 +359,13 @@ def _lane_node(row: Any, moment: datetime) -> dict[str, Any]:
         raise HistoryError("oracle mesh lane read names no node")
     if isinstance(count, bool) or not isinstance(count, int) or count < 0:
         raise HistoryError("oracle mesh lane read is not a count")
+    waiting = row.get("waiting")
+    if isinstance(waiting, bool) or not isinstance(waiting, int) or waiting < 0:
+        raise HistoryError("oracle mesh lane read has no waiting count")
     return {"node_ref": node_ref[:256], "open": count,
-            "oldest_seconds": _lane_seconds(row.get("oldest"), moment)}
+            "oldest_seconds": _lane_seconds(row.get("oldest"), moment),
+            "waiting": waiting,
+            "waiting_oldest_seconds": _lane_seconds(row.get("waiting_oldest"), moment)}
 
 
 def _now_iso() -> str:
@@ -3024,12 +3029,22 @@ class D1HistoryStore:
             "WHERE state=? AND expires_at>? AND nonce_sha256 IS NOT NULL AND claimed_until>?",
             "pending", now, now,
         )
+        # Per PC, two different questions, because the owner standard keeps them
+        # apart: `open` is everything still unfinished there (a long command under a
+        # live claim is that, and nothing may call it a stop), while `waiting` is
+        # only the work no claim covers. A silence verdict reads `waiting` alone.
         nodes = await self._all(
-            "SELECT node_ref, COUNT(*) AS n, MIN(created_at) AS oldest "
+            "SELECT node_ref, COUNT(*) AS n, MIN(created_at) AS oldest, "
+            "SUM(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN 1 ELSE 0 END) "
+            "AS waiting, "
+            "MIN(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN created_at "
+            "ELSE NULL END) AS waiting_oldest "
             "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
             "AND node_ref IS NOT NULL AND node_ref<>'' "
             "GROUP BY node_ref ORDER BY oldest ASC LIMIT ?",
-            "pending", now, node_limit,
+            now, now, "pending", now, node_limit,
         )
         return {
             "unclaimed": _lane_count_age(waiting, moment),
