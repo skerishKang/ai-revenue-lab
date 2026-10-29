@@ -168,6 +168,76 @@ decision whether the shell lane is ever worth reviving comes after that table, n
 module); whether `pskill` on a service-owned pid fails silently or returns the console text
 `pskill: <error>`; the consent behaviour for a non-browser session on these node groups.
 
+## 6. The probe: what to run on the host, and what the answer means
+
+`scripts/ops/mesh_process_lane_probe.js` is the read-only observation. It sends exactly two
+frames — `{action:'msg',type:'ps'}` and one `{action:'msg',type:'psinfo',pid}` — and has no
+code path that sends `pskill`. It prints counts and **field names only**: a customer's
+command lines and user names are the two fields a PC has most of, and they never leave the
+terminal.
+
+On 컴2, with the same operator credential file the executor already uses (the password
+travels on stdin, never as an argument — `meshctrl.js:1395` builds the header from it and
+this script does the same):
+
+```bash
+# $CRED is the mode-0600 file the service itself reads. The repository does not record
+# its path: `systemctl show -p EnvironmentFiles padiem-oracle-mesh-executor.service`
+# names the env file, and ORACLE_MESH_PASSWORD_FILE inside it names the credential.
+node scripts/ops/mesh_process_lane_probe.js \
+      --id '<the CGI-1 nodeRef>' \
+      --url wss://127.0.0.1:4443 \
+      --loginuser '<the operator account the service names>' \
+      --ws-module /opt/meshcentral/node_modules/ws \
+      < "$CRED"
+```
+
+Read the file the way the service reads it (mode-0600, one line); do not put the value on a
+command line, in a shell variable in history, or in the issue. `--dry-run` prints the two
+frames and sends nothing, so the operator can read exactly what will go out first.
+A non-loopback `--url` is refused unless `--allow-remote-unverified` is passed, because this
+was written for the server on this host, whose own certificate is why verification is off
+(`meshctrl.js:1381` does the same for this socket).
+
+Expected output is one line:
+
+```
+PROBE_RESULT {"ps_reply":true,"ps_count":214,"ps_fields":["cmd","user","mem","cpu"],
+ "ps_parent_like":[],"ps_pid_key_is_numeric":true,"nodeid_echoed":true,
+ "psinfo_reply":true,"psinfo_fields":["processName","workingSet"],"psinfo_parent_like":[],
+ "routed_error":false,"notes":[]}
+```
+
+| reading | means | what the port PR does |
+|---|---|---|
+| `ps_reply:false`, `routed_error:true` (`unable_to_route`) | the nodeRef form is wrong for this frame | fix the id form in `ps_frame`; nothing on the PC changed |
+| `ps_reply:false`, no error | the socket is not accepted for this login, or the agent did not answer | the lane is not reachable from a socket client; §1's last unknown is the answer, and the memo is corrected |
+| `ps_parent_like` non-empty | a parent link exists | the subtree kill is computable, deepest first |
+| `ps_parent_like:[]` and `psinfo_parent_like:[]` | no parent link | the stop addresses **the matched root pid only** and the report says `tree:false`; start times and name patterns are not used |
+| `ps_fields` without `cmd`, or `ps_count` fine but a test dispatch not matched | `cmd` is not a command line | the target cannot be identified: the stop answers `no_target` and nothing is killed |
+| exit code 3 | nothing was confirmed within the bound | report it; do not run it again in a loop |
+
+Run it **once per question**, not as a monitor. One `ps` of a busy PC is a few tens of
+kilobytes on a loopback socket; nothing about it is repeated, so the agent's anti-DoS kick
+(`src/meshagent.js:1287-1295`, 31 identical console outputs) is not in play.
+
+## 7. What the companion PR implements, and what it does not
+
+Implemented there, with the flag off by default: `local_agent_meshcentral_process_port.py` —
+the three frames in their first-party shape, the table reader that follows the web UI's own
+parser, the marker-name match as the only target rule, the subtree ordering with an
+explicit `tree=False` when no parent link exists, and `stop()` as
+`ps → kill → ps` where **only the second read can confirm**.
+`MeshCentralCliCommandPort.kill_command_process` uses it when a deployment injects a lane
+and `PADIEM_MESH_PROCESS_LANE` says yes; otherwise the terminal stop runs unchanged, with
+#6204's evidence token.
+
+Not implemented, on purpose: the socket. `ws` is not a Python dependency of this package,
+and the two §5 unknowns decide what that layer has to do (one shot per call versus a held
+session, and whether a `responseid` is honoured at all). Writing it before the probe runs
+would be a second transport built on a guess. The wiring follows the observation, and the
+flag stays off until it.
+
 ## Sources
 
 - `meshcentral@1.3.1`: `agents/meshcore.js:1357-1560`, `meshuser.js:277-307,1021-1056`,
