@@ -21,7 +21,18 @@ from kagent.local_agent_oracle_mesh_executor import (
     ROUND_SKIPPED,
     ROUND_WORKED,
 )
-from tests.test_4139_oracle_mesh_executor import SECRET, _StubPort
+#: Defined here, not imported from another suite: CI discovers these files with
+#: ``unittest.TestLoader().discover("tests")``, which imports each module by its own
+#: name and has no ``tests`` package to import from.
+SECRET = "deployment-channel-secret-value-261017"
+
+
+class _StubPort:
+    """Stand-in read port; the channel transport is what is under test here."""
+
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds):  # noqa: D102
+        del node_ref, file_path, timeout_seconds
+        return b""
 
 ENV = {
     "ORACLE_MESH_CHAT_ORIGIN": "https://chat.example.test",
