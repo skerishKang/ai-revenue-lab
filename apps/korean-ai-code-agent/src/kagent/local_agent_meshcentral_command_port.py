@@ -245,6 +245,15 @@ LINE_STALL_WAIT_SECONDS = 120
 #: the flag is turned on by the operator only after the queue cutover and its
 #: observation window, never by this module.
 SESSION_COMMAND_LANE_ENV = "PADIEM_MESH_SESSION_COMMAND_LANE"
+#: The console probe and its clearing (#6106, #6113), DEFAULT OFF as of 2026-10-29.
+#: Qoder's live probe showed that `meshctrl shell` input is echoed back and never
+#: executed on COM1's old agent, COM2's and a brand-new CGI-1 install alike (a 71-byte
+#: reply that merely mirrors what was typed, no token, no prompt, no error). The probe
+#: therefore cannot work through that channel today, and it ran on every command that
+#: carried a dispatch id. Until the transport is fixed or replaced, the safe default
+#: is the queue lane exactly as it was before the probe existed: the operator turns
+#: this on only if they know their agent's shell lane executes input.
+LINE_PROBE_ENV = "PADIEM_MESH_LINE_PROBE"
 #: Communication bounds for the session lane. Opening a session is not work: the
 #: password and the script must reach the shell and something must come back. Past
 #: this the session is treated as not opened and the caller falls back.
@@ -473,6 +482,21 @@ def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
     )
 
 
+def _line_probe_enabled(explicit: bool | None, environ=None) -> bool:
+    """Whether the console probe runs for a command (#6106/#6113), default NO.
+
+    Off is the shipped behaviour since 2026-10-29: the shell channel was measured
+    echoing input without executing it, so a probe there reports nothing and a
+    clearing there kills nothing. Enabled only by an explicit value, never by absence.
+    """
+    if explicit is not None:
+        return explicit is True
+    source = os.environ if environ is None else environ
+    return (source.get(LINE_PROBE_ENV) or "").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+
+
 def _session_payload(raw: bytes) -> bytes:
     """The reply from the last envelope marker onward, with terminal noise dropped.
 
@@ -483,7 +507,10 @@ def _session_payload(raw: bytes) -> bytes:
     marker = ENVELOPE_PREFIX.encode("ascii")
     position = raw.rfind(marker)
     if position < 0:
-        return raw
+        # No envelope means nothing this lane printed as an answer. A terminal that
+        # only mirrors its input must not be shown as the command's output: the reply
+        # is noise, and the caller reports an unanswered console.
+        return b""
     tail = raw[position:]
     # The shell prompt returns right after the sentinel line, and a prompt is not part
     # of the reply: keep the frame and drop whatever the terminal appended after it.
@@ -848,6 +875,7 @@ class MeshCentralCliCommandPort:
         keep_dispatch_ids=(),
         line_guard: Callable[[], bool] | None = None,
         session_lane: bool | None = None,
+        line_probe: bool | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -961,6 +989,7 @@ class MeshCentralCliCommandPort:
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
+            line_probe=line_probe,
         )
 
     def _run_command_on_a_session(
@@ -1065,6 +1094,7 @@ class MeshCentralCliCommandPort:
         dispatch_id: str | None,
         keep_dispatch_ids: tuple[str, ...],
         line_guard: Callable[[], bool] | None = None,
+        line_probe: bool | None = None,
     ) -> MeshCentralCommandOutcome:
         """Run one command, and free the console line when something else holds it.
 
@@ -1077,7 +1107,9 @@ class MeshCentralCliCommandPort:
         once.
         """
         sweeps: list[MeshCentralLineSweep] = []
-        if dispatch_id is not None:
+        # #6106/#6113 probe, off unless the operator says the shell lane executes.
+        probe_enabled = _line_probe_enabled(line_probe)
+        if probe_enabled and dispatch_id is not None:
             sweeps.append(self.sweep_agent_children(
                 node_ref=node_ref, dispatch_id=dispatch_id,
                 keep_dispatch_ids=keep_dispatch_ids,
@@ -1085,7 +1117,8 @@ class MeshCentralCliCommandPort:
             ))
         # An explicit deadline already bounds the wait, so the line watch rides the
         # no-decision case only: it is the shape the operational lane actually uses.
-        line_watch = timeout_seconds is None and dispatch_id is not None
+        line_watch = (probe_enabled and timeout_seconds is None
+                      and dispatch_id is not None)
         attempts = 0
         outcome: MeshCentralCommandOutcome | None = None
         while True:

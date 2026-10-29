@@ -166,9 +166,10 @@ class TestTheFlagShipsOff(unittest.TestCase):
         )
         self.assertEqual(outcome.termination, "exited")
         self.assertEqual(len(harness.run_children), 1, "the queue lane sent it")
-        # The single terminal session here is the #6106 pre-flight look; the command
+        # No shell session at all: the #6106 pre-flight probe is opt-in since
+        # 2026-10-29 (its channel echoed input without executing it), and the command
         # itself never ran on a session.
-        self.assertEqual(len(harness.shell_children), 1, "only the pre-flight sweep")
+        self.assertEqual(harness.shell_children, [], "no probe and no session")
 
     def test_the_environment_turns_it_on_and_nothing_else_does(self) -> None:
         self.assertFalse(port_module._session_lane_enabled(None, {}))
@@ -268,6 +269,45 @@ class TestCancelAndFallback(unittest.TestCase):
                 self.assertEqual(outcome.termination, "exited")
                 self.assertEqual(outcome.output, b"via queue")
                 self.assertEqual(len(harness.run_children), 1, "the old lane carried it")
+
+
+class TestTheMeasuredShellFailure(unittest.TestCase):
+    """Qoder's live measurement, 2026-10-29, on COM1's old agent, COM2's and CGI-1.
+
+    ``meshctrl shell`` answered with exactly the bytes it was given — 71 for the plain
+    line, 73 with a newline, 77 with ``; Exit`` appended — and never executed it. No
+    token, no prompt, no error word: the reply length followed the input length. A
+    transport that mirrors its input must never look like a command that ran.
+    """
+
+    #: The probe line as it was typed, and the mirror it came back as.
+    PROBE_LINE = "Write-Output ('PDSHELL' + 'PROBE7')"
+
+    def test_a_mirror_is_not_an_answer_on_the_session_lane(self) -> None:
+        for suffix in ("", chr(10), "; Exit"):
+            line = self.PROBE_LINE + suffix
+            with self.subTest(suffix=suffix):
+                harness = _Harness(sessions=[[line.encode()]], shell_alive=False)
+                outcome = harness.port().run_command(
+                    node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
+                    dispatch_id=OURS, session_lane=True,
+                )
+                self.assertEqual(outcome.termination, "no_reply", line)
+                self.assertIsNone(outcome.exit_code)
+                self.assertEqual(outcome.output, b"", "the mirror is not the output")
+
+    def test_a_mirror_never_reaches_a_caller_as_parsed_output(self) -> None:
+        # The same bytes through the reply parser the queue lane uses: there is no
+        # envelope and no sentinel in a mirror, so nothing is claimed about it.
+        from kagent.local_agent_meshcentral_command_port import (
+            _session_payload, parse_transcript,
+        )
+        for suffix in ("", chr(10), "; Exit"):
+            raw = (self.PROBE_LINE + suffix).encode()
+            # A mirror carries no envelope, so it is silence: no output is attributed
+            # to a command that never ran, and the exit code stays unobserved.
+            self.assertEqual(parse_transcript(_session_payload(raw)),
+                             ("no_reply", None, b""), suffix)
 
 
 if __name__ == "__main__":
