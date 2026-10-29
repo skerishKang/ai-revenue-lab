@@ -55,6 +55,8 @@ MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "035_b66_saved_
 # The reviewer writes approved Skills through the existing #3301 store, so the
 # candidate table is exercised against the real Saved Quote Skill schema too.
 SKILL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "021_b66_saved_quote_skill.sql"
+# #3180 ③: the same table now also holds an owner-registered PC form.
+SKILL_KIND_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "079_b66_saved_quote_skill_kind.sql"
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "b66_manual_candidate_v1.json"
 
 
@@ -124,6 +126,7 @@ def source():
     db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     db.executemany("INSERT INTO users(id) VALUES (?)", [(A,), (B,)])
     db.executescript(SKILL_MIGRATION.read_text(encoding="utf-8"))
+    db.executescript(SKILL_KIND_MIGRATION.read_text(encoding="utf-8"))
     db.executescript(MIGRATION.read_text(encoding="utf-8"))
     yield db
     db.close()
