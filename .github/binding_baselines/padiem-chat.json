@@ -280,6 +280,10 @@
       "type": "r2_bucket"
     },
     {
+      "name": "PC_QUEUE_SERVICE_SECRET",
+      "type": "secret_text"
+    },
+    {
       "name": "TINYFISH_API_KEY",
       "type": "secrets_store_secret"
     },
