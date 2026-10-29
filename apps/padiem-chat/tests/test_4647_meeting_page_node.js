@@ -20,11 +20,12 @@ test("Chat and Claw share a group; meeting, automation, library, calendar follow
   const order = [
     "newChatButton", "sidebarSearchButton", "clawNavButton",
     "meetingNavButton", "automationNavButton", "filesNavButton",
-    "calendarNavButton", "connectorsNavButton", "skillsNavButton",
+    "calendarNavButton", "connectorsNavButton",
   ];
   const positions = order.map((id) => html.indexOf('id="' + id + '"'));
   assert.ok(positions.every((p) => p >= 0), "all existing navigation actions must be preserved");
   assert.deepEqual([...positions].sort((a, b) => a - b), positions);
+  assert.doesNotMatch(html, /id="skillsNavButton"/);
   assert.ok(html.indexOf('class="sidebar-chat-claw-group"') < positions[0]);
   const workspace = html.indexOf('id="workspaceNav"');
   assert.ok(workspace > positions[2] && workspace < positions[3]);

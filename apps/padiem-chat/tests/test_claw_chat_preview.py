@@ -151,20 +151,21 @@ def test_claw_manual_intake_preview_oversized_body_rejected(client: TestClient) 
     assert data["ok"] is False
 
 
-def test_claw_static_assets_preserve_disabled_controls_and_safe_dom_sinks() -> None:
+def test_claw_static_assets_preserve_safe_dom_sinks() -> None:
     from pathlib import Path
 
     chat_dir = Path(__file__).resolve().parents[1]
     index_html = (chat_dir / "static" / "index.html").read_text(encoding="utf-8")
     app_js = (chat_dir / "static" / "app.js").read_text(encoding="utf-8")
 
-    # Disabled controls must remain disabled
-    assert 'claw-disabled-control" disabled aria-disabled="true"' in index_html
-    assert 'Markdown 다운로드' in index_html
-    assert 'DOCX 다운로드' in index_html
-    assert '메모리 저장 후보' in index_html
-    assert '이메일 발송' in index_html
-    assert '공유 링크' in index_html
+    # The never-wired disabled controls are gone; the false "Markdown download"
+    # claim goes with them, while the real DOCX action stays in the result card.
+    assert 'claw-disabled-control' not in index_html
+    assert 'Markdown 다운로드' not in index_html
+    assert 'id="clawResultDocx"' in index_html
+    assert '메모리 저장 후보' not in index_html
+    assert '이메일 발송' not in index_html
+    assert '공유 링크' not in index_html
 
     # Endpoint must be wired in app.js
     assert "/api/claw/manual-intake/preview" in app_js

@@ -126,7 +126,6 @@
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
-        <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -364,21 +363,6 @@
             <button class="claw-connection-guide-continue" id="clawConnectionGuideAction" type="button">연결 설정 보기</button>
           </footer>
         </section>
-      </dialog>
-      <dialog class="capability-dialog" id="skillsDialog" aria-labelledby="skillsDialogTitle">
-        <div class="capability-dialog-header">
-          <div><p class="capability-kicker" data-locale-key="skills-kicker">SKILLS</p><h2 class="capability-title" id="skillsDialogTitle" data-locale-key="skills-title">Skills</h2></div>
-          <button class="capability-close" id="skillsDialogClose" type="button" data-locale-aria-label="capability-close-aria" aria-label="닫기">×</button>
-        </div>
-        <p class="capability-tagline" data-locale-key="skills-note">스킬은 준비 중입니다. 지금은 목록만 표시됩니다.</p>
-        <div class="capability-grid" data-locale-aria-label="skills-grid-aria" aria-label="준비 중 스킬">
-          <div class="capability-card"><strong data-locale-key="skill-quote">견적서 만들기</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-order">발주서 만들기</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-reply">답장 초안 만들기</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-requests">요청사항 정리</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-extract">거래처/품목 추출</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-custom">사용자 정의 스킬 만들기</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-        </div>
       </dialog>
       <section class="claw-workspace" id="clawWorkspace" aria-labelledby="clawWorkspaceTitle" hidden>
         <header class="claw-workspace-header">
@@ -1046,31 +1030,6 @@
           </form>
           <div class="claw-qc-result" id="clawQcResult" hidden></div>
         </section>
-        <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
-          <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
-          <div class="claw-disabled-grid">
-            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-              <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
-              <small data-locale-key="claw-ctrl-md-note">이 작업공간에서는 아직 사용할 수 없습니다.</small>
-            </button>
-            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-              <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
-              <small data-locale-key="claw-ctrl-docx-note">실제 실행 후 결과 카드에서 다운로드할 수 있습니다.</small>
-            </button>
-            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-              <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
-              <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
-            </button>
-            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-              <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
-              <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
-            </button>
-            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-              <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
-              <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
-            </button>
-          </div>
-        </details>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
         <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="clawManualForm clawVerifiedModelSelect">모델·고급 설정 접기</button>
