@@ -9,7 +9,6 @@ All scans are read-only text parsing — no cross-app runtime imports.
 from __future__ import annotations
 
 import ast
-import re
 from pathlib import Path
 
 import pytest
@@ -36,7 +35,6 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PACKAGE_ROOT.parents[1]
 CONTRACT_PATH = PACKAGE_ROOT / "padiem_control_plane" / "product_tier_routes.py"
 CHAT_MODEL_POLICY_PATH = REPO_ROOT / "apps" / "padiem-chat" / "app" / "model_policy.py"
-REGISTRY_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "tier_registry_v1.py"
 KILO_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "kilo_provider.py"
 AGNES_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "agnes_provider.py"
 BAI_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "bai_provider.py"
@@ -208,20 +206,6 @@ def test_undocumented_non_executable_route_fails_closed() -> None:
         validate_product_tier_routes(
             (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX), get_tier(ProductTierLabel.ADMIN))
         )
-
-
-def _registry_executable_model_ids() -> dict[str, str]:
-    """Parse TierRoute blocks from the B14 registry source (read-only)."""
-    source = REGISTRY_PATH.read_text(encoding="utf-8")
-    found: dict[str, str] = {}
-    for match in re.finditer(r"TierRoute\((.*?)\n\s+\)", source, re.DOTALL):
-        body = match.group(1)
-        status = re.search(r"status=RouteStatus\.(\w+)", body)
-        model = re.search(r'model_id="([^"]+)"', body)
-        route_id = re.search(r'route_id="([^"]+)"', body)
-        if status and model and route_id and status.group(1) == "EXECUTABLE":
-            found[route_id.group(1)] = model.group(1)
-    return found
 
 
 def test_active_tier_routes_match_the_current_b14_model_registry() -> None:

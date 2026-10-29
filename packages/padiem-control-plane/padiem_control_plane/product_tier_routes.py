@@ -24,8 +24,8 @@ Separation of duties (#2099 ACT-0 decision):
     Retired model IDs here mirror B14's RETIRED_KILO_FREE_MODEL_IDS and Chat's
     RETIRED_B14_MODEL_IDS; STEP-1 pins all three in agreement via parity
     tests. Chat and Claw now consume these declarations through the shared
-    tier resolver. apps/korean-ai-platform/app/pilot/tier_registry_v1.py
-    is a separate legacy governance projection, not the live route.
+    tier resolver. This module is the single product-tier route authority;
+    no second tier registry is maintained anywhere else.
 
 Credential fields carry binding NAMES only (platform secret identifiers),
 never secret values. This module performs no I/O or provider dispatch;
