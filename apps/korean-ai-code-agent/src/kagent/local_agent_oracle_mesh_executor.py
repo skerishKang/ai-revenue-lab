@@ -38,6 +38,30 @@ CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: here is a time ceiling: the command runs until the console answers.
 LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
 RENEW_INTERVAL_SECONDS = 20
+#: What the loop waits after a round that asked for work and got none. A poll already
+#: holds five seconds on the live channel and the lane answers the moment a dispatch
+#: exists, so an empty answer is a fact about the queue rather than a timeout, and the
+#: next ask may come later.
+#: The ceiling is a measurement, not a product rule: the beat that says "this executor
+#: is alive and this PC was reachable" rides the poll body, and the product calls a
+#: presence row stale at 180 seconds
+#: (`apps/padiem-chat/app/claw_local_access_source.py:102`,
+#: `MESH_PRESENCE_MAX_AGE_SECONDS`) while the connector watch alarms at 300
+#: (`.github/scripts/connector_lane_watch.py:59`, `BEAT_STALL_SECONDS`). Sixty seconds
+#: of gap plus the five the lane already holds leaves a beat at most 65 seconds old -
+#: 2.8 times inside the freshness the product actually acts on. What it costs is one
+#: longer wait before a dispatch that arrives into a quiet lane is claimed, measured in
+#: `docs/architecture/PADIEM_CONNECTOR_IDLE_POLL_BACKOFF_4139_20261029.md` together with
+#: the rounds per minute before and after.
+IDLE_POLL_BASE_SECONDS = 1
+IDLE_POLL_MAX_SECONDS = 60
+#: Only an empty answer from the lane earns a longer wait. A round this host skipped -
+#: the failover gate closed, or a held result still waiting to be sent - proves nothing
+#: about the queue, and backing off there would slow exactly the moment a handover needs
+#: the new host to start claiming at once.
+ROUND_IDLE = "idle"
+ROUND_SKIPPED = "skipped"
+ROUND_WORKED = "worked"
 #: #6106 follow-up: before anything on a customer PC is ended, the executor asks the
 #: server whether that PC has a live claim at all. The connector's own map covers the
 #: host it runs on; this is the only view that also covers the failover partner
@@ -277,6 +301,10 @@ class OracleMeshExecutor:
         #: guards is a loop that stopped asking at all, not a channel that answers
         #: badly.
         self._last_round_at = time.monotonic()
+        #: Which of the three shapes the last round had, read by the service loop to
+        #: decide whether the queue really is empty. Starts as a skip: no lane has
+        #: answered for this process yet, so nothing has been earned.
+        self.last_round = ROUND_SKIPPED
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
         #: The connector's own answer to "is a dispatch running on this PC right now".
@@ -1489,16 +1517,23 @@ class OracleMeshExecutor:
     def run_once(self) -> Optional[dict[str, Any]]:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
+            self.last_round = ROUND_SKIPPED
             return self.resend_pending_result()
         # #5462: a held result is still resent while this host is not the
         # active one — the bytes the PC really produced must reach the
         # server exactly once. Only a NEW claim is gated, because claiming
         # is what could execute the same work twice.
         if self._claim_gate is not None and not self._claim_gate():
+            self.last_round = ROUND_SKIPPED
             return None
         dispatch = self.poll_once()
         if dispatch is None:
+            self.last_round = ROUND_IDLE
             return None
+        # Claimed: the lane had something for this host, which is the one answer that
+        # ends an idle stretch. Set before the work, not after the submission, so a
+        # round that dies mid-command still says the queue was not empty.
+        self.last_round = ROUND_WORKED
         renewer = self.start_lease_renewal(dispatch)
         self._mark_active(dispatch)
         try:
@@ -1608,6 +1643,8 @@ __all__ = [
     "CHANNEL_HEADER",
     "CHANNEL_SOCKET_TIMEOUT_SECONDS",
     "CHANNEL_STALL_SECONDS",
+    "IDLE_POLL_BASE_SECONDS",
+    "IDLE_POLL_MAX_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
@@ -1620,6 +1657,9 @@ __all__ = [
     "OracleMeshDispatch",
     "OracleMeshExecutionOutcome",
     "OracleMeshExecutor",
+    "ROUND_IDLE",
+    "ROUND_SKIPPED",
+    "ROUND_WORKED",
     "deployment_secret_password_provider",
     "make_oracle_mesh_executor",
 ]
@@ -1773,7 +1813,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_PASSWORD_FILE     mode-0600 file holding the operator password
       ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
       ORACLE_MESH_WORK_DIR          optional scratch directory
-      ORACLE_MESH_POLL_SECONDS      optional idle interval, default 5
+      ORACLE_MESH_POLL_SECONDS      optional interval after a refused channel, default 5
+      ORACLE_MESH_IDLE_POLL_MAX_SECONDS
+                                    optional ceiling on the idle wait, default 60;
+                                    one reproduces the pre-backoff cadence verbatim
       MESH_FAILOVER_DEVICE_ID       optional comma-separated devices (max 8);
                                     poll carries one beat per device
     Secrets are read from files at call time; they never appear on argv.
@@ -1858,6 +1901,14 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             pairing_provider=pairing_provider,
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
+        # The idle ceiling is readable for the operator who wants to weigh the old
+        # cadence against the new one on a live host: one is exactly the behaviour every
+        # executor had before this schedule existed.
+        idle_max = max(
+            IDLE_POLL_BASE_SECONDS,
+            min(int(env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS",
+                            str(IDLE_POLL_MAX_SECONDS)) or IDLE_POLL_MAX_SECONDS), 300),
+        )
     except (ContractError, ValueError) as exc:
         print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
         return 2
@@ -1874,19 +1925,31 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     # revived from inside the round that is stuck.
     executor.start_channel_watchdog()
 
+    #: The wait before the next ask. It grows only across rounds the lane itself
+    #: answered empty, and resets the moment the queue produces work.
+    gap = IDLE_POLL_BASE_SECONDS
     while True:
         try:
             result = executor.run_once()
         except OracleMeshChannelRefused as exc:
-            # Bounded: the message never carries dispatch content or secrets.
+            # Bounded: the message never carries dispatch content or secrets. A
+            # channel that will not complete rounds is not a quiet queue, so the wait
+            # returns to the base and the interval the operator named.
             print(f"oracle-mesh-executor channel refusal: {exc}", file=sys.stderr)
+            gap = IDLE_POLL_BASE_SECONDS
             time.sleep(idle)
             continue
         if result is None:
-            # Empty work queue was already awaited on the live HTTPS channel.
-            # Brief idle gap prevents a retry storm on older Chat versions.
-            time.sleep(1)
+            # The lane held this request five seconds and answered "nothing waiting",
+            # or this host asked for nothing at all. Only the first of those says
+            # something about the queue, and only for it does the next ask wait
+            # longer - a skipped round goes back to the base so a failover landing on
+            # this host starts claiming on the next second.
+            time.sleep(gap)
+            gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
+                   else min(gap * 2, idle_max))
             continue
+        gap = IDLE_POLL_BASE_SECONDS
         observations = executor.line_observations()
         print(
             f"oracle-mesh-executor result ok={result.get('ok')} "
