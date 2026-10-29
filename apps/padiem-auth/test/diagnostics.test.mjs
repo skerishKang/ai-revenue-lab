@@ -22,7 +22,8 @@ test('callback diagnostics identify token failures without exposing sensitive va
     }
     assert.ok(logs.some(line => line.includes('invalid_client')));
     assert.ok(logs.some(line => line.includes('TypeError')));
-    assert.ok(logs.every(line => line.includes('google_token_exchange_failed')));
+    assert.ok(logs.some(line => line.includes('google_token_exchange_failed')));
+    assert.ok(logs.some(line => line.includes('google_fetch_failed')));
     assert.equal(logs.join('\n').includes(fakeSecret), false);
     assert.equal(logs.join('\n').includes(token), false);
   } finally { console.error = old; }
