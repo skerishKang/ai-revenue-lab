@@ -1,0 +1,103 @@
+name: PADIEM auth deployment gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/padiem-auth-deploy-gate.yml'
+      - 'apps/padiem-auth/**'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [readonly, deploy]
+      target_sha:
+        type: string
+        required: true
+      confirmation:
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: padiem-auth-production-gate
+  cancel-in-progress: false
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/padiem-auth/test/*.test.mjs
+  gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      MODE: ${{ inputs.mode }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Validate input before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_SHA" == "$GITHUB_SHA" ]]
+          [[ "$MODE" == 'readonly' || "$MODE" == 'deploy' ]]
+          [[ "$CONFIRMATION" == "PADIEM_AUTH_${MODE}_${TARGET_SHA}" ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm exact main and account without printing account ID or token
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          python - <<'PY'
+          import json, os, urllib.error, urllib.request
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          request = urllib.request.Request('https://api.cloudflare.com/client/v4/accounts/' + account, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          with urllib.request.urlopen(request, timeout=15) as response:
+              data = json.load(response)
+          if data.get('success') is not True or data.get('result', {}).get('name') != 'Charliekant':
+              raise SystemExit('Cloudflare account mismatch or unreadable')
+          print('Cloudflare account match: Charliekant')
+          script_url = 'https://api.cloudflare.com/client/v4/accounts/' + account + '/workers/scripts/padiem-auth'
+          script_request = urllib.request.Request(script_url, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          try:
+              urllib.request.urlopen(script_request, timeout=15).close()
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise SystemExit('Worker absence could not be confirmed')
+              print('Target worker absent: PASS')
+          else:
+              raise SystemExit('Target Worker already exists; refusing initial deployment')
+          PY
+      - name: Install pinned Wrangler for this disposable runner
+        run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Synthetic auth regression and dry-run
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/padiem-auth/test/*.test.mjs
+          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --outdir "$RUNNER_TEMP/padiem-auth-build"
+      - name: Deploy approved exact main SHA
+        if: inputs.mode == 'deploy'
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml
