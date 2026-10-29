@@ -47,6 +47,7 @@ DESTRUCTIVE = {
     "068_project_files_extracted_media.sql",
     "069_project_files_image_media.sql",
     "070_mesh_device_presence_source.sql",
+    "077_project_files_text_byte_bound.sql",
 }
 UNPROVABLE = {
     "051_b66_inquiry_quote_skill_assist.sql",
@@ -54,6 +55,7 @@ UNPROVABLE = {
     "061_b66_quote_asset_byte_length_ceiling_release.sql",
     "068_project_files_extracted_media.sql",
     "069_project_files_image_media.sql",
+    "077_project_files_text_byte_bound.sql",
 }
 
 
@@ -711,7 +713,7 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
     # inventory에는 표가 하나 더 있다: 076_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
-    assert len(result["seed"]) == 65
+    assert len(result["seed"]) == 66
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -779,7 +781,12 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         assert "B62_D1_PLAN_APPLY_DESTRUCTIVE=076_report_update.sql" in out
         seed_line = next(line for line in out.splitlines() if line.startswith("B62_D1_PLAN_SEED_FILES="))
         seed_names = seed_line.split("=", 1)[1].split(",")
-        assert len(seed_names) == len(inventory) - 2
+        # The seed covers the WINDOW, not the whole inventory: a migration numbered
+        # past --up-to (077_project_files_text_byte_bound.sql today) is outside it.
+        window = json.loads(plan.read_text(encoding="utf-8"))["window"]
+        assert "077_project_files_text_byte_bound.sql" not in window
+        assert len(window) == len(inventory) - 1
+        assert len(seed_names) == len(window) - 2
         assert "075_report_clean.sql" not in seed_names and "076_report_update.sql" not in seed_names
         assert "CREATE TABLE" not in out and "UPDATE b62" not in out
         summary_text = summary.read_text(encoding="utf-8")
@@ -897,7 +904,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 65
+    assert len(plan["seed"]) == 66
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -905,7 +912,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 65
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 66
 
     window_dir = tmp_path / "window"
     assert gate.main([

@@ -76,8 +76,11 @@ GET    /api/projects/{project_id}/files/{file_id}/original
 - **Stored images.** `image/png`, `image/jpeg`, `image/webp`, validated against the first 12 bytes
   (`apps/padiem-chat/app/project_files.py:18-45`) so a renamed text payload cannot masquerade as
   an original.
-- **Existing ceilings.** text body `160000` bytes (`project_file_routes.py:46`), stored
-  `content_chars ≤ 40000` (`project_files.py:27`). These are the platform's numbers, not the app's.
+- **Existing ceilings.** request body `2359296` bytes (`project_file_routes.py`), and the stored
+  row is D1's own per-row limit — `CHECK(length(CAST(content_text AS BLOB)) <= 2097152)`, migration
+  `077_project_files_text_byte_bound.sql`, mirrored by `PROJECT_FILE_MAX_TEXT_BYTES`
+  (`project_files.py`). These are the platform's numbers, not the app's: #5882 PR-E removed the
+  former arbitrary `160000`-byte body / `40000`-character row caps, which refused bodies D1 holds.
 - **Re-entry.** the file detail route alone adds `content` to the projection; `public_dict` never
   carries it. A saved draft is distinguished from an absent file by the caller treating a blank
   text as "no saved draft" and a failed roster read as "leave the surface untouched".

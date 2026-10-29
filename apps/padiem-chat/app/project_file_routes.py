@@ -44,7 +44,14 @@ async def _r2_call(bucket, method: str, *args, **kwargs):
     return result
 
 
-MAX_PROJECT_FILE_BODY_BYTES = 160_000
+#: #5882 PR-E — the request body bound follows the row's own ceiling instead of
+#: the former arbitrary 160,000 bytes. The body carries exactly one row's text in
+#: JSON, so it is the D1 per-row byte limit (project_files.PROJECT_FILE_MAX_TEXT_BYTES
+#: = 2_097_152) plus a 256 KiB envelope for the id/name/media-type keys. A body
+#: past the row limit could never be stored, so refusing it here only turns a D1
+#: error into the route's own Korean guidance. Kept as a literal so the platform
+#: integration contract can read it without executing this module.
+MAX_PROJECT_FILE_BODY_BYTES = 2_359_296
 
 
 def _unavailable() -> JSONResponse:
@@ -265,7 +272,17 @@ async def project_files_collection(request: Request) -> JSONResponse:
             request, max_bytes=MAX_PROJECT_FILE_BODY_BYTES,
         )
     except RequestBodyTooLarge:
-        return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
+        return JSONResponse(
+            {
+                "error": {
+                    "code": "invalid_document",
+                    # #5882 PR-E — the platform bound is now stated with the way out
+                    # instead of a bare "too large".
+                    "message": "본문이 너무 길어요 — 내용을 나눠서 올리거나, 원본 파일을 첨부로 올려 주세요.",
+                }
+            },
+            status_code=413,
+        )
     try:
         raw = json.loads(body.decode("utf-8"))
         if not isinstance(raw, dict):

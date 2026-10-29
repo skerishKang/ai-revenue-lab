@@ -18,13 +18,15 @@ DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingm
 IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
 BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
-#: The stored ceiling of `project_files.content_chars`, declared by migrations
-#: 003/068/069 as `CHECK(content_chars <= 40000)`. Checking it before the INSERT
-#: turns a D1 constraint violation into the route's own 422. It is the schema's
-#: bound on a persisted row, not a limit on how long a document may be: #5734
-#: stage 2 removed the document-length refusals, and an ephemeral composer
-#: attachment of any length is unaffected.
-PROJECT_FILE_MAX_CONTENT_CHARS = 40_000
+#: The stored ceiling of `project_files.content_text`, declared by migration 077
+#: as `CHECK(length(CAST(content_text AS BLOB)) <= 2097152)`. 2 MiB is D1's
+#: documented per-row limit — the platform's physical bound, not a product cap.
+#: Until 077 the schema carried `CHECK(content_chars <= 40000)` instead, which
+#: was arbitrary: 40,000 Korean characters is only ~117 KB of a ~2 MB row, so a
+#: body D1 would hold was refused for its character count. Measuring bytes is
+#: what D1 measures. Checking it before the INSERT turns a D1 constraint
+#: violation into the route's own 422 with Korean guidance (#5882 PR-E).
+PROJECT_FILE_MAX_TEXT_BYTES = 2_097_152
 
 #: #5728 — the same honesty the document path enforces through its parser:
 #: the declared image media type must match the bytes actually uploaded, so a
@@ -52,8 +54,11 @@ def _extracted_media_type(original_media_type: str) -> str:
         return "extracted/docx"
     return "extracted/" + ext
 
-MAX_PROJECT_FILES = 12
-MAX_PROJECT_TOTAL_CHARS = 160_000
+#: #5882 PR-E — there is no per-project file-count or total-character cap. The
+#: former `MAX_PROJECT_FILES = 12` / `MAX_PROJECT_TOTAL_CHARS = 160_000` pair was
+#: never enforced on any path; it is gone rather than kept as a dead promise of
+#: a limit the product does not make. Persisted rows are bounded by D1 itself
+#: (PROJECT_FILE_MAX_TEXT_BYTES) and an ephemeral attachment by the browser.
 
 #: #4489 — the Library browses every file an owner stored, one bounded keyset page at a
 #: time. These are HTTP page bounds, not a record cap: no page may grow a response.
@@ -360,9 +365,10 @@ class D1ProjectFileStore:
         source_media_type: str | None = None,
         country: str = "kr",
     ) -> ProjectFileRecord:
-        if len(text) > PROJECT_FILE_MAX_CONTENT_CHARS:
+        if len(text.encode("utf-8")) > PROJECT_FILE_MAX_TEXT_BYTES:
             raise ProjectFileLimitError(
-                f"프로젝트 파일 본문은 저장 스키마의 한계({PROJECT_FILE_MAX_CONTENT_CHARS}자)를 넘었습니다."
+                f"본문이 너무 길어요 — 저장 한도(D1 한 행 약 {PROJECT_FILE_MAX_TEXT_BYTES // 1024 // 1024}MB)를 "
+                "넘었습니다. 내용을 나눠서 올리거나, 원본 파일을 첨부로 올려 주세요."
             )
         if source_media_type is not None and source_media_type != media_type:
             raise ProjectFileFormatError("source_media_type must match media_type")
