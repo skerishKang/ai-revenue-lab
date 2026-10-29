@@ -385,7 +385,9 @@ class PcConnectorCanaryStreamTests(unittest.TestCase):
         self.assertEqual(outcome["conversation_id"], CONVERSATION_ID)
         self.assertEqual(outcome["error_code"], "none")
         self.assertIn(b'"pc_run_id":"' + RUN_ID.encode() + b'"', opener.sent[0])
-        self.assertIn(b'"mode":"auto"', opener.sent[0])
+        # `mode` left the request contract with the chat-mode remnant; a canary that
+        # still sent it would be refused as an unknown key.
+        self.assertNotIn(b'"mode"', opener.sent[0])
 
     def test_a_refusal_frame_is_named_and_the_conversation_is_still_found(self) -> None:
         opener = _FakeOpener(_FakeResponse(200, sse(

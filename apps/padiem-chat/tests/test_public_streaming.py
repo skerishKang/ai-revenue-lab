@@ -32,7 +32,6 @@ USER_ID = "usr_" + "4" * 32
 def _payload(**extra):
     value = {
         "messages": [{"role": "user", "content": "스트리밍으로 답해 주세요"}],
-        "mode": "auto",
     }
     value.update(extra)
     return value

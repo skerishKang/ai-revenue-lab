@@ -78,7 +78,7 @@ async def test_identity_questions_answer_with_padiem_tier_without_provider_call(
         # message alias: an alias alone cannot grant a paid tier.
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": prompt}], "mode": "auto", "tier": tier},
+            json={"messages": [{"role": "user", "content": prompt}], "tier": tier},
             headers=_BROWSER_ORIGIN,
         )
 
@@ -110,7 +110,7 @@ async def test_underlying_model_question_declines_internal_route_details_without
         _login(client, settings)
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "/max 실제 기반 모델이 뭐야?"}], "mode": "auto", "tier": "max"},
+            json={"messages": [{"role": "user", "content": "/max 실제 기반 모델이 뭐야?"}], "tier": "max"},
             headers=_BROWSER_ORIGIN,
         )
 
@@ -212,7 +212,7 @@ async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}]},
         )
 
     assert response.status_code == 200
@@ -240,7 +240,7 @@ async def test_stream_identity_is_local_and_uses_selected_tier():
         _login(client, settings)
         response = await client.post(
             "/api/chat/stream",
-            json={"messages": [{"role": "user", "content": "/plus 너 어떤 AI야?"}], "mode": "auto", "tier": "plus"},
+            json={"messages": [{"role": "user", "content": "/plus 너 어떤 AI야?"}], "tier": "plus"},
             headers=_BROWSER_ORIGIN,
         )
 
@@ -284,7 +284,7 @@ async def test_identity_matrix_matches_the_verified_member_grade(tier: str, ques
         _login(client, settings)
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": question}], "mode": "auto", "tier": tier},
+            json={"messages": [{"role": "user", "content": question}], "tier": tier},
             headers=_BROWSER_ORIGIN,
         )
 
@@ -314,7 +314,7 @@ async def test_member_grade_question_reports_the_server_grade(tier: str):
         _login(client, settings)
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "나는 어떤 등급이야?"}], "mode": "auto", "tier": tier},
+            json={"messages": [{"role": "user", "content": "나는 어떤 등급이야?"}], "tier": tier},
             headers=_BROWSER_ORIGIN,
         )
 

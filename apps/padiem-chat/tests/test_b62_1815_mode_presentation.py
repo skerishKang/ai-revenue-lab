@@ -32,7 +32,10 @@ def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
     assert 'let selectedTier = "free";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
     assert 'tier: selectedProductTier()' in APP
-    assert 'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };' in APP
+    assert 'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };' in APP
+    # The chat `mode` request key is gone with the remnant it came from: no client
+    # sends it, and the contract refuses it as an unknown item.
+    assert 'mode: "auto"' not in APP
 
 
 def test_tier_copy_contains_no_provider_or_model_authority() -> None:

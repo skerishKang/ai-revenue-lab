@@ -128,7 +128,7 @@ class ScriptedB14:
 
 
 def payload(**extra) -> dict[str, object]:
-    body: dict[str, object] = {"messages": [{"role": "user", "content": "안녕하세요"}], "mode": "auto"}
+    body: dict[str, object] = {"messages": [{"role": "user", "content": "안녕하세요"}]}
     body.update(extra)
     return body
 

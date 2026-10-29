@@ -25,7 +25,7 @@ COUNTRY_ERROR = "국가 식별자가 올바르지 않습니다."
 
 
 def payload(**extra):
-    base = {"messages": [{"role": "user", "content": "안녕하세요"}], "mode": "auto"}
+    base = {"messages": [{"role": "user", "content": "안녕하세요"}]}
     base.update(extra)
     return base
 

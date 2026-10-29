@@ -59,7 +59,7 @@
     // Same rule as app.js selectedProductTier(), lines 3039-3040.
     const selected = window.PadiemTierSelection?.get?.();
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
-    const payload = { messages: [{ role: "user", content: prompt }], mode: "auto", tier };
+    const payload = { messages: [{ role: "user", content: prompt }], tier };
     if (util) payload.util = util;
     let res;
     try {

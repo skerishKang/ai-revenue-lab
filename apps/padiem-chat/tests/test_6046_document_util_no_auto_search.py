@@ -130,7 +130,7 @@ async def test_document_util_scopes_answer_without_retrieval(util: str) -> None:
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto", "util": util},
+            json={"messages": [{"role": "user", "content": DOCUMENT}], "util": util},
         )
 
     assert response.status_code == 200, response.text
@@ -154,7 +154,7 @@ async def test_document_scope_streams_without_a_grounding_degradation_notice() -
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         declared = await client.post(
             "/api/chat/stream",
-            json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto", "util": "meeting"},
+            json={"messages": [{"role": "user", "content": DOCUMENT}], "util": "meeting"},
         )
 
     assert declared.status_code == 200, declared.text[:400]
@@ -167,7 +167,7 @@ async def test_document_scope_streams_without_a_grounding_degradation_notice() -
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app2), base_url="http://test") as client:
         undeclared = await client.post(
             "/api/chat/stream",
-            json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": DOCUMENT}]},
         )
     assert undeclared.status_code == 200
     # #6090: the undeclared document is still answered (never a 422), and the
@@ -191,7 +191,7 @@ async def test_short_document_scope_does_not_egress_the_record_as_a_search_query
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": body}], "mode": "auto", "util": "meeting"},
+            json={"messages": [{"role": "user", "content": body}], "util": "meeting"},
         )
 
     assert response.status_code == 200, response.text
@@ -212,7 +212,7 @@ async def test_undeclared_request_answers_with_korean_length_guidance() -> None:
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": DOCUMENT}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": DOCUMENT}]},
         )
 
     assert response.status_code == 200, response.text[:300]
@@ -231,7 +231,7 @@ async def test_explicit_search_flag_still_searches_inside_a_document_scope() -> 
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": "오늘 발표된 서울시 예산 정책을 찾아서 알려줘"}],
-                "mode": "auto", "util": "meeting", "web_search": True,
+                "util": "meeting", "web_search": True,
             },
         )
 

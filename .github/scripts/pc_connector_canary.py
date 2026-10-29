@@ -110,7 +110,7 @@ def mint_pc_run_id() -> str:
 
 
 def turn_payload(run_id: str) -> dict:
-    return {"mode": "auto", "messages": [{"role": "user", "content": PROMPT}], "pc_run_id": run_id}
+    return {"messages": [{"role": "user", "content": PROMPT}], "pc_run_id": run_id}
 
 
 def count_entries(answer: str) -> int:
@@ -463,7 +463,7 @@ def self_test() -> int:
         ) == "connected",
         "run_id_is_canonical": bool(PC_RUN_ID.fullmatch(mint_pc_run_id())),
         "payload_is_a_pc_turn_only": turn_payload("chat_pcq_" + "b" * 32) == {
-            "mode": "auto", "messages": [{"role": "user", "content": PROMPT}],
+            "messages": [{"role": "user", "content": PROMPT}],
             "pc_run_id": "chat_pcq_" + "b" * 32,
         },
         "one_summary_line": summary_line("PASS", entries=4, elapsed=41, code="none",

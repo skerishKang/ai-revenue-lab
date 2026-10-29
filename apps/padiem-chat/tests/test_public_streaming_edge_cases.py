@@ -17,7 +17,6 @@ USER_ID = "usr_" + "a" * 32
 CHAT_ID = "chat_" + "b" * 32
 PAYLOAD = {
     "messages": [{"role": "user", "content": "안녕하세요"}],
-    "mode": "auto",
 }
 
 

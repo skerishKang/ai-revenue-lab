@@ -335,7 +335,7 @@ def test_route_sse_close_closes_the_b14_transport():
 
     downstream = RecordingDownstream([_frame("첫"), _frame("둘")])
     body = json.dumps(
-        {"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
+        {"messages": [{"role": "user", "content": "안녕"}]},
         ensure_ascii=False,
     ).encode("utf-8")
 

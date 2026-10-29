@@ -127,7 +127,6 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "이 문서에서 중요한 내용을 알려줘"}],
-            "mode": "auto",
             "attachments": [doc(text=f"회의 메모\n{marker}\n매출은 42")],
         })
 
@@ -171,7 +170,6 @@ async def test_document_can_combine_with_web_evidence_inside_context_cap():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "문서와 최신 정보를 비교해줘"}],
-            "mode": "auto",
             "tool": "web_search",
             "attachments": [doc("facts.txt", "text/plain", marker + "\n내부 기준 날짜 2026-08-20")],
         })
@@ -264,7 +262,6 @@ async def test_authenticated_project_chat_uses_project_files_but_history_saves_o
         client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "자료를 쉽게 정리해줘"}],
-            "mode": "auto",
             "project_id": history.project.id,
         })
 

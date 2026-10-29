@@ -143,9 +143,14 @@ def _validate_payload_parts(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
+    # `mode` is gone, not merely unvalidated: B14 automatic model selection was
+    # abolished (#4844), the server accepted only "auto", and the four-mode catalog
+    # in `app/chat_modes.py` (자동/빠르게/균형/깊게) had no call site at all. A key that
+    # no client may meaningfully set is refused here rather than ignored, so nothing
+    # can grow a mode-shaped promise again.
     # The tail order below is a load-bearing literal: test_5015 pins
     # `"pc_run_id", "web_search"}` as the end of this set.
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "country", "pc_run_id", "web_search"}:
+    if set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "country", "pc_run_id", "web_search"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "util" in raw:
         util_scope = raw["util"]
@@ -164,8 +169,6 @@ def _validate_payload_parts(
         turn_id = raw["calendar_turn_id"]
         if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:
             raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.")
-    if raw.get("mode", "auto") != "auto":
-        raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
 
     skill_id = raw.get("skill", "auto")
     if not isinstance(skill_id, str) or not skill_id.strip():

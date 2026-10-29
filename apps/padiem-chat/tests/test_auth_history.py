@@ -260,7 +260,7 @@ async def test_no_store_reports_not_ready_and_keeps_anonymous_chat():
     app = create_app(Settings.from_values())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         status = await client.get("/api/auth/status")
-        chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"})
+        chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}]})
     assert status.json() == {
         "ready": False,
         "authenticated": False,
@@ -283,14 +283,14 @@ async def test_authenticated_chat_creates_and_appends_owner_scoped_history():
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
-        first = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "첫 질문"}], "mode": "auto"})
+        first = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "첫 질문"}]})
         cid = first.json()["conversation_id"]
         second_messages = [
             {"role": "user", "content": "첫 질문"},
             {"role": "assistant", "content": first.json()["answer"]},
             {"role": "user", "content": "두 번째 질문"},
         ]
-        second = await client.post("/api/chat", json={"messages": second_messages, "mode": "auto", "conversation_id": cid})
+        second = await client.post("/api/chat", json={"messages": second_messages, "conversation_id": cid})
         detail = await client.get(f"/api/conversations/{cid}")
         recent = await client.get("/api/conversations")
     assert first.status_code == 200 and second.status_code == 200
@@ -311,13 +311,13 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
-        denied = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "침범"}], "mode": "auto", "conversation_id": cid})
+        denied = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "침범"}], "conversation_id": cid})
     assert denied.status_code == 404
     assert len(store.conversations[cid]["messages"]) == 2
 
     anon_app = create_app(Settings.from_values(), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=anon_app), base_url="http://test") as client:
-        anonymous = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "익명"}], "mode": "auto", "conversation_id": cid})
+        anonymous = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "익명"}], "conversation_id": cid})
     assert anonymous.status_code == 200
     assert "conversation_id" not in anonymous.json()
     assert len(store.conversations[cid]["messages"]) == 2
@@ -363,7 +363,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     fail_app = create_app(failing_settings, transport=httpx.MockTransport(fail_handler), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
-        failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}], "mode": "auto"})
+        failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}]})
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert failed.status_code == 502
         assert provider_calls == 1
@@ -379,7 +379,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     secret_b64 = attachment[0]["base64"]
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(settings, profile.id), domain="chat.example.test", path="/")
-        ok = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "이 사진 설명"}], "mode": "auto", "attachments": attachment})
+        ok = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "이 사진 설명"}], "attachments": attachment})
     assert ok.status_code == 200
     dumped = json.dumps(store.conversations, ensure_ascii=False)
     assert secret_b64 not in dumped
