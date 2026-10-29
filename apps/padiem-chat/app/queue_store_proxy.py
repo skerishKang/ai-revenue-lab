@@ -26,6 +26,10 @@ QUEUE_BACKEND_D1 = "d1"
 QUEUE_BACKEND_COM2 = "com2"
 MAX_SECRET_CHARS = 256
 QUEUE_TIMEOUT_SECONDS = 8.0
+#: The Workers Python runtime stamps outbound fetches with `Python-urllib/3.12`,
+#: and the Cloudflare edge bot rule answers that UA with 403 error 1010 before
+#: the request reaches the queue. Every queue call names itself instead.
+QUEUE_USER_AGENT = "PadiemChat-Queue/1.0"
 
 #: The `oracle_mesh_dispatch` methods the queue owns. The result *content* is absent on
 #: purpose: the over-budget original lives in private R2 and the delivered answer in the
@@ -144,7 +148,8 @@ class QueueStoreClient:
                     headers={QUEUE_SERVICE_SECRET_HEADER: self._secret,
                              "Accept": "application/json",
                              "Content-Type": "application/json",
-                             "Cache-Control": "no-store"},
+                             "Cache-Control": "no-store",
+                             "User-Agent": QUEUE_USER_AGENT},
                 )
                 if response.status_code != 200:
                     raise QueueUnavailable("the queue refused the call")
