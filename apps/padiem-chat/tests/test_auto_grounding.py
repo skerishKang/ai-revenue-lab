@@ -170,7 +170,7 @@ async def test_stable_concept_does_not_over_search() -> None:
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": STABLE, "skill": "explain"})
+        response = await client.post("/api/chat", json={"messages": STABLE, "skill": "plan"})
 
     assert response.status_code == 200
     body = response.json()
