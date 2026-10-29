@@ -113,16 +113,17 @@ def test_the_session_read_still_does_not_carry_a_user_id(tmp_path, monkeypatch) 
 
 def test_the_storage_ceilings_and_media_are_the_existing_ones(tmp_path, monkeypatch) -> None:
     swap(monkeypatch, "PROJECT_FILE_ROUTES",
-         contract._read(contract.PROJECT_FILE_ROUTES).replace("MAX_PROJECT_FILE_BODY_BYTES = 160_000",
-                                                              "MAX_PROJECT_FILE_BODY_BYTES = 999"),
+         contract._read(contract.PROJECT_FILE_ROUTES).replace(
+             "MAX_PROJECT_FILE_BODY_BYTES = 2_359_296",
+             "MAX_PROJECT_FILE_BODY_BYTES = 999"),
          tmp_path)
     assert "STORED_BODY_LIMIT_DRIFT" in contract.findings()
 
     swap(monkeypatch, "PROJECT_FILES",
-         contract._read(contract.PROJECT_FILES).replace("PROJECT_FILE_MAX_CONTENT_CHARS = 40_000",
-                                                        "PROJECT_FILE_MAX_CONTENT_CHARS = 10"),
+         contract._read(contract.PROJECT_FILES).replace("PROJECT_FILE_MAX_TEXT_BYTES = 2_097_152",
+                                                        "PROJECT_FILE_MAX_TEXT_BYTES = 10"),
          tmp_path)
-    assert "STORED_CHARS_LIMIT_DRIFT" in contract.findings()
+    assert "STORED_TEXT_BYTES_LIMIT_DRIFT" in contract.findings()
 
     narrowed = contract._read(contract.DOCUMENT_NORMALIZATION).replace('"application/json": frozenset({".json"}),', "")
     swap(monkeypatch, "DOCUMENT_NORMALIZATION", narrowed, tmp_path)
@@ -179,4 +180,5 @@ def test_the_checker_runs_as_a_plain_script() -> None:
     payload = json.loads(subprocess.run([sys.executable, str(CONTRACT), "describe"],
                                         capture_output=True, text=True, check=False).stdout)
     assert payload["work_scopes"] == ["meeting", "sns", "speech"]
-    assert payload["max_stored_body_bytes"] == 160_000
+    assert payload["max_stored_body_bytes"] == 2_359_296
+    assert payload["max_stored_text_bytes"] == 2_097_152

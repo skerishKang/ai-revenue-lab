@@ -65,8 +65,12 @@ WORK_SCOPES = frozenset({"speech", "sns", "meeting"})
 #: What the existing project-file contract accepts and enforces for an app.
 STORED_TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/csv", "application/json"})
 STORED_IMAGE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
-MAX_STORED_BODY_BYTES = 160_000
-MAX_STORED_CONTENT_CHARS = 40_000
+#: #5882 PR-E — the storage ceiling is D1's per-row limit (2 MiB), measured in
+#: bytes, plus the bounded JSON envelope the file route allows around one row's
+#: text. It was 160,000 bytes and 40,000 characters before 077; both were
+#: arbitrary and refused bodies D1 would hold.
+MAX_STORED_BODY_BYTES = 2_359_296
+MAX_STORED_TEXT_BYTES = 2_097_152
 
 #: Canonical identity products the Control Plane admits today. An app that ever
 #: needs its own canonical product id must change that allowlist and its
@@ -145,11 +149,11 @@ def findings() -> list[str]:
         drift.append("AUTH_STATUS_PROJECTION_CHANGED")
 
     body_limit = _assigned_int(_read(PROJECT_FILE_ROUTES), "MAX_PROJECT_FILE_BODY_BYTES")
-    char_limit = _assigned_int(_read(PROJECT_FILES), "PROJECT_FILE_MAX_CONTENT_CHARS")
+    text_limit = _assigned_int(_read(PROJECT_FILES), "PROJECT_FILE_MAX_TEXT_BYTES")
     if body_limit != MAX_STORED_BODY_BYTES:
         drift.append("STORED_BODY_LIMIT_DRIFT")
-    if char_limit != MAX_STORED_CONTENT_CHARS:
-        drift.append("STORED_CHARS_LIMIT_DRIFT")
+    if text_limit != MAX_STORED_TEXT_BYTES:
+        drift.append("STORED_TEXT_BYTES_LIMIT_DRIFT")
     if set(re.findall(r'"(image/[a-z]+)"', _read(PROJECT_FILES))) != STORED_IMAGE_MEDIA:
         drift.append("STORED_IMAGE_MEDIA_DRIFT")
     normalization = _read(DOCUMENT_NORMALIZATION)
@@ -180,7 +184,7 @@ def summary() -> dict[str, object]:
         "stored_text_media": sorted(STORED_TEXT_MEDIA),
         "stored_image_media": sorted(STORED_IMAGE_MEDIA),
         "max_stored_body_bytes": MAX_STORED_BODY_BYTES,
-        "max_stored_content_chars": MAX_STORED_CONTENT_CHARS,
+        "max_stored_text_bytes": MAX_STORED_TEXT_BYTES,
         "identity_products": sorted(IDENTITY_PRODUCTS),
         "forbidden": list(FORBIDDEN),
     }
