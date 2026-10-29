@@ -62,3 +62,7 @@ reference/generated-assets/
 # the same file), so a second copy of the artifact in Git would only be a copy that
 # can drift - and never the thing a PC downloads.
 scripts/pc_pairing/connect-exe/dist/
+
+# #5573 stage 2: the local CPython run's database, disk-R2 folder and its
+# generated dev session key. All three are machine-local run state, never source.
+apps/padiem-chat/local_dev_data/
