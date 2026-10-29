@@ -28,8 +28,15 @@ reads:
 | period of one quiet round | 6 s | 65 s |
 | **polls per minute, one executor at rest** | **10.0** | **0.92** |
 | dispatch-table reads per minute | ~30 | ~2.8 |
-| meshctrl presence rounds per minute (N named devices) | 10·(N+1) | 0.92·(N+1) |
+| meshctrl enumerations per minute (N named devices) | 10·(2N+1) | 0.92·(2N+1) |
 | first claim, dispatch arriving mid-gap | ≤ 3 s | ≤ 63 s at the ceiling |
+
+`2N+1` is measured, not inferred: with two named devices and one tagged candidate a single
+quiet round ran five full `meshctrl.js listdevices` enumerations, because the beat asks
+`is_connected` and `name_of` per device and `pairing_candidates` once, and each of those
+starts its own enumeration (`local_agent_mesh_failover.py:518-573`). Bringing that to one
+enumeration per round is the second half of this assignment and a separate PR; this row is
+the before-number for it.
 
 Ten times fewer rounds, and the same ten times fewer held requests at the edge before the
 COM2 cutover — after it, the identical count lands on the loopback queue instead, which
