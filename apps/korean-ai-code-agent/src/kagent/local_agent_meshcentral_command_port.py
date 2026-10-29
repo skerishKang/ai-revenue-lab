@@ -96,7 +96,15 @@ class MeshCentralStopUnconfirmed(MeshCentralCommandRefused):
     A terminal that echoes its input (measured 2026-10-29 on every agent generation)
     answers without executing anything, so an open session is not evidence. Reporting a
     stop as done on an unexecuted line is the one outcome this lane may not produce.
+
+    `verdict` carries the process lane's own word for why - `no_target`, `still_running`,
+    `lane_unanswered` - so a journal says which answer came back without repeating any
+    part of a customer's process table.
     """
+
+    def __init__(self, message: str, *, verdict: str | None = None) -> None:
+        super().__init__(message)
+        self.verdict = verdict
 
 
 @dataclass(frozen=True, slots=True)
@@ -499,6 +507,26 @@ def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
     return (source.get(SESSION_COMMAND_LANE_ENV) or "").strip().lower() in (
         "1", "true", "yes", "on",
     )
+
+
+#: Opt-in for the agent's own process lane (#6227 memo): off is the shipped behaviour,
+#: and the terminal stop below is what runs while it is off. The lane itself is
+#: `local_agent_meshcentral_process_port`. The fields this lane needed to know about are
+#: now observed (CGI-1, 2026-10-30) and the lane follows them; what is still missing is its
+#: socket layer, which is the transport PR, so the flag has nothing to hand a stop to yet.
+PROCESS_LANE_ENV = "PADIEM_MESH_PROCESS_LANE"
+
+
+def _process_lane_enabled(explicit: bool | None, environ=None) -> bool:
+    """Whether a stop is carried by the process lane rather than the terminal.
+
+    Same rule as every other lane on this connector: default no, explicit yes, never
+    enabled by absence.
+    """
+    if explicit is not None:
+        return explicit is True
+    source = os.environ if environ is None else environ
+    return (source.get(PROCESS_LANE_ENV) or "").strip().lower() in ("1", "true", "yes", "on")
 
 
 def _line_probe_enabled(explicit: bool | None, environ=None) -> bool:
@@ -912,9 +940,18 @@ class MeshCentralCliCommandPort:
         popen_factory: Callable[..., Any] | None = None,
         pty_factory: Callable[[], Any] | None = None,
         host_tag: str | None = None,
+        process_lane: Any = None,
+        process_lane_enabled: bool | None = None,
     ) -> None:
         if not callable(command_runner):
             raise ContractError("meshcentral command requires an injected command runner")
+        # The agent's own process verbs, when a deployment supplies the socket for them
+        # (`local_agent_meshcentral_process_port`). None, or the flag off, means the
+        # terminal stop below is what runs - which is today's shipped behaviour.
+        if process_lane is not None and not hasattr(process_lane, "stop"):
+            raise ContractError("the process lane needs a stop")
+        self._process_lane = process_lane
+        self._process_lane_enabled = process_lane_enabled
         # #4139: the child is read in chunks, so memory tracks what the PC
         # actually sent. #5895 removed the byte ceiling: the transcript is
         # returned whole, and the chunked read stays as the streaming shape.
@@ -1366,7 +1403,10 @@ class MeshCentralCliCommandPort:
             return False
         try:
             self.kill_command_process(node_ref=node_ref, dispatch_id=dispatch_id)
-        except MeshCentralStopUnconfirmed:
+        except MeshCentralStopUnconfirmed as exc:
+            if getattr(exc, "verdict", None):
+                # Which answer came back, in our own words and never the PC's.
+                phase("cancel_kill_" + str(exc.verdict))
             phase("cancel_kill_unverified")
             return False
         except Exception:
@@ -1436,8 +1476,9 @@ class MeshCentralCliCommandPort:
                 child.kill()
         return b""
 
-    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
-        """End exactly one dispatch's own process tree on the PC.
+    def kill_command_process(self, *, node_ref: str, dispatch_id: str,
+                             recorded_pid: int | None = None) -> None:
+        """End exactly one dispatch's own process on the PC.
 
         ``runcommand`` cannot carry a stop: it is the queue the running command is
         holding. ``meshctrl shell`` opens the agent's terminal over its own session,
@@ -1445,8 +1486,24 @@ class MeshCentralCliCommandPort:
         wedged. The command sent through it names only the stopped dispatch's pid
         marker - no image name, no service, no window title - and the whole session
         is bounded, so an unreachable agent cannot make this the new way to hang.
+
+        ``recorded_pid`` is used by the process lane only: it is the number the command
+        wrote into its own marker file, and with the observed agent - whose records carry
+        no parent field - it is the one authority a stop has for which process was ours.
         """
         checked = _checked_dispatch_id(dispatch_id)
+        if self._process_lane is not None and _process_lane_enabled(self._process_lane_enabled):
+            # The agent's own verbs: read the table, end the pid this dispatch recorded
+            # (or, with no recorded pid, the pid whose record names our marker), read the
+            # table again. The second read is the whole verdict - `pskill` answers nothing
+            # of its own (agents/meshcore.js:1542-1550), so a sent frame is never evidence
+            # that a process went away.
+            report = self._process_lane.stop(checked, recorded_pid)
+            if report.confirmed:
+                return
+            raise MeshCentralStopUnconfirmed(
+                "the stop was not confirmed by the PC", verdict=report.verdict,
+            )
         raw = self._run_shell_session(
             node_ref, cancel_kill_command(checked),
             answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
