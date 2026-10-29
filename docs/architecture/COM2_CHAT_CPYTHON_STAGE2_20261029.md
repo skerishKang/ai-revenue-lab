@@ -183,3 +183,47 @@ S4 pc-read | com2 | — | NOT_MEASURED reason=pc_lane_unbound
 
 측정 산출물은 이 저장소의 보고 경로 정책(GITHUB_REPORT_HANDOFF_POLICY)에 따라
 수치·분류만 남기고 원문 로그·쿠키는 남기지 않는다.
+
+## 9. 3단계 — Chat 본체 데이터(D1 전체) → 컴2 SQLite
+
+```text
+도구=tools/chat_d1_migration.py (stdlib only) / 리허설=로컬·CI (프로덕션 D1 미접근)
+실제 export·적재·전환=Qoder가 컴2에서, CTO 창 승인 후
+```
+
+### 9.1 도구
+
+| 명령 | 하는 일 |
+|---|---|
+| `plan --source EXPORT --target CHAT_DB` | 읽기 전용 비교: 표별 `OK(건수)`/`EXCLUDED_OWNED`/`MISSING_IN_TARGET`/`SCHEMA_MISMATCH`, 원천 장부(`d1_migrations`) 열거. 쓰기 없음 |
+| `load …` | **전 표를 한 트랜잭션으로** 교체 적재. 사전 검증(표 존재·열 일치·PK 존재)에서 하나라도 어긋나면 **아무것도 쓰지 않고** 거부. 성공 시 `chat_migration_runs/summary/snapshot`(행 해시) 기록, 건수·해시만 출력 |
+| `verify --target [--source]` | 기록된 run과 현재 target을 재계산 대조(표별 `OK`/`DRIFT`), `--source` 지정 시 원천 export도 대조(`SOURCE_DRIFT`) — 적재 후 바뀐 행이 있으면 종료 코드 3 |
+| `export --live --out` | 역방향: 컴2 DB의 **비소유 표**만 담은 핸드백용 읽기 전용 사본(+표별 건수·해시 요약) |
+
+**소유 표(덮어쓰지 않음):** 큐가 진실인 `oracle_mesh_dispatch`·`mesh_device_presence`·`pc_pairing_codes`·`pc_device_links`, broker(Stage 2-C) `local_agent_*`, 그리고 장부/도구 표. D1 export에 남아 있어도 적재 대상이 아니다 — 이중 쓰기 금지.
+
+### 9.2 리허설 결과 (로컬·CI, 마이그레이션 001–077로 만든 D1 대역 + 합성 300행)
+
+| 리허설 | 결과 |
+|---|---|
+| export→plan→load→verify | PASS, 표 80·20,005행 기준 **load 0.61초(≈32.7k행/초), verify 0.22초** (로컬 SSD, 20k 메시지 벤치) |
+| 적재 후 원천 한 행 변조 | `verify --source`가 `SOURCE_DRIFT`로 **거부(종료 3)** |
+| target 열 불일치·PK 없는 표 | **쓰기 0으로 전체 거부** (bookkeeping 표조차 생성 안 함) |
+| 큐 소유 표 | target의 `device.com2.queue` 행 보존, D1 쪽 행은 미적재 |
+| 역방향 export | 비소유 표만, 표별 건수·해시 요약 포함 |
+
+### 9.3 쓰기 중지 창
+
+- 방법: 컴2 Chat에 **유지보수 모드**(센티널 파일) — 읽기(GET/HEAD)는 그대로, 변경 요청(POST/PUT/PATCH/DELETE)은 503 `maintenance` "잠시 점검 중". 플래그는 재시작 없이 켜고 끈다. (기능 구현은 후속 PR, 이 문서는 계약)
+- 순서: ① 쓰기 중지(센티널) ② 최종 D1 export(읽기 전용) ③ `plan` ④ `load` ⑤ `verify`(원천 포함) ⑥ 쓰기 재개 ⑦ 대표 시나리오 스모크.
+- 소요 산정: `초 ≈ 행수 ÷ 20,000 × 2(안전계수) + verify(≈load의 1/3)`. 100만 행이면 약 2~3분(컴2 실측으로 대체). 실제 행 수는 Qoder의 export 보고서가 채운다.
+- 원복: 창 실패 시 `export --live`로 컴2 변경분을 핸드백 → D1 재적재(Qoder 경로) → 장부 해시 대조 → 쓰기 재개. D1은 창 전까지 무변경이므로 최후 수단은 "컴2 적재 폐기 + 쓰기 재개"다.
+
+### 9.4 Qoder 인계 절차
+
+1. CTO 창 승인 후, 컴2에서 Chat 쓰기 중지(센티널 파일 배치) — 헬스/읽기 유지 확인.
+2. 승인된 경로로 D1 export(읽기 전용 SQLite 파일) 생성. 계정·토큰·행 내용은 채팅/로그에 남기지 않는다.
+3. `python tools/chat_d1_migration.py plan --source <export> --target /mnt/d/padiem/chat-com2/chat.sqlite3` → `SCHEMA_MISMATCH`/`MISSING_IN_TARGET` 0 확인.
+4. `load` → 출력된 RUN·TABLES·ROWS·ELAPSED만 보고. 이어서 `verify --target … --source <export>`가 `PASS`인지 확인.
+5. 쓰기 재개 → 대표 시나리오(로그인·목록·채팅 1회) 스모크. 실패 시 §9.3 원복 순서.
+6. 보고: RUN id, 표/행 수, load·verify 초, refuse가 났다면 `CHAT_MIGRATION_REFUSED reason=…`(내용 없음).
