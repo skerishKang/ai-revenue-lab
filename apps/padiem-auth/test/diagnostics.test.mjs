@@ -21,10 +21,10 @@ test('callback diagnostics identify token failures without exposing sensitive va
       assert.equal(response.status, 503);
       assert.deepEqual(await response.json(), {error:'authentication_unavailable'});
     }
-    assert.ok(logs.some(line => line.includes('invalid_client')));
-    assert.ok(logs.some(line => line.includes('TypeError')));
+    assert.ok(logs.some(line => JSON.parse(line).status === 401));
     assert.ok(logs.some(line => line.includes('google_token_exchange_failed')));
     assert.ok(logs.some(line => line.includes('google_fetch_failed')));
+    assert.ok(logs.every(line => Object.keys(JSON.parse(line)).every(key => ['auth_stage', 'status'].includes(key))));
     assert.equal(logs.join('\n').includes(fakeSecret), false);
     assert.equal(logs.join('\n').includes(token), false);
   } finally { console.error = old; }
