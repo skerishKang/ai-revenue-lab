@@ -980,7 +980,10 @@
           if (!currentPid) currentPid = await ensureProject();
           if (!currentPid) { failed.push(file); continue; }
           const prepared = await shrinkPhotoFile(file);
-          const stored = await uploadProjectImage(currentPid, prepared);
+          // A dropped connection throws, not just a bad status: one photo
+          // that never lands must end in the retry row, not silence.
+          let stored = null;
+          try { stored = await uploadProjectImage(currentPid, prepared); } catch (_) { stored = null; }
           if (!stored) { failed.push(file); continue; }
           const item = await readPhotoFile(prepared);
           if (item) { item.id = stored.id; photos.push(item); }
@@ -996,11 +999,13 @@
       }
 
       photoAdd.addEventListener("click", async () => {
-        // The shared 가져오기 dialog browses the linked PC; a machine with no
-        // linked PC (a phone included) keeps the local file picker.
+        // The shared 가져오기 dialog browses the linked PC. Without an
+        // explicitly linked PC — including a pairing store that cannot answer
+        // (503) — 사진 추가 keeps the local file picker, which works on a
+        // phone too; the dialog would only open a dead end.
         let linked = null;
         try { linked = await pcLinked(); } catch (_) { linked = null; }
-        if (linked === false) { photoInput.click(); return; }
+        if (linked !== true) { photoInput.click(); return; }
         let component;
         try { component = await loadPcExchange(); } catch (_) { component = null; }
         if (!component || typeof component.open !== "function") { photoInput.click(); return; }
