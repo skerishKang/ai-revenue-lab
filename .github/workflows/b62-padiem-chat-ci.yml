@@ -31,10 +31,12 @@ on:
       - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
-      # #6209 부수 피해: chat 테스트 일부가 게이트 워크플로 본문을 직접 읽는다
-      # (test_claw_production_smoke_gate.py 등). 게이트를 바꾼 PR에서 이 스위트가
-      # 돌지 않아 main이 빨개진 채로 머지됐다. b62 게이트 변경은 여기서 다시 돈다.
-      - ".github/workflows/b62-*.yml"
+      # #6209 부수 피해: chat 테스트가 게이트 워크플로 본문을 직접 읽는다.
+      # 게이트를 바꾼 PR에서 이 스위트가 돌지 않아 main이 빨개진 채 머지됐다.
+      # chat 테스트가 실제로 읽는 워크플로만 정확히 넣는다(전체 glob 금지).
+      - ".github/workflows/b62-claw-production-smoke-gate.yml"
+      - ".github/workflows/b62-production-code-deploy-gate.yml"
+      - ".github/workflows/b62-browser-qa-unified.yml"
   workflow_dispatch:
 
 permissions:
