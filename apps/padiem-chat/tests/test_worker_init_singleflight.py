@@ -77,3 +77,31 @@ async def test_failed_initialization_not_cached_and_next_request_retries(monkeyp
     assert len(attempts) == 2
     assert observed == [app]
     assert module._worker_app is app
+
+
+async def test_cancelled_waiter_does_not_cancel_shared_initialization(monkeypatch):
+    module = _load_worker(monkeypatch)
+    observed = []
+    worker = _runtime(monkeypatch, module, observed)
+    started, release = asyncio.Event(), asyncio.Event()
+    app = SimpleNamespace(state=SimpleNamespace(ready=True))
+    calls = []
+    async def build(self):
+        calls.append(1)
+        started.set()
+        await release.wait()
+        return app
+    monkeypatch.setattr(module.Default, '_build_worker_app', build)
+    first = asyncio.create_task(worker.fetch(_request()))
+    second = asyncio.create_task(worker.fetch(_request()))
+    await started.wait()
+    first.cancel()
+    try:
+        await first
+    except asyncio.CancelledError:
+        pass
+    release.set()
+    await second
+    assert calls == [1]
+    assert observed == [app]
+    assert module._worker_app is app
