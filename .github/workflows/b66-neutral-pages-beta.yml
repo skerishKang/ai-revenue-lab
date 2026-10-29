@@ -10,6 +10,7 @@ on:
       - 'scripts/sync_shared_conversation_scroll.py'
       - 'scripts/sync_shared_answer_copy.py'
       - 'apps/b66-quote-adapter/**'
+      - 'tools/b66_generic/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   push:
     branches: [main]
@@ -20,6 +21,7 @@ on:
       - 'scripts/sync_shared_conversation_scroll.py'
       - 'scripts/sync_shared_answer_copy.py'
       - 'apps/b66-quote-adapter/**'
+      - 'tools/b66_generic/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   workflow_dispatch:
     inputs:
@@ -372,4 +374,64 @@ jobs:
           ! grep -F 'file-intake.js' "${RUNNER_TEMP}/b66-embed.html"
           echo "B66_EMBED_HTTP_SMOKE=PASS"
           echo "LOCAL_HTTP_SMOKE=PASS"
+
+  generic-pipeline-certification:
+    # #3595: the generic analyzer/compiler/renderer/certifier used to be proven
+    # only by a recorded private evidence artifact. This lane runs the public
+    # synthetic fixture through the same full pipeline on every change here.
+    name: b66-generic-pipeline-certification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install hash-pinned PDF engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --require-hashes \
+            --only-binary=:all: -r tools/b66_generic/requirements-certification.txt
+          python -m pip install --disable-pip-version-check 'pytest>=8.3,<9'
+          python -c "import fitz; print('PYMUPDF_READY', fitz.VersionBind)"
+
+      - name: Install the Korean font family the gates measure
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends fonts-nanum
+          test -f /usr/share/fonts/truetype/nanum/NanumGothic.ttf
+          echo "B66_GENERIC_FONT_FAMILY=PASS"
+
+      - name: Run generic pipeline certification with skip guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/b66-generic-pytest.log"
+          start=$(date +%s)
+          python -m pytest -q -rs -p no:cacheprovider \
+            tools/b66_generic/tests/test_b66_generic_compile.py | tee "${log}"
+          elapsed=$(( $(date +%s) - start ))
+          # A skipped case is a missing dependency or a deleted contract, never a
+          # pass in this lane: print every skip reason and fail.
+          if grep -q '^SKIPPED' "${log}"; then
+            echo "::error::the generic certification suite skipped a case"
+            grep '^SKIPPED' "${log}"
+            exit 1
+          fi
+          # The three cases are the contract: analysis+compile+render+certify,
+          # mutation isolation, and the no-template-literal scan.
+          grep -Eq '^3 passed' "${log}"
+          echo "B66_GENERIC_PIPELINE_TESTS=3_passed"
+          echo "B66_GENERIC_PIPELINE_PYTEST_SECONDS=${elapsed}"
 
