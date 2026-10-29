@@ -114,6 +114,7 @@ from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
 from app.main import create_app
+from app.worker_write_freeze import freeze_active, reject_request
 from app.orchestration_routes import install_orchestration_routes
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
@@ -943,13 +944,20 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
 class Default(WorkerEntrypoint):
     async def scheduled(self, event: Any, env: Any, ctx: Any) -> None:
         del event, ctx
-        await run_scheduled_automation_source(env)
+        if not freeze_active(binding_value(env, "PADIEM_CHAT_WRITE_FREEZE")):
+            await run_scheduled_automation_source(env)
 
     async def fetch(self, request: Any) -> Any:
         import asgi
 
         global _worker_app
         path = urlparse(request.url).path
+        freeze = binding_value(self.env, "PADIEM_CHAT_WRITE_FREEZE")
+        if reject_request(freeze, request.method, request.headers.get("Upgrade")):
+            return Response(
+                '{"error":{"code":"maintenance","message":"잠시 점검 중입니다."}}',
+                status=503, headers={"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"},
+            )
 
         connector_wss_response = await maybe_dispatch_connector_gateway(
             request=request, worker_env=self.env, response_factory=Response,
