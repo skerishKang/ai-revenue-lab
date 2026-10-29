@@ -1,4 +1,4 @@
-name: PADIEM auth update gate
+name: PADIEM auth production update gate
 run-name: padiem-auth-update/${{ inputs.mode }}/${{ inputs.target_sha }}/${{ inputs.current_version }}/${{ inputs.rollback_version }}
 on:
   pull_request:
