@@ -17,3 +17,9 @@
 2. Wrangler dry-run만으로 배포 후 보존될 모든 변수·Secret의 집합을 증명하지 못했다. 저장소 설정과 기존 서비스 결합을 정확히 대조하는 검사를 추가해야 한다.
 3. Worker 코드·바인딩 롤백과 별개인 Durable Object 데이터 호환성 및 기기별 검증이 필요하다.
 4. 자동 실행되지 않는 draft PR에서 게이트 구현·합성 실패 사례 테스트·CTO 검토를 마친다. 현재 파일은 기능이 아니라 작업 계획이다.
+
+## 최초 배포 후 확인 — 2026-10-29
+
+COM1의 기존 OAuth로 승인 계정의 활성 배포가 단일 버전임을 확인했다. 해당 버전의 이름·종류만 읽은 결과 `AUTH_STATE`(durable_object_namespace), `IDENTITY_AUTHORITY`(service), `PADIEM_AUTH_ES256_PRIVATE_JWK`·`PADIEM_AUTH_IDENTITY_HMAC_KEY`·`PADIEM_AUTH_REFRESH_ENCRYPTION_KEY`(secret_text), `PADIEM_AUTH_JWKS`·`PADIEM_AUTH_SIGNING_KID`(plain_text)가 있다. 값과 버전 ID는 기록하지 않았다. Google client secret 및 서비스별 설정은 이후 별도 단계라 이 목록을 최종 기준선으로 확정하지 않는다.
+
+갱신 게이트는 어떤 모드에서도 `bootstrap-deploy.mjs`를 호출하거나 서명·지문·refresh 키를 재생성하지 않는다. 같은 코드의 dry-run과 업데이트는 기존 Secret을 보존하고 일반 vars 보존(`--keep-vars`)과 전후 기준선을 검증해야 한다. 단순한 이름·종류 검사를 충분한 안전성으로 취급하지 않는다. 실제 구성과 계획된 업로드의 동등성, 부재/추가 바인딩, 대상 리소스, 활성 버전 변화에 대한 fail-closed 테스트가 남았다.
