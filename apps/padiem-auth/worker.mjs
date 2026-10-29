@@ -103,7 +103,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
       const googleToken = await diagnosed('google_token_exchange_failed', async () => {
-        const response = await diagnosed('google_fetch_failed', () => fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'error', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) }));
+        const response = await diagnosed('google_fetch_failed', () => fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) }));
         if (!response.ok) {
           let oauthError = 'other';
           try { const candidate = (await response.json())?.error; if (['invalid_client','invalid_grant','invalid_request','unauthorized_client','redirect_uri_mismatch'].includes(candidate)) oauthError = candidate; } catch {}
@@ -113,7 +113,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         return diagnosed('google_response_parse_failed', () => response.json());
       });
       const identity = await diagnosed('google_id_token_verification_failed', async () => {
-        const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'error' });
+        const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'manual' });
         if (!keyResponse.ok) throw new Error('google keys unavailable');
         return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
       });
