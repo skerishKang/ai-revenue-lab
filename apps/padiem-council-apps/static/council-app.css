@@ -594,3 +594,1244 @@ body.council-body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+
+/* ══ cinematic token layer — ported from the approved design ═══════════════
+ *
+ * Everything between the markers below is copied byte-for-byte out of
+ * reference/padiem-parliament-ai-design-v1/parliament-theme.css (the #5967 정본), so a
+ * reviewer can diff these values against the design file instead of trusting a
+ * transcription. Two axes, exactly as the design defines them:
+ *   html[data-country]  = the tone ramp, the photography and the scene material.
+ *   html[data-style]    = which role each material is used for, plus its character.
+ * 4 x 5 is therefore 4 + 5 blocks, never 20.
+ *
+ * The role names (--bg, --page-bg, --panel, --text, --line, --accent …) are the ones the
+ * design assigns. This sheet is linked after /padiem-themes.css, so on this page the
+ * chosen style governs them; the shared sheet itself is not edited, and the
+ * --council-* aliases above keep reading them, which is how a style change reaches every
+ * existing .council-* surface without renaming a single production class.
+ * ═════════════════════════════════════════════════════════════════════════ */
+/* ══ TOKENS ══════════════════════════════════════════════════════════════ */
+
+/* ══ 웹폰트 — 자체 호스팅 ══════════════════════════════════════════════════
+   이 프로토타입은 한때 폰트를 선언만 하고 파일을 배포하지 않아, 선언(Pretendard·
+   NanumMyeongjo)과 실제 렌더(Noto Sans KR·Batang)가 어긋났다. 그래서 파일을 같이 싣는다.
+   * src 는 상대 경로만 쓴다(원격 요청 0 — 테스트가 강제한다).
+   * 가중치는 이 저장소에 실제로 존재하는 파일 4종(400/500/600/700)에 맞춰 선언한다.
+     없는 가중치를 물리면 브라우저가 임의의 근사면을 고르므로, CSS의 650/750도 이 값으로 정규화했다.
+   * 라이선스: Pretendard = SIL OFL 1.1 (Reserved Font Name 'Pretendard'),
+     MaruBuri = 네이버 글꼴. 고지문은 assets/fonts/ 에 동봉했다.
+   ═════════════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/Pretendard-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/MaruBuri-Bold.woff2") format("woff2");
+}
+
+/* 라틴 제목 면: 03 매트릭스의 고대비 Didone 결. us/uk/fr 만 --font-display 첫 면으로 쓴다.
+   한글 글리프는 이 파일에 없어 뒤의 MaruBuri 로 떨어지고, 한국 테마 스택은 바꾸지 않는다. */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/PlayfairDisplay-Bold-latin.woff2") format("woff2");
+}
+
+/* ==TOKENS-BEGIN== */
+:root {
+  /* 골격 — 색과 무관 */
+  --pa-shell: 1440px;
+  --pa-gap: clamp(14px, 2.2vw, 26px);
+  --pa-pad: clamp(16px, 3vw, 40px);
+  --pa-radius: 14px;
+  --pa-radius-lg: 20px;
+  --pa-hair: 1px;
+  --pa-target: 44px;
+  --pa-ease: cubic-bezier(.22, .61, .36, 1);
+  --pa-sun-op: 1;
+  --pa-haze-op: .5;
+  --pa-scene-op: 1;
+  --pa-glass-blur: 10px;
+  --pa-grade-op: 0;
+  /* 히어로 사진 층: 국가가 재료를 정하고, 없는 국가는 none을 명시한다(플레이스홀더 은폐 금지). */
+  --hero-photo: none;
+  --hero-photo-position: 50% 60%;
+  --hero-photo-zoom: 1;
+  --skyline-display: block;
+  /*
+   * 이미지 슬롯 — 대표가 AI 생성으로 제공한 4장(의사당 석양 · 연단 · SNS 스마트폰 · 회의 문서)을
+   * 역할별로 받는 자리다. 사진이 있는 국가는 자기 블록에서 이 4개를 바꾸고,
+   * 없는 국가는 none을 명시해 색 면만 남긴다(플레이스홀더를 완성처럼 보이지 않게).
+   * HTML 구조는 건드리지 않는다.
+   */
+  --hero-image: var(--hero-photo);
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-fit: cover;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: .92;
+}
+
+/* ── 축 1 · 국가 = 음계 ─────────────────────────────────────────────────── */
+html[data-country="kr"] {
+  /* 한국(04 시안): 전폭 석양 사진 + 그라파이트 좌측 오버레이 + 골드 보조 강조.
+     카드 3장 색은 원본 계측 코어값(남색 #062043 · 청록 #06322a · 보라 #352442). */
+  --tone-1: #14161c;
+  --tone-2: #1d2029;
+  --tone-3: #2c3140;
+  --tone-4: #4d5568;
+  --tone-5: #9aa3b8;
+  --tone-6: #e7b972;
+  --tone-7: #f4dcae;
+  --tone-8: #f7f4ee;
+  --accent: #e2ae5e;
+  --accent-contrast: #171319;
+  --accent-soft: rgba(226, 174, 94, .16);
+  --gold: #d9b26a;
+  --gold-soft: rgba(217, 178, 106, .14);
+  --danger: #c9584f;
+  --success: #4a9a72;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-3);
+  --sky-3: #6b3a4a;
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(244, 220, 174, .5);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(20, 22, 28, .72);
+  --reflection: rgba(231, 185, 114, .16);
+  --haze: rgba(44, 49, 64, .3);
+  --lit: rgba(244, 220, 174, .55);
+  --vignette: rgba(20, 22, 28, .55);
+  --hero-photo: url("./assets/parliament-hero.jpg");
+  /* 제공된 사진은 왼쪽(석양)이 밝고 오른쪽이 어둡다. 원본은 반대이므로
+     건물을 오른쪽으로 밀고 좌측 오버레이로 읽기를 보장한다. */
+  --hero-photo-position: 74% 44%;
+  --hero-photo-zoom: 1.06;
+  --pa-grade-op: 0;
+  --skyline-display: none;
+  --card-image-1: url("./assets/speech-card.jpg");
+  --card-image-2: url("./assets/sns-card.jpg");
+  --card-image-3: url("./assets/meeting-card.jpg");
+  --card-position-1: 64% 52%;
+  --card-position-2: 56% 50%;
+  --card-position-3: 42% 58%;
+  --card-photo-op: .92;
+  --work-1: #062043;
+  --work-2: #06322a;
+  --work-3: #352442;
+  /* 카드 위 텍스트는 카드 face 와 짝지어야 한다. 세 장 모두 어두우므로 밝은 잉크. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-8);
+  --work-index-display: none;   /* 04 시안의 카드에는 번호가 없다 */
+  /* 원본이 실제로 그 자리에 있는 요소를 국가가 켠다. 04 만 우측 인용구를 쓴다. */
+  --hero-quote-display: grid;
+  --hero-eyebrow-display: block;
+  /* 04 의 카드 원형 화살표는 스트립 표면과 같은 밝기 — 스타일을 따라간다(기존 렌더 그대로). */
+  --work-arrow-bg: var(--strip-bg);
+  --work-arrow-ink: var(--ink);
+  --work-arrow-line: transparent;
+  /* 04 에는 좌측 레일이 없다: 레일 숨김, 내용 인덱스 0, 상단 크롬 유지, 카드는 세로 스택. */
+  --rail-display: none;
+  --rail-w: 0px;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: flex;
+  --hero-copy-w: 51.4%;
+  --work-display: flex;
+  --work-cols: none;
+  --work-body-display: contents;
+  --work-icon-rule: none;
+  --work-badge-display: none;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: auto;
+  --works-lift: 0px;
+  --works-head-display: flex;
+  --works-note-display: block;
+  --hero-actions-display: block;
+  --strip-display: block;
+  --work-arrow-inline-display: inline;
+  /* B2 확정안: 제목은 마루부리(원본 04의 명조 결을 보존), 본문·메뉴·카드·에디터는 Pretendard.
+     두 패밀리 모두 이 페이지가 웹폰트로 직접 배포하므로, 보는 사람의 설치 여부와 무관하게 항상 해결된다. */
+  --font-display: "MaruBuri", "NanumMyeongjo", "Noto Serif KR", "Batang", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+html[data-country="us"] {
+  /* 미국(02 시안): 딥 네이비 레일 + 크림 본문 + 크림슨 액센트 */
+  --tone-1: #0d1b33;
+  --tone-2: #16264a;
+  --tone-3: #24365f;
+  --tone-4: #4a5f88;
+  --tone-5: #93a4c4;
+  --tone-6: #cfd8e8;
+  --tone-7: #eceae2;
+  --tone-8: #f8f6f0;
+  --accent: #a8232f;
+  --accent-contrast: #fdfbf7;
+  --accent-soft: rgba(168, 35, 47, .12);
+  --gold: #b99a5c;
+  --gold-soft: rgba(185, 154, 92, .12);
+  --danger: #b5303c;
+  --success: #3f8f68;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-4);
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-8);
+  --sun-glow: rgba(248, 246, 240, .45);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(13, 27, 51, .7);
+  --reflection: rgba(207, 216, 232, .18);
+  --haze: rgba(36, 54, 95, .32);
+  --lit: rgba(236, 234, 226, .5);
+  --vignette: rgba(13, 27, 51, .5);
+  --hero-photo: url("./assets/parliament-us-hero.jpg");
+  --hero-photo-position: 62% 48%;
+  --hero-photo-zoom: 1.02;
+  --pa-grade-op: 0;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-7);
+  --work-2: var(--tone-1);
+  --work-3: var(--tone-7);
+  /* 02 목업: 1·3 번은 크림 카드에 어두운 텍스트, 2 번만 네이비 카드. face 와 다른 잉크를 얹으면
+     흰 텍스트가 흰 카드에 앉는다(v7 에서 실측 1.41). 그래서 짝을 국가 재료로 둔다. */
+  --work-1-text: var(--tone-1);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-1);
+  --work-index-display: block;  /* 01/02 목업의 카드는 01·02·03 인덱스를 쓴다 */
+  /* 02 목업의 히어로 우측은 사진뿐 — 인용구는 04 만 쓰는 요소다. */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: block;
+  /* 02 목업: 세 카드 모두 흰 원반 + 어두운 화살표. face 가 크림이어도 원반이 카드에 삼켜지지 않는다. */
+  --work-arrow-bg: var(--tone-8);
+  --work-arrow-ink: var(--tone-1);
+  --work-arrow-line: transparent;
+  --work-arrow-inline-display: none;   /* 02/03 은 원형 화살표 하나만 쓴다 */
+  /* 02 목업: 좌측 영구 레일 15.8%W + active 채움 알약 + crimson 좌바 + 아이콘 언더라인 + 인덱스.
+     스트립 4항은 02 에 없다 — 카드 아래가 곧 작업 영역이다. */
+  --rail-display: grid;
+  --rail-w: 15.8%;
+  --rail-active-bg: var(--tone-2);
+  --rail-active-bar: var(--accent);
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--tone-8);
+  --rail-caption-line: color-mix(in srgb, var(--tone-8) 26%, transparent);
+  --rail-caption-pad: 12px 14px;
+  --topchrome-display: none;
+  --hero-copy-w: 40%;
+  --work-display: grid;
+  --work-cols: 76px minmax(0, 1fr);
+  --work-body-display: flex;
+  --work-icon-rule: var(--accent);
+  --work-badge-display: none;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: start;
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-head-display: none;
+  --works-note-display: none;
+  --hero-actions-display: none;
+  --strip-display: none;
+  /* 해외 테마도 이 페이지가 배포한 두 면으로 확정한다(장비별 fallback 차이 제거).
+     Tail 의 의도 서체는 웹폰트가 실패한 환경에서만 쓰인다. */
+  --font-display: "Playfair Display", "MaruBuri", Georgia, serif;
+  --font-body: "Pretendard", Inter, "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, system-ui, sans-serif;
+}
+
+html[data-country="fr"] {
+  /* 프랑스(03 매트릭스): 돌빛 회벽 + 남색 + 와인 액센트 */
+  --tone-1: #14182b;
+  --tone-2: #222848;
+  --tone-3: #3d3f66;
+  --tone-4: #5b5880;   /* 구 `#6d6a92` 는 --muted 로 2.98:1(AA 4.5 미만)이라 어둡게 바로잡았다 */
+  --tone-5: #bbabd3;   /* 다크 스트립에서 --muted 로 3.87:1(AA 4.5 미만) — 재료를 밝게 바로잡았다 */
+  --tone-6: #dcc9c8;
+  --tone-7: #efe3d6;
+  --tone-8: #f7f1e8;
+  --accent: #7c3550;
+  --accent-contrast: #f7f1e8;
+  --accent-soft: rgba(124, 53, 80, .12);
+  --gold: #c3a37a;
+  --gold-soft: rgba(195, 163, 122, .12);
+  --danger: #bf5b56;
+  --success: #46937a;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-4);
+  --sky-4: var(--tone-6);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(239, 227, 214, .42);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(20, 24, 43, .68);
+  --reflection: rgba(220, 201, 200, .18);
+  --haze: rgba(61, 63, 102, .3);
+  --lit: rgba(239, 227, 214, .5);
+  --vignette: rgba(20, 24, 43, .48);
+  --hero-photo: url("./assets/parliament-fr-hero.jpg");
+  --hero-photo-position: 52% 46%;
+  --hero-photo-zoom: 1.02;
+  --pa-grade-op: 0;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-2);
+  --work-2: var(--tone-4);
+  --work-3: var(--tone-3);
+  /* 03 패널의 프랑스 카드는 세 장 모두 네이비에 흰 텍스트·흰 채운 아이콘. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-8);
+  --work-3-text: var(--tone-8);
+  --work-index-display: none;
+  /* 03 프랑 패널: 히어로에 eyebrow 도 인용구도 없이 제목이 내비 바로 아래 앉는다. */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: none;
+  /* 03 프랑 패널: 네이비 카드 위의 흰 원반. face 와 무관하게 항상 밝은 원반이다. */
+  --work-arrow-bg: var(--tone-8);
+  --work-arrow-ink: var(--tone-1);
+  --work-arrow-line: transparent;
+  --work-arrow-inline-display: none;   /* 02/03 은 원형 화살표 하나만 쓴다 */
+  /* 03 패널: 레일 없음(상단 수평 내비). 카드는 중앙 정렬이 원본의 유일한 지시. */
+  --rail-display: none;
+  --rail-w: 0px;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: transparent;
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: flex;
+  --hero-copy-w: 51.4%;
+  --work-display: flex;
+  --work-cols: none;
+  --work-body-display: contents;
+  --work-icon-rule: none;
+  --work-badge-display: none;
+  --work-align: center;
+  --work-items: center;
+  --work-icon-self: auto;
+  --works-lift: 0px;
+  --works-head-display: flex;
+  --works-note-display: block;
+  --hero-actions-display: block;
+  --strip-display: block;
+  --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+html[data-country="uk"] {
+  /* 영국(01 시안): 웨스트민스터 딥 네이비 + 퍼치먼트 + 앤티크 골드 */
+  --tone-1: #0b1220;
+  --tone-2: #142039;
+  --tone-3: #24365c;
+  --tone-4: #4b5f86;
+  --tone-5: #92a4c1;   /* 다크 스트립에서 --muted 로 4.29:1(AA 4.5 미만) — 재료를 밝게 바로잡았다 */
+  --tone-6: #c6cede;
+  --tone-7: #e6ddc9;
+  --tone-8: #f4efe2;
+  --accent: #b8923a;
+  --accent-contrast: #0b1220;
+  --accent-soft: rgba(184, 146, 58, .16);
+  --gold: #c9ab5e;
+  --gold-soft: rgba(201, 171, 94, .13);
+  --danger: #c05a52;
+  --success: #4a937a;
+  --sky-1: var(--tone-1);
+  --sky-2: var(--tone-2);
+  --sky-3: var(--tone-3);
+  --sky-4: var(--tone-5);
+  --sun: var(--tone-7);
+  --sun-glow: rgba(230, 221, 201, .4);
+  --skyline: var(--tone-1);
+  --skyline-back: rgba(11, 18, 32, .72);
+  --reflection: rgba(198, 206, 222, .16);
+  --haze: rgba(36, 54, 92, .34);
+  --lit: rgba(230, 221, 201, .45);
+  --vignette: rgba(11, 18, 32, .52);
+  --hero-photo: url("./assets/parliament-uk-hero.jpg");
+  --hero-photo-position: 58% 52%;
+  --hero-photo-zoom: 1.03;
+  --pa-grade-op: 0;
+  --skyline-display: none;   /* 사진이 들어와 백스톱을 끈다 */
+  --card-image-1: none;
+  --card-image-2: none;
+  --card-image-3: none;
+  --card-position-1: 50% 55%;
+  --card-position-2: 50% 55%;
+  --card-position-3: 50% 55%;
+  --card-photo-op: 0;
+  --work-1: var(--tone-2);
+  --work-2: var(--tone-8);
+  --work-3: var(--tone-8);
+  /* 01 실측: 카드1 네이비 #0c1d3c · 카드2·3 크림 #faf7f1. face 와 같은 요소를 읽는 잉크로 짝짓는다.
+     흰 텍스트를 크림 카드에 얹으면(이전 상태) 카드 2·3 이 화면상 빈 칸이 됐다. */
+  --work-1-text: var(--tone-8);
+  --work-2-text: var(--tone-1);
+  --work-3-text: var(--tone-1);
+  --work-index-display: none;   /* 01 목업의 영국 카드에는 번호가 없다(02 미국에만 있다) */
+  --hero-quote-display: none;
+  --hero-eyebrow-display: block;
+  /* 01 목업: 원반을 채우지 않고 골드 테두리만 두른다. 크림 카드에서 흰 원반은 사라지고,
+     네이비 카드에서 어두운 원반은 사라진다 — 테두리만 두 형태가 둘 다 살아남는다.
+     (골드 링의 크림 위 대비는 1.9:1 이다. 이 원은 유일한 신호가 아니다: 같은 버튼에
+     라벨과 인라인 화살표가 있으므로 1.4.11 의 적용 대상이 아니다.) */
+  --work-arrow-bg: transparent;
+  --work-arrow-ink: var(--gold);
+  --work-arrow-line: var(--gold);
+  --work-arrow-inline-display: none;   /* 01 은 원형 화살표 하나만 쓴다 */
+  /* 01 목업: 레일 14.7%W + 보더 알약(active) + 골드 아이콘 + 배지 3종, 인덱스·언더라인 없음. */
+  --rail-display: grid;
+  --rail-w: 14.7%;
+  --rail-active-bg: transparent;
+  --rail-active-bar: transparent;
+  --rail-active-line: color-mix(in srgb, var(--gold) 55%, transparent);
+  --rail-active-ink: var(--gold);
+  --rail-caption-line: transparent;
+  --rail-caption-pad: 0px;
+  --topchrome-display: none;
+  --hero-copy-w: 40%;
+  --work-display: grid;
+  --work-cols: 76px minmax(0, 1fr);
+  --work-body-display: flex;
+  --work-icon-rule: none;
+  --work-badge-display: grid;
+  --work-align: start;
+  --work-items: stretch;
+  --work-icon-self: start;
+  --works-lift: 250px;   /* 실측: 카드 하단이 히어로 바닥보다 55px 위에 앉는 값(01 원본) */
+  --works-head-display: none;
+  --works-note-display: none;
+  --hero-actions-display: none;
+  --strip-display: none;
+  --font-display: "Playfair Display", "MaruBuri", "NanumMyeongjo", "Noto Serif KR", Georgia, serif;
+  --font-body: "Pretendard", "Noto Sans KR", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Pretendard", Inter, "Noto Sans KR", system-ui, sans-serif;
+}
+
+/* ── 축 2 · 스타일 = 역할 할당 ──────────────────────────────────────────── */
+/* 밝은 역할: 라이트·클래식·모던·미니멀은 재료를 밝게 쓰고, 성격 블록만 다르다.
+   시안대로 레일과 히어로 패널은 밝은 테마에서도 진하게 간다. */
+html[data-style="light"],
+html[data-style="classic"],
+html[data-style="modern"],
+html[data-style="minimal"] {
+  --bg: var(--tone-8);
+  --page-bg: var(--tone-8);
+  --panel: var(--tone-7);
+  --text: var(--tone-1);
+  --muted: var(--tone-4);
+  --line: var(--tone-6);
+  --paper: var(--tone-8);
+  --ink: var(--tone-1);
+  --ink-muted: var(--tone-4);
+  --glass: rgba(255, 255, 255, .74);
+  --shadow: 0 18px 44px rgba(0, 0, 0, .1);
+  --focus-ring: var(--accent-soft);
+  --rail: var(--tone-1);
+  --rail-text: var(--tone-8);
+  --rail-muted: var(--tone-5);
+  --rail-line: var(--tone-3);
+  --hero-panel: var(--tone-1);
+  --hero-panel-text: var(--tone-8);
+  --hero-text: var(--tone-8);
+  --hero-scrim: rgba(0, 0, 0, .3);
+  --pa-scene-op: 1;
+  /* 04 시안: 히어로 사진 왼쪽에 얹는 읽기용 오버레이, 업무 밴드와 흰 스트립 카드의 위계. */
+  --hero-scrim-strong: rgba(0, 0, 0, .92);
+  --topbar-text: var(--tone-8);
+  --works-bg: color-mix(in srgb, var(--tone-8) 94%, var(--tone-1));
+  --strip-bg: var(--tone-8);
+  --strip-line: color-mix(in srgb, var(--tone-6) 70%, var(--tone-8));
+}
+
+html[data-style="dark"] {
+  --bg: var(--tone-2);
+  --page-bg: var(--tone-2);
+  --panel: var(--tone-3);
+  --text: var(--tone-8);
+  --muted: var(--tone-5);
+  --line: var(--tone-3);
+  --paper: var(--tone-2);
+  --ink: var(--tone-8);
+  --ink-muted: var(--tone-5);
+  --glass: rgba(255, 255, 255, .06);
+  --shadow: 0 20px 52px rgba(0, 0, 0, .34);
+  --focus-ring: var(--accent-soft);
+  --rail: var(--tone-1);
+  --rail-text: var(--tone-8);
+  --rail-muted: var(--tone-5);
+  --rail-line: var(--tone-3);
+  --hero-panel: var(--tone-1);
+  --hero-panel-text: var(--tone-8);
+  --hero-text: var(--tone-8);
+  --hero-scrim: rgba(0, 0, 0, .22);
+  --pa-scene-op: 1;
+  --hero-scrim-strong: rgba(0, 0, 0, .74);
+  --topbar-text: var(--tone-8);
+  --works-bg: var(--tone-2);
+  --strip-bg: var(--tone-3);
+  --strip-line: var(--tone-4);
+}
+
+/* ── 축 2 · 스타일 = 성격 ──────────────────────────────────────────────── */
+html[data-style="classic"] {
+  --pa-radius: 8px;
+  --pa-radius-lg: 12px;
+  --pa-glass-blur: 6px;
+}
+
+html[data-style="modern"] {
+  --pa-radius: 16px;
+  --pa-radius-lg: 24px;
+  --pa-glass-blur: 14px;
+  --pa-sun-op: .88;
+}
+
+html[data-style="minimal"] {
+  --pa-sun-op: .3;
+  --pa-haze-op: .12;
+  --pa-glass-blur: 0px;
+  --card-photo-op: 0;
+  --glass: transparent;
+  --shadow: none;
+}
+
+html[data-style="light"] { --pa-sun-op: .82; }
+/* ==TOKENS-END== */
+/* ══ end of the ported token layer ════════════════════════════════════════ */
+
+/* ══ cinematic layout layer — the 정본's structure on production's DOM ══════
+ *
+ * Every value below is the design file's own measured value, applied to the classes this
+ * app actually renders. Nothing here invents a shape: the hero, the works band, the card
+ * faces, the strip and the popover are the #5967 정본's, ported rule for rule.
+ *
+ * Two states, exactly as the design has them:
+ *   home      — the photo hero with the bar over it, the three work tiles, the strip.
+ *   workspace — a tool is open: the hero and the strip step out, the bar returns to the
+ *               document flow (a bar with no photo under it must not float over content),
+ *               and the open card becomes the paper surface.
+ */
+
+/* ── fonts reach the app through the alias it already had ───────────────── */
+.council-body {
+  font-family: var(--font-body);
+  background: var(--page-bg, var(--bg));
+  color: var(--text);
+}
+.council-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* The 정본 carries this guard for exactly the reason this page just proved: a component
+   rule that says display:grid wins over the UA's [hidden] rule, so a closed popover and an
+   idle workspace bar both stay painted. State has to beat presentation, always. */
+[hidden] { display: none !important; }
+
+/* ── 상단 바: 히어로 위에 얹히는 한 줄(필드·구분선 없음) ───────────────────── */
+.council-topbar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  min-width: 0;
+  gap: clamp(8px, 1.2vw, 18px);
+  padding: 12px clamp(20px, 4.85vw, 70px);
+  background: transparent;
+  border-bottom: 0;
+  color: var(--topbar-text);
+}
+.council-brand-name { color: inherit; }
+.council-badge {
+  color: var(--topbar-text);
+  border-color: color-mix(in srgb, var(--topbar-text) 30%, transparent);
+  background: color-mix(in srgb, var(--tone-1) 26%, transparent);
+}
+.council-badge-action {
+  color: var(--topbar-text);
+  border-color: color-mix(in srgb, var(--topbar-text) 34%, transparent);
+  background: color-mix(in srgb, var(--tone-1) 30%, transparent);
+}
+.council-badge-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* ── 축 전환 통제 ──────────────────────────────────────────────────────── */
+.council-theme { order: 6; position: relative; display: inline-flex; flex: 0 0 auto; }
+.council-theme-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: var(--pa-target);
+  height: var(--pa-target);
+  min-height: var(--pa-target);
+  padding: 0;
+  border: var(--pa-hair) solid color-mix(in srgb, var(--topbar-text) 34%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone-1) 30%, transparent);
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(var(--pa-glass-blur));
+}
+.council-theme-trigger:hover { border-color: var(--accent); background: var(--accent-soft); }
+.council-theme-trigger svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.council-theme-value { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* 우측 고정: 왼쪽으로 붙이면 패널이 화면 밖으로 나간다(시안 테스트가 right:0 를 강제한다). */
+.council-theme-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  display: grid;
+  gap: 14px;
+  width: min(84vw, 344px);
+  padding: 16px;
+  background: var(--paper);
+  color: var(--text);
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--shadow);
+}
+.council-theme-group { display: grid; gap: 6px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.council-theme-legend { font-family: var(--font-label); font-size: 11px; letter-spacing: .12em; color: var(--muted); grid-column: 1 / -1; }
+.council-theme-group button {
+  min-height: var(--pa-target);
+  padding: 8px 12px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: var(--pa-radius);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.council-theme-group button:hover { border-color: var(--accent); }
+.council-theme-group button[aria-checked="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+.council-theme-note { font-size: 12px; line-height: 1.55; color: var(--muted); word-break: keep-all; }
+/* 국가의 권한은 <select> 에 그대로 두고, 눈은 시안의 알약 4개가 본다. */
+.council-country { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ── 홈 셸 ─────────────────────────────────────────────────────────────── */
+.council-home { display: grid; gap: 0; background: var(--works-bg); }
+#councilMain { max-width: none; padding: 0; }
+.council-auth { width: min(100% - 40px, 720px); margin: clamp(20px, 4svh, 40px) auto; }
+.council-footer, .council-workspace-bar { width: min(100%, var(--pa-shell)); margin-inline: auto; }
+
+/* ── 히어로: 전폭 사진 + 왼쪽 읽기 오버레이 ──────────────────────────────── */
+.council-hero {
+  position: relative;
+  display: grid;
+  align-content: center;
+  isolation: isolate;
+  min-height: clamp(400px, 52.2svh, 640px);
+  padding: clamp(78px, 10svh, 112px) 0 clamp(22px, 3.4svh, 44px);
+}
+.council-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  min-height: 0;
+  overflow: hidden;
+  opacity: var(--pa-scene-op);
+  isolation: isolate;
+  pointer-events: none;
+}
+.council-scene > * { position: absolute; inset: 0; display: block; }
+.council-photo-layer {
+  background-image: var(--hero-image);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: var(--hero-photo-position);
+  /* 배율을 background-size 에 주면 세로가 깎인다. 층을 확대해 cover 를 유지한다. */
+  transform: scale(var(--hero-photo-zoom));
+  transform-origin: var(--hero-photo-position);
+  filter: saturate(1.05) contrast(1.04);
+}
+/* 제공된 사진은 왼쪽이 밝다. 시안처럼 텍스트가 앉는 왼쪽을 먹색으로 눌러 대비를 만든다. */
+.council-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, var(--hero-scrim-strong) 0%, var(--hero-scrim-strong) 34%, var(--hero-scrim) 54%, transparent 76%),
+    linear-gradient(180deg, var(--hero-scrim) 0%, transparent 20%, transparent 52%, var(--vignette) 100%);
+}
+.council-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(74% 70% at 100% 0%, var(--hero-scrim-strong) 0%, transparent 86%),
+    radial-gradient(120% 90% at 62% 22%, transparent 44%, var(--vignette) 100%);
+}
+.council-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  opacity: .05;
+  mix-blend-mode: overlay;
+}
+.council-hero-copy {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: min(100%, var(--hero-copy-w));
+  display: grid;
+  align-content: center;
+  gap: clamp(12px, 1.9svh, 22px);
+  padding: 0 0 0 clamp(20px, 5.65vw, 82px);
+  background: transparent;
+  color: var(--hero-text);
+}
+.council-eyebrow {
+  font-family: var(--font-label);
+  font-size: 11.5px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0;
+}
+/* 히어로 eyebrow 는 국가마다 원본에 실제로 있다/없다가 갈린다(03 프랑 패널엔 없다). */
+.council-hero-copy .council-eyebrow { display: var(--hero-eyebrow-display); }
+.council-hero .council-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--hero-text);
+  text-wrap: balance;
+  word-break: keep-all;
+  hyphens: none;
+  /* 04 실측: 2줄 블록 114px, 2행 ink 542px(37.6%W). 44px/1.30 이 두 조건을 동시에 맞춘다. */
+  font-size: clamp(28px, 3.06vw, 44px);
+  line-height: 1.30;
+  margin: 0;
+}
+.council-hero .council-title em { font-style: normal; color: var(--gold); }
+.council-hero-lead { font-size: clamp(14px, 1.11vw, 16px); line-height: 1.45; opacity: .9; word-break: keep-all; margin: 0; }
+.council-hero-actions { margin-top: 10px; display: var(--hero-actions-display); }
+.council-cta {
+  min-height: var(--pa-target);
+  padding: 13px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--accent), var(--gold));
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform .18s var(--pa-ease), box-shadow .18s var(--pa-ease);
+}
+.council-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+.council-hero-quote {
+  position: absolute;
+  top: clamp(78px, 10svh, 118px);
+  right: clamp(20px, 4.85vw, 70px);
+  z-index: 3;
+  display: var(--hero-quote-display);
+  gap: 10px;
+  margin: 0;
+  max-width: 30ch;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.65;
+  color: var(--hero-text);
+  text-shadow: 0 1px 14px var(--hero-scrim-strong);
+  word-break: keep-all;
+}
+.council-hero-quote span { display: block; }
+.council-hero-quote small {
+  display: block;
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: .18em;
+  opacity: .8;
+  border-top: var(--pa-hair) solid color-mix(in srgb, var(--hero-text) 40%, transparent);
+  padding-top: 10px;
+}
+
+/* ── 업무 밴드: 왼쪽 소개 컬럼 + 오른쪽 카드 3열 ─────────────────────────── */
+.council-works {
+  display: grid;
+  /* us/uk 는 카드가 사진 위에 앉도록 밴드를 끌어올린다(01/02 계측). kr/fr 은 0. */
+  margin-top: calc(0px - var(--works-lift));
+  grid-template-columns: minmax(0, 15.8%) minmax(0, 1fr);
+  grid-template-areas: "head head" "note cards";
+  gap: 0 clamp(8px, .8vw, 12px);
+  align-items: start;
+  padding: clamp(16px, 2.7svh, 28px) clamp(20px, 3.35vw, 48px) 0;
+  max-width: var(--pa-shell);
+  /* 가운데 정렬은 좌우만 맡긴다. `margin: 0 auto` 는 위의 margin-top 을 덮어밴드 상승이 0 이 된다. */
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.council-works-head {
+  grid-area: head;
+  display: var(--works-head-display);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--pa-gap);
+  flex-wrap: wrap;
+}
+.council-works-intro { display: grid; gap: 0; min-width: 0; }
+.council-works-head h2 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.64vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+  line-height: 1.15;
+  margin-bottom: 0;
+  word-break: keep-all;
+}
+.council-works-note {
+  grid-area: note;
+  align-self: start;
+  display: var(--works-note-display);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 6px 0 0;
+  word-break: keep-all;
+}
+.council-works-side {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  text-align: right;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+.council-works-side::before { content: ""; width: 34px; height: var(--pa-hair); background: var(--line); margin-bottom: 6px; }
+
+/* 카드 3열은 소개 컬럼 오른쪽 영역을 채운다(시안: 카드1 좌 edge 19.2%W). */
+.council-menu {
+  grid-area: cards;
+  display: grid;
+  gap: clamp(8px, .8vw, 12px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* ── 업무 카드: 사진 위에 국가가 정한 색 면 ──────────────────────────────── */
+.council-card {
+  --work-face: var(--work-1);
+  --work-ink: var(--work-1-text);
+  /* 카드 색을 왼쪽에서 무겁게 눌러 사진 위에서 텍스트를 읽게 한다. 이 그라데이션은
+     --work-face 와 같은 요소에서 정의돼야 치환된다. :root 에 두면 미해석된다. */
+  --work-scrim: linear-gradient(96deg, var(--work-face) 0%, var(--work-face) 40%, transparent 82%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: var(--work-display);
+  flex-direction: column;
+  grid-template-columns: var(--work-cols);
+  align-items: var(--work-items);
+  text-align: var(--work-align);
+  gap: 6px;
+  padding: clamp(12px, 1.15vw, 17px);
+  background: var(--work-face);
+  border: 0;
+  border-radius: var(--pa-radius-lg);
+  box-shadow: var(--shadow);
+  color: var(--work-ink);
+  transition: transform .2s var(--pa-ease);
+}
+.council-card:nth-child(2) { --work-face: var(--work-2); --work-ink: var(--work-2-text); }
+.council-card:nth-child(3) { --work-face: var(--work-3); --work-ink: var(--work-3-text); }
+.council-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--card-image-1);
+  background-size: var(--card-fit);
+  background-position: var(--card-position-1);
+  background-repeat: no-repeat;
+  opacity: var(--card-photo-op);
+}
+.council-card:nth-child(2)::before { background-image: var(--card-image-2); background-position: var(--card-position-2); }
+.council-card:nth-child(3)::before { background-image: var(--card-image-3); background-position: var(--card-position-3); }
+.council-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--work-scrim);
+}
+.council-card:hover { transform: translateY(-2px); }
+.council-card-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  grid-row: 1 / -1;
+  align-self: var(--work-icon-self);
+  position: relative;
+}
+.council-card-icon svg { width: 26px; height: 26px; fill: none; stroke: var(--work-ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* 02 미국은 아이콘 아래 짧은 언더라인을 깐다. 01·03·04 는 없다. */
+.council-card-icon::after {
+  content: "";
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 2px;
+  background: var(--work-icon-rule);
+}
+.council-card > h2 {
+  font-family: var(--font-body);
+  font-size: clamp(17px, 1.39vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--work-ink);
+  word-break: keep-all;
+  margin: 2px 0 0;
+}
+.council-card > p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--work-ink) 92%, transparent);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.council-card-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--work-ink);
+  cursor: pointer;
+}
+/* 정본 04 는 라벨 뒤 인라인 화살표와 우하단 원형 화살표를 함께 쓴다. 01/02/03 은 원형 하나뿐. */
+.council-card-select::after {
+  content: "→";
+  position: absolute;
+  right: clamp(14px, 1.5vw, 20px);
+  bottom: clamp(14px, 1.5vw, 20px);
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--work-arrow-bg);
+  border: var(--pa-hair) solid var(--work-arrow-line);
+  color: var(--work-arrow-ink);
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+}
+.council-card:hover .council-card-select::after { background: var(--accent); color: var(--accent-contrast); }
+.council-card-select:hover { color: var(--accent); }
+
+/* ── 카드 안의 국가별 장식: 배지(01 영국)·일련번호(02 미국) ──────────────── */
+/* 01 영국 카드의 배지. face 와 무관하게 골드 틴트 + 카드 잉크 텍스트. */
+.council-card-badge {
+  display: var(--work-badge-display);
+  /* absolute 로 띄우면 긴 제목이 배지 밑으로 파고든다(시안 실측). 흐름 안 첫 행이 원본과 같다. */
+  align-self: flex-end;
+  margin: 0 0 2px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  border: var(--pa-hair) solid color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--work-ink);
+}
+/* 02(미국) 목업만 카드에 01·02·03 을 찍는다. */
+.council-card-index {
+  display: var(--work-index-display);
+  font-family: var(--font-label);
+  font-size: 11.5px;
+  letter-spacing: .18em;
+  color: color-mix(in srgb, var(--work-ink) 70%, transparent);
+}
+
+/* ── us/uk 구성: 카피는 위, 카드는 사진 위 2단, 소개 컬럼 없음 ────────────── */
+/* 토큰으로 둘 수 없었다는 정본의 기록을 그대로 따른다: svh 를 토큰에 넣으면 전환 후에도
+   min-height 가 재계산되지 않는 것을 실측했다고 한다. 그래서 국가 분기 규칙이다. */
+html[data-country="us"] .council-hero,
+html[data-country="uk"] .council-hero {
+  /* 카피 끝 + 간격 30 + 카드 173 + 사진 여백 55 = 526. 뷰포트가 커져도 구도가 늘지 않게 고정. */
+  min-height: 526px;
+  align-content: start;
+}
+/* us/uk 에는 좌측 소개 컬럼이 없다: 카드가 본문 전폭을 쓴다(01/02). */
+html[data-country="us"] .council-works,
+html[data-country="uk"] .council-works {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "cards";
+}
+/* 생산 카드에는 본문 래퍼가 없다(자식 셀렉터가 살아 있어야 하므로). 그래서 평평한 자식들을
+   그리드 영역으로 직접 배치해 정본의 76px 아이콘 + 본문 2단을 같은 모양으로 낸다. */
+html[data-country="us"] .council-card,
+html[data-country="uk"] .council-card {
+  grid-template-areas: "icon title" "icon body" "icon foot";
+  align-items: start;
+}
+html[data-country="us"] .council-card-icon,
+html[data-country="uk"] .council-card-icon { grid-area: icon; grid-row: auto; }
+html[data-country="us"] .council-card-badge,
+html[data-country="uk"] .council-card-badge,
+html[data-country="us"] .council-card-index,
+html[data-country="uk"] .council-card-index,
+html[data-country="us"] .council-card > h2,
+html[data-country="uk"] .council-card > h2 { grid-area: title; }
+html[data-country="us"] .council-card > p,
+html[data-country="uk"] .council-card > p { grid-area: body; }
+html[data-country="us"] .council-card > .council-card-select,
+html[data-country="uk"] .council-card > .council-card-select { grid-area: foot; }
+html[data-country="us"] .council-card > .council-card-body,
+html[data-country="uk"] .council-card > .council-card-body { grid-column: 1 / -1; }
+
+/* ── 기능 스트립: 밝은 밴드 위의 흰 카드 + 구분선 + 라인 아이콘 ──────────── */
+.council-strip {
+  background: var(--strip-bg);
+  border-top: var(--pa-hair) solid var(--strip-line);
+  padding: clamp(18px, 3svh, 30px) clamp(20px, 3.35vw, 48px) clamp(22px, 4svh, 40px);
+}
+.council-strip ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 22px);
+  margin: 0 auto;
+  padding: 0;
+  max-width: var(--pa-shell);
+}
+.council-strip li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0 clamp(10px, 1.2vw, 18px);
+  border-left: var(--pa-hair) solid var(--strip-line);
+}
+.council-strip li:first-child { border-left: 0; padding-left: 0; }
+.council-strip-icon { display: grid; place-items: center; width: 26px; height: 26px; flex: 0 0 auto; }
+.council-strip-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.council-strip-body { display: grid; gap: 3px; min-width: 0; }
+.council-strip-body strong { font-size: 14px; font-weight: 700; color: var(--text); word-break: keep-all; }
+.council-strip-body small { font-size: 12.5px; line-height: 1.55; color: var(--muted); word-break: keep-all; }
+
+/* ── 작업실 전환: 히어로와 스트립이 물러나고 열린 카드가 용지가 된다 ───────── */.council-workspace-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 clamp(20px, 4.85vw, 70px);
+  min-height: 56px;
+}
+/* The bar stays in the flow, exactly as the design's editor header does: a sticky or
+   floating bar paints over the first field of the form it is supposed to escape from
+   (measured at 390 - input[name=nature] sat under #councilBack). Reaching the bar is the
+   script's job when it opens the 작업실, not the bar's. */
+html.council-in-workspace .council-workspace-bar {
+  border-bottom: var(--pa-hair) solid var(--line);
+}
+.council-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--pa-target);
+  padding: 8px 14px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.council-back:hover { border-color: var(--accent); color: var(--accent); }
+.council-workspace-title { font-family: var(--font-label); font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+
+/* 사진이 없는 화면에서 바는 흐름으로 돌아와 스스로 높이를 확보한다. 히어로에 얹을 이유가
+   없는 상태에서 absolute 로 남으면 뒤의 컨트롤을 덮는다(시안과 같은 판단). */
+html.council-in-workspace .council-topbar {
+  position: static;
+  background: var(--bg);
+  border-bottom: var(--pa-hair) solid var(--line);
+  color: var(--text);
+}
+html.council-in-workspace .council-badge,
+html.council-in-workspace .council-badge-action,
+html.council-in-workspace .council-theme-trigger {
+  color: var(--text);
+  border-color: var(--line);
+  background: transparent;
+}
+html.council-in-workspace .council-home .council-hero,
+html.council-in-workspace .council-strip,
+html.council-in-workspace .council-works-head,
+html.council-in-workspace .council-works-note { display: none; }
+html.council-in-workspace .council-works { margin-top: 0; grid-template-columns: minmax(0, 1fr); grid-template-areas: "cards"; }
+html.council-in-workspace .council-menu { grid-template-columns: minmax(0, 1fr); }
+html.council-in-workspace .council-card { display: none; }
+html.council-in-workspace .council-card.active {
+  display: block;
+  grid-column: 1 / -1;
+  padding: clamp(16px, 2.4vw, 30px);
+  background: var(--panel);
+  border: var(--pa-hair) solid var(--line);
+  color: var(--text);
+}
+html.council-in-workspace .council-card.active::before,
+html.council-in-workspace .council-card.active::after { content: none; }
+html.council-in-workspace .council-card.active > h2 { color: var(--text); }
+html.council-in-workspace .council-card.active > p { color: var(--muted); }
+html.council-in-workspace .council-card.active .council-card-icon svg { stroke: var(--text); }
+html.council-in-workspace .council-card.active .council-card-select { color: var(--accent); }
+html.council-in-workspace .council-card.active .council-card-select::after { content: none; }
+
+/* ── 하단 고지 ─────────────────────────────────────────────────────────── */
+.council-footer {
+  display: grid;
+  gap: 6px;
+  padding: 18px clamp(20px, 4.85vw, 70px) 34px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+.council-footer p { margin: 0; }
+
+/* ── 반응형: 1440 앵커 / 900 / 767 / 390 ────────────────────────────────── */
+@media (max-width: 1100px) {
+  .council-strip ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .council-strip li:nth-child(3) { border-left: 0; padding-left: 0; }
+}
+@media (min-width: 1200px) {
+  .council-hero { min-height: clamp(400px, 52.2svh, 470px); }
+}
+@media (max-width: 900px) {
+  .council-works { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "note" "cards"; }
+  .council-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .council-hero-copy { width: 100%; }
+  .council-hero .council-title { font-size: clamp(28px, 6.4vw, 42px); }
+  .council-hero-quote { display: none; }
+  /* 카드 상승폭은 데스크톱(250px)보다 작게. 크게 잡으면 복사 아래로 카드가 파고든다. */
+  html[data-country="us"] .council-works,
+  html[data-country="uk"] .council-works { margin-top: -220px; }
+}
+@media (max-width: 767px) {
+  .council-topbar { position: absolute; flex-wrap: wrap; padding: 10px 20px; }
+  .council-brand { flex: 0 1 100%; }
+  .council-theme { order: 5; }
+  .council-hero { padding-top: 150px; min-height: 520px; }
+  .council-scene::before { background: linear-gradient(180deg, var(--hero-scrim-strong) 0%, var(--hero-scrim) 46%, var(--hero-scrim) 100%); }
+  .council-hero-copy { padding-left: 20px; }
+  .council-menu { grid-template-columns: minmax(0, 1fr); }
+  .council-strip ul { grid-template-columns: minmax(0, 1fr); }
+  .council-strip li { border-left: 0; padding-left: 0; }
+  .council-works { margin-top: 0; }
+}
+@media (max-width: 390px) {
+  .council-body { font-size: 15px; }
+  .council-hero { padding-top: 158px; }
+  /* MaruBuri 제목을 2줄에 앉히는 상한(실측 28px). */
+  .council-hero .council-title { font-size: 28px; }
+  .council-cta, .council-back { width: 100%; justify-content: center; }
+  .council-workspace-bar { padding: 0 20px; }
+}
+
+/* ── 동작 ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .council-card, .council-cta { transition: none; }
+  .council-card:hover, .council-cta:hover { transform: none; }
+}
+@media (prefers-contrast: more) {
+  .council-card { outline: var(--pa-hair) solid var(--work-ink); }
+  .council-theme-panel, .council-card.active { border-width: 2px; }
+}

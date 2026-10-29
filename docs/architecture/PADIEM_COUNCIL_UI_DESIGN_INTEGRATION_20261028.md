@@ -323,6 +323,31 @@ No stage in this list deploys to production; production release stays with CENTR
   in the *touch* loop is load-bearing on the real page (sub-44 count 1 → 0 at all widths).
 - **Deferred behind §6 — hero, photography, localised chrome.** Not part of #6065 S5; the CTO's
   S5 order explicitly bans new visual features, photos or fonts without a discrete issue.
+- **S6 — the cinematic first screen, released by the 2026-10-29 order.** The discrete issue
+  arrived: #6065 must show the #5967 시안 from the first screen, with 4 countries × 5 styles
+  switchable in a real browser. What this stage did, and what it decided:
+  - The design's token layer is **copied verbatim** into `council-app.css`, between the
+    `cinematic token layer` and `end of the ported token layer` markers.
+    `tests/test_6065_cinematic_design.py` compares the declaration *sets* against
+    `reference/padiem-parliament-ai-design-v1/parliament-theme.css` lines 14–562, so a
+    re-invented value fails even while the original line is still somewhere in the file.
+  - The two axes stay the design's own mechanism — `html[data-country]` supplies material,
+    `html[data-style]` supplies roles — so 4 + 5 blocks, never 20. Measured in a real
+    browser at 1440: **20 combinations reachable, 20 distinct paint signatures**.
+  - The country axis did **not** get a second authority. `#councilCountry` stays the only
+    writer of `padiem-council-country` and of the `country` field on the wire; the design's
+    four pills mirror it. The style axis is the only new value and gets
+    `padiem-council-style`; the prototype's own key `padiem-parliament-theme` stays out.
+  - The 작업실 is a state, not moved DOM: `applySelection` paints `html.council-in-workspace`,
+    the hero and the strip step out, the open card becomes the paper. Which panel is open is
+    still decided exactly as before, and the bar stays in the flow because a sticky one
+    painted over the form's first field at 390 (measured).
+  - The design's nav row, left rail, search box, `전체 도구 보기` and the fictional account
+    chip were **not** ported: this app has no screen behind them.
+  - §6-1, §6-2 and §6-3 are answered by this stage. §6-4 (localised chrome) is not: the
+    app's UI strings stay Korean, because the order asked for the design's visual structure
+    and country remains output language only.
+
 
 ## 5. Non-goals
 
@@ -338,10 +363,20 @@ proof that generation or saving works.
 1. **Asset budget.** The prototype ships 7 photographs (2,647,683 bytes) and `assets/fonts/`
    (1,997,707 bytes including licence texts). Staged into the Chat Worker bundle, that is added to
    every cold load of `/apps/council/`. Which images, at what size, is an owner call.
+   **Decided 2026-10-29 (S6):** all seven ship, at the 정본's own sizes, unmodified —
+   4,645,541 bytes under `static/assets/`. The bundle is served as static assets, so the cost is
+   a cold-cache fetch per file, not a Worker size limit. Shrinking the three overseas heroes is
+   available as a follow-up and would change the design's own files.
 2. **`url()` policy.** Constraint 2 currently makes CSS-referenced imagery impossible here. Either
    photography stays `<img>`-only, or the ban is consciously narrowed to `@import` plus remote URLs.
+   **Decided 2026-10-29 (S6):** narrowed. `@import` stays banned and every `url()` must resolve
+   inside this app (`./assets/...`) or be a `data:` URI; `tests/_council_module.py`'s
+   `local_asset_targets()` enforces it, and five separate guards go red on a remote reference.
 3. **Are the 5 styles user-facing in production?** If yes, where the choice persists: a third
    `localStorage` key beside `padiem-council-country` and `padiem-council-tool`.
+   **Decided 2026-10-29 (S6):** user-facing, persisted in `padiem-council-style`. The country
+   axis did not get a new key or a new authority — the design's pills mirror `#councilCountry`,
+   which remains the only writer of the value that goes on the wire.
 4. **Localised chrome.** The app has no UI dictionary — the header, cards and login strings are
    hard-coded Korean (`index.html`, `council-app.js:296-310,531-537,974-979`). The prototype's
    `COPY` dictionary covers screen strings for `us`/`uk`/`fr` only. Translating the app's chrome is a

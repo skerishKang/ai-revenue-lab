@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-theme="light">
+<html lang="ko" data-theme="light" data-country="kr" data-style="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,6 +17,10 @@
     * 로그인이 필요하면 이 화면 안에서 한다. PADIEM Chat 홈페이지로 이동시키지 않는다.
       Google 로그인은 제공자 왕복이 끝나면 이 화면으로 돌아온다(서명된 상태값의 허용 목록으로만 판정).
     * 미로그인 상태에서는 설명만 보이고, 도구 빌더는 붙지 않는다(fail-closed).
+    * 첫 화면의 시네마틱 구조·국가 4·스타일 5는 #5967 정본을 그대로 옮긴 것이다.
+      두 축은 독립적이다: 국가는 음계와 사진만, 스타일은 그 재료의 역할과 성격만 바꾼다.
+      국가 값은 아래 <select> 가 유일한 권한이며(padiem-council-country), 스타일은
+      padiem-council-style 에 따로 저장한다. 사진·폰트 모두 이 앱의 정적 자산만 쓴다.
   -->
   <link rel="stylesheet" href="/padiem-themes.css" />
   <link rel="stylesheet" href="./static/council-app.css" />
@@ -33,19 +37,154 @@
     </div>
     <div class="council-topbar-actions">
       <span class="council-badge" id="councilAuthBadge">확인 중…</span>
-      <label class="council-country" for="councilCountry">콘텐츠 언어
-        <select id="councilCountry" name="country" aria-label="콘텐츠 언어(국가)">
-          <option value="kr">한국어</option>
-          <option value="us">English (US)</option>
-          <option value="uk">English (UK)</option>
-          <option value="fr">Français</option>
-        </select>
-      </label>
       <button type="button" class="council-badge-action" id="councilAuthAction" hidden>로그인</button>
+      <!-- 시안의 두 축 전환은 우상단 아이콘 하나. 값은 스크린리더에만 남긴다. -->
+      <span class="council-theme" id="councilTheme">
+        <button type="button" class="council-theme-trigger" id="councilThemeTrigger"
+                aria-expanded="false" aria-controls="councilThemePanel" aria-haspopup="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.2 2.2M16.9 16.9l2.2 2.2M19.1 4.9l-2.2 2.2M7.1 16.9l-2.2 2.2" /></svg>
+          <span class="council-theme-value" id="councilThemeValue">국가 한국 · 스타일 라이트</span>
+        </button>
+        <span class="council-theme-panel" id="councilThemePanel" hidden>
+          <span class="council-theme-group" role="radiogroup" aria-label="디자인 국가" id="councilCountryGroup">
+            <span class="council-theme-legend">디자인 국가</span>
+            <button type="button" role="radio" aria-checked="true" data-country="kr">한국</button>
+            <button type="button" role="radio" aria-checked="false" data-country="us">미국</button>
+            <button type="button" role="radio" aria-checked="false" data-country="uk">영국</button>
+            <button type="button" role="radio" aria-checked="false" data-country="fr">프랑스</button>
+            <!--
+              국가의 유일한 권한은 이 <select> 다. #6046 의 저장·요청·필터가 모두 이것을 읽고,
+              위 4개 버튼은 그 거울이다(버튼 → select.value + change, select change → 버튼 갱신).
+              시안대로 알약 4개로 보이게 두고, 통제 권한은 기존 계약에 그대로 둔다.
+            -->
+            <label class="council-country" for="councilCountry">콘텐츠 언어
+              <select id="councilCountry" name="country" aria-label="콘텐츠 언어(국가)" tabindex="-1">
+                <option value="kr">한국어</option>
+                <option value="us">English (US)</option>
+                <option value="uk">English (UK)</option>
+                <option value="fr">Français</option>
+              </select>
+            </label>
+          </span>
+          <span class="council-theme-group" role="radiogroup" aria-label="디자인 스타일" id="councilStyleGroup">
+            <span class="council-theme-legend">디자인 스타일</span>
+            <button type="button" role="radio" aria-checked="false" data-style="classic">클래식</button>
+            <button type="button" role="radio" aria-checked="false" data-style="modern">모던</button>
+            <button type="button" role="radio" aria-checked="false" data-style="dark">다크</button>
+            <button type="button" role="radio" aria-checked="true" data-style="light">라이트</button>
+            <button type="button" role="radio" aria-checked="false" data-style="minimal">미니멀</button>
+          </span>
+          <span class="council-theme-note">국가는 결과물 언어와 화면 재료를 함께 바꿉니다. 타일은 그 재료를 어디에 쓸지만 정합니다.</span>
+        </span>
+      </span>
     </div>
   </header>
   <main id="councilMain">
-    <h1 class="council-title">의원실 업무 도구 3종</h1>
+    <!-- 작업실: 업무를 고르면 히어로와 스트립이 물러나고 이 막대가 헤더 아래 흐름으로 앉는다. -->
+    <div class="council-workspace-bar" id="councilWorkspaceBar" hidden>
+      <button type="button" class="council-back" id="councilBack">&larr; 시네마틱 홈으로</button>
+      <span class="council-workspace-title" id="councilWorkspaceTitle"></span>
+    </div>
+    <section class="council-home" id="councilHome">
+      <section class="council-hero" aria-labelledby="councilHeroTitle">
+        <span class="council-scene" aria-hidden="true">
+          <span class="council-photo-layer"></span>
+          <span class="council-grain"></span>
+        </span>
+        <p class="council-hero-quote" aria-hidden="true">
+          <span>&ldquo;기술이 만드는 더 나은 민주주의,<br />AI가 의원님의 오늘을 응원합니다.&rdquo;</span>
+          <small>PEOPLE &middot; DEMOCRACY &middot; A BETTER TOMORROW</small>
+        </p>
+        <div class="council-hero-copy">
+          <p class="council-eyebrow" id="councilHeroEyebrow">PARLIAMENTARY AI STUDIO</p>
+          <h1 class="council-title" id="councilHeroTitle">국민을 위한<br /><em>더 나은 의정활동</em>, AI와 함께</h1>
+          <p class="council-hero-lead">
+            말 한 마디가 더 멀리 닿고, 한 번의 기록이 더 큰 변화를 만듭니다.<br />
+            의원실의 시간을 아껴, 국민을 위한 일에 집중할 수 있도록.
+          </p>
+          <p class="council-hero-actions">
+            <button type="button" class="council-cta" id="councilHeroCta">지금, AI 업무 도구 시작하기</button>
+          </p>
+        </div>
+      </section>
+      <section class="council-works" aria-labelledby="councilWorksTitle">
+        <div class="council-works-head">
+          <div class="council-works-intro">
+            <p class="council-eyebrow">AI WORK TOOLS</p>
+            <h2 id="councilWorksTitle">의원실 업무 도구 3종</h2>
+          </div>
+          <p class="council-works-side">AI가 만드는,<br />더 효율적인 의정활동</p>
+        </div>
+        <p class="council-works-note">반복되는 업무는 AI에게,<br />더 중요한 의정활동에 집중하세요.</p>
+        <nav class="council-menu" aria-label="의원3종 기능 선택">
+          <section class="council-card" id="council-speech" data-tool="speech" aria-labelledby="councilSpeechTitle">
+            <span class="council-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><path d="M7 5h13a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H7z" /><path d="M11 11h8M11 15h8M11 19h5" /></svg>
+            </span>
+            <span class="council-card-badge" aria-hidden="true">AI 작성</span>
+            <span class="council-card-index" aria-hidden="true">01</span>
+            <h2 id="councilSpeechTitle">축사·인사말</h2>
+            <p>행사 정보를 입력하면 축사·인사말 초안을 준비합니다.</p>
+            <button type="button" class="council-card-select" data-tool="speech"
+                    aria-controls="councilSpeechBody" aria-expanded="false">열기</button>
+            <div class="council-card-body" id="councilSpeechBody" hidden></div>
+          </section>
+          <section class="council-card" id="council-sns" data-tool="sns" aria-labelledby="councilSnsTitle">
+            <span class="council-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><path d="M5 13v6a2 2 0 0 0 2 2h3l8 5V6l-8 5H7a2 2 0 0 0-2 2z" /><path d="M23 11a6 6 0 0 1 0 10" /></svg>
+            </span>
+            <span class="council-card-badge" aria-hidden="true">AI 홍보글</span>
+            <span class="council-card-index" aria-hidden="true">02</span>
+            <h2 id="councilSnsTitle">SNS 홍보</h2>
+            <p>행사 소식을 블로그·페이스북·인스타그램 게시글 초안으로 준비합니다.</p>
+            <button type="button" class="council-card-select" data-tool="sns"
+                    aria-controls="councilSnsBody" aria-expanded="false">열기</button>
+            <div class="council-card-body" id="councilSnsBody" hidden></div>
+          </section>
+          <section class="council-card" id="council-meeting" data-tool="meeting" aria-labelledby="councilMeetingTitle">
+            <span class="council-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><path d="M6 5h16a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H6z" /><path d="M11 11h9M11 15h9M11 19h6" /></svg>
+            </span>
+            <span class="council-card-badge" aria-hidden="true">AI 요약</span>
+            <span class="council-card-index" aria-hidden="true">03</span>
+            <h2 id="councilMeetingTitle">회의정리·활동집</h2>
+            <p>회의 내용을 요약·기록으로 남기고, 선택한 기록으로 활동집 초안을 만듭니다.</p>
+            <button type="button" class="council-card-select" data-tool="meeting"
+                    aria-controls="councilMeetingBody" aria-expanded="false">열기</button>
+            <div class="council-card-body" id="councilMeetingBody" hidden></div>
+          </section>
+        </nav>
+      </section>
+      <section class="council-strip" aria-labelledby="councilStripTitle">
+        <h2 class="council-visually-hidden" id="councilStripTitle">의정활동 지원 가치</h2>
+        <ul>
+          <li>
+            <span class="council-strip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></svg>
+            </span>
+            <span class="council-strip-body"><strong>시간 절약</strong><small>반복 업무는 AI가, 더 중요한 일에 집중하세요.</small></span>
+          </li>
+          <li>
+            <span class="council-strip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M4 19V9M10 19V5M16 19v-8M22 19H2" /></svg>
+            </span>
+            <span class="council-strip-body"><strong>높은 완성도</strong><small>검증된 템플릿과 어조 관리로 품격을 유지합니다.</small></span>
+          </li>
+          <li>
+            <span class="council-strip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z" /><path d="M9 12l2 2 4-4" /></svg>
+            </span>
+            <span class="council-strip-body"><strong>보안과 신뢰</strong><small>기존 PADIEM 계정과 저장 권한을 그대로 사용합니다.</small></span>
+          </li>
+          <li>
+            <span class="council-strip-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3" /><circle cx="17" cy="10" r="2.5" /><path d="M3 20c0-3 3-5 6-5s6 2 6 5M15 20c0-2 1.5-3.5 3.5-3.5S22 18 22 20" /></svg>
+            </span>
+            <span class="council-strip-body"><strong>함께 성장하는 플랫폼</strong><small>축사·SNS·회의록·활동집이 하나의 기록으로 이어집니다.</small></span>
+          </li>
+        </ul>
+      </section>
+    </section>
     <section class="council-auth" id="councilAuthPanel" hidden aria-labelledby="councilAuthTitle">
       <h2 id="councilAuthTitle">PADIEM 로그인</h2>
       <p class="council-auth-lead">
@@ -69,38 +208,14 @@
       </p>
       <p class="council-auth-status" id="councilAuthStatus" role="status" aria-live="polite" hidden></p>
     </section>
-    <nav class="council-menu" aria-label="의원3종 기능 선택">
-      <section class="council-card" id="council-speech" data-tool="speech" aria-labelledby="councilSpeechTitle">
-        <span class="council-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 32 32" focusable="false"><path d="M7 5h13a3 3 0 0 1 3 3v16a3 3 0 0 1-3 3H7z" /><path d="M11 11h8M11 15h8M11 19h5" /></svg>
-        </span>
-        <h2 id="councilSpeechTitle">축사·인사말</h2>
-        <p>행사 정보를 입력하면 축사·인사말 초안을 준비합니다.</p>
-        <button type="button" class="council-card-select" data-tool="speech"
-                aria-controls="councilSpeechBody" aria-expanded="false">열기</button>
-        <div class="council-card-body" id="councilSpeechBody" hidden></div>
-      </section>
-      <section class="council-card" id="council-sns" data-tool="sns" aria-labelledby="councilSnsTitle">
-        <span class="council-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 32 32" focusable="false"><path d="M5 13v6a2 2 0 0 0 2 2h3l8 5V6l-8 5H7a2 2 0 0 0-2 2z" /><path d="M23 11a6 6 0 0 1 0 10" /></svg>
-        </span>
-        <h2 id="councilSnsTitle">SNS 홍보</h2>
-        <p>행사 소식을 블로그·페이스북·인스타그램 게시글 초안으로 준비합니다.</p>
-        <button type="button" class="council-card-select" data-tool="sns"
-                aria-controls="councilSnsBody" aria-expanded="false">열기</button>
-        <div class="council-card-body" id="councilSnsBody" hidden></div>
-      </section>
-      <section class="council-card" id="council-meeting" data-tool="meeting" aria-labelledby="councilMeetingTitle">
-        <span class="council-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 32 32" focusable="false"><path d="M6 5h16a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H6z" /><path d="M11 11h9M11 15h9M11 19h6" /></svg>
-        </span>
-        <h2 id="councilMeetingTitle">회의정리·활동집</h2>
-        <p>회의 내용을 요약·기록으로 남기고, 선택한 기록으로 활동집 초안을 만듭니다.</p>
-        <button type="button" class="council-card-select" data-tool="meeting"
-                aria-controls="councilMeetingBody" aria-expanded="false">열기</button>
-        <div class="council-card-body" id="councilMeetingBody" hidden></div>
-      </section>
-    </nav>
+    <footer class="council-footer">
+      <p class="council-footer-photo" id="councilPhotoCredit">
+        사진 출처: Farruk Ahmed Bhuiyan &middot; Wikimedia Commons &middot; CC BY-SA 4.0 (한국 의사당 석양)
+      </p>
+      <p class="council-footer-note">
+        국가 선택은 결과물의 언어와 화면 디자인을 바꿉니다. 문서의 법적·절차적 정확성은 의원실이 확인합니다.
+      </p>
+    </footer>
   </main>
   <script src="./static/council-app.js" defer></script>
 </body>

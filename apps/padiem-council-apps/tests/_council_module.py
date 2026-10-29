@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -65,7 +66,7 @@ def load_council_module() -> _Builders:
 
 
 SCENARIOS = ("generate", "restore", "errors", "calendar_words", "auth",
-             "auth_routing", "auth_states", "country_filter", "selection", "book")
+             "auth_routing", "auth_states", "country_filter", "selection", "book", "cinematic")
 
 
 @lru_cache(maxsize=len(SCENARIOS))
@@ -90,3 +91,16 @@ def run(scenario: str) -> dict:
     assert result["scenario"] == scenario, result
     return result["observation"]
 
+
+def local_asset_targets(css: str) -> list[str]:
+    """Every url() this sheet may use: a file that ships inside this app, or a data: URI.
+
+    The cinematic layer paints the 정본's photography, so a blanket "no url()" guard would
+    have to go. What stays forbidden is reaching outside this bundle: no @import, no remote
+    origin, no other app's asset path.
+    """
+    # a quoted argument is read whole: the grain layer's data: URI contains url(%23n) inside
+    # itself, and matching that fragment would report a missing file that is not a target.
+    pattern = re.compile(r"""url\(\s*(?P<q>['"]?)(?P<target>.*?)(?P=q)\s*\)""")
+    found = [match.group("target").strip() for match in pattern.finditer(css)]
+    return [target for target in found if target and not target.startswith("data:")]

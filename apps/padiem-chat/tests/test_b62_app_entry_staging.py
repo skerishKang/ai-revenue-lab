@@ -36,13 +36,34 @@ spec.loader.exec_module(builder)
 
 ENTRY_PREFIX = "apps/council"
 #: The app's own layout (app/app_factory.py): the entry page is served at "/" and
-#: everything else under "/static/*". Under the Chat prefix that is exactly:
+#: everything else under "/static/*". Under the Chat prefix that is the whole static
+#: tree - since #6065 S6 it also carries the design's photography and self-hosted
+#: faces, so the list is written out rather than derived: an unexpected file reaching
+#: the bundle has to fail here, not appear in Production.
 STAGED_PATHS = {
-    f"{ENTRY_PREFIX}/index.html",
-    f"{ENTRY_PREFIX}/static/council-app.js",
+    f"{ENTRY_PREFIX}/static/assets/ATTRIBUTION.md",
+    f"{ENTRY_PREFIX}/static/assets/fonts/LICENSE-MaruBuri-NAVER.txt",
+    f"{ENTRY_PREFIX}/static/assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt",
+    f"{ENTRY_PREFIX}/static/assets/fonts/LICENSE-Pretendard-OFL-1.1.txt",
+    f"{ENTRY_PREFIX}/static/assets/fonts/MaruBuri-Bold.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/MaruBuri-Regular.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/PlayfairDisplay-Bold-latin.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/Pretendard-Bold.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/Pretendard-Medium.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/Pretendard-Regular.woff2",
+    f"{ENTRY_PREFIX}/static/assets/fonts/Pretendard-SemiBold.woff2",
+    f"{ENTRY_PREFIX}/static/assets/IMAGE-SLOTS.md",
+    f"{ENTRY_PREFIX}/static/assets/meeting-card.jpg",
+    f"{ENTRY_PREFIX}/static/assets/parliament-fr-hero.jpg",
+    f"{ENTRY_PREFIX}/static/assets/parliament-hero.jpg",
+    f"{ENTRY_PREFIX}/static/assets/parliament-uk-hero.jpg",
+    f"{ENTRY_PREFIX}/static/assets/parliament-us-hero.jpg",
+    f"{ENTRY_PREFIX}/static/assets/sns-card.jpg",
+    f"{ENTRY_PREFIX}/static/assets/speech-card.jpg",
     f"{ENTRY_PREFIX}/static/council-app.css",
+    f"{ENTRY_PREFIX}/static/council-app.js",
+    f"{ENTRY_PREFIX}/index.html",
 }
-
 
 @lru_cache(maxsize=None)
 def staged_map() -> dict[str, Path]:
@@ -257,6 +278,17 @@ def test_the_staged_tree_serves_the_entry_page_at_its_ordered_path(tmp_path) -> 
     assert "PADIEM 의원3종" in entry.text
     for reference in re.findall(r'(?:src|href)="(\./[^"]+)"', entry.text):
         url = f"/{ENTRY_PREFIX}/{reference[len('./'):]}"
+        asset = client.get(url)
+        assert asset.status_code == 200, f"{url} -> {asset.status_code}"
+    # the sheet's own url() targets are the photography and the faces; a path one directory
+    # level off paints an unstyled page in Production and 404s here
+    css = client.get(f"/{ENTRY_PREFIX}/static/council-app.css")
+    assert css.status_code == 200
+    sheet_urls = [target for target in re.findall(r'url\(\s*"([^"]+)"', css.text)
+                  if not target.startswith("data:")]
+    assert len(sheet_urls) >= 10, len(sheet_urls)
+    for target in sheet_urls:
+        url = f"/{ENTRY_PREFIX}/static/{target[len('./'):]}"
         asset = client.get(url)
         assert asset.status_code == 200, f"{url} -> {asset.status_code}"
     # Chat's own surface is unchanged by the entry.

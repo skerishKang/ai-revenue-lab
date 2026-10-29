@@ -97,13 +97,16 @@ def test_the_two_column_editor_only_opens_when_the_right_side_has_content():
     assert "min-width: 900px" in CSS and "max-width: 900px" in CSS, "the design switches columns at 900"
 
 
-def test_s3_added_no_asset_no_font_and_no_style_axis():
-    assert "@font-face" not in CSS and "url(" not in CSS and "@import" not in CSS
+def test_the_editor_skin_still_borrows_nothing_from_outside_the_bundle():
+    assert "@import" not in CSS, "the sheet may not reach another sheet"
     assert CSS.count("min-height: 44px") >= 6, CSS.count("min-height: 44px")
-    assert "data-style" not in CSS and "padiem-parliament-theme" not in CSS
+    assert "padiem-parliament-theme" not in CSS, "the prototype keeps its own key"
     # Comments carry issue numbers like #6046 and the keyboard ring keeps Chat's own
     # --focus-ring fallback, so neither is a colour the editor skin invented.
-    code = re.sub(r"/\*.*?\*/", "", CSS, flags=re.S)
+    outside = CSS.split("/* ══ cinematic token layer", 1)
+    code = outside[0] + (outside[1].split("/* ══ end of the ported token layer", 1)[-1]
+                         if len(outside) > 1 else "")
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
     code = "\n".join(l for l in code.splitlines() if "--focus-ring" not in l)
     literals = re.findall(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", code)
     assert not literals, f"the editor skin must stay on the shared tokens: {literals}"

@@ -93,10 +93,14 @@ def test_the_gate_and_the_session_contract_are_still_the_ones_the_app_shipped():
     assert not re.search(r'fetch\("/api/(?!chat|projects|auth/)', JS), "no new endpoint may appear"
 
 
-def test_s4_added_no_asset_no_font_and_no_style_axis():
-    assert "@font-face" not in CSS and "url(" not in CSS and "@import" not in CSS
-    assert "data-style" not in CSS and "padiem-parliament-theme" not in CSS
+def test_the_auth_surface_still_borrows_nothing_from_outside_the_bundle():
+    assert "@import" not in CSS, "the sheet may not reach another sheet"
+    assert "padiem-parliament-theme" not in CSS, "the prototype keeps its own storage key"
     assert CSS.count("min-height: 44px") >= 6, CSS.count("min-height: 44px")
-    code = re.sub(r"/\*.*?\*/", "", CSS, flags=re.S)
+    # the ported token layer carries the design's ramps; every other layer stays on tokens
+    outside = CSS.split("/* ══ cinematic token layer", 1)
+    code = outside[0] + (outside[1].split("/* ══ end of the ported token layer", 1)[-1]
+                         if len(outside) > 1 else "")
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
     code = "\n".join(l for l in code.splitlines() if "--focus-ring" not in l)
     assert not re.search(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", code), "the surfaces stay on shared tokens"
