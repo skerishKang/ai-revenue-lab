@@ -1,6 +1,10 @@
 name: B62 isolated Python Worker CPU probe
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-worker-local-cpu-probe.yml"
+      - "tools/worker_cpu_probe/**"
 permissions:
   contents: read
 jobs:
@@ -22,6 +26,8 @@ jobs:
         run: |
           uv sync --locked --extra dev
           uv pip install websocket-client==1.8.0
+          uv run --no-sync pywrangler --version
+          uv run --no-sync python scripts/build_b66_worker_dependencies.py
       - name: Probe local workerd without network access
         shell: bash
         run: |
