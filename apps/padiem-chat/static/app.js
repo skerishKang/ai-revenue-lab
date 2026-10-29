@@ -2457,11 +2457,28 @@
       setNote(error instanceof Error ? error.message : uiT("conversation-delete-failed"), "error");
     }
   }
+  async function fetchAuthStatusOnce() {
+    const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data) throw new Error("auth status unavailable");
+    return data;
+  }
   async function loadAuthStatus() {
+    // #6114: a Python Worker restart can eat the first status read (1101/1102).
+    // A request that produced NO answer is never a signed-out answer: ask once
+    // more before the browser presents unreachable. A definitive guest answer
+    // (a 200 that says ready and not authenticated) is never re-asked.
+    let data = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        data = await fetchAuthStatusOnce();
+        break;
+      } catch (_) {
+        if (attempt === 1) data = null;
+      }
+    }
     try {
-      const response = await fetch("/api/auth/status", { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data) throw new Error("auth status unavailable");
+      if (!data) throw new Error("auth status unavailable");
       applyAuthState(data);
       if (authState.authenticated) {
         await loadProjects();

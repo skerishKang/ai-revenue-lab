@@ -512,6 +512,10 @@ async def _run_callback(authority, identity, *, query=None, state_ok=True, retur
             self.app.state.identity_shadow_store = None
             self.query_params = state["query_params"]
             self.cookies = state["cookies"]
+            # #6114: the callback now branches on Accept. A plain stub request
+            # carries no text/html, so it keeps the JSON contract like the app's
+            # own fetches; the assertions below stay exactly as they were.
+            self.headers = {}
 
     request = _Request()
     response = await google_callback(request)

@@ -178,7 +178,7 @@ def test_an_unreadable_status_is_a_distinct_session_state():
     assert "function sessionStateForPresentation()" in CAPABILITIES
     assert 'return auth.statusReachable === false ? "unreachable" : "pending";' in CAPABILITIES
     assert "UNREACHABLE_AUTH" in CAPABILITIES
-    assert "nextAuth = response.ok ? projectAuth(data) : UNREACHABLE_AUTH;" in CAPABILITIES
+    assert "nextAuth = answer.ok ? projectAuth(answer.data) : UNREACHABLE_AUTH;" in CAPABILITIES
     assert '"pending", "unavailable", "unreachable", "guest", "signed_in", "expired"' in LOCALE
 
 
