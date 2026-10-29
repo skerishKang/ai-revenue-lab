@@ -10,7 +10,6 @@ from app.documents import (
 from app.b14_client import _bounded_context
 from padiem_ai_core.execution_runtime import (
     _normalize_additional_system_context, _compose_system_instruction,
-    MAX_SYSTEM_CONTEXT_BYTES,
 )
 
 

@@ -773,7 +773,7 @@ async def test_cancel_rejects_blank_reason_preserves_continuation(reason) -> Non
     assert service._continuation_store._records[ref].state == "active"
 
 
-@pytest.mark.parametrize("reason", ["x" * 257, 123, {"a": 1}])
+@pytest.mark.parametrize("reason", [123, {"a": 1}])
 async def test_cancel_rejects_invalid_reason_values(reason) -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
@@ -788,6 +788,20 @@ async def test_cancel_rejects_invalid_reason_values(reason) -> None:
     response = await service.cancel_payload(payload)
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_cancel_reason"
+
+
+async def test_cancel_accepts_a_reason_over_the_old_length_ceiling() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    reason = "x" * 257
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": reason}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 200
+    assert service._continuation_store._records[ref].cancel_reason == reason
 
 
 # ==============================================================================

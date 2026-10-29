@@ -27,7 +27,7 @@ B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 # The old global 4096 max_tokens limit was a B14 pilot compatibility setting,
 # not any provider's capability. It must not constrain all AI products (#4379).
 # Keep this exported symbol for old callers; None means no global product cap.
-# A feature may opt into its own explicit budget via b14_output_limits.
+# A feature may opt into its own explicit budget.
 PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
 # Owner rules 2026-10-26: completed JSON is materialized in Worker memory.
