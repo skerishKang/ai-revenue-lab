@@ -15,6 +15,7 @@ import json
 import pathlib
 import re
 import sqlite3
+import pytest
 import sys
 from types import SimpleNamespace
 
@@ -278,6 +279,22 @@ def test_busy_shares_the_channel_proof_rules():
         _Request(state, {"node_ref": "node-ABC"}, secret="nope-nope-nope-nope")))
     assert response.status_code == 403
     assert _json(response)["error"]["code"] == "oracle_mesh_channel_rejected"
+
+
+def test_the_queue_runs_without_an_ownership_map_when_the_lane_is_retired():
+    """#5573 follow-up: a cutover must not wait for a map lane it will not use."""
+
+    from service import HEALTH_PATH
+
+    app = create_app(connection=_connection(), channel_secret=SECRET,
+                     ownership_map=None, legacy_map_lane=False)
+    probe = _Request(app.state, None, content_type="text/plain")
+    body = _json(asyncio.run(endpoint_of(app, HEALTH_PATH)(probe)))
+    assert body["ok"] is True and body["pending_unclaimed"] == 0
+    # The same absence is still fatal while the lane is on: the switch, not a default,
+    # is what removes the dependency.
+    with pytest.raises(ValueError):
+        create_app(connection=_connection(), channel_secret=SECRET, ownership_map=None)
 
 
 def test_health_reports_the_three_counts_the_cutover_decision_reads():

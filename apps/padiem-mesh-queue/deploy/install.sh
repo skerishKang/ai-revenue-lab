@@ -51,6 +51,10 @@ echo "== environment"
 # simply keeps the channel-secret-only behaviour, and the monitor's own install hands
 # that file later. An empty line in an EnvironmentFile is ignored, so absence is
 # expressed by leaving the slot empty rather than by a second template.
+# #5573 follow-up: a re-run must not undo a retirement decision. The value already in
+# queue.env wins; a fresh install writes today's behaviour ("on").
+LEGACY_MAP_LANE=$(grep -s '^MESH_QUEUE_LEGACY_MAP_LANE=' "$ROOT/queue.env" 2>/dev/null | cut -d= -f2)
+LEGACY_MAP_LANE=${LEGACY_MAP_LANE:-on}
 WATCH_LINE=""
 if [ -s "$ROOT/watch-read-secret.txt" ]; then
   WATCH_LINE="MESH_QUEUE_WATCH_READ_SECRET_FILE=$ROOT/watch-read-secret.txt"
@@ -63,6 +67,7 @@ MESH_QUEUE_DB_PATH=$ROOT/queue.sqlite3
 MESH_QUEUE_CHANNEL_SECRET_FILE=$CHANNEL_SECRET_FILE
 MESH_QUEUE_OWNERSHIP_MAP_FILE=$ROOT/ownership-map.json
 MESH_QUEUE_SERVICE_SECRET_FILE=$ROOT/service-secret.txt
+MESH_QUEUE_LEGACY_MAP_LANE=$LEGACY_MAP_LANE
 $WATCH_LINE
 MESH_QUEUE_EXECUTION_MODE=mesh
 PYTHONPATH=$ROOT

@@ -520,6 +520,7 @@ def create_app(
     local_task_result_source=None,
     connector_txt_read_source=None,
     oracle_mesh_return_source=None,
+    oracle_mesh_legacy_map_lane=True,
     claw_engine_desktop_secret=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
@@ -1485,6 +1486,10 @@ def create_app(
     # unmounted and every return fail-closed until the Worker root composes it.
     from .oracle_mesh_read_return_routes import UnconfiguredOracleMeshReturnSource
     app.state.claw_engine_desktop_secret = claw_engine_desktop_secret
+    # #5573 follow-up: the legacy map lane's switch travels with the app, so a request
+    # that names a file for the deployment map can be told about the retirement instead
+    # of being judged by a map that no longer holds authority.
+    app.state.oracle_mesh_legacy_map_lane = bool(oracle_mesh_legacy_map_lane)
     app.state.oracle_mesh_return_source = (
         oracle_mesh_return_source
         if oracle_mesh_return_source is not None
