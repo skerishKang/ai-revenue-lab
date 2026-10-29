@@ -17,6 +17,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -44,6 +45,12 @@ RENEW_INTERVAL_SECONDS = 20
 #: reference and the asker's own dispatch id in, one boolean out — the same read-only
 #: shape, the same channel proof and the same ownership boundary as poll.
 BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
+#: #5881 follow-on: the result submission is the one leg the 컴2 queue does not serve.
+#: Framing the answer and writing the conversation rows stay in the Chat Worker, which
+#: asks the queue only for the atomic consume. So when the claim lane is answered on
+#: this host, a submission still travels to the Worker - by path, not by a second
+#: switch that could be set wrong.
+CHAT_ONLY_PATHS = frozenset({RESULT_PATH})
 #: A channel request may never own the loop indefinitely. One host met a half-dead
 #: TCP path on a single poll and blocked for 5 h 36 m with no log line at all (last
 #: send and last receive 20,125 s apart, 1,971 of 3,099 bytes retransmitted), so no
@@ -60,6 +67,24 @@ CHANNEL_WATCHDOG_INTERVAL_SECONDS = 15
 EXIT_STALLED_CHANNEL = 87
 #: Header carrying the deployment channel secret on both legs.
 CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
+#: #5881 follow-on: the 컴2 PC queue answers the claim lane on this host's loopback,
+#: and the executor runs on that host. A literal loopback address cannot be routed to
+#: and cannot be met on the way, so the queue leg may cross it without TLS. Every other
+#: origin still has to be https - the Worker's origin included, because its traffic can
+#: leave the machine. The header, its secret and the server's check of it are unchanged.
+LOOPBACK_CHANNEL_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
+
+
+def _is_loopback_channel_origin(origin: Any) -> bool:
+    if not isinstance(origin, str) or not origin.startswith("http://"):
+        return False
+    try:
+        host = urllib.parse.urlsplit(origin).hostname
+    except ValueError:
+        return False
+    return isinstance(host, str) and host.lower() in LOOPBACK_CHANNEL_HOSTS
+
+
 #: #5553: bound shared with the Chat poll route's presence envelope.
 MAX_PRESENCE_ENTRIES = 8
 #: #5573: the install tag an agent name may carry. The token rule is the same one
@@ -190,6 +215,7 @@ class OracleMeshExecutor:
         *,
         chat_origin: str,
         channel_secret: str,
+        queue_origin: Optional[str] = None,
         read_port: Any,
         command_port: Any = None,
         desktop_port: Any = None,
@@ -205,6 +231,17 @@ class OracleMeshExecutor:
             raise ContractError("the chat channel must be an https origin")
         if len(chat_origin) > 300 or chat_origin.rstrip("/") != chat_origin:
             raise ContractError("the chat origin must be a bare https origin")
+        # An empty or absent queue origin is today's behaviour: every leg, including
+        # the claim, travels to the Worker. That is also the rollback, which is why it
+        # is the state the field falls back to rather than a mode to configure.
+        if queue_origin and (
+            not isinstance(queue_origin, str)
+            or len(queue_origin) > 300
+            or queue_origin.rstrip("/") != queue_origin
+            or not (queue_origin.startswith("https://")
+                    or _is_loopback_channel_origin(queue_origin))
+        ):
+            raise ContractError("the queue channel must be an https or loopback origin")
         if (
             not isinstance(channel_secret, str)
             or not 16 <= len(channel_secret) <= 256
@@ -228,6 +265,7 @@ class OracleMeshExecutor:
         ):
             raise ContractError("the channel socket deadline must be 1..900 seconds")
         self._origin = chat_origin
+        self._queue_origin = queue_origin or None
         self._secret = channel_secret
         self._read_port = read_port
         self._command_port = command_port
@@ -282,11 +320,24 @@ class OracleMeshExecutor:
         self._carried_pairing_tags: list[str] = []
 
     # ---- channel -------------------------------------------------------
+    def _origin_for(self, path: str) -> str:
+        """Which server this leg asks.
+
+        The claim lane is answered by the queue on this host when one is configured;
+        the result submission is not served there and always travels to the Worker.
+        With no queue configured every leg asks the Worker, which is the state the
+        lane has run in and the state it rolls back to.
+        """
+
+        if self._queue_origin is not None and path not in CHAT_ONLY_PATHS:
+            return self._queue_origin
+        return self._origin
+
     def _https_post(
         self, path: str, payload: Optional[dict[str, Any]] | bytes,
     ) -> tuple[int, dict[str, Any]]:
         """One verified HTTPS POST. Redirects are refused, not followed."""
-        url = f"{self._origin}{path}"
+        url = f"{self._origin_for(path)}{path}"
         if isinstance(payload, (bytes, bytearray)):
             # #4379: an already framed body (desktop screenshot) travels as
             # octet-stream; its JPEG bytes are never re-encoded as base64.
@@ -1577,6 +1628,7 @@ def make_oracle_mesh_executor(
     *,
     chat_origin: str,
     channel_secret: str,
+    queue_origin: Optional[str] = None,
     meshctrl_js: str,
     login_user: str,
     password_provider: Callable[[], str],
@@ -1660,6 +1712,7 @@ def make_oracle_mesh_executor(
     return OracleMeshExecutor(
         chat_origin=chat_origin,
         channel_secret=channel_secret,
+        queue_origin=queue_origin,
         read_port=read_port,
         command_port=command_port,
         desktop_port=desktop_port,
@@ -1708,6 +1761,12 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
 
     Configuration is environment-only and bounded:
       ORACLE_MESH_CHAT_ORIGIN       https origin of the Chat worker (bare)
+      ORACLE_MESH_QUEUE_ORIGIN      optional; the origin of the 컴2 PC queue that
+                                    answers the claim lane on this host
+                                    (http://127.0.0.1:8797). Unset, every leg —
+                                    including the claim — goes to the Worker, which
+                                    is the state before the queue and the rollback.
+                                    The result submission always goes to the Worker.
       ORACLE_MESH_CHANNEL_SECRET_FILE  mode-0600 file holding the channel secret
       ORACLE_MESH_MESHCTRL_JS       path to the official meshctrl.js
       ORACLE_MESH_LOGIN_USER        MeshCentral operator account
@@ -1789,6 +1848,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             channel_secret=_read_secret_file(
                 need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"
             ),
+            queue_origin=env.get("ORACLE_MESH_QUEUE_ORIGIN", "").strip() or None,
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
             login_user=need("ORACLE_MESH_LOGIN_USER"),
             password_provider=password_provider,

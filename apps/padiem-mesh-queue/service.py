@@ -24,13 +24,21 @@ Configuration is files and environment, mirroring the executor's own unit:
     MESH_QUEUE_CHANNEL_SECRET_FILE   mode-0600 file, same secret the Worker holds
     MESH_QUEUE_OWNERSHIP_MAP_FILE    the deployment Mesh target map (JSON)
     MESH_QUEUE_EXECUTION_MODE        default mesh
+    MESH_QUEUE_SERVICE_SECRET_FILE   mode-0600 file; absent means no store door
+
+The service binds 127.0.0.1:8797. The executor reaches it there with
+`ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither
+address is published anywhere else, and the queue never listens on a public interface.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import pathlib
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -61,8 +69,20 @@ from schema import open_queue
 
 DEFAULT_DB_PATH = "/opt/padiem/mesh-queue/queue.sqlite3"
 HEALTH_PATH = "/health"
+#: This service is passive: quiet traffic is normal, so "no request lately" says
+#: nothing. What says something is a health read that stops answering - the same
+#: store the lane runs on, asked on a schedule, with a deadline. Three failed
+#: answers and the process exits so systemd's Restart=always brings a clean one.
+LIVENESS_INTERVAL_SECONDS = 60
+LIVENESS_DEADLINE_SECONDS = 20
+LIVENESS_FAILURES_BEFORE_RESTART = 3
+LIVENESS_ANSWERED = "answered"
+LIVENESS_FAILED = "failed"
+EXIT_UNRESPONSIVE = 87
 
-__all__ = ["DEFAULT_DB_PATH", "HEALTH_PATH", "create_app", "read_secret_file",
+__all__ = ["DEFAULT_DB_PATH", "EXIT_UNRESPONSIVE", "HEALTH_PATH", "LIVENESS_ANSWERED",
+           "LIVENESS_FAILED", "app_from_environment", "create_app", "liveness_check",
+           "liveness_rounds", "read_secret_file", "start_liveness_watchdog",
            "store_resolvers"]
 
 
@@ -164,6 +184,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     app.state.history_store = D1HistoryStore(database)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
     app.state.pc_device_pairing_store = D1PcPairingStore(database)
+    app.state.queue_database = database
     # The same composition the Worker root performs, run once here from files. An
     # unusable secret or map leaves the source None, and every channel route then
     # answers its documented 503 rather than serving an unauthenticated claim.
@@ -182,6 +203,76 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     return app
 
 
+async def _liveness_ask(database: Any) -> bool:
+    rows = await database.prepare(
+        "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch").all()
+    return isinstance(rows, list)
+
+
+def liveness_check(database: Any,
+                   *, deadline: float = LIVENESS_DEADLINE_SECONDS,
+                   pool: Any = None) -> str:
+    """One health read of the store the lane runs on, bounded in wall-clock time.
+
+    The query is plain SQLite, so a statement that stops answering is a statement
+    that has stopped: the bound is held by a thread waiting on the answer, which is
+    the only way to time out a call that blocks inside the database rather than
+    cooperatively. A caller that expects a wedge wants no cooperation from it. The
+    price of that thread is that the connection must be opened for it — which is
+    what `app.d1_sqlite.connect` does, and the only way this service opens one.
+    """
+
+    owner = pool is None
+    if owner:
+        pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="mesh-queue-liveness")
+    try:
+        future = pool.submit(lambda: asyncio.run(_liveness_ask(database)))
+        try:
+            return LIVENESS_ANSWERED if future.result(timeout=deadline) else LIVENESS_FAILED
+        except Exception:
+            return LIVENESS_FAILED
+    finally:
+        if owner:
+            pool.shutdown(wait=False)
+
+
+def liveness_rounds(database: Any, *, interval: float = LIVENESS_INTERVAL_SECONDS,
+                    deadline: float = LIVENESS_DEADLINE_SECONDS,
+                    sleep: Any = time.sleep, exit_process: Any = None,
+                    pool: Any = None, check: Any = None) -> int:
+    """Count failed health reads and give up on a service that stops answering.
+
+    Silence on the lane is normal — nobody is forced to poll — so this watches the
+    one thing that must always answer: the store behind the claim route. Three in a
+    row and the process ends on its own exit code; `Restart=always` brings a clean
+    one, and the exit is loud in the journal where a hung process is not.
+    """
+
+    ask = liveness_check if check is None else check
+    failures = 0
+    while True:
+        sleep(interval)
+        if ask(database, deadline=deadline, pool=pool) == LIVENESS_ANSWERED:
+            failures = 0
+            continue
+        failures += 1
+        if failures < LIVENESS_FAILURES_BEFORE_RESTART:
+            continue
+        print("mesh-queue watchdog: %d health reads did not answer; exiting for a "
+              "supervised restart" % failures, file=sys.stderr, flush=True)
+        if exit_process is None:
+            return failures
+        exit_process(EXIT_UNRESPONSIVE)
+
+
+def start_liveness_watchdog(database: Any) -> ThreadPoolExecutor:
+    """Run the liveness rounds on their own thread, away from the serving loop."""
+
+    pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="mesh-queue-liveness")
+    pool.submit(liveness_rounds, database, pool=pool)
+    return pool
+
+
 def app_from_environment() -> Starlette:
     """Build the service from the unit's environment, refusing to guess material.
 
@@ -191,7 +282,7 @@ def app_from_environment() -> Starlette:
     """
 
     service_secret_file = os.environ.get("MESH_QUEUE_SERVICE_SECRET_FILE", "").strip()
-    return create_app(
+    app = create_app(
         db_path=os.environ.get("MESH_QUEUE_DB_PATH", DEFAULT_DB_PATH),
         channel_secret=read_secret_file(
             os.environ.get("MESH_QUEUE_CHANNEL_SECRET_FILE",
@@ -205,6 +296,8 @@ def app_from_environment() -> Starlette:
         service_secret=(read_secret_file(service_secret_file, label="queue service secret")
                         if service_secret_file else None),
     )
+    start_liveness_watchdog(app.state.queue_database)
+    return app
 
 
 if __name__ == "__main__":

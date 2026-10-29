@@ -20,8 +20,8 @@ from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralCliFileReadPort, MeshCentralReadRefused, _PASSWORD_MARKER,
 )
 from kagent.local_agent_oracle_mesh_executor import (
-    CHANNEL_HEADER, CHANNEL_SOCKET_TIMEOUT_SECONDS, CHANNEL_STALL_SECONDS,
-    POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
+    BUSY_PATH, CANCEL_PATH, CHANNEL_HEADER, CHANNEL_SOCKET_TIMEOUT_SECONDS,
+    CHANNEL_STALL_SECONDS, LEASE_RENEW_PATH, POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
     MAX_RESULT_REJECTIONS, OracleMeshExecutionOutcome, make_oracle_mesh_executor,
 )
@@ -352,6 +352,130 @@ class EntrypointTests(unittest.TestCase):
                 "ORACLE_MESH_PASSWORD_FILE": "/nonexistent/password",
             })
         self.assertEqual(code, 2)
+
+
+class QueueChannelOriginTests(unittest.TestCase):
+    """#5881 follow-on: the claim lane may be served on this host's loopback, nowhere else.
+
+    The 컴2 PC queue listens on 127.0.0.1:8797 and the executor runs on that host, so the
+    queue leg can be a same-host call with no TLS in front of it. That relaxation is
+    confined to the queue field: the Worker's own origin still has to be https, because
+    its traffic can leave the machine, and the secret travels in the same header checked
+    the same way by whichever server answers.
+    """
+
+    def _queue_origin(self, origin: str) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=_StubPort(), queue_origin=origin,
+        )
+
+    def test_a_loopback_queue_origin_is_accepted_as_written(self):
+        for origin in ("http://127.0.0.1:8797", "http://localhost:8797",
+                       "http://[::1]:8797"):
+            with self.subTest(origin=origin):
+                self.assertEqual(self._queue_origin(origin)._queue_origin, origin)
+
+    def test_the_worker_origin_still_refuses_http_even_on_loopback(self):
+        for origin in ("http://127.0.0.1:8797", "http://localhost:8797",
+                       "http://chat.padiem.net", "ftp://127.0.0.1", "//127.0.0.1:8797"):
+            with self.subTest(origin=origin):
+                with self.assertRaises(ContractError):
+                    OracleMeshExecutor(chat_origin=origin, channel_secret=SECRET,
+                                       read_port=_StubPort())
+
+    def test_a_queue_origin_that_could_leave_this_host_is_refused(self):
+        for origin in (
+            "http://queue.example",
+            "http://localhost.evil.example",
+            "http://127.0.0.1.attacker.example",
+            "http://127.0.0.1:8797@evil.example",
+            "http://[::1].evil.example",
+            "ftp://127.0.0.1",
+            "//127.0.0.1:8797",
+            "https://",
+        ):
+            with self.subTest(origin=origin):
+                with self.assertRaises(ContractError):
+                    self._queue_origin(origin)
+
+    def test_the_bare_origin_rule_applies_to_the_queue_leg_as_to_the_worker_leg(self):
+        for origin in ("http://127.0.0.1:8797/", "https://queue.example/"):
+            with self.subTest(origin=origin):
+                with self.assertRaises(ContractError):
+                    self._queue_origin(origin)
+
+
+class QueueOriginLaneTests(unittest.TestCase):
+    """#5881 follow-on: the claim lane and the answer are asked at two servers.
+
+    The queue answers poll, renew, cancel and busy on this host's loopback. It does not
+    serve the result submission — framing the answer and writing the conversation rows
+    stay in the Chat Worker — so a configured queue origin must redirect the claim legs
+    and leave the submission exactly where it is. Unset, every leg goes to the Worker:
+    that is the state the lane ran in before the queue, and the rollback.
+    """
+
+    QUEUE = "http://127.0.0.1:8797"
+    CHAT = "https://chat.padiem.net"
+
+    def _executor(self, **kwargs) -> OracleMeshExecutor:
+        return OracleMeshExecutor(
+            chat_origin=self.CHAT, channel_secret=SECRET, read_port=_StubPort(), **kwargs)
+
+    def _urls(self, executor: OracleMeshExecutor, *paths) -> list[str]:
+        asked: list[str] = []
+
+        class _Opener:
+            def open(self, request, timeout=None):  # noqa: D102
+                del timeout
+                asked.append(request.full_url)
+                return ChannelTransportHeaderTests._Response()
+
+        with patch("urllib.request.build_opener", return_value=_Opener()):
+            for path in paths:
+                executor._https_post(path, None)
+        return asked
+
+    def test_the_claim_legs_go_to_the_queue_and_the_answer_to_the_worker(self):
+        urls = self._urls(self._executor(queue_origin=self.QUEUE),
+                          POLL_PATH, LEASE_RENEW_PATH, CANCEL_PATH, BUSY_PATH, RESULT_PATH)
+        self.assertEqual(urls, [
+            self.QUEUE + POLL_PATH, self.QUEUE + LEASE_RENEW_PATH,
+            self.QUEUE + CANCEL_PATH, self.QUEUE + BUSY_PATH,
+            self.CHAT + RESULT_PATH,
+        ])
+
+    def test_without_a_queue_everything_still_goes_to_the_worker(self):
+        paths = (POLL_PATH, LEASE_RENEW_PATH, CANCEL_PATH, BUSY_PATH, RESULT_PATH)
+        self.assertEqual(self._urls(self._executor(), *paths),
+                         [self.CHAT + path for path in paths])
+
+    def test_an_empty_queue_origin_is_the_worker_lane_not_a_broken_one(self):
+        for blank in (None, ""):
+            with self.subTest(queue_origin=blank):
+                executor = self._executor(queue_origin=blank)
+                self.assertIsNone(executor._queue_origin)
+                self.assertEqual(self._urls(executor, POLL_PATH), [self.CHAT + POLL_PATH])
+
+    def test_the_secret_travels_to_the_queue_exactly_as_it_travels_to_the_worker(self):
+        sent: list[dict] = []
+
+        class _Opener:
+            def open(self, request, timeout=None):  # noqa: D102
+                del timeout
+                sent.append(dict(request.header_items()))
+                return ChannelTransportHeaderTests._Response()
+
+        executor = self._executor(queue_origin=self.QUEUE)
+        with patch("urllib.request.build_opener", return_value=_Opener()):
+            executor._https_post(POLL_PATH, None)
+            executor._https_post(RESULT_PATH, None)
+
+        for headers in sent:
+            lowered = {name.lower(): value for name, value in headers.items()}
+            self.assertEqual(lowered[CHANNEL_HEADER.lower()], SECRET)
+            self.assertEqual(lowered["user-agent"], PRODUCT_USER_AGENT)
 
 
 class ResultSubmitTests(unittest.TestCase):
