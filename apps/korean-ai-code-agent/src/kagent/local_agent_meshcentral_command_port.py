@@ -237,6 +237,19 @@ def cancel_kill_command(dispatch_id: str) -> str:
 #: interrupted by it, because the sweep asks the PC whether that command is alive
 #: before it touches anything.
 LINE_STALL_WAIT_SECONDS = 120
+#: #82 root fix (CTO standard 2), DEFAULT OFF. The agent serves one `runcommand` child
+#: and answers a later request "already busy" and drops it, so one long command holds
+#: every later one on that machine. The terminal tunnels are a different lane: the
+#: source shows N per node, no cap, alive until `endtunnel`. With this flag on, each
+#: dispatch runs on its own session. Off, nothing about the existing path changes -
+#: the flag is turned on by the operator only after the queue cutover and its
+#: observation window, never by this module.
+SESSION_COMMAND_LANE_ENV = "PADIEM_MESH_SESSION_COMMAND_LANE"
+#: Communication bounds for the session lane. Opening a session is not work: the
+#: password and the script must reach the shell and something must come back. Past
+#: this the session is treated as not opened and the caller falls back.
+SESSION_OPEN_TIMEOUT_SECONDS = 20
+SESSION_CANCEL_KILL_WAIT_SECONDS = 15
 #: The sweep rides the same terminal session the stop rides, so it inherits the
 #: stop's bound: a sweep that cannot reach the PC must never become the new way to
 #: hold that PC.
@@ -445,6 +458,42 @@ def sweep_script(
     return head + body + _sweep_frame(mode)
 
 
+def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
+    """Whether a command runs on its own terminal session (#82, default off).
+
+    Off is the shipped behaviour: the runcommand queue plus the line healing (#6106,
+    #6113). The operator turns it on in the executor's unit after the queue cutover
+    and its observation window, and nothing here changes the default.
+    """
+    if explicit is not None:
+        return explicit is True
+    source = os.environ if environ is None else environ
+    return (source.get(SESSION_COMMAND_LANE_ENV) or "").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+
+
+def _session_payload(raw: bytes) -> bytes:
+    """The reply from the last envelope marker onward, with terminal noise dropped.
+
+    A terminal writes prompts, echoes and escape sequences around what the PC
+    actually printed. The envelope marker is the boundary: everything before its last
+    occurrence is the session talking, not the command.
+    """
+    marker = ENVELOPE_PREFIX.encode("ascii")
+    position = raw.rfind(marker)
+    if position < 0:
+        return raw
+    tail = raw[position:]
+    # The shell prompt returns right after the sentinel line, and a prompt is not part
+    # of the reply: keep the frame and drop whatever the terminal appended after it.
+    index = tail.find(EXIT_SENTINEL.encode("ascii"))
+    if index < 0:
+        return tail
+    end = tail.find(b"\n", index)
+    return tail if end < 0 else tail[:end + 1]
+
+
 def _may_clear(line_guard: Callable[[], bool] | None,
                phase: Callable[[str], None]) -> bool:
     """Whether a held console may be cleared, as the caller's authority answers.
@@ -492,7 +541,8 @@ def parse_sweep_reply(raw: bytes) -> dict[str, Any] | None:
     return verdict if isinstance(verdict, dict) else None
 
 
-def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None) -> str:
+def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = None,
+          split_markers: bool = False) -> str:
     """Run one command on the PC and bring its output back as ASCII Base64.
 
     Three rules carry it:
@@ -548,9 +598,18 @@ def _wrap(command: str, dispatch_id: str | None = None, host_tag: str | None = N
         " $__padiem=$null;" + marks +
         " try { $__padiem=(& { " + command + " } 2>&1 | Out-String)"
         " } catch { $__padiem=($_ | Out-String) };" + clears +
-        ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
-        "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
-        ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
+        # A terminal session echoes the script the shell was handed. The markers are
+        # assembled from two literals on that lane, so the echo can never contain the
+        # joined token while the bytes the PC prints stay exactly the same.
+        (
+            ' Write-Output ("PADIEM_" + "B64=" + '
+            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            ' Write-Output ("__PADIEM_" + "EXIT__" + $LASTEXITCODE)'
+            if split_markers else
+            ' Write-Output ("' + ENVELOPE_PREFIX + '" + '
+            "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes([string]$__padiem)));"
+            ' Write-Output ("' + EXIT_SENTINEL + '" + $LASTEXITCODE)'
+        )
     )
 
 
@@ -701,6 +760,17 @@ class _TerminalHandoff:
     def wait_closed(self, seconds: float) -> None:
         self._pump(seconds)
 
+    def read(self, timeout: float) -> bytes:
+        """One bounded read from the terminal; empty when nothing arrived."""
+        import select
+
+        try:
+            if not select.select([self._master], [], [], timeout)[0]:
+                return b""
+            return os.read(self._master, 65536)
+        except OSError:
+            return b""
+
     def wait_for(self, done: Callable[[bytes], bool], seconds: float) -> bytes:
         """Read the session until the answer is complete, or until the bound ends."""
         self._pump(seconds, done)
@@ -777,6 +847,7 @@ class MeshCentralCliCommandPort:
         dispatch_id: str | None = None,
         keep_dispatch_ids=(),
         line_guard: Callable[[], bool] | None = None,
+        session_lane: bool | None = None,
     ) -> MeshCentralCommandOutcome:
         def phase(name: str) -> None:
             if callable(phase_observer):
@@ -870,12 +941,119 @@ class MeshCentralCliCommandPort:
             outcome = self._from_transcript(raw)
             phase("reply")
             return outcome
+        if checked_dispatch is not None and _session_lane_enabled(session_lane):
+            # #82 standard 2: the command gets its own terminal session, so another
+            # dispatch on this PC is never waiting behind it. No line sweep here - the
+            # session is not the queue the sweep exists to unblock.
+            phase("session_lane")
+            session_outcome = self._run_command_on_a_session(
+                node_ref=node_ref.strip(), command=body, dispatch_id=checked_dispatch,
+                password=password, phase=phase, cancelled=cancelled,
+                timeout_seconds=timeout_seconds,
+            )
+            if session_outcome is not None:
+                return session_outcome
+            # A session that never opened is not a failed command: send it the way the
+            # lane has always sent it. Phase names which happened.
+            phase("session_fallback")
         return self._stream_with_line_selfheal(
             argv, password, timeout_seconds, phase, cancelled,
             node_ref=node_ref.strip(), dispatch_id=checked_dispatch,
             keep_dispatch_ids=_keep_id_literals(checked_dispatch, keep_dispatch_ids),
             line_guard=line_guard,
         )
+
+    def _run_command_on_a_session(
+        self, *, node_ref: str, command: str, dispatch_id: str, password: str,
+        phase: Callable[[str], None],
+        cancelled: Callable[[], bool] | None,
+        timeout_seconds: int | None,
+    ) -> MeshCentralCommandOutcome | None:
+        """One dispatch on its own terminal session; ``None`` when none opened.
+
+        The agent serves N terminal tunnels per node with no cap and keeps each alive
+        until it ends, which is the lane the owner standard 2 asks for: a command that
+        takes minutes holds only itself.
+
+        Two bounds, both on communication and neither on the work: how long the session
+        may take to accept the script and answer anything (``SESSION_OPEN_TIMEOUT_SECONDS``),
+        and an explicit caller deadline if one was given. After the first bytes the wait
+        is the work's own, exactly as on the queue lane.
+
+        MeshCentral's own limit is respected rather than invented: the agent closes the
+        connection after 30 consecutive identical console output strings
+        (``src/meshagent.js:1287-1295``), so nothing here repeats a payload at a cadence,
+        and there is no PADIEM cap on how many sessions a PC may have.
+        """
+        import subprocess
+        import time
+
+        if self._popen_factory is None:
+            return None
+        argv = [
+            "node", "-e", _MESHCTRL_STDIN_LINE_BOOTSTRAP,
+            self._meshctrl_js, "shell",
+            "--url", self._url,
+            "--loginuser", self._login_user,
+            "--loginpass", "__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__",
+            "--id", node_ref,
+            "--powershell",
+        ]
+        wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
+        try:
+            handoff = self._pty_factory(
+                (password + "\n" + wrapped + "\n").encode("utf-8"),
+            )
+        except Exception:
+            phase("session_open_refused")
+            return None
+        child = self._popen_factory(
+            argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+        )
+        buffer = bytearray()
+        opened = time.monotonic()
+        seen = False
+        try:
+            while True:
+                chunk = handoff.read(1.0)
+                if chunk:
+                    seen = True
+                    if len(buffer) < HANDOFF_CAPTURE_LIMIT:
+                        buffer.extend(chunk)
+                if _SENTINEL_LINE.search(bytes(buffer)):
+                    break
+                if child.poll() is not None:
+                    break
+                if not seen and time.monotonic() - opened > SESSION_OPEN_TIMEOUT_SECONDS:
+                    phase("session_open_timeout")
+                    return None
+                if timeout_seconds is not None and time.monotonic() - opened > timeout_seconds:
+                    phase("timeout")
+                    return MeshCentralCommandOutcome(
+                        termination="timed_out", exit_code=None, output=b"",
+                    )
+                if cancelled is not None and cancelled():
+                    # Ending the session alone would leave the PC process running, so the
+                    # owner's stop travels the same kill path the queue lane uses.
+                    self._stop_on_pc(node_ref, dispatch_id, phase)
+                    phase("cancel")
+                    return MeshCentralCommandOutcome(
+                        termination="cancelled", exit_code=None, output=b"",
+                    )
+        finally:
+            try:
+                if child.poll() is None:
+                    child.kill()
+            finally:
+                handoff.close()
+        raw = bytes(buffer)
+        if not raw:
+            # The session closed before it printed anything: no session opened, so the
+            # caller may still send the command the old way.
+            return None
+        outcome = self._from_transcript(_session_payload(raw))
+        phase("reply")
+        return outcome
 
     # ---- streaming execution -------------------------------------------
     def _stream_with_line_selfheal(
