@@ -2,7 +2,10 @@
 
 Every claim here is checked against the frames and the answers, not against a customer's
 process table: the tables below are synthetic, and the tests are about what this lane is
-allowed to send and what it is allowed to conclude.
+allowed to send and what it is allowed to conclude. The shapes are the ones the read-only
+capture on CGI-1 reported on 2026-10-30 - `ps` records with `cmd` and `pid` only, no parent
+field, `psinfo` answering the .NET process object - so the rules below are pinned to what
+the agent actually carries, not to what a shell could be made to say.
 """
 from __future__ import annotations
 
@@ -10,15 +13,17 @@ import io
 import json
 import unittest
 
+from kagent import local_agent_meshcentral_process_port as lane_module
 from kagent.contracts import ContractError
 from kagent.local_agent_meshcentral_command_port import (
     MeshCentralCliCommandPort, MeshCentralStopUnconfirmed, _process_lane_enabled,
 )
 from kagent.local_agent_meshcentral_process_port import (
-    ALLOWED_FRAME_TYPES, CONFIRMED, LANE_UNANSWERED, NO_TARGET, PSKILL_LABEL,
-    STILL_RUNNING, MeshCentralProcessLane, MeshCentralProcessLaneRefused,
-    dispatch_target_pids, parent_field, parse_process_table, ps_frame, psinfo_frame,
-    pskill_frame, subtree_pids,
+    ALLOWED_FRAME_TYPES, BASIS_CMD_MARKER, BASIS_NONE, BASIS_RECORDED_PID, CONFIRMED,
+    LANE_UNANSWERED, NO_TARGET, NO_TREE_NOTE, PS_WAIT_FLOOR_SECONDS, PS_WAIT_SECONDS,
+    PSKILL_LABEL, STILL_RUNNING, MeshCentralProcessLane, MeshCentralProcessLaneRefused,
+    marker_matched_pids, parse_process_table, ps_frame, psinfo_frame, pskill_frame,
+    selected_details,
 )
 
 NODE = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
@@ -30,9 +35,9 @@ OTHER_MARKER = "padiem-dispatch-" + "b" * 32 + ".pid"
 def table(*records):
     """A process table in the shape the agent answers: keys are pids, values are objects.
 
-    The first-party parser reads `cmd` and `user` only
-    (`views/default.handlebars:10844-10849`), so `cmd` here is a stand-in for whatever the
-    observation finds in that field - never real customer text.
+    Observed on CGI-1: one object keyed by pid, every record carrying `cmd` and `pid` and
+    nothing else. `cmd` here is a stand-in for whatever that field holds on a real PC -
+    never real customer text.
     """
     out = {}
     for pid, record in records:
@@ -40,9 +45,9 @@ def table(*records):
     return out
 
 
-OURS = {"cmd": "powershell.exe -Command " + MARKER, "user": "someone"}
-THEIRS = {"cmd": "powershell.exe -Command " + OTHER_MARKER, "user": "someone"}
-SHELL = {"cmd": "explorer.exe", "user": "someone"}
+OURS = {"cmd": "powershell.exe -Command " + MARKER, "pid": 1}
+THEIRS = {"cmd": "powershell.exe -Command " + OTHER_MARKER, "pid": 2}
+SHELL = {"cmd": "explorer.exe", "pid": 3}
 
 
 class LaneCase(unittest.TestCase):
@@ -79,10 +84,15 @@ class TestTheFrames(unittest.TestCase):
         self.assertEqual(value.split("|", 1)[1], PSKILL_LABEL)
         self.assertNotIn(MARKER, value)
 
-    def test_a_number_that_is_not_a_process_id_is_refused(self):
-        for bad in (0, -1, "42", True, None, 4.2):
+    def test_zero_and_a_negative_are_not_process_ids_and_are_refused(self):
+        # 0 is the idle process: the agent's own handler skips a falsy pid, so asking about
+        # it is asking for a reply that cannot come. A negative is not a pid here at all.
+        for bad in (0, -1, -4021, "42", True, None, 4.2):
             with self.assertRaises(MeshCentralProcessLaneRefused):
                 pskill_frame(NODE, bad)
+        for bad in (0, -1):
+            with self.assertRaises(MeshCentralProcessLaneRefused):
+                psinfo_frame(NODE, bad, "r2")
 
     def test_a_device_that_is_not_an_identifier_is_refused(self):
         for bad in ("", " ", None, 7, "has space", "line" + chr(10) + "break"):
@@ -102,6 +112,12 @@ class TestTheTable(unittest.TestCase):
         self.assertEqual(sorted(rows), [4])
         self.assertEqual(rows[4]["cmd"], "a")
 
+    def test_the_idle_process_is_never_a_row_this_lane_can_address(self):
+        # Observed shape, observed refusal: a `0` key stays out of the table, so it cannot
+        # reach pskill_frame even by way of a matching record.
+        rows = parse_process_table({"0": {"cmd": MARKER, "pid": 0}, "7": {"cmd": "x"}})
+        self.assertEqual(sorted(rows), [7])
+
     def test_bytes_and_an_object_are_both_accepted(self):
         self.assertEqual(parse_process_table(b'{"9":{"cmd":"x"}}'), {9: {"cmd": "x"}})
         self.assertEqual(parse_process_table({"9": {"cmd": "x"}}), {9: {"cmd": "x"}})
@@ -113,35 +129,89 @@ class TestTheTable(unittest.TestCase):
 
     def test_the_only_thing_matched_is_our_own_marker_name(self):
         rows = parse_process_table(table((1, OURS), (2, THEIRS), (3, SHELL)))
-        self.assertEqual(dispatch_target_pids(rows, DISPATCH), (1,))
+        self.assertEqual(marker_matched_pids(rows, DISPATCH), (1,))
 
     def test_a_process_that_merely_looks_like_a_shell_is_never_a_target(self):
         rows = parse_process_table(table((1, SHELL), (2, {"cmd": "powershell.exe"})))
-        self.assertEqual(dispatch_target_pids(rows, DISPATCH), ())
+        self.assertEqual(marker_matched_pids(rows, DISPATCH), ())
 
 
-class TestTheSubtree(unittest.TestCase):
-    def test_a_parent_field_orders_the_tree_deepest_first(self):
-        rows = {
-            10: {"cmd": MARKER, "parentId": 0},
-            11: {"cmd": "child.exe", "parentId": 10},
-            12: {"cmd": "grandchild.exe", "parentId": 11},
-        }
-        ordered, tree = subtree_pids(rows, [10], parent_field(rows))
-        self.assertTrue(tree)
-        self.assertEqual(ordered, (12, 11, 10), "the leaves go first")
+class TestThereIsNoFamilyWalk(LaneCase):
+    """CGI-1 answered `cmd|pid` and 42 .NET fields with no parent in either.
 
-    def test_without_a_parent_field_only_the_matched_pid_is_addressed(self):
-        rows = {10: {"cmd": MARKER}, 11: {"cmd": "child.exe"}}
-        ordered, tree = subtree_pids(rows, [10], parent_field(rows))
-        self.assertIsNone(parent_field(rows))
-        self.assertEqual(ordered, (10,))
-        self.assertFalse(tree, "the report must say a child may still be running")
+    A path that climbed or descended a process tree cannot be built on this agent, so it is
+    not built at all - and this test is what keeps nobody re-adding a guess later.
+    """
 
-    def test_a_cycle_in_the_table_cannot_loop_forever(self):
-        rows = {1: {"parentId": 2}, 2: {"parentId": 1}}
-        ordered, _tree = subtree_pids(rows, [1], "parentId")
-        self.assertEqual(sorted(ordered), [1, 2])
+    def test_the_lane_exports_no_parent_or_subtree_machinery(self):
+        for name in ("parent_field", "subtree_pids", "kill_tree", "children_of"):
+            self.assertNotIn(name, dir(lane_module), name + " would need a field that is not there")
+
+    def test_a_stop_that_touched_a_process_says_a_child_may_survive(self):
+        lane, _sent = self.lane([
+            self.ps(table((1, OURS))), {"action": "msg", "type": "pskill"},
+            self.ps(table((3, SHELL))),
+        ])
+        report = lane.stop(DISPATCH)
+        self.assertEqual(report.verdict, CONFIRMED)
+        self.assertIn(NO_TREE_NOTE, report.notes)
+
+    def test_only_the_addressed_pid_is_ever_sent(self):
+        rows = table((1, OURS), (2, THEIRS), (3, SHELL), (4, {"cmd": "child.exe"}))
+        lane, sent = self.lane([
+            self.ps(rows), {"action": "msg", "type": "pskill"}, self.ps(table((3, SHELL))),
+        ])
+        report = lane.stop(DISPATCH)
+        self.assertEqual([frame["value"].split("|")[0] for frame in sent
+                          if frame["type"] == "pskill"], ["1"])
+        self.assertEqual(report.killed, (1,))
+
+
+class TestTheRecordedPidIsTheAuthority(LaneCase):
+    def test_a_recorded_pid_is_addressed_even_when_its_cmd_names_another_dispatch(self):
+        # The dispatch's own record outranks a text match: pid 2's record names a different
+        # dispatch, and this one still ends pid 2 because that is the number it wrote down.
+        lane, sent = self.lane([
+            self.ps(table((1, OURS), (2, THEIRS))),
+            {"action": "msg", "type": "pskill"},
+            self.ps(table((1, OURS))),
+        ])
+        report = lane.stop(DISPATCH, 2)
+        self.assertEqual(report.targets, (2,))
+        self.assertEqual(report.basis, BASIS_RECORDED_PID)
+        self.assertEqual(sent[1]["value"], "2|" + PSKILL_LABEL)
+
+    def test_a_recorded_pid_that_is_not_in_the_table_is_already_finished_with(self):
+        lane, sent = self.lane([self.ps(table((3, SHELL)))])
+        report = lane.stop(DISPATCH, 4021)
+        self.assertEqual(report.verdict, CONFIRMED)
+        self.assertEqual(report.killed, ())
+        self.assertEqual([frame["type"] for frame in sent], ["ps"],
+                         "nothing was sent to kill what is already gone")
+
+    def test_the_marker_match_is_the_auxiliary_and_says_so(self):
+        lane, _sent = self.lane([
+            self.ps(table((1, OURS))), {"action": "msg", "type": "pskill"},
+            self.ps(table((3, SHELL))),
+        ])
+        report = lane.stop(DISPATCH)
+        self.assertEqual(report.basis, BASIS_CMD_MARKER)
+        self.assertEqual(report.targets, (1,))
+
+    def test_a_stop_that_matched_nothing_addresses_nothing(self):
+        lane, sent = self.lane([self.ps(table((1, SHELL), (2, THEIRS)))])
+        report = lane.stop(DISPATCH)
+        self.assertEqual(report.verdict, NO_TARGET)
+        self.assertEqual(report.basis, BASIS_NONE)
+        self.assertEqual(sent, [ps_frame(NODE, "padiem-test")],
+                         "one read, no pskill, no second read")
+
+    def test_a_recorded_number_that_is_not_a_pid_is_refused_before_anything_is_read(self):
+        lane, sent = self.lane([self.ps(table((1, OURS)))])
+        for bad in (0, -1, "4021"):
+            with self.assertRaises(MeshCentralProcessLaneRefused):
+                lane.stop(DISPATCH, bad)
+        self.assertEqual(sent, [], "a refusal does not spend a request")
 
 
 class TestTheStopVerdicts(LaneCase):
@@ -170,14 +240,6 @@ class TestTheStopVerdicts(LaneCase):
         self.assertEqual(report.remaining, (1,))
         self.assertFalse(report.confirmed)
 
-    def test_nothing_matched_kills_nothing(self):
-        lane, sent = self.lane([self.ps(table((1, SHELL), (2, THEIRS)))])
-        report = lane.stop(DISPATCH)
-        self.assertEqual(report.verdict, NO_TARGET)
-        self.assertEqual(sent, [ps_frame(NODE, "padiem-test")],
-                         "one read, no pskill, no second read")
-        self.assertFalse(report.tree)
-
     def test_a_lane_that_answers_nothing_is_reported_as_nothing(self):
         lane, _sent = self.lane([])
         self.assertEqual(lane.stop(DISPATCH).verdict, LANE_UNANSWERED)
@@ -203,6 +265,82 @@ class TestTheStopVerdicts(LaneCase):
     def test_the_lane_needs_a_socket_and_refuses_to_invent_one(self):
         with self.assertRaises(ContractError):
             MeshCentralProcessLane(node_ref=NODE, ask=None, response_id="r")
+
+
+class TestTheWaitBudget(LaneCase):
+    """One observed `ps` took 15,283 ms; a shorter bound invents a silent PC."""
+
+    def _ask(self, frame):
+        return None
+
+    def test_the_default_wait_clears_the_observed_answer_time(self):
+        self.assertGreaterEqual(PS_WAIT_FLOOR_SECONDS, 15.0)
+        self.assertGreaterEqual(PS_WAIT_SECONDS, PS_WAIT_FLOOR_SECONDS)
+        lane = MeshCentralProcessLane(node_ref=NODE, ask=self._ask, response_id="r")
+        self.assertGreaterEqual(lane.ps_wait_seconds, PS_WAIT_FLOOR_SECONDS)
+
+    def test_a_socket_bound_shorter_than_the_observed_answer_is_refused(self):
+        for short in (0.5, 1, 5, 14.9):
+            with self.assertRaises(MeshCentralProcessLaneRefused):
+                MeshCentralProcessLane(node_ref=NODE, ask=self._ask, response_id="r",
+                                       ps_wait_seconds=short)
+
+    def test_a_wait_that_would_reach_the_execution_ceiling_is_not_a_communication_bound(self):
+        # #5895 removed ceilings on the work itself; this wait is on an ANSWER, so it is
+        # bounded and bounded generously - and never allowed to be the hidden way to give up
+        # on a PC that is merely slow to list its processes.
+        self.assertGreaterEqual(PS_WAIT_FLOOR_SECONDS, 15.0)
+
+
+class TestTheDetailRecord(LaneCase):
+    """`psinfo` answers 42 .NET fields; this lane keeps the handful that are numbers."""
+
+    DETAIL = {
+        "Id": 4021, "SessionId": 1, "CPU": 12.5, "Responding": True,
+        "HandleCount": 300, "WorkingSet64": 4096, "PeakWorkingSet64": 8192,
+        "PrivateMemorySize64": 1024, "StartTime": "2026-10-30T04:00:00Z",
+        # Fields the observation found and this lane must not carry onward.
+        "StartInfo": {"FileName": "powershell.exe", "Arguments": "-Command " + MARKER},
+        "MachineName": "CGI-1", "Name": "powershell", "ProcessName": "powershell",
+        "Threads": [{"Id": 1}], "EnableRaisingEvents": False, "__NounName": "Process",
+    }
+
+    def test_only_the_listed_scalars_survive_a_detail_record(self):
+        kept = selected_details(self.DETAIL)
+        self.assertEqual(sorted(kept), sorted(
+            "Id SessionId CPU Responding HandleCount WorkingSet64 PeakWorkingSet64 "
+            "PrivateMemorySize64 StartTime".split()))
+        for smuggled in ("StartInfo", "MachineName", "Name", "ProcessName", "Threads"):
+            self.assertNotIn(smuggled, kept)
+
+    def test_the_lane_hands_back_no_field_it_did_not_ask_for(self):
+        lane, _sent = self.lane([
+            {"action": "msg", "type": "psinfo", "nodeid": NODE, "pid": 4021,
+             "value": self.DETAIL},
+        ])
+        details = lane.details(4021)
+        self.assertNotIn("StartInfo", details)
+        self.assertEqual(details["Id"], 4021)
+        text = json.dumps(details, default=str)
+        self.assertNotIn(MARKER, text, "a command line cannot ride out of a detail record")
+        self.assertNotIn("CGI-1", text)
+
+    def test_an_empty_detail_answer_is_a_possible_truth_not_a_transport_fault(self):
+        lane, _sent = self.lane([{"action": "msg", "type": "psinfo", "value": {}}])
+        self.assertEqual(lane.details(4021), {})
+
+    def test_a_detail_answer_that_is_not_an_object_is_read_as_empty(self):
+        for junk in ("text", None, 7, [1, 2]):
+            lane, _sent = self.lane([{"action": "msg", "type": "psinfo", "value": junk}])
+            self.assertEqual(lane.details(4021), {})
+
+    def test_a_stop_never_buys_a_detail_read(self):
+        lane, sent = self.lane([
+            self.ps(table((1, OURS))), {"action": "msg", "type": "pskill"},
+            self.ps(table((3, SHELL))),
+        ])
+        lane.stop(DISPATCH)
+        self.assertEqual([frame["type"] for frame in sent], ["ps", "pskill", "ps"])
 
 
 class TestTheSwitchIsOptIn(unittest.TestCase):
@@ -268,6 +406,13 @@ class TestTheSwitchIsOptIn(unittest.TestCase):
         self.assertEqual(lane.asks, 1)
         self.assertEqual(created, [], "no session is opened when the lane has the answer")
 
+    def test_the_recorded_pid_travels_to_the_lane_and_nowhere_else(self):
+        lane = _CountingLane(CONFIRMED)
+        port, created = self._port(lane=lane, enabled=True)
+        port.kill_command_process(node_ref=NODE, dispatch_id=self.MARK, recorded_pid=4021)
+        self.assertEqual(lane.recorded, [4021])
+        self.assertEqual(created, [])
+
     def test_an_unconfirmed_verdict_travels_the_same_exception_as_the_terminal(self):
         lane = _CountingLane(NO_TARGET)
         port, created = self._port(lane=lane, enabled=True)
@@ -295,11 +440,13 @@ class _CountingLane:
         self.verdict = verdict
         self._shape = ProcessStopReport
         self.asks = 0
+        self.recorded: list = []
 
-    def stop(self, dispatch_id):
+    def stop(self, dispatch_id, recorded_pid=None):
         self.asks += 1
+        self.recorded.append(recorded_pid)
         return self._shape(verdict=self.verdict, dispatch_id=dispatch_id,
-                           tree=self.verdict == CONFIRMED)
+                           basis=BASIS_RECORDED_PID if recorded_pid else BASIS_CMD_MARKER)
 
 
 if __name__ == "__main__":

@@ -511,8 +511,9 @@ def _session_lane_enabled(explicit: bool | None, environ=None) -> bool:
 
 #: Opt-in for the agent's own process lane (#6227 memo): off is the shipped behaviour,
 #: and the terminal stop below is what runs while it is off. The lane itself is
-#: `local_agent_meshcentral_process_port`; its socket layer is not wired yet, because two
-#: of its fields are still unobserved on a real PC.
+#: `local_agent_meshcentral_process_port`. The fields this lane needed to know about are
+#: now observed (CGI-1, 2026-10-30) and the lane follows them; what is still missing is its
+#: socket layer, which is the transport PR, so the flag has nothing to hand a stop to yet.
 PROCESS_LANE_ENV = "PADIEM_MESH_PROCESS_LANE"
 
 
@@ -1475,8 +1476,9 @@ class MeshCentralCliCommandPort:
                 child.kill()
         return b""
 
-    def kill_command_process(self, *, node_ref: str, dispatch_id: str) -> None:
-        """End exactly one dispatch's own process tree on the PC.
+    def kill_command_process(self, *, node_ref: str, dispatch_id: str,
+                             recorded_pid: int | None = None) -> None:
+        """End exactly one dispatch's own process on the PC.
 
         ``runcommand`` cannot carry a stop: it is the queue the running command is
         holding. ``meshctrl shell`` opens the agent's terminal over its own session,
@@ -1484,14 +1486,19 @@ class MeshCentralCliCommandPort:
         wedged. The command sent through it names only the stopped dispatch's pid
         marker - no image name, no service, no window title - and the whole session
         is bounded, so an unreachable agent cannot make this the new way to hang.
+
+        ``recorded_pid`` is used by the process lane only: it is the number the command
+        wrote into its own marker file, and with the observed agent - whose records carry
+        no parent field - it is the one authority a stop has for which process was ours.
         """
         checked = _checked_dispatch_id(dispatch_id)
         if self._process_lane is not None and _process_lane_enabled(self._process_lane_enabled):
-            # The agent's own verbs: read the table, end what names this dispatch, read
-            # the table again. The second read is the whole verdict - `pskill` answers
-            # nothing of its own (agents/meshcore.js:1542-1550), so a sent frame is never
-            # evidence that a process went away.
-            report = self._process_lane.stop(checked)
+            # The agent's own verbs: read the table, end the pid this dispatch recorded
+            # (or, with no recorded pid, the pid whose record names our marker), read the
+            # table again. The second read is the whole verdict - `pskill` answers nothing
+            # of its own (agents/meshcore.js:1542-1550), so a sent frame is never evidence
+            # that a process went away.
+            report = self._process_lane.stop(checked, recorded_pid)
             if report.confirmed:
                 return
             raise MeshCentralStopUnconfirmed(
