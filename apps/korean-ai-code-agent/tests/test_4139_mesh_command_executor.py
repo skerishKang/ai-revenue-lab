@@ -824,6 +824,9 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
                 def wait_closed(self, seconds):
                     self.waits.append(seconds)
 
+                def release_slave(self):
+                    return None
+
                 def wait_for(self, done, seconds):
                     # The stop is answered with the evidence that the script ran; the
                     # probe (when asked for) gets nothing, which is reported as an
@@ -863,12 +866,38 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         argv, kwargs, stop_child = seen["stop"][stop_index]
         self.assertIn("shell", argv)
         self.assertIn("--powershell", argv)
+        # The official client writes the PC's answer to its standard output
+        # (meshctrl.js:2872). Reading only what the input queue echoed back is how
+        # this lane called a mirror an answer, so all three handles are the device.
+        self.assertEqual(
+            (kwargs["stdin"], kwargs["stdout"], kwargs["stderr"]), (77, 77, 77),
+            "the session's answer stream is the terminal device, never a discard",
+        )
         self.assertIn(self.MARKED, stops[0].data.decode("utf-8"))
         self.assertEqual(handoffs[0].data.decode("utf-8").splitlines()[0], PASSWORD,
                          "the credential still never enters argv")
         self.assertEqual(stops[0].waits, [15], "the stop is bounded")
         self.assertIsNone(stop_child.poll())
         self.assertIn("cancel_kill", phases)
+
+    def test_the_scripts_this_lane_queues_fit_the_devices_queue(self):
+        """The ordinary payloads are far inside the terminal's own queue.
+
+        Past N_TTY_BUF_SIZE the tail is dropped without a word and the PC receives half
+        a script, so the two scripts this lane really sends are measured here.
+        """
+        from kagent.local_agent_meshcentral_command_port import (
+            TERMINAL_PREQUEUE_LIMIT_BYTES, _terminal_payload, sweep_script,
+        )
+
+        for script in (
+            cancel_kill_command(self.MARKED),
+            sweep_script(dispatch_id=self.MARKED, keep_dispatch_ids=(),
+                         mode="abandoned", host_tag="com1"),
+        ):
+            self.assertLess(len(_terminal_payload("x" * 64, script)),
+                            TERMINAL_PREQUEUE_LIMIT_BYTES,
+                            "the queued session input has to fit the device's queue")
 
     def test_a_stop_that_cannot_reach_the_pc_is_reported_and_still_releases_the_lane(self):
         class _RefusingPty:
@@ -920,6 +949,9 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
             def wait_closed(self, seconds):  # pragma: no cover - not used here
                 return None
 
+            def release_slave(self):
+                return None
+
         port = MeshCentralCliCommandPort(
             command_runner=lambda *a, **k: None,
             meshctrl_js=MESHCTRL, login_user="padiemadmin",
@@ -931,10 +963,13 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
             port.kill_command_process(node_ref=NODE, dispatch_id="dsp_" + "a" * 32)
 
         marked = "dsp_" + "a" * 32
+        from kagent.local_agent_meshcentral_command_port import _terminal_payload
+
         self.assertEqual(
             typed[0],
-            (PASSWORD + "\n" + cancel_kill_command(marked) + "\n").encode("utf-8"),
+            _terminal_payload(PASSWORD, cancel_kill_command(marked)),
         )
+        self.assertTrue(typed[0].endswith(b"\r\n"), "a console submits on a carriage return")
         self.assertNotIn(STOP_EVIDENCE.encode("ascii"), typed[0])
 
         phases = []
@@ -946,6 +981,69 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertEqual(outcome.termination, "cancelled")
         self.assertIn("cancel_kill_unverified", phases)
         self.assertNotIn("cancel_kill", phases)
+
+
+class TestTheTerminalDeviceAnswersOnlyForThePc(unittest.TestCase):
+    """The device itself, because a double cannot show what the device did.
+
+    Two of the terminal's own defaults made this lane wrong: ECHO handed back the
+    bytes this side had just written - which is the 71-byte mirror measured on
+    2026-10-29 - and ICRNL rewrote the carriage return a PC's console submits a typed
+    line on. Both are only observable on a real terminal device, so the POSIX lane
+    runs these and the windows lane skips them.
+    """
+
+    def setUp(self):
+        try:
+            import pty  # noqa: F401
+            import termios  # noqa: F401
+        except Exception:
+            self.skipTest("the terminal device needs pty and termios")
+
+    def test_writing_the_session_input_does_not_answer_for_the_pc(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            _TerminalHandoff, _terminal_payload,
+        )
+
+        handoff = _TerminalHandoff(
+            _terminal_payload("op3rator-secret-line", "Write-Output ('A' + 'B')"))
+        try:
+            answered = handoff.read(0.3)
+        finally:
+            handoff.close()
+        self.assertEqual(answered, b"", "an echo of our own bytes is not an answer")
+        self.assertNotIn(b"op3rator-secret-line", answered,
+                         "the credential is not something this side ever reads back")
+
+    def test_the_carriage_return_reaches_the_client_as_a_carriage_return(self):
+        import os
+
+        from kagent.local_agent_meshcentral_command_port import (
+            _TerminalHandoff, _terminal_payload,
+        )
+
+        handoff = _TerminalHandoff(_terminal_payload("secretpw", "Get-Date"))
+        try:
+            credential_line = os.read(handoff.slave, 64)
+            script_line = os.read(handoff.slave, 64)
+        finally:
+            handoff.close()
+        self.assertEqual(credential_line, b"secretpw\n")
+        self.assertEqual(
+            script_line, b"Get-Date\r\n",
+            "the queue flushes on the line feed; the console submits on the carriage "
+            "return, and ICRNL would have eaten it",
+        )
+
+    def test_a_script_the_device_queue_cannot_hold_is_refused_before_the_pc_is_asked(self):
+        from kagent.local_agent_meshcentral_command_port import (
+            TERMINAL_PREQUEUE_LIMIT_BYTES, MeshCentralCommandRefused, _TerminalHandoff,
+        )
+
+        with self.assertRaises(MeshCentralCommandRefused):
+            _TerminalHandoff(b"x" * TERMINAL_PREQUEUE_LIMIT_BYTES)
+        # One under the bound is the ordinary case: the stop and the sweep both fit.
+        _TerminalHandoff(b"y" * (TERMINAL_PREQUEUE_LIMIT_BYTES - 1)).close()
 
 
 class _NeverChild:

@@ -60,9 +60,11 @@ class _Handoff:
     def wait_closed(self, seconds):  # pragma: no cover
         return None
 
+    def release_slave(self):
+        self.slaves_released = True
+
     def close(self):
         self.closed = True
-
 
 class _Once:
     """A stdout that yields one transcript and then reports that it is done."""

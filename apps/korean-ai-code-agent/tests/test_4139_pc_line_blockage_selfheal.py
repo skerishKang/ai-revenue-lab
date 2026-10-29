@@ -145,6 +145,9 @@ class _Harness:
             def wait_closed(self, seconds):
                 session["bound"] = seconds
 
+            def release_slave(self):
+                session["released"] = True
+
         return _Handoff()
 
     def port(self):
