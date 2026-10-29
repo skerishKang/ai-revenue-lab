@@ -215,8 +215,16 @@ def load_state(source_path: str, target_path: str) -> dict:
         if problems:
             raise MigrationRefused(";".join(problems))
 
+        # Refuse schema drift before changing even the rehearsal target.
+        source_triggers = {r[0]: r[1] for r in source.execute("SELECT name, sql FROM sqlite_master WHERE type='trigger' ORDER BY name")}
+        target_triggers = {r[0]: r[1] for r in target.execute("SELECT name, sql FROM sqlite_master WHERE type='trigger' ORDER BY name")}
+        if source_triggers != target_triggers or any(sql is None for sql in source_triggers.values()):
+            raise MigrationRefused("trigger_schema_mismatch")
         target.execute("BEGIN IMMEDIATE")
         try:
+            # DDL is inside the same SQLite transaction as data and guard.
+            for name in target_triggers:
+                target.execute('DROP TRIGGER "' + name.replace('"', '""') + '"')
             _prepare_target(target)
             total_rows = 0
             for table, columns, rows, keys, hashes in payloads:
@@ -253,6 +261,11 @@ def load_state(source_path: str, target_path: str) -> dict:
                 actual = [_row_hash(columns, tuple(row)) for row in target.execute(f"SELECT * FROM '{table}'")]
                 if sorted(actual) != sorted(hashes):
                     raise MigrationRefused(f"final_content_mismatch:{table}")
+            for sql in source_triggers.values():
+                target.execute(sql)
+            recreated = {r[0]: r[1] for r in target.execute("SELECT name, sql FROM sqlite_master WHERE type='trigger' ORDER BY name")}
+            if recreated != source_triggers:
+                raise MigrationRefused("trigger_recreation_mismatch")
             target.execute(
                 f"INSERT INTO {RUNS_TABLE} (run_id, started_at, finished_at,"
                 " source_latest_migration, tables, rows) VALUES (?, ?, ?, ?, ?, ?)",
