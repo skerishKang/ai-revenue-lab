@@ -418,9 +418,15 @@ jobs:
         run: |
           set -euo pipefail
           log="${RUNNER_TEMP}/b66-generic-pytest.log"
+          # Every collected case must pass and none may skip. The floor of three
+          # is the contract itself: analysis+compile+render+certify, mutation
+          # isolation, and the no-template-literal scan.
+          collected=$(python -m pytest -q --co -p no:cacheprovider \
+            tools/b66_generic/tests | grep -c '::')
+          test "${collected}" -ge 3
           start=$(date +%s)
-          python -m pytest -q -rs -p no:cacheprovider \
-            tools/b66_generic/tests/test_b66_generic_compile.py | tee "${log}"
+          python -m pytest -q -rs -p no:cacheprovider tools/b66_generic/tests \
+            | tee "${log}"
           elapsed=$(( $(date +%s) - start ))
           # A skipped case is a missing dependency or a deleted contract, never a
           # pass in this lane: print every skip reason and fail.
@@ -429,9 +435,7 @@ jobs:
             grep '^SKIPPED' "${log}"
             exit 1
           fi
-          # The three cases are the contract: analysis+compile+render+certify,
-          # mutation isolation, and the no-template-literal scan.
-          grep -Eq '^3 passed' "${log}"
-          echo "B66_GENERIC_PIPELINE_TESTS=3_passed"
+          grep -Eq "^${collected} passed" "${log}"
+          echo "B66_GENERIC_PIPELINE_TESTS=${collected}_collected_${collected}_passed"
           echo "B66_GENERIC_PIPELINE_PYTEST_SECONDS=${elapsed}"
 
