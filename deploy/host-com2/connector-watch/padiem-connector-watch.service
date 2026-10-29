@@ -1,0 +1,30 @@
+[Unit]
+Description=PADIEM COM2 connector watch (#82): executor liveness and lane counters
+Documentation=https://github.com/skerishKang/ai-revenue-lab/blob/main/deploy/host-com2/connector-watch/README.md
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/opt/padiem/connector-watch/.env
+# Runs beside the executor it watches; it never restarts or touches that unit.
+ConditionPathExists=/etc/systemd/system/padiem-oracle-mesh-executor.service
+
+[Service]
+Type=oneshot
+User=padiem-connector-watch
+Group=padiem-connector-watch
+# Reading the executor's own journal is the point: no capability beyond that group.
+SupplementaryGroups=systemd-journal
+WorkingDirectory=/opt/padiem/connector-watch
+EnvironmentFile=/opt/padiem/connector-watch/.env
+Environment=CONNECTOR_WATCH_STATE_DIR=/var/lib/padiem-connector-watch
+ExecStart=/usr/bin/python3 /opt/padiem/connector-watch/connector_watch_host.py
+# A watch that hangs must not pile up behind itself.
+TimeoutStartSec=180
+Nice=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/padiem-connector-watch
+StandardOutput=journal
+StandardError=journal
