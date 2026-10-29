@@ -131,4 +131,16 @@ jobs:
           PY
 
       - name: Aggregate (counts only)
-        run: python3 .github/scripts/b62_tail_summarize.py "${RUNNER_TEMP}/tail.jsonl"
+        run: python3 .github/scripts/b62_tail_summarize.py "${RUNNER_TEMP}/tail.jsonl" --sanitize-out "${RUNNER_TEMP}/tail-sanitized.jsonl"
+      # The sanitized capture is kept for the lane that reads CPU baselines.
+      # Retention is 3 days on purpose: the file is route buckets and timings,
+      # not evidence to archive — after a baseline is read it only widens the
+      # window in which production traffic patterns can be enumerated.
+      - name: Upload the sanitized capture
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-tail-sanitized
+          path: ${{ runner.temp }}/tail-sanitized.jsonl
+          retention-days: 3
+          if-no-files-found: ignore

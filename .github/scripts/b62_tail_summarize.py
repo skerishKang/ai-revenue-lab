@@ -218,7 +218,89 @@ def summarize(rows: list[dict]) -> dict:
             statuses[status] += 1
     return {"rows": len(rows), "fields": sorted(fields), "outcomes": outcomes,
             "exceptions": exceptions, "paths": paths, "colos": colos,
-            "statuses": statuses, "shape": shape, "truncated": truncated}
+            "statuses": statuses, "shape": shape, "truncated": truncated,
+            "path_stats": path_stats(rows)}
+
+
+
+#: Path segments that name an object, not a route: ids, tokens, dates, long
+#: hex/uuid runs. They are folded to "*" so the bucket says which ENDPOINT was
+#: slow without saying which user's object it was.
+_IDISH = re.compile(r"^(?:\d+|[0-9a-f]{8,}|[0-9a-f]{8}-[0-9a-f-]{27,}"
+                    r"|[a-z]+_[0-9a-f]{16,}"
+                    r"|\d{4}-\d{2}-\d{2}[T_ ]?\d{0,6}|\d{4}-\d{2}-\d{2})$", re.I)
+
+
+def path_bucket(path: str) -> str:
+    parts = []
+    for segment in str(path or "").split("/"):
+        parts.append("*" if _IDISH.match(segment) else segment)
+    return "/".join(parts)[:80] or "/"
+
+
+def _percentile(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    index = min(len(ordered) - 1, max(0, int(round(q * (len(ordered) - 1)))))
+    return float(ordered[index])
+
+
+def _number(row: dict, name: str) -> float | None:
+    value = row.get(name)
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    return None
+
+
+def sanitize_rows(rows: list[dict]) -> list[dict]:
+    """The raw capture, reduced to the fields that answer "which route, how slow".
+
+    Only path bucket, status, outcome, cpuTime, wallTime, scriptVersion id and
+    the event timestamp are kept. Headers, cookies, bodies, URLs (query and
+    user-carrying path segments included) and exception text never enter this
+    file, so the artifact can be shared with the lane that reads baselines.
+    """
+
+    out: list[dict] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        path = path_of(row)
+        outcome = str(row.get("outcome") or row.get("level") or "")
+        version = row.get("scriptVersion")
+        version_id = version.get("id") if isinstance(version, dict) else None
+        entry: dict = {
+            "path": path_bucket(path) if path else None,
+            "status": status_of(row),
+            "outcome": bucket(outcome),
+            "cpuTime": _number(row, "cpuTime"),
+            "wallTime": _number(row, "wallTime"),
+            "version": str(version_id)[:36] if version_id else None,
+            "ts": row.get("eventTimestamp") or row.get("timestamp"),
+        }
+        out.append({key: value for key, value in entry.items() if value is not None})
+    return out
+
+
+def path_stats(rows: list[dict]) -> dict:
+    """Per path bucket: count, cpuTime p50/p95/max ms, and outcome tallies."""
+
+    stats: dict[str, dict] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        path = path_of(row)
+        if not path:
+            continue
+        key = path_bucket(path)
+        item = stats.setdefault(key, {"cpu": [], "n": 0, "outcomes": Counter()})
+        item["n"] += 1
+        item["outcomes"][bucket(str(row.get("outcome") or ""))] += 1
+        cpu = _number(row, "cpuTime")
+        if cpu is not None:
+            item["cpu"].append(cpu)
+    return stats
 
 
 def emit(summary: dict) -> None:
@@ -243,6 +325,15 @@ def emit(summary: dict) -> None:
     print("PATH_TOP10")
     for path, count in summary["paths"].most_common(10):
         print("  %d | %s" % (count, path))
+    stats = summary.get("path_stats") or {}
+    if stats:
+        print("PATH_CPU_TOP10 (ms; * = id segment folded)")
+        for key, item in sorted(stats.items(), key=lambda kv: -kv[1]["n"])[:10]:
+            cpu = item["cpu"]
+            outs = " ".join("%s=%d" % kv for kv in item["outcomes"].most_common())
+            print("  %-40s n=%d p50=%.1f p95=%.1f max=%.1f %s"
+                  % (key, item["n"], _percentile(cpu, 0.50), _percentile(cpu, 0.95),
+                     max(cpu) if cpu else 0.0, outs))
     if summary["colos"]:
         print("COLO " + " ".join("%s=%d" % item for item in
                                  summary["colos"].most_common(10)))
@@ -284,9 +375,16 @@ def load(path: str) -> list[dict]:
 
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
-        print("usage: b62_tail_summarize.py <tail.jsonl>")
+        print("usage: b62_tail_summarize.py <tail.jsonl> [--sanitize-out PATH]")
         return 2
-    emit(summarize(load(argv[1])))
+    rows = load(argv[1])
+    emit(summarize(rows))
+    if "--sanitize-out" in argv:
+        out_path = argv[argv.index("--sanitize-out") + 1]
+        with open(out_path, "w", encoding="utf-8") as handle:
+            for entry in sanitize_rows(rows):
+                handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + chr(10))
+        print("TAIL_SANITIZED_ROWS=%d" % len(sanitize_rows(rows)))
     return 0
 
 
