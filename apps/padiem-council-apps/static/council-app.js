@@ -1260,14 +1260,29 @@
 
   async function checkSignedIn() {
     try {
-      const res = await fetch("/api/auth/status", { credentials: "include" });
-      if (!res.ok) return { signedIn: false, methods: null };
+      const res = await fetch("/api/auth/status", {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        // #6127: a 5xx is the server failing to answer, not a verdict about this
+        // visitor. Chat draws the same line for the runtime's NoGilError race
+        // (#5479), where every dynamic route can 500 while the account itself is
+        // untouched. 401/403 IS such a verdict, and stays a plain signed-out.
+        return { signedIn: false, methods: null, unavailable: res.status >= 500 };
+      }
       const data = await res.json().catch(() => null);
+      if (!data) return { signedIn: false, methods: null, unavailable: true };
       // fail-closed gate, unchanged from councillor.js: nothing is attached
       // unless the server itself says this cookie is authenticated.
-      return { signedIn: !!(data && data.authenticated === true), methods: (data && data.methods) || null };
+      return {
+        signedIn: !!(data && data.authenticated === true),
+        methods: (data && data.methods) || null,
+        unavailable: false,
+      };
     } catch (_) {
-      return { signedIn: false, methods: null };
+      return { signedIn: false, methods: null, unavailable: true };
     }
   }
 
@@ -1277,7 +1292,8 @@
   // the tool it had picked. No new endpoint, store, token or account system.
   const TOOLS = Object.freeze(["speech", "sns", "meeting"]);
   const LABELS = Object.freeze({ speech: "축사·인사말", sns: "SNS 홍보", meeting: "회의정리·활동집" });
-  const session = { signedIn: false, built: false, bound: false, selected: null, pending: null };
+  const session = { signedIn: false, built: false, bound: false, selected: null, pending: null,
+                     unavailable: false };
   let bodies = {};
 
   function host(id) { return document.getElementById(id); }
@@ -1288,12 +1304,12 @@
     node.textContent = text || "";
     node.hidden = !text;
   }
-  function showAuthPanel(message) {
+  function showAuthPanel(message, badge) {
     const panel = host("councilAuthPanel");
     if (panel) panel.hidden = false;
     const action = host("councilAuthAction");
     if (action) action.hidden = false;
-    setBadge("로그인 필요");
+    setBadge(badge || "로그인 필요");
     if (message) setStatus(message);
   }
   function hideAuthPanel() {
@@ -1369,6 +1385,12 @@
 
   function openLoginHere(tool, message) {
     if (tool) session.pending = tool;
+    // #6127: "로그인이 필요합니다"는 서버가 답하지 못했을 때 잘못된 지시입니다.
+    // 게이트는 그대로 닫혀 있습니다.
+    if (session.unavailable && !message) {
+      showAuthPanel("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요.", "로그인 확인 실패");
+      return;
+    }
     showAuthPanel(message || (!session.signedIn && session.pending
       ? "로그인이 필요합니다. 선택한 업무(" + LABELS[session.pending] + ")는 로그인 후 이 화면에서 바로 이어집니다."
       : ""));
@@ -1434,6 +1456,7 @@
   async function enterSignedIn() {
     const auth = await checkSignedIn();
     session.signedIn = auth.signedIn;
+    session.unavailable = !!auth.unavailable;
     if (!session.signedIn) { showAuthPanel("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요."); return false; }
     setBadge("로그인됨");
     hideAuthPanel();
@@ -1491,8 +1514,14 @@
       // fail-closed: the tool builders are not attached while signed out. The
       // cards stay readable as descriptions, and choosing one opens the in-page
       // login instead of sending the visitor to Chat.
-      showAuthPanel();
-      return { signedIn: false, tools: null, selected: null };
+      // #6127: when the server could not answer at all, say so. The gate stays
+      // closed either way; only the report to the user differs, so a runtime
+      // fault is not presented as "you are not signed in".
+      showAuthPanel(
+        auth.unavailable ? "로그인 상태 확인에 실패했습니다. 다시 시도해 주세요." : "",
+        auth.unavailable ? "로그인 확인 실패" : "로그인 필요",
+      );
+      return { signedIn: false, tools: null, selected: null, unavailable: !!auth.unavailable };
     }
     setBadge("로그인됨");
     hideAuthPanel();

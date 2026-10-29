@@ -127,6 +127,10 @@ let chatResponseOverride = null;
 // these to walk signed-out → in-page login → expiry without any second authority.
 let authState = { authenticated: true, user: { name: "테스트 사용자" } };
 let loginOutcome = null;
+// #6127: the status read itself can fail. A scenario swaps this in to prove the
+// module tells a server fault apart from a signed-out visitor.
+let authStatusOutcome = null;
+let fetchRejects = null;
 
 function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
@@ -157,7 +161,10 @@ async function fetch(url, init) {
     if (chatResponseOverride) return chatResponseOverride;
     return json({ answer: "생성된 초안 본문입니다.\n\n두 번째 문단입니다." });
   }
-  if (String(url) === "/api/auth/status") return json(authState);
+  if (String(url) === "/api/auth/status") {
+    if (fetchRejects) throw fetchRejects;
+    return authStatusOutcome || json(authState);
+  }
   if (method === "POST" && String(url) === "/api/auth/password/login") {
     loginAttempts.push(body);
     if (loginOutcome) return loginOutcome;
@@ -446,6 +453,51 @@ const SCENARIOS = {
       alerts,
       pageErrors,
     };
+  },
+  async auth_states() {
+    // #6127: three answers from the SAME status read, three different reports.
+    // 200 {authenticated:false} is a signed-out visitor; 401/403 is a real
+    // "not allowed"; 5xx or no answer at all is the server failing to say, and
+    // must never be dressed up as "you are not signed in". The gate stays closed
+    // in all three - that is the part that must not change.
+    const cases = [
+      ["signed_out_200", () => json({ authenticated: false, session_state: "guest",
+                                      methods: { google: true, password: true } })],
+      ["forbidden_401", () => json({ error: { code: "forbidden" } }, 401)],
+      ["fault_500", () => ({ ok: false, status: 500,
+                             json: async () => { throw new Error("Cloudflare HTML, not JSON"); } })],
+      ["network_throw", () => { throw new Error("worker did not answer"); }],
+      // a 200 whose body cannot be parsed says nothing about the visitor either
+      ["ok_200_unparseable", () => ({ ok: true, status: 200,
+                                      json: async () => { throw new Error("HTML, not JSON"); } })],
+    ];
+    const rows = [];
+    for (const [name, make] of cases) {
+      authState = { authenticated: false, methods: { google: true, password: true } };
+      // `network_throw` models fetch itself rejecting (the worker never answered);
+      // the others are real Response-shaped objects with a status.
+      let thrown = null;
+      try { authStatusOutcome = make(); } catch (e) { thrown = e; authStatusOutcome = null; }
+      if (thrown) fetchRejects = thrown; else fetchRejects = null;
+      const s = spawnSession();
+      const api = s.ctx.window.PadiemCouncilApps;
+      const first = await api.init();
+      await sleep(20);
+      rows.push({
+        name,
+        initSignedIn: first.signedIn,
+        initUnavailable: Boolean(first.unavailable),
+        badge: text(find(s, "councilAuthBadge")),
+        status: text(find(s, "councilAuthStatus")),
+        panelHidden: find(s, "councilAuthPanel").hidden,
+        loginActionHidden: find(s, "councilAuthAction").hidden,
+        anyToolBuilt: ["councilSpeechForm", "councilSnsForm", "councilMeetingForm"]
+          .some((id) => s.root._descendants().find((n) => n.id === id)),
+      });
+      authStatusOutcome = null;
+      fetchRejects = null;
+    }
+    return { cases: rows, endpoints: endpointSet() };
   },
   async auth_routing() {
     // URL and host-storage selection: a refresh or a provider round trip must land
