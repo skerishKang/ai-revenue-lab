@@ -11,11 +11,37 @@ a column that a guard depends on cannot be missing on one side only.
 """
 from __future__ import annotations
 
+import os
 import pathlib
 
 from app.d1_sqlite import SqliteD1, connect
 
-MIGRATION_DIR = pathlib.Path(__file__).resolve().parents[1] / "padiem-chat" / "migrations"
+
+def migration_dir(base: pathlib.Path | None = None) -> pathlib.Path:
+    """Where the Chat migrations are, in whichever layout this file is running.
+
+    The repository layout puts this file at apps/padiem-mesh-queue/schema.py, one level
+    below the Chat app. On 컴2 the same file is installed at $ROOT/schema.py, where that
+    relative path would be /opt/padiem/padiem-chat — so the installed `app` link is
+    used instead: $ROOT/app resolves to <chat>/app, and its parent holds migrations.
+    An explicit MESH_QUEUE_MIGRATIONS_DIR wins over both.
+    """
+
+    override = os.environ.get("MESH_QUEUE_MIGRATIONS_DIR", "").strip()
+    if override:
+        return pathlib.Path(override)
+    here = pathlib.Path(base) if base is not None else pathlib.Path(__file__).resolve().parent
+    # Resolve the app link and take its parent: "../" after a symlink is lexical on
+    # Windows and physical on Linux, and this file runs on both.
+    through_app = here / "app"
+    if through_app.is_dir():
+        candidate = through_app.resolve().parent / "migrations"
+        if candidate.is_dir():
+            return candidate
+    return here.parent / "padiem-chat" / "migrations"
+
+
+MIGRATION_DIR = migration_dir()
 
 QUEUE_MIGRATIONS = (
     "047_oracle_mesh_dispatch.sql",
