@@ -90,6 +90,15 @@ class MeshCentralCommandRefused(ValueError):
     """Bounded refusal of one command run. Never carries output or secrets."""
 
 
+class MeshCentralStopUnconfirmed(MeshCentralCommandRefused):
+    """The stop was sent but the PC never showed it ran it.
+
+    A terminal that echoes its input (measured 2026-10-29 on every agent generation)
+    answers without executing anything, so an open session is not evidence. Reporting a
+    stop as done on an unexecuted line is the one outcome this lane may not produce.
+    """
+
+
 @dataclass(frozen=True, slots=True)
 class MeshCentralCommandOutcome:
     """What one real command run produced, exactly as observed."""
@@ -221,13 +230,16 @@ def cancel_kill_command(dispatch_id: str) -> str:
     the normal case - a command that finished on its own has already removed it.
     """
     marker = "$__padiem_stop"
+    # The last line is the evidence that this script RAN: the marker line is split so
+    # a terminal that only echoes its input can never produce the joined token.
     return (
         "$ErrorActionPreference='SilentlyContinue';"
         f"{marker}={_pid_file_literal(dispatch_id)};"
         f"if (Test-Path -LiteralPath {marker}) {{"
         f"$__padiem_kill=(Get-Content -LiteralPath {marker} | Select-Object -First 1);"
         "if ($__padiem_kill) { & taskkill /T /F /PID $__padiem_kill | Out-Null };"
-        f"Remove-Item -LiteralPath {marker} -Force }}"
+        f"Remove-Item -LiteralPath {marker} -Force }};"
+        "Write-Output ('__PADIEM_' + 'KILL__')"
     )
 
 
@@ -519,6 +531,10 @@ def _session_payload(raw: bytes) -> bytes:
         return tail
     end = tail.find(b"\n", index)
     return tail if end < 0 else tail[:end + 1]
+
+
+#: The joined token the stop script prints when it actually ran.
+STOP_EVIDENCE = "__PADIEM_KILL__"
 
 
 def _may_clear(line_guard: Callable[[], bool] | None,
@@ -1286,6 +1302,9 @@ class MeshCentralCliCommandPort:
             return False
         try:
             self.kill_command_process(node_ref=node_ref, dispatch_id=dispatch_id)
+        except MeshCentralStopUnconfirmed:
+            phase("cancel_kill_unverified")
+            return False
         except Exception:
             phase("cancel_kill_refused")
             return False
@@ -1362,7 +1381,16 @@ class MeshCentralCliCommandPort:
         is bounded, so an unreachable agent cannot make this the new way to hang.
         """
         checked = _checked_dispatch_id(dispatch_id)
-        self._run_shell_session(node_ref, cancel_kill_command(checked))
+        raw = self._run_shell_session(
+            node_ref, cancel_kill_command(checked),
+            answer=lambda buf: STOP_EVIDENCE.encode("ascii") in buf,
+            wait_seconds=CANCEL_KILL_WAIT_SECONDS,
+        )
+        if STOP_EVIDENCE.encode("ascii") not in (raw or b""):
+            # The session answered nothing that proves the script ran. On 2026-10-29
+            # every agent generation echoed input instead of executing it, so this is
+            # the ordinary case until the transport is fixed.
+            raise MeshCentralStopUnconfirmed("the stop was not confirmed by the PC")
 
     def sweep_agent_children(
         self,

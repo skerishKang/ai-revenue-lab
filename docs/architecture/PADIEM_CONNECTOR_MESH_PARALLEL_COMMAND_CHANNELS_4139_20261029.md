@@ -31,6 +31,28 @@ claim state:
   marker this very host wrote, so it cannot be wrong about a partner's work, and
   gating it would spend a channel round trip on every command for no safety.
 
+### 0.1 The stop must prove the PC ran it (live measurement, 2026-10-29 KST)
+
+Qoder measured the terminal channel on COM1 (older agent), COM2 and a freshly installed
+CGI-1 agent: a line typed into `meshctrl shell` comes back as a mirror of itself —
+the probe line answered 71 bytes, `+"\n"` 73 bytes, `+"; Exit"` 77 bytes, printable
+characters 1.00 — with no prompt, no banner and no error. Input is not executed, and the
+behaviour is independent of agent generation. That is a defect of this transport, not of
+the agent version, so the console probe ships off (#6183) and the per-dispatch session
+lane (#6163) stays off until the transport answers.
+
+What it does not excuse: the owner's stop rode the same session and reported
+`cancel_kill` as though it had worked. An opened session is not evidence. The stop script
+now ends with `Write-Output ('__PADIEM_' + 'KILL__')` — built from two literals, so the
+terminal's echo of the typed line can never contain the joined token — and
+`kill_command_process` raises `MeshCentralStopUnconfirmed` unless that token comes back.
+`_stop_on_pc` then logs `cancel_kill_unverified`, distinct from `cancel_kill_refused`:
+the stop was delivered and is unproven, which is the honest state of this lane today.
+Diffing #6106 against #6059 found no channel regression — the stop's argv, stdin
+bootstrap, pty payload and 15-second bound are byte-identical; #6106 only extracted
+`_run_shell_session`. So the stop was never verified through this path recently, and it
+now cannot claim otherwise.
+
 ## 1. Why the lane is serial, and what a stuck command actually does to the next one
 
 `runcommand` has no server-side queue. `src/meshuser.js:3216-3325` (`case 'runcommands'`) only forwards the request to the agent with `agent.send()`. The lock is entirely agent-side, in `agents/meshcore.js:1975`:
