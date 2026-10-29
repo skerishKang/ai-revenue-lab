@@ -149,7 +149,7 @@ let fakeFileSeq = 0;
 function nextBinaryId() { return "file_" + String(1000 + ++fakeFileSeq).padStart(32, "0").slice(-32); }
 function nextTextId() { return "f" + (++fakeFileSeq); }
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
-const CURRENT = { alerts: [], links: [], exchangeOpens: [], exchangeSelect: null, nativePicks: 0 };
+const CURRENT = { alerts: [], links: [], exchangeOpens: [], exchangeSelect: null, nativePicks: 0, pcFileStatus: 0, pcFileBytes: null };
 
 class FakeFile {
   constructor(parts, name, opts) {
@@ -184,7 +184,11 @@ async function fetch(url, opts) {
     return json({ links: CURRENT.links });
   }
   if (method === "GET" && path === "/api/pc/file") {
-    const bytes = new TextEncoder().encode("img:pc사진.jpg");
+    // /api/pc/file answers the PC file's real bytes; the fake serves a real
+    // JPEG signature, because the client now reads the media type from them.
+    if (CURRENT.pcFileStatus) return { ok: false, status: CURRENT.pcFileStatus, json: async () => ({}) };
+    const bytes = CURRENT.pcFileBytes
+      || new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01]);
     return { ok: true, status: 200, blob: async () => ({ size: bytes.length, arrayBuffer: async () => bytes }) };
   }
   const originalMatch = /^\/api\/projects\/p1\/files\/(file_\d+)\/original$/.exec(path);
@@ -526,6 +530,47 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_ON_UNKNOWN_PAIRINGS");
   if (CURRENT.nativePicks !== 2) fail("NATIVE_PICKER_MISSING_ON_UNKNOWN_PAIRINGS");
 
+  // 16) The 가져오기 dialog lists every file in a folder, so the extension
+  // proves nothing. A PC file whose bytes are not PNG/JPG/WEBP is refused by
+  // the bytes themselves: no upload, one sentence naming the formats, and no
+  // [다시 시도] row — a retry against a permanent refusal would only loop.
+  CURRENT.links = [{ state: "active" }];
+  CURRENT.pcFileBytes = new TextEncoder().encode("그냥 텍스트 파일입니다");
+  const photosBefore = root.findAll(".util-photo-item").length;
+  const binariesBefore = storedFiles.filter((f) => f.binary).length;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 2) fail("SHARED_DIALOG_NOT_REOPENED", { opens: CURRENT.exchangeOpens.length });
+  await CURRENT.exchangeSelect({ fileId: "d2", name: "메모.txt" });
+  await sleep(30);
+  if (root.findAll(".util-photo-item").length !== photosBefore) fail("NON_IMAGE_PC_FILE_ADDED", { names: names() });
+  if (storedFiles.filter((f) => f.binary).length !== binariesBefore) fail("NON_IMAGE_PC_FILE_UPLOADED");
+  const refusedStatus = root._descendants().find((n) => n.id === "utilSnsPhotoStatus");
+  if (!refusedStatus || refusedStatus.hidden || refusedStatus.textContent.indexOf("PNG·JPG·WEBP") < 0) {
+    fail("NON_IMAGE_PC_FILE_NOT_EXPLAINED", { text: refusedStatus ? refusedStatus.textContent : null });
+  }
+  if (refusedStatus.textContent.indexOf("메모.txt") < 0) fail("NON_IMAGE_PC_FILE_NOT_NAMED", { text: refusedStatus.textContent });
+  const refusedRetry = root._descendants().find((n) => n.id === "utilSnsPhotoRetry");
+  if (!refusedRetry || !refusedRetry.hidden) fail("RETRY_OFFERED_FOR_PERMANENT_REFUSAL");
+
+  // 17) The PC read itself failing says which side stopped it — an HTTP status
+  // in the menu's own Korean copy, and the offline sentence for a dead network
+  // — with nothing added and nothing to retry.
+  CURRENT.pcFileBytes = null;
+  CURRENT.pcFileStatus = 503;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  await CURRENT.exchangeSelect({ fileId: "d3", name: "큰사진.jpg" });
+  await sleep(30);
+  if (root.findAll(".util-photo-item").length !== photosBefore) fail("FAILED_PC_READ_ADDED_PHOTO");
+  if (refusedStatus.textContent.indexOf("사진을 가져오지 못했어요") < 0
+      || refusedStatus.textContent.indexOf("과부하") < 0) {
+    fail("FAILED_PC_READ_COPY_WRONG", { text: refusedStatus.textContent });
+  }
+  if (!refusedRetry.hidden) fail("RETRY_OFFERED_FOR_FAILED_PC_READ");
+  CURRENT.pcFileStatus = 0;
+  CURRENT.links = [];
+
   console.log(JSON.stringify({
     ok: true,
     photos: root.findAll(".util-photo-item").length,
@@ -538,6 +583,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     blogSeq: seq.slice(0, 6),
     storedBinary: storedFiles.filter((f) => f.binary).length,
     pcPhoto: names()[2] || null,
+    pcRefusalCopy: refusedStatus ? refusedStatus.textContent : null,
     alertsA: A.alerts, alertsB: B.alerts,
   }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });

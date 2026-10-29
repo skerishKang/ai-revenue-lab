@@ -1000,16 +1000,38 @@
       // Without an explicitly linked PC, including a pairing store that
       // cannot answer (503), the local file picker stays: it works on a phone
       // too, and the dialog would only open a dead end.
-      function photoImageType(name) {
-        const lower = String(name || "").toLowerCase();
-        if (lower.endsWith(".png")) return "image/png";
-        if (lower.endsWith(".webp")) return "image/webp";
-        return "image/jpeg";
+      // A PC file arrives with no browser filter behind it: the 가져오기 dialog
+      // lists every file in the folder, so the extension proves nothing. The
+      // media type comes from the bytes, and the same three formats the store
+      // accepts (app/project_files.py IMAGE_PROJECT_FILE_MEDIA) are the three
+      // that pass. Anything else is refused here, before an upload the server
+      // could only answer with a 422 — a retry that can never succeed is worse
+      // than one sentence naming the formats that work.
+      const PC_PHOTO_FORMATS = "사진은 PNG·JPG·WEBP만 추가할 수 있어요: ";
+
+      function photoBytesType(bytes) {
+        const head = new Uint8Array(bytes.slice(0, 12));
+        if (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) return "image/png";
+        if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+        const riff = String.fromCharCode(head[0], head[1], head[2], head[3]);
+        const form = String.fromCharCode(head[8], head[9], head[10], head[11]);
+        if (riff === "RIFF" && form === "WEBP") return "image/webp";
+        return null;
+      }
+
+      // Nothing was added to the composition, so [다시 시도] has nothing to
+      // offer: the owner opens the dialog again and the sentence says why.
+      function showPhotoImportRefusal(sentence) {
+        failedPhotos = [];
+        photoRetry.hidden = true;
+        photoStatus.textContent = sentence;
+        photoStatus.hidden = false;
       }
 
       async function importPickedPhoto(picked) {
         if (!picked || !picked.fileId) return;
-        const name = picked.name || "사진.jpg";
+        const name = picked.name || "사진";
+        let bytes;
         try {
           const res = await fetch(
             "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
@@ -1017,14 +1039,24 @@
           );
           if (!res.ok) throw new Error("http_" + res.status);
           const blob = await res.blob();
-          const bytes = await blob.arrayBuffer();
-          await addPhotoFiles([new File([bytes], name, { type: photoImageType(name) })]);
-        } catch (_error) {
-          // One plain Korean sentence, and the owner opens the dialog again.
-          // The upload-path retry button belongs to files that were picked.
-          photoStatus.textContent = "PC에서 사진을 가져오지 못했어요: " + name + ". 다시 시도해 주세요.";
-          photoStatus.hidden = false;
+          bytes = await blob.arrayBuffer();
+        } catch (error) {
+          // A dead network is not an HTTP status: it keeps the offline
+          // sentence the rest of this menu already uses.
+          const matched = /^http_(\d+)$/.exec(String((error && error.message) || ""));
+          const status = matched ? Number(matched[1]) : 0;
+          const why = status === 0
+            ? GEN_OFFLINE_COPY
+            : (GEN_ERROR_COPY[status] || "잠시 후 다시 시도해 주세요.");
+          showPhotoImportRefusal("PC에서 사진을 가져오지 못했어요: " + name + " — " + why);
+          return;
         }
+        const type = photoBytesType(bytes);
+        if (!type) { showPhotoImportRefusal(PC_PHOTO_FORMATS + name); return; }
+        // The bytes keep their real type, so preparePhoto decodes and shrinks
+        // the same way a locally picked photo does, and an upload failure
+        // still reaches the shared [다시 시도] row through addPhotoFiles.
+        await addPhotoFiles([new File([bytes], name, { type: type })]);
       }
 
       photoAdd.addEventListener("click", async () => {
