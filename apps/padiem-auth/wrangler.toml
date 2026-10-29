@@ -1,0 +1,17 @@
+name = "padiem-auth"
+main = "worker.mjs"
+compatibility_date = "2026-08-27"
+workers_dev = false
+
+# No routes or real secrets are set by this file. All bindings require deployment approval.
+[[services]]
+binding = "IDENTITY_AUTHORITY"
+service = "padiem-control-plane-identity"
+
+[[durable_objects.bindings]]
+name = "AUTH_STATE"
+class_name = "AuthStateObject"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AuthStateObject"]
