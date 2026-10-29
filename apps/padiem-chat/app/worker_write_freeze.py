@@ -9,7 +9,7 @@ def freeze_active(value):
     return True
 
 
-WRITE_ON_GET = frozenset({"/auth/google/callback", "/auth/lovetree/start"})
+WRITE_ON_GET = frozenset({"/auth/google/callback", "/auth/lovetree/start", "/api/connectors/github/start", "/api/connectors/github/callback"})
 
 
 def reject_request(value, method, upgrade=None, path=""):
