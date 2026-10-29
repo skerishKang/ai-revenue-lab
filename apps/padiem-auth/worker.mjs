@@ -110,6 +110,15 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
         if (!result.ok) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
         accountId = result.accountId;
+        // A disabled product link must not keep receiving 30 days of fresh access.
+        // A failed authority call closes the flow; the rotated credential was not
+        // returned, so recovery requires a new login instead of a fail-open grant.
+        const userId = await googleProductUserId(subject);
+        const linked = await authority.resolve_product_user_for_subject({ product_id: id, canonical_subject_id: accountId });
+        if (linked?.ok !== true || linked?.product_user_id !== userId) {
+          await stateFor(object).revoke({ id: sessionId, client: id, digest: await digest(nextSecret), now: current });
+          return json(400, { error: 'invalid_grant' });
+        }
       }
       const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
       return json(200, { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` });
