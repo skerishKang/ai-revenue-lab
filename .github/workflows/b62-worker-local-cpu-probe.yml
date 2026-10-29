@@ -29,6 +29,7 @@ jobs:
         run: |
           uv sync --locked --extra dev
           uv pip install websocket-client==1.8.0
+          uv venv .venv-workers/pyodide-venv --python cpython-3.13.2-emscripten-wasm32-musl
           uv run --no-sync pywrangler --version
           uv run --no-sync python scripts/build_b66_worker_dependencies.py
       - name: Probe local workerd without network access
