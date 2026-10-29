@@ -218,7 +218,7 @@ def load_state(source_path: str, target_path: str) -> dict:
         # Refuse schema drift before changing even the rehearsal target.
         source_triggers = {r[0]: r[1] for r in source.execute("SELECT name, sql FROM sqlite_master WHERE type='trigger' ORDER BY name")}
         target_triggers = {r[0]: r[1] for r in target.execute("SELECT name, sql FROM sqlite_master WHERE type='trigger' ORDER BY name")}
-        if source_triggers != target_triggers or any(sql is None for sql in source_triggers.values()):
+        if (target_triggers and source_triggers != target_triggers) or any(sql is None for sql in source_triggers.values()):
             raise MigrationRefused("trigger_schema_mismatch")
         target.execute("BEGIN IMMEDIATE")
         try:

@@ -18,6 +18,7 @@ class TriggerGuardTest(unittest.TestCase):
             with sqlite3.connect(source) as db:
                 db.execute("INSERT INTO z_users VALUES ('user')")
                 db.execute('DELETE FROM a_outbox')
+            with sqlite3.connect(target) as db: db.execute('DROP TRIGGER signup')
             tool.load_state(str(source), str(target))
             with sqlite3.connect(source) as a, sqlite3.connect(target) as b:
                 self.assertEqual(a.execute('SELECT * FROM a_outbox').fetchall(), b.execute('SELECT * FROM a_outbox').fetchall())
@@ -29,6 +30,7 @@ class TriggerGuardTest(unittest.TestCase):
             for path in (source, target):
                 with sqlite3.connect(path) as db: db.execute('CREATE TABLE items(id TEXT PRIMARY KEY)')
             with sqlite3.connect(source) as db: db.execute('CREATE TRIGGER t AFTER INSERT ON items BEGIN SELECT 1; END')
+            with sqlite3.connect(target) as db: db.execute('CREATE TRIGGER other AFTER INSERT ON items BEGIN SELECT 1; END')
             with self.assertRaisesRegex(tool.MigrationRefused, 'trigger_schema_mismatch'):
                 tool.load_state(str(source), str(target))
             with sqlite3.connect(target) as db:
