@@ -22,10 +22,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .app_factory import create_app
+from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
 from .d1_sqlite import SqliteD1
+from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
 from .local_r2 import LocalDiskR2
+from .local_service_bridge import (
+    HttpRpcBinding,
+    LocalB66PdfRendererClient,
+    compose_local_b14_transports,
+)
 from .project_files import D1ProjectFileStore
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
@@ -90,18 +97,30 @@ def _ensure_session_secret(data_dir: Path) -> None:
 def build_app():
     """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings."""
 
-    if os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() not in {"1", "true"}:
+    local_flag = os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() in {"1", "true"}
+    host_flag = os.getenv("PADIEM_CHAT_CPYTHON_HOST", "").strip().lower() in {"1", "true"}
+    if not local_flag and not host_flag:
         raise ConfigError(
-            "app.local_cpython is the explicit local-run entry point: "
-            "set PADIEM_LOCAL_DEV=1 (see tools/run_chat_local_cpython.py)"
+            "app.local_cpython is the explicit CPython entry point: "
+            "PADIEM_LOCAL_DEV=1 for a loopback dev run, or "
+            "PADIEM_CHAT_CPYTHON_HOST=1 for the COM2 parallel host "
+            "(see tools/run_chat_local_cpython.py / deploy/host-com2/chat)"
         )
     data_dir = local_data_dir()
     data_dir.mkdir(parents=True, exist_ok=True)
     _ensure_session_secret(data_dir)
 
     settings = Settings.from_env()
-    if not settings.local_dev:
+    if local_flag and not settings.local_dev:
         raise ConfigError("PADIEM_LOCAL_DEV did not reach Settings — from_env regression")
+    if host_flag:
+        # The host run is the parallel-operation host: its public origin is a
+        # real https hostname, so the loopback allowance must stay off and the
+        # https-only validation applies exactly as in Production.
+        if settings.local_dev:
+            raise ConfigError("host runs must not set PADIEM_LOCAL_DEV")
+        if not str(settings.public_base_url or "").startswith("https://"):
+            raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL must be https on the CPython host")
 
     # Same autocommit stance as the shared facade's connect(), minus the
     # foreign_keys pragma: production D1 never enforces it and the migration
@@ -120,6 +139,23 @@ def build_app():
     db = SqliteD1(connection)
     r2 = LocalDiskR2(data_dir / "objects")
 
+    # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
+    # configured origin+secret pair builds one; a half-configured pair is a
+    # boot error, never a silent downgrade. Absent pairs keep the exact
+    # fail-closed behavior the Worker has when a binding is missing.
+    identity_origin, identity_secret = _optional_pair(
+        "PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN", "PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET"
+    )
+    pdf_origin, pdf_secret = _optional_pair(
+        "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "PADIEM_CHAT_LOCAL_B66_PDF_SECRET"
+    )
+    identity_authority = (
+        HttpRpcBinding(identity_origin, identity_secret) if identity_origin else None
+    )
+    pdf_renderer = (
+        LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
+    )
+
     app = create_app(
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
@@ -128,5 +164,34 @@ def build_app():
         project_file_store=D1ProjectFileStore(db),
         saved_output_store=D1SavedOutputStore(db),
         usage_store=D1UsageCounterStore(db),
+        control_plane_identity_authority=identity_authority,
+        b66_pdf_renderer_client=pdf_renderer,
     )
+
+    if settings.runtime_mode == "b14":
+        # The same replacement worker.py performs when it composes the B14
+        # transports: the default client stays as a stub any other subsystem
+        # already captured, and the dispatch-aware client carries the proof.
+        completion_transport, stream_transport = compose_local_b14_transports(
+            settings, os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET")
+        )
+        app.state.b14_client = DispatchAwareB14Client(
+            settings,
+            service_transport=completion_transport,
+            stream_transport=stream_transport,
+            require_service_binding=True,
+        )
+        quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
+        app.state.b66_quote_model_resolver = quote_model_resolver
+        app.state.b14_model_choice_resolver = quote_model_resolver
     return app
+
+
+def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | None]:
+    origin = os.getenv(origin_env, "").strip()
+    secret = os.getenv(secret_env, "").strip()
+    if not origin and not secret:
+        return None, None
+    if not origin or not secret:
+        raise ConfigError(f"{origin_env} and {secret_env} must be set together")
+    return origin, secret
