@@ -1,0 +1,15 @@
+# cloudflared ingress for the COM2 Chat parallel host (chat-com2.padiem.net).
+# Copy under /etc/cloudflared/ and add `--config` to that tunnel's unit.
+# chat.padiem.net keeps its own tunnel/config — nothing here selects it.
+tunnel: CHAT_COM2_TUNNEL_UUID
+credentials-file: /etc/cloudflared/CHAT_COM2_TUNNEL_UUID.json
+
+ingress:
+  # The app listens on loopback only; the tunnel is the only public path.
+  # WebSocket upgrades pass through this rule unchanged.
+  - hostname: chat-com2.padiem.net
+    service: http://127.0.0.1:8798
+    originRequest:
+      connectTimeout: 15s
+      noTLSVerify: false
+  - service: http_status:404

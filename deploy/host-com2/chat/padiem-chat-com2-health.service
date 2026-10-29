@@ -1,0 +1,7 @@
+[Unit]
+Description=PADIEM COM2 Chat loopback health check
+
+[Service]
+Type=oneshot
+User=padiem-chat
+ExecStart=/opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/health.py --url http://127.0.0.1:8798/health
