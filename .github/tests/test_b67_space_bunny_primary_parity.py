@@ -4,20 +4,15 @@ Static and network-free. Space Bunny survives only as historical identity
 constants, not as a registered model/provider. Padiem has no canonical
 text/vision primary pending owner decision.
 
-The two product-tier authorities are asserted separately, because they are NOT
-the same surface:
+The product-tier authority is asserted once:
+``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``
+is the LIVE route contract that Chat, Claw and Control Plane resolve
+through. After the owner decisions #5009 (Plus/Pro/Max Muse primary) and
+#5218 (Free Google priority, active-only product tier declaration) it holds
+one EXECUTABLE route per tier and no legacy successor-pending hold route.
 
-* ``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``
-  is the LIVE route contract that Chat, Claw and Control Plane resolve
-  through. After the owner decisions #5009 (Plus/Pro/Max Muse primary) and
-  #5218 (Free Google priority, active-only product tier declaration) it holds
-  one EXECUTABLE route per tier and no legacy successor-pending hold route.
-* ``apps/korean-ai-platform/app/pilot/tier_registry_v1.py`` is the legacy
-  governance projection (the live contract states it is "not the live route").
-  It still carries the #3568 Plus hold and its historical data-only routes.
-
-The previous single shared assertion demanded the legacy hold shape in BOTH
-files, which stopped matching the live contract when #5218 landed.
+The unshipped legacy ``apps/korean-ai-platform/app/pilot/tier_registry_v1.py``
+governance projection was deleted; no second tier registry may return.
 """
 
 from __future__ import annotations
@@ -107,15 +102,13 @@ def _live_route_table(text: str) -> str:
     return text.split(marker, 1)[1]
 
 
-def test_legacy_tier_registry_keeps_the_plus_hold_and_space_bunny_data_only() -> None:
-    """The legacy governance projection still holds the #3568 Plus posture."""
-    text = TIER_REGISTRY.read_text(encoding="utf-8")
-    assert 'route_id="plus.hold.v1"' in text
-    assert "model_id=PLUS_HOLD_MODEL_ID" in text
-    assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
-    assert 'upstream_model="stealth/space-bunny-alpha"' in text
-    assert "HOLD_AS_DATA_ONLY" in text
-    assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
+def test_legacy_tier_registry_module_is_removed() -> None:
+    """No second product-tier registry may return as a governance projection."""
+    assert not TIER_REGISTRY.exists(), (
+        "the unshipped B14 tier registry must stay deleted; "
+        "product_tier_routes.py is the single product-tier route authority"
+    )
+    assert PRODUCT_TIERS.is_file(), "the live product-tier contract must remain"
 
 
 def test_live_product_tier_contract_uses_google_and_holds_muse_without_the_legacy_plus_hold() -> None:
@@ -141,8 +134,9 @@ def test_live_product_tier_contract_uses_google_and_holds_muse_without_the_legac
     assert 'PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"' in text
     assert "HOLD_AS_DATA_ONLY" in text
 
-    # The authority boundary between the two product-tier surfaces is explicit.
-    assert "is a separate legacy governance projection, not the live route" in text
+    # The authority boundary is explicit: the live contract is the only source.
+    assert "single product-tier route authority" in text
+    assert "tier_registry_v1" not in text
 
     table = _live_route_table(text)
     assert 'route_id="plus.hold.v1"' not in table, (
