@@ -201,6 +201,22 @@ def test_bounds_and_verbs():
     assert broken[0] == 500 and "upstream detail" not in json.dumps(broken[1])
 
 
+def test_stale_proof_is_rejected_against_the_real_clock_by_default():
+    # The worker path calls without `now`; a proof minted an hour ago must be
+    # refused by the real clock, not compared with its own timestamp.
+    stale = _signed_request(at=int(__import__("time").time()) - 3600)
+    status, payload, _ = _run(handle_internal_rpc(
+        stale, secret=SECRET, allowed_methods=ALLOWED, dispatcher=_Dispatcher(),
+    ))
+    assert status == 403 and payload["error"]["code"] == "rpc_proof_stale"
+
+    fresh = _signed_request(at=int(__import__("time").time()))
+    status, _, _ = _run(handle_internal_rpc(
+        fresh, secret=SECRET, allowed_methods=ALLOWED, dispatcher=_Dispatcher(),
+    ))
+    assert status == 200
+
+
 def test_non_ingress_paths_are_left_to_the_worker_404():
     assert _run(handle_internal_rpc(
         _Request("https://w/health", headers={}, body=b""),
@@ -296,13 +312,13 @@ def test_identity_fetch_is_absent_without_the_secret_and_gated_with_it():
     # No secret: the door is not registered — every path, including the RPC
     # prefix, keeps the plain 404 the Worker has today.
     default = module.Default(env=env)
-    response = _run(default.fetch(_signed_request()))
+    response = _run(default.fetch(_signed_request(at=int(__import__("time").time()))))
     assert response.status == 404 and response.body == "Not Found"
 
     env.PADIEM_IDENTITY_RPC_INGRESS_SECRET = SECRET
     default = module.Default(env=env)
     response = _run(default.fetch(_signed_request(
-        method="resolve_or_create_product_link",
+        method="resolve_or_create_product_link", at=int(__import__("time").time()),
         body=b'{"product_id":"b62","product_user_id":"usr_1","auth_provider":"password","provider_subject":"a@example.com"}',
     )))
     assert response.status == 200
@@ -311,7 +327,7 @@ def test_identity_fetch_is_absent_without_the_secret_and_gated_with_it():
 
     # The unlisted and tenant methods stay unreachable through HTTPS.
     for name in ("create_tenant", "issue_google_connect_ticket", "install_connector_enrollment_schema"):
-        denied = _run(default.fetch(_signed_request(method=name)))
+        denied = _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time()))))
         assert denied.status == 404, name
 
     # The Service Binding RPC method itself is untouched.
@@ -328,17 +344,17 @@ def test_google_state_fetch_exposes_only_workspace_connector_state():
     env = _env(GOOGLE_OAUTH_STATE=_Namespace(stub))
 
     default = module.Default(env=env)
-    response = _run(default.fetch(_signed_request(method="workspace_connector_state")))
+    response = _run(default.fetch(_signed_request(method="workspace_connector_state", at=int(__import__("time").time()))))
     assert response.status == 404
 
     env.PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET = SECRET
     default = module.Default(env=env)
     ok = _run(default.fetch(_signed_request(
-        method="workspace_connector_state", body=b'{"workspace_ref":"w"}'
+        method="workspace_connector_state", body=b'{"workspace_ref":"w"}', at=int(__import__("time").time())
     )))
     assert ok.status == 200 and json.loads(ok.body)["ok"] is True
     assert stub.calls[0][0] == "workspace_connector_state"
 
     for name in ("begin_connect", "complete_callback", "issue_access_lease", "disconnect_drive"):
-        assert _run(default.fetch(_signed_request(method=name))).status == 404, name
+        assert _run(default.fetch(_signed_request(method=name, at=int(__import__("time").time())))).status == 404, name
     assert isinstance(_run(default.workspace_connector_state({"workspace_ref": "w"})), dict)

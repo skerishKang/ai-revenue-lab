@@ -1,0 +1,15 @@
+# COM2 padiem-broker — third-party runtime closure, pinned from
+# apps/padiem-chat/uv.lock with wheel hashes (all py3-none-any).
+# The broker modules themselves are imported from this checkout (PYTHONPATH).
+anyio==4.15.1 \
+    --hash=sha256:6152fdbbf9a77fdec97731721bebf7c4c44f7c29b424b0065826173efc7ed101
+click==8.5.0 \
+    --hash=sha256:255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360
+h11==0.16.0 \
+    --hash=sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86
+starlette==0.52.1 \
+    --hash=sha256:0029d43eb3d273bc4f83a08720b4912ea4b071087a3b48db01b7c839f7954d74
+typing-extensions==4.16.0 \
+    --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+uvicorn==0.53.0 \
+    --hash=sha256:e8dca71ec86dce5f04e333f0d56cdedf942446e6643b9cea1af0d6d3a02cb03e

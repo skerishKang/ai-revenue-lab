@@ -1,0 +1,10 @@
+[Unit]
+Description=PADIEM COM2 broker daily SQLite snapshot at 04:10
+
+[Timer]
+OnCalendar=*-*-* 04:10:00
+Persistent=true
+Unit=padiem-broker-backup.service
+
+[Install]
+WantedBy=timers.target
