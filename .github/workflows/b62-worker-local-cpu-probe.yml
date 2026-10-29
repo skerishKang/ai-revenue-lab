@@ -1,0 +1,50 @@
+name: B62 isolated Python Worker CPU probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: astral-sh/setup-uv@v6
+      - name: Install locked dependencies and local inspector client
+        run: |
+          uv sync --locked --extra dev
+          uv pip install websocket-client==1.8.0
+      - name: Probe local workerd without network access
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp ../../tools/worker_cpu_probe/wrangler.local.toml ./wrangler.cpu-probe.toml
+          # Apply only after package setup. The GitHub-hosted runner is ephemeral.
+          cleanup() {
+            if [[ -n "${worker_pid:-}" ]]; then kill "$worker_pid" 2>/dev/null || true; fi
+            sudo iptables -D OUTPUT ! -o lo -j REJECT 2>/dev/null || true
+            sudo ip6tables -D OUTPUT ! -o lo -j REJECT 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          sudo iptables -I OUTPUT 1 ! -o lo -j REJECT
+          sudo ip6tables -I OUTPUT 1 ! -o lo -j REJECT
+          env -i PATH="$PATH" HOME="$HOME" NO_PROXY=localhost,127.0.0.1 \
+            uv run --no-sync pywrangler dev --local --config wrangler.cpu-probe.toml \
+            --ip 127.0.0.1 --port 18787 --inspector-port 19229 > /tmp/b62-cpu-wrangler.log 2>&1 &
+          worker_pid=$!
+          ready=0
+          for attempt in $(seq 1 90); do
+            if curl --noproxy '*' --silent --max-time 1 http://127.0.0.1:19229/json > /dev/null; then ready=1; break; fi
+            kill -0 "$worker_pid" || break
+            sleep 1
+          done
+          if [[ "$ready" != 1 ]]; then cat /tmp/b62-cpu-wrangler.log; exit 1; fi
+          uv run --no-sync python ../../tools/worker_cpu_probe/probe.py
