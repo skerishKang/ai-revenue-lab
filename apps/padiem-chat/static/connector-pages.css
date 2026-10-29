@@ -168,3 +168,50 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── layout corrections (owner report 2026-10-29) ───────────────────────── */
+
+/* The ⋯ menu is a popover inside the card: the card never clips it, and the
+ * panel stays within the viewport on a phone. */
+#connectorsView .pc-pairing,
+#connectorsView .pc-pairing-list,
+#connectorsView .pc-pairing-link {
+  overflow: visible;
+}
+
+#connectorsView .pc-pairing-menu-panel {
+  max-width: min(240px, calc(100vw - 48px));
+}
+
+/* A long PC name shrinks first; the state badge and the menu keep their
+ * width instead of being pushed out of the card. */
+#connectorsView .pc-pairing-link {
+  flex-wrap: wrap;
+}
+
+#connectorsView .pc-pairing-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#connectorsView .pc-pairing-state,
+#connectorsView .pc-pairing-menu {
+  flex: 0 0 auto;
+}
+
+/* The Claw ON/OFF switch stays a compact bottom-right control, and the card's
+ * own text reserves the row: the switch can never sit on top of the
+ * description at any width, and the card's grid height is untouched. */
+
+/* Claw home cards at phone widths: the fixed-height tile clipped the name and
+ * let the status chip sit on it. The card grows to its own content and the
+ * starter reserves the status row above and the switch row below. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
+    min-height: 160px;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+    padding: 30px 12px 50px;
+    align-items: flex-start;
+  }
+}
