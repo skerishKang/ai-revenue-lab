@@ -7,14 +7,12 @@ import pytest
 
 from app import model_policy as model_policy_module
 from app.model_policy import (
-    AUTO_B14_MODEL_ID,
     FREE_B14_MODEL_ID,
     PADIEM_FREE,
     DEFAULT_B14_MODEL_ID,
     DEFAULT_CHAT_PROFILE,
     EXECUTABLE_B14_MODEL_IDS,
     HIGH_B14_MODEL_ID,
-    KILO_B14_MODEL_ID,
     LOW_B14_MODEL_ID,
     MAX_HOLD_MODEL_ID,
     MEDIUM_B14_MODEL_ID,
@@ -26,7 +24,6 @@ from app.model_policy import (
     PRODUCT_TIER_NAMES,
     PROFILE_MODEL_IDS,
     RETIRED_B14_MODEL_IDS,
-    UNASSIGNED_B14_MODEL_ID,
     ModelPolicyError,
     model_policy_is_executable,
     model_profile_is_assigned,
@@ -145,7 +142,11 @@ def test_explicit_alias_without_prompt_fails_before_availability_check() -> None
 
 
 def test_historical_hold_sentinels_claim_no_executable_capabilities() -> None:
-    for model_id in (CONTRACT_PLUS_HOLD_MODEL_ID,CONTRACT_PRO_HOLD_MODEL_ID,CONTRACT_MAX_HOLD_MODEL_ID,AUTO_B14_MODEL_ID,UNASSIGNED_B14_MODEL_ID):
+    # A2/A3/B1: the three compatibility names are gone from the module; the
+    # retired ids themselves must still claim no capability if an old client sends them.
+    for gone in ("AUTO_B14_MODEL_ID", "KILO_B14_MODEL_ID", "UNASSIGNED_B14_MODEL_ID"):
+        assert not hasattr(model_policy_module, gone)
+    for model_id in (CONTRACT_PLUS_HOLD_MODEL_ID,CONTRACT_PRO_HOLD_MODEL_ID,CONTRACT_MAX_HOLD_MODEL_ID,"b14/auto","padiem-profile/medium-unassigned"):
         assert model_supports(model_id,"chat") is False
         assert model_supports(model_id,"image") is False
         assert model_policy_is_executable(model_id) is False
@@ -156,7 +157,7 @@ def test_model_id_is_not_an_identity_for_four_distinct_product_grades() -> None:
     for profile in ("low","medium","high"):
         assert PROFILE_MODEL_IDS[profile]==TEST_PHASE_PRIMARY_B14_MODEL_ID
         assert model_policy_is_executable(PROFILE_MODEL_IDS[profile])
-    for model_id in (AUTO_B14_MODEL_ID,UNASSIGNED_B14_MODEL_ID):
+    for model_id in ("b14/auto","padiem-profile/medium-unassigned"):
         assert not model_profile_is_assigned(model_id)
         assert not model_policy_is_executable(model_id)
 

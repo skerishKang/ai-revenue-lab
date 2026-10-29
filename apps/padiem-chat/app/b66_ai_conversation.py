@@ -50,12 +50,9 @@ TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 
 # Conversation shape limits. #4379 removed the character ceilings on the
 # customer message, the model answer, the replayed history and the assembled
-# prompt: they used to refuse a long answer or silently cut the prompt. The
-# symbols below are retained for import compatibility and are no longer
-# enforced; the remaining bounds are the product's own quote shape (item
-# count, field lengths) and the persisted-state size guard.
-MAX_MESSAGE_CHARS = 2_000
-MAX_REPLY_CHARS = 2_000
+# prompt; no PADIEM character ceiling is enforced here. The remaining bounds
+# are the product's own quote shape (item count, field lengths) and the
+# persisted-state size guard.
 MAX_HISTORY_TURNS = 8
 MAX_STATE_BYTES = 32_768
 MAX_ITEMS = 20
@@ -924,8 +921,6 @@ __all__ = [
     "ConversationRevisionConflict",
     "INTENTS",
     "MAX_HISTORY_TURNS",
-    "MAX_MESSAGE_CHARS",
-    "MAX_REPLY_CHARS",
     "MAX_STATE_BYTES",
     "METHOD_FLEXIBLE",
     "METHOD_GUIDED",

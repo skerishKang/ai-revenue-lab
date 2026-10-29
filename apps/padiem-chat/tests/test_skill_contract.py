@@ -1,17 +1,18 @@
 from __future__ import annotations
 
+import importlib
+
+import pytest
 from padiem_ai_core import AgentProfile
 
-from app.skills import Skill, get_skill, skill_public_metadata
 from app.task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
-
-def test_b62_task_modes_are_product_presets_and_skill_is_compatibility_alias():
+def test_b62_task_modes_are_product_presets_and_the_skill_alias_is_gone():
     mode = get_task_mode("explain")
 
     assert isinstance(mode, TaskMode)
-    assert Skill is TaskMode
-    assert get_skill("explain") is mode
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("app.skills")
     assert isinstance(mode, AgentProfile)
     assert mode.short_description == "어려운 내용을 쉬운 말과 예시로 풉니다."
     assert mode.description == mode.short_description
@@ -22,7 +23,7 @@ def test_b62_task_modes_are_product_presets_and_skill_is_compatibility_alias():
 
 
 def test_historical_skill_constructor_and_public_metadata_stay_compatible():
-    mode = Skill(
+    mode = TaskMode(
         "compat_skill",
         "호환 작업",
         "호환 설명",
@@ -41,5 +42,5 @@ def test_historical_skill_constructor_and_public_metadata_stay_compatible():
     assert mode.task_type == "general"
     assert mode.optimize_for == "korean"
     assert mode.max_tokens == 321
-    assert skill_public_metadata(mode) == {"id": "compat_skill", "title": "호환 작업"}
+    assert task_mode_public_metadata(mode) == {"id": "compat_skill", "title": "호환 작업"}
     assert "system_instruction" not in mode.to_public_dict()

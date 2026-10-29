@@ -10,7 +10,7 @@ from app.b14_client import B14Client, ChatRuntimeError, PADIEM_IDENTITY_INSTRUCT
 from app.config import ConfigError, Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
-from app.skills import get_skill
+from app.task_modes import get_task_mode
 from app.usage_gate import InMemoryUsageCounterStore
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -91,8 +91,8 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
 
     assert seen["url"] == "https://b14.example/api/pilot/v1/chat/completions"
     assert seen["body"]["model"] == ACTIVE_MODEL
-    assert get_skill("auto").system_instruction is None
-    assert get_skill("auto").max_tokens is None
+    assert get_task_mode("auto").system_instruction is None
+    assert get_task_mode("auto").max_tokens is None
     system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
     assert len(system_messages) == 1
     assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]

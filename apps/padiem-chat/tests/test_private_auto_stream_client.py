@@ -14,7 +14,7 @@ from app.dispatch_quota import (
     _refund_active_reservation,
 )
 from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
-from app.skills import get_skill
+from app.task_modes import get_task_mode
 from app.usage_gate import UsageDecision
 
 
@@ -116,7 +116,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
             )
         ]
 
-        skill = get_skill()
+        skill = get_task_mode()
         assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
         assert seen["model"] == REQUEST_MODEL == DEFAULT_B14_MODEL_ID

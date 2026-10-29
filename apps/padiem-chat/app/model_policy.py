@@ -57,7 +57,6 @@ DEFAULT_CHAT_PROFILE = "free"
 # membership tier; the request's verified tier remains authoritative.
 FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
 PADIEM_FREE = "Padiem Free"
-AUTO_B14_MODEL_ID = "b14/auto"
 # Administrator lane model follows the shared Control Plane declaration:
 # #5685 declares an interim ADMIN route (the Free Google route), so the Muse
 # hold model below applies only while that route is absent. Provisioned by
@@ -214,13 +213,6 @@ PADIEM_PLUS = "Padiem Plus"
 PADIEM_PRO = "Padiem Pro"
 PADIEM_MAX = "Padiem Max"
 
-# Compatibility alias retained for the Kilo free test lane.
-KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
-
-# Historical sentinel retained for older adapters/tests that import it. It is
-# not part of the active product-tier mapping.
-UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
-
 PROFILE_MODEL_IDS: dict[str, str] = {
     "free": FREE_B14_MODEL_ID,
     "low": LOW_B14_MODEL_ID,
@@ -273,8 +265,6 @@ MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     "google/gemini-3.5-flash-lite": frozenset({"chat", "image"}),
     "opencode-go/muse-spark-1.2-contributor": frozenset({"chat", "coding"}),
     "opencode-go/muse-spark-1.3-contributor": frozenset({"chat", "coding"}),
-    AUTO_B14_MODEL_ID: frozenset(),
-    UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
 
 

@@ -25,11 +25,6 @@ from .web_tools import MAX_QUERY_CHARS, SEARCH_QUERY_TOO_LONG_MESSAGE, normalize
 # finite value; a finite value is still a PADIEM total, so the limit is
 # removed instead of enlarged.
 MAX_BROWSER_BODY_BYTES: int | None = None
-# Deprecated model-input caps remain importable for compatibility; no product
-# pilot count/character ceiling applies before B14. HTTP body safety is separate.
-MAX_MESSAGES: int | None = None
-MAX_MESSAGE_CHARS: int | None = None
-MAX_TOTAL_MESSAGE_CHARS: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
 # Routing label for the three 의원3종 utilities. It grants no identity, tier,
 # entitlement or tool scope, and it is not an authentication input.

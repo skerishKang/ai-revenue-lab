@@ -9,7 +9,7 @@ from app.b14_client import B14Client, PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
-from app.skills import SKILL_REGISTRY, get_skill, skill_public_metadata
+from app.task_modes import TASK_MODE_REGISTRY, get_task_mode, task_mode_public_metadata
 
 USER_MESSAGES = [{"role": "user", "content": "테스트 질문"}]
 
@@ -27,8 +27,8 @@ def _success_payload():
 
 
 def test_skill_registry_has_exact_initial_ids_and_is_immutable():
-    assert isinstance(SKILL_REGISTRY, MappingProxyType)
-    assert tuple(SKILL_REGISTRY) == (
+    assert isinstance(TASK_MODE_REGISTRY, MappingProxyType)
+    assert tuple(TASK_MODE_REGISTRY) == (
         "auto",
         "explain",
         "plan",
@@ -38,22 +38,22 @@ def test_skill_registry_has_exact_initial_ids_and_is_immutable():
         "code",
         "brainstorm",
     )
-    assert len(SKILL_REGISTRY) == 8
-    assert len(set(SKILL_REGISTRY)) == 8
+    assert len(TASK_MODE_REGISTRY) == 8
+    assert len(set(TASK_MODE_REGISTRY)) == 8
     with pytest.raises(TypeError):
-        SKILL_REGISTRY["evil"] = get_skill("auto")  # type: ignore[index]
+        TASK_MODE_REGISTRY["evil"] = get_task_mode("auto")  # type: ignore[index]
 
 
 def test_get_skill_defaults_to_auto_and_rejects_unknown():
-    assert get_skill().id == "auto"
-    assert get_skill(None).id == "auto"
+    assert get_task_mode().id == "auto"
+    assert get_task_mode(None).id == "auto"
     with pytest.raises(ValueError, match="지원하지 않는 작업 모드"):
-        get_skill("not-a-skill")
+        get_task_mode("not-a-skill")
 
 
 def test_public_metadata_exposes_only_safe_fields():
-    skill = get_skill("explain")
-    public = skill_public_metadata(skill)
+    skill = get_task_mode("explain")
+    public = task_mode_public_metadata(skill)
     assert public == {"id": "explain", "title": "쉽게 설명"}
     assert "system_instruction" not in public
     assert skill.system_instruction is None
@@ -76,7 +76,7 @@ async def test_skill_maps_routing_hints_without_response_shaping(skill_id, task_
         seen["body"] = __import__("json").loads(request.content)
         return httpx.Response(200, json=_success_payload())
 
-    skill = get_skill(skill_id)
+    skill = get_task_mode(skill_id)
     result = await B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),

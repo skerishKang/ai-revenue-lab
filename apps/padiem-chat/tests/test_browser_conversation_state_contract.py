@@ -95,3 +95,14 @@ def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() ->
         "idAfterReset": None,
         "skillAfterReset": "auto",
     }
+
+def test_removed_model_input_caps_are_absent_from_the_server_modules() -> None:
+    """A4/A5: the legacy caps were names only; they are gone, not merely None."""
+
+    from app import b66_ai_conversation, request_contract
+
+    for name in ("MAX_MESSAGES", "MAX_MESSAGE_CHARS", "MAX_TOTAL_MESSAGE_CHARS"):
+        assert not hasattr(request_contract, name), name
+    for name in ("MAX_MESSAGE_CHARS", "MAX_REPLY_CHARS"):
+        assert not hasattr(b66_ai_conversation, name), name
+        assert name not in b66_ai_conversation.__all__, name
