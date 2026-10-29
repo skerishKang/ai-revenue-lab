@@ -1672,7 +1672,7 @@
     const cta = host("councilHeroCta");
     if (!cta) return;
     cta.addEventListener("click", () => {
-      if (!session.signedIn) { openLoginHere(null); return; }
+      // The primary CTA previews the tools; authentication is requested only on tool entry.
       const heading = host("councilWorksTitle");
       if (heading && typeof heading.scrollIntoView === "function") {
         try { heading.scrollIntoView({ block: "start" }); } catch (_) {}
@@ -1707,10 +1707,12 @@
       // #6127: when the server could not answer at all, say so. The gate stays
       // closed either way; only the report to the user differs, so a runtime
       // fault is not presented as "you are not signed in".
-      showAuthPanel(
-        auth.unavailable ? "로그인 상태 확인에 실패했습니다. 다시 시도해 주세요." : "",
-        auth.unavailable ? "로그인 확인 실패" : "로그인 필요",
-      );
+      // Keep the first visit focused on the cinematic home and tool cards.
+      // The existing login form opens only after the visitor chooses a tool.
+      hideAuthPanel();
+      setBadge(auth.unavailable ? "로그인 확인 실패" : "로그인 필요");
+      if (auth.unavailable) setStatus("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요.");
+      session.unavailable = !!auth.unavailable;
       return { signedIn: false, tools: null, selected: null, unavailable: !!auth.unavailable };
     }
     setBadge("로그인됨");

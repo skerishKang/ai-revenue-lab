@@ -29,8 +29,8 @@ def test_signed_out_visit_offers_the_in_page_login_and_builds_no_tool() -> None:
     assert signed_out["anyToolBuilt"] is False
     assert signed_out["badge"] == "로그인 필요"
     # ...and the login is offered HERE, with the server's own method list.
-    assert signed_out["panelHidden"] is False
-    assert signed_out["actionHidden"] is False
+    assert signed_out["panelHidden"] is True
+    assert signed_out["actionHidden"] is True
     assert signed_out["googleHidden"] is False
 
 
