@@ -114,7 +114,7 @@ from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
 from app.main import create_app
-from app.worker_write_freeze import freeze_active, reject_request
+from app.worker_write_freeze import freeze_active, reject_request, schedule_unless_frozen
 from app.orchestration_routes import install_orchestration_routes
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
@@ -1672,7 +1672,10 @@ class Default(WorkerEntrypoint):
         from pyodide.ffi import create_proxy
 
         def _schedule_log_export(awaitable):
-            self.ctx.waitUntil(create_proxy(awaitable))
+            # Previously scheduled tasks still need completion evidence.
+            schedule_unless_frozen(
+                freeze, awaitable, lambda task: self.ctx.waitUntil(create_proxy(task)),
+            )
 
         export_context = install_export_scheduler(_schedule_log_export)
         try:
