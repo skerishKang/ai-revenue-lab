@@ -244,12 +244,13 @@ async def test_api_chat_mock_round_trip_and_validation():
         assert "request_id" not in body
         assert body["skill"] == {"id": "auto", "title": "자동 추천"}
 
-        explain = await client.post(
+        # C1: 지운 6종은 미지 값으로 거절된다.
+        refused = await client.post(
             "/api/chat",
             json={"messages": USER_MESSAGES, "skill": "explain"},
         )
-        assert explain.status_code == 200
-        assert explain.json()["skill"] == {"id": "explain", "title": "쉽게 설명"}
+        assert refused.status_code == 422
+        assert refused.json()["error"]["message"] == "지원하지 않는 작업 모드입니다."
 
         assert (
             await client.post(

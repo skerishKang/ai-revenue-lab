@@ -8,18 +8,18 @@ from padiem_ai_core import AgentProfile
 from app.task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 def test_b62_task_modes_are_product_presets_and_the_skill_alias_is_gone():
-    mode = get_task_mode("explain")
+    mode = get_task_mode("plan")
 
     assert isinstance(mode, TaskMode)
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module("app.skills")
     assert isinstance(mode, AgentProfile)
-    assert mode.short_description == "어려운 내용을 쉬운 말과 예시로 풉니다."
+    assert mode.short_description == "실행 가능한 순서와 선택지를 정리합니다."
     assert mode.description == mode.short_description
     assert mode.allowed_tools == ()
     assert mode.required_capabilities == ()
     assert mode.max_steps is None
-    assert task_mode_public_metadata(mode) == {"id": "explain", "title": "쉽게 설명"}
+    assert task_mode_public_metadata(mode) == {"id": "plan", "title": "계획 세우기"}
 
 
 def test_historical_skill_constructor_and_public_metadata_stay_compatible():
