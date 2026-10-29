@@ -82,3 +82,17 @@ broker Worker RPC 메서드에는 register_binding, rotate_credential, revoke_bi
 ## 추가 위험: GET 폴백
 
 앞단은 HTTP 메서드로 GET/HEAD/OPTIONS를 read로 분류한다. Google callback, LoveTree 시작, GitHub OAuth 시작/콜백은 GET이지만 데이터를 쓴다. COM2 정본 전환 후 service 폴백이 켜져 있다면 이 요청이 기존 Worker로 돌아가 D1에 쓸 수 있다. static 폴백만 설정되어 있어도 제품 전체의 직접 Worker 접근·동적 등록·예외 경로가 안전하다는 증거는 아니다. 쓰기 효과 기준의 fail-closed 분류와 통합 테스트가 선행되어야 한다.
+
+
+## CTO 결정 반영: 큐 선행 (2026-10-29)
+
+Chat 이전은 Qoder가 별도 절차로 큐 이전을 끝내고 검증한 뒤에만 시작한다. 큐 전환은 Astra1의 probe 비활성화·kill 회귀 결과를 기다린다. 이 문서의 앞선 큐 split-brain 전환 창은 Chat 이전 시점에 이미 닫혔다고 가정하며, 운영에서 확인되기 전에는 사실로 보고하지 않는다.
+
+| 대상 | 큐 선행 시 상태 | 남은 조건 |
+|---|---|---|
+| dispatch/pairing/presence | Worker와 실행기가 이미 컴2 큐를 쓰면 Chat 전환 중 D1 대 큐의 이중 정본 위험이 줄어든다. | 컴2 Chat도 동일 큐·인증을 사용하도록 구현하고, 기존 D1 fallback 쓰기 차단과 세 호출자의 단일 claim을 검증한다. |
+| Chat 대화·결과 | 큐 하나만으로 Chat D1과 컴2 Chat의 결과 기록은 하나가 되지 않는다. | consume과 결과 기록 간 중복·재시도·복구, 이전 Worker 쓰기 차단 및 기록 정본을 검증한다. |
+
+Worker live WSS 경로는 Chat DB 접근 없이 broker private fetch에 전달한다. 다만 원래 정확한 URL 및 Cloudflare request.cf TLS 메타데이터 확인에 의존한다. 앞단 service binding 전달 시 이 증거가 유지되는지 미검증이며 보장되지 않으면 거부한다. default-off 및 acceptance 분기는 별도다. 앞단 경로 분기 구현·실기기 검증 전까지 미완료.
+
+늦은 쓰기 대응은 동결 → 실측 최대 요청 시간과 여유 대기 → D1 스냅숏 두 번 확인 → 최종 export → 전환 → +5분/+15분 D1 재검사다. 관측은 완전한 배수 증명이 아니다. 변경이 있으면 양쪽 변경과 충돌을 확인하고 안전한 재조정·대조 전까지 완료로 판정하지 않는다. LoveTree 31ms는 판정 보류이며 일반 로그인과 LoveTree 콜백 E2E는 전환 성공 판정에 포함한다.
