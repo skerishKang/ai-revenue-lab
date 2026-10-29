@@ -289,18 +289,37 @@
   padding: 0;
 }
 
-/* Phone widths: the tile reads name → description → state → ON/OFF in one
- * flow; the state line sits under the name instead of a clipped top-right
- * chip, and the card keeps only the room those four lines need. */
+
+/* Phone widths: the card itself is the tile surface, so the name, the state
+ * line, the description and the ON/OFF switch all live INSIDE the border.
+ * Order: [icon+name] → state → description → ON/OFF(44px, always visible). */
 @media (max-width: 720px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
-    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     gap: 0;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--line, rgba(26, 34, 48, .12));
+    border-radius: 12px;
+    overflow: hidden;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
     order: 1;
-    padding: 10px 10px 2px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 10px 12px 2px;
     min-height: 0;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    align-items: flex-start;
+  }
+  .app-shell[data-state="claw"] .conversation .claw-home-card .claw-workspace-starter small {
+    display: block !important;
+    font-size: 10px;
+    line-height: 1.35;
+    opacity: .9;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-card-status {
     position: static !important;
@@ -308,14 +327,17 @@
     right: auto !important;
     order: 2;
     align-self: flex-start;
-    margin: 0 10px;
+    margin: 0 12px 2px;
     max-width: none;
-    font-size: 10px;
+    font-size: 11px;
   }
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
     position: static !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
     order: 3;
     align-self: flex-start;
-    margin: 2px 10px 10px;
+    margin: 4px 12px 12px;
   }
 }
