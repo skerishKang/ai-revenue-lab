@@ -105,6 +105,13 @@ _EXECUTION_MODES = (EXECUTION_MODE_OFF, EXECUTION_MODE_MESH, EXECUTION_MODE_NATI
 #: Deployment channel secret for the Oracle executor (Worker env on Chat,
 #: operator-held file on Oracle). Compared constant-time, never logged.
 ORACLE_MESH_CHANNEL_SECRET_ENV = "ORACLE_MESH_CHANNEL_SECRET"
+#: #82: a READ-ONLY secret for the connector watch. It opens the lane-status read and
+#: nothing else. poll, renew, cancel, busy and result keep the channel secret, because
+#: that value can claim a dispatch and submit a result on a customer PC — a workflow
+#: holding it could take work away from the executor or plant a result for work that
+#: never ran. The two secrets must differ: two names for one value is a comment, not
+#: a boundary.
+CONNECTOR_WATCH_READ_SECRET_ENV = "CONNECTOR_WATCH_READ_SECRET"
 #: Header carrying the channel secret on poll/submit.
 ORACLE_MESH_CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: How long one dispatch stays claimable/submittable.
@@ -224,7 +231,8 @@ class OracleMeshReturnSource:
     configured = True
 
     def __init__(
-        self, mapping: Any, channel_secret: Any, mode: Any = EXECUTION_MODE_OFF
+        self, mapping: Any, channel_secret: Any, mode: Any = EXECUTION_MODE_OFF,
+        watch_secret: Any = None,
     ) -> None:
         if not isinstance(mapping, (list, tuple)) or not mapping:
             raise TypeError("oracle mesh ownership mapping is required")
@@ -282,8 +290,22 @@ class OracleMeshReturnSource:
             or any(ord(ch) < 33 or ord(ch) > 126 for ch in channel_secret)
         ):
             raise TypeError("oracle mesh channel secret invalid")
+        if watch_secret is not None:
+            if (
+                not isinstance(watch_secret, str)
+                or not 16 <= len(watch_secret) <= 256
+                or any(ord(ch) < 33 or ord(ch) > 126 for ch in watch_secret)
+            ):
+                raise TypeError("connector watch read secret invalid")
+            if watch_secret == channel_secret:
+                raise TypeError(
+                    "connector watch read secret must differ from the channel secret"
+                )
         self._rows = rows
         self._secret = channel_secret.encode("utf-8")
+        self._watch_secret = (
+            watch_secret.encode("utf-8") if watch_secret is not None else None
+        )
         self._mode = mode if mode in _EXECUTION_MODES else EXECUTION_MODE_OFF
 
     @property
@@ -468,6 +490,30 @@ class OracleMeshReturnSource:
             return False
         return hmac.compare_digest(candidate, self._secret)
 
+    def check_watch_secret(self, presented: Any) -> bool:
+        """Constant-time check for the read-only watch secret, when one is set."""
+        if self._watch_secret is None:
+            return False
+        if not isinstance(presented, str) or not presented:
+            return False
+        try:
+            candidate = presented.encode("utf-8")
+        except (UnicodeEncodeError, ValueError):
+            return False
+        return hmac.compare_digest(candidate, self._watch_secret)
+
+    def check_read_secret(self, presented: Any) -> bool:
+        """Either secret, for the read-only legs only.
+
+        Both comparisons run on every call, so the work done does not depend on which
+        secret was presented. No mutating leg calls this: an operator holding the
+        watch secret can read the lane's counters and cannot claim, renew, cancel or
+        submit anything.
+        """
+        channel_ok = self.check_channel_secret(presented)
+        watch_ok = self.check_watch_secret(presented)
+        return bool(channel_ok | watch_ok)
+
 
 async def _resolve_oracle_store_text(raw: Any) -> Any:
     """Plain strings pass through; Secrets Store bindings resolve via async .get()."""
@@ -483,11 +529,12 @@ async def _resolve_oracle_store_text(raw: Any) -> Any:
 
 
 def build_oracle_mesh_return_source(
-    mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF
+    mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF,
+    watch_secret: Any = None,
 ) -> OracleMeshReturnSource | None:
     """Worker-root composition only; missing/invalid material is unconfigured."""
     try:
-        return OracleMeshReturnSource(mapping, channel_secret, mode)
+        return OracleMeshReturnSource(mapping, channel_secret, mode, watch_secret)
     except Exception:
         return None
 
@@ -496,6 +543,27 @@ def _mesh_source_unconfigured(reason: str) -> None:
     """Record one fixed startup reason, never a secret, mapping or account."""
     logging.getLogger(__name__).warning("oracle_mesh_source_unconfigured=%s", reason)
     return None
+
+
+async def _resolve_optional_secret(raw: Any) -> Any:
+    """Resolve an optional secret binding; absent is None, never an error.
+
+    The watch secret is optional by design: a deployment that has not created one
+    keeps the channel-secret-only behaviour for the read-only leg, and the watch
+    workflow then reports UNKNOWN instead of authenticating with the channel secret.
+    """
+    if raw is None or isinstance(raw, str):
+        return raw
+    getter = getattr(raw, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        resolved = getter()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except Exception:
+        return None
+    return resolved if isinstance(resolved, str) else None
 
 
 async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
@@ -510,6 +578,7 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
         raw_map = await _resolve_oracle_store_text(binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV))
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
         raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
+        raw_watch = binding_value(env, CONNECTOR_WATCH_READ_SECRET_ENV)
     except Exception:
         return _mesh_source_unconfigured("binding_read_failed")
     if not isinstance(raw_map, str) or not raw_map.strip():
@@ -530,7 +599,8 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
             return _mesh_source_unconfigured("channel_secret_fetch_failed")
         raw_secret = resolved
     mode = raw_mode.strip().lower() if isinstance(raw_mode, str) else EXECUTION_MODE_OFF
-    source = build_oracle_mesh_return_source(mapping, raw_secret, mode)
+    watch_secret = await _resolve_optional_secret(raw_watch)
+    source = build_oracle_mesh_return_source(mapping, raw_secret, mode, watch_secret)
     if source is None:
         return _mesh_source_unconfigured("source_validation_failed")
     return source
@@ -761,6 +831,18 @@ def _channel_proof(request: Request, source: OracleMeshReturnSource) -> bool:
     if not isinstance(presented, str) or len(presented) > 512:
         return False
     return source.check_channel_secret(presented)
+
+
+def _watch_read_proof(request: Request, source: OracleMeshReturnSource) -> bool:
+    """The read-only proof: the watch secret or the channel secret, nothing else.
+
+    Same header, same 512-character refusal and the same constant-time comparison as
+    the channel proof. Used by lane-status only.
+    """
+    presented = request.headers.get(ORACLE_MESH_CHANNEL_HEADER, "")
+    if not isinstance(presented, str) or len(presented) > 512:
+        return False
+    return source.check_read_secret(presented)
 
 
 async def oracle_mesh_read_request(request: Request) -> JSONResponse:
@@ -1957,7 +2039,8 @@ async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
     mesh_source = _channel_source(request)
     if mesh_source is None:
         return _error(503, "oracle_mesh_unconfigured")
-    if not _channel_proof(request, mesh_source):
+    # The read-only proof: the watch secret opens this leg and this leg only.
+    if not _watch_read_proof(request, mesh_source):
         return _error(403, "oracle_mesh_channel_rejected")
     try:
         body = json.loads((await request.body()).decode("utf-8"))

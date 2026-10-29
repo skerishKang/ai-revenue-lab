@@ -276,12 +276,12 @@ class History:
 
 
 def state(*, mesh=None, history=None, identity=None, secret=SECRET,
-            presence=None):
+            presence=None, watch_secret=None):
     return SimpleNamespace(
         mesh_device_presence_store=presence,
 oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
             mesh if mesh is not None else _mapping(), secret,
-            routes.EXECUTION_MODE_MESH,
+            routes.EXECUTION_MODE_MESH, watch_secret,
         ),
         control_plane_identity_authority=identity or Identity(consent()),
         history_store=history or History(),
@@ -738,14 +738,56 @@ def test_foreign_pinned_account_is_a_hard_ownership_refusal(monkeypatch):
     assert status == 403
     assert result["error"]["code"] == "oracle_mesh_ownership_unverified"
 
-def _deployment_env(mapping=None, secret=SECRET, mode="mesh"):
+_NO_WATCH = object()
+
+
+def _deployment_env(mapping=None, secret=SECRET, mode="mesh", watch=_NO_WATCH):
     import json
-    return {
+    env = {
         routes.ORACLE_MESH_OWNERSHIP_MAP_ENV: json.dumps(
             mapping if mapping is not None else _mapping()),
         routes.ORACLE_MESH_CHANNEL_SECRET_ENV: secret,
         routes.ORACLE_MESH_EXECUTION_MODE_ENV: mode,
     }
+    if watch is not _NO_WATCH:
+        env[routes.CONNECTOR_WATCH_READ_SECRET_ENV] = watch
+    return env
+
+
+def test_the_env_builder_reads_the_optional_watch_secret_and_keeps_it_optional():
+    """Deployment wiring for the split secret.
+
+    Absent means "not configured", not a failure: the read-only leg then keeps the
+    channel-secret-only behaviour, and the watch workflow reports UNKNOWN instead of
+    authenticating with a credential it must not hold.
+    """
+    import asyncio
+
+    plain = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch=WATCH_SECRET)))
+    assert plain is not None
+    assert plain.check_read_secret(WATCH_SECRET) is True
+    assert plain.check_channel_secret(WATCH_SECRET) is False
+
+    absent = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env()))
+    assert absent is not None
+    assert absent.check_read_secret(WATCH_SECRET) is False
+    assert absent.check_read_secret(SECRET) is True
+
+    class Store:
+        def get(self):
+            return WATCH_SECRET
+
+    stored = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch=Store())))
+    assert stored is not None and stored.check_read_secret(WATCH_SECRET) is True
+
+    # A watch value the secret rules refuse makes the source unconfigured rather than
+    # silently falling back to "channel only" for a deployment that asked for a split.
+    refused = asyncio.run(routes.build_oracle_mesh_return_source_from_env(
+        _deployment_env(watch="short")))
+    assert refused is None
 
 
 def test_env_builder_resolves_the_secrets_store_binding():
@@ -1203,12 +1245,13 @@ def test_the_busy_route_is_mounted_on_the_same_channel_proof_as_poll():
             ' methods=["POST"])') in app_source
 
 
-def _lane_status_read(history, *, secret=SECRET, payload=None, presence=None):
+def _lane_status_read(history, *, secret=SECRET, payload=None, presence=None,
+                      watch_secret=None):
     return call(
         routes.oracle_mesh_read_lane_status,
         Request(
             {} if payload is None else payload,
-            state(history=history, presence=presence),
+            state(history=history, presence=presence, watch_secret=watch_secret),
             secret=secret,
         ),
     )
@@ -1283,9 +1326,88 @@ def test_the_lane_status_route_is_mounted_where_the_other_executor_legs_are():
     assert ("Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,"
             ' methods=["POST"])') in source
     handler = inspect.getsource(routes.oracle_mesh_read_lane_status)
-    assert "_channel_proof(request, mesh_source)" in handler
+    # The read-only leg takes the watch secret; every mutating leg takes the channel
+    # secret only. This test pins which one this route uses.
+    assert "_watch_read_proof(request, mesh_source)" in handler
+    assert "_channel_proof(request, mesh_source)" not in handler
     assert routes.ORACLE_MESH_READ_LANE_STATUS_PATH == (
         "/api/claw/connector/mesh-reads/lane-status")
+
+
+WATCH_SECRET = "watch-only-read-secret-value-261029"
+
+
+def test_the_watch_secret_opens_the_lane_read_and_nothing_that_can_claim(monkeypatch):
+    """#82 security: the monitor must not hold the credential that can take work.
+
+    The channel secret can claim a dispatch and submit a result on a customer PC. A
+    workflow that leaked it could steal work from the executor or plant a result for
+    work that never ran, so the read-only leg accepts a second, separate secret — and
+    every mutating leg keeps refusing it.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+
+    # The read-only secret works for the read.
+    status, body, _ = _lane_status_read(history, secret=WATCH_SECRET,
+                                        watch_secret=WATCH_SECRET)
+    assert status == 200 and body["ok"] is True
+
+    # The channel secret still works there, unchanged.
+    status, body, _ = _lane_status_read(history, secret=SECRET, watch_secret=WATCH_SECRET)
+    assert status == 200
+
+    # And the read-only secret is refused by every leg that can mutate the lane.
+    from app import oracle_mesh_lease_renew_routes as renew_routes
+
+    for handler in (routes.oracle_mesh_read_poll,
+                    renew_routes.oracle_mesh_read_renew,
+                    routes.oracle_mesh_read_cancel_check,
+                    routes.oracle_mesh_read_busy_check):
+        status, body, _ = call(
+            handler,
+            Request({"dispatch_id": "dsp_" + "a" * 32},
+                    state(history=history, watch_secret=WATCH_SECRET),
+                    secret=WATCH_SECRET),
+        )
+        assert status == 403, (handler.__name__, status, body)
+        assert body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    # The submission leg too: a planted result must never come from the watch secret.
+    status, body, _ = call(
+        routes.oracle_mesh_read_result,
+        Request(result_body("dsp_" + "a" * 32, "n" * 32),
+                state(history=history, watch_secret=WATCH_SECRET),
+                secret=WATCH_SECRET),
+    )
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+
+def test_without_a_watch_secret_only_the_channel_secret_is_accepted(monkeypatch):
+    setup_auth(monkeypatch)
+    status, body, _ = _lane_status_read(History(), secret=WATCH_SECRET)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+    status, body, _ = _lane_status_read(History(), secret=SECRET)
+    assert status == 200
+
+
+def test_the_read_leg_keeps_the_512_character_refusal(monkeypatch):
+    setup_auth(monkeypatch)
+    for secret in (WATCH_SECRET, SECRET):
+        status, body, _ = _lane_status_read(
+            History(), secret=secret + "x" * 600, watch_secret=WATCH_SECRET,
+        )
+        assert status == 403, secret[:6]
+
+
+def test_one_value_under_two_names_is_refused_at_composition():
+    # A deployment that sets both names to the same value would look split and not be.
+    assert routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH, SECRET,
+    ) is None
+    assert routes.build_oracle_mesh_return_source(
+        _mapping(), SECRET, routes.EXECUTION_MODE_MESH, "too-short",
+    ) is None
 
 
 def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():
