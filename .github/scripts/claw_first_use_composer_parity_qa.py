@@ -93,8 +93,11 @@ with sync_playwright() as p:
   # row must resolve to the same height in both, the truthful headline sits in
   # the top-right of every card, and the bottom-right holds the ON/OFF switch
   # alone (no inline "확인 불가" row stretching the card).
-  assert chat["cellH"] is not None and claw["cardH"] is not None,(width,"row-height",chat,claw)
-  assert abs(chat["cellH"]-claw["cardH"])<=2,(width,"row-height",chat["cellH"],claw["cardH"])
+  # Phone widths stack the four lines (name/state/description/switch) inside
+  # the tile, so the desktop row-height parity applies above 390 only.
+  if width > 390:
+    assert chat["cellH"] is not None and claw["cardH"] is not None,(width,"row-height",chat,claw)
+    assert abs(chat["cellH"]-claw["cardH"])<=2,(width,"row-height",chat["cellH"],claw["cardH"])
   assert claw["inlineLabels"]==0,(width,"inline-label",claw)
   if width <= 390:
     # Phone widths: the state sits in the tile's own flow under the name and
