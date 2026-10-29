@@ -242,6 +242,37 @@ def test_deploy_scripts_parse_as_bash_and_are_lf_only():
         assert result.stderr.strip() == "", "%s: %s" % (script.name, result.stderr.strip())
 
 
+def test_the_migration_dir_is_found_in_both_layouts_and_can_be_overridden(tmp_path):
+    """The installed copy sits at $ROOT/schema.py, one level above the Chat app link."""
+
+    import os
+
+    import schema
+
+    # Repository layout: the Chat app is one level up, exactly as the module path says.
+    assert (schema.migration_dir() / "047_oracle_mesh_dispatch.sql").is_file()
+
+    # Installed layout: $ROOT/app -> <chat>/app, and ../migrations through that link.
+    root = tmp_path / "queue"
+    chat = tmp_path / "chat"
+    (chat / "app").mkdir(parents=True)
+    (chat / "migrations").mkdir()
+    (root).mkdir()
+    (root / "app").symlink_to(chat / "app")
+    assert schema.migration_dir(root) == (chat / "migrations").resolve()
+
+    # An explicit override wins over both layouts.
+    previous = os.environ.get("MESH_QUEUE_MIGRATIONS_DIR")
+    os.environ["MESH_QUEUE_MIGRATIONS_DIR"] = str(chat / "migrations")
+    try:
+        assert schema.migration_dir() == chat / "migrations"
+    finally:
+        if previous is None:
+            os.environ.pop("MESH_QUEUE_MIGRATIONS_DIR", None)
+        else:
+            os.environ["MESH_QUEUE_MIGRATIONS_DIR"] = previous
+
+
 def test_the_suite_runs_in_ci_and_needs_no_credential():
     """A cutover gate that only ever ran on one laptop is not a gate."""
 
