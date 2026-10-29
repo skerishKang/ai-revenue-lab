@@ -455,3 +455,50 @@ html[data-theme="dark"] .auth-primary {
     color: #111;
   }
 }
+
+/* #6119: the recent list is loading, never blank — gray rows while the read
+   is in flight, and one honest failure row with its retry button when the
+   read produced no answer. Tokens only; no theme writes its own colors. */
+.history-row.history-skeleton {
+  min-height: 44px;
+  margin: 2px 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--line, rgba(26, 34, 48, .12)) 25%, var(--panel, rgba(26, 34, 48, .05)) 45%, var(--line, rgba(26, 34, 48, .12)) 65%);
+  background-size: 200% 100%;
+  animation: history-skeleton-sweep 1.2s ease-in-out infinite;
+}
+
+@keyframes history-skeleton-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-row.history-skeleton { animation: none; }
+}
+
+.history-row.history-load-failed {
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--muted, #5a7488);
+}
+
+.history-row.history-load-failed .history-load-failed-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.history-row.history-load-failed .history-retry {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));
+  border-radius: 999px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}

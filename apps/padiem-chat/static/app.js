@@ -2326,15 +2326,69 @@
     }
   }
 
+  // #6119: the recent list is loading, never blank. The sidebar shows gray
+  // rows until the answer lands, and a read that produced no answer asks one
+  // more time — a failure is drawn as one honest retry row, never as an
+  // empty list.
+  function renderHistorySkeleton() {
+    historySection.hidden = false;
+    historyEmpty.hidden = true;
+    historyList.replaceChildren();
+    for (let index = 0; index < 4; index += 1) {
+      const row = document.createElement("div");
+      row.className = "history-row history-skeleton";
+      row.setAttribute("aria-hidden", "true");
+      historyList.appendChild(row);
+    }
+  }
+
+  function renderHistoryLoadFailed() {
+    historySection.hidden = false;
+    historyEmpty.hidden = true;
+    historyList.replaceChildren();
+    const row = document.createElement("div");
+    row.className = "history-row history-load-failed";
+    const text = document.createElement("span");
+    text.className = "history-load-failed-text";
+    text.textContent = uiT("history-load-failed");
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "history-retry";
+    retry.textContent = uiT("history-retry");
+    retry.addEventListener("click", () => {
+      void loadRecentConversations();
+    });
+    row.append(text, retry);
+    historyList.appendChild(row);
+  }
+
+  async function fetchRecentConversations() {
+    const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
+    return data;
+  }
+
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
       clearHistoryUI();
       return;
     }
+    renderHistorySkeleton();
+    let data = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        data = await fetchRecentConversations();
+        break;
+      } catch (_) {
+        if (attempt === 1) data = null;
+      }
+    }
+    if (!data) {
+      renderHistoryLoadFailed();
+      return;
+    }
     try {
-      const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
       // Labels are presentation only; run history is owner-filtered by the server.
       // Never infer a Claw execution authority from a title or browser storage.
       const verifiedClawIds = new Set();
@@ -2408,7 +2462,9 @@
         historyList.appendChild(row);
       });
     } catch (_) {
-      clearHistoryUI();
+      // #6119: a read that landed but could not render is still a failure —
+      // the retry row says so instead of painting an empty list.
+      renderHistoryLoadFailed();
     }
   }
   document.addEventListener("click", (event) => {
