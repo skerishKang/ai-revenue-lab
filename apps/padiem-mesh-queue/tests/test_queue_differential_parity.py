@@ -155,12 +155,18 @@ def _iso(moment):
 
 
 def _stage(database, dispatch_id, *, when):
+    # The claim compares `expires_at` against the STORE's own clock, so the staged
+    # row's life must come from the real clock, not from the fixed `when` this file
+    # uses for flows that take `now` explicitly. A frozen expiry is a time bomb: it
+    # starts failing the moment wall-clock passes it, which is what happened to the
+    # `NOW = 2026-10-29T03:04:05Z` fixture on 2026-10-29 (#82 triage).
+    expires_at = _iso(datetime.now(timezone.utc) + timedelta(minutes=10))
     values = (dispatch_id, USER, "chat_pcq_" + "c" * 24, "cmd-" + dispatch_id[-6:],
               "tool-" + dispatch_id[-6:], "req-" + dispatch_id[-6:],
               "rev-" + dispatch_id[-6:], "evid-" + dispatch_id[-6:],
               "fp-" + dispatch_id[-6:], "acct-1", "ws-1", "device-1", "bind-1",
               "node//NEWPC", "C:", "p.txt", "C:/p.txt", "read", "pending",
-              _iso(when + timedelta(minutes=10)), _iso(when))
+              expires_at, _iso(when))
     database.connection.execute(
         "INSERT INTO oracle_mesh_dispatch (%s) VALUES (%s)"
         % (",".join(DISPATCH_COLUMNS), ",".join("?" * len(DISPATCH_COLUMNS))), values)
