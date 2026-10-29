@@ -22,6 +22,14 @@ on:
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/b62_live_content_marker_probe.py"
       - ".github/tests/test_b62_live_content_marker_probe.py"
+      # The markers are byte runs taken from these three files, so a change here is a
+      # change to what the served script must contain. Without these paths the needles
+      # rotted silently: #4194 (2884a5205, 2026-10-10) moved 50s/20s to 600s in
+      # config.py and this gate never ran, so the first PR to touch the gate afterwards
+      # went red instead of the change that broke it.
+      - "apps/padiem-chat/app/config.py"
+      - "apps/padiem-chat/app/worker_config.py"
+      - "apps/padiem-chat/app/b14_client.py"
   workflow_dispatch:
     inputs:
       target_sha:
