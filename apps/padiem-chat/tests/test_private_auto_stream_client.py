@@ -121,10 +121,12 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
         assert seen["stream"] is True
         assert seen["model"] == REQUEST_MODEL == DEFAULT_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["free"]
-        assert seen["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["business14"]
         assert "max_attempts" not in seen["business14"]
-        assert seen["business14"]["task_type"] == skill.task_type
-        assert seen["business14"]["optimize_for"] == skill.optimize_for
+        # B4: the scorer-era fields no longer travel on the wire.
+        assert "task_type" not in seen["business14"]
+        assert "optimize_for" not in seen["business14"]
         assert "provider" not in seen["business14"]
         assert "provider_order" not in seen["business14"]
         assert seen["messages"][0]["role"] == "system"

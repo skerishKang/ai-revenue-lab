@@ -99,9 +99,7 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
     assert seen["body"]["messages"][-1] == USER_MESSAGES[0]
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"] == {
-        "task_type": "general",
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
+        # B4/B5: the scorer-era fields and the fallback knob no longer travel.
         # #5362 removed the default one-step agent execution ceiling, so no
         # attempt ceiling is sent.
         "required_capabilities": ["chat"],

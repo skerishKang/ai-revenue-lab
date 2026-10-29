@@ -78,7 +78,8 @@ class FakeServiceTransport:
         assert url.endswith("/api/pilot/v1/chat/completions")
         assert payload["model"] == DEFAULT_B14_MODEL_ID
         assert payload["business14"]["required_capabilities"] == ["chat"]
-        assert payload["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in payload["business14"]
         assert "max_attempts" not in payload["business14"]
         if self.error is not None:
             raise self.error
