@@ -157,6 +157,14 @@ def _automation_source_enabled(env: Any) -> bool:
 _PUSH_SCOPE_ORIGIN_ENV = "PADIEM_CHAT_PUBLIC_BASE_URL"
 
 
+async def compose_scheduled_automation_execution(**kwargs: Any) -> Any:
+    # Keep the existing composition seam while loading its graph only on use.
+    from app.claw_automation_scheduled_execution import (
+        compose_scheduled_automation_execution as compose,
+    )
+    return await compose(**kwargs)
+
+
 def _push_delivery_parts(env: Any, db_binding: Any) -> tuple[Any, Any, str]:
     """Build the existing #5034 delivery parts for the background automation lane.
 
@@ -205,7 +213,6 @@ async def run_scheduled_automation_source(
     # load its execution graph when the scheduler is disabled or unbound.
     from app.claw_automation_due_workspace_discovery import compose_canonical_due_workspace_discovery
     from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
-    from app.claw_automation_scheduled_execution import compose_scheduled_automation_execution
     from app.claw_automation_store import D1ClawAutomationStore
     from kagent.claw_automation import ClawAutomationTickRuntime
     from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
