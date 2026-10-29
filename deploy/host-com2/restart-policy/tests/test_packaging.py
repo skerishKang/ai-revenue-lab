@@ -25,6 +25,9 @@ class Packaging(unittest.TestCase):
             "padiem-oracle-mesh-executor.service", "padiem-connector-watch.service",
             "padiem-chat-com2.service", "padiem-broker.service",
             "cloudflared.service", "meshcentral.service",
+            # 컴2's tunnel and MeshCentral units carry these names; a host applies only
+            # the ones it actually has and reports the rest as SKIPPED_MISSING.
+            "cloudflared-padiem.service", "padiem-meshcentral.service",
         ):
             self.assertIn(expected, names)
         self.assertFalse([name for name in names if name.endswith(".timer")])

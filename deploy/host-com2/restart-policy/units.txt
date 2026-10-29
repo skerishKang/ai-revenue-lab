@@ -10,4 +10,6 @@ padiem-connector-watch.service
 padiem-chat-com2.service
 padiem-broker.service
 cloudflared.service
+cloudflared-padiem.service
 meshcentral.service
+padiem-meshcentral.service
