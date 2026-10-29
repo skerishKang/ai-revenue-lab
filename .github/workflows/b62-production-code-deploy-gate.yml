@@ -185,7 +185,6 @@ jobs:
             *[!0-9a-f]*|"") echo "target_sha는 40자리 전체 SHA여야 합니다"; exit 1 ;;
           esac
           test "${#TARGET_SHA}" -eq 40 || { echo "target_sha는 40자리 전체 SHA여야 합니다"; exit 1; }
-    steps:
       - name: Checkout PR exact head
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v4
