@@ -290,6 +290,13 @@ _BASE64_BODY = re.compile(rb"[A-Za-z0-9+/=]+")
 #: few hundred bytes; the limit only bounds a chatty terminal, and a session that
 #: runs past it reports its verdict as unobserved instead of growing without end.
 HANDOFF_CAPTURE_LIMIT = 262_144
+#: How many bytes the terminal device holds for a client that has not attached its
+#: reader yet. This side writes the whole session input before ``meshctrl`` reaches
+#: the point where it installs one (`meshctrl.js:2892`, only after the tunnel says
+#: connected), and Linux fixes that queue at N_TTY_BUF_SIZE = 4096
+#: (`drivers/tty/n_tty.c`) - past it the tail is dropped without a word, which would
+#: deliver half a script to a customer PC. A script that cannot fit is refused here.
+TERMINAL_PREQUEUE_LIMIT_BYTES = 4096
 
 
 def _keep_id_literals(dispatch_id: str | None, keep_dispatch_ids) -> list[str]:
@@ -762,6 +769,37 @@ def parse_transcript(raw: bytes) -> tuple[str, int | None, bytes]:
     return "exited", int(raw_code), body
 
 
+def _still_the_terminal(fd: int) -> None:
+    """Make the terminal device answer only for the PC, not for itself.
+
+    Two termios defaults faked an answer on this lane. ECHO sends every byte written
+    to the master straight back to it, so the bytes this side queued - credential line
+    and script line - came home as a reply that looked like the PC had spoken (the
+    2026-10-29 measurement: a 71-byte mirror, one more byte typed returning two more
+    observed). And ICRNL rewrites the carriage return the PC's console needs to submit
+    a typed line into a line feed, so the far end received a line that never executed.
+    Both are cleared before anything is written. Clearing ECHO also keeps the
+    credential out of the bytes this side can ever report.
+    """
+    import termios
+
+    attrs = termios.tcgetattr(fd)
+    attrs[0] &= ~termios.ICRNL
+    attrs[3] &= ~termios.ECHO
+    termios.tcsetattr(fd, termios.TCSANOW, attrs)
+
+
+def _terminal_payload(password: str, script: str) -> bytes:
+    """The credential line, then the script line, submitted the way a console takes it.
+
+    The queue this side writes into is line-oriented: the line feed is what delivers
+    the bytes to the client. The console at the far end submits on a carriage return,
+    and once the client is in raw mode nothing translates either one - so both, in
+    that order, are written down.
+    """
+    return (password + "\n" + script + "\r\n").encode("utf-8")
+
+
 class _TerminalHandoff:
     """The pty ``meshctrl shell`` insists on, with its input already queued.
 
@@ -769,13 +807,27 @@ class _TerminalHandoff:
     stream into the PC's terminal, so the password is one line and the command is
     the bytes after it, and closing the handle ends the session. ``setRawMode`` is
     not a function on a pipe, which is why a terminal device is needed at all.
+
+    The device is quieted before anything is written (see ``_still_the_terminal``),
+    and the client's own output is read from this same handle - it is the only place
+    the PC's answer can appear.
     """
 
     def __init__(self, write_bytes: bytes) -> None:
         import pty
 
         self._master, self.slave = pty.openpty()
+        if len(write_bytes) >= TERMINAL_PREQUEUE_LIMIT_BYTES:
+            # The queue would drop the tail of it. Refuse instead of sending half a
+            # script to a customer machine and calling the answer the PC never had
+            # a chance to give a verdict about.
+            os.close(self._master)
+            os.close(self.slave)
+            raise MeshCentralCommandRefused(
+                "the terminal queue cannot carry this script"
+            )
         self.received = bytearray()
+        _still_the_terminal(self.slave)
         os.write(self._master, write_bytes)
 
     def _pump(
@@ -825,6 +877,18 @@ class _TerminalHandoff:
                 os.close(handle)
             except OSError:
                 pass
+
+    def release_slave(self) -> None:
+        """Drop this process's copy of the device once the client holds it.
+
+        The client owns the terminal from that moment on. Keeping a second handle
+        open here would mean the master never sees the client's exit as the end of
+        the stream, and every session would wait out its whole bound.
+        """
+        try:
+            os.close(self.slave)
+        except OSError:
+            pass
 
 
 class MeshCentralCliCommandPort:
@@ -1030,7 +1094,6 @@ class MeshCentralCliCommandPort:
         (``src/meshagent.js:1287-1295``), so nothing here repeats a payload at a cadence,
         and there is no PADIEM cap on how many sessions a PC may have.
         """
-        import subprocess
         import time
 
         if self._popen_factory is None:
@@ -1047,14 +1110,15 @@ class MeshCentralCliCommandPort:
         wrapped = _wrap(command, dispatch_id, self._host_tag, split_markers=True)
         try:
             handoff = self._pty_factory(
-                (password + "\n" + wrapped + "\n").encode("utf-8"),
+                _terminal_payload(password, wrapped),
             )
         except Exception:
             phase("session_open_refused")
             return None
         child = self._popen_factory(
-            argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+            argv, stdin=handoff.slave, stdout=handoff.slave, stderr=handoff.slave,
         )
+        handoff.release_slave()
         buffer = bytearray()
         opened = time.monotonic()
         seen = False
@@ -1326,11 +1390,12 @@ class MeshCentralCliCommandPort:
         with "already busy" and dropped - it is not queued, so no amount of waiting
         produces an answer for it. ``meshctrl shell`` opens the agent's terminal as a
         tunnel instead, which is the channel that worked by hand on 2026-10-28 and
-        2026-10-29 while that console was held. The session is bounded in both shapes,
-        so an unreachable agent cannot turn a repair into the new way to hang a PC.
+        2026-10-29 while that console was held - an operator typing into a real
+        terminal. What did not work was this side's scripted handoff, and the reason
+        is in ``_TerminalHandoff``: the client answers on standard output, which used
+        to be discarded here. The session is bounded in both shapes, so an unreachable
+        agent cannot turn a repair into the new way to hang a PC.
         """
-        import subprocess
-
         if not isinstance(node_ref, str) or not node_ref.strip():
             raise MeshCentralCommandRefused("node_ref is required")
         if self._popen_factory is None:
@@ -1352,11 +1417,12 @@ class MeshCentralCliCommandPort:
             "--powershell",
         ]
         handoff = self._pty_factory(
-            (password + "\n" + script + "\n").encode("utf-8"),
+            _terminal_payload(password, script),
         )
         child = self._popen_factory(
-            argv, stdin=handoff.slave, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+            argv, stdin=handoff.slave, stdout=handoff.slave, stderr=handoff.slave,
         )
+        handoff.release_slave()
         # The client is ended on every path out of this session, including a pump
         # that raised: an abandoned node process on this host would be exactly the
         # thing this whole lane exists to stop leaving behind on the PC.

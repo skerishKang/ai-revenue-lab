@@ -36,10 +36,10 @@ claim state:
 Qoder measured the terminal channel on COM1 (older agent), COM2 and a freshly installed
 CGI-1 agent: a line typed into `meshctrl shell` comes back as a mirror of itself —
 the probe line answered 71 bytes, `+"\n"` 73 bytes, `+"; Exit"` 77 bytes, printable
-characters 1.00 — with no prompt, no banner and no error. Input is not executed, and the
-behaviour is independent of agent generation. That is a defect of this transport, not of
-the agent version, so the console probe ships off (#6183) and the per-dispatch session
-lane (#6163) stays off until the transport answers.
+characters 1.00 — with no prompt, no banner and no error. Nothing the PC produced could
+reach the reader. The behaviour is independent of agent generation, which is the first
+sign the defect sat on this host's side of the wire (§0.2), and while it stands the
+console probe ships off (#6183) and the per-dispatch session lane (#6163) stays off.
 
 What it does not excuse: the owner's stop rode the same session and reported
 `cancel_kill` as though it had worked. An opened session is not evidence. The stop script
@@ -52,6 +52,56 @@ Diffing #6106 against #6059 found no channel regression — the stop's argv, std
 bootstrap, pty payload and 15-second bound are byte-identical; #6106 only extracted
 `_run_shell_session`. So the stop was never verified through this path recently, and it
 now cannot claim otherwise.
+
+### 0.2 Where the mirror came from (root cause, reproduced on a real pty, 2026-10-29 KST)
+
+The mirror was this host's own terminal device, not the PC. `_TerminalHandoff` creates a
+pty and writes the credential line and the script line into it **before** the client
+process starts; a new pty has ECHO set, so the line discipline returned exactly those
+bytes to the master — which is the only handle this side reads. `meshctrl.js:2878` writes
+the PC's answer to `process.stdout`, and the port started the client with
+`stdout=DEVNULL`, so every byte the agent produced was discarded on arrival. The reply was
+the input, the answer was thrown away, and the two facts together are indistinguishable
+from "the transport never executes".
+
+Reproduced on a plain Linux pty with a stand-in client (nothing MeshCentral involved):
+
+| wiring | bytes this side read | what they were |
+|---|---|---|
+| as shipped: stdout=DEVNULL, echo on | 39 | the 39-byte payload, verbatim, `\n` grown to `\r\n` |
+| + client stdout on the device | 110 | the payload mirror **and** the child's real answer |
+| + ECHO and ICRNL cleared before writing | 80 | only the child's answer; no credential, no mirror |
+
+The `+1 typed byte = +2 observed bytes` in the live measurement is that ONLCR expansion on
+the way back into our own master. A third defect hides in the same two defaults: ICRNL
+rewrites the carriage return a Windows console needs to **submit** a typed line into a
+line feed, and `meshctrl.js:2888` puts stdin into raw mode before piping it
+(`meshctrl.js:2892`), so nothing downstream repairs it. The client only ever installs that
+reader after the tunnel reports connected (`meshctrl.js:2880-2892`), which is why this side
+queues the whole session input first — and Linux holds only `N_TTY_BUF_SIZE = 4096`
+bytes (`drivers/tty/n_tty.c`) of un-read queued input, silently dropping the tail.
+
+What the fix does, each part pinned by a test that runs on the POSIX lane:
+
+* the pty is stilled before a byte is written: ECHO cleared, so a mirror can never again
+  be mistaken for an answer, and ICRNL cleared, so `CR` survives to the client. The
+  credential line is therefore never part of what this side can report — measured before:
+  it was.
+* the client's stdout and stderr are the terminal device, so the PC's answer is read
+  where `meshctrl.js:2878` actually puts it.
+* the session input is `password + "\n" + script + "\r\n"`: the line feed is what flushes
+  our queue to the client, the carriage return is what a console submits on, and raw mode
+  means neither is translated any more.
+* a script that cannot fit the device queue is refused on this host instead of being
+  delivered in halves (`TERMINAL_PREQUEUE_LIMIT_BYTES`); the stop (425 bytes) and the
+  sweep (2,533 bytes) fit with room, and a test measures both.
+
+**UNVERIFIED, and only a live PC can verify it:** that the agent's Windows console
+submits on that CR, and that the answer arrives framed. The three properties above were
+proven against a stand-in client on a local device; the last step needs Qoder to run one
+stop and one sweep on COM1/COM2 after the executor picks this up. Until then the probe
+stays off and the session lane stays off — this section explains the mirror, it does not
+re-enable either.
 
 ## 1. Why the lane is serial, and what a stuck command actually does to the next one
 
