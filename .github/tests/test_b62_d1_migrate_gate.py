@@ -923,3 +923,13 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--inventory", str(inventory_path), "--dir", str(window_dir),
     ]) == 0
     assert {path.name for path in window_dir.iterdir()} == pending
+
+
+def test_dispatch_fails_fast_when_target_sha_is_not_a_full_40_hex() -> None:
+    # A 9-char SHA makes actions/checkout treat it as a branch name and the
+    # next step's rev-parse comparison dies with a confusing git error.
+    # Both gates must reject it in their first step, in Korean.
+    for name in ("b62-d1-migrate-gate.yml", "b62-production-code-deploy-gate.yml"):
+        text = (Path(__file__).resolve().parents[1] / "workflows" / name).read_text(encoding="utf-8")
+        assert "target_sha는 40자리 전체 SHA여야 합니다" in text, name
+        assert 'test "${#TARGET_SHA}" -eq 40' in text, name
