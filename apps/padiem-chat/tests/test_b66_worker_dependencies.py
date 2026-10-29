@@ -124,3 +124,15 @@ def test_symlink_output_is_rejected(tmp_path):
         pytest.skip("Host does not permit creating symlinks")
     with pytest.raises(ValueError, match="symlink or junction"):
         builder.require_fresh_output(link / "vendor")
+
+
+def test_worker_staging_omits_host_server_and_cli(tmp_path):
+    lock = tmp_path / "pylock.toml"
+    lock.write_text('[[packages]]\nname="uvicorn"\nversion="1"\n\n'
+                    '[[packages]]\nname="click"\nversion="1"\n\n'
+                    '[[packages]]\nname="httpx"\nversion="1"\n', encoding="utf-8")
+    stage = tmp_path / "stage"
+    stage.mkdir()
+    result = builder.stage_local_packages(lock, stage)
+    assert [p["name"] for p in tomllib.loads(result.read_text())["packages"]] == ["httpx"]
+    assert 'name="uvicorn"' in lock.read_text()
