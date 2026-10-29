@@ -114,20 +114,70 @@
 
   // #5728: photos persist through the SAME project-file channel as text
   // drafts — binary original upload, owner/project scoped, no new limits.
-  async function uploadProjectImage(pid, file) {
-    const res = await fetch("/api/projects/" + pid + "/files", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "X-Padiem-Filename": encodeURIComponent(file.name),
-        "X-Padiem-Media-Type": file.type,
-      },
-      body: file,
-    });
-    if (!res.ok) return null;
+  // The failure keeps its HTTP status so the screen can say what happened
+  // (GEN_ERROR_COPY) instead of a bare "failed".
+  async function uploadProjectImage(pid, blob, name, type) {
+    let res;
+    try {
+      res = await fetch("/api/projects/" + pid + "/files", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "X-Padiem-Filename": encodeURIComponent(name),
+          "X-Padiem-Media-Type": type,
+        },
+        body: blob,
+      });
+    } catch (_error) {
+      // A dead network is not an HTTP status; it gets the offline sentence.
+      return { ok: false, file: null, status: 0 };
+    }
+    if (!res.ok) return { ok: false, file: null, status: res.status };
     const data = await res.json().catch(() => null);
-    return data && data.file ? data.file : null;
+    const file = data && data.file ? data.file : null;
+    return file
+      ? { ok: true, file: file, status: res.status }
+      : { ok: false, file: null, status: res.status };
+  }
+
+  // #5728: the browser does the shrinking (static/photo-resize.js explains the
+  // Worker CPU/memory reason). Loaded on first photo, so a page that never adds
+  // a photo touches no extra script.
+  let photoResizeLoading = null;
+  function loadPhotoResize() {
+    if (window.PadiemPhotoResize) return Promise.resolve(window.PadiemPhotoResize);
+    if (photoResizeLoading) return photoResizeLoading;
+    photoResizeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      const script = document.createElement("script");
+      script.src = "./photo-resize.js";
+      script.addEventListener("load", () => {
+        if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
+        else reject(new Error("photo-resize-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("photo-resize-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return photoResizeLoading;
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const comma = String(dataUrl || "").indexOf(",");
+    if (comma < 0) return null;
+    const head = dataUrl.slice(0, comma);
+    const body = dataUrl.slice(comma + 1);
+    const isBase64 = head.indexOf(";base64") >= 0;
+    const mime = (head.match(/^data:([^;,]+)/) || [])[1] || "image/jpeg";
+    try {
+      if (!isBase64) return new Blob([decodeURIComponent(body)], { type: mime });
+      const binary = atob(body);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    } catch (_error) {
+      return null;
+    }
   }
 
   async function deleteProjectFile(pid, fileId) {
@@ -777,7 +827,6 @@
       // post media. Photos survive platform switches, stay in this session
       // (no upload claim), and no automatic publishing is implied.
       const photos = [];
-      let photoSeq = 0;
       const photoBox = el("div", "util-photos");
       photoBox.id = "utilSnsPhotoBox";
       const photoHead = el("div", "util-photos-head");
@@ -794,7 +843,18 @@
       photoList.id = "utilSnsPhotoList";
       const photoNote = el("p", "util-photo-note");
       photoNote.id = "utilSnsPhotoNote";
-      photoBox.append(photoHead, photoList, photoNote);
+      // #5728: a failed photo upload is said out loud in Korean, and the same
+      // photos can be retried without picking them again.
+      const photoStatus = el("p", "util-photo-status");
+      photoStatus.id = "utilSnsPhotoStatus";
+      photoStatus.setAttribute("role", "status");
+      photoStatus.setAttribute("aria-live", "polite");
+      photoStatus.hidden = true;
+      const photoRetry = el("button", "util-photo-retry", GEN_RETRY_LABEL);
+      photoRetry.type = "button";
+      photoRetry.id = "utilSnsPhotoRetry";
+      photoRetry.hidden = true;
+      photoBox.append(photoHead, photoList, photoNote, photoStatus, photoRetry);
       form.appendChild(photoBox);
 
       function photoNoteText() {
@@ -803,13 +863,41 @@
         return "페이스북은 사진을 본문과 구분된 게시물 미디어로 첨부합니다.";
       }
 
-      function readPhotoFile(file) {
+      function readImageDataUrl(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto" });
-          reader.onerror = () => resolve(null);
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => resolve("");
           reader.readAsDataURL(file);
         });
+      }
+
+      // #5728: shrink big photos BEFORE the upload. The Worker cannot decode a
+      // multi-megabyte image inside the free plan's per-request CPU budget, so
+      // the browser does the resizing (static/photo-resize.js carries the full
+      // reason). A resize that fails leaves the original bytes alone — the
+      // upload still happens.
+      async function preparePhoto(file) {
+        const original = await readImageDataUrl(file);
+        if (!original) return null;
+        let dataUrl = original;
+        let type = file.type || "image/jpeg";
+        // Only a real browser can decode and re-encode an image; a DOM without
+        // Image (the Node harness) keeps the original bytes and never waits.
+        const canDecode = typeof window === "object" && typeof window.Image === "function";
+        if (canDecode) {
+          try {
+            const shrink = await loadPhotoResize();
+            const out = await shrink.resizeDataUrl(original, shrink.MAX_EDGE, type);
+            if (out && out.resized && typeof out.dataUrl === "string") {
+              dataUrl = out.dataUrl;
+              const mime = (dataUrl.match(/^data:([^;,]+)/) || [])[1];
+              if (mime) type = mime;
+            }
+          } catch (_error) { /* the original bytes are still uploaded */ }
+        }
+        const blob = dataUrlToBlob(dataUrl) || file;
+        return { blob: blob, dataUrl: dataUrl, type: type };
       }
 
       // #5728: the roster is one small JSON file that carries the whole
@@ -907,28 +995,67 @@
       });
 
       photoAdd.addEventListener("click", () => photoInput.click());
-      photoInput.addEventListener("change", async () => {
-        const files = Array.from(photoInput.files || []);
-        const failed = [];
+      // #5728: what failed stays available for [다시 시도]; the sentence is the
+      // same Korean copy the generation path already uses for that status.
+      let failedPhotos = [];
+      function showPhotoFailure(failures) {
+        failedPhotos = failures;
+        if (!failures.length) {
+          photoStatus.hidden = true;
+          photoStatus.textContent = "";
+          photoRetry.hidden = true;
+          return;
+        }
+        const status = failures[0].status;
+        const sentence = status === 0
+          ? GEN_OFFLINE_COPY
+          : (GEN_ERROR_COPY[status] || "사진을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+        photoStatus.textContent = "사진 저장 실패: " + failures.map((f) => f.name).join(", ")
+          + " — " + sentence;
+        photoStatus.hidden = false;
+        photoRetry.hidden = false;
+      }
+
+      async function addPhotoFiles(files) {
+        const failures = [];
         for (const file of files) {
           if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
           // #5728: a photo joins the composition only once the project-file
           // upload succeeded — the thumbnail and the stored original are the
           // same bytes, and a failed upload never looks "saved".
           if (!currentPid) currentPid = await ensureProject();
-          if (!currentPid) { failed.push(file.name); continue; }
-          const stored = await uploadProjectImage(currentPid, file);
-          if (!stored) { failed.push(file.name); continue; }
-          const item = await readPhotoFile(file);
-          if (item) { item.id = stored.id; photos.push(item); }
+          if (!currentPid) { failures.push({ file: file, name: file.name, status: 0 }); continue; }
+          const prepared = await preparePhoto(file);
+          if (!prepared) { failures.push({ file: file, name: file.name, status: 0 }); continue; }
+          const stored = await uploadProjectImage(
+            currentPid, prepared.blob, file.name, prepared.type,
+          );
+          if (!stored.ok) { failures.push({ file: file, name: file.name, status: stored.status }); continue; }
+          photos.push({
+            id: stored.file.id,
+            name: file.name,
+            dataUrl: prepared.dataUrl,
+            position: "auto",
+          });
         }
-        if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
-        photoInput.value = "";
+        showPhotoFailure(failures);
         renderPhotoList();
         renderPreview();
         // An added photo is part of the durable composition as soon as its
         // upload landed — the roster records it right away.
-        if (!failed.length) writePhotoRoster(currentPid);
+        if (!failures.length) writePhotoRoster(currentPid);
+      }
+
+      photoInput.addEventListener("change", async () => {
+        const files = Array.from(photoInput.files || []);
+        photoInput.value = "";
+        await addPhotoFiles(files);
+      });
+
+      photoRetry.addEventListener("click", () => {
+        const retry = failedPhotos.map((f) => f.file);
+        showPhotoFailure([]);
+        if (retry.length) void addPhotoFiles(retry);
       });
 
       function blogParagraphs(text) {
