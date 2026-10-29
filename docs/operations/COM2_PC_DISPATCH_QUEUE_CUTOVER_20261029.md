@@ -273,12 +273,22 @@ The order is fixed and is the only dangerous part:
    runs `mode=readonly` first (it reads the live binding, the `d1_migrations` ledger
    and the plan for the window), then `mode=apply` with the migration number `077` and
    the authorization phrase the input asks for. **Confirm from its own output that the
-   ledger now names 077** — the count it reads goes from 76 recorded migrations to 77 —
-   before any code goes out. A CHECK constraint the deployed code does not know about
-   yet rejects writes; a code path that assumes the new bound while the constraint is
-   still the old one accepts writes nothing will police. The two gates are separate
-   workflows on purpose, so this order is an operator action and not something one run
-   can get wrong by itself.
+   ledger now names 077.** The recorded count and the file count are different numbers:
+   077 went in at `B62_D1_PLAN_RECORDED=75` → 76, against 76 migration files in the
+   checkout — so read `LEDGER_HAS_077=1` and the ledger's newest name, not a count that
+   was predicted. Before any code goes out. A CHECK constraint the deployed code does
+   not know about yet rejects writes; a code path that assumes the new bound while the
+   constraint is still the old one accepts writes nothing will police. The two gates are
+   separate workflows on purpose, so this order is an operator action and not something
+   one run can get wrong by itself.
+   A shadow rebuild — `INSERT`, `DROP TABLE`, `RENAME`, as 068 and 069 were — carries
+   `DROP TABLE`, so the gate refuses it until `allow_table_drop=true` is passed:
+   `B62_D1_GATE=FAIL:B62_D1_DROP_GUARD_REFUSED=STOP:<file>` with `PRODUCTION_MUTATION=0`
+   is the refusal, not a fault. Grant the flag for that one run and set nothing back.
+   Take the export first: `SELECT * FROM <rebuilt table> ORDER BY rowid` plus that table's
+   own `sqlite_master` DDL, written 0600 on the host, row count and SHA-256 recorded and
+   no content printed. That is the restore material for exactly the object the migration
+   rewrites.
 2. Then `b62-production-code-deploy-gate.yml` with `mode=deploy_production_code`
    publishes the Worker at the exact main SHA.
 3. `PC_QUEUE_BACKEND` stays `d1` in this deploy. The queue is installed and verified
@@ -287,6 +297,56 @@ The order is fixed and is the only dangerous part:
 Any single 5xx during the publish stops it: the gate's
 `rollback_production_code` returns the previous version and the operator reports,
 rather than continuing to a step that looks greener.
+
+### 077 applied — 2026-10-29, and what the record looked like
+
+Run `40813300365` (`mode=apply`, `up_to=077`, `allow_table_drop=true`, exact main). Its
+own markers: `PLAN_WINDOW=76 PLAN_RECORDED=75 PLAN_APPLY=1` → `WINDOW_FILES=1
+WINDOW_SHA_VERIFIED=PASS WINDOW_APPLIED=1 GATE_APPLY=PASS`, and
+`ROW_COUNTS_BEFORE … project_files=14`. The schema diff came back empty in both
+directions (`SCHEMA_TABLES/COLUMNS/OTHER _ADDED|_REMOVED`), which is what a rebuild of
+one table should look like from outside.
+
+Read-only afterwards: `LEDGER_RECORDED=76`, `LEDGER_HAS_077=1`, newest name
+`077_project_files_text_byte_bound.sql`, `CHECK_2MIB_PRESENT=True`,
+`CHECK_CHARS_CAP_PRESENT=False`, `project_files=14` — and the row digest of the
+re-read table (`1cc5a58a0a482b96…`, 33,054 bytes) is identical to the export taken
+before the run, so the rebuild carried every row unchanged. Backups live on 컴2 at
+`/opt/padiem/backups/d1-exports/` (root:root 0600): the 14-row JSON export
+(`9dfb334113b8d386…`) and the pre-migration DDL of the table plus its two indexes
+(`b6f4754b8890de6f…`).
+
+The bound was then read from Production and replayed in a scratch SQLite — production was
+not written to test it: 2,097,152 bytes accepted, 2,097,153 refused, 40,001 Korean
+characters (120,003 bytes) **accepted**, 699,051 Korean characters (2,097,153 bytes)
+refused. Bytes, not characters, which was the point of 077.
+
+One thing the window itself taught: `project_files` went 18 → 14 between two reads
+(03:11 and 03:29), and no CI lane did it. The only code that deletes those rows is
+authenticated and owner-scoped — `project_files.py:delete_file` reached from the owner's
+DELETE route, and the same call as the post-create rollback when the R2 original cannot
+be stored, which answers the user with a 503. The lanes running in that window
+(`B62 Unified Browser QA`, `B62 Padiem Chat CI`, `Web Desktop Non-Model E2E`,
+`COM2 PR Auto Sandbox`) serve their own `uvicorn app.main:app` on `127.0.0.1` with
+fixture users, or a Pages preview URL, and `tests/e2e` names no production host — so
+none of them can reach the Production D1. A net −4 is also exactly what four uploads that
+rolled back would look like to a count taken mid-request: the rows existed only inside
+those requests. What would settle it next time is the tail lane run *during* the activity
+it is meant to explain — a real-time tail cannot answer for a window it was not open in,
+and `request_telemetry` writes to the Worker log channel, which is where the tail reads.
+
+### Time Travel: available, and not reachable with this token
+
+D1 Time Travel is not a paid-only feature; it exists on this plan. What this host's API
+token lacks is the permission — `wrangler d1 time-travel info` dies in its pre-flight on
+`GET /memberships` (`Authentication error [code: 10000]`, "Unable to retrieve email for
+this user"), and the direct REST guesses (`time-travel`, `time_travel`, with and without
+`/info`, GET and POST) all return `Route not found` rather than a permission error, so the
+path is not even established. Recording a bookmark from automation would need the token to
+carry `User Details: Read` plus D1 read/write on the account (`Account D1:Edit`) for the
+restore direction. **No token permission was changed here, and none is changed by this
+runbook.** Until one is, the export above is the restore material for a rebuild, which is
+why section 8 makes it a precondition rather than a nicety.
 
 ## 9. What is deliberately not here
 
