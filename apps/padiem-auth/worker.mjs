@@ -41,6 +41,16 @@ function one(params, name) {
   return values.length === 1 ? values[0] : '';
 }
 
+async function diagnosed(stage, operation) {
+    try { return await operation(); }
+    catch (error) {
+      const name = ['Error', 'TypeError', 'RangeError', 'SyntaxError'].includes(error?.name) ? error.name : 'OtherError';
+      // Never log exception text: it may contain codes, tokens, cookies or URLs.
+      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed' }));
+      throw error;
+    }
+}
+
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
 export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
   async function verifyClient(params, client, current) {
@@ -84,21 +94,33 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
     if (url.pathname === '/oauth/google/callback' && request.method === 'GET') {
       const state = split(one(url.searchParams, 'state')), browser = cookieValue(request), code = one(url.searchParams, 'code');
       if (!state || !opaque.test(browser) || !code) return json(400, { error: 'invalid_callback' });
-      const pending = await stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current });
+      const pending = await diagnosed('login_state_read_failed', async () => stateFor(state[0]).consumeLogin({ stateDigest: await digest(state[1]), browserDigest: await digest(browser), now: current }));
       if (!pending) return json(400, { error: 'invalid_callback' });
       if (!clients[pending.client]?.redirect_uris?.includes(pending.redirect)) return json(400, { error: 'invalid_callback' });
-      const response = await fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'error', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) });
-      if (!response.ok) throw new Error('google token endpoint failed');
-      const googleToken = await response.json();
-      const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'error' });
-      if (!keyResponse.ok) throw new Error('google keys unavailable');
-      const identity = await verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
-      const userId = await googleProductUserId(identity.sub);
-      const fingerprint = await identityFingerprint(identityKey, identity.sub);
-      const account = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub });
-      if (!account || account.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(account.account_id ?? '')) throw new Error('identity authority failed');
+      const googleToken = await diagnosed('google_token_exchange_failed', async () => {
+        const response = await fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'error', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) });
+        if (!response.ok) {
+          let oauthError = 'other';
+          try { const candidate = (await response.json())?.error; if (['invalid_client','invalid_grant','invalid_request','unauthorized_client','redirect_uri_mismatch'].includes(candidate)) oauthError = candidate; } catch {}
+          console.error(JSON.stringify({ auth_stage: 'google_token_exchange_failed', google_error: oauthError, http_status: response.status }));
+          throw new Error('google token endpoint failed');
+        }
+        return response.json();
+      });
+      const identity = await diagnosed('google_id_token_verification_failed', async () => {
+        const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'error' });
+        if (!keyResponse.ok) throw new Error('google keys unavailable');
+        return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
+      });
+      const account = await diagnosed('identity_lookup_failed', async () => {
+        const userId = await googleProductUserId(identity.sub);
+        const fingerprint = await identityFingerprint(identityKey, identity.sub);
+        const result = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub });
+        if (!result || result.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(result.account_id ?? '')) throw new Error('identity authority failed');
+        return result;
+      });
       const codeSecret = random();
-      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60 });
+      await diagnosed('code_issue_failed', async () => stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60 }));
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -112,7 +134,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
         const code = split(one(params, 'code')), verifier = one(params, 'code_verifier'), returnTo = one(params, 'redirect_uri');
         if (!code || !opaque.test(verifier) || !client.redirect_uris.includes(returnTo)) return json(400, { error: 'invalid_grant' });
         object = code[0]; sessionId = random();
-        const result = await stateFor(object).exchangeCode({ codeDigest: await digest(code[1]), client: id, redirect: returnTo, challenge: await digest(verifier), now: current, id: sessionId, expires: current + 30 * 24 * 3600, refreshDigest: await digest(nextSecret) });
+        const result = await diagnosed('session_storage_failed', async () => stateFor(object).exchangeCode({ codeDigest: await digest(code[1]), client: id, redirect: returnTo, challenge: await digest(verifier), now: current, id: sessionId, expires: current + 30 * 24 * 3600, refreshDigest: await digest(nextSecret) }));
         if (!result) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
         accountId = result.accountId;
@@ -159,9 +181,12 @@ export class AuthStateObject extends AuthState {
     return this.state.blockConcurrencyWhile(async () => {
       const current = this.accountByFingerprint(fingerprint);
       if (current) return current;
-      const linked = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link({ product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject });
-      if (linked?.ok !== true || linked?.link?.state !== 'active' || linked?.link?.product_id !== productId || linked?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(linked?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
-      return this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id });
+      const linked = await diagnosed('identity_authority_rpc_failed', async () => {
+        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link({ product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject });
+        if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
+        return result;
+      });
+      return diagnosed('account_mapping_storage_failed', async () => this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id }));
     });
   }
   async fetch(request) {
