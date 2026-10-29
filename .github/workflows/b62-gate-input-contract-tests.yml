@@ -1,0 +1,48 @@
+name: B62 gate input contract tests
+
+# The target_sha rule lives in one script (.github/scripts/b62_verify_target_sha.py)
+# and is embedded as the first step of every B62 gate that takes a target_sha, so its
+# tests belong to no single gate. This workflow is their CI host: it parses the gate
+# YAML and runs the rule offline. It never dispatches a gate, never reads a Secret,
+# and never calls Cloudflare.
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b62_verify_target_sha.py"
+      - ".github/tests/test_b62_verify_target_sha.py"
+      - ".github/workflows/b62-*.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-gate-input-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  input-contract-tests:
+    name: Input shape contract (offline, no Cloudflare access)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check --quiet pyyaml pytest
+
+      - name: Run the rule tests and the gate sweep
+        run: python -m pytest -q .github/tests/test_b62_verify_target_sha.py
+
+      - name: Record that no gate ran and nothing was mutated
+        run: |
+          echo 'B62_GATE_INPUT_CONTRACT_TESTS=PASS'
+          echo 'GATE_DISPATCHED=0'
+          echo 'PRODUCTION_MUTATION=0'
