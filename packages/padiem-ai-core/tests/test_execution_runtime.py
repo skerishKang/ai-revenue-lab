@@ -17,7 +17,6 @@ from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionRuntime,
     ExecutionRuntimeError,
-    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
 )
 
 

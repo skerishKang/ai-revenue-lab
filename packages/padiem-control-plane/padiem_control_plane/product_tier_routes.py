@@ -84,11 +84,6 @@ def is_free_execution_candidate(model_id: str | None) -> bool:
     return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
 
 
-# A declared grade's fallback is a specific owner choice, not b14/auto or
-# permission for an unrelated/paid model. B14 verifies live registration,
-# credentials and eligible 429/5xx/timeout before any failover.
-OWNER_PINNED_TIER_FALLBACK_ON_RECOVERABLE_ERROR = True
-
 class ProductTierLabel(str, Enum):
     FREE = "Padiem Free"
     PLUS = "Padiem Plus"
@@ -104,11 +99,7 @@ class ProductRouteStatus(str, Enum):
 # One shared primary-route switch for a separately approved Muse return.
 # HOLD -> EXECUTABLE here reactivates Muse for all four lanes and holds Google.
 MUSE_ROUTE_STATUS = ProductRouteStatus.HOLD_AS_DATA_ONLY
-_TEST_PHASE_GOOGLE_ROUTE_STATUS = (
-    ProductRouteStatus.EXECUTABLE
-    if MUSE_ROUTE_STATUS is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    else ProductRouteStatus.HOLD_AS_DATA_ONLY
-)
+_TEST_PHASE_GOOGLE_ROUTE_STATUS = ProductRouteStatus.EXECUTABLE
 
 class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"

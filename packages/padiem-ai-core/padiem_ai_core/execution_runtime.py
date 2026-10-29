@@ -42,18 +42,6 @@ from .dispatch_preinstruction import (
     server_wall_clock,
 )
 
-# Execution messages are provider-native; trusted injected system context
-# retains separate bounds for tool/instruction safety.
-# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
-MAX_EXECUTION_MESSAGES: int | None = None
-MAX_EXECUTION_MESSAGE_CHARS: int | None = None
-# #4379: the model/reference context carries no PADIEM byte total. The
-# provider and the platform apply their own limits. These symbols are
-# retained for import compatibility and are no longer enforced.
-MAX_SYSTEM_CONTEXT_BYTES: int | None = None
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
-
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _MESSAGE_ROLES = frozenset({"user", "assistant", "tool"})
 _MODEL_POLICY_FIELDS = frozenset(
@@ -225,11 +213,6 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
         parts.append(request.additional_system_context)
     content = "\n\n".join(parts)
     # #4379: the composed system instruction carries no PADIEM byte total.
-    if (
-        MAX_SYSTEM_CONTEXT_BYTES is not None
-        and len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES
-    ):
-        raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
 
