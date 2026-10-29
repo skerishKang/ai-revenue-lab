@@ -27,7 +27,7 @@ async function setup() {
   const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
   const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({ clients: { lovetree: { id: 'lovetree', redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
-    async fetcher(address) { if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
+    async fetcher(address, options) { assert.equal(options.redirect, 'manual'); if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
       const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', nonce, iat: 999, exp: 1100 });
       const input = `${h}.${p}`, sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', google.privateKey, new TextEncoder().encode(input));
       return Response.json({ id_token: `${input}.${b64(sig)}` }); } });
