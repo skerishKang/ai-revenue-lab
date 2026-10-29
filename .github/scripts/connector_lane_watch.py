@@ -175,20 +175,55 @@ def liveness_verdict(lane: Any, *, now: float, bound: int = BEAT_STALL_SECONDS) 
     return OK, "executor_beating"
 
 
-def chat_health_verdict(status: Any) -> tuple[str, str]:
+#: Cloudflare's own error numbers that mean the Worker itself did not answer: 1101 is
+#: an exception in the Worker, 1102 the CPU limit. On 2026-10-29 the LAX path returned
+#: them for 40-50% of turns while other paths were fine, so the number is the fact to
+#: record — the status code alone cannot tell "the edge answered for a dead worker"
+#: from "the worker said no".
+CLOUDFLARE_WORKER_ERRORS = (1101, 1102)
+
+
+def cloudflare_error_code(payload: Any) -> int | None:
+    """The edge's numeric error code, when the body carries one of the known numbers.
+
+    Only an integer field is read, from the two shapes Cloudflare uses for a Worker
+    that did not answer (`error_code` at the top level, or `errors[0].code`). Text is
+    never searched: a number that only looks like 1102 somewhere in a page is not a
+    verdict, and a string "1102" is not the field.
+    """
+    if not isinstance(payload, dict):
+        return None
+    candidates = [payload.get("error_code")]
+    errors = payload.get("errors")
+    if isinstance(errors, list) and errors and isinstance(errors[0], dict):
+        candidates.append(errors[0].get("code"))
+    for candidate in candidates:
+        if isinstance(candidate, bool) or not isinstance(candidate, int):
+            continue
+        if candidate in CLOUDFLARE_WORKER_ERRORS:
+            return candidate
+    return None
+
+
+def chat_health_verdict(status: Any, edge_error: Any = None) -> tuple[str, str]:
     """The public read of Chat's own health endpoint.
 
     200 is the only answer this reads as healthy; a transport failure is UNKNOWN, not
-    a failure, because a runner's own network is not evidence about the worker.
+    a failure, because a runner's own network is not evidence about the worker. A 5xx
+    that carries a Cloudflare Worker error number says which way the worker failed,
+    and that number is part of the reason.
     """
     code = _count(status)
     if code is None:
         return UNKNOWN, "chat_health_unreadable"
     if code == 200:
         return OK, "chat_health_200"
+    named = cloudflare_error_code({"error_code": edge_error})
     if code >= 500:
-        return STALL, f"chat_health_{code}"
-    return UNKNOWN, f"chat_health_{code}"
+        return STALL, (f"chat_health_{code}_cloudflare_{named}" if named
+                       else f"chat_health_{code}")
+    return UNKNOWN, (f"chat_health_{code}_cloudflare_{named}" if named
+                     else f"chat_health_{code}")
 
 
 def source_verdict(configured: Any) -> tuple[str, str]:
@@ -254,7 +289,20 @@ def _post_lane_status(origin: str, secret: str, device_ids: list[str]) -> tuple[
         return None, None
 
 
-def _get_health(origin: str) -> int | None:
+#: One health answer is small; an edge error page can be larger than that and is
+#: still bounded here. Only the number is kept — never body text.
+_HEALTH_BODY_BYTES = 8_192
+
+
+def _health_error_code(body: bytes) -> int | None:
+    try:
+        return cloudflare_error_code(json.loads(body.decode("utf-8", "replace")))
+    except Exception:
+        return None
+
+
+def _get_health(origin: str) -> tuple[int | None, int | None]:
+    """The status and, when the edge named one, its Worker error number."""
     request = urllib.request.Request(
         f"{origin}{CHAT_HEALTH_PATH}", method="GET",
         headers={"Accept": "application/json",
@@ -262,11 +310,15 @@ def _get_health(origin: str) -> int | None:
     )
     try:
         with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-            return response.status
+            return response.status, _health_error_code(response.read(_HEALTH_BODY_BYTES))
     except urllib.error.HTTPError as exc:
-        return exc.code
+        try:
+            body = exc.read(_HEALTH_BODY_BYTES)
+        except Exception:
+            body = b""
+        return exc.code, _health_error_code(body)
     except Exception:
-        return None
+        return None, None
 
 
 class _RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -322,7 +374,8 @@ def run(env: dict[str, str]) -> int:
             checks["queue"] = queue_verdict(lane)
             checks["pc"] = pc_silence_verdict(lane)
             checks["beat"] = liveness_verdict(lane, now=now)
-    checks["chat"] = chat_health_verdict(_get_health(origin))
+    health_status, health_edge_error = _get_health(origin)
+    checks["chat"] = chat_health_verdict(health_status, health_edge_error)
 
     state, reasons = combine(checks)
     print(f"CONNECTOR_WATCH={state} reasons={','.join(reasons) if reasons else 'none'}")

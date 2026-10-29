@@ -198,5 +198,42 @@ class TestDeviceIdList(unittest.TestCase):
         )
 
 
+class TestCloudflareWorkerErrors(unittest.TestCase):
+    """#82 (d): which way the worker failed, as a number the edge itself sends.
+
+    On 2026-10-29 the LAX path failed 40-50% of turns with 1101/1102 while other
+    paths answered, so a bare 5xx is not enough to describe it. Only the numeric
+    field is read; a page containing the digits is not a verdict.
+    """
+
+    def test_the_two_known_numbers_are_read_from_either_shape(self) -> None:
+        self.assertEqual(watch.cloudflare_error_code({"error_code": 1101}), 1101)
+        self.assertEqual(watch.cloudflare_error_code({"error_code": 1102}), 1102)
+        self.assertEqual(watch.cloudflare_error_code({"errors": [{"code": 1102}]}), 1102)
+
+    def test_anything_that_is_not_that_field_is_not_read_as_a_code(self) -> None:
+        for bad in ({"error_code": "1102"}, {"error_code": True}, {"error_code": 1100},
+                    {"error_code": 1103}, {"errors": [{"code": 1000}]}, {"errors": []},
+                    {"errors": "1102"}, {"body": "cloudflare_error 1102"}, None, []):
+            with self.subTest(bad=bad):
+                self.assertIsNone(watch.cloudflare_error_code(bad))
+
+    def test_a_5xx_names_the_number_and_an_unnamed_5xx_does_not(self) -> None:
+        self.assertEqual(watch.chat_health_verdict(503, 1102),
+                         ("stall", "chat_health_503_cloudflare_1102"))
+        self.assertEqual(watch.chat_health_verdict(500, 1101),
+                         ("stall", "chat_health_500_cloudflare_1101"))
+        self.assertEqual(watch.chat_health_verdict(503, None), ("stall", "chat_health_503"))
+        self.assertEqual(watch.chat_health_verdict(200, 1102), ("ok", "chat_health_200"),
+                         "a healthy answer is healthy whatever a stray body says")
+
+    def test_the_body_reader_takes_numbers_and_never_text(self) -> None:
+        self.assertEqual(watch._health_error_code(b'{"error_code": 1101}'), 1101)
+        self.assertEqual(watch._health_error_code(b'{"errors":[{"code":1102}]}'), 1102)
+        for bad in (b"", b"not json", b'{"error_code": "1102"}', b"<html>1102</html>"):
+            with self.subTest(bad=bad):
+                self.assertIsNone(watch._health_error_code(bad))
+
+
 if __name__ == "__main__":
     unittest.main()
