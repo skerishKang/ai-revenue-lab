@@ -22,10 +22,10 @@ Stage 2-C 대상(현재 `padiem-local-agent-broker-state` DO 전용):
 
 목표는 "같은 RPC 이름·같은 응답 봉투"를 컴2의 단일 프로세스 + SQLite에서 제공하는 것이다. 새 권한을 만들지 않는다.
 
-## 2. 컴2 구성
+## 2. 컴2 구성 (CTO 확정 2026-10-29)
 
-- **별도 systemd 유닛** `padiem-broker-state`(권장): 채팅 프로세스와 수명·메모리·장애를 분리한다. loopback `127.0.0.1:8799`, Cloudflare Tunnel hostname `broker-com2.padiem.net`(가칭)로만 노출. 큐(`:8797`)·파일 레인(`:8788`)·채팅(`:8798`)과 겹치지 않는다.
-- **DB 분리**: `broker.sqlite3`(WAL, `busy_timeout=5000`, autocommit + 명시 트랜잭션). 큐 DB와 합치지 않는다 — 권한 경계가 다르고, 큐는 재해 복구 단위가 다르다.
+- **별도 서비스 `padiem-broker`**(확정): 큐와 **프로세스·DB를 분리**한다(자격증명 경계). systemd 단일 프로세스, loopback `127.0.0.1:8799`, Cloudflare Tunnel hostname `broker-com2.padiem.net`(가칭)로만 노출. 큐(`:8797`)·파일 레인(`:8788`)·채팅(`:8798`)과 겹치지 않는다.
+- **전용 SQLite**(확정): `broker.sqlite3`(WAL, `busy_timeout=5000`, autocommit + 명시 트랜잭션). 큐와 같은 방식의 **일 백업** — `VACUUM INTO` → 사본 `integrity_check`·핵심 표 행 수 검증 통과 후에만 rotate, 보관 정책 동일(7개).
 - **호출자 경로**: Chat/Engine/kagent → HTTPS `POST /internal/rpc/<method>` + **v1 service proof**(#6149와 동일 계약). PC 기기 HTTP는 기존 사설 기기 전송 계약 그대로(터널 통과), 세션 인증은 서버 시계 기준.
 
 ## 3. 원자성·동시성 — DO `transactionSync` 대응
@@ -41,7 +41,8 @@ Stage 2-C 대상(현재 `padiem-local-agent-broker-state` DO 전용):
 
 ## 4. 자격증명·비밀
 
-- 기기 자격증명·세션 시크릿: **해시만 저장**(서버 pepper + HMAC/단방향). pepper는 `/opt/padiem/broker-state/pepper`(0600, root 소유, 서비스 사용자 읽기 전용) 또는 DPAPI가 아닌 호스트이므로 0600 파일 + 최소 권한.
+- 기기 자격증명·세션 시크릿: **해시만 저장**(서버 pepper + HMAC/단방향).
+- **pepper**(확정): 컴2에서 **1회 생성한 0600 파일**(root 소유, 서비스 사용자 읽기 전용). **DB 백업과 분리 보관** — 같은 백업 묶음/같은 스냅샷 안에 넣지 않는다(백업 유출이 곧 자격증명 검증키 유출이 되지 않도록). 원문은 출력·로그·커밋 금지, 생성 시에도 화면에 쓰지 않는다.
 - 원문 자격증명·세션 시크릿·refresh 계열은 DB·로그·응답에 남기지 않는다(현재 DO 플래그와 동일한 계약).
 - material(명령 본문)은 별도 표 + `expires_at`, ack/rotate/revoke 시 즉시 삭제, 크기 상한. 백업에도 남지 않도록 purge를 백업 전 스냅샷에 반영(백업은 VACUUM INTO 이후 상태).
 - service proof 시크릿은 호출자(Chat)와 같은 값, env 파일 0600. 비밀이 없으면 기동 거부(check_config).
@@ -49,8 +50,8 @@ Stage 2-C 대상(현재 `padiem-local-agent-broker-state` DO 전용):
 ## 5. 전환 순서 (쓰기 권위는 항상 하나)
 
 1. **선행**: Qoder 큐 전환 `QUEUE_BACKEND=com2` 30분 관찰 통과(CTO 판단). 이 설계는 그 뒤에 착수.
-2. **Stage A — 읽기 전용 그림자**: D1/DO 스냅샷을 `copy_state` 방식으로 `broker.sqlite3`에 복사, 컴2 서비스는 **read RPC만** 서비스. Chat의 읽기 호출을 한 비율로 com2로 돌려 응답을 Cloudflare와 대조(투영 동일성·지연). 쓰기는 계속 Cloudflare.
-3. **Stage B — 쓰기 권위 이전**: 유지보수 창에서 쓰기 동결 → 최종 스냅샷(해시 장부) → Chat/Engine/kagent의 broker origin을 com2로 전환 → 기기 한 대 페어링/세션/읽기/명령 왕복 스모크.
+2. **Stage A — 읽기 전용 그림자(확정: 100% 비교)**: D1/DO 스냅샷을 `copy_state` 방식으로 `broker.sqlite3`에 복사. **읽기 호출 100%를 com2에서도 실행해 응답을 Cloudflare와 대조하되, 실제 응답은 기존 DO 경로가 돌려준다**(그림자). **불일치 0이 24시간 유지**되면 Stage B로 간다. 쓰기는 계속 Cloudflare.
+3. **Stage B — 쓰기 권위 이전(확정: 05:00~06:00 KST 창)**: 새벽 창에서 쓰기 동결 → 최종 스냅샷(해시 장부) → Chat/Engine/kagent의 broker origin을 com2로 전환 → 기기 한 대 페어링/세션/읽기/명령 왕복 스모크. **실행은 Qoder, CTO 승인 후**. 창을 넘기면 자동으로 원복 절차(§6)를 따른다.
 4. **Stage C — 관찰**: 이중 쓰기 없음(쓰기 권위는 com2 단일). Cloudflare DO는 **읽기 전용 롤백 경로**로 보존하되 쓰기를 받지 않도록 배포 구성에서 분리.
 
 원칙: **이중 쓰기(dual-write) 금지** — 두 권위가 서로 다른 CAS 결과를 만들 수 있다. 단계 사이는 동결+스냅샷으로 자른다.
@@ -74,9 +75,12 @@ Stage 2-C 대상(현재 `padiem-local-agent-broker-state` DO 전용):
 | 동시성 | 실제 소켓 2연결 경쟁, `BEGIN IMMEDIATE` 잠금 대기 상한 내 완료 |
 | 롤백 리허설 | Stage B 원복 절차를 스테이징에서 1회 수행, 장부 해시 일치 |
 
-## 8. CTO 결정이 필요한 것
+## 8. CTO 확정 (2026-10-29)
 
-1. 서비스 분리 여부(권장: 별도 유닛)와 DB 위치(`/mnt/d/padiem/broker-state`).
-2. Stage A에서 com2로 돌릴 읽기 비율·관찰 기간.
-3. Stage B 유지보수 창과 기기 1대 스모크 담당(Qoder/아스트라3).
-4. pepper 보관 방식(0600 파일 vs 호스트 KMS) — 보안 결정.
+1. **서비스**: 별도 `padiem-broker` — 큐와 프로세스·DB 분리(자격증명 경계), systemd 단일 프로세스.
+2. **DB**: 컴2 전용 SQLite(WAL), 큐와 같은 방식의 일 백업(`VACUUM INTO` + 검증 + 보관).
+3. **Stage A**: 읽기 **100%** 그림자 비교, **응답은 기존 DO 경로**. 불일치 0이 **24시간** 유지되면 Stage B.
+4. **Stage B**: **05:00~06:00 KST** 창, 실행 **Qoder**, **CTO 승인 후**.
+5. **pepper**: 컴2에서 1회 생성한 **0600 파일**, **DB 백업과 분리 보관**(같은 백업 묶음 금지), 원문 출력·로그·커밋 금지.
+
+남은 실행 항목(결정 아님): Stage A 그림자 러너의 배포 위치·로그 보관(숫자만), Stage B 승인 문서 형식.
