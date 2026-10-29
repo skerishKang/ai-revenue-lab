@@ -1325,7 +1325,7 @@
   let bodies = {};
 
   function host(id) { return document.getElementById(id); }
-  function setBadge(text) { const node = host("councilAuthBadge"); if (node) { node.textContent = text; node.hidden = true; } }
+  function setBadge(text) { const node = host("councilAuthBadge"); if (node) node.textContent = text; }
   function setStatus(text) {
     const node = host("councilAuthStatus");
     if (!node) return;
@@ -1710,7 +1710,8 @@
       // Keep the first visit focused on the cinematic home and tool cards.
       // The existing login form opens only after the visitor chooses a tool.
       hideAuthPanel();
-      setBadge("");
+      setBadge(auth.unavailable ? "로그인 확인 실패" : "로그인 필요");
+      if (auth.unavailable) setStatus("로그인 상태 확인에 실패했습니다. 다시 시도해 주세요.");
       session.unavailable = !!auth.unavailable;
       return { signedIn: false, tools: null, selected: null, unavailable: !!auth.unavailable };
     }
