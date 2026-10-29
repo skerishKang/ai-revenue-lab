@@ -168,3 +168,44 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── layout corrections (owner report 2026-10-29) ───────────────────────── */
+
+/* The ⋯ menu is a popover inside the card: the card never clips it, and the
+ * panel stays within the viewport on a phone. */
+.pc-pairing,
+.pc-pairing-list,
+.pc-pairing-link {
+  overflow: visible;
+}
+
+.pc-pairing-menu-panel {
+  max-width: min(240px, calc(100vw - 48px));
+}
+
+/* A long PC name shrinks first; the state badge and the menu keep their
+ * width instead of being pushed out of the card. */
+.pc-pairing-link {
+  flex-wrap: wrap;
+}
+
+.pc-pairing-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pc-pairing-state,
+.pc-pairing-menu {
+  flex: 0 0 auto;
+}
+
+/* The Claw ON/OFF switch is a normal control in the card's own flow: it can
+ * never sit on top of the description text, at any width. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+  position: static;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  align-self: flex-end;
+  margin: 0 10px 10px auto !important;
+}
