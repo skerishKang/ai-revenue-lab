@@ -2,7 +2,7 @@
 
 ```text
 DOC_ROLE=REPO_LEFTOVER_CLASSIFICATION
-STATUS=조사·검증 완료 / A·B는 주제별 PR로 제거 중 / C는 대표 확인 대기
+STATUS=조사·검증 완료(서버·패키지·화면) / A 18·B 12건은 주제별 PR로 제거 중 / C 12건은 대표 확인 대기
 ISSUE=대표 요청(잔재 제거), 발단: chat mode 잔재
 RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_modes.py(삭제됨),
         docs/operations/TEST_TIME_ANCHOR_AUDIT_20261029.md, PR #6234(mode 제거)
@@ -79,17 +79,40 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
 | C8 | "GitHub 직접 연결은 준비 중입니다" vs 실제 라우트 존재 | `static/locale.js:136,396`; `app/github_oauth_routes.py`, `static/app.js:5935`, `static/claw-connection-chips.js:65` | 카피가 거짓인가(라우트는 살아있음), 라우트가 미승인가 |
 | C9 | `app/main.py`의 "legacy imports" 재수출 블록 | `app/main.py:57-79` | `from app.main import` 참조가 저장소에 82건이라 진입 표면 자체는 살아있음. 개별 심볼 13종만 미사용으로 의심 → 이름별 확인 후 A로 승격 가능 |
 
-## 6. 검증에서 바로잡은 것 (에이전트 결론 → 실제)
+## 6. 검증에서 바로잡은 것 (서브오디트 결론 → 실제)
 
-- "스킬 6종이 도달 불가라 A" → 서버는 그 값들을 **허용**한다. UI 생성 값은 `plan`/`auto`가 전부이지만
-  직송 요청은 통과하므로 **C1**으로 강등했다(제휴: 삭제 전 대표 확인).
+- "스킬 6종이 도달 불가라 A" → 서버는 그 값들을 **허용**한다. 화면이 만드는 값은
+  `plan`/`auto`가 전부이지만 직송 요청은 통과하므로 **C1**으로 강등했다(삭제 전 대표 확인).
 - "`app/main.py` 재수출은 죽었으니 A" → `from app.main import`가 82건. 재수출 표면은 살아있고
   특정 심볼만 미사용 의심 → **C9**.
-- 또한 에이전트가 "browser가 country를 보내지 않는다(grep 0)"고 한 것은 **틀렸다**:
+- "browser가 `country`를 보내지 않는다(grep 0)"는 것은 **틀렸다**:
   `apps/padiem-council-apps/static/council-app.js:79-83`이 보낸다. 그래서 B3의 근거를
   "검증만 하고 읽지 않음 + 보내는 쪽은 council"로 다시 썼다.
+- 화면 오디트의 "죽은 locale 키 30종" 목록에는 오탐이 섞여 있다: `claw-actions-aria`는
+  `locale.js:735`의 aria-label 테이블이 `.claw-chips`에 붙인다(살아있음). 그래서 A17은
+  **키별 재확인 조건부**로만 제거한다(§7의 별표).
+- "PDF 변환 notices가 실라우트와 모순(B)" → 그 문구는 **수정된 XLSX의** PDF 변환을 두고 한 말이고,
+  같은 파일에 이미 "승인된 표준 견적 PDF 미리보기"(`claw-web-xlsx-sources.js:245-248`)가 존재한다.
+  즉 모순이 아니라 범위 문제 → **C11**.
+- "Drive OFF 토글이 toast-only no-op이라 B" → 코드에 이유가 적혀 있다: Google 권한에는 되돌릴 수 있는
+  일시 중지가 없어 조용히 삭제를 하지 않는 것(`claw-connection-chips.js:230-237`). 고장이나 빈 약속이 아니라 **어포던스/문구 결정** → **C10**.
 
-## 7. 제거 계획 (주제별 작은 PR)
+## 7. 화면(`apps/padiem-chat/static`) — 버튼·메뉴·카피
+
+| # | 항목 | 위치 | 근거(호출처 0 등) | 분류 | 제거 시 영향 | 오늘 고정하는 테스트 |
+|---|---|---|---|---|---|---|
+| U1 | 스킬 패널 통째로 죽은 DOM | `static/index.html:129`(`#skillsNavButton` markup에서 영구 `disabled`), `:368-381`(`#skillsDialog`, `#skillsDialogClose`), `locale.js:217,240` | `skillsDialog`를 읽는 JS는 `locale.js:735`의 aria 지정 한 줄뿐이고 `showModal()`/`.show()` 호출·클릭 핸들러가 없다 | B |내비게이션 행·다이얼로그와 키 6종(`nav-skills`·`skills-kicker`·`skills-title`·`skills-note`·`skill-custom`·`skills-grid-aria`) 소멸 | 없음(`test_connectors_bright_calendar_state_ui.py:224`는 CSS **부재**만 검사) |
+| U2 | "준비 중인 기능 5개" disclosure — 5개 버튼 모두 id·data·핸들러 없음, 그중 두 줄은 **거짓** | `index.html:1049-1072`, `locale.js:181` | Markdown/DOCX 다운로드는 실제로 존재(`app.js:6126` `clawResultDocx`, `claw-quote-compare.js:312,329`) | B | disclose 블록 + locale 키 10종. 거짓 안내 제거는 사용자 정확도 개선 | `test_b62_2532_claw_chat_continuity.py:240,244` |
+| U3 | "지원 형식은 추후 안내합니다" — 형식 목록은 클라이언트에 이미 있음 | `index.html:838`, `locale.js:234` vs `attachment-capabilities.js:60-88`(`imageFormats`/`documentFormats`) | `app.js:3603-3612`는 `hidden`만 토글하고 패널에 형식을 채우는 코드가 없다 | B | 빈 약속을 기존 목록 표시로 교체(또는 패널 제거) | 없음 |
+| U4 | Discord·Kakao Business 상시 "준비 중" 카드 | `index.html:343-344`, `app/connector_status_projection.py:136-163` | 카드에 `data-connector-id`·연결 어포던스가 없고 서버 투영에 두 항목이 없어 켜질 수 없다 | B | 카드 2개 + `connectors-support-deferred` 제거 | `test_b54_connectors_surface_truthful.py:46,169,342,386` |
+| U5 | 죽은 `window.Padiem*` 공개 객체 3종 | `claw-mesh-capture.js:133`, `claw-office-chooser.js:260`, `conversation-search.js:284` | 세 심볼의 참조는 정의 줄 3건뿐(저장소 전체 grep) | A | export 블록만 제거, 동작 불변 | 없음 |
+| U6 | `TIER_COPY` 각 항의 두 번째 요소 `""`(읽는 데 없음) | `product-capabilities.js:71-75,86-90`; 소비 `:554` + `[0]`만 쓰는 지점들 | `[1]` 접근이 저장소에 없음 | A | 문자열 평탄화. 유료 고지 자체는 실재(`copy.upgrade`/`copy.truth`) → 숨은 유료 전환 아님 | 없음 |
+| U7* | 소비자 없는 locale 키 약 30종 | `locale.js:25,43,52,150,234,255,266,267,288` | 키 문자열·동적 접두 build 모두 grep; 단 **오탐 1건 확인**(`claw-actions-aria`는 살아있음, §6) | A* | ko/en 쌍 정리, 렌더 변화 없음 | 없음 |
+| U8 | 영어 블록에 한국어 라벨 `en.admin: ["Padiem 관리자", ""]` | `product-capabilities.js:90` | 같은 표의 `:75`와 불일치 | C12 | 1줄 교정 | 없음 |
+
+별표(*)는 제거 PR에서 항목별로 다시 확인하라는 표식이다.
+
+## 8. 제거 계획 (주제별 작은 PR)
 
 1. ✅ **PR #6234** — chat `mode` 잔재(§2).
 2. **PR-B** Chat 서버 죽음 심볼·alias — A1,A2,A3,A4,A5 + B1 (`skills.py`, 모델 id 3종, `= None` 상한 이름들).
@@ -98,6 +121,13 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
 5. **PR-E** 숨은 전환·대체 신호(B2,B5,B8) — 등급 슬래시 셀렉터, 대체 허용 기본값, provider 노출 행.
 6. **PR-F** 플랫폼 pilot 레인(B4,B7) — 소유 레인 통보 후(테스트 다수 얽힘).
 7. **PR-G** `tier_registry_v1`(A14) + living-fiction 비CAS(A12) — 별도.
+8. **PR-H** 화면 죽은 표면 — U1(스킬 패널) + U2(거짓 안내 5종 disclosure) → markup·locale 키·
+   `test_b62_2532_*:240,244`와 `test_connectors_bright_calendar_state_ui.py:224`를
+   "그 블록이 존재하지 않는다" 검사로 교체.
+9. **PR-I** 화면 빈 약속 — U3(형식 목록) + U4(Discord/Kakao 카드). 카피 삭제이므로 대표 문구
+   확인이 필요한 부분만 C로 남긴다.
+10. **PR-J** 죽은 export·locale 정리(U5,U6,U7*) — U7은 키별로 소비처를 다시 확인한 것만 제거
+    (오탐 사례가 이미 한 번 나왔으므로 목록을 통째로 믿지 않는다).
 
 모든 PR에서: 단언을 약화하지 않는다. "exists" 검사 → "no longer exists/거부된다" 검사로 바꾼다.
 D1 표·열 제거는 제안하지 않고, 배포·D1 게이트 실행도 하지 않는다. C는 이 표에 남기고 지우지 않는다.
