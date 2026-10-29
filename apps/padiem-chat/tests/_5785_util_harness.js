@@ -1053,7 +1053,9 @@ const SCENARIOS = {
     };
 
     observation.endpoints = endpointSet();
-    observation.chatModes = chatPayloads.map((payload) => payload.mode);
+    // #6234: the chat request key is {messages, tier, util} — the three tabs
+    // are told apart by util, and the mode request key no longer exists.
+    observation.chatUtils = chatPayloads.map((payload) => payload.util);
     observation.storedKinds = storedFiles.filter((f) => !f.doc_version_of).map((f) => ({ name: f.name, doc_kind: f.doc_kind }));
     observation.versionCount = storedFiles.filter((f) => f.doc_version_of).length;
     observation.alerts = alerts.slice();

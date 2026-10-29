@@ -145,7 +145,9 @@ def test_meeting_writes_saves_reopens_rewrites_and_exports(g5: dict) -> None:
 
 
 def test_all_three_tabs_use_the_existing_chat_route(g5: dict) -> None:
-    assert g5["chatModes"] == ["auto", "auto", "auto"]
+    # #6234: the chat request key is {messages, tier, util} — one route, the
+    # tab named in util, and no mode request key any more.
+    assert g5["chatUtils"] == ["speech", "sns", "meeting"]
 
 
 def test_each_tab_keeps_its_own_kind_and_its_own_rows(g5: dict) -> None:
