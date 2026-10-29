@@ -282,7 +282,7 @@ async function main() {
     await second.window.PadiemPcConnectFlow.open() === "connected"
     && !second.body.querySelectorAll(".pc-connect-backdrop").some((n) => n.hidden === false)
     && second.downloads.length === 0
-    && (second.body.querySelector(".pc-connect-note") || { allText: () => "" }).allText().includes("내 PC 연결됨 ✓"),
+    && (second.body.querySelector(".pc-connect-note") || { allText: () => "" }).allText().includes("내 컴퓨터 연결됨 ✓"),
     JSON.stringify({ downloads: second.downloads, note: (second.body.querySelector(".pc-connect-note") || { allText: () => "" }).allText() }));
   check("the chip's connect affordance hides once a PC is connected",
     (second.chip.querySelector(".pc-connect-chip-action") || {}).hidden === true,

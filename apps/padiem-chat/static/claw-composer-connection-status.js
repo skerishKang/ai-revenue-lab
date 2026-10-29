@@ -18,6 +18,14 @@
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SNAPSHOT_EVENT = "padiem:claw-device-directory";
 
+  function vocabStatus(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.status === "function" ? (v.status(key) || fallback) : fallback;
+  }
+  function vocabName(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.name === "function" ? (v.name(key) || fallback) : fallback;
+  }
   const COPY = Object.freeze({
     ko: {
       connect: "컴퓨터 연결",
@@ -183,10 +191,10 @@
 
     function labelFor(next) {
       const t = locale();
-      if (next === "connected") return t.connected;
-      if (next === "connecting") return t.connecting;
-      if (next === "disconnected") return t.disconnected;
-      if (next === "unavailable") return t.check;
+      if (next === "connected") return vocabStatus("connected", t.connected);
+      if (next === "connecting") return vocabStatus("checking", t.connecting);
+      if (next === "disconnected") return vocabStatus("disconnected", t.disconnected);
+      if (next === "unavailable") return vocabStatus("failed", t.check);
       if (next === "preparing") return t.preparing;
       return t.connect;
     }

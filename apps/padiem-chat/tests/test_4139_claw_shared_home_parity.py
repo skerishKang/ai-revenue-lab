@@ -51,8 +51,8 @@ def test_only_one_shared_chat_hero_and_composer_existing_product_structure():
 
 def test_claw_four_cards_are_reused_chat_starters_in_exact_product_order():
     items = [
-        ("clawComputerWorkspace", "컴퓨터 연결하기"),
-        ("clawDriveWorkspace", "구글 드라이브"),
+        ("clawComputerWorkspace", "내 컴퓨터"),
+        ("clawDriveWorkspace", "Google Drive"),
         ("clawGithubWorkspace", "GitHub"),
         ("clawWebWorkspace", "웹에서 하기"),
     ]
