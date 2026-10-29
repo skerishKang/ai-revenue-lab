@@ -71,7 +71,7 @@ def live_env(monkeypatch):
 
 
 def test_owner_selected_model_route_is_available_without_fallback(live_env):
-    route = resolve_manual_route(MODEL, allow_external_fallback=False)
+    route = resolve_manual_route(MODEL)
     assert route.selected_model == MODEL
     assert route.selected_upstream_model == UPSTREAM
     assert route.platform_provider_id == "experiential"

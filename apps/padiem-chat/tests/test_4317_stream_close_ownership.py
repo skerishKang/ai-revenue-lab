@@ -243,7 +243,8 @@ def test_stream_request_keeps_the_tier_fallback_contract():
     business = seen[0]["business14"]
     # #5422 remains the upstream policy: the owner-pinned tier grade fallback is
     # enabled and no local attempt pin was reintroduced.
-    assert business["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in business
     assert business["product_tier"] == "free"
     assert "max_attempts" not in business
     assert "max_retries" not in business

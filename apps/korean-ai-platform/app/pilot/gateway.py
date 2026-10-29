@@ -75,7 +75,6 @@ from app.pilot.platform_secrets import (
 from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
-from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.model_registry_file import group_model_ids
 
@@ -183,12 +182,9 @@ _ALLOWED_CHAT_FIELDS = frozenset({
     "user_credential_ref", "user_credential",
 })
 _ALLOWED_B14_FIELDS = frozenset({
-    "task_type", "required_capabilities", "optimize_for",
-    "allow_external_fallback", "provider_order", "max_attempts",
-    "max_retries", "allow_paid", "product_tier",
+    "required_capabilities",
+    "max_retries", "product_tier",
 })
-_B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
-_B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
 
 
 class _InvalidBody(PilotError):
@@ -267,11 +263,11 @@ def _validate_body(raw: Any) -> dict:
         raise _InvalidBody("model must be a non-empty string")
 
     model = raw["model"].strip()
-    if credential is not None and model == "b14/auto":
-        # A caller-owned key names one provider and one model. The automatic
-        # route would answer with a supplier the credential never offered, so
-        # the combination is refused instead of silently served by one of them.
-        raise _InvalidBody("b14/auto cannot be combined with a request credential")
+    if model == "b14/auto":
+        # The retired b14/auto id is rejected as a string (B1/B7 pattern):
+        # without a credential and with one. The former "reserved for future
+        # development" gate answered a request the product never enables.
+        raise _InvalidBody("b14/auto is retired; select a Business 14 catalog model.")
     # Provider/model controls supported context size and message count.
     # B14 validates the message shape, not a second artificial context cap.
     msgs = raw.get("messages")
@@ -365,43 +361,11 @@ def _validate_b14_options(raw: Any) -> dict:
             raise _InvalidBody("business14.product_tier must be a supported product tier")
         opts["product_tier"] = tier
 
-    tt = raw.get("task_type")
-    if tt is not None:
-        if not isinstance(tt, str) or tt not in _B14_TASK_TYPES:
-            raise _InvalidBody(f"business14.task_type must be one of {sorted(_B14_TASK_TYPES)}")
-        opts["task_type"] = tt
-
     rc = raw.get("required_capabilities")
     if rc is not None:
         if not isinstance(rc, list) or not all(isinstance(c, str) for c in rc):
             raise _InvalidBody("business14.required_capabilities must be an array of strings")
         opts["required_capabilities"] = list(rc)
-
-    of = raw.get("optimize_for")
-    if of is not None:
-        if not isinstance(of, str) or of not in _B14_OPTIMIZE_FOR:
-            raise _InvalidBody(f"business14.optimize_for must be one of {sorted(_B14_OPTIMIZE_FOR)}")
-        opts["optimize_for"] = of
-
-    aef = raw.get("allow_external_fallback")
-    if aef is not None:
-        if not isinstance(aef, bool):
-            raise _InvalidBody("business14.allow_external_fallback must be a boolean")
-        opts["allow_external_fallback"] = aef
-
-    po = raw.get("provider_order")
-    if po is not None:
-        if not isinstance(po, list) or not all(isinstance(p, str) for p in po):
-            raise _InvalidBody("business14.provider_order must be an array of strings")
-        opts["provider_order"] = list(po)
-
-    ma = raw.get("max_attempts")
-    if ma is not None:
-        # #4317: the option is accepted for wire compatibility and no longer
-        # bounds anything. The number of candidates one dispatch may try is
-        # the number of candidates the declared product grade allows.
-        if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1:
-            raise _InvalidBody("business14.max_attempts must be a positive integer")
 
     mr = raw.get("max_retries")
     if mr is not None:
@@ -413,19 +377,11 @@ def _validate_b14_options(raw: Any) -> dict:
             raise _InvalidBody("business14.max_retries must be a non-negative integer")
         opts["max_retries"] = mr
 
-    ap = raw.get("allow_paid")
-    if ap is not None:
-        if not isinstance(ap, bool):
-            raise _InvalidBody("business14.allow_paid must be a boolean")
-        opts["allow_paid"] = ap
-
     return opts
 
 
 def _is_alpha_model(model_id: str) -> bool:
-    """Check if a model ID is a Business 14 catalog model or b14/auto."""
-    if model_id.strip() == "b14/auto":
-        return True
+    """Check if a model ID is a Business 14 catalog model."""
     return get_catalog_by_id(model_id) is not None
 
 
@@ -504,10 +460,6 @@ async def pilot_health(request: Request):
         "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
         "catalog_models": enabled_model_count,
-        "routing_policy": {
-            "id": ROUTING_POLICY_ID,
-            "chain": list(B14_AUTO_CHAIN),
-        },
         "providers": [
             {
                 "id": spec.provider_id,
@@ -632,8 +584,6 @@ async def pilot_router_resolve(
         body = _validate_body(raw_body)
 
         model_id = body["model"]
-        from .auto_availability import ensure_generic_auto_enabled
-        ensure_generic_auto_enabled(model_id)
         b14_opts = body.get("business14", {})
 
         if not _is_alpha_model(model_id):
@@ -642,19 +592,14 @@ async def pilot_router_resolve(
                 content={
                     "error": {
                         "code": "unsupported_model",
-                        "message": f"모델 '{model_id}'은(는) Business 14 Alpha 카탈로그에 없습니다. b14/auto 또는 카탈로그 모델 ID를 사용하십시오.",
+                        "message": f"모델 '{model_id}'은(는) Business 14 Alpha 카탈로그에 없습니다. 카탈로그 모델 ID를 사용하십시오.",
                         "request_id": request_id,
                     }
                 },
             )
 
         from .platform_secrets import ensure_route_secrets
-        await ensure_route_secrets(
-            model_id,
-            allow_external_fallback=b14_opts.get(
-                "allow_external_fallback", model_id == "b14/auto"
-            ),
-        )
+        await ensure_route_secrets(model_id)
         decision = rcore.resolve_route(model_id, b14_opts)
 
         return JSONResponse({
@@ -723,7 +668,6 @@ def _build_b14_mock_metadata(
     model_id: str,
     upstream_model: str,
     provider: str,
-    routing_policy: str | None = None,
 ) -> dict[str, Any]:
     """Build Business 14 metadata for a mock response."""
     return {
@@ -742,7 +686,6 @@ def _build_b14_mock_metadata(
         "attempt_count": 1,
         "fallback_used": False,
         "evidence_status": "mock_no_upstream_call",
-        "routing_policy": routing_policy,
     }
 
 
@@ -758,7 +701,6 @@ def _build_b14_live_metadata(
     attempt_count: int = 1,
     fallback_used: bool = False,
     actual_response_model: str | None = None,
-    routing_policy: str | None = None,
 ) -> dict[str, Any]:
     """Build Business 14 metadata for a live response.
 
@@ -787,11 +729,10 @@ def _build_b14_live_metadata(
         "estimated_usd": estimated_usd,
         "estimated_krw": estimated_krw,
         "cost_basis": cost_basis,
-        "route_mode": "auto" if model_id == "b14/auto" else "manual",
+        "route_mode": "manual",
         "attempt_count": attempt_count,
         "fallback_used": fallback_used,
         "evidence_status": "live_verified",
-        "routing_policy": routing_policy,
     }
 
 
@@ -878,15 +819,12 @@ async def _handle_alpha_chat(
     # resolved, so a request that declares a tool for a model that cannot
     # serve one is refused before execution.
     declared_tools = body.get("tools") or []
-    if declared_tools and model_id != "b14/auto":
+    if declared_tools:
         require_tool_capability(model_id)
 
     from .platform_secrets import ensure_route_secrets
     await ensure_route_secrets(
         model_id,
-        allow_external_fallback=b14_opts.get(
-            "allow_external_fallback", model_id == "b14/auto"
-        ),
         product_tier=b14_opts.get("product_tier", "free"),
     )
     decision = rcore.resolve_route(model_id, b14_opts)
@@ -1311,7 +1249,6 @@ async def _handle_alpha_chat(
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],
             provider=success_candidate["provider"],
-            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
     else:
         usage = response_data.get("usage") or {}
@@ -1330,7 +1267,6 @@ async def _handle_alpha_chat(
             attempt_count=attempt_count,
             fallback_used=fallback_used,
             actual_response_model=actual_response_model,
-            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
 
     usage = response_data.get("usage") or {}
@@ -1585,7 +1521,6 @@ async def _handle_user_credential_chat(
         biz14 = _build_b14_mock_metadata(
             request_id=request_id, model_id=model_id,
             upstream_model=credential.upstream_model, provider=credential.provider_id,
-            routing_policy=None,
         )
     else:
         biz14 = _build_b14_live_metadata(
@@ -1596,7 +1531,7 @@ async def _handle_user_credential_chat(
             completion_tokens=usage.get("completion_tokens"),
             total_tokens=usage.get("total_tokens"),
             attempt_count=1, fallback_used=False,
-            actual_response_model=actual_response_model, routing_policy=None,
+            actual_response_model=actual_response_model,
         )
 
     biz14.update({
@@ -1650,7 +1585,6 @@ async def pilot_chat_completions(
     Supports two modes:
     - Alpha (Business 14 catalog): uses the platform provider adapter with
       mock/live mode (keyless Kilo Gateway free route; OpenRouter retired).
-      Supports b14/auto.
     - BYOK (legacy): uses X-Business14-Provider-Key header. Uses registry/legacy routing.
     """
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"
@@ -1694,7 +1628,6 @@ async def pilot_chat_completions(
             isinstance(raw_body, dict)
             and raw_body.get("stream") is True
             and isinstance(raw_body.get("model"), str)
-            and raw_body["model"] != "b14/auto"
             and _is_alpha_model(raw_body["model"])
         ):
             from .stream_gateway import pilot_stream_preview
@@ -1702,10 +1635,8 @@ async def pilot_chat_completions(
             return await pilot_stream_preview(request, parsed_body=raw_body)
 
         body = _validate_body(raw_body)
-        from .auto_availability import ensure_generic_auto_enabled
-        ensure_generic_auto_enabled(body["model"])
 
-        # Alpha mode: catalog model or future b14/auto
+        # Alpha mode: a registered Business 14 catalog model
         if _is_alpha_model(body["model"]):
             # Platform-owned credentials are spent on this lane. Refuse an
             # unproven caller before any credential is resolved or any

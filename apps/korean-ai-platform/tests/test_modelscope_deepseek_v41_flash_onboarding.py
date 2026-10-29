@@ -113,7 +113,7 @@ def test_missing_modelscope_secret_denied_before_network(monkeypatch):
 
 
 def test_manual_identity_route_no_fallback(isolated_provider):
-    d = resolve_manual_route(MID, allow_external_fallback=False)
+    d = resolve_manual_route(MID)
     assert d.selected_model == MID
     assert d.platform_provider_id == "modelscope"
     assert d.selected_upstream_model == UPSTREAM

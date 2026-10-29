@@ -136,7 +136,7 @@ def test_gateway_502_empty_no_retries_and_no_fallback(monkeypatch):
         response = client.post("/api/pilot/v1/chat/completions", json={
             "model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "test"}],
             "max_tokens": 8,
-            "business14": {"max_retries": 0, "allow_external_fallback": False}
+            "business14": {"max_retries": 0}
         })
     assert response.status_code == 502
     result = response.json()["error"]

@@ -26,7 +26,6 @@ from .tool_channel import (
 )
 
 B14_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
-B14_AUTO_STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
 
 
 def _tool_json_value(value: Any) -> Any:
@@ -341,24 +340,9 @@ def _validate_stream_request(request: B14ChatRequest) -> None:
             "streaming_request_unsupported",
             "Business 14 streaming currently requires an explicit model route.",
         )
-    if request.routing.allow_external_fallback is True:
-        raise B14ExecutionError(
-            "streaming_request_unsupported",
-            "Business 14 streaming fallback is not enabled in this Core contract.",
-        )
     # #4317: there is no attempt budget to constrain. The streaming lane tries
     # the candidates the declared product grade allows, in order, and the
     # gateway owns that list.
-
-
-def _validate_auto_stream_request(request: B14ChatRequest) -> None:
-    if not isinstance(request, B14ChatRequest):
-        raise ValueError("request must be B14ChatRequest")
-    if request.model != "b14/auto":
-        raise B14ExecutionError(
-            "streaming_request_unsupported",
-            "Business 14 automatic streaming requires model=b14/auto.",
-        )
 
 
 def _raise_status_error(status_code: int) -> None:
@@ -415,24 +399,10 @@ class B14StreamingClient:
     def stream_preview_url(self) -> str:
         return self._config.base_url + B14_STREAM_PREVIEW_PATH
 
-    @property
-    def auto_stream_preview_url(self) -> str:
-        return self._config.base_url + B14_AUTO_STREAM_PREVIEW_PATH
-
     async def stream(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]:
         """Stream one explicit manual route through the existing staged preview."""
         _validate_stream_request(request)
         iterator = self._stream_request(request, self.stream_preview_url)
-        try:
-            async for event in iterator:
-                yield event
-        finally:
-            await iterator.aclose()
-
-    async def stream_auto(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]:
-        """Stream Router-owned b14/auto execution through the staged auto preview."""
-        _validate_auto_stream_request(request)
-        iterator = self._stream_request(request, self.auto_stream_preview_url)
         try:
             async for event in iterator:
                 yield event

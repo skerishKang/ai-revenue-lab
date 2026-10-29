@@ -377,16 +377,14 @@ def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypa
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
-    response = _client().post(STREAM_URL, json=_payload(
-        business14={"allow_external_fallback": False, "max_attempts": 1},
-    ))
+    response = _client().post(STREAM_URL, json=_payload())
     assert response.status_code == 200, response.text
     frames = _json_data_frames(response.text)
     assert frames and "data: [DONE]" in response.text
     assert frames[0]["business14"]["attempt_count"] == 1
     assert frames[0]["business14"]["fallback_used"] is False
-    # The tier fallback is still advertised: the caller's attempt count did not
-    # remove it from the candidate list.
+    # The tier fallback is still advertised: no caller option can narrow the
+    # owner roster (B4/B5 removed the retired knobs outright).
     assert frames[0]["business14"]["fallback_allowed"] is True
 
 
@@ -394,8 +392,9 @@ def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
     response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
 
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7: the retired id is refused at validation, before any stream handling.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"
 
 
 def test_preview_requires_stream_true():
@@ -428,8 +427,10 @@ def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7/B5: both are refused at validation now, before the stream surface
+    # and before any network call.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"
     assert calls == 0
 
 
@@ -487,7 +488,7 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
     rcfg.provider_mode = "live"
     response = _client().post(
         STREAM_URL,
-        json=_payload(business14={"allow_external_fallback": False}),
+        json=_payload(),
     )
 
     assert response.status_code == 200, response.text
@@ -552,7 +553,7 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
     rcfg.provider_mode = "live"
     response = _client().post(
         STREAM_URL,
-        json=_payload(business14={"allow_external_fallback": False}),
+        json=_payload(),
     )
 
     assert response.status_code == 200, response.text
@@ -783,8 +784,9 @@ def test_canonical_stream_true_does_not_enable_fallback_or_extra_calls():
     response = _client().post(CHAT_URL, json=_payload(
         business14={"allow_external_fallback": True},
     ))
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B5: the retired knob is an unknown business14 field now.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"
 
 
 def test_canonical_stream_true_does_not_enable_byok_without_secret():

@@ -25,7 +25,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
         "google/gemma-4-31b-it",
     )
     decision = router_core.resolve_manual_route(
-        TIER_DEFAULT_B14_MODEL, allow_external_fallback=False, product_tier="free",
+        TIER_DEFAULT_B14_MODEL, product_tier="free",
     )
     assert decision.selected_model == TIER_DEFAULT_B14_MODEL
     assert decision.fallback_allowed
@@ -45,7 +45,7 @@ def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, mode
     # refused in test_2505_b14_free_candidate_execution_block.py.
     _ready(monkeypatch)
     decision = router_core.resolve_manual_route(
-        model_id, allow_external_fallback=False, product_tier=tier,
+        model_id, product_tier=tier,
     )
     assert decision.selected_model == model_id
     assert not decision.fallback_allowed
@@ -72,7 +72,7 @@ def test_a_caller_cannot_narrow_the_owner_roster_with_an_attempt_count(monkeypat
     _ready(monkeypatch)
     decision = router_core.resolve_route(
         TIER_DEFAULT_B14_MODEL,
-        {"product_tier": "free", "allow_external_fallback": False, "max_attempts": 1},
+        {"product_tier": "free", "max_attempts": 1},
     )
     assert decision.route_mode == "manual"
     assert decision.fallback_allowed is True
@@ -94,21 +94,19 @@ def test_an_explicit_attempt_count_does_not_narrow_the_nonstreaming_contract(mon
     ]
 
 
-def test_b14_accepts_the_attempt_option_but_never_returns_it_as_a_bound():
-    """#4317: the option is accepted for wire compatibility only.
+def test_b14_no_longer_accepts_the_attempt_option():
+    """B4: the scorer-era attempt option is an unknown business14 field now.
 
-    It is not forwarded to the router, so it can no longer narrow the
-    candidate list.
+    There is no bound to return and nothing to validate: the option cannot
+    reach the router at all.
     """
-    from app.pilot.gateway import _validate_b14_options
-    assert "max_attempts" not in _validate_b14_options({"max_attempts": 50})
-
-
-@pytest.mark.parametrize("value", [0, -1, True, 1.5, "50"])
-def test_b14_rejects_invalid_attempt_budget(value):
     from app.pilot.gateway import _InvalidBody, _validate_b14_options
     with pytest.raises(_InvalidBody):
-        _validate_b14_options({"max_attempts": value})
+        _validate_b14_options({"max_attempts": 50})
+    with pytest.raises(_InvalidBody):
+        _validate_b14_options({"max_attempts": 0})
+    with pytest.raises(_InvalidBody):
+        _validate_b14_options({"max_attempts": 1.5})
 
 
 @pytest.mark.parametrize("tier", ["plus", "pro", "max", "admin"])

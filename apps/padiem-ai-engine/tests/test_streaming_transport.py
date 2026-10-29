@@ -14,8 +14,6 @@ from padiem_ai_core import (
     B14RoutingOptions,
     B14StreamingClient,
 )
-from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
-
 from app.cloudflare_transport import B14_INTERNAL_ORIGIN
 from tests.test_cloudflare_transport import FakeResponse, transport_for
 
@@ -79,7 +77,7 @@ def _sse_chunks(*, done: bool = True) -> list[bytes]:
     [
         B14_CHAT_COMPLETIONS_PATH,
         B14_STREAM_PREVIEW_PATH,
-        B14_AUTO_STREAM_PREVIEW_PATH,
+        "/api/pilot/v1/chat/completions/auto-stream-preview",
     ],
 )
 async def test_transport_allows_exact_core_owned_paths_only(path: str) -> None:
@@ -155,7 +153,8 @@ async def test_actual_core_manual_stream_client_uses_manual_binding_path() -> No
 
 
 @pytest.mark.asyncio
-async def test_actual_core_auto_stream_client_uses_auto_binding_path() -> None:
+async def test_auto_stream_preview_path_is_no_longer_a_client_surface() -> None:
+    """B7: the Core auto stream client is gone with the b14/auto lane."""
     response = FakeResponse(
         chunks=_sse_chunks(),
         content_type="text/event-stream",
@@ -165,18 +164,10 @@ async def test_actual_core_auto_stream_client_uses_auto_binding_path() -> None:
         B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN),
         transport=transport,
     )
-    request = B14ChatRequest(
-        messages=({"role": "user", "content": "hi"},),
-        model="b14/auto",
-    )
 
-    events = [event async for event in client.stream_auto(request)]
-
-    assert len(binding.calls) == 1
-    assert len(factory.calls) == 1
-    assert factory.calls[0].url == B14_INTERNAL_ORIGIN + B14_AUTO_STREAM_PREVIEW_PATH
-    assert events[-1].done is True
-    assert response.body.reader.release_calls == 1
+    assert not hasattr(client, "stream_auto")
+    assert binding.calls == []
+    assert factory.calls == []
 
 
 @pytest.mark.asyncio
