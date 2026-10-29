@@ -14,13 +14,14 @@ Two halves:
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 
 import pytest
 from starlette.testclient import TestClient
 
 from app.config import ConfigError, Settings
-from app.local_cpython import apply_migrations, build_app
+from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
 from app.local_r2 import LocalDiskR2
 from app.same_origin_guard import expected_browser_origin
 from app.workspace_storage import _read_r2_object_bytes
@@ -124,13 +125,36 @@ def local_client(tmp_path, monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_LIVE_ENABLED", "false")
     monkeypatch.setenv("PADIEM_CHAT_PUBLIC_BASE_URL", "http://127.0.0.1:8773")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
-    monkeypatch.delenv("PADIEM_CHAT_SESSION_SECRET", raising=False)
+    # The dev key is pinned here so build_app never writes the process
+    # environment from inside a test — `_ensure_session_secret`'s own behavior
+    # is covered separately below.
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
 
     app = build_app()
     with TestClient(app, headers={"Origin": "http://127.0.0.1:8773"}) as client:
         yield client
-    # The dev key persists between boots — cookies survive a restart.
-    assert (tmp_path / "session_secret").read_text(encoding="utf-8").strip() != ""
+
+
+def test_ensure_session_secret_generates_once_and_keeps_cookies_across_restart(tmp_path, monkeypatch):
+    # Exactly one tracked setenv, before any direct mutation: the function
+    # writes os.environ itself, and monkeypatch can only undo to the value it
+    # recorded — which here is "not set", so the process ends as it started.
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "")
+    _ensure_session_secret(tmp_path)
+    first = os.environ["PADIEM_CHAT_SESSION_SECRET"]
+    assert len(first) >= 32
+    assert (tmp_path / "session_secret").read_text(encoding="utf-8").strip() == first
+
+    # A "restart" reads the persisted key back, so last run's cookie still
+    # verifies — this is the whole reason the file exists.
+    os.environ["PADIEM_CHAT_SESSION_SECRET"] = ""
+    _ensure_session_secret(tmp_path)
+    assert os.environ["PADIEM_CHAT_SESSION_SECRET"] == first
+
+    # An explicit, already-valid key is never overwritten by the generator.
+    os.environ["PADIEM_CHAT_SESSION_SECRET"] = "operator-supplied-secret-0123456789"
+    _ensure_session_secret(tmp_path)
+    assert os.environ["PADIEM_CHAT_SESSION_SECRET"] == "operator-supplied-secret-0123456789"
 
 
 def test_local_boot_signed_in_chat_lane_end_to_end(local_client):
