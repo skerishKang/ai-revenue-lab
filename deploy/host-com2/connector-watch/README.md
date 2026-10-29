@@ -24,6 +24,19 @@ Chat worker already uses (`B66_ALERT_TELEGRAM_BOT_TOKEN` / `_CHAT_ID`,
 `B66_ALERT_DISCORD_WEBHOOK_URL`). With none configured it prints and reports
 `HOST_WATCH_NOTIFY=not_configured` — it never claims to have told anybody.
 
+Alongside the verdict the watch prints one count line for the refused exchanges in the
+same journal window:
+
+```
+HOST_WATCH_REFUSALS chat=0 queue=3 unattributed=0 window_minutes=5
+```
+
+`chat` and `queue` are the legs the executor named when it asked; `unattributed` is a
+refusal printed without a leg, which is what an installed executor older than the field
+produces — counted as unknown rather than guessed at, because guessing is how the
+2026-10-30 cutover attempt read an edge bot block as a Worker failure. These are counts of
+lines in text that was read, so `0` is a real zero, not `unknown`.
+
 Facts that keep the verdict honest:
 - `unknown` is not health: an unread counter, an unreadable systemd state, an absent
   health answer are all `unknown`, and `unknown` never becomes `ok`.
