@@ -35,7 +35,11 @@ B54 = "b54-padiem-claw"
 LOVETREE = "lovetree-4-0"
 LOVETREE_USER = "usr_" + "7" * 32
 B62_USER = "usr_" + "1" * 32
-NOW = datetime(2026, 10, 27, 6, 0, tzinfo=timezone.utc)
+# The DO's establish_auth_session compares not_after with the real clock
+# (identity_authority_worker.py: now=datetime.now().astimezone()), so a fixed
+# anchor turns this suite into a time bomb once that date passes. Anchor on the
+# wall clock instead; the assertions still check product scoping, never a date.
+NOW = datetime.now(timezone.utc)
 
 
 class _FakeResponse:
