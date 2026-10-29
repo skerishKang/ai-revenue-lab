@@ -90,9 +90,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          # The channel secret is the same credential the executor already uses. It is
-          # read only here, and its absence is UNKNOWN in the verdict — never "ok".
-          ORACLE_MESH_CHANNEL_SECRET: ${{ secrets.ORACLE_MESH_CHANNEL_SECRET }}
+          # A READ-ONLY secret, deliberately not the executor channel secret: that one
+          # can claim a dispatch and submit a result on a customer PC, and a workflow
+          # that leaked it could take work away or plant a result. This value opens the
+          # lane-status read and nothing else. Its absence is UNKNOWN — never "ok".
+          CONNECTOR_WATCH_READ_SECRET: ${{ secrets.CONNECTOR_WATCH_READ_SECRET }}
           # Which store is live. Unset means the pre-move default, d1. Reported as
           # com2 the moment the queue becomes authoritative, and this lane then says
           # UNKNOWN until the queue-side read is wired, instead of reading a frozen copy.

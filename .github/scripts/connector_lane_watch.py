@@ -42,6 +42,10 @@ from typing import Any
 
 LANE_STATUS_PATH = "/api/claw/connector/mesh-reads/lane-status"
 LANE_STATUS_HEADER = "X-Oracle-Mesh-Secret"
+#: The READ-ONLY watch secret, never the executor channel secret: that one can claim
+#: a dispatch and submit a result on a customer PC, and a scheduled workflow is the
+#: last place to keep it.
+WATCH_SECRET_ENV = "CONNECTOR_WATCH_READ_SECRET"
 CHAT_HEALTH_PATH = "/health"
 #: The product's own presence freshness is 180 s (#5553). The monitor uses a wider
 #: window on purpose: one slow poll must not page anyone, while a lane that has not
@@ -290,7 +294,7 @@ def run(env: dict[str, str]) -> int:
     if not origin.startswith("https://") or "@" in origin:
         print("CONNECTOR_WATCH=unknown reason=origin_refused")
         return 0
-    secret = (env.get("ORACLE_MESH_CHANNEL_SECRET") or "").strip()
+    secret = (env.get(WATCH_SECRET_ENV) or "").strip()
     devices = _device_ids(env.get("CONNECTOR_WATCH_DEVICE_IDS"))
     now = time.time()
     checks: dict[str, tuple[str, str]] = {}
@@ -303,9 +307,9 @@ def run(env: dict[str, str]) -> int:
         checks["pc"] = (UNKNOWN, "not_read")
         checks["beat"] = (UNKNOWN, "not_read")
     elif not secret or not devices:
-        checks["queue"] = (UNKNOWN, "channel_secret_absent" if not secret else "devices_unset")
+        checks["queue"] = (UNKNOWN, "read_secret_absent" if not secret else "devices_unset")
         checks["pc"] = (UNKNOWN, "not_read")
-        checks["beat"] = (UNKNOWN, "channel_secret_absent" if not secret else "devices_unset")
+        checks["beat"] = (UNKNOWN, "read_secret_absent" if not secret else "devices_unset")
     else:
         status, lane = _post_lane_status(origin, secret, devices)
         if status != 200 or not isinstance(lane, dict) or lane.get("ok") is not True:
