@@ -44,3 +44,8 @@ apps/padiem-mesh-queue/deploy/*.sh text eol=lf
 apps/padiem-mesh-queue/deploy/*.service text eol=lf
 apps/padiem-mesh-queue/deploy/*.timer text eol=lf
 apps/padiem-mesh-queue/requirements.txt text eol=lf
+
+# Deploy shell scripts run under bash in packaging tests and on Linux hosts;
+# a CRLF checkout (core.autocrlf=true on Windows) breaks `bash -n` locally.
+deploy/host-com2/**/*.sh text eol=lf
+apps/padiem-broker/deploy/*.sh text eol=lf

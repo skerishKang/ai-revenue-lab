@@ -33,6 +33,7 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
+from .maintenance_mode import MaintenanceModeMiddleware
 from .project_files import D1ProjectFileStore
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
@@ -184,6 +185,13 @@ def build_app():
         quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
+
+    sentinel = os.getenv("PADIEM_CHAT_MAINTENANCE_SENTINEL", "").strip()
+    if sentinel:
+        # Stage-3 window: reads keep working, mutations answer 503 until the
+        # sentinel file is removed. Wrapped outermost so the answer is the same
+        # whatever the request's origin or cookie state is.
+        app = MaintenanceModeMiddleware(app, sentinel_path=sentinel)
     return app
 
 
