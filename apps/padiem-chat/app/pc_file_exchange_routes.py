@@ -404,8 +404,13 @@ def _items(text: str, *, with_folder: bool) -> list[dict[str, Any]]:
     row it belongs to rather than being looked up by name afterwards.
     """
 
+    return _items_from_rows(_rows(text), with_folder=with_folder)
+
+
+def _items_from_rows(rows: list[dict[str, Any]], *,
+                     with_folder: bool) -> list[dict[str, Any]]:
     items: list[dict[str, Any]] = []
-    for row in _rows(text):
+    for row in rows:
         name = row.get("Name")
         if not isinstance(name, str) or not name.strip():
             continue
@@ -428,8 +433,34 @@ def _items(text: str, *, with_folder: bool) -> list[dict[str, Any]]:
     return items
 
 
-def _listing_items(text: str) -> list[dict[str, Any]]:
-    return _items(text, with_folder=False)
+def _listing_page(text: str) -> tuple[list[dict[str, Any]], int | None, bool, str | None]:
+    """One page of a listing: the rows, the folder's total, whether more remains, next cursor.
+
+    The PC answers with ``{offset, total, has_more, items}``. A listing stored before
+    paging existed is a bare row array whose total is unknown: it is reported as one
+    final page with no total rather than claiming the folder ended there.
+    """
+
+    try:
+        decoded = json.loads(text)
+    except (TypeError, ValueError):
+        decoded = None
+    if isinstance(decoded, dict) and isinstance(decoded.get("items"), list):
+        rows = [row for row in decoded["items"] if isinstance(row, dict)]
+        items = _items_from_rows(rows, with_folder=False)
+        total = decoded.get("total")
+        offset = decoded.get("offset")
+        has_more = decoded.get("has_more")
+        if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+            total = None
+        if not isinstance(offset, int) or isinstance(offset, bool) or offset < 0:
+            offset = 0
+        if not isinstance(has_more, bool):
+            has_more = bool(total is not None and offset + len(rows) < total)
+        next_cursor = str(offset + len(rows)) if has_more else None
+        return items, total, has_more, next_cursor
+    items = _items_from_rows(_rows(text), with_folder=False)
+    return items, None, False, None
 
 
 def _found_items(text: str) -> list[dict[str, Any]]:
@@ -443,12 +474,45 @@ def _found_items(text: str) -> list[dict[str, Any]]:
     return _items(text, with_folder=True)
 
 
-def _listing_limit() -> int:
-    """How many entries the existing listing command asks for — read where it is used."""
+def _page_size() -> int:
+    """How many entries one listing request asks for — read where it is used."""
 
-    from .oracle_mesh_read_return_routes import PC_FILES_LIST_DEFAULT_LIMIT
+    from .oracle_mesh_read_return_routes import PC_FILES_LIST_PAGE_SIZE
 
-    return PC_FILES_LIST_DEFAULT_LIMIT
+    return PC_FILES_LIST_PAGE_SIZE
+
+
+#: A cursor is the offset the client was handed, and nothing else. Digits only, and
+#: bounded so a malformed or hostile value can never turn into a huge Skip on the PC.
+_LISTING_CURSOR = re.compile(r"(?:0|[1-9][0-9]{0,9})\Z")
+_LISTING_CURSOR_MAX = 1_000_000_000
+
+
+def _listing_filter(raw: Any) -> tuple[str | None, JSONResponse | None]:
+    """A name fragment, or nothing. Control characters are refused; length is not capped.
+
+    The term is never a pattern: the PC escapes it and matches with -like. No product
+    length limit is applied here — the executor's own argv guard is the only bound —
+    but an empty or control-bearing value is refused before anything is staged.
+    """
+
+    if raw is None:
+        return None, None
+    if not isinstance(raw, str) or not raw:
+        return None, _error(400, "pc_exchange_invalid_body")
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in raw):
+        return None, _error(400, "pc_exchange_invalid_body")
+    return raw, None
+
+
+def _listing_cursor(raw: Any) -> tuple[int, JSONResponse | None]:
+    if raw is None:
+        return 0, None
+    if isinstance(raw, str) and _LISTING_CURSOR.fullmatch(raw):
+        value = int(raw)
+        if value <= _LISTING_CURSOR_MAX:
+            return value, None
+    return 0, _error(400, "pc_exchange_invalid_body")
 
 
 def _write_account(text: str) -> dict[str, Any] | None:
@@ -693,9 +757,16 @@ async def _readable_owner(request: Request) -> tuple[str, Any] | JSONResponse:
 async def pc_file_exchange_browse(request: Request) -> JSONResponse:
     """One folder's entries on the owner's own PC."""
 
-    body = await _read_body(request, frozenset(), optional=frozenset({"link_id", "path"}))
+    body = await _read_body(request, frozenset(),
+                            optional=frozenset({"link_id", "path", "cursor", "filter"}))
     if body is None:
         return _error(400, "pc_exchange_invalid_body")
+    offset, refusal = _listing_cursor(body.get("cursor"))
+    if refusal is not None:
+        return refusal
+    term, refusal = _listing_filter(body.get("filter"))
+    if refusal is not None:
+        return refusal
     owner = await _owner(request)
     if isinstance(owner, JSONResponse):
         return owner
@@ -731,14 +802,18 @@ async def pc_file_exchange_browse(request: Request) -> JSONResponse:
     answer = await dispatch_oracle_mesh_command_intent(
         request,
         command=_pc_files_command(
-            op="list", root=root, relative=relative, limit=_listing_limit(),
+            op="list", root=root, relative=relative,
+            offset=offset, page_size=_page_size(), filter_term=term,
         ),
         wire={"run_id": run[0], "device_id": link.get("mesh_node_id"), "confirmed": True},
         trusted_owner=(session, uid, workspace_id),
-        tool_call_ref=_call_ref(run[0], "browse", root, relative),
+        # A name search is its own call: the same folder asked twice for the same
+        # word is the same call, a different word is not.
+        tool_call_ref=_call_ref(run[0], "browse", root, relative, term or ""),
         files_target=target,
     )
-    return await _staged(answer, run=run, extra={"path": path})
+    return await _staged(answer, run=run,
+                         extra={"path": path, "cursor": str(offset), "filter": term})
 
 
 async def pc_file_exchange_find(request: Request) -> JSONResponse:
@@ -1150,8 +1225,10 @@ async def pc_file_exchange_result(request: Request) -> JSONResponse:
                 "found": [row for row in rows if row["kind"] == "file"],
                 "folders": [row["path"] for row in rows if row["kind"] == "folder"],
             })
+        items, total, has_more, next_cursor = _listing_page(text)
         return _response({"ok": True, "state": "ready", "dispatch_id": dispatch_id,
-                          "items": _listing_items(text)})
+                          "items": items, "total": total, "has_more": has_more,
+                          "next_cursor": next_cursor})
     readable = _is_text(content)
     return _response({
         "ok": True, "state": "ready", "dispatch_id": dispatch_id,

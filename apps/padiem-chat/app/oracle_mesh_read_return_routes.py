@@ -3358,8 +3358,16 @@ async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResp
 # ---------------------------------------------------------------------------
 
 PC_FILES_MAX_PATH_CHARS = 2048
-PC_FILES_LIST_DEFAULT_LIMIT = 200
-PC_FILES_LIST_MAX_LIMIT = 500
+#: One page of a folder listing is a transport unit, not a product ceiling: the
+#: route keeps asking for the next page until the PC says there is nothing left, so
+#: a folder of any size is fully reachable. Measured on 컴1's C:/Windows/System32
+#: (4,925 entries) on 2026-10-29 through the real command lane: 200 rows = 20,647
+#: transcript bytes in 1,240 ms; 500 rows = 53,979 bytes in 1,454 ms. 200 keeps one
+#: page ~10x under the 6 MB result-body bound and ~100x under the 2 MiB D1 row
+#: bound, and small enough that the Worker's parse of a page stays a fraction of its
+#: 10 ms CPU budget. The old silent `-First 200` cut had no continuation; this
+#: constant has one.
+PC_FILES_LIST_PAGE_SIZE = 200
 PC_FILES_READ_MAX_BYTES = 20_000_000
 PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: Stable per-call reference suffix the Engine uses for read_file. The poll
@@ -3686,7 +3694,23 @@ def _pc_write_command(
 
 
 
-def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
+#: Characters the provider's own -Filter can carry harmlessly. Anything else (a
+#: wildcard, a quote, a path separator, a semicolon) makes the coarse pre-filter '*'
+#: and lets the exact -like test decide — so a term can never become a pattern or a
+#: second statement, and correctness never depends on which branch ran.
+_FILTER_PREFILTER_SAFE = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-.,()")
+
+
+def _pc_files_filter_prefilter(term: str) -> str:
+    if term and all(ch in _FILTER_PREFILTER_SAFE or ord(ch) > 127 for ch in term):
+        return "*" + term + "*"
+    return "*"
+
+
+def _pc_files_command(*, op: str, root: str, relative: str,
+                      offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE,
+                      filter_term: str | None = None) -> str:
     """Build the one command this server will execute for a file tool call.
 
     Only ``list`` uses the PowerShell command lane. ``read`` uses the existing
@@ -3694,23 +3718,60 @@ def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     timed out through the MeshCentral PowerShell reply, and replacing it with
     another shell command is not the contract.
 
+    A listing is one page of a **fixed order**: folders first, then name. Without a
+    fixed order an offset means nothing — two calls could sort the same folder
+    differently and skip or repeat rows. The reply carries the folder's own total
+    and whether this page was the last, so the caller never has to guess that a
+    short page was the end.
+
     The list command is cmdlet-only on purpose: no native program runs, so the
     PC reports no exit code (``no_exit_code``) and the existing result lane
     stays truthful.
     """
     if op != "list":
         raise ValueError("only list uses the read-only command builder")
+    if (not isinstance(offset, int) or isinstance(offset, bool) or offset < 0
+            or not isinstance(page_size, int) or isinstance(page_size, bool)
+            or not 1 <= page_size <= 2000):
+        raise ValueError("a paging offset and a page size are required")
+    if filter_term is not None:
+        # The term is a name fragment, never a pattern: it travels as a single-quoted
+        # literal and is escaped with the wildcard escaper before -like sees it. No
+        # length cap is imposed here — the exec boundary already refuses an argument
+        # the OS cannot carry — but a control character or an empty term is refused.
+        if not isinstance(filter_term, str) or not filter_term:
+            raise ValueError("a filter term must be non-empty text")
+        if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
+            raise ValueError("a filter term may not carry control characters")
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
-    # A plain pipeline: no nested hashtables or calculated properties.
-    # The nested form timed out through the MeshCentral PowerShell reply
-    # while the identical script completed locally, so the wire path gets
-    # the smallest command that still returns name/metadata JSON.
+    # Measured through the same wrapper the executor sends: one page of 200 rows on
+    # 컴1's System32 came back as 20,647 transcript bytes in 1,240 ms, and the
+    # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
+    # the folder at 200; `-Skip`/`-First` over a fixed sort is a page of the whole
+    # list, and total/has_more make the cut visible.
+    if filter_term is None:
+        scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
+                + " -Force -ErrorAction Stop);")
+    else:
+        scan = (
+            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
+            + _pc_files_powershell_literal(filter_term) + ");"
+            "$p=@(Get-ChildItem -LiteralPath " + folder_literal
+            + " -Filter "
+            + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
+            + " -Force -ErrorAction Stop"
+            " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
+        )
     return (
-        "Get-ChildItem -LiteralPath " + folder_literal
-        + " -Force -ErrorAction Stop | Select-Object -First " + str(limit)
-        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer"
-        + " | ConvertTo-Json -Compress"
+        scan
+        + "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
+        "$n=$s.Count;"
+        "$pg=@($s | Select-Object -Skip " + str(offset) + " -First " + str(page_size)
+        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer);"
+        "@{offset=" + str(offset) + "; total=$n;"
+        " has_more=(($pg.Count + " + str(offset) + ") -lt $n); items=@($pg)}"
+        " | ConvertTo-Json -Compress -Depth 3"
     )
 
 
@@ -4175,7 +4236,6 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             )
         command = _pc_files_command(
             op=op, root=root, relative=relative,
-            limit=PC_FILES_LIST_DEFAULT_LIMIT,
         )
         response = await dispatch_oracle_mesh_command_intent(
             request, command=command,

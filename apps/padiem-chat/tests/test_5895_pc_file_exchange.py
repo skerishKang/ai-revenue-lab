@@ -18,12 +18,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
 import test_5573_pc_device_pairing as pairing                       # noqa: E402
 from app.oracle_mesh_read_return_routes import (                       # noqa: E402
-    PC_FILES_LIST_DEFAULT_LIMIT, _pc_files_command, _response,
+    PC_FILES_LIST_PAGE_SIZE, _pc_files_command, _response,
 )
 
 OWNER = pairing.OWNER
@@ -686,7 +688,7 @@ def _finished(state, *, dispatch_id, kind, text, command=None, state_name="done"
     }
     if kind == "command":
         row["command_text"] = command if command is not None else _pc_files_command(
-            op="list", root=QUARTERLY, relative="", limit=PC_FILES_LIST_DEFAULT_LIMIT,
+            op="list", root=QUARTERLY, relative="",
         )
     if termination is not None:
         row["termination"] = termination
@@ -890,6 +892,153 @@ def test_the_listing_answer_is_the_folders_own_entries(monkeypatch):
     assert [item["name"] for item in body["items"]] == ["1분기.md", "사진"]
     assert body["items"][0]["kind"] == "file" and body["items"][0]["size_bytes"] == 2048
     assert body["items"][1]["kind"] == "folder"
+
+
+def _page_envelope(rows, *, offset, total, has_more):
+    return json.dumps({"offset": offset, "total": total, "has_more": has_more,
+                       "items": rows}, ensure_ascii=False)
+
+
+def _row(name, folder=False):
+    return {"Name": name, "Length": None if folder else 10,
+            "LastWriteTimeUtc": "2026-10-01T00:00:00Z", "PSIsContainer": folder}
+
+
+def _listing_body(monkeypatch, text, command=None):
+    dispatch = "dsp_" + "a" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="command", text=text, command=command)
+    return _answer(pairing.run(exchange.pc_file_exchange_result(
+        _Request(state, query={"dispatch_id": dispatch}, method="GET")
+    )))
+
+
+def test_a_listing_page_carries_the_total_and_the_next_cursor(monkeypatch):
+    rows = [_row("f%04d" % n) for n in range(PC_FILES_LIST_PAGE_SIZE)]
+    status, body = _listing_body(monkeypatch, _page_envelope(
+        rows, offset=0, total=4925, has_more=True))
+    assert status == 200 and body["state"] == "ready"
+    assert len(body["items"]) == PC_FILES_LIST_PAGE_SIZE
+    assert body["total"] == 4925 and body["has_more"] is True
+    assert body["next_cursor"] == str(PC_FILES_LIST_PAGE_SIZE)
+
+
+def test_the_last_page_says_there_is_nothing_left(monkeypatch):
+    rows = [_row("last%03d" % n) for n in range(25)]
+    _status, body = _listing_body(monkeypatch, _page_envelope(
+        rows, offset=4900, total=4925, has_more=False))
+    assert body["total"] == 4925 and len(body["items"]) == 25
+    assert body["has_more"] is False and body["next_cursor"] is None
+
+
+def test_a_listing_stored_before_paging_is_one_final_page_without_a_total(monkeypatch):
+    # A dispatch staged before this change carries a bare row array. It is reported as
+    # one final page with no total — never as "the folder ended here".
+    _status, body = _listing_body(monkeypatch, JSON_ONE)
+    assert len(body["items"]) == 2
+    assert body["total"] is None
+    assert body["has_more"] is False and body["next_cursor"] is None
+
+
+@pytest.mark.parametrize("count", [0, 1, 200, 201, 5000])
+def test_every_page_sums_to_the_total_without_gaps_or_repeats(monkeypatch, count):
+    every = [_row("item%05d" % n) for n in range(count)]
+    names = [row["Name"] for row in every]
+    seen, offset, pages = [], 0, 0
+    while True:
+        window = every[offset:offset + PC_FILES_LIST_PAGE_SIZE]
+        has_more = offset + len(window) < count
+        _status, body = _listing_body(monkeypatch, _page_envelope(
+            window, offset=offset, total=count, has_more=has_more))
+        assert body["total"] == count
+        seen.extend(item["name"] for item in body["items"])
+        pages += 1
+        if not body["has_more"]:
+            break
+        offset = int(body["next_cursor"])
+        assert pages <= count // PC_FILES_LIST_PAGE_SIZE + 2
+    assert seen == names
+    assert len(seen) == len(set(seen)) == count
+
+
+def test_a_name_search_travels_as_a_name_and_never_as_a_pattern():
+    # A plain word may ride the provider's own -Filter as a coarse pre-filter; the exact
+    # -like test still decides, and the term itself is wildcard-escaped on the PC.
+    plain = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term="보고서")
+    assert "WildcardPattern]::Escape('보고서')" in plain
+    assert "-Filter '*보고서*'" in plain
+    assert "$_.Name -like ('*'+$pat+'*')" in plain
+
+    # A wildcard, a quote or a semicolon is never a pattern: the pre-filter falls back to
+    # '*' and the literal carries the text with its quotes doubled.
+    for term in ("a*b", "it's", "q'; Remove-Item x", "x[y]", "a/b"):
+        command = _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=term)
+        assert "-Filter '*'" in command, term
+        assert command.count("Remove-Item") == (1 if "Remove-Item" in term else 0), term
+        assert "''" in command or "'" not in term, term
+    injected = _pc_files_command(op="list", root=QUARTERLY, relative="",
+                                 filter_term="q'; Remove-Item x")
+    assert "Escape('q''; Remove-Item x')" in injected
+
+    for bad in ("", None, "line" + chr(10) + "break", "nul" + chr(0)):
+        if bad is None:
+            # Absent is the plain listing, not an error.
+            assert "Escape(" not in _pc_files_command(op="list", root=QUARTERLY, relative="")
+            continue
+        with pytest.raises(ValueError, match="filter term"):
+            _pc_files_command(op="list", root=QUARTERLY, relative="", filter_term=bad)
+
+
+def test_a_browse_filter_is_refused_when_it_carries_control_characters(monkeypatch):
+    for bad in ("", "a" + chr(10) + "b", "a" + chr(127) + "b", 7, True):
+        state, captured, _link, _ = _state(monkeypatch)
+        status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+            _Request(state, body={"path": ".", "filter": bad})
+        )))
+        assert status == 400 and body["error"]["code"] == "pc_exchange_invalid_body", bad
+        assert captured == []
+    state, captured, _link, _ = _state(monkeypatch)
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+        _Request(state, body={"path": ".", "filter": "보고서"})
+    )))
+    assert status == 200 and body["state"] == "working" and body["filter"] == "보고서"
+    assert "WildcardPattern]::Escape('보고서')" in captured[0]["command"]
+
+
+def test_a_filtered_page_reports_the_number_of_matches_and_pages_them(monkeypatch):
+    matches = [_row("match%03d" % n) for n in range(204)]
+    seen, offset = [], 0
+    while True:
+        window = matches[offset:offset + PC_FILES_LIST_PAGE_SIZE]
+        has_more = offset + len(window) < 204
+        _status, body = _listing_body(monkeypatch, _page_envelope(
+            window, offset=offset, total=204, has_more=has_more))
+        assert body["total"] == 204
+        seen.extend(item["name"] for item in body["items"])
+        if not body["has_more"]:
+            break
+        offset = int(body["next_cursor"])
+    assert seen == [row["Name"] for row in matches]
+
+
+def test_a_page_two_asks_the_pc_to_skip_the_page_already_shown(monkeypatch):
+    state, captured, _link, _ = _state(monkeypatch)
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+        _Request(state, body={"path": ".", "cursor": "400"})
+    )))
+    assert status == 200 and body["state"] == "working"
+    assert "Select-Object -Skip 400 -First " in captured[0]["command"]
+    assert body["cursor"] == "400"
+
+
+@pytest.mark.parametrize("bad", ["abc", "-1", "1.5", "0x10", "1" * 12, 5, True])
+def test_a_malformed_cursor_is_refused_before_anything_is_staged(monkeypatch, bad):
+    state, captured, _link, _ = _state(monkeypatch)
+    status, body = _answer(pairing.run(exchange.pc_file_exchange_browse(
+        _Request(state, body={"path": ".", "cursor": bad})
+    )))
+    assert status == 400 and body["error"]["code"] == "pc_exchange_invalid_body"
+    assert captured == []
 
 
 def test_the_search_answer_keeps_the_folder_each_name_was_found_in(monkeypatch):

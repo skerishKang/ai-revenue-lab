@@ -70,7 +70,11 @@ def test_the_component_adds_no_deadline_no_give_up_and_no_confirmation():
     # The wait is the server's record: the loop ends only when the answer is ready or
     # the operation is over, and `더 보기` splits the answer without shortening it.
     assert "for (;;)" in script
-    assert "state.items.slice(0, state.shown)" in script
+    # The screen splits what arrived; it never shortens it. A folder larger than one
+    # page is continued by a real request, and the button says how many are left.
+    assert "const shown = visible.slice(0, state.shown)" in script
+    assert "pc-exchange-more-remaining" in script
+    assert "loadMore()" in script
     assert "poll_seconds" in script
     assert "pc-exchange-working" in script
     assert script.count("PAGE = 60") == 1
