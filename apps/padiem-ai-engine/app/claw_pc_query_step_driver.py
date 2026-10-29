@@ -1045,8 +1045,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         )
         request = B14ChatRequest(model=model_id, messages=({"role": "user", "content": prompt},), max_tokens=None,
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
-                max_retries=model_policy.get("max_retries") if model_policy else None,
-                task_type=task_type, optimize_for=optimize_for))
+                max_retries=model_policy.get("max_retries") if model_policy else None))
         print("pc_step_model_call stage=start", flush=True)
         try:
             response = await b14_client.execute(request)
