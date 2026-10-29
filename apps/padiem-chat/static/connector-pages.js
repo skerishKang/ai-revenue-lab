@@ -110,14 +110,30 @@
     if (title) title.textContent = nameOf(card);
     const mark = byId("connectorDetailMark");
     if (mark) mark.textContent = markOf(card);
-    const status = byId("connectorDetailStatus");
-    if (status) status.textContent = statusText(card);
     const actions = byId("connectorDetailActions");
     const computer = card.dataset.connector === "computer" || card.id === "connectorComputerCard";
     if (actions) actions.hidden = !computer;
+    syncDetailStatus(card);
     syncDetailRetry(card);
     if (computer) groupAdvanced(card);
     setHash("#connectors/" + connectorId(card));
+  }
+
+  function syncDetailStatus(card) {
+    const status = byId("connectorDetailStatus");
+    if (!status) return;
+    // One row of truth: the shared vocabulary, plus how many PCs are linked
+    // when at least one is (the page head reads “● 3대 연결됨”).
+    const rows = card.querySelectorAll(".pc-pairing-link").length;
+    const vocab = window.PadiemConnectorVocabulary;
+    if (rows > 0 && vocab) {
+      const ko = !String(document.documentElement.lang || "ko").toLowerCase().startsWith("en");
+      const line = ko ? "● " + rows + "대 연결됨" : "● " + rows + " connected";
+      if (status.textContent !== line) status.textContent = line;
+      return;
+    }
+    const text = statusText(card);
+    if (status.textContent !== text) status.textContent = text;
   }
 
   function syncDetailRetry(card) {
@@ -198,9 +214,7 @@
   const observer = new MutationObserver(() => {
     makeTiles();
     if (detailed.card) {
-      const status = byId("connectorDetailStatus");
-      const text = statusText(detailed.card);
-      if (status && status.textContent !== text) status.textContent = text;
+      syncDetailStatus(detailed.card);
       syncDetailRetry(detailed.card);
       return;
     }

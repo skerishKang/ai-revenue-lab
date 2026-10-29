@@ -274,3 +274,48 @@
     gap: 2px;
   }
 }
+
+/* The moved card contributes list + advanced only: its own padding never
+ * leaves an empty band above the PC list. */
+.connector-detail-body .capability-card {
+  padding: 0;
+  gap: 0;
+  border: 0;
+  background: transparent;
+}
+
+.connector-detail-body .pc-pairing {
+  margin: 0;
+  padding: 0;
+}
+
+/* Phone widths: the tile reads name → description → state → ON/OFF in one
+ * flow; the state line sits under the name instead of a clipped top-right
+ * chip, and the card keeps only the room those four lines need. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
+    min-height: 150px;
+    gap: 0;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+    order: 1;
+    padding: 10px 10px 2px;
+    min-height: 0;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-card-status {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    order: 2;
+    align-self: flex-start;
+    margin: 0 10px;
+    max-width: none;
+    font-size: 10px;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+    position: static !important;
+    order: 3;
+    align-self: flex-start;
+    margin: 2px 10px 10px;
+  }
+}
