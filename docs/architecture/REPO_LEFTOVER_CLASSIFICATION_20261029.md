@@ -37,7 +37,7 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
 
 | # | 항목 | 위치 | 근거(호출처 0 등) | 제거 시 영향 | 오늘 고정하는 테스트 |
 |---|---|---|---|---|---|
-| A1 | 스킬 alias 계층 `Skill/ SKILL_REGISTRY / get_skill / skill_public_metadata` | `app/skills.py` 전문 | `from .skills import` → 자기 자신과 `tests/test_skill_contract.py`만. 실제 리더는 전부 `task_modes` 직접 import(b14_client, tier_identity_client, auto_grounding, request_contract, grounding, b66_search_boundary) | 중복 공개 표면 소멸, `task_modes`가 단일 출처 | `test_skill_contract.py` |
+| A1 | 스킬 alias 계층 `Skill/ SKILL_REGISTRY / get_skill / skill_public_metadata` | `app/skills.py` 전문 | `from app.skills import`가 **테스트 6개**(`test_skill_contract`·`test_skills`·`test_grounding`·`test_runtime`·`test_projects`·`test_private_auto_stream_client`)뿐이고 생산 코드 0건. 실제 리더는 전부 `task_modes` 직접 import(b14_client, tier_identity_client, auto_grounding, request_contract, grounding, b66_search_boundary) | 중복 공개 표면 소멸, `task_modes`가 단일 출처 | `test_skill_contract.py`·`test_skills.py` |
 | A2 | `KILO_B14_MODEL_ID` ("compatibility alias for the Kilo free test lane") | `app/model_policy.py:218` | 정의 외 참조 = `tests/test_model_policy.py:17` 한 곳 | Kilo 브랜드 문자열 제거 | `test_model_policy.py` |
 | A3 | `UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"` ("retained for older adapters") | `app/model_policy.py:222`(+빈 능력 행 :277) | adapter import 0건; 자기 행과 `test_model_policy.py:29,148,159`만 | 카탈로그 유령 모델 id 소멸 | `test_model_policy.py` |
 | A4 | 이미 제거된 상한을 "호환" 이름으로만 남긴 심볼 | `app/request_contract.py:30-32`(`MAX_MESSAGES`·`MAX_MESSAGE_CHARS`·`MAX_TOTAL_MESSAGE_CHARS = None`) + `app/main.py:64-66` import | 어느 코드도 읽지 않음; `test_browser_conversation_state_contract.py:23-24`는 JS에 문자열이 **없음**을 검사 | #4379 선례(키우지 말고 없앤다)대로 이름까지 제거 | 없음 |
@@ -81,7 +81,7 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
 | C6 | 재시도·길이 예산 10/4/256 | `apps/padiem-ai-engine/app/orchestration_wire.py:39-41` | **부분 제거**: 길이 예산 256(`_MAX_CANCEL_REASON_LEN`)은 없앤다. 재시도 10/4는 네트워크 대기 상한으로 유지하고, 근거(커넥터 안정성 기준: 네트워크 대기에는 상한을 허용한다)를 주석으로 남긴다 | PR-D |
 | C7 | 테스트 전용 라우트 2건(`/api/b66/quote/native-sol-scope`, `/api/connectors/github/repositories`) | `app/*routes.py` | **유지**. 서버-서버·관리 표면은 클라이언트 무참조가 정상 | — |
 | C8 | "GitHub 직접 연결은 준비 중입니다" vs 실제 라우트 존재 | `static/locale.js:136,396` | **교정 = 삭제**. 실사로 이 키의 소비처는 **0건**이었고(§6), 라우트는 마운트돼 동작한다(`app_factory.py:602-604`). 죽은 거짓 약속 키를 ko·en에서 내린다 | PR-L |
-| C9 | `app/main.py`의 "legacy imports" 재수출 블록 | `app/main.py:57-79` | **조건부 제거**: 심볼별로 소비처를 확인해 미사용만 없앤다. 확인 결과 32심볼 전부 `app.main.<symbol>` 참조 0건(§6) → `create_app`·`api_chat_stream`·`app`·`STATIC_DIR`만 남기고 내린다 | PR-B |
+| C9 | `app/main.py`의 "legacy imports" 재수출 블록 | `app/main.py:20-79`(파일 전체가 재수출) | **조건부 제거**: 심볼별로 소비처를 확인해 미사용만 없앤다. main.py가 import하는 이름은 **76개**이고, 외부(`from app.main import`·`app.main.<name>`) 참조가 있는 것은 `create_app`·`api_chat_stream` **둘뿐**이다. `app`은 이 파일이 정의한다. 나머지 74개를 내린다 | PR-B |
 | C10 | Drive OFF 토글의 문구 | `static/claw-connection-chips.js:233-234` | **교정(동작 불변)**: "Google 권한은 잠시 멈출 수 없어요. 완전히 끊으려면 Google 계정 > 보안 > 타사 앱에서 해제하세요" + 링크. 이 파일에는 `href`가 아직 없으므로 앵커를 새로 붙인다 | PR-L |
 | C11 | PDF 변환 안내의 범위 혼동 | `static/claw-web-xlsx-sources.js:274` vs `:245-248` | **교정**: 별도 승인이 필요한 것은 **수정된 XLSX의 PDF 변환**이고, `:247`의 "승인된 표준 견적 PDF 미리보기"는 이미 동작하는 별개 기능이다. `:274`를 "변환"만 가리키도록 고치고 미리보기 문구는 건드리지 않는다 | PR-L |
 | C12 | 영어 표에 한국어 라벨 | `static/product-capabilities.js:90`(`admin: ["Padiem 관리자", ""]`) | **교정**: 영어 행만 `"Padiem Admin"`으로. 한국어 행(`:75`)과 서버명(`b66_grade_models.py:38` `B66_ADMIN_NAME`)은 그대로 둔다 — 서버가 한국어 명을 그대로 주는 사실은 PR-L 본문에 남긴다 | PR-J |
@@ -117,9 +117,10 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
   (`orchestration_wire.py:206-209`)은 256자를 넘으면 `ServiceContractError`를 낸다. 같은 조건의
   `1 <=` 하한은 바로 앞 `.strip()`이 막으므로 도달 불가능하다. 제거의 실제 효과는 "256자 초과 취소
   사유를 거부하던 상한의 폐지"이고, 아무 것도 잘리지 않는다.
-- **C9의 "13종"은 틀린 수**: 심볼별로 세면 재수출 블록은 32종이고, `app.main.<symbol>` 참조는
-  **32종 전부 0건**이다. `from app.main import`가 실제로 가져가는 것은 `create_app`
-  (테스트 약 80건 + `app/worker.py:116`), `api_chat_stream`(테스트 2건), `app`뿐이다.
+- **C9의 "13종"은 틀린 수**: 재수출 블록은 첫 인용(57-79행의 32개)만이 아니라 파일 앞쪽 import까지
+  포함해 **76개 이름**이다. 저장소 전체에서 `from app.main import <name>`·`app.main.<name>`을
+  이름별로 세면 참조가 있는 것은 `create_app`(약 80개 테스트 + `app/worker.py:116`)과
+  `api_chat_stream`(테스트 2건) 둘뿐이고 나머지 **74개는 0건**이다. `app`은 main.py가 정의한다.
 - **C11의 인용문은 저장소에 없다**: "수정된 XLSX의 PDF 변환"이라는 문자열은 어디에도 없다. 실제
   문장은 `claw-web-xlsx-sources.js:274`·`:803`·`:1142`이고, `:245-248`의 미리보기는 다른 기능이다.
   세 문장은 locale 키가 아니라 하드코딩 한국어 문자열이라 en 표가 아직 없다.
