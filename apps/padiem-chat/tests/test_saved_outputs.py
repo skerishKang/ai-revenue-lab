@@ -391,7 +391,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "innerHTML" not in js
     assert "D1SavedOutputStore" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",

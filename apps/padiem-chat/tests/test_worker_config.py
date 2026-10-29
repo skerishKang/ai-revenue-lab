@@ -250,7 +250,7 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert "D1UsageCounterStore" in worker
     assert "UsageGate(settings, usage_store)" in worker
     assert "usage_gate_enforced = True" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",
