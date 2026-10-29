@@ -147,6 +147,11 @@ const requests = [];
 const chatPayloads = [];
 let chatResponseOverride = null;
 const storedFiles = [];
+// #5783 G5: what a download action hands the browser. `downloadText` builds one
+// Blob, one object URL and one <a download>, so recording those three pieces
+// pins the exported file name, MIME type and exact bytes.
+const exportedBlobs = [];
+const downloads = [];
 // #5895: what the PC carries, as this account last saw it. The authoring screens read
 // these two shapes exactly as production does.
 let pcLinks = [{ link_id: "pclink_" + "1".repeat(32), label: "사무실 PC", state: "active" }];
@@ -360,7 +365,24 @@ function spawnSession(windowState = {}) {
       getElementById: (id) => byId[id] || root._descendants().find((n) => n.id === id) || null,
       querySelector: (sel) => root.querySelector(sel),
       querySelectorAll: (sel) => root.querySelectorAll(sel),
-      createElement: (tag) => new N(tag),
+      createElement: (tag) => {
+        const node = new N(tag);
+        // #5783 G5: the only <a> the util module builds is the download link
+        // inside downloadText. Record its filename and the Blob it carries at
+        // the moment the link is clicked, then run the normal click.
+        if (String(tag).toLowerCase() === "a") {
+          const originalClick = node.click.bind(node);
+          node.click = async () => {
+            downloads.push({
+              filename: String(node.download || ""),
+              href: String(node.href || ""),
+              blob: exportedBlobs[exportedBlobs.length - 1] || null,
+            });
+            return originalClick();
+          };
+        }
+        return node;
+      },
       addEventListener() {},
     },
     window: windowState,
@@ -369,7 +391,11 @@ function spawnSession(windowState = {}) {
     alert: (message) => alerts.push(String(message)),
     console,
     setTimeout: () => 0,
-    Blob: function Blob() {},
+    Blob: function Blob(parts, options) {
+      this.parts = Array.isArray(parts) ? parts.map((part) => String(part)) : [];
+      this.type = options && options.type ? String(options.type) : "";
+      exportedBlobs.push({ parts: this.parts, type: this.type });
+    },
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
   };
@@ -823,6 +849,218 @@ const SCENARIOS = {
       alerts: alerts.slice(),
       pageErrors,
     };
+  },
+
+  // #5783 G5: the SAME chain in all three tools (write → save → reopen →
+  // rewrite → export), against the one shipped module and the existing
+  // endpoints. Each tool keeps its own kind, its own stored name, its own
+  // 409 answer, and the export hands the browser a real file name/type/body.
+  async g5() {
+    const session = spawnSession();
+    const observation = {};
+
+    // ── 축사 ────────────────────────────────────────────────────────────
+    await openTool(session, "speech");
+    const speechForm = find(session, "utilSpeechForm");
+    speechForm.querySelector("[name=event]").value = "가을 문화제 축사";
+    speechForm.querySelector("[name=message]").value = "주민 화합과 감사";
+    await speechForm.dispatch("submit");
+    await sleep(20);
+    const speechGenerated = find(session, "utilSpeechOutput").value;
+
+    const speechFirstEdit = speechGenerated + "\n[편집: 저장 전]";
+    find(session, "utilSpeechOutput").value = speechFirstEdit;
+    await find(session, "utilSpeechSave").dispatch("click");
+    await sleep(40);
+    const speechStored = storedFiles.filter((f) => f.doc_kind === "speech" && !f.doc_version_of).pop();
+
+    find(session, "utilSpeechOutput").value = "";
+    const speechRow = find(session, "utilSpeechSaved")
+      .querySelectorAll(".util-edit-stored")
+      .find((button) => text(button).includes(speechStored.name));
+    if (!speechRow) throw new Error("speech reopen row missing");
+    await speechRow.dispatch("click");
+    await sleep(30);
+    const speechReopened = find(session, "utilSpeechOutput").value;
+    const speechEditState = text(find(session, "utilSpeechEditState"));
+
+    const speechSecondEdit = speechReopened + "\n[편집: 고쳐 쓰기]";
+    find(session, "utilSpeechOutput").value = speechSecondEdit;
+    void find(session, "utilSpeechSave").dispatch("click");
+    await sleep(40);
+    const speechAsk = session.root.querySelector(".util-save-choice");
+    const speechAskText = speechAsk ? text(speechAsk.querySelector(".util-save-choice-text")) : "";
+    const speechAskLabels = speechAsk ? labels(speechAsk.querySelectorAll("button")) : [];
+    if (speechAsk) {
+      await speechAsk.querySelector(".util-save-overwrite").dispatch("click");
+      await sleep(40);
+    }
+    const speechAfterOverwrite = storedFiles.find((f) => f.id === speechStored.id) || null;
+    const speechVersions = storedFiles.filter((f) => f.doc_version_of === speechStored.id);
+
+    const speechBeforeDownload = downloads.length;
+    await find(session, "utilSpeechDownload").dispatch("click");
+    await sleep(10);
+    const speechDownload = downloads[speechBeforeDownload] || null;
+
+    observation.speech = {
+      generated: speechGenerated,
+      firstSavedName: speechStored.name,
+      firstSavedKind: speechStored.doc_kind,
+      reopened: speechReopened,
+      editState: speechEditState,
+      askText: speechAskText,
+      askLabels: speechAskLabels,
+      overwrittenBody: speechAfterOverwrite ? speechAfterOverwrite.content : null,
+      overwrittenKind: speechAfterOverwrite ? speechAfterOverwrite.doc_kind : null,
+      versions: speechVersions.map((v) => ({
+        name: v.name, doc_kind: v.doc_kind, doc_version_of: v.doc_version_of, content: v.content,
+      })),
+      export: speechDownload ? {
+        filename: speechDownload.filename,
+        type: speechDownload.blob ? speechDownload.blob.type : null,
+        content: speechDownload.blob ? speechDownload.blob.parts.join("") : null,
+      } : null,
+    };
+
+    // ── SNS ─────────────────────────────────────────────────────────────
+    await openTool(session, "sns");
+    const snsForm = find(session, "utilSnsForm");
+    const snsField = (name) => snsForm.querySelector(`[name=${name}]`);
+    snsField("event").value = "가을 마을 축제";
+    snsField("whenwhere").value = "10월 18일 · 시민공원";
+    snsField("content").value = "가족 놀이마당과 먹거리 장터가 열립니다.";
+    await snsForm.dispatch("submit");
+    await sleep(20);
+    const snsGenerated = find(session, "utilSnsOutput").value;
+    const snsTitle = text(session.root.querySelector("#utilSnsResult h3"));
+
+    const snsFirstEdit = snsGenerated + "\n#가을축제";
+    find(session, "utilSnsOutput").value = snsFirstEdit;
+    await find(session, "utilSnsSave").dispatch("click");
+    await sleep(40);
+    const snsStored = storedFiles.filter((f) => f.doc_kind === "sns" && !f.doc_version_of).pop();
+
+    find(session, "utilSnsOutput").value = "";
+    const snsRow = find(session, "utilSnsSaved")
+      .querySelectorAll(".util-edit-stored")
+      .find((button) => text(button).includes(snsStored.name));
+    if (!snsRow) throw new Error("sns reopen row missing");
+    await snsRow.dispatch("click");
+    await sleep(30);
+    const snsReopened = find(session, "utilSnsOutput").value;
+    const snsEditState = text(find(session, "utilSnsEditState"));
+
+    const snsSecondEdit = snsReopened + "\n#고쳐쓰기";
+    find(session, "utilSnsOutput").value = snsSecondEdit;
+    void find(session, "utilSnsSave").dispatch("click");
+    await sleep(40);
+    const snsAsk = session.root.querySelector(".util-save-choice");
+    const snsAskText = snsAsk ? text(snsAsk.querySelector(".util-save-choice-text")) : "";
+    const snsAskLabels = snsAsk ? labels(snsAsk.querySelectorAll("button")) : [];
+    if (snsAsk) {
+      // The safe default: save as a NEW name, original untouched.
+      await snsAsk.querySelector(".util-save-as-new").dispatch("click");
+      await sleep(40);
+    }
+
+    const snsBeforeDownload = downloads.length;
+    await find(session, "utilSnsDownload").dispatch("click");
+    await sleep(10);
+    const snsDownload = downloads[snsBeforeDownload] || null;
+
+    observation.sns = {
+      generated: snsGenerated,
+      title: snsTitle,
+      firstSavedName: snsStored.name,
+      firstSavedKind: snsStored.doc_kind,
+      reopened: snsReopened,
+      editState: snsEditState,
+      askText: snsAskText,
+      askLabels: snsAskLabels,
+      storedNames: storedFiles.filter((f) => f.doc_kind === "sns" && !f.doc_version_of).map((f) => f.name),
+      originalBody: (storedFiles.find((f) => f.id === snsStored.id) || {}).content || null,
+      export: snsDownload ? {
+        filename: snsDownload.filename,
+        type: snsDownload.blob ? snsDownload.blob.type : null,
+        content: snsDownload.blob ? snsDownload.blob.parts.join("") : null,
+      } : null,
+    };
+
+    // ── 회의정리 ────────────────────────────────────────────────────────
+    await openTool(session, "meeting");
+    const meetingForm = find(session, "utilMeetingForm");
+    const meetingField = (name) => meetingForm.querySelector(`[name=${name}]`);
+    meetingField("title").value = "가을 주민 간담회";
+    meetingField("when").value = "2026-10-20T14:00";
+    meetingField("attendees").value = "비서실장, 주민 대표";
+    meetingField("content").value = "공원 조명 보수와 버스 증회를 논의했습니다.";
+    await meetingForm.dispatch("submit");
+    await sleep(20);
+    const meetingGenerated = find(session, "utilMeetingOutput").value;
+
+    const meetingFirstEdit = meetingGenerated + "\n[편집: 저장 전]";
+    find(session, "utilMeetingOutput").value = meetingFirstEdit;
+    await find(session, "utilMeetingSave").dispatch("click");
+    await sleep(40);
+    const meetingStored = storedFiles.filter((f) => f.doc_kind === "meeting" && !f.doc_version_of).pop();
+
+    find(session, "utilMeetingOutput").value = "";
+    const meetingReopenRow = find(session, "utilMeetingArchive")
+      .querySelectorAll("button")
+      .find((button) => text(button).includes(meetingStored.name));
+    if (!meetingReopenRow) throw new Error("meeting reopen row missing");
+    await meetingReopenRow.dispatch("click");
+    await sleep(30);
+    const meetingReopened = find(session, "utilMeetingOutput").value;
+
+    const meetingSecondEdit = meetingReopened + "\n[편집: 고쳐 쓰기]";
+    find(session, "utilMeetingOutput").value = meetingSecondEdit;
+    void find(session, "utilMeetingSave").dispatch("click");
+    await sleep(40);
+    const meetingAsk = session.root.querySelector(".util-save-choice");
+    const meetingAskText = meetingAsk ? text(meetingAsk.querySelector(".util-save-choice-text")) : "";
+    const meetingAskLabels = meetingAsk ? labels(meetingAsk.querySelectorAll("button")) : [];
+    if (meetingAsk) {
+      await meetingAsk.querySelector(".util-save-overwrite").dispatch("click");
+      await sleep(40);
+    }
+    const meetingAfterOverwrite = storedFiles.find((f) => f.id === meetingStored.id) || null;
+    const meetingVersions = storedFiles.filter((f) => f.doc_version_of === meetingStored.id);
+
+    const meetingBeforeDownload = downloads.length;
+    await find(session, "utilMeetingDownload").dispatch("click");
+    await sleep(10);
+    const meetingDownload = downloads[meetingBeforeDownload] || null;
+
+    observation.meeting = {
+      generated: meetingGenerated,
+      firstSavedName: meetingStored.name,
+      firstSavedKind: meetingStored.doc_kind,
+      reopened: meetingReopened,
+      askText: meetingAskText,
+      askLabels: meetingAskLabels,
+      overwrittenBody: meetingAfterOverwrite ? meetingAfterOverwrite.content : null,
+      overwrittenKind: meetingAfterOverwrite ? meetingAfterOverwrite.doc_kind : null,
+      versions: meetingVersions.map((v) => ({
+        name: v.name, doc_kind: v.doc_kind, doc_version_of: v.doc_version_of, content: v.content,
+      })),
+      export: meetingDownload ? {
+        filename: meetingDownload.filename,
+        type: meetingDownload.blob ? meetingDownload.blob.type : null,
+        content: meetingDownload.blob ? meetingDownload.blob.parts.join("") : null,
+      } : null,
+    };
+
+    observation.endpoints = endpointSet();
+    // #6234: the chat request key is {messages, tier, util} — the three tabs
+    // are told apart by util, and the mode request key no longer exists.
+    observation.chatUtils = chatPayloads.map((payload) => payload.util);
+    observation.storedKinds = storedFiles.filter((f) => !f.doc_version_of).map((f) => ({ name: f.name, doc_kind: f.doc_kind }));
+    observation.versionCount = storedFiles.filter((f) => f.doc_version_of).length;
+    observation.alerts = alerts.slice();
+    observation.pageErrors = pageErrors;
+    return observation;
   },
 
   async meeting() {
