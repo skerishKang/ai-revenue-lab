@@ -115,6 +115,19 @@ def test_the_call_sends_the_declared_name_and_proves_the_service_secret():
     assert seen["body"] == {"method": "list_links", "arguments": {"user_id": "usr_1"}}
 
 
+def test_every_queue_call_carries_the_declared_user_agent():
+    """The Cloudflare edge answers the Pyodide runtime's default
+    `Python-urllib/3.12` UA with 403 error 1010 before the queue is reached, so
+    each call must name itself with the explicit UA."""
+
+    client, recorder = _client(lambda sent: _Response(200, {"ok": True, "result": []}))
+    asyncio.run(client.call("list_links", user_id="usr_1"))
+    agent = recorder.sent[0]["headers"]["User-Agent"]
+    assert agent == proxy.QUEUE_USER_AGENT
+    assert agent != "Python-urllib/3.12"
+    assert "urllib" not in agent.lower()
+
+
 def test_an_unusable_answer_is_named_without_repeating_what_was_sent():
     def handler(request):
         return _Response(502, {"ok": False,
