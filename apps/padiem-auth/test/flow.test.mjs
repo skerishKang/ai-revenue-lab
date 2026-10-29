@@ -14,7 +14,7 @@ function storage() {
   return { sql: { exec(q, ...p) { const stmt = db.prepare(q); if (stmt.columns().length) { const rows = stmt.all(...p); return { toArray: () => rows }; } stmt.run(...p); return { toArray: () => [] }; } },
     transactionSync(fn) { db.exec('BEGIN'); try { const out = fn(); db.exec('COMMIT'); return out; } catch (e) { db.exec('ROLLBACK'); throw e; } } };
 }
-async function setup() {
+async function setup({ advanceDuringExchange = false } = {}) {
   const google = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   const googleJwk = await crypto.subtle.exportKey('jwk', google.publicKey); googleJwk.kid = 'google';
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
@@ -28,7 +28,8 @@ async function setup() {
   const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({ clients: { lovetree: { id: 'lovetree', redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
     async fetcher(address, options) { assert.equal(options.redirect, 'manual'); if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
-      const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', nonce, iat: 999, exp: 1100 });
+      if (advanceDuringExchange) t += 1;
+      const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', nonce, iat: advanceDuringExchange ? t : 999, exp: 1100 });
       const input = `${h}.${p}`, sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', google.privateKey, new TextEncoder().encode(input));
       return Response.json({ id_token: `${input}.${b64(sig)}` }); } });
   async function assertion() { const h = j64({ alg: 'ES256', kid: 'client' }), p = j64({ iss: 'lovetree', sub: 'lovetree', aud: `${url}/token`, iat: 1000, exp: 1100, jti: rand() });
@@ -43,6 +44,12 @@ async function setup() {
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
   return { app, post, login, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
+
+test('a token issued after callback starts uses the current verification time', async () => {
+  const f = await setup({ advanceDuringExchange: true });
+  const login = await f.login();
+  assert.ok(login.code);
+});
 
 test('synthetic Google login, code exchange, refresh, replay revocation and JWKS', async () => {
   const f = await setup(); const l = await f.login();
