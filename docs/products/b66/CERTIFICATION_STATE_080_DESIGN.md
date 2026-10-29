@@ -41,12 +41,14 @@ ALTER TABLE b66_template_source ADD COLUMN certification_state TEXT
         'ANALYZED','REPRODUCTION_IN_PROGRESS','CERTIFIED',
         'CERTIFIED_WITH_TOLERANCE','REJECTED'));
 ALTER TABLE b66_template_source ADD COLUMN certification_evidence_json TEXT
-    CHECK (certification_evidence_json IS NULL OR length(...) <= 8192);
+    CHECK (certification_evidence_json IS NULL
+           OR json_valid(certification_evidence_json));
 ALTER TABLE b66_template_source ADD COLUMN certification_updated_at TEXT;
 ```
 
 - `certification_state IS NULL` = **인증 기록 없음**. 기본값을 `ANALYZED`로 두지 않는 이유: 한 번도 분석하지 않은 업로드 행이 "분석됨"으로 보이면 안 된다. NULL은 통과가 아니다.
-- `certification_evidence_json`은 8 KiB 상한. 게이트 결과·측정 델타·허용 오차 기록만 담고, **고객 원본 바이트나 개인정보는 담지 않는다**(원본은 #3884 custody, 이 컬럼은 판정 근거만).
+- `certification_evidence_json`은 **길이 상한 없음, JSON 유효성만** 검사한다. 게이트 결과·측정 델타·허용 오차 기록만 담고, **고객 원본 바이트나 개인정보는 담지 않는다**(원본은 #3884 custody, 이 컬럼은 판정 근거만).
+  - 물리 한계는 D1 행 2 MiB 하나뿐이다. 실측: 공개 합성 양식의 인증 JSON(13게이트+상세)이 **820 바이트**, 오차 기록을 붙여도 2 KiB 남짓 — 행 한도의 0.1% 수준이다. 그래서 임의의 바이트 상한을 CHECK에 넣지 않는다(대표 기준: 숫자를 먼저 정하지 않는다). 잘린/손으로 고친 blob은 `json_valid`가 거절한다.
 - `certification_updated_at`은 마지막 전이 시각(ISO-8601, 서버가 쓴다).
 
 ## 4. 전이 규칙 (다음 슬라이스가 구현할 계약)

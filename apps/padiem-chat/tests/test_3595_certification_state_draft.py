@@ -15,6 +15,7 @@ migration 060's `b66_template_source` and proves three things:
 
 from __future__ import annotations
 
+import json
 import re
 import sqlite3
 from pathlib import Path
@@ -111,9 +112,51 @@ def test_only_the_five_named_states_are_accepted():
         with pytest.raises(sqlite3.IntegrityError):
             db.execute("UPDATE b66_template_source SET certification_state=? WHERE id='row'",
                        (bad,))
-    with pytest.raises(sqlite3.IntegrityError):
-        db.execute("UPDATE b66_template_source SET certification_evidence_json=? WHERE id='row'",
-                   ("{" + "x" * 8191 + "}",))
+
+
+def test_evidence_json_must_be_json_but_has_no_byte_cap():
+    """Only validity is enforced: a byte cap here would be an arbitrary number.
+
+    The physical bound is D1's 2 MiB row limit. A long but well-formed evidence
+    record (accepted differences, per-gate results) must not be refused by a
+    CHECK that guesses at a size.
+    """
+    db = sqlite3.connect(":memory:")
+    db.executescript(MIGRATION_060_SHAPE)
+    db.execute(
+        "INSERT INTO b66_template_source (id,user_id,workspace_id,media_type,"
+        "original_filename,object_key,byte_length,sha256,status,created_at,updated_at) "
+        "VALUES ('row','u','w','application/pdf','f.pdf','b66/template-source/x',10,"
+        "'" + "0" * 64 + "','uploaded','t','t')"
+    )
+    for part in statements():
+        db.execute(part)
+
+    assert db.execute(
+        "SELECT certification_evidence_json FROM b66_template_source WHERE id='row'"
+    ).fetchone() == (None,)
+
+    for bad in ("{", "not json", "", "{'a': 1}"):
+        with pytest.raises(sqlite3.IntegrityError):
+            db.execute(
+                "UPDATE b66_template_source SET certification_evidence_json=? WHERE id='row'",
+                (bad,),
+            )
+
+    long_record = json.dumps({
+        "accepted_differences": [
+            {"area": f"gate_{n}", "measured_delta_pt": 0.1, "reviewed_by": "owner",
+             "reviewed_at": "2026-10-29T00:00:00Z"}
+            for n in range(600)
+        ],
+        "gates": {"TABLE_LINES_BORDERS": True},
+    })
+    assert len(long_record) > 50_000
+    db.execute("UPDATE b66_template_source SET certification_evidence_json=? WHERE id='row'",
+               (long_record,))
+    assert json.loads(db.execute(
+        "SELECT certification_evidence_json FROM b66_template_source WHERE id='row'"
+    ).fetchone()[0]) == json.loads(long_record)
 
 
 def test_draft_is_not_in_the_applied_sequence_yet():

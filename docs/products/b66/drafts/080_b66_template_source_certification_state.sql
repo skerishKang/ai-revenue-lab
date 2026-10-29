@@ -23,10 +23,17 @@ ALTER TABLE b66_template_source ADD COLUMN certification_state TEXT
         'CERTIFIED_WITH_TOLERANCE',
         'REJECTED'));
 
--- Bounded evidence JSON: gate results, measured deltas, and — only when the
--- owner reviewed a deviation — the accepted-differences record.
+-- Evidence JSON: gate results, measured deltas, and — only when the owner
+-- reviewed a deviation — the accepted-differences record.
+--
+-- No length CHECK. A byte cap here would be an arbitrary number that can reject
+-- a legitimate record; the only real bound is D1's 2 MiB row limit. Measured
+-- for scale: the public synthetic fixture's certification JSON (13 gates plus
+-- their detail) is 820 bytes, and even a tolerance record with per-area entries
+-- stays around 2 KiB — about 0.1% of a row. Only JSON validity is enforced, so a
+-- truncated or hand-edited blob fails closed while a long evidence list does not.
 ALTER TABLE b66_template_source ADD COLUMN certification_evidence_json TEXT
     CHECK (certification_evidence_json IS NULL
-           OR length(certification_evidence_json) <= 8192);
+           OR json_valid(certification_evidence_json));
 
 ALTER TABLE b66_template_source ADD COLUMN certification_updated_at TEXT;
