@@ -223,6 +223,18 @@ def test_deploy_scripts_parse_as_bash_and_are_lf_only():
         assert result.stderr.strip() == "", "%s: %s" % (script.name, result.stderr.strip())
 
 
+def test_the_suite_runs_in_ci_and_needs_no_credential():
+    """A cutover gate that only ever ran on one laptop is not a gate."""
+
+    workflow = (QUEUE.parents[1] / ".github" / "workflows"
+                / "com2-mesh-queue-contract-tests.yml").read_text(encoding="utf-8")
+    assert "python -m pytest -q apps/padiem-mesh-queue/tests" in workflow
+    assert '- "apps/padiem-mesh-queue/**"' in workflow
+    assert "secrets." not in workflow, "this lane is offline; a secret makes it not so"
+    assert "${{ secrets" not in workflow and "CLOUDFLARE_API_TOKEN" not in workflow
+    assert "wrangler" not in workflow
+
+
 def test_the_service_listens_on_loopback_only():
     service_source = (QUEUE / "service.py").read_text(encoding="utf-8")
 

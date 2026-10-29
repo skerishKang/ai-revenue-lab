@@ -254,6 +254,12 @@ incident rather than a guess afterwards.
 The executor-side monitoring — poll refusals, queue silence, 1102/1010 detection — is
 아스트라1's handover (#82); this lane installs nothing beyond its own `/health`.
 
+The tests that decide whether a switch is allowed run on GitHub, not on a workstation:
+`com2-mesh-queue-contract-tests.yml` executes `apps/padiem-mesh-queue/tests` on every PR
+touching the queue, the store modules it imports or the migrations it applies. It holds no
+credential and makes no network call — a cutover gate that only ever passed on one laptop
+is not a gate.
+
 ## 8. This week's Chat deploy carries the switch
 
 The next Chat Worker publish is not only the queue adapter. It carries PR-E (#6128)
