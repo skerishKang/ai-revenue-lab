@@ -1,0 +1,14 @@
+# Offline disposable configuration: no production account, domains, remote bindings or secrets.
+name = "padiem-chat-local-cpu-probe"
+main = "worker.py"
+base_dir = ".b66-worker-src"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+workers_dev = false
+[build]
+command = "uv run python scripts/build_b66_worker_dependencies.py"
+[assets]
+directory = ".b66-worker-src/static"
+binding = "ASSETS"
+[vars]
+PADIEM_CHAT_RUNTIME_MODE = "mock"
