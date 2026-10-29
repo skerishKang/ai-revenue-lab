@@ -27,11 +27,19 @@ class Packaging(unittest.TestCase):
         self.assertNotIn("token_hex", source)
         self.assertNotIn("/dev/urandom", source)
         self.assertNotIn("cat /etc/padiem/offsite-backup.key", source)
+        # The generation authority is linked, not copied, and its import is proven
+        # before the unit is installed: d1-chat/d1-engine cannot resolve a generation
+        # without it.
+        self.assertIn("ln -sfn \"$source_root/scripts/ops/com2_backup_schedule.py\"", source)
+        self.assertIn("  scripts/ops/com2_backup_schedule.py; do", source)
+        self.assertIn("GENERATION_IMPORT_FAILED", source)
 
     def test_unit_and_timer_are_bounded(self):
         unit = (HERE / "padiem-offsite-backup.service").read_text(encoding="utf-8")
         self.assertIn("EnvironmentFile=/etc/padiem/offsite-backup.env", unit)
         self.assertIn("ReadOnlyPaths=/mnt/d/padiem /opt/padiem/backups", unit)
+        # The D1 generation root is a read-only source, never a scratch directory.
+        self.assertIn("/mnt/d/PADIEM-Servers", unit.split("ReadOnlyPaths", 1)[1].splitlines()[0])
         self.assertIn("ReadWritePaths=/var/lib/padiem-offsite-backup", unit)
         self.assertIn("ProtectSystem=strict", unit)
         self.assertNotIn("0.0.0.0", unit)
@@ -50,6 +58,8 @@ class Packaging(unittest.TestCase):
             "/opt/padiem/backups/mesh-queue",
             "/mnt/d/padiem/chat-com2/backups",
             "/mnt/d/padiem/broker/backups",
+            "/mnt/d/PADIEM-Servers/infrastructure/storage-migration/snapshots/generations",
+            "/mnt/d",
             "https://<ACCOUNT_ID>.r2.cloudflarestorage.com",
         }
         for line in text.splitlines():
@@ -57,6 +67,8 @@ class Packaging(unittest.TestCase):
                 continue
             name, _, value = line.partition("=")
             self.assertIn(value, allowed, name)
+        # The D1 pair is a declared target, not an operator afterthought.
+        self.assertIn("OFFSITE_D1_GENERATIONS_DIR=", text)
 
     def test_requirements_are_exact_pins_with_hashes(self):
         text = (HERE / "requirements.txt").read_text(encoding="utf-8")

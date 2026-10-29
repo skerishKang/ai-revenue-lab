@@ -25,7 +25,7 @@ fail() { echo "OFFSITE_INSTALL=$1" >&2; exit 1; }
 for required in \
   deploy/host-com2/offsite-backup/offsite.py \
   scripts/ops/com2_backup.py \
-  scripts/ops/com2_backup.py; do
+  scripts/ops/com2_backup_schedule.py; do
   [[ -e "$source_root/$required" ]] || fail SOURCE_MISSING
 done
 [[ -s /etc/padiem/offsite-backup.key ]] || fail KEY_FILE_MISSING
@@ -38,6 +38,9 @@ if [[ ! -x "$app/venv/bin/python" ]]; then (umask 022; python3 -m venv "$app/ven
 install -m 0755 "$here/offsite.py" "$app/offsite.py"
 # Reuse the reviewed envelope helpers instead of a drifting copy.
 ln -sfn "$source_root/scripts/ops/com2_backup.py" "$app/com2_backup.py"
+# Same for the generation authority: it is what decides which D1 generation is
+# complete enough to back up, so a second implementation here would drift.
+ln -sfn "$source_root/scripts/ops/com2_backup_schedule.py" "$app/com2_backup_schedule.py"
 if [[ ! -e /etc/padiem/offsite-backup.env ]]; then
   install -m 0600 "$here/offsite-backup.env.example" /etc/padiem/offsite-backup.env
 fi
@@ -46,6 +49,10 @@ chmod 0600 /etc/padiem/offsite-backup.env
 if ! "$app/venv/bin/python" -c \
   "import importlib.util, sys; sys.path.insert(0, '$app'); spec=importlib.util.spec_from_file_location('com2_backup_crypto', '$app/com2_backup.py'); m=importlib.util.module_from_spec(spec); sys.modules['com2_backup_crypto']=m; spec.loader.exec_module(m); m.parse_encryption_key('ab'*32)" >/dev/null 2>&1; then
   fail CRYPTO_IMPORT_FAILED
+fi
+if ! "$app/venv/bin/python" -c \
+  "import importlib.util, sys; sys.path.insert(0, '$app'); spec=importlib.util.spec_from_file_location('com2_backup_schedule', '$app/com2_backup_schedule.py'); m=importlib.util.module_from_spec(spec); sys.modules['com2_backup_schedule']=m; spec.loader.exec_module(m); assert callable(m.resolve_generation)" >/dev/null 2>&1; then
+  fail GENERATION_IMPORT_FAILED
 fi
 install -m 0644 "$here/$unit" "/etc/systemd/system/$unit"
 install -m 0644 "$here/padiem-offsite-backup.timer" /etc/systemd/system/padiem-offsite-backup.timer
