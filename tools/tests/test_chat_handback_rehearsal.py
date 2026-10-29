@@ -38,6 +38,7 @@ class Tests(unittest.TestCase):
    h.apply_local(base,late,com2)
    with sqlite3.connect(late) as x,sqlite3.connect(com2) as y:
     self.assertEqual(h._snapshot(x,'item'),h._snapshot(y,'item'))
+    self.assertEqual(h._digest(h._snapshot(x,'item')[2]), h._digest(h._snapshot(y,'item')[2]))
  def test_late_replay_refuses_com2_writes(self):
   with tempfile.TemporaryDirectory() as d:
    base,late,com2=[Path(d)/n for n in ('export','late_d1','com2')]
