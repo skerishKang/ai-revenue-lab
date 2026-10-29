@@ -248,11 +248,19 @@ def test_inventory_pins_every_file_and_flags_the_real_rebuilds() -> None:
 # --- the one-time baseline ---------------------------------------------------------
 
 
-def with_detail(tmp_path, inventory, schema, name="detail", plan=None):
-    """Build the PRAGMA/COUNT response the gate needs for column indicators."""
+def with_detail(tmp_path, inventory, schema, name="detail", plan=None, up_to=None):
+    """Build the PRAGMA/COUNT response the gate needs for column indicators.
+
+    ``up_to`` must match the window the plan is classified for: an ALTER that
+    first mentions a table past ``--up-to`` is outside that window, so a detail
+    response built for the whole inventory would name a table the classify step
+    never asks about.
+    """
 
     tables = gate.detail_tables(
-        inventory, max(item["number"] for item in inventory), schema["tables"]
+        inventory,
+        up_to if up_to is not None else max(item["number"] for item in inventory),
+        schema["tables"],
     )
     path = write(tmp_path / f"{name}.json", detail_payload(schema, tables))
     return path, tables
@@ -346,7 +354,7 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
         # is missing, which is what makes it pending rather than unrecorded.
         live = replayed_schema()
         inventory_path = write(tmp_path / "inv.json", fresh)
-        detail_path, _tables = with_detail(tmp_path, fresh, live, name="detail75")
+        detail_path, _tables = with_detail(tmp_path, fresh, live, name="detail75", up_to="076")
         snapshot_path = write(tmp_path / "snap.json", snapshot_payload(live))
         probe_path = write(tmp_path / "probe.json", probe_payload(True))
         ledger_path = write(tmp_path / "ledger.json", ledger_payload(recorded))
@@ -420,7 +428,7 @@ def test_drop_guard_blocks_an_executed_rebuild_until_the_flag_is_given(tmp_path)
             item["name"] == "076_rebuild_probe.sql" and item["destructive"] for item in fresh
         )
         inventory_path = write(tmp_path / "inv.json", fresh)
-        detail_path, _tables = with_detail(tmp_path, fresh, schema, name="detail")
+        detail_path, _tables = with_detail(tmp_path, fresh, schema, name="detail", up_to="076")
         snapshot_path = write(tmp_path / "snap.json", snapshot_payload(schema))
         probe_path = write(tmp_path / "probe.json", probe_payload(True))
         ledger_path = write(tmp_path / "ledger.json", ledger_payload(recorded))
@@ -713,8 +721,9 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
     # inventory에는 표가 하나 더 있다: 076_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
-    # 078_project_files_doc_kind.sql(#5731)은 표가 아니라 열 추가라 seed에 한 줄 더 붙는다.
-    assert len(result["seed"]) == 67
+    # 078_project_files_doc_kind.sql(#5731)과 079_b66_saved_quote_skill_kind.sql
+    # (#3180 ③)은 표가 아니라 열 추가라 seed에 한 줄씩 더 붙는다.
+    assert len(result["seed"]) == 68
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -766,7 +775,7 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         live = replayed_schema()
         inventory = gate.build_inventory("chat")
         inventory_path = write(tmp_path / "inv.json", inventory)
-        detail_path, _tables = with_detail(tmp_path, inventory, live, name="detailplan")
+        detail_path, _tables = with_detail(tmp_path, inventory, live, name="detailplan", up_to="076")
         summary = tmp_path / "step-summary.md"
         monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
         plan = tmp_path / "plan.json"
@@ -783,12 +792,14 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         seed_line = next(line for line in out.splitlines() if line.startswith("B62_D1_PLAN_SEED_FILES="))
         seed_names = seed_line.split("=", 1)[1].split(",")
         # The seed covers the WINDOW, not the whole inventory: migrations numbered
-        # past --up-to (077_project_files_text_byte_bound.sql and
-        # 078_project_files_doc_kind.sql today) are outside it.
+        # past --up-to (077_project_files_text_byte_bound.sql,
+        # 078_project_files_doc_kind.sql and 079_b66_saved_quote_skill_kind.sql
+        # today) are outside it.
         window = json.loads(plan.read_text(encoding="utf-8"))["window"]
         assert "077_project_files_text_byte_bound.sql" not in window
         assert "078_project_files_doc_kind.sql" not in window
-        assert len(window) == len(inventory) - 2
+        assert "079_b66_saved_quote_skill_kind.sql" not in window
+        assert len(window) == len(inventory) - 3
         assert len(seed_names) == len(window) - 2
         assert "075_report_clean.sql" not in seed_names and "076_report_update.sql" not in seed_names
         assert "CREATE TABLE" not in out and "UPDATE b62" not in out
@@ -907,7 +918,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 67
+    assert len(plan["seed"]) == 68
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -915,7 +926,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 67
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 68
 
     window_dir = tmp_path / "window"
     assert gate.main([

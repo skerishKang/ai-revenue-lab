@@ -15,6 +15,7 @@ approved Saved Quote Skill artifact needed for deterministic repeat generation.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import uuid
@@ -40,9 +41,30 @@ _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _EXPECTED_RENDERER_CONTRACT = "quote-template-renderer.v1"
 _EXPECTED_CALCULATION_AUTHORITY = "quote-core"
 
+# #3180 ③: the same table holds one more kind of asset - a form the owner
+# already uses, registered from their own PC. It is NOT a certified skill: the
+# PC lane fills the owner's workbook and the sheet's own formulas do the
+# arithmetic, so this kind never claims QuoteCore authority or the renderer
+# contract above.
+SKILL_KIND_QUOTE = "skill"
+SKILL_KIND_PC_FORM = "pc_form"
+SKILL_KINDS = (SKILL_KIND_QUOTE, SKILL_KIND_PC_FORM)
+PC_FORM_RENDERER_CONTRACT = "pc-excel-form.v1"
+PC_FORM_CALCULATION_AUTHORITY = "excel-formulas"
+MAX_FORM_PATH_CHARS = 1024
+MAX_FORM_FILENAME_CHARS = 200
+MAX_FORM_SHEETS = 8
+MAX_FORM_CELLS = 600
+MAX_FORM_TEXT_CHARS = 200
+MAX_FORM_ITEM_ROWS = 20
+MAX_FORM_JSON_BYTES = 48 * 1024
+
 
 class SavedQuoteSkillStoreError(RuntimeError):
     pass
+
+
+_FORM_CELL_RE = re.compile(r"^[A-Z]{1,3}[1-9][0-9]{0,6}$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,6 +76,7 @@ class ApprovedSavedQuoteSkillArtifact:
     fingerprint: str
     version: int
     serialized_json: str
+    kind: str = SKILL_KIND_QUOTE
 
 
 def _now_iso() -> str:
@@ -82,6 +105,180 @@ def _clean_skill_name(value: object) -> str:
     return text
 
 
+def _clean_form_path(value: object) -> str:
+    """The PC-side path the read used, kept only as a reference.
+
+    It is either a full PC path or a granted-folder-relative one; both are only
+    ever resolved again through the owner's own grants, so a value that escapes
+    upward is refused here rather than at the machine.
+    """
+
+    if not isinstance(value, str):
+        raise SavedQuoteSkillStoreError("form path is invalid")
+    text = value.strip().replace("\\", "/")
+    if (not text or len(text) > MAX_FORM_PATH_CHARS or _CONTROL_RE.search(text)
+            or text.startswith("/") or text.startswith("~")):
+        raise SavedQuoteSkillStoreError("form path is invalid")
+    segments = text.split("/")
+    if any(segment in {"", ".."} for segment in segments):
+        raise SavedQuoteSkillStoreError("form path is invalid")
+    return text
+
+
+def _clean_form_filename(value: object) -> str:
+    if not isinstance(value, str):
+        raise SavedQuoteSkillStoreError("form filename is invalid")
+    text = value.strip().replace("\\", "/").rsplit("/", 1)[-1]
+    if (not text or len(text) > MAX_FORM_FILENAME_CHARS or _CONTROL_RE.search(text)
+            or not text.lower().endswith(".xlsx")):
+        raise SavedQuoteSkillStoreError("form filename is invalid")
+    return text
+
+
+def _clean_form_structure(value: object) -> dict[str, Any]:
+    """The lane's own description, bounded: sheet names, cells, merges.
+
+    Only what the fill prompt needs — an address, its displayed text and whether
+    the cell is a formula — is kept. Values the model wrote are not part of a
+    form; they belong to one quote.
+    """
+
+    if not isinstance(value, dict) or set(value) != {"sheets"}:
+        raise SavedQuoteSkillStoreError("form structure is invalid")
+    sheets = value.get("sheets")
+    if not isinstance(sheets, list) or not sheets or len(sheets) > MAX_FORM_SHEETS:
+        raise SavedQuoteSkillStoreError("form structure is invalid")
+    kept: list[dict[str, Any]] = []
+    total_cells = 0
+    for sheet in sheets:
+        if not isinstance(sheet, dict):
+            raise SavedQuoteSkillStoreError("form structure is invalid")
+        name = sheet.get("name")
+        rows = sheet.get("rows")
+        columns = sheet.get("columns")
+        merged = sheet.get("merged", [])
+        cells = sheet.get("cells")
+        if (not isinstance(name, str) or not name.strip() or len(name) > 120 or _CONTROL_RE.search(name)
+                or isinstance(rows, bool) or not isinstance(rows, int) or not (1 <= rows <= 100000)
+                or isinstance(columns, bool) or not isinstance(columns, int) or not (1 <= columns <= 1000)
+                or not isinstance(merged, list) or len(merged) > 200
+                or not isinstance(cells, list)):
+            raise SavedQuoteSkillStoreError("form structure is invalid")
+        clean_merged = []
+        for item in merged:
+            if not isinstance(item, str) or not item or len(item) > 40:
+                raise SavedQuoteSkillStoreError("form structure is invalid")
+            clean_merged.append(item)
+        clean_cells = []
+        for cell in cells:
+            if not isinstance(cell, dict):
+                raise SavedQuoteSkillStoreError("form structure is invalid")
+            address = cell.get("cell")
+            text = cell.get("text")
+            formula = cell.get("formula", False)
+            if (not isinstance(address, str) or not _FORM_CELL_RE.fullmatch(address)
+                    or not isinstance(text, str) or not isinstance(formula, bool)):
+                raise SavedQuoteSkillStoreError("form structure is invalid")
+            if total_cells >= MAX_FORM_CELLS:
+                raise SavedQuoteSkillStoreError("form structure is too large")
+            total_cells += 1
+            clean_cells.append({
+                "cell": address, "text": text[:MAX_FORM_TEXT_CHARS], "formula": formula,
+            })
+        kept.append({
+            "name": name.strip(), "rows": rows, "columns": columns,
+            "merged": clean_merged, "cells": clean_cells,
+        })
+    return {"sheets": kept}
+
+
+def _clean_form_item_rows(value: object) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if not isinstance(value, list) or len(value) > MAX_FORM_ITEM_ROWS:
+        raise SavedQuoteSkillStoreError("form item rows are invalid")
+    kept = []
+    for row in value:
+        if not isinstance(row, dict):
+            raise SavedQuoteSkillStoreError("form item rows are invalid")
+        sheet = row.get("sheet")
+        template_row = row.get("template_row")
+        at_row = row.get("at_row")
+        count = row.get("count")
+        if (not isinstance(sheet, str) or not sheet.strip() or len(sheet) > 120
+                or any(isinstance(v, bool) or not isinstance(v, int) or not (1 <= v <= 100000)
+                       for v in (template_row, at_row, count))):
+            raise SavedQuoteSkillStoreError("form item rows are invalid")
+        kept.append({"sheet": sheet.strip(), "template_row": template_row,
+                     "at_row": at_row, "count": count})
+    return kept
+
+
+def _clean_form(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != {"path", "filename", "structure", "item_rows"}:
+        raise SavedQuoteSkillStoreError("form is invalid")
+    form = {
+        "path": _clean_form_path(value.get("path")),
+        "filename": _clean_form_filename(value.get("filename")),
+        "structure": _clean_form_structure(value.get("structure")),
+        "item_rows": _clean_form_item_rows(value.get("item_rows")),
+    }
+    try:
+        encoded = json.dumps(form, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    except (TypeError, ValueError, UnicodeEncodeError) as exc:
+        raise SavedQuoteSkillStoreError("form is invalid") from exc
+    if len(encoded) > MAX_FORM_JSON_BYTES:
+        raise SavedQuoteSkillStoreError("form is too large")
+    return form
+
+
+def build_pc_form_artifact(
+    *,
+    skill_id: object,
+    skill_name: object,
+    form: object,
+    approved_at: str,
+) -> ApprovedSavedQuoteSkillArtifact:
+    """The envelope for one owner-registered PC form, in this same store.
+
+    `approved` here means the owner registered their own form after seeing what
+    the fill wrote into it (#6177). No operator certification is implied, and the
+    envelope never carries the workbook's bytes: the PC keeps the original and
+    the fill re-reads it by the stored path.
+    """
+
+    if not isinstance(skill_id, str) or not _SKILL_ID_RE.fullmatch(skill_id.strip()):
+        raise SavedQuoteSkillStoreError("skill_id is invalid")
+    clean_id = skill_id.strip()
+    clean_name = _clean_skill_name(skill_name)
+    clean_form = _clean_form(form)
+    compact_form = json.dumps(clean_form, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    fingerprint = hashlib.sha256(compact_form.encode("utf-8")).hexdigest()
+    payload = {
+        "schemaVersion": 1,
+        "kind": SKILL_KIND_PC_FORM,
+        "id": clean_id,
+        "name": clean_name,
+        "fingerprint": fingerprint,
+        "rendererContract": PC_FORM_RENDERER_CONTRACT,
+        "calculationAuthority": PC_FORM_CALCULATION_AUTHORITY,
+        "approval": {
+            "status": "approved",
+            "approvedBy": "owner",
+            "skillFingerprint": fingerprint,
+            "approvedAt": approved_at,
+        },
+        "form": clean_form,
+    }
+    serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    if len(serialized.encode("utf-8")) > MAX_SKILL_JSON_BYTES:
+        raise SavedQuoteSkillStoreError("skill_json is too large")
+    return ApprovedSavedQuoteSkillArtifact(
+        skill_id=clean_id, skill_name=clean_name, fingerprint=fingerprint,
+        version=1, serialized_json=serialized, kind=SKILL_KIND_PC_FORM,
+    )
+
+
 def canonicalize_approved_artifact(
     *,
     skill_id: object,
@@ -89,6 +286,7 @@ def canonicalize_approved_artifact(
     fingerprint: object,
     version: object,
     serialized_json: object,
+    kind: object = SKILL_KIND_QUOTE,
 ) -> ApprovedSavedQuoteSkillArtifact:
     """Validate only the persistence envelope around canonical B66 Skill JSON.
 
@@ -131,10 +329,27 @@ def canonicalize_approved_artifact(
         raise SavedQuoteSkillStoreError("skill id mismatch")
     if payload.get("name") != clean_name:
         raise SavedQuoteSkillStoreError("skill name mismatch")
-    if payload.get("rendererContract") != _EXPECTED_RENDERER_CONTRACT:
-        raise SavedQuoteSkillStoreError("renderer contract mismatch")
-    if payload.get("calculationAuthority") != _EXPECTED_CALCULATION_AUTHORITY:
-        raise SavedQuoteSkillStoreError("calculation authority mismatch")
+    if not isinstance(kind, str) or kind not in SKILL_KINDS:
+        raise SavedQuoteSkillStoreError("skill kind is invalid")
+    if kind == SKILL_KIND_PC_FORM:
+        # A PC form never claims the certified renderer or QuoteCore arithmetic:
+        # its totals come from the workbook's own formulas.
+        if payload.get("kind") != SKILL_KIND_PC_FORM:
+            raise SavedQuoteSkillStoreError("pc form kind mismatch")
+        if payload.get("rendererContract") != PC_FORM_RENDERER_CONTRACT:
+            raise SavedQuoteSkillStoreError("pc form renderer contract mismatch")
+        if payload.get("calculationAuthority") != PC_FORM_CALCULATION_AUTHORITY:
+            raise SavedQuoteSkillStoreError("pc form calculation authority mismatch")
+        if payload.get("approval", {}).get("approvedBy") != "owner":
+            raise SavedQuoteSkillStoreError("pc form approval is not the owner's")
+        _clean_form(payload.get("form"))
+    else:
+        if payload.get("kind") not in (None, SKILL_KIND_QUOTE):
+            raise SavedQuoteSkillStoreError("skill kind mismatch")
+        if payload.get("rendererContract") != _EXPECTED_RENDERER_CONTRACT:
+            raise SavedQuoteSkillStoreError("renderer contract mismatch")
+        if payload.get("calculationAuthority") != _EXPECTED_CALCULATION_AUTHORITY:
+            raise SavedQuoteSkillStoreError("calculation authority mismatch")
 
     # Persist a compact deterministic JSON projection. The B66 semantic
     # authority already canonicalizes the Skill; storage normalizes whitespace
@@ -149,6 +364,7 @@ def canonicalize_approved_artifact(
         fingerprint=fingerprint,
         version=version,
         serialized_json=compact,
+        kind=kind,
     )
 
 
@@ -191,6 +407,7 @@ def _rows_from_result(result: Any) -> list[dict[str, Any]]:
 
 
 def _public_projection(row: dict[str, Any], *, include_skill: bool) -> dict[str, Any]:
+    kind = str(row.get("skill_kind") or SKILL_KIND_QUOTE)
     projected: dict[str, Any] = {
         "saved_skill_id": str(row.get("id", "")),
         "workspace_id": str(row.get("workspace_id", "")),
@@ -198,16 +415,30 @@ def _public_projection(row: dict[str, Any], *, include_skill: bool) -> dict[str,
         "skill_name": str(row.get("skill_name", "")),
         "skill_fingerprint": str(row.get("skill_fingerprint", "")),
         "skill_version": int(row.get("skill_version", 0)),
+        "skill_kind": kind,
         "status": str(row.get("status", "")),
         "created_at": str(row.get("created_at", "")),
         "updated_at": str(row.get("updated_at", "")),
     }
-    if include_skill:
-        raw = row.get("skill_json")
+    raw = row.get("skill_json")
+    payload: dict[str, Any] | None = None
+    if isinstance(raw, str):
         try:
-            projected["skill"] = json.loads(raw) if isinstance(raw, str) else None
+            decoded = json.loads(raw)
+            payload = decoded if isinstance(decoded, dict) else None
         except json.JSONDecodeError:
-            projected["skill"] = None
+            payload = None
+    if include_skill:
+        projected["skill"] = payload
+    # A PC form's list entry has to say WHICH form it is without shipping the
+    # whole structure to every list read: the owner's own PC path and file name.
+    if kind == SKILL_KIND_PC_FORM:
+        form = payload.get("form") if payload else None
+        form = form if isinstance(form, dict) else {}
+        projected["form_path"] = form.get("path") if isinstance(form.get("path"), str) else ""
+        projected["form_filename"] = (
+            form.get("filename") if isinstance(form.get("filename"), str) else ""
+        )
     return projected
 
 
@@ -293,25 +524,31 @@ class D1SavedQuoteSkillStore:
             row_id = existing["id"]
             await self._run(
                 "UPDATE b66_saved_quote_skill "
-                "SET skill_name=?, skill_fingerprint=?, skill_json=?, status='approved', updated_at=? "
+                "SET skill_name=?, skill_fingerprint=?, skill_json=?, skill_kind=?, "
+                "status='approved', updated_at=? "
                 "WHERE id=? AND user_id=? AND workspace_id=?",
-                artifact.skill_name, artifact.fingerprint, artifact.serialized_json, now,
-                row_id, owner, workspace,
+                artifact.skill_name, artifact.fingerprint, artifact.serialized_json,
+                artifact.kind, now, row_id, owner, workspace,
             )
         else:
             row_id = _row_id()
             await self._run(
+                # `skill_kind` is appended last so the shape this table has
+                # always had (migration 079 adds the column at the end) reads
+                # first, exactly as the provisioning gate contract expects.
                 "INSERT INTO b66_saved_quote_skill "
                 "(id, user_id, workspace_id, skill_id, skill_name, skill_fingerprint, "
-                "skill_version, skill_json, status, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?)",
+                "skill_version, skill_json, status, created_at, updated_at, "
+                "skill_kind) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?)",
                 row_id, owner, workspace, artifact.skill_id, artifact.skill_name,
-                artifact.fingerprint, artifact.version, artifact.serialized_json, now, now,
+                artifact.fingerprint, artifact.version, artifact.serialized_json,
+                now, now, artifact.kind,
             )
 
         row = await self._first(
             "SELECT id, workspace_id, skill_id, skill_name, skill_fingerprint, skill_version, "
-            "skill_json, status, created_at, updated_at FROM b66_saved_quote_skill "
+            "skill_json, skill_kind, status, created_at, updated_at FROM b66_saved_quote_skill "
             "WHERE id=? AND user_id=? AND workspace_id=?",
             row_id, owner, workspace,
         )
@@ -331,7 +568,7 @@ class D1SavedQuoteSkillStore:
         bounded = max(1, int(limit))
         rows = await self._all(
             "SELECT id, workspace_id, skill_id, skill_name, skill_fingerprint, skill_version, "
-            "status, created_at, updated_at FROM b66_saved_quote_skill "
+            "skill_json, skill_kind, status, created_at, updated_at FROM b66_saved_quote_skill "
             "WHERE user_id=? AND workspace_id=? AND status='approved' "
             "ORDER BY updated_at DESC LIMIT ?",
             owner, workspace, bounded,
@@ -350,7 +587,7 @@ class D1SavedQuoteSkillStore:
         row_id = validate_row_id(saved_skill_id)
         row = await self._first(
             "SELECT id, workspace_id, skill_id, skill_name, skill_fingerprint, skill_version, "
-            "skill_json, status, created_at, updated_at FROM b66_saved_quote_skill "
+            "skill_json, skill_kind, status, created_at, updated_at FROM b66_saved_quote_skill "
             "WHERE id=? AND user_id=? AND workspace_id=? AND status='approved'",
             row_id, owner, workspace,
         )

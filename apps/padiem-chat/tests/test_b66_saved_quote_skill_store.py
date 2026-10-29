@@ -226,6 +226,7 @@ class _Statement:
                 fingerprint,
                 version,
                 skill_json,
+                skill_kind,
                 created_at,
                 updated_at,
             ) = self.values
@@ -239,6 +240,7 @@ class _Statement:
                     "skill_fingerprint": fingerprint,
                     "skill_version": version,
                     "skill_json": skill_json,
+                    "skill_kind": skill_kind,
                     "status": "approved",
                     "created_at": created_at,
                     "updated_at": updated_at,
@@ -251,6 +253,7 @@ class _Statement:
                 skill_name,
                 fingerprint,
                 skill_json,
+                skill_kind,
                 updated_at,
                 row_id,
                 user_id,
@@ -266,6 +269,7 @@ class _Statement:
                         skill_name=skill_name,
                         skill_fingerprint=fingerprint,
                         skill_json=skill_json,
+                        skill_kind=skill_kind,
                         status="approved",
                         updated_at=updated_at,
                     )
@@ -298,7 +302,7 @@ class _Statement:
             rows.sort(key=lambda row: row["updated_at"], reverse=True)
             return {
                 "results": [
-                    {k: v for k, v in row.items() if k not in {"user_id", "skill_json"}}
+                    {k: v for k, v in row.items() if k != "user_id"}
                     for row in rows[:limit]
                 ]
             }

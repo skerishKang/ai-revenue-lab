@@ -171,6 +171,18 @@
     )).slice(0, 20);
   }
 
+  // #3180 ③: the saved-quote list holds two kinds. A `pc_form` entry is the
+  // owner's own workbook on their own PC, never a certified skill: the fill
+  // lane writes into a copy of it and the sheet's formulas do the arithmetic.
+  function skillById(savedSkillId) {
+    return skills.find((item) => item && item.saved_skill_id === savedSkillId) || null;
+  }
+
+  function isPcForm(skill) {
+    return Boolean(skill && skill.skill_kind === "pc_form"
+      && typeof skill.form_path === "string" && skill.form_path);
+  }
+
   function companyProfileForRender(profile) {
     if (profile === null || profile === undefined) {
       return { ok: true, code: "absent", profile: null };
@@ -209,6 +221,9 @@
   }
 
   let pcExchangePromise = null;
+  // Set once the dialog exists: the saved-form repeat path renders through the
+  // same review list, so it needs the PC form section's own nodes.
+  let pcFormBridge = null;
 
   function pcCopy() {
     if (document.documentElement.lang === "en") {
@@ -225,6 +240,10 @@
         reviewEmpty: "No cell was filled. Check the request and the form.",
         reviewExtend: "Item rows added by copying the form's own row:",
         reviewTotals: "Totals and tax come from your form's own formulas. Check each value and cell before saving.",
+        remember: "Save this form as my quote form", remembering: "Saving the form…",
+        remembered: "Saved. Pick it from the quote form list next time.",
+        rememberFailed: "The form could not be saved. Please try again in a moment.",
+        pcFormSuffix: " (my PC form)", repeatFill: "Filling your saved form from the PC…",
       };
     }
     return {
@@ -240,6 +259,10 @@
       reviewEmpty: "채운 셀이 없습니다. 요청과 양식을 확인해 주세요.",
       reviewExtend: "양식의 품목 행 서식을 복사해 늘린 행:",
       reviewTotals: "합계·세금은 양식의 수식이 계산합니다. 저장 전에 값과 셀 위치를 확인해 주세요.",
+      remember: "이 양식을 내 견적서로 저장", remembering: "양식을 저장하는 중…",
+      remembered: "저장했습니다. 다음부터는 견적서 양식 목록에서 고를 수 있습니다.",
+      rememberFailed: "양식을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+      pcFormSuffix: " (내 PC 양식)", repeatFill: "저장한 양식을 PC에서 다시 읽어 채우는 중…",
     };
   }
 
@@ -303,6 +326,7 @@
   function wirePcForm(nodes) {
     let template = null;
     let filled = null;
+    let savedFormId = null;
     const say = (text) => {
       nodes.status.textContent = text || "";
       nodes.status.hidden = !text;
@@ -383,7 +407,9 @@
             fileId: picked.fileId,
           };
           filled = null;
+          savedFormId = null;
           nodes.save.hidden = true;
+          if (nodes.remember) nodes.remember.hidden = true;
           clearReview();
           nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
           nodes.chosen.hidden = false;
@@ -413,6 +439,10 @@
         }
         filled = body;
         nodes.save.hidden = false;
+        // #3180 ③: the fill this owner just reviewed can become their saved
+        // quote form, so the next quote starts from the list instead of a
+        // fresh picker trip.
+        if (nodes.remember) nodes.remember.hidden = savedFormId !== null;
         renderReview(body);
         say(pcCopy().made);
       } catch (_) {
@@ -458,6 +488,23 @@
         await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
       }
     }
+    if (nodes.remember) nodes.remember.addEventListener("click", async () => {
+      if (!template || typeof template.fileId !== "string" || !template.fileId) return;
+      say(pcCopy().remembering);
+      try {
+        const saved = await readJson("/api/b66/pc-quote/forms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ file_id: template.fileId, name: template.name.replace(/\.[^.]+$/, "") }),
+        });
+        if (!saved.response.ok || !saved.data || saved.data.ok !== true) throw new Error("remember_failed");
+        nodes.remember.hidden = true;
+        say(pcCopy().remembered);
+        void refresh();
+      } catch (_) {
+        say(pcCopy().rememberFailed);
+      }
+    });
     void pcLinkedNow().then((linked) => {
       if (linked !== false) return;
       nodes.pick.hidden = true;
@@ -468,6 +515,26 @@
       nodes.note.append(connect);
       nodes.note.hidden = false;
     });
+
+    return {
+      // A repeat fill already knows its form: no picker, and nothing new to
+      // register — the same review list still runs before saving.
+      repeatFromSavedForm(skill, fileId, body) {
+        savedFormId = skill.saved_skill_id;
+        template = {
+          name: skill.form_filename || "견적서 양식.xlsx",
+          path: skill.form_path, fileId,
+        };
+        filled = body;
+        nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
+        nodes.chosen.hidden = false;
+        nodes.make.hidden = false;
+        nodes.save.hidden = false;
+        if (nodes.remember) nodes.remember.hidden = true;
+        renderReview(body);
+        say(pcCopy().made);
+      },
+    };
   }
 
   function ensureUi() {
@@ -649,6 +716,10 @@
     pcReview.id = "b66QuotePcReview";
     pcReview.setAttribute("aria-live", "polite");
     pcReview.hidden = true;
+    const pcRemember = el("button", "b66-quote-pcform-remember", pcCopy().remember);
+    pcRemember.id = "b66QuotePcRemember";
+    pcRemember.type = "button";
+    pcRemember.hidden = true;
     const pcSave = el("button", "b66-quote-pcform-save", pcCopy().save);
     pcSave.id = "b66QuotePcSave";
     pcSave.type = "button";
@@ -658,13 +729,14 @@
     pcFormStatus.setAttribute("role", "status");
     pcFormStatus.setAttribute("aria-live", "polite");
     pcFormStatus.hidden = true;
-    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcSave, pcFormStatus);
+    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcRemember, pcSave, pcFormStatus);
     // #5895: the section rides the form's own append below. Calling after() on
     // the still-detached pair was a per-DOM no-op, so the dialog shipped
     // without the PC form its launcher promises.
-    wirePcForm({
+    pcFormBridge = wirePcForm({
       pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
-      review: pcReview, status: pcFormStatus, request: () => message.value,
+      review: pcReview, remember: pcRemember, status: pcFormStatus,
+      request: () => message.value,
     });
 
     const submit = el("button", "b66-quote-generate", copy().generate);
@@ -1177,7 +1249,7 @@
     skills.forEach((skill) => {
       const option = document.createElement("option");
       option.value = skill.saved_skill_id;
-      option.textContent = skill.skill_name;
+      option.textContent = skill.skill_name + (isPcForm(skill) ? pcCopy().pcFormSuffix : "");
       select.append(option);
     });
     // #5895: a linked PC is enough to reach the quote screen; the form itself is the
@@ -1366,6 +1438,57 @@
     });
   }
 
+  // One finished PC file read, polled to its staged result. The same
+  // `/api/pc/fetch` + `/api/pc/result` pair the PC menu already uses; no new PC
+  // authority, and the bytes only ever travel for this one fill.
+  async function waitForPcFile(dispatchId) {
+    for (;;) {
+      let response = null;
+      let body = null;
+      try {
+        const result = await readJson("/api/pc/result?dispatch_id=" + encodeURIComponent(dispatchId));
+        response = result.response;
+        body = result.data;
+      } catch (_) {
+        body = null;
+      }
+      if (body && body.state === "ready") return body.ok === true ? dispatchId : null;
+      if (body && body.state === "cancelled") return null;
+      if (response && response.status !== 200) return null;
+      const seconds = body && Number(body.poll_seconds) > 0 ? Number(body.poll_seconds) : 2;
+      await new Promise((resolve) => window.setTimeout(resolve, seconds * 1000));
+    }
+  }
+
+  async function fillFromSavedForm(skill, requestText) {
+    setStatus(pcCopy().repeatFill, "working");
+    const fetched = await readJson("/api/pc/fetch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ path: skill.form_path }),
+    });
+    if (!fetched.response.ok || !fetched.data || fetched.data.ok !== true
+        || typeof fetched.data.dispatch_id !== "string") {
+      throw new Error("pc_fetch_failed");
+    }
+    const fileId = await waitForPcFile(fetched.data.dispatch_id);
+    if (!fileId) throw new Error("pc_fetch_failed");
+    const filled = await readJson("/api/b66/pc-quote/fill", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ file_id: fileId, request: requestText, form_id: skill.saved_skill_id }),
+    });
+    if (!filled.response.ok || !filled.data || filled.data.ok !== true
+        || typeof filled.data.filled_file_id !== "string") {
+      throw new Error("fill_failed");
+    }
+    if (!pcFormBridge || typeof pcFormBridge.repeatFromSavedForm !== "function") {
+      throw new Error("pc_form_missing");
+    }
+    pcFormBridge.repeatFromSavedForm(skill, fileId, filled.data);
+    setStatus(pcCopy().made, "ready");
+  }
+
   async function generate(event) {
     event.preventDefault();
     const c = copy();
@@ -1379,6 +1502,24 @@
     const selectedTier = modelSelect && modelSelect.value;
     const modelId = selectedModelByTier[selectedTier];
     const requestText = message.value.trim();
+    const savedSkill = skillById(savedSkillId);
+    if (isPcForm(savedSkill)) {
+      // #3180 ③: a saved PC form is not interpreted through the model at all;
+      // the PC's own workbook is re-read and filled in the lane.
+      if (!requestText) {
+        setStatus(c.failed, "error");
+        return;
+      }
+      submit.disabled = true;
+      try {
+        await fillFromSavedForm(savedSkill, requestText);
+      } catch (_) {
+        setStatus(c.failed, "error");
+      } finally {
+        submit.disabled = false;
+      }
+      return;
+    }
     if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
         !modelId || !modelIds.includes(selectedTier)) {
       setStatus(c.failed, "error");

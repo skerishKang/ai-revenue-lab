@@ -89,6 +89,7 @@ from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
 from .b66_pc_template_routes import PC_QUOTE_FILL_PATH, pc_quote_fill
+from .b66_pc_form_routes import PC_QUOTE_FORMS_PATH, pc_quote_form_register
 from .b66_pc_directory_routes import B66_PC_DIRECTORY_PATH, b66_pc_directory
 from .b66_pc_txt_read_routes import (
     B66_PC_RESULT_PATH,
@@ -763,6 +764,9 @@ def create_app(
         # #5895: the quote screen's "my PC Excel form" lane. Chat exchanges ids and the
         # model's cell mapping only; reading and filling the workbook happen in COM2.
         Route(PC_QUOTE_FILL_PATH, pc_quote_fill, methods=["POST"]),
+        # #3180 ③: register the owner's own PC form into the same saved-quote asset
+        # table the skill list already reads; the workbook itself stays on the PC.
+        Route(PC_QUOTE_FORMS_PATH, pc_quote_form_register, methods=["POST"]),
         Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),

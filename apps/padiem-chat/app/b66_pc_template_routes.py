@@ -29,6 +29,13 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .b66_saved_quote_skill_store import (
+    SKILL_KIND_PC_FORM,
+    SavedQuoteSkillStoreError,
+    build_pc_form_artifact,
+    validate_row_id,
+)
+from .claw_memory_routes import _resolve_memory_workspace
 from .pc_file_exchange_routes import (
     DISPATCH_ID,
     _dispatch_row,
@@ -165,6 +172,86 @@ def _filled_name(client_name: str, day: str) -> str:
     return "견적서_" + safe + "_" + day + ".xlsx"
 
 
+async def _saved_form(
+    request: Request, uid: str, form_id: Any, template_path: str,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None] | tuple[JSONResponse, None]:
+    """The owner's registered form for this exact workbook, or a refusal.
+
+    ``None`` means "no saved form was named": the caller describes the workbook
+    on the spot, exactly as before #3180 ③.
+    """
+
+    if form_id is None:
+        return None, None
+    if not isinstance(form_id, str):
+        return _error(422, "form_id_invalid"), None
+    try:
+        clean_id = validate_row_id(form_id)
+    except SavedQuoteSkillStoreError:
+        return _error(422, "form_id_invalid"), None
+    store = getattr(request.app.state, "b66_saved_quote_skill_store", None)
+    if not callable(getattr(store, "get_skill", None)):
+        return _error(503, "saved_quote_skill_unavailable"), None
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "workspace_unavailable"), None
+    if not isinstance(workspace_id, str) or not workspace_id:
+        return _error(503, "workspace_unavailable"), None
+    try:
+        record = store.get_skill(user_id=uid, workspace_id=workspace_id, saved_skill_id=clean_id)
+        if hasattr(record, "__await__"):
+            record = await record
+    except Exception:
+        return _error(503, "saved_quote_skill_unavailable"), None
+    if not isinstance(record, dict):
+        return _error(404, "form_not_found"), None
+    if record.get("skill_kind") != SKILL_KIND_PC_FORM:
+        return _error(409, "form_not_a_pc_form"), None
+    skill = record.get("skill") if isinstance(record.get("skill"), dict) else {}
+    form = skill.get("form")
+    if not isinstance(form, dict):
+        return _error(409, "form_invalid"), None
+    # The saved form is bound to the file it was registered from. Filling some
+    # other workbook under that name would put the wrong company's form under a
+    # familiar label, so it is refused rather than guessed at.
+    if form.get("path") != template_path:
+        return _error(409, "form_path_mismatch"), None
+    return form, record
+
+
+async def _remember_item_rows(
+    request: Request, uid: str, record: dict[str, Any] | None,
+    form: dict[str, Any], extend: list[Any],
+) -> None:
+    """Store the row-growth pattern this fill needed on the same saved form."""
+
+    if not isinstance(record, dict) or not isinstance(extend, list):
+        return
+    store = getattr(request.app.state, "b66_saved_quote_skill_store", None)
+    if not callable(getattr(store, "put_approved_skill", None)):
+        return
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+        if not isinstance(workspace_id, str) or not workspace_id:
+            return
+        artifact = build_pc_form_artifact(
+            skill_id=record.get("skill_id"),
+            skill_name=record.get("skill_name"),
+            form={**form, "item_rows": extend},
+            approved_at="",
+        )
+        written = store.put_approved_skill(
+            user_id=uid, workspace_id=workspace_id, artifact=artifact,
+        )
+        if hasattr(written, "__await__"):
+            await written
+    except Exception:
+        # The fill already succeeded; a pattern we could not remember must not
+        # turn a delivered workbook into an error.
+        return
+
+
 async def pc_quote_fill(request: Request) -> JSONResponse:
     """One picked PC workbook, answered as a filled copy held by the file lane."""
 
@@ -173,7 +260,8 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
     from .oracle_mesh_read_return_routes import _read_body, _response, _text_value
 
     body = await _read_body(
-        request, frozenset({"file_id", "request"}), optional=frozenset({"today"}),
+        request, frozenset({"file_id", "request"}),
+        optional=frozenset({"today", "form_id"}),
     )
     if body is None:
         return _error(400, "pc_exchange_invalid_body")
@@ -203,25 +291,40 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
     data, refusal = await _stored_output(request, uid, dispatch)
     if refusal is not None:
         return refusal
-    template_name = str(dispatch.get("file_path") or "").replace("\\", "/").rsplit("/", 1)[-1] or "견적서 양식.xlsx"
+    template_path = str(dispatch.get("file_path") or "").replace("\\", "/").strip()
+    template_name = template_path.rsplit("/", 1)[-1] or "견적서 양식.xlsx"
     if not template_name.lower().endswith(".xlsx"):
         return _error(422, "pc_quote_template_format")
+
+    # #3180 ③: a saved form already knows its own structure, so the repeat fill
+    # reuses it instead of describing the workbook again — and refuses a file
+    # that is not the one the owner registered under that form.
+    saved_form, saved_record = await _saved_form(request, uid, body.get("form_id"), template_path)
+    if isinstance(saved_form, JSONResponse):
+        return saved_form
 
     lane_id = await _lane_upload(client, uid, template_name, data)
     if lane_id is None:
         return _error(502, "file_lane_unavailable")
-    structure = await _lane_json(client, uid, method="GET", path="/files/" + lane_id + "/structure")
-    if structure is None:
-        return _error(502, "file_lane_unavailable")
+    if saved_form is None:
+        structure = await _lane_json(client, uid, method="GET", path="/files/" + lane_id + "/structure")
+        if structure is None:
+            return _error(502, "file_lane_unavailable")
+    else:
+        structure = {"sheets": saved_form["structure"]["sheets"]}
 
     interpreter = getattr(request.app.state, "b66_quote_interpreter", None)
     completer = getattr(getattr(interpreter, "_client", None), "complete", None)
     if not callable(completer):
         return _error(503, "quote_runtime_unavailable")
     try:
+        pattern = ""
+        if saved_form is not None and saved_form.get("item_rows"):
+            pattern = ("\n\n이 양식에서 지난번 품목 행을 늘린 방식:\n"
+                       + json.dumps(saved_form["item_rows"], ensure_ascii=False)[:2000])
         result = await completer(
             [{"role": "user", "content": asked.strip()}],
-            additional_system_context=_MAPPING_SYSTEM + "\n\n양식 구조:\n"
+            additional_system_context=_MAPPING_SYSTEM + pattern + "\n\n양식 구조:\n"
             + json.dumps(structure, ensure_ascii=False)[:_MAX_REQUEST_CHARS * 8],
             attachments=(),
         )
@@ -239,6 +342,10 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
     )
     if filled is None:
         return _error(502, "quote_template_fill_failed")
+    if saved_form is not None and decided["extend"]:
+        # The item-row pattern is what makes the second quote cheap; remember it
+        # on the same stored form. A failed update never fails the fill itself.
+        await _remember_item_rows(request, uid, saved_record, saved_form, decided["extend"])
     return _response({
         "ok": True,
         "filled_file_id": filled.get("file_id"),
@@ -247,4 +354,5 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
         "client": decided["client"],
         "mapping": decided["mapping"],
         "extend": decided["extend"],
+        "form_id": saved_record.get("saved_skill_id") if saved_record else None,
     })
