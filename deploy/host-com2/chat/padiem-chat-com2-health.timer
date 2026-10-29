@@ -1,0 +1,10 @@
+[Unit]
+Description=PADIEM COM2 Chat loopback health check every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=padiem-chat-com2-health.service
+
+[Install]
+WantedBy=timers.target
