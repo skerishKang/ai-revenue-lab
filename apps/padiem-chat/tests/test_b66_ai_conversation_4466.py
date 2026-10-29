@@ -666,7 +666,7 @@ async def test_malformed_stored_row_fails_closed(source):
 async def test_oversize_stored_row_fails_closed(source):
     db, store = source
     state = empty_state()
-    state["memo"] = "x" * 40_000
+    state["memo"] = "x" * 1_100_000
     raw = json.dumps(state, ensure_ascii=False)
     db.execute(
         "INSERT INTO b66_ai_conversation (user_id,workspace_id,state_json,updated_at)"
@@ -675,6 +675,21 @@ async def test_oversize_stored_row_fails_closed(source):
     db.commit()
     with pytest.raises(B66ConversationError):
         await store.load(user_id=A, workspace_id=f"owner:{A}")
+
+
+async def test_a_stored_row_larger_than_the_old_32k_cap_loads(source):
+    # B6: the old 32 KiB guard refused this row; the aligned 1 MiB guard loads it.
+    db, store = source
+    state = empty_state()
+    state["memo"] = "x" * 40_000
+    raw = json.dumps(state, ensure_ascii=False)
+    db.execute(
+        "INSERT INTO b66_ai_conversation (user_id,workspace_id,state_json,updated_at)"
+        " VALUES (?,?,?,?)", (A, f"owner:{A}", raw, "2026-10-14"),
+    )
+    db.commit()
+    loaded = await store.load(user_id=A, workspace_id=f"owner:{A}")
+    assert loaded is not None
 
 
 async def test_a_row_whose_guard_revision_disagrees_with_its_state_fails_closed(source):
@@ -709,7 +724,7 @@ async def test_clear_removes_only_the_owner_slot(source):
 async def test_oversize_state_is_refused_on_save(source):
     _, store = source
     state = empty_state()
-    state["facts"]["memo"] = "x" * 33_000
+    state["facts"]["memo"] = "x" * 1_100_000
     with pytest.raises(B66ConversationError):
         await store.save(
             user_id=A, workspace_id=f"owner:{A}", state=state, expected_revision=0
