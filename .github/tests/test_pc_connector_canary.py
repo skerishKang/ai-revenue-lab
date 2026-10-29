@@ -114,10 +114,11 @@ class PcConnectorCanaryVerdictTests(unittest.TestCase):
         )
         self.assertTrue(canary.PC_RUN_ID.fullmatch(canary.mint_pc_run_id()))
         # The turn is one composer POST with the run id the caller minted: nothing else.
+        # `mode` left the request contract with the chat-mode remnant.
         self.assertEqual(
-            set(canary.turn_payload(RUN_ID)), {"mode", "messages", "pc_run_id"},
+            set(canary.turn_payload(RUN_ID)), {"messages", "pc_run_id"},
         )
-        self.assertEqual(canary.turn_payload(RUN_ID)["mode"], "auto")
+        self.assertNotIn("mode", canary.turn_payload(RUN_ID))
 
     def test_a_run_still_unfinished_at_the_bound_is_a_named_failure(self) -> None:
         """The 2026-10-29 miss, fixed: silence now ends with a verdict, not with the job.
