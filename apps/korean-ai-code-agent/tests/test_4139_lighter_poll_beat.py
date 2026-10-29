@@ -17,7 +17,18 @@ import kagent.local_agent_mesh_failover as failover
 from kagent.local_agent_oracle_mesh_executor import (
     IDLE_POLL_BASE_SECONDS, POLL_PATH, OracleMeshExecutor, _PresenceBeat, _beat_row,
 )
-from tests.test_4139_oracle_mesh_executor import SECRET, _StubPort
+#: Defined here, not imported from another suite: CI discovers these files with
+#: ``unittest.TestLoader().discover("tests")``, which imports each module by its own
+#: name and has no ``tests`` package to import from.
+SECRET = "deployment-channel-secret-value-261017"
+
+
+class _StubPort:
+    """Stand-in read port; the channel transport is what is under test here."""
+
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds):  # noqa: D102
+        del node_ref, file_path, timeout_seconds
+        return b""
 
 NODE_ONE = "node/abcd/nodeone@Dd2cdXxSOwp"
 NODE_TWO = "node/abcd/nodetwo@Dd2cdXxSOwp"
