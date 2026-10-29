@@ -173,6 +173,12 @@ function json(payload, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => payload };
 }
 
+// #5783 G5 failure half: a scenario answers the next requests itself. The
+// override runs BEFORE the recording fake and returns a response (or throws,
+// which is how a request that never reached a server is modelled); returning
+// a falsy value hands the request back to the fake.
+let fetchOverride = null;
+
 async function fetch(url, opts) {
   const options = opts || {};
   const method = String(options.method || "GET").toUpperCase();
@@ -183,6 +189,11 @@ async function fetch(url, opts) {
     try { body = JSON.parse(options.body); } catch (_) { body = null; }
   }
   requests.push({ method, url: path, credentials: options.credentials || null });
+
+  if (fetchOverride) {
+    const answered = fetchOverride(method, path, body);
+    if (answered) return answered;
+  }
 
   if (method === "GET" && path === "/api/pc/pairings") {
     return json({ ok: true, links: pcLinks.map((link) => ({ ...link })) });
@@ -1010,9 +1021,11 @@ const SCENARIOS = {
       .querySelectorAll("button")
       .find((button) => text(button).includes(meetingStored.name));
     if (!meetingReopenRow) throw new Error("meeting reopen row missing");
+    const meetingRowLabel = text(meetingReopenRow).trim();
     await meetingReopenRow.dispatch("click");
     await sleep(30);
     const meetingReopened = find(session, "utilMeetingOutput").value;
+    const meetingEditState = text(find(session, "utilMeetingEditState"));
 
     const meetingSecondEdit = meetingReopened + "\n[편집: 고쳐 쓰기]";
     find(session, "utilMeetingOutput").value = meetingSecondEdit;
@@ -1038,6 +1051,8 @@ const SCENARIOS = {
       firstSavedName: meetingStored.name,
       firstSavedKind: meetingStored.doc_kind,
       reopened: meetingReopened,
+      rowLabel: meetingRowLabel,
+      editState: meetingEditState,
       askText: meetingAskText,
       askLabels: meetingAskLabels,
       overwrittenBody: meetingAfterOverwrite ? meetingAfterOverwrite.content : null,
@@ -1058,6 +1073,177 @@ const SCENARIOS = {
     observation.chatUtils = chatPayloads.map((payload) => payload.util);
     observation.storedKinds = storedFiles.filter((f) => !f.doc_version_of).map((f) => ({ name: f.name, doc_kind: f.doc_kind }));
     observation.versionCount = storedFiles.filter((f) => f.doc_version_of).length;
+    observation.alerts = alerts.slice();
+    observation.pageErrors = pageErrors;
+    return observation;
+  },
+
+  // #5783 failure half: a save that stored nothing says so inside the tab.
+  // Each case injects one status on the project-file write and reads the tab's
+  // own status line; the retry case then presses 다시 시도 with the failure
+  // gone and expects the very same save to complete. No case may alert.
+  async g5fail() {
+    const session = spawnSession();
+    const observation = { cases: {}, alertsAfterCases: null };
+
+    async function speechSaveFailureCase(override) {
+      fetchOverride = override;
+      find(session, "utilSpeechOutput").value = "저장 실패 본문";
+      await find(session, "utilSpeechSave").dispatch("click");
+      await sleep(30);
+      const line = find(session, "utilSpeechSaveState");
+      const result = {
+        text: text(line),
+        hidden: Boolean(line.hidden),
+        hasRetry: Boolean(line.querySelector(".util-retry")),
+        ariaLive: line.getAttribute("aria-live"),
+        storedCount: storedFiles.length,
+      };
+      fetchOverride = null;
+      return result;
+    }
+
+    // ── 축사: every status the save path can answer, on the tab's own line ──
+    // Each failing case keeps the form's event name, so every POST collides
+    // with nothing — nothing is stored while the override answers.
+    await openTool(session, "speech");
+    const speechForm = find(session, "utilSpeechForm");
+    speechForm.querySelector("[name=event]").value = "상태별 안내 확인";
+    speechForm.querySelector("[name=message]").value = "본문";
+    await speechForm.dispatch("submit");
+    await sleep(20);
+
+    observation.cases.speech403 = await speechSaveFailureCase(
+      (method, path) => (
+        method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "forbidden" } }, 403) : null
+      ),
+    );
+    observation.cases.speech404 = await speechSaveFailureCase(
+      (method, path) => (
+        method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "not_found" } }, 404) : null
+      ),
+    );
+    observation.cases.speech413 = await speechSaveFailureCase(
+      (method, path) => (
+        method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "invalid_document" } }, 413) : null
+      ),
+    );
+    observation.cases.speech422limit = await speechSaveFailureCase(
+      (method, path) => (
+        method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "project_file_limit", message: "본문이 너무 길어요" } }, 422) : null
+      ),
+    );
+    // 연결 실패: the request never reaches an answer — the override throws.
+    observation.cases.speechOffline = await speechSaveFailureCase(
+      (method, path) => {
+        if (method === "POST" && path === "/api/projects/p1/files") throw new Error("network down");
+        return null;
+      },
+    );
+
+    // 5xx: the line rides the 다시 시도 button, and pressing it re-runs the
+    // SAME save — the stored row proves the retry really saved.
+    // The retry re-runs the SAME save — a fresh event name, so the row it
+    // stores is this save's own and no earlier failure's.
+    speechForm.querySelector("[name=event]").value = "재시도 축사";
+    const retryName = "재시도 축사.txt";
+    fetchOverride = (method, path) => (
+      method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "unavailable" } }, 500) : null
+    );
+    find(session, "utilSpeechOutput").value = "재시도 되는 본문";
+    await find(session, "utilSpeechSave").dispatch("click");
+    await sleep(30);
+    const retryLine = find(session, "utilSpeechSaveState");
+    const retryButton = retryLine.querySelector(".util-retry");
+    observation.cases.speech500 = {
+      text: text(retryLine),
+      hasRetry: Boolean(retryButton),
+      buttonLabel: retryButton ? text(retryButton).trim() : null,
+    };
+    if (!retryButton) throw new Error("retry button missing on a 5xx save failure");
+    fetchOverride = null;
+    await retryButton.dispatch("click");
+    await sleep(40);
+    const retried = storedFiles.find((f) => f.name === retryName && f.doc_kind === "speech" && !f.doc_version_of) || null;
+    observation.cases.speech500Retry = {
+      lineHidden: Boolean(find(session, "utilSpeechSaveState").hidden),
+      stored: retried ? { name: retried.name, kind: retried.doc_kind, content: retried.content } : null,
+      saveButtonLabel: text(find(session, "utilSpeechSave")).trim(),
+    };
+
+    // ── SNS·회의정리: each tab owns its own status line ────────────────────
+    await openTool(session, "sns");
+    const snsForm = find(session, "utilSnsForm");
+    snsForm.querySelector("[name=event]").value = "상태별 안내 SNS";
+    snsForm.querySelector("[name=content]").value = "본문";
+    await snsForm.dispatch("submit");
+    await sleep(20);
+    fetchOverride = (method, path) => (
+      method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "forbidden" } }, 403) : null
+    );
+    find(session, "utilSnsOutput").value = "SNS 저장 실패 본문";
+    await find(session, "utilSnsSave").dispatch("click");
+    await sleep(30);
+    const snsLine = find(session, "utilSnsSaveState");
+    observation.cases.sns403 = {
+      text: text(snsLine),
+      hidden: Boolean(snsLine.hidden),
+      hasRetry: Boolean(snsLine.querySelector(".util-retry")),
+      ariaLive: snsLine.getAttribute("aria-live"),
+    };
+    fetchOverride = null;
+
+    await openTool(session, "meeting");
+    const meetingForm = find(session, "utilMeetingForm");
+    meetingForm.querySelector("[name=title]").value = "상태별 안내 회의";
+    meetingForm.querySelector("[name=content]").value = "본문";
+    await meetingForm.dispatch("submit");
+    await sleep(20);
+    fetchOverride = (method, path) => (
+      method === "POST" && path === "/api/projects/p1/files" ? json({ error: { code: "not_found" } }, 404) : null
+    );
+    find(session, "utilMeetingOutput").value = "회의 저장 실패 본문";
+    await find(session, "utilMeetingSave").dispatch("click");
+    await sleep(30);
+    const meetingLine = find(session, "utilMeetingSaveState");
+    observation.cases.meeting404 = {
+      text: text(meetingLine),
+      hidden: Boolean(meetingLine.hidden),
+      hasRetry: Boolean(meetingLine.querySelector(".util-retry")),
+      ariaLive: meetingLine.getAttribute("aria-live"),
+    };
+    fetchOverride = null;
+
+    // ── 409 with no choice: the ask waits, nothing is stored, no line lies ──
+    await openTool(session, "speech");
+    speechForm.querySelector("[name=event]").value = "선택 없이는 저장 없음";
+    speechForm.querySelector("[name=message]").value = "본문";
+    await speechForm.dispatch("submit");
+    await sleep(20);
+    find(session, "utilSpeechOutput").value = "첫 저장 본문";
+    await find(session, "utilSpeechSave").dispatch("click");
+    await sleep(40);
+    const firstStored = storedFiles.filter((f) => f.doc_kind === "speech" && !f.doc_version_of).length;
+    find(session, "utilSpeechOutput").value = "다시 저장하려는 본문";
+    const writesBefore = requests.filter((r) => r.method === "POST" || r.method === "PUT").length;
+    // The ask suspends the save until a button is pressed — dispatch without
+    // awaiting it, then give the 409 round trip time to land.
+    void find(session, "utilSpeechSave").dispatch("click");
+    await sleep(60);
+    const ask = session.root.querySelector(".util-save-choice");
+    const writesAfter = requests.filter((r) => r.method === "POST" || r.method === "PUT").length;
+    const storedAfter = storedFiles.filter((f) => f.doc_kind === "speech" && !f.doc_version_of).length;
+    observation.noChoice409 = {
+      askShown: Boolean(ask),
+      askText: ask ? text(ask.querySelector(".util-save-choice-text")) : null,
+      askLabels: ask ? labels(ask.querySelectorAll("button")) : [],
+      statusLineHidden: Boolean(find(session, "utilSpeechSaveState").hidden),
+      rowsBefore: firstStored,
+      rowsAfter: storedAfter,
+      writeRequestsBefore: writesBefore,
+      writeRequestsAfter: writesAfter,
+    };
+
     observation.alerts = alerts.slice();
     observation.pageErrors = pageErrors;
     return observation;
