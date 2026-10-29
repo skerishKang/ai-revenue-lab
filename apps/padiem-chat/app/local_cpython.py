@@ -22,10 +22,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .app_factory import create_app
+from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
 from .d1_sqlite import SqliteD1
+from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
 from .local_r2 import LocalDiskR2
+from .local_service_bridge import (
+    HttpRpcBinding,
+    LocalB66PdfRendererClient,
+    compose_local_b14_transports,
+)
 from .project_files import D1ProjectFileStore
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
@@ -120,6 +127,23 @@ def build_app():
     db = SqliteD1(connection)
     r2 = LocalDiskR2(data_dir / "objects")
 
+    # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
+    # configured origin+secret pair builds one; a half-configured pair is a
+    # boot error, never a silent downgrade. Absent pairs keep the exact
+    # fail-closed behavior the Worker has when a binding is missing.
+    identity_origin, identity_secret = _optional_pair(
+        "PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN", "PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET"
+    )
+    pdf_origin, pdf_secret = _optional_pair(
+        "PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "PADIEM_CHAT_LOCAL_B66_PDF_SECRET"
+    )
+    identity_authority = (
+        HttpRpcBinding(identity_origin, identity_secret) if identity_origin else None
+    )
+    pdf_renderer = (
+        LocalB66PdfRendererClient(pdf_origin, pdf_secret) if pdf_origin else None
+    )
+
     app = create_app(
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
@@ -128,5 +152,34 @@ def build_app():
         project_file_store=D1ProjectFileStore(db),
         saved_output_store=D1SavedOutputStore(db),
         usage_store=D1UsageCounterStore(db),
+        control_plane_identity_authority=identity_authority,
+        b66_pdf_renderer_client=pdf_renderer,
     )
+
+    if settings.runtime_mode == "b14":
+        # The same replacement worker.py performs when it composes the B14
+        # transports: the default client stays as a stub any other subsystem
+        # already captured, and the dispatch-aware client carries the proof.
+        completion_transport, stream_transport = compose_local_b14_transports(
+            settings, os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET")
+        )
+        app.state.b14_client = DispatchAwareB14Client(
+            settings,
+            service_transport=completion_transport,
+            stream_transport=stream_transport,
+            require_service_binding=True,
+        )
+        quote_model_resolver = B66ExplicitQuoteModelResolver(completion_transport)
+        app.state.b66_quote_model_resolver = quote_model_resolver
+        app.state.b14_model_choice_resolver = quote_model_resolver
     return app
+
+
+def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | None]:
+    origin = os.getenv(origin_env, "").strip()
+    secret = os.getenv(secret_env, "").strip()
+    if not origin and not secret:
+        return None, None
+    if not origin or not secret:
+        raise ConfigError(f"{origin_env} and {secret_env} must be set together")
+    return origin, secret

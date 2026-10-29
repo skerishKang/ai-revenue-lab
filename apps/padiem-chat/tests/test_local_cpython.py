@@ -23,7 +23,9 @@ from starlette.testclient import TestClient
 from app.config import ConfigError, Settings
 from app.local_cpython import _ensure_session_secret, apply_migrations, build_app
 from app.local_r2 import LocalDiskR2
+from app.local_service_bridge import HttpRpcBinding, LocalB66PdfRendererClient
 from app.same_origin_guard import expected_browser_origin
+from app.web_tools import create_web_provider
 from app.workspace_storage import _read_r2_object_bytes
 
 
@@ -133,6 +135,55 @@ def local_client(tmp_path, monkeypatch):
     app = build_app()
     with TestClient(app, headers={"Origin": "http://127.0.0.1:8773"}) as client:
         yield client
+
+
+def test_web_search_is_not_runtime_blocked_on_cpython_only_key_configured():
+    # The provider is the same core client the Worker builds; on CPython the
+    # transport argument simply stays None and the core's real httpx is used.
+    # So the only gates are the same two: keys in the environment and the
+    # b14/live runtime the automatic search already requires.
+    settings = Settings.from_values(
+        runtime_mode="b14", b14_base_url="https://b14.example", live_enabled=True,
+        web_provider="tinyfish_daum", tinyfish_api_key="t" * 40,
+        daum_rest_api_key="d" * 40,
+    )
+    provider = create_web_provider(settings)
+    assert type(provider).__name__ == "TinyFishDaumWebProvider"
+    assert provider._automatic_search_enabled is True
+
+    off = create_web_provider(Settings.from_values(runtime_mode="mock", web_provider="off"))
+    assert off._automatic_search_enabled is False
+
+
+@pytest.fixture()
+def local_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("PADIEM_LOCAL_DEV", "1")
+    monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "mock")
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "off")
+    monkeypatch.setenv("PADIEM_CHAT_WEB_PROVIDER", "off")
+    monkeypatch.setenv("PADIEM_CHAT_PUBLIC_BASE_URL", "http://127.0.0.1:8773")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
+    return tmp_path
+
+
+def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, monkeypatch):
+    app = build_app()
+    assert app.state.control_plane_identity_authority is None
+    assert app.state.b66_pdf_renderer_client is None
+
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN", "https://identity.example")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET", "local-service-secret-0123456789abcd")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_ORIGIN", "https://pdf.example")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET", "local-service-secret-0123456789abcd")
+    app = build_app()
+    assert isinstance(app.state.control_plane_identity_authority, HttpRpcBinding)
+    assert isinstance(app.state.b66_pdf_renderer_client, LocalB66PdfRendererClient)
+
+    # A half-configured pair is a boot error, never a silent downgrade.
+    monkeypatch.delenv("PADIEM_CHAT_LOCAL_B66_PDF_SECRET")
+    with pytest.raises(ConfigError):
+        build_app()
 
 
 def test_ensure_session_secret_generates_once_and_keeps_cookies_across_restart(tmp_path, monkeypatch):
