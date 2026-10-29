@@ -61,8 +61,10 @@ def test_a_stored_document_keeps_the_country_it_was_saved_under() -> None:
 def test_the_fix_changes_nothing_on_the_wire() -> None:
     """Generation payload and stored-document shape are exactly the #6046 contract."""
     obs = observation()
-    assert set(obs["chatBodyKeys"]) == {"country,messages,mode,tier,util",
-                                        "messages,mode,tier,util"}, obs["chatBodyKeys"]
+    # `mode` is gone from the request contract (chat-mode remnant removal), so the
+    # only bodies this module can put on the wire are these two key sets.
+    assert set(obs["chatBodyKeys"]) == {"country,messages,tier,util",
+                                        "messages,tier,util"}, obs["chatBodyKeys"]
     assert set(obs["saveBodyKeys"]) == {"country,media_type,name,text",
                                         "media_type,name,text"}, obs["saveBodyKeys"]
     assert obs["saveCountries"] == ["uk", "fr", "kr(absent)", "kr(absent)"], obs["saveCountries"]
