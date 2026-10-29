@@ -118,6 +118,26 @@ Order that matters:
 copying state all happen on loopback; the only thing that needs a public route is the
 Worker's store call, and that opens at cutover with the path restriction in section 5.
 
+### The executor's source is a link — so its "backup" was too
+
+This host runs the executor from `/opt/padiem/oracle-mesh/kagent-src/kagent`, and that
+entry is a **symlink** into the shared checkout. Two consequences, both learned on
+2026-10-29:
+
+* Refreshing to a newer main is a **re-point, not a copy**: record the old target, pin the
+  real bytes of the files that will change (`cp -a` into a 0700 directory under
+  `/opt/padiem/oracle-mesh/`, e.g. `kagent-pin-<sha>`), `ln -sfn` the new target, import
+  the module with the service's own venv, then restart. The shared checkout is not moved —
+  the file lane, b14 and the other units read it too.
+* The entries named `kagent.bak-<stamp>` beside it were **symlinks to that same target**.
+  They never held an older version. A backup is bytes: `cp -a` or `tar`. A link follows
+  its target and therefore proves nothing — the host looked protected while it had
+  exactly one copy of the code.
+
+Rolling a refresh back is the reverse of those two steps — re-point at the pinned target
+and restore the pinned bytes. Both are files on this host, so neither direction needs the
+network.
+
 Then, still with the Chat Worker on `d1`, prove the two halves talk:
 
 ```bash
@@ -283,7 +303,10 @@ journalctl -u padiem-mesh-queue-backup.service -n 20 --no-pager
 copy that can catch a half-written page while the lane is claiming — then opens the
 copy, requires `PRAGMA integrity_check` to say `ok`, prints the four row counts, and
 only then rotates. A backup that cannot be opened never replaces one that could.
-Seven are kept (`MESH_QUEUE_BACKUP_KEEP`). Restoring is: stop the unit, move the live
+Seven are kept (`MESH_QUEUE_BACKUP_KEEP`). **A backup is bytes** — `VACUUM INTO` for the
+database, `cp -a` or `tar` for any source tree. A symlink, or a copy of a symlink, is not
+a backup: it follows whatever the target is today, and the section 3 refresh is exactly
+the case where the target changes underneath it. Restoring is: stop the unit, move the live
 `queue.sqlite3` aside together with its `-wal` and `-shm` partners, copy the backup into
 place, start the unit, and read `/health` before `PC_QUEUE_BACKEND` is trusted again.
 A restore that skips the stop is a restore against a database that is still being
