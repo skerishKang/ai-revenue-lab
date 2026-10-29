@@ -132,6 +132,52 @@ html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disab
 .util-saved-list button, .util-archive button { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 10px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); cursor: pointer; width: 100%; text-align: left; }
 .util-saved-list button:hover, .util-archive button:hover { background: var(--accent-soft); border-color: var(--accent); }
 .util-empty { color: var(--muted, #5b6672); font-size: 13px; }
+
+/* #5731: a same-name save asks instead of stacking a second row. The safe
+ * answer (new name) is the first control; overwriting states what it keeps. */
+.util-save-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 12px;
+  background: var(--panel, #ffffff);
+}
+.util-save-choice-text {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--text, #17202a);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.util-save-choice button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .16));
+  border-radius: 10px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font-size: 13px;
+  cursor: pointer;
+}
+.util-save-choice .util-save-as-new {
+  border-color: var(--accent, #6557e8);
+  font-weight: 700;
+}
+.util-save-choice button:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .32));
+  outline-offset: 2px;
+}
+.util-saved-group {
+  margin: 12px 0 4px;
+  color: var(--muted, #5b6672);
+  font-size: 12px;
+  font-weight: 700;
+}
 .util-soon-msg { color: var(--muted, #5b6672); padding: 20px; text-align: center; }
 /* Glass theme below 921px: the util page sits outside the six-panel frame, so
  * the same opaque-page contract as the meeting view applies — hide the shell

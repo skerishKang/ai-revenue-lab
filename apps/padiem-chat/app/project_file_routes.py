@@ -25,6 +25,7 @@ from .project_files import (
     OwnerFileCursorError,
     ProjectFileLimitError,
     ProjectFileStore,
+    UTIL_DOC_KINDS,
     _extracted_media_type,
     decode_owner_file_cursor,
     encode_owner_file_cursor,
@@ -97,10 +98,10 @@ async def _identity(request: Request):
     return uid, pid, None
 
 
-def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str, str]:
+def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str, str, str]:
     if not isinstance(raw, dict):
         raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"name", "media_type", "text", "country"}:
+    if set(raw) - {"name", "media_type", "text", "country", "doc_kind"}:
         raise ValueError("Project text documents require name, media_type and text; binary files use raw upload.")
     if not {"name", "media_type", "text"} <= set(raw):
         raise ValueError("Project text documents require name, media_type and text; binary files use raw upload.")
@@ -108,8 +109,13 @@ def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str, str]:
     country = raw.get("country", "kr")
     if not isinstance(country, str) or country not in COUNTRIES:
         raise ValueError("국가 식별자가 올바르지 않습니다.")
+    # #5731 — 종류는 저장하는 화면이 남기는 표시다. 모르는 값은 거절하고,
+    # 없는 값은 ''(기타)로 남겨 예전 문서와 섞이지 않게 한다.
+    doc_kind = raw.get("doc_kind", "")
+    if not isinstance(doc_kind, str) or (doc_kind and doc_kind not in UTIL_DOC_KINDS):
+        raise ValueError("문서 종류가 올바르지 않습니다.")
     document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
-    return document.name, document.media_type, document.text, country
+    return document.name, document.media_type, document.text, country, doc_kind
 
 
 def _bad_request(field: str) -> JSONResponse:
@@ -287,13 +293,28 @@ async def project_files_collection(request: Request) -> JSONResponse:
         raw = json.loads(body.decode("utf-8"))
         if not isinstance(raw, dict):
             raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-        name, media_type, text, country = _parse_project_file_item(raw)
-        # 기본값(kr)은 인자를 생략한다: 기존 저장소 대역·스키마와 호출 계약이
-        # 오늘과 같아지고, 국가를 쓰는 저장만 새 컬럼을 요구한다.
-        if country == "kr":
-            created = await store.create_file(uid, pid, name, media_type, text)
-        else:
-            created = await store.create_file(uid, pid, name, media_type, text, country=country)
+        name, media_type, text, country, doc_kind = _parse_project_file_item(raw)
+        # #5731 — 같은 이름이 이미 그 종류로 있으면 조용히 하나 더 쌓지 않는다.
+        # 화면은 이 409를 받아 [덮어쓸까요 / 새 이름으로 저장]을 묻는다.
+        if doc_kind:
+            same = await store.find_current_by_name(uid, pid, name, doc_kind)
+            if same is not None:
+                return JSONResponse(
+                    {"error": {
+                        "code": "name_conflict",
+                        "message": "같은 이름의 글이 이미 있습니다.",
+                        "existing": {"id": same.id, "name": same.name},
+                    }},
+                    status_code=409,
+                )
+        # 기본값(kr/종류 없음)은 인자를 생략한다: 기존 저장소 대역·스키마와 호출 계약이
+        # 오늘과 같아지고, 국가·종류를 쓰는 저장만 새 컬럼을 요구한다.
+        extra: dict[str, Any] = {}
+        if country != "kr":
+            extra["country"] = country
+        if doc_kind:
+            extra["doc_kind"] = doc_kind
+        created = await store.create_file(uid, pid, name, media_type, text, **extra)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
@@ -395,6 +416,55 @@ async def project_file_detail(request: Request):
         # owner and project. Keep collection/public projections content-free,
         # while allowing the owner to reopen the stored text document.
         return JSONResponse({"file": {**record.public_dict(), "content": record.content_text}})
+
+    if request.method == "PUT":
+        # #5731 — 덮어쓰기는 새 본문으로 기존 행을 갱신하고, 밀려난 본문을
+        # 같은 프로젝트 파일(`<이름> (이전 N)`)로 남긴다. 종류는 보낼 수 있으면
+        # 쓰고, 없으면 기존 행의 종류를 그대로 지킨다.
+        try:
+            body = await read_bounded_request_body(
+                request, max_bytes=MAX_PROJECT_FILE_BODY_BYTES,
+            )
+            raw = json.loads(body.decode("utf-8"))
+            if not isinstance(raw, dict) or not isinstance(raw.get("text"), str):
+                raise ValueError("본문 형식이 올바르지 않습니다.")
+            doc_kind = raw.get("doc_kind", "")
+            if not isinstance(doc_kind, str) or (doc_kind and doc_kind not in UTIL_DOC_KINDS):
+                raise ValueError("문서 종류가 올바르지 않습니다.")
+            record = await store.get_file(uid, pid, fid)
+            if record is None:
+                return _not_found()
+            if record.media_type != "text/plain":
+                return JSONResponse(
+                    {"error": {"code": "invalid_document",
+                     "message": "글 문서만 덮어쓸 수 있습니다."}},
+                    status_code=422,
+                )
+            replaced = await store.replace_text(
+                uid, pid, fid, raw["text"], doc_kind=doc_kind or record.doc_kind,
+            )
+        except RequestBodyTooLarge:
+            return JSONResponse(
+                {"error": {"code": "invalid_document",
+                 "message": "본문이 너무 길어요 — 내용을 나눠서 올리거나, 원본 파일을 첨부로 올려 주세요."}},
+                status_code=413,
+            )
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError) as exc:
+            return JSONResponse(
+                {"error": {"code": "invalid_document", "message": str(exc) or "본문 형식이 올바르지 않습니다."}},
+                status_code=422,
+            )
+        except ProjectFileLimitError as exc:
+            return JSONResponse({"error": {"code": "project_file_limit", "message": str(exc)}}, status_code=422)
+        except Exception:
+            return _unavailable()
+        if replaced is None:
+            return _not_found()
+        updated, version = replaced
+        return JSONResponse({
+            "file": updated.public_dict(),
+            "previous": version.public_dict() if version is not None else None,
+        })
 
     try:
         # An original exists only for the new raw-binary project upload path.

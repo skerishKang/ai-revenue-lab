@@ -713,7 +713,8 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
     # inventory에는 표가 하나 더 있다: 076_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
-    assert len(result["seed"]) == 66
+    # 078_project_files_doc_kind.sql(#5731)은 표가 아니라 열 추가라 seed에 한 줄 더 붙는다.
+    assert len(result["seed"]) == 67
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -781,11 +782,13 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         assert "B62_D1_PLAN_APPLY_DESTRUCTIVE=076_report_update.sql" in out
         seed_line = next(line for line in out.splitlines() if line.startswith("B62_D1_PLAN_SEED_FILES="))
         seed_names = seed_line.split("=", 1)[1].split(",")
-        # The seed covers the WINDOW, not the whole inventory: a migration numbered
-        # past --up-to (077_project_files_text_byte_bound.sql today) is outside it.
+        # The seed covers the WINDOW, not the whole inventory: migrations numbered
+        # past --up-to (077_project_files_text_byte_bound.sql and
+        # 078_project_files_doc_kind.sql today) are outside it.
         window = json.loads(plan.read_text(encoding="utf-8"))["window"]
         assert "077_project_files_text_byte_bound.sql" not in window
-        assert len(window) == len(inventory) - 1
+        assert "078_project_files_doc_kind.sql" not in window
+        assert len(window) == len(inventory) - 2
         assert len(seed_names) == len(window) - 2
         assert "075_report_clean.sql" not in seed_names and "076_report_update.sql" not in seed_names
         assert "CREATE TABLE" not in out and "UPDATE b62" not in out
@@ -904,7 +907,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 66
+    assert len(plan["seed"]) == 67
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -912,7 +915,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 66
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 67
 
     window_dir = tmp_path / "window"
     assert gate.main([

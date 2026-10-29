@@ -39,6 +39,7 @@ MIGRATION_SET = (
     "069_project_files_image_media.sql",
     "075_project_files_country.sql",
     "077_project_files_text_byte_bound.sql",
+    "078_project_files_doc_kind.sql",
 )
 
 #: A long document the retired 40,000-character ceiling refused. Korean costs 3

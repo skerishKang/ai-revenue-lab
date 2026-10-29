@@ -612,7 +612,7 @@ def create_app(
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
-        Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE", "PUT"]),
         # #5568 PDF→Markdown utility: a work ledger per upload session, one conversion
         # per item, and owner-scoped reads of both the original and the result.
         Route("/api/document-conversions", convert_jobs_collection, methods=["GET", "POST"]),
