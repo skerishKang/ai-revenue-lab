@@ -202,10 +202,6 @@
 /* The Claw ON/OFF switch stays a compact bottom-right control, and the card's
  * own text reserves the row: the switch can never sit on top of the
  * description at any width, and the card's grid height is untouched. */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
-  right: 10px;
-  bottom: 8px;
-}
 
 /* Claw home cards at phone widths: the fixed-height tile clipped the name and
  * let the status chip sit on it. The card grows to its own content and the
