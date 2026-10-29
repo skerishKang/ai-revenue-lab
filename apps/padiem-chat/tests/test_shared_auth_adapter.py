@@ -44,3 +44,21 @@ class SharedAuthTests(unittest.TestCase):
         auth = SharedChatAuth(verifier=Verifier(), authority=Missing(), legacy=lambda _: 'legacy-user', clock=lambda: 1000)
         with self.assertRaises(SharedAuthUnavailable):
             asyncio.run(auth.user_id(None, 'valid'))
+
+    def test_comparison_returns_only_match_or_mismatch(self):
+        for legacy, expected in [('existing-chat-user', 'MATCH'), ('different-user', 'MISMATCH')]:
+            auth = SharedChatAuth(verifier=Verifier(), authority=Authority(), legacy=lambda _: legacy, clock=lambda: 1000)
+            self.assertEqual(asyncio.run(auth.compare_existing_account(None, 'valid')), expected)
+
+    def test_comparison_returns_unknown_for_missing_or_unverified_sessions(self):
+        for legacy, token in [(None, 'valid'), ('existing-chat-user', None), ('existing-chat-user', 'forged')]:
+            auth = SharedChatAuth(verifier=Verifier(), authority=Authority(), legacy=lambda _: legacy, clock=lambda: 1000)
+            self.assertEqual(asyncio.run(auth.compare_existing_account(None, token)), 'UNKNOWN')
+
+    def test_comparison_does_not_log_ids_or_create_a_link(self):
+        class Missing:
+            async def resolve_product_user_for_subject(self, **_kwargs):
+                raise ValueError('unavailable')
+        auth = SharedChatAuth(verifier=Verifier(), authority=Missing(), legacy=lambda _: 'private-user', clock=lambda: 1000)
+        with self.assertNoLogs():
+            self.assertEqual(asyncio.run(auth.compare_existing_account(None, 'valid')), 'UNKNOWN')
