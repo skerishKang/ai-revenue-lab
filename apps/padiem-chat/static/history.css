@@ -458,13 +458,18 @@ html[data-theme="dark"] .auth-primary {
 
 /* #6119: the recent list is loading, never blank — gray rows while the read
    is in flight, and one honest failure row with its retry button when the
-   read produced no answer. Tokens only; no theme writes its own colors. */
-.history-row.history-skeleton {
+   read produced no answer. sidebar-history-scroll.css wipes every .history-row
+   background with !important, so the skeleton paints through the same scoped
+   selector at higher specificity; the fixed white alphas match the alphas the
+   sidebar's own row states read. */
+html body .app-shell .sidebar .history-row.history-skeleton {
   min-height: 44px;
   margin: 2px 0;
-  border-radius: 10px;
-  background: linear-gradient(90deg, var(--line, rgba(26, 34, 48, .12)) 25%, var(--panel, rgba(26, 34, 48, .05)) 45%, var(--line, rgba(26, 34, 48, .12)) 65%);
+  border-radius: 11px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .10) 25%, rgba(255, 255, 255, .22) 45%, rgba(255, 255, 255, .10) 65%) !important;
   background-size: 200% 100%;
+  border: 0 !important;
+  box-shadow: none !important;
   animation: history-skeleton-sweep 1.2s ease-in-out infinite;
 }
 
@@ -482,7 +487,7 @@ html[data-theme="dark"] .auth-primary {
   min-height: 44px;
   padding: 6px 10px;
   font-size: 13px;
-  color: var(--muted, #5a7488);
+  color: #8a8f98; /* same gray the sidebar's own .history-empty line reads */
 }
 
 .history-row.history-load-failed .history-load-failed-text {
