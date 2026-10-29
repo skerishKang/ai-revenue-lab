@@ -113,7 +113,7 @@ from app.password_reset_store import D1PasswordResetStore
 from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
-from app.main import create_app
+from app.app_factory import create_app
 from app.orchestration_routes import install_orchestration_routes
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
