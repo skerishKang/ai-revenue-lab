@@ -174,6 +174,14 @@ export class AuthStateObject extends AuthState {
 export default {
   async fetch(request, env) {
     try {
+      // The public key endpoint remains available during bootstrap before the
+      // Google client secret and per-service login configuration are installed.
+      if (request.method === 'GET' && new URL(request.url).pathname === '/.well-known/jwks.json') {
+        const data = JSON.parse(env.PADIEM_AUTH_JWKS);
+        if (!Array.isArray(data?.keys) || !data.keys.length) return json(503, { error: 'authentication_unavailable' });
+        const keys = data.keys.map(({ kty, crv, x, y, kid, use, alg }) => ({ kty, crv, x, y, kid, use, alg }));
+        return json(200, { keys });
+      }
       const clients = JSON.parse(env.PADIEM_AUTH_CLIENTS);
       const jwks = JSON.parse(env.PADIEM_AUTH_JWKS);
       const signingKey = await crypto.subtle.importKey('jwk', JSON.parse(env.PADIEM_AUTH_ES256_PRIVATE_JWK), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
