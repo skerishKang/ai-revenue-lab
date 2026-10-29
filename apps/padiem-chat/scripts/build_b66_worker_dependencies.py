@@ -27,6 +27,9 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = APP_ROOT.parents[1]
 RUNTIME_DIRECTORY = ".b66-worker-src"
 RUNTIME_MARKER = ".b66-generated.json"
+# Uvicorn is the CPython host server; Click is its CLI dependency. The
+# Worker runs on workerd and uses neither. Keep the upstream lock intact.
+WORKER_OMIT_PACKAGES = frozenset({"uvicorn", "click"})
 
 #: Independent apps keep their own static directory as the only source of truth.
 #: The deploy assembles it into the Assets upload here, so no app file is copied
@@ -158,6 +161,9 @@ def installed_versions(output: Path, versions: dict[str, str]) -> dict[str, str]
         for dist in importlib.metadata.distributions(path=[str(output)])
         if dist.metadata.get("Name")
     }
+    unexpected = sorted(WORKER_OMIT_PACKAGES & installed.keys())
+    if unexpected:
+        raise ValueError("Worker vendor contains omitted packages: " + ", ".join(unexpected))
     mismatched = [name for name, version in versions.items() if installed.get(name) != version]
     if mismatched:
         raise ValueError("Installed versions differ from Worker lock: " + ", ".join(mismatched))
@@ -229,6 +235,13 @@ def stage_local_packages(lock_path: Path, staging: Path) -> Path:
         if text.count(original) != 1:
             raise ValueError("Unexpected local path entry in Worker lock")
         text = text.replace(original, replacement)
+    sections = text.split("[[packages]]")
+    kept = [sections[0]]
+    for section in sections[1:]:
+        package = tomllib.loads("[[packages]]" + section)["packages"][0]
+        if normalize(package["name"]) not in WORKER_OMIT_PACKAGES:
+            kept.append("[[packages]]" + section)
+    text = "".join(kept)
     staged_lock = staging / "pylock.toml"
     staged_lock.write_text(text, encoding="utf-8")
     return staged_lock
@@ -236,7 +249,9 @@ def stage_local_packages(lock_path: Path, staging: Path) -> Path:
 
 def build(output: Path, *, lock_path: Path = APP_ROOT / "pylock.toml", uv: str = "uv") -> dict:
     locked_bytes = lock_path.read_bytes()
-    versions = validate_lock(tomllib.loads(locked_bytes.decode("utf-8")))
+    versions = {name: version for name, version in validate_lock(
+        tomllib.loads(locked_bytes.decode("utf-8"))
+    ).items() if name not in WORKER_OMIT_PACKAGES}
     require_unlinked_output(output)
     consume_pywrangler_placeholder(output)
     try:
