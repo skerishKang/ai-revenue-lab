@@ -67,6 +67,7 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
+  remove() { if (this.parentNode) this.parentNode.removeChild(this); }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
@@ -173,7 +174,18 @@ let fakeFileSeq = 0;
 function nextBinaryId() { return "file_" + String(1000 + ++fakeFileSeq).padStart(32, "0").slice(-32); }
 function nextTextId() { return "f" + (++fakeFileSeq); }
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
-const CURRENT = { alerts: [] };
+const CURRENT = { alerts: [], links: [], uploadFailures: 0, exchangeOpens: [], exchangeSelect: null, nativePicks: 0 };
+
+class FakeFile {
+  constructor(parts, name, opts) {
+    this._parts = parts || [];
+    this.name = String(name || "");
+    this.type = (opts && opts.type) || "";
+    const sizes = this._parts.map((p) => Number(p && p.size)).filter(Number.isFinite);
+    this.size = (opts && Number.isFinite(Number(opts.size))) ? Number(opts.size)
+      : sizes.length === this._parts.length ? sizes.reduce((a, b) => a + b, 0) : 0;
+  }
+}
 
 async function fetch(url, opts) {
   opts = opts || {};
@@ -186,11 +198,22 @@ async function fetch(url, opts) {
     return json({ answer: "첫 문단입니다.\n\n둘째 문단입니다.\n\n마지막 문단입니다." });
   }
   if (method === "POST" && path === "/api/projects/p1/files" && opts.headers && String(opts.headers["Content-Type"] || "").indexOf("octet-stream") >= 0) {
+    if (CURRENT.uploadFailures > 0) {
+      CURRENT.uploadFailures -= 1;
+      return { ok: false, status: 503, json: async () => ({ error: { code: "project_files_unavailable", message: "프로젝트 파일을 현재 사용할 수 없습니다." } }) };
+    }
     const fname = decodeURIComponent(opts.headers["X-Padiem-Filename"] || "");
     const ftype = opts.headers["X-Padiem-Media-Type"] || "";
     const id = nextBinaryId();
     storedFiles.push({ id, name: fname, media_type: ftype, binary: true });
     return json({ file: { id, name: fname, media_type: ftype, content_chars: 0 } });
+  }
+  if (method === "GET" && path === "/api/pc/pairings") {
+    return json({ links: CURRENT.links });
+  }
+  if (method === "GET" && path === "/api/pc/file") {
+    const bytes = new TextEncoder().encode("img:pc사진.jpg");
+    return { ok: true, status: 200, blob: async () => ({ size: bytes.length, arrayBuffer: async () => bytes }) };
   }
   const originalMatch = /^\/api\/projects\/p1\/files\/(file_\d+)\/original$/.exec(path);
   if (method === "GET" && originalMatch) {
@@ -300,16 +323,39 @@ function spawnSession(tag) {
       getElementById: (id) => byId[id] || root._descendants().find((n) => n.id === id) || null,
       querySelector: (sel) => root.findAll(sel)[0] || null,
       querySelectorAll: (sel) => root.findAll(sel),
-      createElement: (tag) => new N(tag),
+      createElement: (tag) => {
+        if (String(tag).toLowerCase() === "canvas") {
+          return {
+            width: 0, height: 0,
+            getContext: () => ({ drawImage() {} }),
+            toBlob: (cb, type) => cb({ size: 900000, type: type || "image/jpeg" }),
+          };
+        }
+        return new N(tag);
+      },
       addEventListener() {},
     },
-    window: {},
+    window: {
+      PadiemPcFileExchange: {
+        open: (settings) => {
+          CURRENT.exchangeOpens.push(settings || {});
+          CURRENT.exchangeSelect = (settings && settings.onSelect) || null;
+          return { close() {} };
+        },
+        close() {},
+      },
+    },
     navigator: {},
     fetch: fetch,
     alert: (message) => alerts.push(String(message)),
     console: console,
     setTimeout: () => 0,
     Blob: function Blob() {},
+    File: FakeFile,
+    createImageBitmap: async (file) => {
+      CURRENT.lastBitmapSource = file;
+      return { width: 4000, height: 3000, close() {} };
+    },
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
     FileReader: FakeFileReader,
@@ -494,6 +540,53 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const cTitle = C.root._descendants().find((n) => n.id === "utilSnsTitle");
   if (!cTitle || cTitle.textContent !== "페이스북 게시글") fail("RESTORE_C_PLATFORM_WRONG", { title: cTitle ? cTitle.textContent : null });
 
+  // 14) #5728: with a linked PC, 사진 추가 opens the shared 가져오기 dialog
+  // and the picked PC file joins the composition through the same pipeline.
+  CURRENT.links = [{ state: "active" }];
+  input.addEventListener("click", () => { CURRENT.nativePicks += 1; });
+  await addBtn.dispatch("click");
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_NOT_OPENED", { opens: CURRENT.exchangeOpens.length });
+  if (CURRENT.exchangeOpens[0].mode !== "import" || typeof CURRENT.exchangeOpens[0].onSelect !== "function") fail("SHARED_DIALOG_MODE_OR_CALLBACK_WRONG");
+  if (CURRENT.nativePicks !== 0) fail("NATIVE_PICKER_USED_WITH_LINKED_PC");
+  await CURRENT.exchangeSelect({ fileId: "d1", name: "pc사진.jpg" });
+  await sleep(30);
+  items = root.findAll(".util-photo-item");
+  if (items.length !== 3 || names()[2] !== "pc사진.jpg") fail("PC_PHOTO_NOT_ADDED", { names: names() });
+
+  // 15) no linked PC (a phone): 사진 추가 falls back to the local picker.
+  CURRENT.links = [];
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_WITHOUT_PC");
+  if (CURRENT.nativePicks !== 1) fail("NATIVE_PICKER_FALLBACK_MISSING");
+
+  // 16) a failed upload is one Korean row with its own retry, not an alert.
+  const alertsBefore = A.alerts.length;
+  CURRENT.uploadFailures = 1;
+  input.files = [{ name: "z.png", type: "image/png" }];
+  await input.dispatch("change");
+  await sleep(30);
+  const failRow = root.findAll(".util-photo-upload-failed")[0];
+  if (!failRow) fail("UPLOAD_FAILURE_ROW_MISSING");
+  const failText = failRow.querySelector(".util-photo-upload-failed-text");
+  if (!failText || failText.textContent.indexOf("사진 1장을 올리지 못했어요") < 0) fail("UPLOAD_FAILURE_TEXT_WRONG", { text: failText ? failText.textContent : null });
+  const retryBtn = root._descendants().find((n) => n.id === "utilSnsPhotoRetry");
+  if (!retryBtn || retryBtn.textContent !== "다시 시도") fail("UPLOAD_RETRY_BUTTON_MISSING");
+  if (root.findAll(".util-photo-item").length !== 3) fail("FAILED_UPLOAD_JOINED_LIST");
+  if (A.alerts.length !== alertsBefore) fail("ALERT_STILL_USED_FOR_UPLOAD_FAILURE");
+  await retryBtn.dispatch("click");
+  await sleep(30);
+  if (root.findAll(".util-photo-upload-failed").length !== 0) fail("FAILURE_ROW_NOT_CLEARED");
+  if (root.findAll(".util-photo-item").length !== 4) fail("RETRY_DID_NOT_ADD_PHOTO");
+
+  // 17) a big photo is shrunk in the browser before upload: the stored
+  // original is the re-encoded jpeg, not the multi-megabyte png.
+  input.files = [{ name: "big.png", type: "image/png", size: 6 * 1024 * 1024 }];
+  await input.dispatch("change");
+  await sleep(30);
+  const lastBinary = storedFiles.filter((f) => f.binary).slice(-1)[0];
+  if (!lastBinary || lastBinary.name !== "big.jpg" || lastBinary.media_type !== "image/jpeg") fail("BIG_PHOTO_NOT_SHRUNKEN", { stored: lastBinary });
+
   console.log(JSON.stringify({
     ok: true,
     photos: root.findAll(".util-photo-item").length,
@@ -505,6 +598,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     promptHead: prompt.slice(0, 60),
     blogSeq: seq.slice(0, 6),
     storedBinary: storedFiles.filter((f) => f.binary).length,
+    shrunkName: lastBinary ? lastBinary.name : null,
     alertsA: A.alerts, alertsB: B.alerts,
   }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });
@@ -534,6 +628,12 @@ def test_the_photo_composition_contract() -> None:
     assert payload.get("restoredDraft") == "페이스북용으로 다시 저장한 초안입니다.", payload
     assert payload.get("restoredPlatform") == "페이스북 게시글", payload
     assert payload.get("alertsB") == [], payload
+    # #5728 follow-up: the shared 가져오기 dialog imports a linked-PC photo,
+    # the no-PC path keeps the local picker, one upload failure draws the
+    # Korean retry row (never an alert), and a 6 MB photo is stored shrunk.
+    assert payload.get("shrunkName") == "big.jpg", payload
+    assert payload.get("photos") == 5, payload
+    assert payload.get("alertsA") == [], payload
 
 
 def test_the_url_field_is_gone_from_the_source() -> None:

@@ -111,6 +111,13 @@ html[data-theme="padiem-glass"] #utilSpeechPanel .util-generate:hover:not(:disab
 .util-photo-pos { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted, #5b6672); }
 .util-photo-pos-select { min-height: 44px; padding: 6px 8px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; }
 .util-photo-note { margin: 0; font-size: 12px; color: var(--muted, #5b6672); line-height: 1.5; }
+/* #5728: a failed upload is one honest row with its own retry, same button
+ * language as the rest of this panel. */
+.util-photo-upload-failed { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.util-photo-upload-failed-text { font-size: 13px; color: var(--danger, #b3261e); flex: 1 1 auto; min-width: 0; }
+.util-photo-upload-retry { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.util-photo-upload-retry:hover { background: var(--accent-soft); border-color: var(--accent); }
+.util-photo-upload-retry:focus-visible { outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24)); outline-offset: 2px; }
 /* Draft preview — composition check only, never a publishing claim. */
 .util-sns-preview { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 12px; background: var(--panel, #ffffff); }
 .util-sns-preview[hidden] { display: none; }

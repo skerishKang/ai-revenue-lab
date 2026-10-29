@@ -906,29 +906,131 @@
         writePhotoRoster(currentPid);
       });
 
-      photoAdd.addEventListener("click", () => photoInput.click());
-      photoInput.addEventListener("change", async () => {
-        const files = Array.from(photoInput.files || []);
+      // #5728: one upload pipeline serves both pickers. A photo joins the
+      // composition only once the project-file upload succeeded — the
+      // thumbnail and the stored original are the same bytes, and a failed
+      // upload never looks "saved". Failures land in one Korean row with its
+      // own retry, never in an alert that vanishes with the keyboard away.
+      let pendingFailedPhotos = [];
+
+      // #5728: big camera photos are shrunk in the browser before upload.
+      // The Cloudflare Worker caps a request body at 128 MB and the free
+      // plan's CPU allowance per request is measured in milliseconds, so
+      // re-encoding a 20 MB original server-side is neither possible nor
+      // needed — the browser that holds the file can do it. A browser
+      // without the decode APIs uploads the original unchanged.
+      const PHOTO_SHRINK_TRIGGER_BYTES = 4 * 1024 * 1024;
+      const PHOTO_MAX_EDGE = 2048;
+
+      async function shrinkPhotoFile(file) {
+        if (!file || !(Number(file.size) > PHOTO_SHRINK_TRIGGER_BYTES)) return file;
+        if (typeof createImageBitmap !== "function") return file;
+        try {
+          const bitmap = await createImageBitmap(file);
+          const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+          if (scale >= 1) {
+            if (typeof bitmap.close === "function") bitmap.close();
+            return file;
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          if (typeof bitmap.close === "function") bitmap.close();
+          const blob = await new Promise((resolve) => {
+            if (typeof canvas.toBlob === "function") canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85);
+            else resolve(null);
+          });
+          if (!blob) return file;
+          const base = String(file.name || "photo").replace(/\.[^.]+$/, "");
+          return new File([blob], base + ".jpg", { type: "image/jpeg" });
+        } catch (_) {
+          return file;
+        }
+      }
+
+      function photoImageType(name) {
+        const lower = String(name || "").toLowerCase();
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".webp")) return "image/webp";
+        return "image/jpeg";
+      }
+
+      function renderPhotoUploadFailure() {
+        photoBox.querySelectorAll(".util-photo-upload-failed").forEach((n) => n.remove());
+        if (!pendingFailedPhotos.length) return;
+        const row = el("div", "util-photo-upload-failed");
+        const text = el("span", "util-photo-upload-failed-text",
+          "사진 " + pendingFailedPhotos.length + "장을 올리지 못했어요");
+        const retry = el("button", "util-photo-upload-retry", "다시 시도");
+        retry.type = "button";
+        retry.id = "utilSnsPhotoRetry";
+        retry.addEventListener("click", () => {
+          void addPhotoFiles(pendingFailedPhotos.slice());
+        });
+        row.append(text, retry);
+        photoBox.appendChild(row);
+      }
+
+      async function addPhotoFiles(files) {
         const failed = [];
         for (const file of files) {
           if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
-          // #5728: a photo joins the composition only once the project-file
-          // upload succeeded — the thumbnail and the stored original are the
-          // same bytes, and a failed upload never looks "saved".
           if (!currentPid) currentPid = await ensureProject();
-          if (!currentPid) { failed.push(file.name); continue; }
-          const stored = await uploadProjectImage(currentPid, file);
-          if (!stored) { failed.push(file.name); continue; }
-          const item = await readPhotoFile(file);
+          if (!currentPid) { failed.push(file); continue; }
+          const prepared = await shrinkPhotoFile(file);
+          const stored = await uploadProjectImage(currentPid, prepared);
+          if (!stored) { failed.push(file); continue; }
+          const item = await readPhotoFile(prepared);
           if (item) { item.id = stored.id; photos.push(item); }
         }
-        if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
+        pendingFailedPhotos = failed;
+        renderPhotoUploadFailure();
         photoInput.value = "";
         renderPhotoList();
         renderPreview();
         // An added photo is part of the durable composition as soon as its
         // upload landed — the roster records it right away.
         if (!failed.length) writePhotoRoster(currentPid);
+      }
+
+      photoAdd.addEventListener("click", async () => {
+        // The shared 가져오기 dialog browses the linked PC; a machine with no
+        // linked PC (a phone included) keeps the local file picker.
+        let linked = null;
+        try { linked = await pcLinked(); } catch (_) { linked = null; }
+        if (linked === false) { photoInput.click(); return; }
+        let component;
+        try { component = await loadPcExchange(); } catch (_) { component = null; }
+        if (!component || typeof component.open !== "function") { photoInput.click(); return; }
+        component.open({
+          mode: "import",
+          onSelect: (picked) => { void importPickedPhoto(picked); },
+        });
+      });
+
+      async function importPickedPhoto(picked) {
+        if (!picked || !picked.fileId) return;
+        const name = picked.name || "사진.jpg";
+        let blob = null;
+        try {
+          const res = await fetch(
+            "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+            { credentials: "include", cache: "no-store" },
+          );
+          if (!res.ok) throw new Error("http_" + res.status);
+          blob = await res.blob();
+          const bytes = await blob.arrayBuffer();
+          await addPhotoFiles([new File([bytes], name, { type: photoImageType(name) })]);
+        } catch (_) {
+          pendingFailedPhotos = [{ name: name, type: photoImageType(name), size: Number(blob && blob.size) || 0 }];
+          renderPhotoUploadFailure();
+        }
+      }
+
+      photoInput.addEventListener("change", () => {
+        void addPhotoFiles(Array.from(photoInput.files || []));
       });
 
       function blogParagraphs(text) {
