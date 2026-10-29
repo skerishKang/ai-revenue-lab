@@ -202,10 +202,6 @@
 /* The Claw ON/OFF switch stays a compact bottom-right control, and the card's
  * own text reserves the row: the switch can never sit on top of the
  * description at any width, and the card's grid height is untouched. */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
-  padding-bottom: 46px;
-}
-
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
   right: 10px;
   bottom: 8px;
