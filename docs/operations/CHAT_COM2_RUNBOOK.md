@@ -68,7 +68,7 @@ padiem-chat-com2-backup.timer`. 백업은 `VACUUM INTO` → 사본 integrity_che
 
 ## 5. 데이터 — 병행 운영은 D1을 쓰지 않는다
 
-- 처음엔 빈 SQLite + 마이그레이션 001~077 자동 적용(부팅 시, 자체 장부).
+- 처음엔 빈 SQLite + 마이그레이션 001~078 자동 적용(부팅 시, 자체 장부; 최종 번호는 현재 main의 migrations 최신 파일 기준).
 - D1 → SQLite 전체 복사는 **준비만** 되어 있다: `apps/padiem-chat/copy_state.py`
   (`copy --source <D1 export> --target /mnt/d/padiem/chat-com2/chat.sqlite3`).
   실행하지 않는다 — 3단계에서 CTO 지시 시 수행. 복사 도구는 행 내용을 출력하지
@@ -92,3 +92,10 @@ sudo systemctl stop padiem-chat-com2.service   # 병행 호스트만 멈춘다
 5. 브라우저에서 가입 → 로그인 → 대화 목록 → mock 채팅 1회(모델은 mock 기본).
 6. health/backup 타이머 enable, 백업 1회 수동 실행 결과 확인.
 7. 보고: 설치 PASS/실패 단계, health, 터널 hostname, mock 채팅 확인 여부.
+
+## 8. 마이그레이션 장부 점검
+
+`python tools/check_chat_migration_ledger.py --db <SQLite 사본> --ledger d1_migrations`로
+현재 체크아웃의 모든 마이그레이션 파일과 장부를 읽기 전용 비교한다. 컴2 로컬 장부는
+`--ledger padiem_local_migration_ledger`를 사용한다. MISMATCH 또는 ERROR는 전환 중단이다.
+076 백업을 078 대상에 직접 복사하면 project_files 열 불일치로 거부된다.
