@@ -1258,32 +1258,48 @@
 
   // ── independent entry wiring: auth gate, then build all three tools ──────
 
-  async function checkSignedIn() {
-    try {
-      const res = await fetch("/api/auth/status", {
-        credentials: "include",
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-      });
-      if (!res.ok) {
-        // #6127: a 5xx is the server failing to answer, not a verdict about this
-        // visitor. Chat draws the same line for the runtime's NoGilError race
-        // (#5479), where every dynamic route can 500 while the account itself is
-        // untouched. 401/403 IS such a verdict, and stays a plain signed-out.
-        return { signedIn: false, methods: null, unavailable: res.status >= 500 };
-      }
-      const data = await res.json().catch(() => null);
-      if (!data) return { signedIn: false, methods: null, unavailable: true };
-      // fail-closed gate, unchanged from councillor.js: nothing is attached
-      // unless the server itself says this cookie is authenticated.
-      return {
-        signedIn: !!(data && data.authenticated === true),
-        methods: (data && data.methods) || null,
-        unavailable: false,
-      };
-    } catch (_) {
-      return { signedIn: false, methods: null, unavailable: true };
+  async function readAuthStatusOnce() {
+    const res = await fetch("/api/auth/status", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      // #6127: a 5xx is the server failing to answer, not a verdict about this
+      // visitor. Chat draws the same line for the runtime's NoGilError race
+      // (#5479), where every dynamic route can 500 while the account itself is
+      // untouched. 401/403 IS such a verdict about the visitor, so it is returned
+      // quietly and never re-asked.
+      if (res.status >= 500) throw new Error("auth status unavailable");
+      return { signedIn: false, methods: null, unavailable: false };
     }
+    const data = await res.json().catch(() => null);
+    if (!data) throw new Error("auth status unavailable");
+    return {
+      signedIn: !!(data && data.authenticated === true),
+      methods: (data && data.methods) || null,
+      unavailable: false,
+    };
+  }
+
+  // #6114 as solved for Chat: a Python Worker restart can eat one status read, so
+  // a request that produced NO answer is re-asked ONCE before the page says the
+  // state cannot be determined. Measured on production, one re-ask takes the
+  // "cannot tell" rate from 30% of loads to 10%; a definitive answer is never
+  // re-asked, so a signed-out visitor pays one round trip, not two.
+  async function checkSignedIn() {
+    let outcome = null;
+    for (let attempt = 0; attempt < 2 && !outcome; attempt += 1) {
+      try {
+        outcome = await readAuthStatusOnce();
+      } catch (_) {
+        outcome = null;
+      }
+    }
+    // fail-closed gate, unchanged from councillor.js: nothing is attached unless
+    // the server itself says this cookie is authenticated, and an unanswered read
+    // is not permission.
+    return outcome || { signedIn: false, methods: null, unavailable: true };
   }
 
   // ── session and selection state (this page's UI state, never an authority) ──

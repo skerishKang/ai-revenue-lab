@@ -130,7 +130,10 @@ let loginOutcome = null;
 // #6127: the status read itself can fail. A scenario swaps this in to prove the
 // module tells a server fault apart from a signed-out visitor.
 let authStatusOutcome = null;
+let statusReads = 0;
 let fetchRejects = null;
+// a queue answers successive status reads differently, which is how the re-ask is proven
+let authStatusQueue = null;
 
 function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
@@ -162,7 +165,9 @@ async function fetch(url, init) {
     return json({ answer: "생성된 초안 본문입니다.\n\n두 번째 문단입니다." });
   }
   if (String(url) === "/api/auth/status") {
+    statusReads += 1;
     if (fetchRejects) throw fetchRejects;
+    if (authStatusQueue && authStatusQueue.length) return authStatusQueue.shift();
     return authStatusOutcome || json(authState);
   }
   if (method === "POST" && String(url) === "/api/auth/password/login") {
@@ -455,36 +460,36 @@ const SCENARIOS = {
     };
   },
   async auth_states() {
-    // #6127: three answers from the SAME status read, three different reports.
-    // 200 {authenticated:false} is a signed-out visitor; 401/403 is a real
-    // "not allowed"; 5xx or no answer at all is the server failing to say, and
-    // must never be dressed up as "you are not signed in". The gate stays closed
-    // in all three - that is the part that must not change.
+    // #6127: five answers from the SAME status read. 200 {authenticated:false} is a
+    // signed-out visitor; 401/403 is a real "not allowed"; 5xx, a rejected fetch and
+    // an unparseable 200 all mean the server did not say anything about this visitor.
+    // The gate stays closed in the first four - that is the part that must not change
+    // - and the fifth proves the single re-ask actually rescues a page load.
     const cases = [
-      ["signed_out_200", () => json({ authenticated: false, session_state: "guest",
-                                      methods: { google: true, password: true } })],
-      ["forbidden_401", () => json({ error: { code: "forbidden" } }, 401)],
-      ["fault_500", () => ({ ok: false, status: 500,
-                             json: async () => { throw new Error("Cloudflare HTML, not JSON"); } })],
-      ["network_throw", () => { throw new Error("worker did not answer"); }],
-      // a 200 whose body cannot be parsed says nothing about the visitor either
-      ["ok_200_unparseable", () => ({ ok: true, status: 200,
-                                      json: async () => { throw new Error("HTML, not JSON"); } })],
+      ["signed_out_200", {}, () => json({ authenticated: false, session_state: "guest",
+                                          methods: { google: true, password: true } })],
+      ["forbidden_401", {}, () => json({ error: { code: "forbidden" } }, 401)],
+      ["fault_500", {}, () => ({ ok: false, status: 500,
+                                 json: async () => { throw new Error("Cloudflare HTML, not JSON"); } })],
+      ["network_throw", { rejects: true }, () => { throw new Error("worker did not answer"); }],
+      ["ok_200_unparseable", {}, () => ({ ok: true, status: 200,
+                                          json: async () => { throw new Error("HTML, not JSON"); } })],
     ];
     const rows = [];
-    for (const [name, make] of cases) {
+    const runOne = async (setup) => {
+      authStatusQueue = null;
+      fetchRejects = null;
+      authStatusOutcome = null;
       authState = { authenticated: false, methods: { google: true, password: true } };
-      // `network_throw` models fetch itself rejecting (the worker never answered);
-      // the others are real Response-shaped objects with a status.
-      let thrown = null;
-      try { authStatusOutcome = make(); } catch (e) { thrown = e; authStatusOutcome = null; }
-      if (thrown) fetchRejects = thrown; else fetchRejects = null;
+      setup();
       const s = spawnSession();
+      // the module starts itself once when the document is ready, so the counter is
+      // zeroed AFTER the spawn: what is measured below is one explicit init().
+      statusReads = 0;
       const api = s.ctx.window.PadiemCouncilApps;
       const first = await api.init();
       await sleep(20);
-      rows.push({
-        name,
+      return {
         initSignedIn: first.signedIn,
         initUnavailable: Boolean(first.unavailable),
         badge: text(find(s, "councilAuthBadge")),
@@ -493,10 +498,34 @@ const SCENARIOS = {
         loginActionHidden: find(s, "councilAuthAction").hidden,
         anyToolBuilt: ["councilSpeechForm", "councilSnsForm", "councilMeetingForm"]
           .some((id) => s.root._descendants().find((n) => n.id === id)),
+        statusReads,
+      };
+    };
+
+    for (const [name, opts, make] of cases) {
+      const row = await runOne(() => {
+        if (opts.rejects) { fetchRejects = new Error("worker did not answer"); return; }
+        authStatusOutcome = make();
       });
+      rows.push(Object.assign({ name }, row));
       authStatusOutcome = null;
       fetchRejects = null;
     }
+
+    // the rescue: one 500 then a real answer. The page must end signed IN, because
+    // the fault was never a statement about the visitor.
+    const rescued = await runOne(() => {
+      const fault = () => ({ ok: false, status: 500, json: async () => { throw new Error("no"); } });
+      const answer = () => json({ authenticated: true, user: { name: "테스트 사용자" },
+                                  session_state: "signed_in" });
+      // one pair per init(): the module starts itself once and the scenario calls it
+      // once, and each of those must survive its own 500 by re-asking.
+      authStatusQueue = [fault(), answer(), fault(), answer()];
+    });
+    rows.push(Object.assign({ name: "fault_then_answer" }, rescued));
+
+    authStatusQueue = null;
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
     return { cases: rows, endpoints: endpointSet() };
   },
   async auth_routing() {

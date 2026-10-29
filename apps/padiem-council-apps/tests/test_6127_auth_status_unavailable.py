@@ -6,9 +6,10 @@ sequential requests, and 43 of 136 rows in a bounded worker tail, with
 so the throw is at request entry, not CPU exhaustion). The council entry page read
 that 500 exactly like a signed-out `200`, so a logged-in user was told to log in.
 
-These tests run the SHIPPED `static/council-app.js` in the Node harness against four
-different answers from the same endpoint. The gate must stay closed in every case;
-only the report to the user may differ.
+These tests run the SHIPPED `static/council-app.js` in the Node harness against six
+different answer patterns from the same endpoint. The gate must stay closed whenever
+the visitor was not identified; only the report to the user may differ, and a fault
+followed by a real answer must end signed in.
 """
 
 from __future__ import annotations
@@ -27,7 +28,11 @@ def case(name: str) -> dict:
 
 
 def test_the_gate_stays_closed_in_every_answer() -> None:
-    """The part that must not change: nothing is attached unless the server says so."""
+    """The part that must not change: nothing is attached unless the server says so.
+
+    `fault_then_answer` is deliberately absent: it is the one case where the server
+    DID answer, and a later test asserts the opposite outcome for it.
+    """
     for name in ("signed_out_200", "forbidden_401", "fault_500", "network_throw",
                  "ok_200_unparseable"):
         row = case(name)
@@ -73,6 +78,29 @@ def test_the_fault_wording_reuses_the_message_the_login_path_already_uses() -> N
     from pathlib import Path
     js = (Path(__file__).resolve().parents[1] / "static" / "council-app.js").read_text(encoding="utf-8")
     assert js.count(FAILURE_MESSAGE) == 3, "post-login read + initial read + tool-pick read"
+
+
+def test_a_verdict_is_never_re_asked_but_a_fault_is() -> None:
+    """#6114's rule, reused: re-ask only when nothing was answered.
+
+    Absolute counts leak across the spawns that share one node process, so the
+    assertion is comparative: a definitive answer costs the same single read as
+    another definitive answer, and a fault costs strictly more.
+    """
+    guest = case("signed_out_200")["statusReads"]
+    forbidden = case("forbidden_401")["statusReads"]
+    assert guest == forbidden, "401 is a verdict; re-asking it would double every guest page load"
+    for name in ("fault_500", "network_throw", "ok_200_unparseable"):
+        assert case(name)["statusReads"] > guest, name
+
+
+def test_the_re_ask_rescues_a_page_load_that_hit_a_fault() -> None:
+    """500 then a real answer must end signed IN, with the builders attached."""
+    row = case("fault_then_answer")
+    assert row["initSignedIn"] is True
+    assert row["initUnavailable"] is False
+    assert row["anyToolBuilt"] is True
+    assert row["statusReads"] > case("signed_out_200")["statusReads"]
 
 
 def test_the_status_read_is_not_cached() -> None:
