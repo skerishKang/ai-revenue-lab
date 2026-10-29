@@ -30,19 +30,23 @@
     return String(card.dataset.serviceMark || "");
   }
 
-  function statusSource(card) {
-    return card.querySelector("#clawComputerLiveStatus")
-      || card.querySelector("[data-connector-workspace]")
-      || card.querySelector(".capability-workspace")
-      || card.querySelector("[data-connector-support]")
-      || card.querySelector(".capability-read")
-      || card.querySelector(".capability-soon");
+  // Every tile and detail page speaks only the shared four-state vocabulary.
+  // The card's own dataset is the state owner; this map translates it and
+  // never copies a raw sentence (no “workspace”, no long server prose).
+  function stateOf(card) {
+    if (card.querySelector(".capability-soon")) return "soon";
+    const raw = String(card.dataset.connectorStatus || "").toLowerCase();
+    if (raw === "connected") return "connected";
+    if (raw === "not_connected" || raw === "disconnected") return "disconnected";
+    if (raw === "connecting" || raw === "loading" || raw === "preparing" || raw === "") return "checking";
+    return "failed";
   }
 
   function statusText(card) {
-    const node = statusSource(card);
-    if (!node || node.hidden) return "";
-    return node.textContent.trim();
+    const state = stateOf(card);
+    if (state === "soon") return "곧 지원돼요";
+    const vocab = window.PadiemConnectorVocabulary;
+    return vocab ? (vocab.status(state) || "") : "";
   }
 
   function syncTile(card) {
@@ -78,8 +82,9 @@
     const summary = document.createElement("summary");
     summary.className = "pc-connector-advanced-summary";
     summary.textContent = "고급 설정";
-    alternate.parentNode.insertBefore(advanced, alternate);
+    // Order: page head → connect → PC list → advanced at the very bottom.
     advanced.append(summary, alternate);
+    card.appendChild(advanced);
     card.dataset.advancedGrouped = "1";
   }
 
@@ -110,8 +115,28 @@
     const actions = byId("connectorDetailActions");
     const computer = card.dataset.connector === "computer" || card.id === "connectorComputerCard";
     if (actions) actions.hidden = !computer;
+    syncDetailRetry(card);
     if (computer) groupAdvanced(card);
     setHash("#connectors/" + connectorId(card));
+  }
+
+  function syncDetailRetry(card) {
+    let link = byId("connectorDetailRetry");
+    const failed = stateOf(card) === "failed";
+    if (!failed) { if (link) link.remove(); return; }
+    if (link) return;
+    const actions = byId("connectorDetailActions");
+    if (!actions) return;
+    link = document.createElement("button");
+    link.type = "button";
+    link.id = "connectorDetailRetry";
+    link.className = "connector-detail-retry";
+    link.textContent = "다시 확인";
+    link.addEventListener("click", () => {
+      const original = card.querySelector("#clawComputerDeviceStatusButton");
+      if (original) original.click();
+    });
+    actions.appendChild(link);
   }
 
   function closeDetail(keepHash) {
@@ -176,6 +201,7 @@
       const status = byId("connectorDetailStatus");
       const text = statusText(detailed.card);
       if (status && status.textContent !== text) status.textContent = text;
+      syncDetailRetry(detailed.card);
       return;
     }
     const view = byId(VIEW_ID);
@@ -183,7 +209,7 @@
   });
   const start = () => {
     const host = byId(VIEW_ID) || document.body;
-    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden"] });
+    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "data-connector-status"] });
     makeTiles();
     handleHash();
   };

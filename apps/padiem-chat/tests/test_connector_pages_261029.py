@@ -33,10 +33,22 @@ def test_the_module_moves_the_card_instead_of_rebuilding_it():
     assert "/api/" not in PAGES
 
 
-def test_the_tile_reads_the_one_status_owner():
-    # Live writer first, server workspace state second, capability line last.
-    order = PAGES.index("#clawComputerLiveStatus")
-    assert order < PAGES.index("[data-connector-workspace]") < PAGES.index(".capability-read")
+def test_the_tile_speaks_only_the_shared_four_state_vocabulary():
+    # The card's dataset is the state owner; the tile maps it to the shared
+    # constant and never copies a raw server sentence (no “워크스페이스”).
+    assert 'card.dataset.connectorStatus' in PAGES
+    assert 'return "곧 지원돼요"' in PAGES
+    assert "워크스페이스" not in PAGES
+    for state in ('"connected"', '"not_connected"', '"connecting"', '"failed"'):
+        assert state in PAGES
+
+
+def test_the_computer_page_folds_the_card_head_and_offers_a_small_retry():
+    assert ".connector-detail-body .capability-card > strong" in CSS
+    assert ".connector-detail-body #clawComputerDeviceStatusButton" in CSS
+    assert "connectorDetailRetry" in PAGES
+    assert 'link.textContent = "다시 확인"' in PAGES
+    assert 'content: "\25B8"' in CSS and 'content: "\25BE"' in CSS
 
 
 def test_the_tile_keeps_one_line_and_the_page_owns_the_full_card():
