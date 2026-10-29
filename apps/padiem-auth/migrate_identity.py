@@ -1,8 +1,10 @@
-"""Read-only inventory and isolated SQLite migration; no live DO transport.
+"""ARCHIVE ONLY. Do not use for the lazy-migration production registry.
 
 Inputs are independently obtained SQLite copies of Chat users and the identity
 authority. The source authority stores keyed fingerprints, not Google sub;
 the verified join through product_user_id is essential. Never print rows.
+This old rehearsal uses plain SHA-256 and is incompatible with the keyed
+HMAC-SHA256 production registry. It has no live DO transport.
 """
 import argparse
 import base64

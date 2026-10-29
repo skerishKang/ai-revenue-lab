@@ -4,6 +4,7 @@ export class AuthState {
   constructor(state) {
     this.storage = state.storage;
     this.sql = this.storage.sql;
+    this.sql.exec('CREATE TABLE IF NOT EXISTS blocked_accounts (account_id TEXT PRIMARY KEY)');
     this.sql.exec(`CREATE TABLE IF NOT EXISTS google_accounts (
       fingerprint TEXT PRIMARY KEY, account_id TEXT NOT NULL UNIQUE,
       state TEXT NOT NULL CHECK(state IN ('active','blocked'))
@@ -38,6 +39,7 @@ export class AuthState {
 
   putAccount({ fingerprint, accountId }) {
     return this.storage.transactionSync(() => {
+      if (this.sql.exec('SELECT account_id FROM blocked_accounts WHERE account_id=?', accountId).toArray().length) throw new Error('account_blocked');
       this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state) VALUES(?,?,'active') ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId);
       const record = this.accountByFingerprint(fingerprint);
       if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
@@ -46,7 +48,12 @@ export class AuthState {
   }
 
   setAccountStatus({ accountId, blocked }) {
-    return this.storage.transactionSync(() => this.sql.exec('UPDATE google_accounts SET state=? WHERE account_id=? RETURNING account_id', blocked ? 'blocked' : 'active', accountId).toArray().length === 1);
+    if (!blocked) throw new Error('unblock is not implemented');
+    return this.storage.transactionSync(() => {
+      this.sql.exec('INSERT INTO blocked_accounts(account_id) VALUES(?) ON CONFLICT DO NOTHING', accountId);
+      this.sql.exec("UPDATE google_accounts SET state='blocked' WHERE account_id=?", accountId);
+      return true;
+    });
   }
 
   claimAssertion({ key, expires, now }) {

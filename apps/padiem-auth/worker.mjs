@@ -12,6 +12,10 @@ const cookie = '__Host-padiem-auth-state';
 const b64 = (a) => btoa(String.fromCharCode(...a)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
 const random = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const digest = async (s) => b64(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s))));
+export async function identityFingerprint(key, subject) {
+  if (!key || key.algorithm?.name !== 'HMAC') throw new Error('identity key unavailable');
+  return b64(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(`padiem-auth:google:v1\0${subject}`))));
+}
 export async function googleProductUserId(subject) {
   if (typeof subject !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(subject)) throw new Error('invalid google subject');
   const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`google:${subject}`)));
@@ -37,7 +41,7 @@ function one(params, name) {
 }
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, adminSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -46,6 +50,19 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
   }
   async function app(request) {
     const url = new URL(request.url), current = now();
+    if (url.pathname === '/internal/account-block' && request.method === 'POST') {
+      if (!adminSecret) return json(404, { error: 'not_found' });
+      const presented = request.headers.get('authorization') || '';
+      const expected = `Bearer ${adminSecret}`;
+      if (presented.length !== expected.length) return json(401, { error: 'unauthorized' });
+      let mismatch = 0;
+      for (let i = 0; i < expected.length; i++) mismatch |= presented.charCodeAt(i) ^ expected.charCodeAt(i);
+      if (mismatch) return json(401, { error: 'unauthorized' });
+      const body = await request.json();
+      if (!body || Object.keys(body).length !== 1 || !/^sub_[A-Za-z0-9_-]+$/.test(body.account_id ?? '')) return json(400, { error: 'invalid_request' });
+      await stateFor('google-account-registry').setAccountStatus({ accountId: body.account_id, blocked: true });
+      return json(200, { ok: true });
+    }
     if (url.pathname === '/.well-known/jwks.json' && request.method === 'GET') {
       const keys = (jwks?.keys || []).map(({ kty, crv, x, y, kid, use, alg }) => ({ kty, crv, x, y, kid, use, alg }));
       return json(200, { keys });
@@ -76,11 +93,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
       if (!keyResponse.ok) throw new Error('google keys unavailable');
       const identity = await verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
       const userId = await googleProductUserId(identity.sub);
-      const fingerprint = await digest(`google:${identity.sub}`);
+      const fingerprint = await identityFingerprint(identityKey, identity.sub);
       const account = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub });
       if (!account || account.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(account.account_id ?? '')) throw new Error('identity authority failed');
       const codeSecret = random();
-      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: identity.sub, accountId: account.account_id, expires: current + 60 });
+      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: account.account_id, accountId: account.account_id, expires: current + 60 });
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -128,7 +145,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'rotate', 'revoke', 'resolveAccount', 'accountById']);
+const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'rotate', 'revoke', 'resolveAccount', 'accountById', 'setAccountStatus']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async resolveAccount({ fingerprint, productId, userId, subject }) {
@@ -155,6 +172,9 @@ export default {
       const clients = JSON.parse(env.PADIEM_AUTH_CLIENTS);
       const jwks = JSON.parse(env.PADIEM_AUTH_JWKS);
       const signingKey = await crypto.subtle.importKey('jwk', JSON.parse(env.PADIEM_AUTH_ES256_PRIVATE_JWK), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+      const identityBytes = Uint8Array.from(atob(env.PADIEM_AUTH_IDENTITY_HMAC_KEY.replaceAll('-', '+').replaceAll('_', '/').padEnd(Math.ceil(env.PADIEM_AUTH_IDENTITY_HMAC_KEY.length / 4) * 4, '=')), c => c.charCodeAt(0));
+      if (identityBytes.length !== 32) throw new Error('identity key must be 32 bytes');
+      const identityKey = await crypto.subtle.importKey('raw', identityBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = (name) => new Proxy({}, { get(_target, method) { return async (args) => {
         const stub = env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name));
@@ -162,7 +182,7 @@ export default {
         if (!response.ok) throw new Error('state failed');
         return (await response.json()).value;
       }; } });
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };
