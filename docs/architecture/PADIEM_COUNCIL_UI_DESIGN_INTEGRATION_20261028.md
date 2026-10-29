@@ -106,6 +106,55 @@ real file writes; they are a separate bounded run, and step 5's "the existing us
 is currently supported only by *no storage write happened* plus the gate's pre-deploy
 `project_files=14` count — a re-measure needs the same authorised read.
 
+### 1.3 S5 authenticated live run — what it proved and what blocked it
+
+Run under CENTRAL's authorization on the existing test account (no account or secret created, no
+deploy, no migration). Charged: at most 3 of 8 model calls, 3 of 4 files created, all deleted.
+
+Proved on production while the service was answering — `[직접]`:
+
+- signed in through the app's own login form; badge `로그인됨`, four `.council-form` (login + 3
+  builders attached only after the server confirms the session).
+- the three editors at 320/390/768/1440 (12 cells): horizontal overflow 0, out-of-viewport 0,
+  occlusion by `elementFromPoint` 0, sub-44px targets 0, self-clipping 0, header `wrap` ≤768 and
+  `nowrap` at 1440, fields 11 / 7 / 4.
+- real generation in two countries: **kr** → `country` absent from the payload (the contract: no
+  value means kr), `util=speech`, reply in Korean; **us** → `country=us` sent, reply Latin 1304 vs
+  Hangul 6, i.e. the result language actually switches.
+- save tags the document with its country (`country=kr`, `country=us`) and
+  `DELETE /api/projects/{pid}/files/{id}` answers 204.
+- existing data: read-only SQL on the sanctioned D1 path gave `project_files` = 14 (all kr) before
+  and **14 (all kr) after**, `S5TEST-` rows 0, `rows_written=0`, `changed_db=false`.
+
+Blocked by a production fault outside this contract's diff — `[사실]`: `GET /api/auth/status` and
+`GET /api/projects` return **HTTP 500 intermittently** (measured 3 of 6 and 3 of 6 in one minute,
+2 of 6 earlier, and 6 of 6 in the run that needed a session), while `/apps/council/` and `/` served
+200 ten times out of ten. No deploy was in flight during any of it. Static assets fine, dynamic
+routes throwing ⇒ the Worker runtime or its dependency, not the council bundle. Consequently uk/fr
+generation, SNS generation, the activity-book draft, per-country list filtering, re-entry, copy/TXT
+and signed-in keyboard focus are **unverified and not claimed**.
+
+Two findings worth a decision:
+
+1. `checkSignedIn()` (`static/council-app.js:1261-1271`) maps `!res.ok` to `{signedIn:false}` —
+   indistinguishable from a genuine signed-out `200` — and `init()` then opens the panel with **no
+   message**. The fail-closed direction is right; the reporting is not: a logged-in user reads as
+   logged out. `enterSignedIn()` already has the correct string at `council-app.js:1437`. Minimal
+   fix is to return an `unavailable` state on 5xx/thrown fetch, keep the gate closed, show that
+   message with a retry. Not shipped here: S4 was told not to extend the sign-in surface, and it
+   would not restore service while the 500s continue.
+2. The 500s themselves belong to the release/engine lane, not to #6065.
+
+Harness corrections recorded so the numbers above are trusted: the `us` document was stored named
+`S5TEST-kr-축사.txt` because the fill step only wrote empty fields and the form still held the
+previous event name (the app names the file from that field, `council-app.js:468` — normal
+behaviour); `.council-card-select` **toggles**, so a blind second click closes the editor; and the
+first UI pass reported 5 "overflow offenders" per cell by counting pages that scroll vertically, and
+missed the auto-focused first field in the Tab walk. Both were probe bugs, re-measured. Two focus
+observations survived the re-measure and are **pre-existing** (the `:focus-visible` rule and the
+`type=date` field both exist at `68ead1f0f`, before S0): the native date input's 4th tab stop gets
+no outline, and at 390 two focused textareas sit 13–18px below the fold with scroll room left.
+
 ## 2. Constraints a visual integration may not break
 
 Each of these is a literal-string assertion that already fails CI if violated. They are the reason
