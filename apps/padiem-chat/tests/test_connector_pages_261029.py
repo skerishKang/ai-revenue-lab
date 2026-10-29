@@ -48,7 +48,7 @@ def test_the_computer_page_folds_the_card_head_and_offers_a_small_retry():
     assert ".connector-detail-body #clawComputerDeviceStatusButton" in CSS
     assert "connectorDetailRetry" in PAGES
     assert 'link.textContent = "다시 확인"' in PAGES
-    assert 'content: "\25B8"' in CSS and 'content: "\25BE"' in CSS
+    assert ('content: "%s"' % chr(0x25B8)) in CSS and ('content: "%s"' % chr(0x25BE)) in CSS
 
 
 def test_the_tile_keeps_one_line_and_the_page_owns_the_full_card():
