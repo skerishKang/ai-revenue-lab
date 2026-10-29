@@ -53,6 +53,12 @@ from app.claw_local_access_composition import (
 from app.claw_device_directory_routes import build_broker_device_directory_source
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
 from app.pc_device_pairing_store import D1PcPairingStore
+from app.queue_store_proxy import (
+    QueueBackedPairingStore,
+    QueueBackedPresenceStore,
+    QueueForwardingHistoryStore,
+    build_queue_client,
+)
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -1542,6 +1548,20 @@ class Default(WorkerEntrypoint):
                 # every pairing route answers 503 exactly as before this slice.
                 if db_binding is not None:
                     _worker_app.state.pc_device_pairing_store = D1PcPairingStore(db_binding)
+                # #5881 follow-on: the PC-lane state may be answered by the 컴2 queue
+                # instead of this Worker's D1. The switch is off unless the flag says
+                # com2 AND the origin and secret are usable, and it moves only what the
+                # queue declares - dispatch, pairing directory, presence receipts. The
+                # conversation rows, projects and R2 originals stay exactly here.
+                queue_client = build_queue_client(self.env)
+                if queue_client is not None:
+                    _worker_app.state.pc_device_pairing_store = (
+                        QueueBackedPairingStore(queue_client))
+                    _worker_app.state.mesh_device_presence_store = (
+                        QueueBackedPresenceStore(queue_client))
+                    _worker_app.state.history_store = QueueForwardingHistoryStore(
+                        _worker_app.state.history_store, queue_client)
+                    print("PC_QUEUE_BACKEND=com2")
                 # #5573 PC pairing handoff: the ONE Windows installer value, read
                 # from deployment vars. An empty or non-https value is no value,
                 # and the handoff route answers 503 "준비 중" rather than inventing
