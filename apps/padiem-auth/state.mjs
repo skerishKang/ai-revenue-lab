@@ -6,7 +6,7 @@ export class AuthState {
     this.sql = this.storage.sql;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
-      challenge TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
+      challenge TEXT NOT NULL, subject TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL,
@@ -17,8 +17,8 @@ export class AuthState {
     )`);
   }
 
-  createCode({ digest, client, redirect, challenge, expires }) {
-    this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,expires) VALUES(?,?,?,?,?)', digest, client, redirect, challenge, expires);
+  createCode({ digest, client, redirect, challenge, subject, expires }) {
+    this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,expires) VALUES(?,?,?,?,?,?)', digest, client, redirect, challenge, subject, expires);
   }
 
   consumeCode({ digest, client, redirect, challenge, now }) {
@@ -32,6 +32,19 @@ export class AuthState {
     return this.storage.transactionSync(() => {
       this.sql.exec('INSERT INTO sessions(id,client,subject,expires) VALUES(?,?,?,?)', id, client, subject, expires);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', digest, id);
+    });
+  }
+
+  // The code and session live in the same object: if creating either session row
+  // fails, consuming the code must roll back too. Authentication and PKCE
+  // verification happen before calling this method.
+  exchangeCode({ codeDigest, client, redirect, challenge, now, id, expires, refreshDigest }) {
+    return this.storage.transactionSync(() => {
+      const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject', codeDigest, client, redirect, challenge, now).toArray();
+      if (rows.length !== 1) return false;
+      this.sql.exec('INSERT INTO sessions(id,client,subject,expires) VALUES(?,?,?,?)', id, client, rows[0].subject, expires);
+      this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', refreshDigest, id);
+      return { subject: rows[0].subject };
     });
   }
 
