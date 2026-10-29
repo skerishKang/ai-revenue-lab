@@ -3,6 +3,7 @@
 ```text
 DOC_ROLE=TEST_TIME_ANCHOR_AUDIT
 STATUS=전수 스캔·분류 완료 / 수정: 이미 터진 1건(아스트라3, #6149) · 예정 폭발 0건 · 안내 주석 2곳
+        2026-10-29 보강: 범위 밖(`scripts/ops`)에서 이미 터진 1건 발견·수신(§5), 스캔 범위에 추가
 ISSUE=#5573 (품질), #82 (Qoder 큐 차동)
 RELATED=PR #6148(큐 차동 앵커 수정, Qoder), PR #6149(lovetree identity 앵커 수정), COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md
 ```
@@ -65,3 +66,28 @@ RELATED=PR #6148(큐 차동 앵커 수정, Qoder), PR #6149(lovetree identity �
    예: `packages/padiem-control-plane/tests/test_connector_workspace_read_resolver.py:757+`.
 
 규칙: **고정 시각은 “실클록과 비교되는 경로”에 넣지 않는다.** 넣어야 하면 (1) 또는 (2)를 쓴다. 공용 `frozen_clock` fixture는 현재 저장소에 없으며, 위 두 패턴이 이미 파일 단위로 존재한다 — 새 전역 fixture는 도입하지 않는다(중복 권한 방지). 새 테스트가 실클록 경로를 건드릴 때 이 문서의 두 패턴을 참조한다.
+
+## 5. 범위 밖에서 터진 하나: `scripts/ops` (2026-10-29 보강)
+
+§2의 스캔 범위는 `apps/`, `packages/`, `.github/tests/`, `deploy/`였고 **`scripts/ops/`는 빠져
+있었다**. 그틈으로 `scripts/ops/tests/test_com2_backup_schedule.py::
+test_status_reports_staleness_only_with_an_explicit_bound`가 고정 `2026-10-17T00:00:00Z`를
+`--max-age-hours 240`이면 OK로 보였는데, 2026-10-29에는 나이 298.4시간으로 이미 실패였다.
+
+- 생산 코드에서 실클록과 비교되는 경로는 그 하나뿐이다: `com2_backup_schedule.py:830`
+  (`age_hours = datetime.now(utc) - last_success`). 나머지 `now=`/`time.time()` 지점
+  (`acquire_lock`, `_stamp`, `cloudflare_asset_snapshot.captured_utc`)은 전부 주입 가능하거나
+  스탬프 전용이고, `run_once`는 `last_success_utc`를 지나다니만 한다(비교 없음).
+- 같은 디렉터리의 나머지 고정 날짜 6개 파일은 실행으로 무해를 확인했다:
+  `test_com2_backup.py:21 CREATED_AT`·`test_com2_backup_schedule.py:194/212`(passthrough),
+  `test_com2_runtime.py:259 started_utc`(상태 파일 재사용 확인용),
+  `test_com2_periodic_sync.py:174 captured_utc`(페이로드 재사용),
+  `test_cloudflare_asset_snapshot.py`(fixture + `now="2026-10-19T01:02:03Z"` 주입),
+  `test_com2_b62_generation_publish.py`(주석의 사건 날짜일 뿐 데이터 아님).
+  잠금·쿨다운 계열은 이미 상대 시각이다(`test_com2_periodic_sync.py:346 old = time.time() - 4h`).
+- 조치는 **단언·바운드는 그대로** 두고 앵커만 now로: 마지막 성공을 `now - 100시간`에 둔다
+  (24h 바운드에는 stale, 240h 바운드에는 OK인 구간의 한복판). §4 규칙의 세 번째 형태 —
+  "구간을 보려는 테스트는 구간의 한복판을 now로 잡는다".
+- 증거: 수정 전 `scripts/ops/tests` 211 passed / 1 failed, 수정 후 **212 passed**.
+- 재발 방지: 이 문서의 스캔 범위에 `scripts/ops/`를 넣는다(§2). 운영 스크립트는 예약 작업과
+  같이 도는 실제 코드라, 달력이 지나가야 알 수 있는 실패가 머물러 있으면 안 되는 곳이다.
