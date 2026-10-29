@@ -34,3 +34,13 @@ apps/claw-connect/claw_connect/tray.py whitespace=cr-at-eol
 scripts/pc_pairing/connect-exe/app.manifest text eol=lf
 scripts/pc_pairing/connect-exe/PadiemPcConnect.cs text eol=lf
 scripts/pc_pairing/connect-exe/win32_reproducible.py text eol=lf
+
+# #5881 follow-on: the 컴2 queue's systemd units and shell scripts are read by a Linux
+# PID 1 and by bash on the host. core.autocrlf=true would materialize them CRLF on a
+# Windows checkout, and the same file that passes review here then fails on the machine
+# that runs it - systemd reports an unparseable unit, bash a `$'\r'` command. Pinned at
+# the deploy directory rather than repo-wide, in step with the entries above.
+apps/padiem-mesh-queue/deploy/*.sh text eol=lf
+apps/padiem-mesh-queue/deploy/*.service text eol=lf
+apps/padiem-mesh-queue/deploy/*.timer text eol=lf
+apps/padiem-mesh-queue/requirements.txt text eol=lf
