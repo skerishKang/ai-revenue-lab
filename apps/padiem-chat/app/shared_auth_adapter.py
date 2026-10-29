@@ -16,6 +16,24 @@ class SharedAuthUnavailable(Exception):
     """Shared credentials were present but could not be verified or mapped."""
 
 
+class IdentityAuthorityReverseLookup:
+    """Adapt the existing identity authority's read-only RPC wire contract."""
+
+    def __init__(self, rpc: Any):
+        self._rpc = rpc
+
+    async def resolve_product_user_for_subject(self, *, product_id: str, canonical_subject_id: str) -> str:
+        response = await self._rpc.resolve_product_user_for_subject({
+            'product_id': product_id, 'canonical_subject_id': canonical_subject_id,
+        })
+        if not isinstance(response, dict) or response.get('ok') is not True:
+            raise ValueError('reverse_lookup_failed')
+        user = response.get('product_user_id')
+        if not isinstance(user, str) or not user:
+            raise ValueError('reverse_lookup_invalid')
+        return user
+
+
 class SharedChatAuth:
     def __init__(self, *, verifier: Any, authority: Any, legacy: Callable, clock=time.time, cache_seconds=300):
         if not callable(getattr(verifier, 'verify', None)) or not callable(legacy) or cache_seconds <= 0:
