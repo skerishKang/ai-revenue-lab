@@ -141,7 +141,10 @@ def test_one_workflow_with_the_four_dispatch_inputs_and_no_deploy() -> None:
     jobs = data["jobs"]
     assert set(jobs) == {"source-contract", "readonly", "apply"}
     apply_job = jobs["apply"]
-    assert apply_job["needs"] == "readonly"
+    # source-contract is in the list because the apply job reads the normalized
+    # target_sha the guard publishes; readonly already needed it, so nothing runs
+    # in a different order.
+    assert list(apply_job["needs"]) == ["readonly", "source-contract"]
     assert apply_job["environment"] == "production"
     assert CONFIRMATION in apply_job["if"]
     assert "inputs.mode == 'apply'" in apply_job["if"]
@@ -938,9 +941,15 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
 
 def test_dispatch_fails_fast_when_target_sha_is_not_a_full_40_hex() -> None:
     # A 9-char SHA makes actions/checkout treat it as a branch name and the
-    # next step's rev-parse comparison dies with a confusing git error.
-    # Both gates must reject it in their first step, in Korean.
+    # next step's rev-parse comparison dies with a confusing git error. Both
+    # gates reject it in their first step, in Korean — through the one rule
+    # .github/tests/test_b62_verify_target_sha.py pins to
+    # .github/scripts/b62_verify_target_sha.py. The separate bash check #6210
+    # added is gone: it rejected the uppercase input the rule normalizes, and it
+    # was written under a duplicated `steps:` key, so the job never ran it.
     for name in ("b62-d1-migrate-gate.yml", "b62-production-code-deploy-gate.yml"):
         text = (Path(__file__).resolve().parents[1] / "workflows" / name).read_text(encoding="utf-8")
         assert "target_sha는 40자리 전체 SHA여야 합니다" in text, name
-        assert 'test "${#TARGET_SHA}" -eq 40' in text, name
+        assert "id: b62_target_sha" in text, name
+        assert text.count("\n    steps:\n") == len(yaml.safe_load(text)["jobs"]), name
+        assert 'test "${#TARGET_SHA}" -eq 40' not in text, name

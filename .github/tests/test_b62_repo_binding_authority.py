@@ -57,7 +57,9 @@ def test_rollback_job_and_automatic_rollback_are_unchanged():
     # #5895 (2026-10-27): both rollback paths gained one stdout+step-summary line
     # naming the version they put into service, so the pinned bytes moved. The
     # assertions themselves are unchanged: any further edit still goes red.
-    assert hashlib.sha256(after.split('\n  rollback-production-code:',1)[1].encode()).hexdigest() == 'e344233047f0a17fe82aa3c86154ee2a9ec57e3355bc96eb1167791dd627bb34'
+    # (2026-10-29): the job gained one env line, TARGET_SHA from the target_sha
+    # guard's normalized output; the Auto-rollback step below is byte-identical.
+    assert hashlib.sha256(after.split('\n  rollback-production-code:',1)[1].encode()).hexdigest() == '26aa913b37cecc5301fef890a1c705e9ea5582f825a89dd1c8cfafc7744c5763'
     assert hashlib.sha256(re.search(r'      - name: Auto-rollback.*?(?=\n      - name:)',after,re.S).group().encode()).hexdigest() == '4f9afbff0a519c9e5be995bc72bb5020ea68153f7f32221ebdf0ff52984cd532'
 
 
