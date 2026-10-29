@@ -54,3 +54,14 @@ test('code exchange is single-use and session creation rolls back with a collisi
   assert.equal(s.exchangeCode({ ...req, id: 'other', refreshDigest: 'other' }), false);
   assert.equal(s.rotate({ id: 'new', client: 'client', digest: 'fresh', replacement: 'next', now: 2 }).ok, true);
 });
+
+test('Google login state is browser bound, expires, and is consumed once', () => {
+  const s = setup();
+  const req = { stateDigest: 'state', browserDigest: 'browser', client: 'c', redirect: 'https://example.test/cb', serviceState: 'service', serviceChallenge: 'challenge', googleNonce: 'nonce', googleVerifier: 'verifier', expires: 60 };
+  s.createLogin(req);
+  assert.equal(s.consumeLogin({ stateDigest: 'state', browserDigest: 'wrong', now: 1 }), null);
+  assert.equal(s.consumeLogin({ stateDigest: 'state', browserDigest: 'browser', now: 1 }).google_nonce, 'nonce');
+  assert.equal(s.consumeLogin({ stateDigest: 'state', browserDigest: 'browser', now: 2 }), null);
+  s.createLogin({ ...req, stateDigest: 'expired' });
+  assert.equal(s.consumeLogin({ stateDigest: 'expired', browserDigest: 'browser', now: 60 }), null);
+});

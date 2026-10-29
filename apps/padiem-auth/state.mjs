@@ -4,6 +4,12 @@ export class AuthState {
   constructor(state) {
     this.storage = state.storage;
     this.sql = this.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS login_requests (
+      state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL,
+      redirect TEXT NOT NULL, service_state TEXT NOT NULL, service_challenge TEXT NOT NULL,
+      google_nonce TEXT NOT NULL, google_verifier TEXT NOT NULL, expires INTEGER NOT NULL,
+      consumed INTEGER NOT NULL DEFAULT 0
+    )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
       challenge TEXT NOT NULL, subject TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
@@ -15,6 +21,17 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
       digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0
     )`);
+  }
+
+  createLogin({ stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires }) {
+    this.sql.exec('INSERT INTO login_requests(state_digest,browser_digest,client,redirect,service_state,service_challenge,google_nonce,google_verifier,expires) VALUES(?,?,?,?,?,?,?,?,?)', stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires);
+  }
+
+  consumeLogin({ stateDigest, browserDigest, now }) {
+    return this.storage.transactionSync(() => {
+      const rows = this.sql.exec('UPDATE login_requests SET consumed=1 WHERE state_digest=? AND browser_digest=? AND consumed=0 AND expires>? RETURNING client,redirect,service_state,service_challenge,google_nonce,google_verifier', stateDigest, browserDigest, now).toArray();
+      return rows[0] || null;
+    });
   }
 
   createCode({ digest, client, redirect, challenge, subject, expires }) {
