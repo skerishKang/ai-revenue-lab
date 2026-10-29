@@ -7,6 +7,7 @@ continuity and the Worker verifier runtime have been independently confirmed.
 from __future__ import annotations
 
 import inspect
+import hmac
 import time
 from typing import Any, Callable
 
@@ -46,3 +47,25 @@ class SharedChatAuth:
             return user_id
         except Exception as exc:
             raise SharedAuthUnavailable('shared_auth_failed') from exc
+
+    async def compare_existing_account(self, request: Any, shared_token: str | None) -> str:
+        """Compare two authenticated sessions; return only MATCH/MISMATCH/UNKNOWN.
+
+        The caller supplies the verified legacy-session resolver and a common
+        token obtained by the service's server-side OAuth code exchange. This
+        method is deliberately not exposed as an HTTP route by itself.
+        """
+        if not isinstance(shared_token, str) or not shared_token:
+            return 'UNKNOWN'
+        try:
+            legacy_user = self._legacy(request)
+            if inspect.isawaitable(legacy_user):
+                legacy_user = await legacy_user
+            if not isinstance(legacy_user, str) or not legacy_user:
+                return 'UNKNOWN'
+            shared_user = await self.user_id(request, shared_token)
+            if not isinstance(shared_user, str) or not shared_user:
+                return 'UNKNOWN'
+            return 'MATCH' if hmac.compare_digest(legacy_user.encode(), shared_user.encode()) else 'MISMATCH'
+        except Exception:
+            return 'UNKNOWN'
