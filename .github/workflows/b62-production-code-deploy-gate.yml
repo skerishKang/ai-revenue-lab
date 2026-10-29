@@ -173,6 +173,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      - name: Require a full 40-hex target SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          TARGET_SHA: "${{ inputs.target_sha }}"
+        run: |
+          # actions/checkout reads a short SHA as a branch name and the next
+          # step compares git rev-parse HEAD (40 chars) — a 9-char dispatch
+          # fails late with a confusing git error. Fail here, in plain Korean.
+          case "${TARGET_SHA}" in
+            *[!0-9a-f]*|"") echo "target_sha는 40자리 전체 SHA여야 합니다"; exit 1 ;;
+          esac
+          test "${#TARGET_SHA}" -eq 40 || { echo "target_sha는 40자리 전체 SHA여야 합니다"; exit 1; }
+    steps:
       - name: Checkout PR exact head
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v4
