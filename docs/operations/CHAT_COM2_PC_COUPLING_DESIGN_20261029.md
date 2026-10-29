@@ -62,3 +62,23 @@ Worker의 isolate 로컬 카운터를 전역 종료 증거로 쓰지 않는다. 
 ## 판정
 
 NOT_READY: broker HTTPS 입구/CPython 바인딩, WSS 방향, 큐 공유 연결, 결과 저장 정본, 정지 증명, R2 핸드백, PC 왕복과 LoveTree 전체 로그인 모두 미검증이다. 작업 승인 또는 이번 문서 PR은 설치·배포·전환을 허용하지 않는다.
+
+## 조건부 등록 경로 상세
+
+다음 경로는 app_factory의 connector_owner_enrollment 및 oracle_mesh_return_source 조건이 맞아야 실제로 등록된다. 로컬 기본 앱의 243개 표에 빠져 있을 수 있다.
+
+| 메서드·경로 | 소유/효과 |
+|---|---|
+| GET /api/claw/connector/enrollments/setup, /setup.js | 소유자 등록 UI·정적 스크립트. 인증·인가 경계 유지. |
+| POST /api/claw/connector/enrollments/consent/grant, /consent/revoke | identity consent 변경. |
+| POST /api/claw/connector/enrollments/issue, /approve-link, /bootstrap-owner-role, /install-schema | identity 동의·enrollment, broker challenge/기기 등록 또는 스키마·관리자 설정. 호출별 실제 기능·활성 상태 검토 필요. |
+| POST /api/claw/connector/android-enrollment/challenge | identity 동의 및 broker 페어링 challenge. |
+| GET /api/claw/connector/android-text-reads/folders; POST /android-text-reads/request; POST /api/claw/connector/text-reads/request | broker 기기 목록/읽기와 작업 등록. 출처와 정본에 대한 호출별 대조 필요. |
+| POST /api/claw/local-access/connect; GET /api/claw/local-access/connect; GET /api/claw/local-access | 기기 연결·상태. 브로커/identity 연결 방식은 실제 구성 확인 필요. |
+| POST /api/claw/runs/{run_id}/local-result | 로컬 결과 회수와 Chat run/대화 기록 경계. |
+
+broker Worker RPC 메서드에는 register_binding, rotate_credential, revoke_binding, open_session, authenticate_device_session, enqueue_command_with_material, resolve_command_material, poll, admit_command, acknowledge, reconcile_expired_command, handle_device_http, device_truth, device_directory, set_owner_usage, terminal_command_result, read_office_artifact_part, read_verified_file_text, installed_execution_profile, android_saf_profile(s), install_pairing_schema, issue_enrollment_challenge, get_enrollment_binding, recovery_verdict, verify_enrollment_bootstrap, gateway_bootstrap_rpc, redeem_enrollment이 있다. 상태 소유자는 기존 broker DO이며, 각각의 읽기·변경 범위와 단일 권위 검사는 미완료다. 이 열거를 배포된 공개 HTTPS 권한이나 모든 경로 동작의 증거로 사용하지 않는다.
+
+## 추가 위험: GET 폴백
+
+앞단은 HTTP 메서드로 GET/HEAD/OPTIONS를 read로 분류한다. Google callback, LoveTree 시작, GitHub OAuth 시작/콜백은 GET이지만 데이터를 쓴다. COM2 정본 전환 후 service 폴백이 켜져 있다면 이 요청이 기존 Worker로 돌아가 D1에 쓸 수 있다. static 폴백만 설정되어 있어도 제품 전체의 직접 Worker 접근·동적 등록·예외 경로가 안전하다는 증거는 아니다. 쓰기 효과 기준의 fail-closed 분류와 통합 테스트가 선행되어야 한다.
