@@ -55,6 +55,9 @@ allowlist: identity 9개(link/session 7 + connector workspace·context), google-
 
 ## 5. (나) com2 이전 계획에 넣는 단계 — "Stage 2-C: broker/device 레인"
 
+상세 설계(원자성·자격증명 경계·전환 순서·원복·차동 테스트):
+`docs/architecture/COM2_BROKER_STAGE2C_DESIGN_20261029.md`.
+
 선행: `QUEUE_BACKEND=com2` 실사용(페어링·presence·dispatch), PC 커넥터 실측 안정화.
 내용: broker DO의 device HTTP·enrollment·session·read API를 com2 서비스(가칭 `padiem-broker-state`)로 옮기는 설계 — DO 대신 SQLite+단일 프로세스 잠금, 같은 RPC 이름 유지, 자격증명 검증기는 재사용. 완료 조건: PC 페어링·읽기·명령 왕복이 com2에서 동작하고, Cloudflare broker는 읽기 전용 롤백 경로로 남는다. 이 단계 전까지 Chat CPython의 broker 레인은 fail-closed(현행).
 
