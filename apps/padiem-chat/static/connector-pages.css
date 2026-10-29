@@ -199,13 +199,27 @@
   flex: 0 0 auto;
 }
 
-/* The Claw ON/OFF switch is a normal control in the card's own flow: it can
- * never sit on top of the description text, at any width. */
+/* The Claw ON/OFF switch stays a compact bottom-right control, and the card's
+ * own text reserves the row: the switch can never sit on top of the
+ * description at any width, and the card's grid height is untouched. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+  padding-bottom: 46px;
+}
+
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
-  position: static;
-  right: auto;
-  bottom: auto;
-  z-index: auto;
-  align-self: flex-end;
-  margin: 0 10px 10px auto !important;
+  right: 10px;
+  bottom: 8px;
+}
+
+/* Claw home cards at phone widths: the fixed-height tile clipped the name and
+ * let the status chip sit on it. The card grows to its own content and the
+ * starter reserves the status row above and the switch row below. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card {
+    min-height: 160px;
+  }
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+    padding: 30px 12px 50px;
+    align-items: flex-start;
+  }
 }
