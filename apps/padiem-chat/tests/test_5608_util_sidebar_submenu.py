@@ -132,6 +132,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
+  insertBefore(child, ref) {
+    const i = this.children.indexOf(ref);
+    if (i < 0) return this.appendChild(child);
+    this.children.splice(i, 0, child);
+    child.parentNode = this;
+    return child;
+  }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
