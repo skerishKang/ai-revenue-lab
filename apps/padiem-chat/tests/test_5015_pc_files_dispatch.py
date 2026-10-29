@@ -43,24 +43,41 @@ def test_relative_path_refuses_traversal_and_absolute_forms():
 
 def test_file_commands_are_server_built_literals():
     list_command = routes._pc_files_command(
-        op="list", root=ROOT, relative=".", limit=200,
+        op="list", root=ROOT, relative=".", offset=0, page_size=200,
     )
     assert "Get-ChildItem -LiteralPath " in list_command
     assert "Select-Object Name, Length" in list_command
     assert "ConvertTo-Json" in list_command
-    assert "@{" not in list_command
     assert "\r" not in list_command and "\n" not in list_command
+    # #5895 follow-up: a page of a fixed order, never a silent cut. Folders first,
+    # then name, and the reply carries the folder's total and whether more remains.
+    assert "Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name" in list_command
+    assert "Select-Object -Skip 0 -First 200" in list_command
+    assert "total=$n" in list_command and "has_more=" in list_command
+    assert "offset=0" in list_command
+
+    paged = routes._pc_files_command(
+        op="list", root=ROOT, relative=".", offset=400, page_size=200,
+    )
+    assert "Select-Object -Skip 400 -First 200" in paged and "offset=400" in paged
 
     # #5015: read no longer builds any shell command. The former
     # ReadAllText command timed out through the MeshCentral PowerShell reply;
     # read uses the existing kind="read" download lane instead.
     with pytest.raises(ValueError, match="only list"):
         routes._pc_files_command(
-            op="read", root=ROOT, relative="notes.txt", limit=200,
+            op="read", root=ROOT, relative="notes.txt",
         )
 
+    for bad in (-1, "0", True):
+        with pytest.raises(ValueError, match="paging offset"):
+            routes._pc_files_command(op="list", root=ROOT, relative=".", offset=bad)
+    for bad in (0, 2001, False):
+        with pytest.raises(ValueError, match="paging offset"):
+            routes._pc_files_command(op="list", root=ROOT, relative=".", page_size=bad)
+
     quoted = routes._pc_files_command(
-        op="list", root=ROOT + "/it's", relative=".", limit=200,
+        op="list", root=ROOT + "/it's", relative=".",
     )
     assert "it''s" in quoted
 
