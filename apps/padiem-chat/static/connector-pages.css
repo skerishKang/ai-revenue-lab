@@ -338,11 +338,7 @@
     bottom: auto !important;
     order: 3;
     align-self: flex-start;
-    min-height: 44px !important;
-    height: 44px !important;
-    min-width: 72px;
     width: auto !important;
-    box-sizing: border-box !important;
     padding: 4px 10px !important;
     margin: 4px 12px 12px;
     box-sizing: border-box;

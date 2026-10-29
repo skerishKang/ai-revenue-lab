@@ -1163,3 +1163,15 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     );
   }
 }
+
+/* Connector unification: at phone widths the Claw switch is a tappable row
+ * inside the tile, not the 24px corner pill. Same selector as the rule above,
+ * declared later in this file so it wins without any !important. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+    min-height: 44px !important;
+    height: 44px !important;
+    min-width: 72px;
+    box-sizing: border-box;
+  }
+}
