@@ -36,12 +36,28 @@ from service import (  # noqa: E402
     liveness_check, liveness_rounds,
 )
 
-#: Every key app_from_environment reads, kept next to the code that reads it.
-CODE_KEYS = frozenset({
+#: The keys app_from_environment must keep reading. A parse that loses one of these is
+#: a broken parse, not a missing feature - the real set is read out of the code below.
+CORE_KEYS = frozenset({
     "MESH_QUEUE_DB_PATH", "MESH_QUEUE_CHANNEL_SECRET_FILE",
     "MESH_QUEUE_OWNERSHIP_MAP_FILE", "MESH_QUEUE_EXECUTION_MODE",
     "MESH_QUEUE_SERVICE_SECRET_FILE",
 })
+
+
+def code_keys():
+    """Which MESH_QUEUE_* names the service actually reads - read from the service.
+
+    Hand-copying the list is how a contract goes quiet: #82 added
+    MESH_QUEUE_WATCH_READ_SECRET_FILE and a copied list would simply have stopped
+    covering it. The parse fails loudly instead.
+    """
+
+    source = (QUEUE / "service.py").read_text(encoding="utf-8")
+    found = frozenset(re.findall(r'"(MESH_QUEUE_[A-Z_]+)"', source))
+    assert CORE_KEYS <= found, "the key parse lost the core keys: %s" % sorted(
+        CORE_KEYS - found)
+    return found
 #: Keys the deploy and backup scripts set or print that are not read by the service.
 OPS_KEYS = frozenset({
     "MESH_QUEUE_BACKUP_DIR", "MESH_QUEUE_BACKUP_KEEP", "MESH_QUEUE_STEP",
@@ -188,9 +204,10 @@ def test_the_unit_and_installer_name_the_keys_the_code_reads():
     assert "UMask=0077" in unit
 
     named = set(re.findall(r"\bMESH_QUEUE_[A-Z_]+", installer + runbook))
-    unknown = named - CODE_KEYS - OPS_KEYS
+    read = code_keys()
+    unknown = named - read - OPS_KEYS
     assert not unknown, "deploy names a key the service does not read: %s" % sorted(unknown)
-    missing = CODE_KEYS - named
+    missing = read - named
     assert not missing, "the service reads a key the deploy never sets: %s" % sorted(missing)
 
 
@@ -233,6 +250,20 @@ def test_the_suite_runs_in_ci_and_needs_no_credential():
     assert "secrets." not in workflow, "this lane is offline; a secret makes it not so"
     assert "${{ secrets" not in workflow and "CLOUDFLARE_API_TOKEN" not in workflow
     assert "wrangler" not in workflow
+
+
+def test_the_installer_protects_the_tree_it_copies_from():
+    """`--delete` against a source checked out under the install root deletes the source.
+
+    컴2 runs the queue from a worktree at $ROOT/src precisely so the shared checkout and
+    the other units' sources stay untouched, so the installer has to exclude that
+    directory and refuse any other nested source instead of discovering it on a re-run.
+    """
+
+    installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
+    assert "--delete" in installer
+    assert "--exclude /src" in installer
+    assert "source_nested_refused" in installer
 
 
 def test_the_service_listens_on_loopback_only():

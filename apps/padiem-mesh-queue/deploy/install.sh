@@ -25,9 +25,17 @@ id -u "$ACCOUNT" >/dev/null 2>&1 || useradd --system --home-dir "$ROOT" --shell 
 
 echo "== code"
 mkdir -p "$ROOT"
+# The queue's source may be a worktree checked out under $ROOT (src/). `--delete`
+# would otherwise eat the very tree it is copying from on a re-run, so the worktree is
+# excluded from deletion and a nested source outside that one directory is refused.
+case "$QUEUE_SRC/" in
+  "$ROOT/"*) [ "$(dirname "$QUEUE_SRC")" = "$ROOT" ] && [ "$(basename "$QUEUE_SRC")" = "src" ] || {
+    echo "MESH_QUEUE_STEP=source_nested_refused"; exit 1; } ;;
+esac
 rsync -a --delete \
-  --exclude venv --exclude '__pycache__' --exclude '*.sqlite3*' --exclude 'queue.env' \
-  --exclude 'service-secret.txt' --exclude 'ownership-map.json' \
+  --exclude /src --exclude venv --exclude '__pycache__' --exclude '*.sqlite3*' \
+  --exclude 'queue.env' --exclude 'service-secret.txt' --exclude 'ownership-map.json' \
+  --exclude 'watch-read-secret.txt' \
   "$QUEUE_SRC/" "$ROOT/"
 # The modules the queue imports are linked, not copied: app/, padiem_ai_core/ and
 # padiem_control_plane/ stay the source of truth the Worker and the tests use, so a
@@ -37,11 +45,23 @@ ln -sfn "$REPO/packages/padiem-ai-core/padiem_ai_core" "$ROOT/padiem_ai_core"
 ln -sfn "$REPO/packages/padiem-control-plane/padiem_control_plane" "$ROOT/padiem_control_plane"
 
 echo "== environment"
+# The read-only watch leg (#82) is optional at install time: with no file the queue
+# simply keeps the channel-secret-only behaviour, and the monitor's own install hands
+# that file later. An empty line in an EnvironmentFile is ignored, so absence is
+# expressed by leaving the slot empty rather than by a second template.
+WATCH_LINE=""
+if [ -s "$ROOT/watch-read-secret.txt" ]; then
+  WATCH_LINE="MESH_QUEUE_WATCH_READ_SECRET_FILE=$ROOT/watch-read-secret.txt"
+  echo "MESH_QUEUE_STEP=watch_secret_present"
+else
+  echo "MESH_QUEUE_STEP=watch_secret_absent_readonly_leg_refused"
+fi
 cat > "$ROOT/queue.env" <<ENV
 MESH_QUEUE_DB_PATH=$ROOT/queue.sqlite3
 MESH_QUEUE_CHANNEL_SECRET_FILE=$CHANNEL_SECRET_FILE
 MESH_QUEUE_OWNERSHIP_MAP_FILE=$ROOT/ownership-map.json
 MESH_QUEUE_SERVICE_SECRET_FILE=$ROOT/service-secret.txt
+$WATCH_LINE
 MESH_QUEUE_EXECUTION_MODE=mesh
 PYTHONPATH=$ROOT
 PATH=$ROOT/venv/bin:/usr/local/bin:/usr/bin:/bin
