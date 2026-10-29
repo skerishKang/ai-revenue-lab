@@ -280,9 +280,4 @@
 
   renderStaticCopy();
   applyAuthState(readCapabilityAuth());
-
-  window.PadiemConversationSearch = Object.freeze({
-    isAvailable: () => available,
-    isOpen: () => searchOpen,
-  });
 })();

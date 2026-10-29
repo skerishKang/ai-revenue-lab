@@ -205,7 +205,8 @@ def test_only_exact_admin_pair_bypasses_product_tier_executability() -> None:
 def test_popup_probes_server_admin_and_never_username_matching() -> None:
     assert "/api/b66/admin/me" in CAPABILITIES
     assert "/api/admin/models/me" not in CAPABILITIES
-    assert "Padiem 관리자" in CAPABILITIES
+    assert 'admin: "Padiem 관리자"' in CAPABILITIES
+    assert 'admin: "Padiem Admin"' in CAPABILITIES
     assert "refreshAdminPresence" in CAPABILITIES
     assert 'tier === "admin"' in CAPABILITIES
     assert "charliekant" not in CAPABILITIES
