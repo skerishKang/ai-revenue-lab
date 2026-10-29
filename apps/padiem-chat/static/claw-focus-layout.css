@@ -1173,5 +1173,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     height: 44px !important;
     min-width: 72px;
     box-sizing: border-box;
+    width: auto;
+    padding: 4px 10px;
   }
 }

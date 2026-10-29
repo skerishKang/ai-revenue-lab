@@ -58,7 +58,8 @@ with sync_playwright() as p:
         const card=t.closest('.claw-home-card');if(!card||!t.getClientRects().length)return false;
         const cr=card.getBoundingClientRect(),tr=t.getBoundingClientRect();
         return cr.bottom-tr.bottom<26 && cr.right-tr.right<26}).length,
-      toggleReady:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const t=c.querySelector('.claw-connection-toggle');if(!t||!c.getClientRects().length)return false;const r=t.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.width>0&&r.height>=44&&hit&&(hit===t||t.contains(hit))}).length,
+      toggleReady:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const t=c.querySelector('.claw-connection-toggle');if(!t||!c.getClientRects().length)return false;const r=t.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.width>0&&r.height>=24&&hit&&(hit===t||t.contains(hit))}).length,
+      toggleTouch:[...document.querySelectorAll(".claw-home-card .claw-connection-toggle")].filter(t=>{const c=t.closest(".claw-home-card");if(!c||!t.getClientRects().length)return false;return t.getBoundingClientRect().height>=44}).length,
       statusInside:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const s=c.querySelector('.claw-card-status');if(!s||!c.getClientRects().length)return false;const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect();return sr.top>=cr.top-1&&sr.bottom<=cr.bottom+1&&sr.left>=cr.left-1&&sr.right<=cr.right+1}).length,
       title:document.querySelector('#emptyState h1').innerText,
       scroll:Math.round(document.documentElement.scrollWidth-window.innerWidth),
@@ -101,6 +102,7 @@ with sync_playwright() as p:
     assert claw["statusInFlow"]==3,(width,"status-placement",claw)
     assert claw["toggleInFlow"]==3,(width,"toggle-placement",claw)
     assert claw["toggleReady"]==3,(width,"toggle-touch",claw)
+    assert claw["toggleTouch"]==3,(width,"toggle-touch-44",claw)
     assert claw["statusInside"]==3,(width,"status-inside-tile",claw)
   else:
     assert claw["statusTopRight"]==3,(width,"status-placement",claw)
