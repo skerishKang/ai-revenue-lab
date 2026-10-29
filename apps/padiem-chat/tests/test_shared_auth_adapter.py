@@ -1,7 +1,7 @@
 import asyncio
 import unittest
 
-from app.shared_auth_adapter import SharedAuthUnavailable, SharedChatAuth
+from app.shared_auth_adapter import IdentityAuthorityReverseLookup, SharedAuthUnavailable, SharedChatAuth
 
 
 class Verifier:
@@ -62,3 +62,20 @@ class SharedAuthTests(unittest.TestCase):
         auth = SharedChatAuth(verifier=Verifier(), authority=Missing(), legacy=lambda _: 'private-user', clock=lambda: 1000)
         with self.assertNoLogs():
             self.assertEqual(asyncio.run(auth.compare_existing_account(None, 'valid')), 'UNKNOWN')
+
+    def test_comparison_uses_existing_rpc_envelope(self):
+        class Rpc:
+            async def resolve_product_user_for_subject(self, payload):
+                assert payload == {'product_id': 'b62', 'canonical_subject_id': 'sub_synthetic'}
+                return {'ok': True, 'product_user_id': 'existing-chat-user'}
+        auth = SharedChatAuth(verifier=Verifier(), authority=IdentityAuthorityReverseLookup(Rpc()),
+                              legacy=lambda _: 'existing-chat-user', clock=lambda: 1000)
+        self.assertEqual(asyncio.run(auth.compare_existing_account(None, 'valid')), 'MATCH')
+
+    def test_comparison_refuses_non_success_rpc_envelope(self):
+        class Rpc:
+            async def resolve_product_user_for_subject(self, payload):
+                return {'ok': False, 'product_user_id': 'existing-chat-user'}
+        auth = SharedChatAuth(verifier=Verifier(), authority=IdentityAuthorityReverseLookup(Rpc()),
+                              legacy=lambda _: 'existing-chat-user', clock=lambda: 1000)
+        self.assertEqual(asyncio.run(auth.compare_existing_account(None, 'valid')), 'UNKNOWN')
