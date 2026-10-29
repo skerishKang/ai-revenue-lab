@@ -14,6 +14,8 @@ Three shapes are exposed:
 """
 from __future__ import annotations
 
+from datetime import date, datetime
+import json
 from typing import Any, Callable
 
 from . import httpx_compat as httpx
@@ -121,7 +123,15 @@ class QueueStoreClient:
     async def call(self, method: str, **arguments: Any) -> Any:
         if not isinstance(method, str) or not method.isidentifier():
             raise QueueUnavailable("the queue method name is invalid")
-        payload = {"method": method, "arguments": dict(arguments)}
+        try:
+            payload = {"method": method,
+                       "arguments": {key: _wire(value) for key, value in arguments.items()}}
+            probe = json.dumps(payload)
+        except (TypeError, ValueError):
+            # A value that cannot cross the boundary is refused here, before anything is
+            # sent: half a call is worse than no call.
+            raise QueueUnavailable("the queue call cannot be encoded")
+        del probe
         client_options: dict[str, Any] = {
             "timeout": httpx.Timeout(self._timeout, connect=3.0),
             "follow_redirects": False,
@@ -159,6 +169,20 @@ def build_queue_client(env: Any) -> QueueStoreClient | None:
         return None
     return QueueStoreClient(origin=getattr(env, "PC_QUEUE_ORIGIN", None),
                             service_secret=getattr(env, "PC_QUEUE_SERVICE_SECRET", None))
+
+
+def _wire(value: Any) -> Any:
+    """An instant becomes the ISO text the queue parses back.
+
+    The stores take real `datetime` objects and the transport carries JSON, so the
+    boundary converts in exactly the format both sides already write their columns in.
+    """
+
+    if isinstance(value, datetime):
+        return value.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    if isinstance(value, date):
+        return value.isoformat()
+    return value
 
 
 class QueueBackedPairingStore:

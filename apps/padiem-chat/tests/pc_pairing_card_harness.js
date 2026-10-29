@@ -350,6 +350,16 @@ async function main() {
     && refused.calls.some((call) => call.method === "DELETE"),
     JSON.stringify(refused.calls));
 
+  const down = makeDom({
+    "GET *": { status: 503,
+               body: { ok: false, error: { code: "pc_pairing_unavailable" } } },
+  });
+  await settle();
+  const downSection = down.card.ids().find((n) => n.attrs.id === "pcPairingSection");
+  check("an unreachable store asks without blaming the owner",
+    downSection.allText().includes("확인하는 중이에요")
+    && !downSection.allText().includes("실패"), downSection.allText());
+
   const noFile = makeDom({
     "GET *": { status: 200, body: { ok: true, links: [], codes: [] } },
     "POST /api/pc/pairings/install-file": { status: 503,
