@@ -265,9 +265,20 @@ class History:
             raise HistoryError("the store will not answer")
         return getattr(self, "live_claims", 0)
 
+    async def oracle_mesh_lane_status(self, *, node_limit=8):
+        if getattr(self, "lane_status_raises", False):
+            raise HistoryError("the store will not answer")
+        return getattr(self, "lane_status", {
+            "unclaimed": {"count": 0, "oldest_seconds": None},
+            "claimed": {"count": 0, "oldest_seconds": None},
+            "nodes": [],
+        })
 
-def state(*, mesh=None, history=None, identity=None, secret=SECRET):
+
+def state(*, mesh=None, history=None, identity=None, secret=SECRET,
+            presence=None):
     return SimpleNamespace(
+        mesh_device_presence_store=presence,
 oracle_mesh_return_source=routes.build_oracle_mesh_return_source(
             mesh if mesh is not None else _mapping(), secret,
             routes.EXECUTION_MODE_MESH,
@@ -1190,6 +1201,91 @@ def test_the_busy_route_is_mounted_on_the_same_channel_proof_as_poll():
     app_source = inspect.getsource(app_factory)
     assert ('Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,'
             ' methods=["POST"])') in app_source
+
+
+def _lane_status_read(history, *, secret=SECRET, payload=None, presence=None):
+    return call(
+        routes.oracle_mesh_read_lane_status,
+        Request(
+            {} if payload is None else payload,
+            state(history=history, presence=presence),
+            secret=secret,
+        ),
+    )
+
+
+def test_the_monitor_reads_the_lane_as_counts_and_ages(monkeypatch):
+    """#82 standard 4: work waiting for a claim is a number a monitor can read.
+
+    Nothing is claimed or written, and the numbers are the lane's own columns:
+    a monitor may ask every few minutes forever. A store that will not answer is a
+    503 rather than a zero, because "nothing is waiting" read from a failed read
+    would call a stalled lane healthy.
+    """
+    setup_auth(monkeypatch)
+    history = History()
+    lane = {
+        "unclaimed": {"count": 3, "oldest_seconds": 900},
+        "claimed": {"count": 1, "oldest_seconds": 40},
+        "nodes": [{"node_ref": NODE, "open": 4, "oldest_seconds": 900}],
+    }
+    history.lane_status = lane
+    status, body, _ = _lane_status_read(history)
+    assert status == 200 and body == {"ok": True, **lane}
+
+    status, body, _ = _lane_status_read(history, secret=None)
+    assert status == 403 and body["error"]["code"] == "oracle_mesh_channel_rejected"
+
+    history.lane_status_raises = True
+    status, body, _ = _lane_status_read(history)
+    assert status == 503 and body["error"]["code"] == "oracle_mesh_lane_unavailable"
+
+    # A request with no body is the plain read; a body must still be a JSON object.
+    for bad in ("not json", [1, 2], {"device_ids": "not a list"},
+                {"device_ids": ["d-%d" % i for i in range(9)]},
+                {"device_ids": [None]}):
+        status, body, _ = _lane_status_read(History(), payload=bad)
+        assert status == 400, (bad, body)
+
+
+def test_the_lane_status_reports_the_executor_beat_only_for_devices_it_is_asked_about(
+    monkeypatch,
+):
+    """The presence beat is the only real evidence of "the executor was alive".
+
+    The caller names the devices, bounded by the same limit the poll beat uses, and
+    a device with no row is reported as ``seen: false`` rather than as an offline
+    device: absence of a record and a recorded disconnection are different facts.
+    """
+    setup_auth(monkeypatch)
+    loaded = {}
+
+    class _Presence:
+        async def load(self, device_id):
+            return loaded.get(device_id)
+
+    loaded["device-oracle-1"] = {"connected": 1, "received_at": "2026-10-29T00:00:00Z"}
+    status, body, _ = _lane_status_read(
+        History(), payload={"device_ids": ["device-oracle-1", "device-never-seen"]},
+        presence=_Presence(),
+    )
+    assert status == 200, body
+    assert body["beats"] == [
+        {"device_id": "device-oracle-1", "connected": True,
+         "received_at": "2026-10-29T00:00:00Z", "seen": True},
+        {"device_id": "device-never-seen", "connected": None,
+         "received_at": None, "seen": False},
+    ]
+
+
+def test_the_lane_status_route_is_mounted_where_the_other_executor_legs_are():
+    source = inspect.getsource(app_factory)
+    assert ("Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,"
+            ' methods=["POST"])') in source
+    handler = inspect.getsource(routes.oracle_mesh_read_lane_status)
+    assert "_channel_proof(request, mesh_source)" in handler
+    assert routes.ORACLE_MESH_READ_LANE_STATUS_PATH == (
+        "/api/claw/connector/mesh-reads/lane-status")
 
 
 def test_a_cancelled_command_reports_no_exit_code_rather_than_an_invented_zero():

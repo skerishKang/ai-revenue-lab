@@ -78,6 +78,10 @@ ORACLE_MESH_READ_CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: to sweep, plus its own dispatch id so its own claim is not counted, in; one
 #: boolean out. Nothing is claimed or written here either.
 ORACLE_MESH_READ_BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
+#: #82 monitoring read: the lane's own counts and ages, plus how recently each named
+#: device last reported its presence beat. Read-only, same channel proof as poll, and
+#: it claims nothing — a monitor may ask every few minutes forever.
+ORACLE_MESH_READ_LANE_STATUS_PATH = "/api/claw/connector/mesh-reads/lane-status"
 #: Owner-scoped read of one stored over-budget command original. The dispatch
 #: id is the only browser-supplied value; the object key, the conversation and
 #: the message id are all re-derived server-side, so no browser-chosen object
@@ -1931,6 +1935,78 @@ async def oracle_mesh_read_busy_check(request: Request) -> JSONResponse:
         return _response({"ok": True, "working": True, "live_claims": 1})
     return _response({"ok": True, "working": live > 0, "live_claims": live})
 
+
+async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
+    """Executor-side read of the lane's own state, for whoever watches the connector.
+
+    #82 standard 4 asks that a stop be known within ten minutes. Nothing answered
+    that on 2026-10-29: the canary was silent and the executor's own counters lived
+    only in its process. This route is the part of that state that is already in the
+    lane's tables — work waiting for a claim, work under a live claim, and per PC how
+    long its oldest unanswered dispatch has been waiting — plus the presence beat the
+    poll already writes, which is the only real evidence of "the executor was alive
+    at this instant".
+
+    Every number comes from the lane's own columns. Nothing is counted by matching
+    text in a log, a transcript or a name, and no caller-supplied string reaches a
+    query as anything but a bound value.
+
+    A store that will not answer is a 503, not a zero: a monitor reading "nothing is
+    waiting" from a failed read would call a stalled lane healthy.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        body = {}
+    device_ids: list[str] = []
+    if body:
+        if not isinstance(body, dict):
+            return _error(400, "oracle_mesh_invalid_body")
+        wanted = body.get("device_ids")
+        if wanted is None:
+            wanted = []
+        if not isinstance(wanted, list) or len(wanted) > _MAX_PRESENCE_ENTRIES:
+            return _error(400, "oracle_mesh_invalid_body")
+        for wanted_id in wanted:
+            bounded = _ref(wanted_id, 128)
+            if bounded is None:
+                return _error(400, "oracle_mesh_invalid_body")
+            device_ids.append(bounded)
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_lane_status", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        lane = await reader()
+    except Exception:
+        return _error(503, "oracle_mesh_lane_unavailable")
+    if not isinstance(lane, dict):
+        return _error(503, "oracle_mesh_lane_unavailable")
+    presence_store = getattr(request.app.state, "mesh_device_presence_store", None)
+    beats: list[dict[str, Any]] = []
+    loader = getattr(presence_store, "load", None)
+    if callable(loader):
+        for device_id in device_ids:
+            try:
+                row = await loader(device_id)
+            except Exception:
+                row = None
+            beats.append({
+                "device_id": device_id,
+                "connected": bool(row.get("connected")) if isinstance(row, dict) else None,
+                "received_at": row.get("received_at") if isinstance(row, dict) else None,
+                "seen": isinstance(row, dict),
+            })
+    payload: dict[str, Any] = {"ok": True}
+    payload.update(lane)
+    if beats:
+        payload["beats"] = beats
+    return _response(payload)
 
 def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
     """Revalidate a desktop observation note: short text, no control bytes."""
