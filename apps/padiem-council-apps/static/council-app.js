@@ -477,6 +477,7 @@
       });
       // Re-entry lists the stored history too (#5731).
       refreshSpeechList();
+      onCountryChange(refreshSpeechList);
     }
 
     return { build(host) { buildForm(host); }, buildPrompt: buildSpeechPrompt };
@@ -1230,6 +1231,7 @@
       // way the speech list does and the way util-menu.js does it: a re-entry
       // must show what is already stored before anything is saved again.
       refreshArchive(archive);
+      onCountryChange(() => refreshArchive(archive));
 
       return { refreshArchive };
     }
@@ -1240,6 +1242,16 @@
       buildBookPrompt,
     };
   })();
+
+  // #6065: the stored lists are country-scoped by sameCountry(), but they were only
+  // ever re-filtered when a tool rebuilt them. Switching the content country left the
+  // previous country's documents on screen until a save or a reload. Each list scope
+  // registers its own refresher here, so the control that changes the generation
+  // language also refreshes what it claims is stored for that language.
+  function onCountryChange(refresh) {
+    const select = host("councilCountry");
+    if (select) select.addEventListener("change", refresh);
+  }
 
   function syncCountrySelect() {
     const select = host("councilCountry");
