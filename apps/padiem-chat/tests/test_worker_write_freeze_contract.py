@@ -37,3 +37,16 @@ class RegisteredGetMutationCoverage(unittest.TestCase):
                 found[handler.id] = path.value
         self.assertEqual(set(found), writing_handlers)
         self.assertTrue(set(found.values()).issubset(freeze.WRITE_ON_GET))
+
+    def test_registered_mutation_methods_are_refused(self):
+        import ast
+        source = (Path(__file__).parents[1] / 'app' / 'app_factory.py').read_text(encoding='utf-8')
+        count = 0
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name) or node.func.id != 'Route': continue
+            for kw in node.keywords:
+                if kw.arg != 'methods' or not isinstance(kw.value, (ast.List, ast.Tuple)): continue
+                for method in kw.value.elts:
+                    if isinstance(method, ast.Constant) and method.value in {'POST','PUT','PATCH','DELETE'}:
+                        self.assertTrue(freeze.reject_request('true', method.value)); count += 1
+        self.assertGreater(count, 0)
