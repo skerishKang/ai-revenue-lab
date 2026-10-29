@@ -1,0 +1,150 @@
+name: PADIEM auth update gate
+run-name: padiem-auth-update/${{ inputs.mode }}/${{ inputs.target_sha }}/${{ inputs.current_version }}/${{ inputs.rollback_version }}
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/padiem-auth-update-gate.yml'
+      - '.github/scripts/padiem_auth_binding_check.py'
+      - '.github/scripts/padiem_auth_update_preflight.py'
+      - '.github/scripts/padiem_auth_update_live.py'
+      - '.github/scripts/padiem_auth_update_served.py'
+      - '.github/scripts/padiem_auth_update_rollback_check.py'
+      - '.github/tests/test_padiem_auth_binding_check.py'
+      - '.github/tests/test_padiem_auth_update_preflight.py'
+      - '.github/tests/test_padiem_auth_update_rollback_check.py'
+      - '.github/tests/test_padiem_auth_update_workflow.py'
+      - '.github/binding_baselines/padiem-auth.json'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [readonly, update, rollback]
+      target_sha:
+        type: string
+        required: true
+      current_version:
+        type: string
+        required: true
+      rollback_version:
+        type: string
+        required: false
+      confirmation:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: padiem-auth-update-gate
+  cancel-in-progress: false
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .github/tests/test_padiem_auth_binding_check.py && python .github/tests/test_padiem_auth_update_preflight.py && python .github/tests/test_padiem_auth_update_rollback_check.py && python .github/tests/test_padiem_auth_update_workflow.py
+  gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      MODE: ${{ inputs.mode }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CURRENT_VERSION: ${{ inputs.current_version }}
+      ROLLBACK_VERSION: ${{ inputs.rollback_version }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Validate exact target and confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == refs/heads/main && "$TARGET_SHA" =~ ^[0-9a-f]{40}$ && "$TARGET_SHA" == "$GITHUB_SHA" ]]
+          [[ "$MODE" == readonly || "$MODE" == update || "$MODE" == rollback ]]
+          [[ "$CURRENT_VERSION" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]
+          [[ -z "$ROLLBACK_VERSION" || "$ROLLBACK_VERSION" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]
+          [[ "$MODE" != rollback || -n "$ROLLBACK_VERSION" ]]
+          [[ "$MODE" != update || -z "$ROLLBACK_VERSION" ]]
+          [[ "$CONFIRMATION" == "PADIEM_AUTH_UPDATE_${MODE}_${TARGET_SHA}_${CURRENT_VERSION}_${ROLLBACK_VERSION}" ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Exact SHA and synthetic tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          python .github/tests/test_padiem_auth_binding_check.py
+          python .github/tests/test_padiem_auth_update_preflight.py
+          python .github/tests/test_padiem_auth_update_rollback_check.py
+          node --test apps/padiem-auth/test/*.test.mjs
+          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --keep-vars --outdir "$RUNNER_TEMP/auth-update-dryrun"
+      - name: Require previous exact-SHA readonly
+        if: inputs.mode != 'readonly'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          sha, current, rollback = (os.environ[k] for k in ('TARGET_SHA', 'CURRENT_VERSION', 'ROLLBACK_VERSION'))
+          repo = os.environ['GITHUB_REPOSITORY']; page = 1
+          while True:
+              # 100 is GitHub's documented per-page physical maximum; paginate.
+              query = urllib.parse.urlencode({'event': 'workflow_dispatch', 'per_page': 100, 'page': page})
+              url = f'https://api.github.com/repos/{repo}/actions/workflows/padiem-auth-update-gate.yml/runs?{query}'
+              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(req, timeout=15) as response: runs = json.load(response).get('workflow_runs', [])
+              if any(r.get('head_sha') == sha and r.get('conclusion') == 'success' and r.get('display_title') == f'padiem-auth-update/readonly/{sha}/{current}/{rollback}' for r in runs):
+                  print('exact readonly evidence: PASS'); break
+              if not runs: raise SystemExit('required readonly evidence missing')
+              page += 1
+          PY
+      - name: Check account, baseline and current deployed version
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings.json"
+          npx --no-install wrangler deployments list --name padiem-auth --json > "$RUNNER_TEMP/auth-deployments.json"
+          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments.json" "$CURRENT_VERSION"
+          if [[ "$MODE" == rollback ]]; then
+            npx --no-install wrangler versions view "$ROLLBACK_VERSION" --name padiem-auth --json > "$RUNNER_TEMP/auth-rollback-version.json"
+            python .github/scripts/padiem_auth_update_rollback_check.py .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-rollback-version.json" "$ROLLBACK_VERSION"
+          fi
+      - name: Recheck and update or rollback without regenerating keys
+        if: inputs.mode != 'readonly'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings-latest.json"
+          npx --no-install wrangler deployments list --name padiem-auth --json > "$RUNNER_TEMP/auth-deployments-latest.json"
+          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings-latest.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments-latest.json" "$CURRENT_VERSION"
+          if [[ "$MODE" == update ]]; then
+            npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --keep-vars
+          else
+            npx --no-install wrangler rollback "$ROLLBACK_VERSION" --name padiem-auth --message 'approved exact-version rollback'
+          fi
+      - name: Validate served binding baseline after change
+        if: inputs.mode != 'readonly'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings-after.json"
+          python .github/scripts/padiem_auth_binding_check.py "$RUNNER_TEMP/auth-settings-after.json" .github/binding_baselines/padiem-auth.json
+          python .github/scripts/padiem_auth_update_served.py .github/binding_baselines/padiem-auth.json

@@ -1,6 +1,6 @@
 # padiem-auth 갱신·복구 게이트 설계 초안
 
-상태: NOT READY. 최초 배포가 아직 실패하여 실제 제공 중인 Worker의 바인딩·버전 기준선이 없다. 이 문서는 운영 변경을 수행하지 않으며, 갱신·롤백 실행 워크플로의 대체물이 아니다.
+상태: NOT READY. 최초 배포 이후 Secret과 설정이 아직 완성되지 않아 승인된 최종 바인딩·버전 기준선이 없다. 갱신 워크플로 초안은 기준선이 pending이면 모든 운영 모드를 거부한다.
 
 ## 확인 및 게이트 계약
 
@@ -13,13 +13,15 @@
 
 ## 구현을 막는 실제 정보
 
-1. padiem-auth 초기 배포가 실행되지 않아 활성 버전과 실제 바인딩 집합을 얻지 못했다. 예상 이름을 운영 기준선으로 확정하지 않는다.
+1. padiem-auth는 배포됐으나 Google Secret과 서비스 설정이 아직 없으므로 최종 운영 기준선으로 확정하지 않는다.
 2. Wrangler dry-run만으로 배포 후 보존될 모든 변수·Secret의 집합을 증명하지 못했다. 저장소 설정과 기존 서비스 결합을 정확히 대조하는 검사를 추가해야 한다.
 3. Worker 코드·바인딩 롤백과 별개인 Durable Object 데이터 호환성 및 기기별 검증이 필요하다.
-4. 자동 실행되지 않는 draft PR에서 게이트 구현·합성 실패 사례 테스트·CTO 검토를 마친다. 현재 파일은 기능이 아니라 작업 계획이다.
+4. draft 게이트의 실제 Worker API 호환성·오류 처리와 CTO 검토가 남았다. 운영 기준선 승인 전에는 모든 모드가 거부된다.
 
 ## 최초 배포 후 확인 — 2026-10-29
 
 COM1의 기존 OAuth로 승인 계정의 활성 배포가 단일 버전임을 확인했다. 해당 버전의 이름·종류만 읽은 결과 `AUTH_STATE`(durable_object_namespace), `IDENTITY_AUTHORITY`(service), `PADIEM_AUTH_ES256_PRIVATE_JWK`·`PADIEM_AUTH_IDENTITY_HMAC_KEY`·`PADIEM_AUTH_REFRESH_ENCRYPTION_KEY`(secret_text), `PADIEM_AUTH_JWKS`·`PADIEM_AUTH_SIGNING_KID`(plain_text)가 있다. 값과 버전 ID는 기록하지 않았다. Google client secret 및 서비스별 설정은 이후 별도 단계라 이 목록을 최종 기준선으로 확정하지 않는다.
 
 갱신 게이트는 어떤 모드에서도 `bootstrap-deploy.mjs`를 호출하거나 서명·지문·refresh 키를 재생성하지 않는다. 같은 코드의 dry-run과 업데이트는 기존 Secret을 보존하고 일반 vars 보존(`--keep-vars`)과 전후 기준선을 검증해야 한다. 단순한 이름·종류 검사를 충분한 안전성으로 취급하지 않는다. 실제 구성과 계획된 업로드의 동등성, 부재/추가 바인딩, 대상 리소스, 활성 버전 변화에 대한 fail-closed 테스트가 남았다.
+
+롤백 시 Secret 원문은 읽을 수 없으므로 과거 버전이 현재와 같은 키 세대를 사용한다는 배포 이력 근거를 CTO가 기준선의 `active_key_generation` 및 `rollback_key_generations`에 명시 승인해야 한다. 확인되지 않은 과거 버전은 거부한다. 이 표시는 실제 Secret 값이 같다는 암호학적 증명이 아니며, 확인 근거가 없으면 롤백하지 않는다.
