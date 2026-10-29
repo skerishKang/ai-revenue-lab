@@ -13,7 +13,7 @@ class FreezeContract(unittest.TestCase):
         for method in ('GET', 'HEAD', 'OPTIONS'):
             self.assertFalse(freeze.reject_request('true', method))
         self.assertTrue(freeze.reject_request('true', 'GET', 'websocket'))
-        for path in ('/auth/google/callback', '/auth/lovetree/start'):
+        for path in ('/auth/google/callback', '/auth/lovetree/start', '/api/connectors/github/start', '/api/connectors/github/callback'):
             self.assertTrue(freeze.reject_request('true', 'GET', path=path))
             self.assertFalse(freeze.reject_request('off', 'GET', path=path))
     def test_absent_off_and_invalid(self):
@@ -27,7 +27,7 @@ class RegisteredGetMutationCoverage(unittest.TestCase):
         import ast
         source = (Path(__file__).parents[1] / 'app' / 'app_factory.py').read_text(encoding='utf-8')
         tree = ast.parse(source)
-        writing_handlers = {'google_callback', 'lovetree_handoff_start'}
+        writing_handlers = {'google_callback', 'lovetree_handoff_start', 'github_start', 'github_callback'}
         found = {}
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name) or node.func.id != 'Route' or len(node.args) < 2:
