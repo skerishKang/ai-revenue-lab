@@ -25,6 +25,10 @@ id -u "$ACCOUNT" >/dev/null 2>&1 || useradd --system --home-dir "$ROOT" --shell 
 
 echo "== code"
 mkdir -p "$ROOT"
+# backup.sh runs as the service user and writes into /opt/padiem/backups, which the host
+# owns as root. Without this directory already being the service user's, every VACUUM
+# INTO lands nowhere and the lane reports `MESH_QUEUE_BACKUP=FAILED reason=no-file`.
+install -d -m 0700 -o "$ACCOUNT" -g "$ACCOUNT" /opt/padiem/backups/mesh-queue
 # The queue's source may be a worktree checked out under $ROOT/src/. `--delete`
 # would otherwise eat the very tree it is copying from on a re-run, so that worktree is
 # excluded from deletion and any nested source outside it is refused. The source sits at

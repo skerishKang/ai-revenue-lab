@@ -285,6 +285,13 @@ def test_the_suite_runs_in_ci_and_needs_no_credential():
     assert "wrangler" not in workflow
 
 
+def test_the_installer_hands_the_backup_dir_to_the_service_user():
+    """backup.sh writes as the service user; a root-owned parent fails with no-file."""
+
+    installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
+    assert "install -d -m 0700 -o \"$ACCOUNT\" -g \"$ACCOUNT\" /opt/padiem/backups/mesh-queue" in installer
+
+
 def test_the_installer_protects_the_tree_it_copies_from():
     """`--delete` against a source checked out under the install root deletes the source.
 
