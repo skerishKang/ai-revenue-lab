@@ -100,7 +100,9 @@ Workers/Pyodide 전용 요소와 로컬 처리:
 ## 6. 컴2에서 띄울 때 필요한 것 (다음 단계)
 
 1. **엔드포인트 소유권**: `PADIEM_CHAT_PUBLIC_BASE_URL`을 실제 호스트(TLS 종단)로 —
-   https면 플래그 없이 동작하므로 `PADIEM_LOCAL_DEV`는 켜지 않는다.
+   컴2 호스트 모드는 `PADIEM_CHAT_CPYTHON_HOST=1`(https 공개 오리진 필수,
+   `PADIEM_LOCAL_DEV`와 동시 설정 금지)로 켠다. 배포 꾸러미·런북은
+   `deploy/host-com2/chat/`, `docs/operations/CHAT_COM2_RUNBOOK.md`.
 2. **B14 연결**: Owner 승인 엔드포인트·바인딩. 모델/프로바이더 결정은 Owner 소유
    (`MODEL_CHANGE_OWNER_APPROVAL_POLICY`) — 이 문서가 선택을 대체하지 않는다.
 3. **커넥터 WSS가 필요하면**: uvicorn 사이드카(별도 프로세스·별도 포트) 또는
@@ -117,6 +119,65 @@ Workers/Pyodide 전용 요소와 로컬 처리:
 - 로컬 변경은 전부 명시적 플래그·별도 엔트리포인트 뒤.
 - DB·세션 키·objects 폴더는 gitignore(`apps/padiem-chat/local_dev_data/`).
   session_secret은 로컬 생성 값이며 출력되지 않는다.
-- 검증: 집중 pytest(test_local_cpython.py 6건 — 플래그 경계 포함 최종단),
+- 검증: 집중 pytest(test_local_cpython.py 10건 — 플래그 경계 포함 최종단),
   facade 회귀(test_d1_sqlite_batch.py 4건), mesh-queue 20건, 3476 가드 34건.
   이 문서는 위 표의 실제 HTTP 확인과 같은 세션의 결과다.
+
+## 8. 병행 운영 비교 계획 — Cloudflare 경로 vs 컴2 경로
+
+목적: 병행 운영 중 두 경로가 **같은 시나리오**에서 어떤 응답 시간·실패율을 보이는지
+측정해, 3단계 전환 판단의 근거를 만든다. 이 절은 측정 **방법**이며 결과 수치가 아니다.
+
+### 8.1 비교 쌍과 시나리오
+
+| 시나리오 | 정의(두 경로 동일) | 요청 |
+|---|---|---|
+| S1 로그인 | 가입된 계정으로 `POST /api/auth/password/login`, 세션 쿠키 획득 | 응답 200 + 쿠키 |
+| S2 대화 목록 | `GET /api/conversations` (계정당 대화 20건 시드 고정) | JSON 200 |
+| S3 채팅 1턴 | `POST /api/chat/stream` 일반 텍스트 1문장, SSE 종료까지 | first-delta 시간 + total |
+| S4 PC 읽기 | 연결된 PC의 파일 목록 1회 + 작은 텍스트 1개 읽기 | 200 + 본문 크기 일치 |
+
+- 호스트: `chat.padiem.net`(Cloudflare) / `chat-com2.padiem.net`(컴2). 계정·데이터는
+  경로별로 **분리 시드**한다(같은 이메일을 두 호스트에 만들지 않는다).
+- 모델: 1차 비교는 mock(`PADIEM_CHAT_RUNTIME_MODE=mock`)로 고정 — 경로 자체의
+  지연을 잰다. B14 실모델은 별도 시리즈로 라벨링해 기록하고 mock 수치와 섞지 않는다
+  (모델 선택은 Owner 소유이므로 이 계획이 모델을 정하지 않는다).
+- S4 전제: 컴2 PC 레인은 서비스 바인딩 표의 broker RPC가 열린 뒤에만 측정 가능하다.
+  열리기 전에는 결과표에 `NOT_MEASURED reason=pc_lane_unbound`로 남긴다 — 0으로
+  채우거나 생략하지 않는다.
+
+### 8.2 실행 방법(동일 스크립트·동일 페이로드)
+
+1. 계정 시드: 경로별 1개 계정, 대화 20건(제목·본문 고정), 첨부 없음.
+2. 워밍업 5회(버리는 표본) 후, 시나리오마다 **50회 연속**, 하루 3개 창
+   (09:00·13:00·21:00 KST)에 반복. 총 2 호스트 × 4 시나리오 × 150 요청.
+3. 각 요청은 독립 httpx 클라이언트 세션, 리다이렉트 미추종, 타임아웃 30초(S3는
+   120초). Origin/쿠키는 그 호스트 자신의 값만 사용한다(교차 사용 금지).
+4. 기록(JSONL, 1줄 1요청): `ts, host, scenario, status, ttfb_ms, total_ms,
+   bytes, error_code, run_id`. 토큰·쿠키·본문·이메일 원문은 기록하지 않는다.
+5. 집계: 시나리오·호스트별 p50/p95/p99, 실패율(= 비2xx + 타임아웃 + 본문 검증 실패),
+   오류 분류표(HTTP 코드/예외 클래스). S3는 first-delta와 total을 따로 낸다.
+6. 판정 보조 지표: 5xx 비율, 429 비율, S1 성공률, S3 완주율(SSE `done` 수신 비율).
+   수용/기각 기준은 이 단계에서 정하지 않는다 — CTO·Owner가 결과표를 보고 정한다.
+
+### 8.3 편향 통제
+
+- 두 경로를 **같은 시간 창 안에서 교차** 측정(호스트 A 25회 → B 25회 → A 25회 …)해
+  시간대 효과를 상쇄한다.
+- 측정 PC는 한 대, 유선, VPN 미사용. Cloudflare 경로는 엣지 위치 영향을 받으므로
+  측정 PC 위치를 기록한다.
+- 시드 데이터는 두 경로에서 동일 파일에서 생성(제목 길이·본문 크기 동일).
+- 각 창의 첫 요청은 워밍업으로 제외. 실패 요청도 분모에 포함한다(빼지 않는다).
+
+### 8.4 결과표 템플릿(3단계 계획 문서에 붙인다)
+
+```text
+scenario | host | n | ok | fail% | p50 | p95 | p99 | note
+S1 login | cf   | 150 | … | … | … | … | … |
+S1 login | com2 | 150 | … | … | … | … | … |
+...
+S4 pc-read | com2 | — | NOT_MEASURED reason=pc_lane_unbound
+```
+
+측정 산출물은 이 저장소의 보고 경로 정책(GITHUB_REPORT_HANDOFF_POLICY)에 따라
+수치·분류만 남기고 원문 로그·쿠키는 남기지 않는다.
