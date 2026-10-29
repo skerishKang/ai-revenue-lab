@@ -11,8 +11,9 @@ test('callback diagnostics identify token failures without exposing sensitive va
   const stateFor = () => ({ async consumeLogin() { return { client: 'trial', redirect: 'https://trial.example/auth/callback', google_verifier: fakeSecret }; } });
   try {
     for (const fetcher of [
-      async () => Response.json({error:'invalid_client', error_description:fakeSecret}, {status:401}),
-      async () => { throw new TypeError(fakeSecret); },
+      async (_url, options) => { assert.equal(options.redirect, 'manual'); return Response.json({error:'invalid_client', error_description:fakeSecret}, {status:401}); },
+      async (_url, options) => { assert.equal(options.redirect, 'manual'); return new Response(null, {status:302, headers:{location:'https://evil.example'}}); },
+      async (_url, options) => { assert.equal(options.redirect, 'manual'); throw new TypeError(fakeSecret); },
     ]) {
       const app = createApp({clients:{trial:{redirect_uris:['https://trial.example/auth/callback']}}, googleClientId:'synthetic', googleClientSecret:fakeSecret, stateFor, fetcher});
       const req = new Request(`https://auth.padiem.net/oauth/google/callback?state=${token}.${token}&code=${fakeSecret}`, {headers:{cookie:`__Host-padiem-auth-state=${token}`}});
