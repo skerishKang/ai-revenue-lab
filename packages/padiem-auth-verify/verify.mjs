@@ -10,7 +10,7 @@ export function createVerifier({ audience, fetcher = fetch, clock = () => Date.n
   let cached = null, expires = 0;
   async function keys(force) {
     if (!force && cached && clock() < expires) return cached;
-    const response = await fetcher(JWKS_URL, { redirect: 'error' });
+    const response = await fetcher(JWKS_URL, { redirect: 'manual' });
     if (!response.ok) throw new Error('jwks_unavailable');
     const data = await response.json();
     if (!Array.isArray(data?.keys)) throw new Error('invalid_jwks');
