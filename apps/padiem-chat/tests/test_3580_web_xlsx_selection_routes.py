@@ -13,9 +13,32 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_sources import harness, request, workbook, OWNER, FOREIGN
 from app.claw_web_xlsx_selection_store import D1WebXlsxSelectionStore
-from app.d1_sqlite import SqliteD1
 
 ENDPOINT = "/api/claw/office/web-selections"
+
+
+class RealSQLiteD1:
+    def __init__(self, conn):
+        self.conn = conn
+
+    def prepare(self, query):
+        return D1Statement(self.conn, query)
+
+
+class D1Statement:
+    def __init__(self, conn, query):
+        self.conn, self.query, self.args = conn, query, ()
+    def bind(self, *args):
+        self.args = args
+        return self
+    async def run(self):
+        self.conn.execute(self.query, self.args)
+        return {}
+    async def first(self):
+        row = self.conn.execute(self.query, self.args).fetchone()
+        return dict(row) if row else None
+    async def all(self):
+        return [dict(row) for row in self.conn.execute(self.query, self.args).fetchall()]
 
 
 def setup():
@@ -25,7 +48,7 @@ def setup():
     sql = (Path(__file__).resolve().parents[1] / "migrations"
            / "029_claw_web_xlsx_selection.sql").read_text(encoding="utf-8")
     conn.executescript(sql)
-    app.state.claw_web_xlsx_selection_store = D1WebXlsxSelectionStore(SqliteD1(conn))
+    app.state.claw_web_xlsx_selection_store = D1WebXlsxSelectionStore(RealSQLiteD1(conn))
     return app, settings, metadata, r2, source, conn
 
 
@@ -65,7 +88,7 @@ async def test_authenticated_exact_original_selection_is_durable_after_store_res
     assert row["expires_at"] <= file["expires_at"]
     assert "sel_" in row["selection_ref"]
     # Recreate application state projection against the *same* D1.
-    app.state.claw_web_xlsx_selection_store = D1WebXlsxSelectionStore(SqliteD1(conn))
+    app.state.claw_web_xlsx_selection_store = D1WebXlsxSelectionStore(RealSQLiteD1(conn))
     listing = await request(app, settings, path=ENDPOINT)
     assert listing.status_code == 200
     assert listing.json()["selections"] == [row]
