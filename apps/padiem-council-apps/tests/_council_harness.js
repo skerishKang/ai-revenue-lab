@@ -132,6 +132,7 @@ let loginOutcome = null;
 let authStatusOutcome = null;
 let statusReads = 0;
 let fetchRejects = null;
+const saveBodies = [];
 // a queue answers successive status reads differently, which is how the re-ask is proven
 let authStatusQueue = null;
 
@@ -139,8 +140,11 @@ function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
 }
 
-const stored = (name, textValue, mediaType, bytes) => {
-  const file = { id: "f" + (++fileIdSeq), name, media_type: mediaType || "text/plain", content_chars: String(textValue || "").length };
+const stored = (name, textValue, mediaType, bytes, country) => {
+  const file = { id: "f" + (++fileIdSeq), name, media_type: mediaType || "text/plain",
+                 content_chars: String(textValue || "").length };
+  // #6046 contract: kr is sent as NO country field, so an absent field reads back as kr.
+  if (country) file.country = country;
   storedFiles.push(Object.assign({ text: textValue, bytes: bytes || null }, file));
   return file;
 };
@@ -207,7 +211,9 @@ async function fetch(url, init) {
         const file = stored(rawName, "", mediaType, bytes);
         return json({ file });
       }
-      const file = stored((body && body.name) || "무제.txt", (body && body.text) || "", (body && body.media_type) || "text/plain");
+      saveBodies.push({ keys: Object.keys(body || {}).sort(), country: body && body.country });
+      const file = stored((body && body.name) || "무제.txt", (body && body.text) || "",
+                             (body && body.media_type) || "text/plain", null, body && body.country);
       return json({ file });
     }
     if (method === "DELETE" && filesMatch[2]) {
@@ -270,7 +276,17 @@ function spawnSession(windowState = {}) {
   root.append(speechBody, snsBody, meetingBody);
   const badge = mk("span", "councilAuthBadge");
   const note = mk("p", "councilSigninNote");
-  root.append(badge, note);
+  // #6065: the content-country control is part of the surface the shipped module
+  // binds, so the fake document carries it - the stored lists are country-scoped
+  // and a scenario has to be able to change it.
+  const countrySelect = mk("select", "councilCountry");
+  ["kr", "us", "uk", "fr"].forEach((code) => {
+    const option = new N("option");
+    option.value = code;
+    countrySelect.appendChild(option);
+  });
+  countrySelect.value = "kr";
+  root.append(badge, note, countrySelect);
 
   // The #5942 entry surface: three selectable cards and the in-page login panel,
   // mirroring static/index.html so the shipped module is driven against the markup
@@ -527,6 +543,81 @@ const SCENARIOS = {
     authStatusQueue = null;
     authState = { authenticated: true, user: { name: "테스트 사용자" } };
     return { cases: rows, endpoints: endpointSet() };
+  },
+  async country_filter() {
+    // #6065: switching the content country must move the stored lists with it.
+    // The filter itself (sameCountry, #6046) was never missing - nothing re-ran it,
+    // so a list stayed filtered for whatever country was active when it was last
+    // rebuilt. One document per country is saved, then the select is moved without
+    // any reload and the visible list is read.
+    storedFiles.length = 0;
+    saveBodies.length = 0;
+    chatPayloads.length = 0;
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const store = {};
+    const s = spawnSession({ localStorage: { getItem: (k) => (k in store ? store[k] : null),
+                                             setItem: (k, v) => { store[k] = String(v); } } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+
+    const select = find(s, "councilCountry");
+    const setCountry = async (code) => {
+      select.value = code;
+      await select.dispatch("change");
+      await sleep(40);
+    };
+    const speechList = () => s.root.querySelectorAll(".council-saved-open")
+      .map((n) => String(n.textContent).trim().replace(/ \(.*/, ""));
+    const archiveList = () => {
+      const arc = find(s, "councilMeetingArchive");
+      return arc ? arc.querySelectorAll(".council-archive-item button")
+        .map((n) => String(n.textContent).trim().replace(/ \(.*/, "")) : [];
+    };
+    const saveSpeech = async (eventName) => {
+      const form = find(s, "councilSpeechForm");
+      form.querySelector("[name=event]").value = eventName;
+      await form.dispatch("submit");
+      await sleep(40);
+      await find(s, "councilSpeechSave").dispatch("click");
+      await sleep(60);
+    };
+
+    const seen = {};
+    for (const [code, eventName] of [["uk", "UK hall address"], ["fr", "Salle communale"], ["kr", "주민 센터 행사"]]) {
+      await setCountry(code);
+      await saveSpeech(eventName);
+      seen["list_after_saving_" + code] = speechList();
+      await setCountry("kr");
+      seen["kr_sees_when_last_saved_was_" + code] = speechList();
+      await setCountry(code);
+    }
+    seen["final_list"] = speechList();
+
+    // the meeting archive follows the same rule
+    const meetingForm = find(s, "councilMeetingForm");
+    await setCountry("kr");
+    meetingForm.querySelector("[name=title]").value = "주민 안전 회의";
+    meetingForm.querySelector("[name=content]").value = "도로 보수 일정을 논의했습니다.";
+    await meetingForm.dispatch("submit");
+    await sleep(40);
+    await find(s, "councilMeetingSave").dispatch("click");
+    await sleep(60);
+    const krArchive = archiveList();
+    await setCountry("fr");
+    const frArchive = archiveList();
+
+    return {
+      seen,
+      krArchive, frArchive,
+      storedCountries: storedFiles.map((f) => [f.name, f.country || "kr"]),
+      // #6065 must not change what goes on the wire: the generation payload keeps
+      // its keys, and a stored document is still {name, media_type, text} with
+      // country present only for a non-kr save.
+      chatBodyKeys: chatPayloads.map((b) => Object.keys(b || {}).sort().join(",")),
+      saveBodyKeys: saveBodies.map((b) => b.keys.join(",")),
+      saveCountries: saveBodies.map((b) => b.country || "kr(absent)"),
+    };
   },
   async auth_routing() {
     // URL and host-storage selection: a refresh or a provider round trip must land
