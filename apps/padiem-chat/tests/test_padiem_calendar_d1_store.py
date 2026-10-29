@@ -166,7 +166,9 @@ async def test_d1_work_log_crud_and_isolation(d1_store: D1CalendarStore) -> None
     assert saved.title == "A사와 견적 협의"
 
     # 2. Get log from workspace alpha
-    fetched = await d1_store.get_work_log("ws_alpha", log_a.log_id)
+    fetched = await d1_store.get_work_log(
+        "ws_alpha", log_a.log_id, owner_id="usr_alice"
+    )
     assert fetched is not None
     assert fetched.log_id == log_a.log_id
     assert fetched.workspace_id == "ws_alpha"
@@ -178,20 +180,24 @@ async def test_d1_work_log_crud_and_isolation(d1_store: D1CalendarStore) -> None
     assert fetched.updated_at == now
 
     # 3. Non-disclosing lookup: foreign workspace returns None
-    foreign_lookup = await d1_store.get_work_log("ws_beta", log_a.log_id)
+    foreign_lookup = await d1_store.get_work_log(
+        "ws_beta", log_a.log_id, owner_id="usr_alice"
+    )
     assert foreign_lookup is None, "Foreign workspace was able to read alpha's work-log!"
 
     # 4. Missing lookup returns None
-    missing_lookup = await d1_store.get_work_log("ws_alpha", "log_nonexistent")
+    missing_lookup = await d1_store.get_work_log(
+        "ws_alpha", "log_nonexistent", owner_id="usr_alice"
+    )
     assert missing_lookup is None
 
     # 5. List work logs scoped to workspace alpha
-    logs_alpha = await d1_store.list_work_logs("ws_alpha")
+    logs_alpha = await d1_store.list_work_logs("ws_alpha", owner_id="usr_alice")
     assert len(logs_alpha) == 1
     assert logs_alpha[0].log_id == log_a.log_id
 
     # 6. List work logs for workspace beta returns 0 items
-    logs_beta = await d1_store.list_work_logs("ws_beta")
+    logs_beta = await d1_store.list_work_logs("ws_beta", owner_id="usr_alice")
     assert len(logs_beta) == 0
 
 
@@ -220,25 +226,32 @@ async def test_d1_work_log_date_filtering_and_ordering(d1_store: D1CalendarStore
         await d1_store.add_work_log(l)
 
     # All items ordered deterministically by date ASC, created_at ASC
-    all_logs = await d1_store.list_work_logs(ws)
+    all_logs = await d1_store.list_work_logs(ws, owner_id="usr_1")
     assert [l.title for l in all_logs] == ["Log Early", "Log Later", "Log Tomorrow", "Log Day After"]
 
     # Filter start_date only
-    from_21 = await d1_store.list_work_logs(ws, start_date=date(2026, 9, 21))
+    from_21 = await d1_store.list_work_logs(
+        ws, owner_id="usr_1", start_date=date(2026, 9, 21)
+    )
     assert [l.title for l in from_21] == ["Log Tomorrow", "Log Day After"]
 
     # Filter end_date only
-    up_to_20 = await d1_store.list_work_logs(ws, end_date=date(2026, 9, 20))
+    up_to_20 = await d1_store.list_work_logs(
+        ws, owner_id="usr_1", end_date=date(2026, 9, 20)
+    )
     assert [l.title for l in up_to_20] == ["Log Early", "Log Later"]
 
     # Range filter
     range_21 = await d1_store.list_work_logs(
-        ws, start_date=date(2026, 9, 21), end_date=date(2026, 9, 21)
+        ws,
+        owner_id="usr_1",
+        start_date=date(2026, 9, 21),
+        end_date=date(2026, 9, 21),
     )
     assert [l.title for l in range_21] == ["Log Tomorrow"]
 
     # Limit check
-    limited = await d1_store.list_work_logs(ws, limit=2)
+    limited = await d1_store.list_work_logs(ws, owner_id="usr_1", limit=2)
     assert len(limited) == 2
     assert [l.title for l in limited] == ["Log Early", "Log Later"]
 
@@ -287,7 +300,9 @@ async def test_d1_appointment_crud_all_types(d1_store: D1CalendarStore) -> None:
     await d1_store.add_appointment(apt_timed)
 
     # Read back and verify each
-    f_date = await d1_store.get_appointment(ws, apt_date.appointment_id)
+    f_date = await d1_store.get_appointment(
+        ws, apt_date.appointment_id, owner_id=owner
+    )
     assert f_date is not None
     assert f_date.appointment_type == AppointmentType.DATE_ONLY
     assert f_date.date == date(2026, 9, 30)
@@ -296,12 +311,16 @@ async def test_d1_appointment_crud_all_types(d1_store: D1CalendarStore) -> None:
     assert f_date.timezone is None
     assert f_date.description == "회계팀 전달"
 
-    f_all = await d1_store.get_appointment(ws, apt_allday.appointment_id)
+    f_all = await d1_store.get_appointment(
+        ws, apt_allday.appointment_id, owner_id=owner
+    )
     assert f_all is not None
     assert f_all.appointment_type == AppointmentType.ALL_DAY
     assert f_all.date == date(2026, 10, 1)
 
-    f_timed = await d1_store.get_appointment(ws, apt_timed.appointment_id)
+    f_timed = await d1_store.get_appointment(
+        ws, apt_timed.appointment_id, owner_id=owner
+    )
     assert f_timed is not None
     assert f_timed.appointment_type == AppointmentType.TIMED
     assert f_timed.timezone == "Asia/Seoul"
@@ -310,8 +329,13 @@ async def test_d1_appointment_crud_all_types(d1_store: D1CalendarStore) -> None:
     assert f_timed.end_at == datetime(2026, 9, 25, 7, 0, 0, tzinfo=timezone.utc)
 
     # Isolation check
-    assert await d1_store.get_appointment("ws_foreign", apt_timed.appointment_id) is None
-    foreign_list = await d1_store.list_appointments("ws_foreign")
+    assert (
+        await d1_store.get_appointment(
+            "ws_foreign", apt_timed.appointment_id, owner_id=owner
+        )
+        is None
+    )
+    foreign_list = await d1_store.list_appointments("ws_foreign", owner_id=owner)
     assert len(foreign_list) == 0
 
 
@@ -357,8 +381,8 @@ async def test_d1_appointment_ordering_parity_with_in_memory(d1_store: D1Calenda
         await d1_store.add_appointment(apt)
         await mem_store.add_appointment(apt)
 
-    d1_items = await d1_store.list_appointments(ws)
-    mem_items = await mem_store.list_appointments(ws)
+    d1_items = await d1_store.list_appointments(ws, owner_id="u1")
+    mem_items = await mem_store.list_appointments(ws, owner_id="u1")
 
     # Verify exact ordering parity between in-memory reference and D1
     assert [a.appointment_id for a in d1_items] == [a.appointment_id for a in mem_items]
@@ -377,11 +401,15 @@ async def test_d1_appointment_ordering_parity_with_in_memory(d1_store: D1Calenda
 @pytest.mark.asyncio
 async def test_d1_store_unsafe_identifiers_rejected(d1_store: D1CalendarStore) -> None:
     with pytest.raises(CalendarContractError) as exc:
-        await d1_store.get_work_log("ws; DROP TABLE padiem_calendar_work_log;", "log_123")
+        await d1_store.get_work_log(
+            "ws; DROP TABLE padiem_calendar_work_log;", "log_123", owner_id="u1"
+        )
     assert exc.value.code == "invalid_identifier"
 
     with pytest.raises(CalendarContractError) as exc:
-        await d1_store.get_appointment("ws_1", "apt-invalid id with spaces")
+        await d1_store.get_appointment(
+            "ws_1", "apt-invalid id with spaces", owner_id="u1"
+        )
     assert exc.value.code == "invalid_identifier"
 
 
@@ -404,10 +432,10 @@ async def test_d1_store_fails_closed_on_broken_database(d1_db: SqliteD1Binding) 
         await store.add_work_log(log)
 
     with pytest.raises(WorkspaceStorageError, match="D1 read failed"):
-        await store.get_work_log("ws_broken", log.log_id)
+        await store.get_work_log("ws_broken", log.log_id, owner_id="u1")
 
     with pytest.raises(WorkspaceStorageError, match="D1 read failed"):
-        await store.list_work_logs("ws_broken")
+        await store.list_work_logs("ws_broken", owner_id="u1")
 
 
 # ==============================================================================

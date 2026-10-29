@@ -675,10 +675,13 @@ async def test_today_projection_deterministic_timezone() -> None:
     # In America/New_York (EDT, UTC-4), it is 2026-09-20 12:00:00 -> today is 2026-09-20
     ref_utc = datetime(2026, 9, 20, 16, 0, 0, tzinfo=timezone.utc)
 
+    # #2952: the native calendar is owner-scoped, so the projection is asked as
+    # the owner who wrote the row.
     proj_seoul = await build_today_projection(
         workspace_id="ws_tz",
         tz_name="Asia/Seoul",
         calendar_store=store,
+        user_id="usr_1",
         now_utc=ref_utc,
     )
     assert proj_seoul["date"] == "2026-09-21"
@@ -689,6 +692,7 @@ async def test_today_projection_deterministic_timezone() -> None:
         workspace_id="ws_tz",
         tz_name="America/New_York",
         calendar_store=store,
+        user_id="usr_1",
         now_utc=ref_utc,
     )
     assert proj_ny["date"] == "2026-09-20"
@@ -797,15 +801,30 @@ async def test_workspace_isolation() -> None:
     )
 
     # Workspace B cannot read Workspace A's records
-    assert await store.get_work_log("ws_b", log_a.log_id) is None
-    assert await store.get_appointment("ws_b", apt_a.appointment_id) is None
+    assert await store.get_work_log("ws_b", log_a.log_id, owner_id="usr_a") is None
+    assert (
+        await store.get_appointment("ws_b", apt_a.appointment_id, owner_id="usr_a")
+        is None
+    )
 
     # Listing workspace B returns nothing from workspace A
-    logs_b = await store.list_work_logs("ws_b")
+    logs_b = await store.list_work_logs("ws_b", owner_id="usr_a")
     assert len(logs_b) == 0
 
-    apts_b = await store.list_appointments("ws_b")
+    apts_b = await store.list_appointments("ws_b", owner_id="usr_a")
     assert len(apts_b) == 0
+
+    # #2952: the same workspace is not enough — a tenant-mate reads nothing.
+    assert await store.get_work_log("ws_a", log_a.log_id, owner_id="usr_b") is None
+    assert (
+        await store.get_appointment("ws_a", apt_a.appointment_id, owner_id="usr_b")
+        is None
+    )
+    assert await store.list_work_logs("ws_a", owner_id="usr_b") == ()
+    assert await store.list_appointments("ws_a", owner_id="usr_b") == ()
+    # The owner still reads their own records normally.
+    assert await store.get_work_log("ws_a", log_a.log_id, owner_id="usr_a") is not None
+    assert len(await store.list_work_logs("ws_a", owner_id="usr_a")) == 1
 
 
 def test_persistence_decision_constants() -> None:
@@ -856,7 +875,7 @@ async def test_mutation_adversarial_workspace_predicate_removal() -> None:
         )
     )
     # If workspace isolation is broken, query for ws_other would return ws_secret's items
-    other_items = await store.list_work_logs("ws_other")
+    other_items = await store.list_work_logs("ws_other", owner_id="usr_other")
     assert len(other_items) == 0
 
 

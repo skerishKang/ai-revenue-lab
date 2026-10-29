@@ -420,8 +420,14 @@ async def calendar_work_logs_list(request: Request) -> JSONResponse:
         return limit_val
 
     try:
+        # #2952: the caller is the owner of every row this returns. The workspace
+        # is the tenant, so it alone must never be the read scope.
         logs = await store.list_work_logs(
-            workspace_id, start_date=start_d, end_date=end_d, limit=limit_val
+            workspace_id,
+            owner_id=uid,
+            start_date=start_d,
+            end_date=end_d,
+            limit=limit_val,
         )
     except Exception:
         return _error(500, "work_log_list_failed", "업무 기록 목록 조회에 실패했습니다.")
@@ -505,7 +511,11 @@ async def calendar_appointments_list(request: Request) -> JSONResponse:
 
     try:
         apts = await store.list_appointments(
-            workspace_id, start_date=start_d, end_date=end_d, limit=limit_val
+            workspace_id,
+            owner_id=uid,
+            start_date=start_d,
+            end_date=end_d,
+            limit=limit_val,
         )
     except Exception:
         return _error(500, "appointment_list_failed", "일정 목록 조회에 실패했습니다.")
@@ -527,7 +537,9 @@ async def calendar_appointment_manage(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     appointment_id = request.path_params.get("appointment_id", "")
     try:
-        existing = await store.get_appointment(workspace_id, appointment_id)
+        existing = await store.get_appointment(
+            workspace_id, appointment_id, owner_id=uid
+        )
         if existing is None or existing.owner_id != uid:
             return _error(404, "appointment_not_found", "Appointment not found")
         if request.method == "DELETE":
@@ -569,7 +581,7 @@ async def calendar_work_log_manage(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     log_id = request.path_params.get("log_id", "")
     try:
-        existing = await store.get_work_log(workspace_id, log_id)
+        existing = await store.get_work_log(workspace_id, log_id, owner_id=uid)
         if existing is None or existing.owner_id != uid:
             return _error(404, "work_log_not_found", "Work log not found")
         if request.method == "DELETE":
