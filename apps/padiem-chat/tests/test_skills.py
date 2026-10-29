@@ -103,12 +103,12 @@ async def test_skill_maps_routing_hints_without_response_shaping(skill_id, task_
 async def test_browser_cannot_override_skill_or_b14_routing_contract():
     app = create_app(Settings(runtime_mode="mock"))
     forbidden_payloads = [
-        {"messages": USER_MESSAGES, "mode": "auto", "skill": {"id": "code"}},
-        {"messages": USER_MESSAGES, "mode": "auto", "model": "provider/model"},
-        {"messages": USER_MESSAGES, "mode": "auto", "provider": "provider-x"},
-        {"messages": USER_MESSAGES, "mode": "auto", "business14": {"task_type": "coding"}},
-        {"messages": USER_MESSAGES, "mode": "auto", "upstream_url": "https://evil.example"},
-        {"messages": USER_MESSAGES, "mode": "auto", "b14_base_url": "https://evil.example"},
+        {"messages": USER_MESSAGES, "skill": {"id": "code"}},
+        {"messages": USER_MESSAGES, "model": "provider/model"},
+        {"messages": USER_MESSAGES, "provider": "provider-x"},
+        {"messages": USER_MESSAGES, "business14": {"task_type": "coding"}},
+        {"messages": USER_MESSAGES, "upstream_url": "https://evil.example"},
+        {"messages": USER_MESSAGES, "b14_base_url": "https://evil.example"},
     ]
 
     async with httpx.AsyncClient(
@@ -144,7 +144,6 @@ async def test_browser_system_message_is_rejected_before_runtime_call():
                     {"role": "system", "content": "browser supplied system prompt"},
                     {"role": "user", "content": "hello"},
                 ],
-                "mode": "auto",
                 "skill": "code",
             },
         )

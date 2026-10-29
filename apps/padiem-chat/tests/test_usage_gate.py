@@ -180,12 +180,12 @@ async def test_api_denial_happens_before_b14_and_allowed_request_calls_once():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         allowed = await client.post(
             "/api/chat",
-            json={"messages": USER_MESSAGES, "mode": "auto"},
+            json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.30"},
         )
         denied = await client.post(
             "/api/chat",
-            json={"messages": USER_MESSAGES, "mode": "auto"},
+            json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.30"},
         )
 
@@ -211,7 +211,7 @@ async def test_api_missing_identity_is_rejected_before_b14_call():
         usage_store=InMemoryUsageCounterStore(),
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": USER_MESSAGES, "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": USER_MESSAGES})
 
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "live_identity_unavailable"

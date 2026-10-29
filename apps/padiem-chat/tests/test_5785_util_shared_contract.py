@@ -56,7 +56,7 @@ def test_every_tool_sends_the_same_chat_payload_shape(shared: dict) -> None:
     payloads = shared["chatPayloads"]
     assert len(payloads) == len(shared["perTool"])
     for payload in payloads:
-        assert payload["mode"] == "auto"
+        assert "mode" not in payload  # the removed chat-mode key
         assert [m["role"] for m in payload["messages"]] == ["user"]
         assert payload["messages"][0]["content"].strip()
 
@@ -96,7 +96,7 @@ def test_util_api_chat_sends_selected_tier_or_free_and_preserves_server_errors()
     assert {row["name"]: row["payload"]["tier"] for row in observed["tiers"]} == expected
     for row in observed["tiers"]:
         assert row["calls"] == 1
-        assert row["payload"]["mode"] == "auto"
+        assert "mode" not in row["payload"]  # the removed chat-mode key
         assert [message["role"] for message in row["payload"]["messages"]] == ["user"]
         assert row["output"] == "생성된 초안 본문입니다.\n\n두 번째 문단입니다."
     assert {row["name"]: row["output"] for row in observed["errors"]} == {

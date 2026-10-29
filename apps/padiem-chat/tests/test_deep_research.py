@@ -140,7 +140,7 @@ async def test_deep_research_is_bounded_deduped_grounded_and_redacted():
     bind_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
+        response = await client.post("/api/chat", json={"messages": MESSAGES, "tool": "deep_research"})
 
     assert response.status_code == 200
     body = response.json()
@@ -198,7 +198,7 @@ async def test_partial_search_and_fetch_failures_return_truthful_partial_result(
     bind_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
+        response = await client.post("/api/chat", json={"messages": MESSAGES, "tool": "deep_research"})
 
     assert response.status_code == 200
     research = response.json()["research"]
@@ -229,7 +229,7 @@ async def test_malformed_planner_falls_back_to_original_query_without_exposing_r
     bind_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
+        response = await client.post("/api/chat", json={"messages": MESSAGES, "tool": "deep_research"})
 
     assert response.status_code == 200
     body = response.json()
@@ -258,7 +258,7 @@ async def test_zero_usable_evidence_continues_with_a_notice_and_no_research_clai
     bind_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
+        response = await client.post("/api/chat", json={"messages": MESSAGES, "tool": "deep_research"})
 
     assert response.status_code == 200
     body = response.json()
@@ -295,6 +295,6 @@ async def test_health_capability_requires_b14_runtime_and_web_provider():
 async def test_direct_deep_research_is_unavailable_in_mock_runtime():
     app = create_app(Settings(runtime_mode="mock", web_provider="mock"))
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
+        response = await client.post("/api/chat", json={"messages": MESSAGES, "tool": "deep_research"})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "deep_research_unavailable"

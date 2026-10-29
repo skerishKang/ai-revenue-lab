@@ -103,7 +103,7 @@ async def test_missing_required_service_binding_refunds_exact_authorization_once
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -131,7 +131,7 @@ async def test_successful_dispatch_consumes_exactly_one_quota_operation():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -157,7 +157,7 @@ async def test_ambiguous_transport_failure_is_not_refunded():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 
@@ -184,7 +184,7 @@ async def test_b14_server_failure_is_not_refunded():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto"},
+            json={"messages": MESSAGES},
             headers={"cf-connecting-ip": IP},
         )
 

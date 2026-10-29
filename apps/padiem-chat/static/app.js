@@ -3299,7 +3299,7 @@
       // is read, so a request never leaves with a tier that was not verified
       // for this account yet.
       await window.PadiemTierSelection?.ready?.();
-      const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };
       if (window.PadiemSearchSources && typeof window.PadiemSearchSources.isActive === "function" && window.PadiemSearchSources.isActive()) {
         payload.web_search = true;
       }

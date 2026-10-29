@@ -129,7 +129,6 @@ def test_the_auth_status_and_the_ordinary_lanes_survive_a_concurrent_burst():
                 {
                     "json": {
                         "messages": [{"role": "user", "content": f"동시 질문 {index}"}],
-                        "mode": "auto",
                     }
                 },
             )

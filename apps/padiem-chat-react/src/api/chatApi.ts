@@ -140,7 +140,6 @@ export async function streamAnswer(
 ): Promise<void> {
   const payload: Record<string, unknown> = {
     messages: request.messages,
-    mode: "auto",
   };
   if (request.skill) payload.skill = request.skill;
   if (request.conversationId) payload.conversation_id = request.conversationId;

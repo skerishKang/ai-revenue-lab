@@ -210,7 +210,7 @@ def test_arbitrary_untrusted_messages_cannot_add_model_choices(kwargs, expected)
 
 
 @pytest.mark.parametrize(("response", "code"), [
-    ({"answer": "valid", "route": {"mode": "auto", "model": "test-owner-catalog/quote-capable"}},
+    ({"answer": "valid", "route": {"model": "test-owner-catalog/quote-capable"}},
      "provider_route_mismatch"),
     ({"answer": "valid", "route": {"mode": "manual", "model": "other-model"}},
      "provider_route_mismatch"),
