@@ -836,13 +836,13 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertEqual(outcome.termination, "cancelled")
         self.assertIsNone(outcome.exit_code)
         self.assertTrue(seen["run"][0][2].killed, "this host stops waiting")
-        # Two terminal sessions on one command, and each is a single one: the
-        # pre-flight look at the console line, then this stop. Neither becomes a
-        # queue, and only the stop carries the kill.
+        # One terminal session for this command: this stop. The #6106 console look is
+        # opt-in since 2026-10-29 (its channel echoed input without executing it), so a
+        # default command opens none — and only the stop carries the kill.
         stops = [h for h in handoffs if b"taskkill /T /F /PID $__padiem_kill" in h.data]
         probes = [h for h in handoffs if b"Get-CimInstance" in h.data]
         self.assertEqual(len(stops), 1, "one stop session, not a queue of them")
-        self.assertEqual(len(probes), 1, "one console look before the command")
+        self.assertEqual(probes, [], "no console look unless the probe is asked for")
         stop_index = handoffs.index(stops[0])
         argv, kwargs, stop_child = seen["stop"][stop_index]
         self.assertIn("shell", argv)
@@ -851,7 +851,6 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
         self.assertEqual(handoffs[0].data.decode("utf-8").splitlines()[0], PASSWORD,
                          "the credential still never enters argv")
         self.assertEqual(stops[0].waits, [15], "the stop is bounded")
-        self.assertEqual(probes[0].waits, [15], "and so is the look before it")
         self.assertIsNone(stop_child.poll())
         self.assertIn("cancel_kill", phases)
 

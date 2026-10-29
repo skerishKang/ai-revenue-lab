@@ -163,6 +163,10 @@ class _Harness:
         # override it is saying "nothing else is claimed here", which is the only
         # condition under which a held line may be cleared at all.
         call.setdefault("line_guard", lambda: True)
+        # The console probe is opt-in since 2026-10-29: the shell lane was measured
+        # echoing input without executing it. These tests are about that probe, so
+        # they turn it on explicitly; the default-off state has its own test.
+        call.setdefault("line_probe", True)
         phases = []
         outcome = self.port().run_command(
             node_ref=NODE, phase_observer=phases.append, **call,
@@ -327,7 +331,7 @@ class TestASilentLineIsClearedAndTriedOnce(unittest.TestCase):
         phases = []
         outcome = refusing.run_command(
             node_ref=NODE, command="Get-ChildItem C:/x", timeout_seconds=None,
-            dispatch_id=OURS, phase_observer=phases.append,
+            dispatch_id=OURS, phase_observer=phases.append, line_probe=True,
         )
         self.assertIn("line_probe_refused", phases)
         self.assertEqual(outcome.termination, "exited", "the command was still sent")
@@ -669,6 +673,34 @@ class _NoopPort:
 class _ReadPort:
     def read_bytes(self, **call):
         raise AssertionError("the command lane never reads a file")
+
+
+class TestTheProbeShipsOff(unittest.TestCase):
+    """2026-10-29: the shell lane echoed input without executing it on every agent.
+
+    The probe ran on every command with a dispatch id and could never succeed there, so
+    it now runs only when an operator says their agent's shell executes. Absence is off.
+    """
+
+    def test_absence_is_off_and_only_an_explicit_value_turns_it_on(self) -> None:
+        self.assertFalse(port_module._line_probe_enabled(None, {}))
+        self.assertFalse(port_module._line_probe_enabled(None, {
+            "PADIEM_MESH_LINE_PROBE": "0"}))
+        for on in ("1", "true", "YES", "on"):
+            self.assertTrue(port_module._line_probe_enabled(None, {
+                "PADIEM_MESH_LINE_PROBE": on}), on)
+        self.assertTrue(port_module._line_probe_enabled(True, {}))
+        self.assertFalse(port_module._line_probe_enabled(False, {
+            "PADIEM_MESH_LINE_PROBE": "1"}), "an explicit no wins over the environment")
+
+    def test_a_command_with_the_probe_off_opens_no_terminal_session(self) -> None:
+        harness = _Harness(sweep_answers=(_frame(running=False),), run_answers=(0.0,))
+        with patch.object(port_module, "LINE_STALL_WAIT_SECONDS", STALL_SECONDS):
+            outcome, phases = harness.run(line_probe=False)
+        self.assertEqual(outcome.termination, "exited")
+        self.assertEqual(harness.sweeps, [], "the shell lane is not touched")
+        self.assertEqual(len(harness.runs), 1)
+        self.assertNotIn("line_probe", phases)
 
 
 if __name__ == "__main__":
