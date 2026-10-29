@@ -37,7 +37,7 @@ function one(params, name) {
 }
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, signingKey, signingKid, jwks, stateFor, authority, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -76,10 +76,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
       if (!keyResponse.ok) throw new Error('google keys unavailable');
       const identity = await verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
       const userId = await googleProductUserId(identity.sub);
-      const linked = await authority.resolve_or_create_product_link({ product_id: pending.client, product_user_id: userId, auth_provider: 'google', provider_subject: identity.sub });
-      if (linked?.ok !== true || linked?.link?.state !== 'active' || linked?.link?.product_id !== pending.client || linked?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(linked?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
+      const fingerprint = await digest(`google:${identity.sub}`);
+      const account = await stateFor('google-account-registry').resolveAccount({ fingerprint, productId: pending.client, userId, subject: identity.sub });
+      if (!account || account.state !== 'active' || !/^sub_[A-Za-z0-9_-]+$/.test(account.account_id ?? '')) throw new Error('identity authority failed');
       const codeSecret = random();
-      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: identity.sub, accountId: linked.link.canonical_subject_id, expires: current + 60 });
+      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: identity.sub, accountId: account.account_id, expires: current + 60 });
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -113,9 +114,8 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
         // A disabled product link must not keep receiving 30 days of fresh access.
         // A failed authority call closes the flow; the rotated credential was not
         // returned, so recovery requires a new login instead of a fail-open grant.
-        const userId = await googleProductUserId(subject);
-        const linked = await authority.resolve_product_user_for_subject({ product_id: id, canonical_subject_id: accountId });
-        if (linked?.ok !== true || linked?.product_user_id !== userId) {
+        const account = await stateFor('google-account-registry').accountById(accountId);
+        if (!account || account.state !== 'active') {
           await stateFor(object).revoke({ id: sessionId, client: id, digest: await digest(nextSecret), now: current });
           return json(400, { error: 'invalid_grant' });
         }
@@ -128,12 +128,24 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'rotate', 'revoke']);
+const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'rotate', 'revoke', 'resolveAccount', 'accountById']);
 export class AuthStateObject extends AuthState {
+  constructor(state, env) { super(state); this.state = state; this.env = env; }
+  async resolveAccount({ fingerprint, productId, userId, subject }) {
+    // DO serialization prevents two concurrent first logins from issuing two
+    // authority calls or binding one fingerprint to different accounts.
+    return this.state.blockConcurrencyWhile(async () => {
+      const current = this.accountByFingerprint(fingerprint);
+      if (current) return current;
+      const linked = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link({ product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject });
+      if (linked?.ok !== true || linked?.link?.state !== 'active' || linked?.link?.product_id !== productId || linked?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(linked?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
+      return this.putAccount({ fingerprint, accountId: linked.link.canonical_subject_id });
+    });
+  }
   async fetch(request) {
     const action = new URL(request.url).pathname.slice(1);
     if (request.method !== 'POST' || !methods.has(action)) return json(404, { error: 'not_found' });
-    try { return json(200, { value: this[action](await request.json()) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
+    try { return json(200, { value: (await this[action](await request.json())) ?? null }); } catch { return json(500, { error: 'state_failure' }); }
   }
 }
 
@@ -150,7 +162,7 @@ export default {
         if (!response.ok) throw new Error('state failed');
         return (await response.json()).value;
       }; } });
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor, authority: env.IDENTITY_AUTHORITY }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { AuthState } from '../state.mjs';
-import { createApp } from '../worker.mjs';
+import { createApp, AuthStateObject } from '../worker.mjs';
 
 const url = 'https://auth.padiem.net';
 const b64 = x => Buffer.from(x).toString('base64url');
@@ -21,10 +21,10 @@ async function setup() {
   const publicSigning = await crypto.subtle.exportKey('jwk', signing.publicKey); publicSigning.kid = 'auth';
   const client = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const publicClient = await crypto.subtle.exportKey('jwk', client.publicKey); publicClient.kid = 'client';
-  const objects = new Map(); const stateFor = id => { if (!objects.has(id)) objects.set(id, new AuthState({ storage: storage() })); return objects.get(id); };
-  let nonce = ''; let linked = null; let blocked = false; const t = 1000;
+  let nonce = ''; let linked = null; let authorityCalls = 0; const t = 1000;
+  const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
+  const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
   const app = createApp({ clients: { lovetree: { id: 'lovetree', redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
-    authority: { async resolve_or_create_product_link(v) { linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; }, async resolve_product_user_for_subject() { return blocked ? {ok:false} : {ok:true,product_user_id:linked.product_user_id}; } },
     async fetcher(address) { if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
       const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', nonce, iat: 999, exp: 1100 });
       const input = `${h}.${p}`, sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', google.privateKey, new TextEncoder().encode(input));
@@ -39,7 +39,7 @@ async function setup() {
     const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } })); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub');
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
-  return { app, post, login, publicSigning, block() { blocked = true; } };
+  return { app, post, login, publicSigning, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
 
 test('synthetic Google login, code exchange, refresh, replay revocation and JWKS', async () => {
@@ -81,4 +81,15 @@ test('revoked authority link prevents refresh', async () => {
   const { refresh_token: refresh } = await response.json();
   f.block();
   assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: refresh })).status, 400);
+});
+
+test('first login calls authority once; known account and refresh never do', async () => {
+  const f = await setup(), l = await f.login();
+  assert.equal(f.calls(), 1);
+  const response = await f.post('/token', { grant_type: 'authorization_code', code: l.code, code_verifier: l.verifier, redirect_uri: l.redirectUri });
+  const { refresh_token: refresh } = await response.json();
+  assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: refresh })).status, 200);
+  assert.equal(f.calls(), 1);
+  await f.login();
+  assert.equal(f.calls(), 1);
 });

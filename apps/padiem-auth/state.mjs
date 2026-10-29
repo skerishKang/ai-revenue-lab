@@ -4,6 +4,10 @@ export class AuthState {
   constructor(state) {
     this.storage = state.storage;
     this.sql = this.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS google_accounts (
+      fingerprint TEXT PRIMARY KEY, account_id TEXT NOT NULL UNIQUE,
+      state TEXT NOT NULL CHECK(state IN ('active','blocked'))
+    )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS client_assertions (jti TEXT PRIMARY KEY, expires INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_requests (
       state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL,
@@ -22,6 +26,27 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
       digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0
     )`);
+  }
+
+  accountByFingerprint(fingerprint) {
+    return this.sql.exec('SELECT account_id,state FROM google_accounts WHERE fingerprint=?', fingerprint).toArray()[0] || null;
+  }
+
+  accountById(accountId) {
+    return this.sql.exec('SELECT account_id,state FROM google_accounts WHERE account_id=?', accountId).toArray()[0] || null;
+  }
+
+  putAccount({ fingerprint, accountId }) {
+    return this.storage.transactionSync(() => {
+      this.sql.exec("INSERT INTO google_accounts(fingerprint,account_id,state) VALUES(?,?,'active') ON CONFLICT(fingerprint) DO NOTHING", fingerprint, accountId);
+      const record = this.accountByFingerprint(fingerprint);
+      if (!record || record.account_id !== accountId || record.state !== 'active') throw new Error('identity_conflict');
+      return record;
+    });
+  }
+
+  setAccountStatus({ accountId, blocked }) {
+    return this.storage.transactionSync(() => this.sql.exec('UPDATE google_accounts SET state=? WHERE account_id=? RETURNING account_id', blocked ? 'blocked' : 'active', accountId).toArray().length === 1);
   }
 
   claimAssertion({ key, expires, now }) {
