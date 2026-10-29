@@ -70,7 +70,7 @@ RELATED=apps/padiem-chat/app/request_contract.py, apps/padiem-chat/app/chat_mode
 | # | 항목 | 위치 | 왜 C인가 |
 |---|---|---|---|
 | C1 | 작업 모드 8종 중 6종(explain/write/translate/summarize/code/brainstorm)이 화면에서 선택 불가 | `app/task_modes.py:54-116`, `static/index.html:833,839`(`data-skill="plan"`, `"auto"`) | UI가 만들 수 있는 값은 `plan`·`auto`뿐이지만, 서버는 8종을 모두 **허용**한다(API 직송 가능성). mode와 달리 도달 불가가 아니므로 "의도된 공개 스킬 셀렉션인가, 잔재인가"를 대표가 정해야 한다 |
-| C2 | AI 등급 알약의 스크린리더 라벨이 "기본 대화"(EN "Standard chat") | `static/locale.js:44,304` ← `static/index.html:1163` `data-locale-aria-label="mode"` | 키 이름은 mode 잔재가 맞지만 값은 사용자 노출 문구다. 라벨 문구 교체가 제품 결정(정적 `aria-label="AI 등급"`과는 이미 불일치) |
+| C2 | AI 등급 알약의 스크린리더 라벨이 "기본 대화"(EN "Standard chat") | `static/locale.js:44,304` ← `static/index.html:1163` `data-locale-aria-label="mode"`; React 복제본도 같은 키를 쓴다(`apps/padiem-chat-react/src/components/Composer.tsx:209` `tOr("mode", "AI 등급")`) | 키 이름은 mode 잔재가 맞지만 값은 사용자 노출 문구다. 라벨 문구 교체가 제품 결정(정적 `aria-label="AI 등급"`과는 이미 불일치) |
 | C3 | "대화 검색 준비 중" | `static/locale.js`(`search-conversation-hold`), 소비: `static/conversation-search.js:107` | 검색 엔드가 없어 약속이 비어 있다. 카피 삭제인가, 기능 예정인가 |
 | C4 | `PRODUCTION_HARK_OFFICE_CHOOSER_ENABLED = False` 상시 게이트 | `app/claw_office_chooser_routes.py:189` | 마운트된 라우트의 노출 여부 판단. env 오버라이드 없음 |
 | C5 | 커넥터 레인의 문서화 HOLD 플래그 13종(`canonical_connector_*` 등) | `apps/padiem-chat/app/connector_*` | 승인된 커넥터 작업의 대기 표시라 제거 대상 아님 — 해당 레인 판단 |
