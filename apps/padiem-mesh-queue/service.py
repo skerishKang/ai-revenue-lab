@@ -13,7 +13,14 @@ What is served (the executor's claim lane):
     POST /api/claw/connector/mesh-reads/renew
     POST /api/claw/connector/mesh-reads/cancel
     POST /api/claw/connector/mesh-reads/busy     (#6113: who is working on this PC now)
+    POST /api/claw/connector/mesh-reads/lane-status   (#82: counts, ages and the beat)
     GET  /health                      (pending/working counts, no secret, no content)
+
+The lane-status read is the Chat route function itself, imported and served here, so the
+numbers a monitor reads after the cutover come from the same SQL that produced them
+before it. It accepts either the channel secret or a separate read-only watch secret
+(`MESH_QUEUE_WATCH_READ_SECRET_FILE`, optional); every claim/stop/consume leg keeps
+refusing the watch secret, exactly as it does in the Worker.
 
 What is deliberately NOT served here: the result submission. Framing the answer and
 writing the conversation rows stay in the Chat Worker; this service owns only the atomic
@@ -25,6 +32,8 @@ Configuration is files and environment, mirroring the executor's own unit:
     MESH_QUEUE_OWNERSHIP_MAP_FILE    the deployment Mesh target map (JSON)
     MESH_QUEUE_EXECUTION_MODE        default mesh
     MESH_QUEUE_SERVICE_SECRET_FILE   mode-0600 file; absent means no store door
+    MESH_QUEUE_WATCH_READ_SECRET_FILE mode-0600 file; absent means the read-only leg
+                                    keeps the channel-secret-only behaviour (#82)
 
 The service binds 127.0.0.1:8797. The executor reaches it there with
 `ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither
@@ -55,9 +64,11 @@ from app.oracle_mesh_lease_renew_routes import (
     ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew,
 )
 from app.oracle_mesh_read_return_routes import (
-    ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH, ORACLE_MESH_READ_POLL_PATH,
+    ORACLE_MESH_READ_BUSY_PATH, ORACLE_MESH_READ_CANCEL_PATH,
+    ORACLE_MESH_READ_LANE_STATUS_PATH, ORACLE_MESH_READ_POLL_PATH,
     build_oracle_mesh_return_source, oracle_mesh_read_busy_check,
-    oracle_mesh_read_cancel_check, oracle_mesh_read_poll,
+    oracle_mesh_read_cancel_check, oracle_mesh_read_lane_status,
+    oracle_mesh_read_poll,
 )
 from app.pc_device_pairing_store import D1PcPairingStore
 
@@ -124,6 +135,7 @@ def _no_store(content: dict[str, Any]) -> JSONResponse:
 
 def create_app(*, db_path: str | None = None, channel_secret: str,
                ownership_map: str, mode: str = "mesh", service_secret: str | None = None,
+               watch_secret: str | None = None,
                connection: Any = None) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
@@ -180,6 +192,9 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
               methods=["POST"]),
         Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check,
               methods=["POST"]),
+        # #82: the monitor's read. One handler, one SQL, served here and in the Worker.
+        Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,
+              methods=["POST"]),
     ])
     app.state.history_store = D1HistoryStore(database)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
@@ -189,7 +204,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     # unusable secret or map leaves the source None, and every channel route then
     # answers its documented 503 rather than serving an unauthenticated claim.
     app.state.oracle_mesh_return_source = build_oracle_mesh_return_source(
-        mapping, channel_secret, mode)
+        mapping, channel_secret, mode, watch_secret)
     if app.state.oracle_mesh_return_source is None:
         raise ValueError("the queue refused to compose the channel source")
     if service_secret is not None:
@@ -282,6 +297,7 @@ def app_from_environment() -> Starlette:
     """
 
     service_secret_file = os.environ.get("MESH_QUEUE_SERVICE_SECRET_FILE", "").strip()
+    watch_secret_file = os.environ.get("MESH_QUEUE_WATCH_READ_SECRET_FILE", "").strip()
     app = create_app(
         db_path=os.environ.get("MESH_QUEUE_DB_PATH", DEFAULT_DB_PATH),
         channel_secret=read_secret_file(
@@ -295,6 +311,8 @@ def app_from_environment() -> Starlette:
         mode=os.environ.get("MESH_QUEUE_EXECUTION_MODE", "mesh"),
         service_secret=(read_secret_file(service_secret_file, label="queue service secret")
                         if service_secret_file else None),
+        watch_secret=(read_secret_file(watch_secret_file, label="watch read secret")
+                      if watch_secret_file else None),
     )
     start_liveness_watchdog(app.state.queue_database)
     return app
