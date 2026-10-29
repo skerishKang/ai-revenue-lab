@@ -322,6 +322,47 @@ def _iso(moment: datetime) -> str:
     return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
+def _lane_seconds(oldest: Any, moment: datetime) -> int | None:
+    """How long the oldest row in a lane bucket has been waiting, in whole seconds.
+
+    ``None`` means the bucket is empty, which is a different fact from "0 seconds"
+    and is reported as ``None`` rather than folded into a number.
+    """
+    if not isinstance(oldest, str) or not oldest:
+        return None
+    try:
+        then = datetime.fromisoformat(oldest.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if then.tzinfo is None:
+        then = then.replace(tzinfo=timezone.utc)
+    return max(0, int((moment - then).total_seconds()))
+
+
+def _lane_count_age(row: Any, moment: datetime) -> dict[str, Any]:
+    """One ``COUNT(*) / MIN(created_at)`` pair, as a count and an age."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read unavailable")
+    count = row.get("n")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    return {"count": count, "oldest_seconds": _lane_seconds(row.get("oldest"), moment)}
+
+
+def _lane_node(row: Any, moment: datetime) -> dict[str, Any]:
+    """One PC's unanswered total, keyed by the node reference the lane stores."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read is not a row")
+    node_ref = row.get("node_ref")
+    count = row.get("n")
+    if not isinstance(node_ref, str) or not node_ref:
+        raise HistoryError("oracle mesh lane read names no node")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    return {"node_ref": node_ref[:256], "open": count,
+            "oldest_seconds": _lane_seconds(row.get("oldest"), moment)}
+
+
 def _now_iso() -> str:
     return _iso(datetime.now(timezone.utc))
 
@@ -2945,6 +2986,56 @@ class D1HistoryStore:
         if isinstance(count, bool) or not isinstance(count, int) or count < 0:
             raise HistoryError("oracle mesh claim read is not a count")
         return count
+
+
+    #: #82 monitoring reads this to answer "is anything waiting that nobody is
+    #: claiming" without a log line and without a string match. The node list is
+    #: bounded the same way the presence beat is (#5553 shares the number).
+    LANE_STATUS_NODE_LIMIT = 8
+
+    async def oracle_mesh_lane_status(
+        self, *, node_limit: int = LANE_STATUS_NODE_LIMIT,
+    ) -> dict[str, Any]:
+        """The dispatch lane's own state, as counts and ages.
+
+        Three questions, all of them answerable from the columns the lane already
+        writes: work that no executor has claimed (`state='pending'`, unexpired, no
+        nonce or a lease that has run out — the exact condition the poll yields on),
+        work a claim is held for right now (the lease columns #5997 renews), and,
+        per PC, how long its oldest unanswered dispatch has been waiting.
+
+        Ages are computed here from the stored timestamps rather than in SQL, so the
+        D1 and the local SQLite dialect answer the same way and one number cannot
+        drift between environments.
+        """
+        if (isinstance(node_limit, bool) or not isinstance(node_limit, int)
+                or not 1 <= node_limit <= 64):
+            raise HistoryError("node_limit is out of range")
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
+        waiting = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            "pending", now, now,
+        )
+        claimed = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NOT NULL AND claimed_until>?",
+            "pending", now, now,
+        )
+        nodes = await self._all(
+            "SELECT node_ref, COUNT(*) AS n, MIN(created_at) AS oldest "
+            "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
+            "AND node_ref IS NOT NULL AND node_ref<>'' "
+            "GROUP BY node_ref ORDER BY oldest ASC LIMIT ?",
+            "pending", now, node_limit,
+        )
+        return {
+            "unclaimed": _lane_count_age(waiting, moment),
+            "claimed": _lane_count_age(claimed, moment),
+            "nodes": [_lane_node(row, moment) for row in nodes if isinstance(row, dict)],
+        }
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str

@@ -63,6 +63,10 @@ class _Statement:
     async def run(self) -> dict[str, Any]:
         conn = sqlite3.connect(self._path)
         try:
+            # The same row shape `first()` gives and the same shape a real D1
+            # `results` array carries: without it, any multi-column SELECT read
+            # through this shim died converting a plain tuple of values as a dict.
+            conn.row_factory = sqlite3.Row
             cursor = conn.execute(self._sql, self._values)
             rows = [dict(row) for row in cursor.fetchall()]
             conn.commit()

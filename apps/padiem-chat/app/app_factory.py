@@ -995,6 +995,7 @@ def create_app(
         if oracle_mesh_return_source is not None:
             from .oracle_mesh_read_return_routes import (
                 ORACLE_MESH_READ_BUSY_PATH,
+                ORACLE_MESH_READ_LANE_STATUS_PATH,
                 ORACLE_MESH_READ_CANCEL_PATH,
                 ORACLE_MESH_READ_ORIGINAL_PATH,
                 ORACLE_MESH_READ_POLL_PATH,
@@ -1004,6 +1005,7 @@ def create_app(
                 oracle_mesh_engine_chat_files_call,
                 oracle_mesh_engine_claw_files_call,
                 oracle_mesh_read_busy_check,
+                oracle_mesh_read_lane_status,
                 oracle_mesh_read_cancel_check,
                 oracle_mesh_read_original,
                 oracle_mesh_read_poll,
@@ -1027,6 +1029,7 @@ def create_app(
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),
                 Route(ORACLE_MESH_READ_BUSY_PATH, oracle_mesh_read_busy_check, methods=["POST"]),
+                Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
