@@ -1735,7 +1735,19 @@ class Default(WorkerEntrypoint):
         from pyodide.ffi import create_proxy
 
         def _schedule_log_export(awaitable):
-            self.ctx.waitUntil(create_proxy(awaitable))
+            # #6225: the handle the runtime receives is released when the
+            # background awaitable settles — a settled PyProxy must not
+            # outlive the request that created it. The awaitable itself is a
+            # pure-Python object, so the export body and its scheduling are
+            # unchanged; only the JS handle's lifetime is bounded here.
+            async def _export_and_release():
+                try:
+                    await awaitable
+                finally:
+                    proxy.destroy()
+
+            proxy = create_proxy(_export_and_release())
+            self.ctx.waitUntil(proxy)
 
         export_context = install_export_scheduler(_schedule_log_export)
         try:

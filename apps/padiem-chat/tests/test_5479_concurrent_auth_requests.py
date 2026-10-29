@@ -21,6 +21,9 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
+import sys
+import types
+from types import SimpleNamespace
 
 import httpx
 
@@ -36,6 +39,7 @@ from test_5434_password_change import (
     CanonicalAuthority,
     seed_db,
 )
+from test_claw_automation_async_composition_seam import _load_worker
 
 BASE = "https://chat.example.test"
 SESSION_SECRET = "5479-concurrent-auth-test-session-secret-not-real-000"
@@ -91,26 +95,111 @@ def test_the_worker_keeps_no_js_proxy_alive_across_a_request():
 
     One proxy is created, inside the request handler, for the log-export
     awaitable only, and the scheduler that owns it is reset in a ``finally``.
-    Nothing survives the request that could be touched by a later request in
-    the same isolate, which is what the runtime race needs to be a runtime
-    problem rather than an application one.
+    #6225 adds the release half: the handle the runtime receives is destroyed
+    once that awaitable has settled, so a settled proxy cannot outlive the
+    request that created it. Nothing survives the request that could be
+    touched by a later request in the same isolate, which is what the runtime
+    race needs to be a runtime problem rather than an application one.
     """
     worker = WORKER.read_text(encoding="utf-8")
     # The import and the single call, and nothing else.
     assert worker.count("create_proxy") == 2
-    call_site = worker.index("self.ctx.waitUntil(create_proxy(awaitable))")
+    # #6225: inside the scheduler, the awaitable settles first and the JS
+    # handle is destroyed second — the release cannot precede the export.
+    awaitable_await = worker.index("await awaitable")
+    release = worker.index("proxy.destroy()")
+    call_site = worker.index("self.ctx.waitUntil(proxy)")
     install = worker.index("export_context = install_export_scheduler(")
     fetch = worker.index("response = await asgi.fetch(")
     reset = worker.index("reset_export_scheduler(export_context)")
-    # The proxy is created for this request's log export, the scheduler that
-    # owns it is installed for this request, and the request runs between the
-    # install and the reset.
-    assert call_site < install < fetch < reset
+    assert awaitable_await < release < call_site < install < fetch < reset
     # The reset runs in a finally block, so it also runs when the request fails.
     assert "finally:" in worker[fetch:reset]
     # The proxy is created per request, never at module scope.
     module_scope = worker.split("class ", 1)[0]
-    assert "create_proxy(awaitable)" not in module_scope
+    assert "create_proxy(" not in module_scope
+
+
+def test_the_scheduled_export_releases_its_proxy_when_it_settles(monkeypatch):
+    """The waitUntil handle is destroyed once the export has settled.
+
+    #6225: the scheduler hands the runtime one proxy per request. The runner
+    keeps the export body and its ordering exactly as before and adds the
+    release the old shape never had — the handle is destroyed after the
+    awaitable settles, not at request end and not while it is still running.
+    """
+    module = _load_worker(monkeypatch)
+    events: list[str] = []
+
+    class _Proxy:
+        def __init__(self, value):
+            self.value = value
+            self.destroyed = False
+
+        def destroy(self):
+            self.destroyed = True
+            events.append("destroy")
+
+        def __await__(self):
+            return self.value.__await__()
+
+    pyodide = types.ModuleType("pyodide")
+    ffi = types.ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: _Proxy(value)
+    monkeypatch.setitem(sys.modules, "pyodide", pyodide)
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+
+    async def _no_gateway(**kwargs):
+        return None
+
+    monkeypatch.setattr(module, "maybe_dispatch_connector_gateway", _no_gateway)
+
+    # The fake app schedules one export the way the telemetry middleware does:
+    # it reads the installed scheduler and hands it a background awaitable.
+    async def dispatch(app, request, env):
+        from app.request_telemetry import _CURRENT_EXPORT_SCHEDULER
+
+        async def _export():
+            events.append("export")
+
+        scheduler = _CURRENT_EXPORT_SCHEDULER.get()
+        assert scheduler is not None
+        scheduler(_export())
+        return module.Response("ok")
+
+    asgi = types.ModuleType("asgi")
+    asgi.fetch = dispatch
+    monkeypatch.setitem(sys.modules, "asgi", asgi)
+
+    async def build(self):
+        return SimpleNamespace(state=SimpleNamespace())
+
+    monkeypatch.setattr(module.Default, "_build_worker_app", build)
+
+    waited: list[object] = []
+    worker = module.Default(
+        SimpleNamespace(),
+        SimpleNamespace(waitUntil=waited.append),
+    )
+    request = SimpleNamespace(url="https://example.invalid/health", js_object=object())
+    response = asyncio.run(worker.fetch(request))
+    assert response.status == 200
+
+    # Nothing has run and nothing is released yet: waitUntil owns the handle.
+    assert len(waited) == 1
+    proxy = waited[0]
+    assert isinstance(proxy, _Proxy)
+    assert proxy.destroyed is False
+    assert events == []
+
+    # The runtime awaits the handle in the background; settling it runs the
+    # same export body as before and then releases the handle, in that order.
+    async def _runtime_settles(value):
+        await value
+
+    asyncio.run(_runtime_settles(proxy))
+    assert events == ["export", "destroy"]
+    assert proxy.destroyed is True
 
 
 def test_the_auth_status_and_the_ordinary_lanes_survive_a_concurrent_burst():
