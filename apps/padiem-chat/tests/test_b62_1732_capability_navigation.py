@@ -195,3 +195,23 @@ def test_capability_projection_only_mutates_the_custom_credential_surface() -> N
     assert "body:" not in delete_source
     assert "b14" not in source.lower()
     assert "control_plane" not in source.lower()
+
+
+def test_dead_window_exports_and_flat_tier_copy_admin_labels() -> None:
+    dead_exports = {
+        "claw-mesh-capture.js": "window.PadiemClawMeshCapture",
+        "claw-office-chooser.js": "window.PadiemHarkOfficeChooser",
+        "conversation-search.js": "window.PadiemConversationSearch",
+    }
+    for filename, symbol in dead_exports.items():
+        script = (STATIC / filename).read_text(encoding="utf-8")
+        assert symbol not in script, (filename, symbol)
+
+    source = CAPABILITIES.read_text(encoding="utf-8")
+    ko_copy, en_copy = source.split("const TIER_COPY", 1)[1].split("en: Object.freeze", 1)
+    en_copy = en_copy.split("});", 1)[0]
+    assert 'admin: "Padiem 관리자"' in ko_copy
+    assert 'admin: "Padiem Admin"' in en_copy
+    assert "Padiem 관리자" not in en_copy
+    assert "admin: [" not in ko_copy
+    assert "admin: [" not in en_copy

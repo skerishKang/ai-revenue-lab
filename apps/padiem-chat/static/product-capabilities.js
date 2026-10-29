@@ -68,11 +68,11 @@
       unavailable: "사용 불가",
       upgrade: "업그레이드",
       adminNote: "관리자 전용 모델로 호출합니다.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem 관리자",
     }),
     en: Object.freeze({
       label: "AI tier",
@@ -83,11 +83,11 @@
       unavailable: "Unavailable",
       upgrade: "Upgrade",
       adminNote: "Calls the admin-only model.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem Admin",
     }),
   });
 
@@ -1686,7 +1686,7 @@
     button.setAttribute("aria-pressed", tier === selectedTier && available ? "true" : "false");
 
     const title = document.createElement("strong");
-    title.textContent = copy[tier][0];
+    title.textContent = copy[tier];
     const state = document.createElement("span");
     state.className = "mode-option-state mode-option-state--" + status;
     const icon = document.createElement("span");
@@ -1727,7 +1727,7 @@
     syncAdminOption();
     const copy = currentModeCopy();
     const custom = customSelection ? customCopy() : null;
-    const activeLabel = custom ? custom.option : copy[selectedTier][0];
+    const activeLabel = custom ? custom.option : copy[selectedTier];
     const label = modePill.querySelector("span:last-child");
     if (label) label.textContent = activeLabel;
     modePill.setAttribute("aria-label", `${copy.label}: ${activeLabel}`);
@@ -1751,7 +1751,7 @@
       button.setAttribute("aria-pressed", tier === selectedTier && available && !custom ? "true" : "false");
       const optionTitle = button.querySelector("strong");
       const stateEl = button.querySelector(".mode-option-state");
-      if (optionTitle) optionTitle.textContent = copy[tier][0];
+      if (optionTitle) optionTitle.textContent = copy[tier];
       if (stateEl) {
         stateEl.className = "mode-option-state mode-option-state--" + status;
         stateEl.textContent = "";
