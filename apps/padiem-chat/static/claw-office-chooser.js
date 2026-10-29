@@ -61,6 +61,7 @@
     const resultPanel = $("clawOfficeResult");
     const checkResult = $("clawOfficeCheckResult");
     const pdfPreview = $("clawOfficePreview");
+    const xlsxDownload = $("clawOfficeXlsx");
     if (![panel, find, notice, list, group, label, approve, deny].every(Boolean)) return null;
     let active = null;
     let pending = null;
@@ -86,6 +87,7 @@
       group.hidden = true;
       if (resultPanel) resultPanel.hidden = true;
       if (pdfPreview) pdfPreview.hidden = true;
+      if (xlsxDownload) xlsxDownload.hidden = true;
       list.replaceChildren();
       const runId = currentRun();
       if (!runId) {
@@ -170,6 +172,7 @@
         group.hidden = true;
         if (resultPanel) resultPanel.hidden = decision !== "approve";
         if (pdfPreview) pdfPreview.hidden = true;
+        if (xlsxDownload) xlsxDownload.hidden = true;
         setMessage(decision === "deny"
           ? "승인이 거절되었습니다. 파일을 읽지 않았습니다."
           : "Engine 승인 처리가 완료됐습니다. 실제 파일 처리 결과는 실행 이력에서 확인해 주세요.");
@@ -177,6 +180,38 @@
         setMessage(error.message);
       } finally {
         setBusy(false);
+      }
+    }
+    // #3936: a completed run is not the same fact as a retrievable file. The
+    // dialog used to reveal the PDF link the moment the local result said
+    // "completed", so a run that produced only a workbook (or nothing yet)
+    // offered a link that answers 404. `/outputs` is the existing metadata-only
+    // answer to "which files can this owner actually open"; ask it first and
+    // offer exactly those.
+    async function readOutputKinds(runId) {
+      try {
+        const response = await fetch(
+          "/api/claw/office/runs/" + encodeURIComponent(runId) + "/outputs",
+          { credentials: "same-origin", cache: "no-store",
+            headers: { "Accept": "application/json" } },
+        );
+        // The bounded 404 is "nothing retrievable", not a failure to report.
+        if (response.status === 404) return null;
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true || body.run_id !== runId
+            || body.private_staging_only !== true || body.raw_bytes_in_projection !== false
+            || !Array.isArray(body.outputs) || body.outputs.length > 8) return null;
+        const kinds = new Set();
+        for (const row of body.outputs) {
+          if (!row || typeof row.filename !== "string" || row.filename.length > 160
+              || row.private_staging_only !== true) continue;
+          const name = row.filename.toLowerCase();
+          if (row.media_type === "application/pdf" || name.endsWith(".pdf")) kinds.add("pdf");
+          else if (name.endsWith(".xlsx")) kinds.add("xlsx");
+        }
+        return kinds;
+      } catch (_) {
+        return null;
       }
     }
     if (checkResult) checkResult.addEventListener("click", async () => {
@@ -194,11 +229,20 @@
           setMessage("파일 작업이 아직 완료되지 않았거나 확인할 수 없습니다.");
           return;
         }
-        setMessage("실행 완료를 확인했습니다. PDF가 준비됐다면 미리보기를 열 수 있습니다.");
+        const kinds = await readOutputKinds(active.runId);
+        const pdf = Boolean(kinds && kinds.has("pdf"));
+        const xlsx = Boolean(kinds && kinds.has("xlsx"));
         if (pdfPreview) {
           pdfPreview.href = "/api/claw/office/runs/" + encodeURIComponent(active.runId) + "/pdf";
-          pdfPreview.hidden = false;
+          pdfPreview.hidden = !pdf;
         }
+        if (xlsxDownload) {
+          xlsxDownload.href = "/api/claw/office/runs/" + encodeURIComponent(active.runId) + "/xlsx";
+          xlsxDownload.hidden = !xlsx;
+        }
+        setMessage(pdf || xlsx
+          ? "실행이 끝났고 결과 파일을 열 수 있습니다."
+          : "실행은 끝났지만 지금 꺼낼 수 있는 결과 파일이 없습니다.");
       } catch (error) {
         setMessage(error.message);
       } finally {
