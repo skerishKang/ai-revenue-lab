@@ -50,3 +50,17 @@ class RegisteredGetMutationCoverage(unittest.TestCase):
                     if isinstance(method, ast.Constant) and method.value in {'POST','PUT','PATCH','DELETE'}:
                         self.assertTrue(freeze.reject_request('true', method.value)); count += 1
         self.assertGreater(count, 0)
+
+
+class BackgroundFreeze(unittest.TestCase):
+    def test_freeze_closes_new_background_coroutine_without_scheduling(self):
+        class Task:
+            closed = False
+            def close(self): self.closed = True
+        task, scheduled = Task(), []
+        self.assertFalse(freeze.schedule_unless_frozen('true', task, scheduled.append))
+        self.assertTrue(task.closed)
+        self.assertEqual(scheduled, [])
+        other = Task()
+        self.assertTrue(freeze.schedule_unless_frozen('off', other, scheduled.append))
+        self.assertEqual(scheduled, [other])
