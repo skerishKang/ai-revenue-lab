@@ -37,6 +37,7 @@ from starlette.requests import Request
 from app import auth_routes
 from app.auth import GOOGLE_TOKEN_URL, GOOGLE_USERINFO_URL, GoogleOAuthClient
 from app.config import Settings
+from app.d1_sqlite import SqliteD1
 from app.lovetree_auth_routes import lovetree_handoff_start
 from app.lovetree_auth_store import D1LoveTreeLoginHandoffStore
 from app.password_auth import hash_password, normalize_email
@@ -49,33 +50,6 @@ def _env(name: str, default: str | None = None) -> str:
     if not value:
         raise RuntimeError(f"{name} is required by the chain harness")
     return value
-
-
-class _SqliteD1:
-    """The same D1-shaped surface the production store is built on."""
-
-    def __init__(self, connection: sqlite3.Connection):
-        self.connection = connection
-
-    def prepare(self, sql: str):
-        return _SqliteStatement(self.connection, sql)
-
-
-class _SqliteStatement:
-    def __init__(self, connection: sqlite3.Connection, sql: str):
-        self.connection = connection
-        self.sql = sql
-        self.params: tuple = ()
-
-    def bind(self, *params):
-        self.params = params
-        return self
-
-    async def first(self):
-        cursor = self.connection.execute(self.sql, self.params)
-        row = cursor.fetchone()
-        self.connection.commit()
-        return dict(row) if row is not None else None
 
 
 class _Profile:
@@ -169,7 +143,11 @@ def build():
         session_secret=_env("CHAIN_SESSION_SECRET"),
         cookie_secure=False,
     )
-    connection = sqlite3.connect(_env("CHAIN_SQLITE_PATH"), check_same_thread=False)
+    # isolation_level=None matches the facade's autocommit contract: the shared
+    # D1 statement surface never issues its own COMMIT.
+    connection = sqlite3.connect(
+        _env("CHAIN_SQLITE_PATH"), isolation_level=None, check_same_thread=False
+    )
     connection.row_factory = sqlite3.Row
     connection.executescript(MIGRATION.read_text(encoding="utf-8"))
 
@@ -178,7 +156,7 @@ def build():
         password=_env("CHAIN_PASSWORD"),
         email=_env("CHAIN_PASSWORD_EMAIL"),
     )
-    store = D1LoveTreeLoginHandoffStore(_SqliteD1(connection))
+    store = D1LoveTreeLoginHandoffStore(SqliteD1(connection))
 
     async def _noop(*_args, **_kwargs):
         return None
