@@ -225,3 +225,59 @@ class WorkflowContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PathCpuStats(unittest.TestCase):
+    ROWS = [
+        {"outcome": "ok", "cpuTime": 12.5, "wallTime": 40, "eventTimestamp": 1,
+         "event": {"request": {"url": "https://x/api/conversations/chat_01ABCDEF0123456789abcdef0123456789"},
+                   "response": {"status": 200}},
+         "scriptVersion": {"id": "60e7d172-a182-489d-b9d2-4144d67084ed"}},
+        {"outcome": "ok", "cpuTime": 20.0, "wallTime": 55, "eventTimestamp": 2,
+         "event": {"request": {"url": "https://x/api/conversations/chat_02FFFFFFFF0123456789abcdef0123456789"},
+                   "response": {"status": 200}}},
+        {"outcome": "ExceededCpu", "cpuTime": 30000.0, "wallTime": 30100, "eventTimestamp": 3,
+         "event": {"request": {"url": "https://x/api/claw/connector/mesh-reads/poll"},
+                   "response": {"status": 503}},
+         "headers": {"cookie": "padiem_session=SECRET-VALUE-DO-NOT-LEAK"}},
+    ]
+
+    def test_percentiles_and_outcomes_per_path_bucket(self) -> None:
+        stats = summ.path_stats(self.ROWS)
+        conv = stats["/api/conversations/*"]
+        self.assertEqual(conv["n"], 2)
+        self.assertEqual(conv["outcomes"]["ok"], 2)
+        self.assertAlmostEqual(summ._percentile(conv["cpu"], 0.50), 12.5)
+        self.assertAlmostEqual(summ._percentile(conv["cpu"], 0.95), 20.0)
+        poll = stats["/api/claw/connector/mesh-reads/poll"]
+        self.assertEqual(poll["outcomes"]["exceededCpu"], 1)
+
+    def test_emit_prints_the_path_cpu_table(self) -> None:
+        import io as _io
+        import contextlib
+        buf = _io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            summ.emit(summ.summarize(self.ROWS))
+        text = buf.getvalue()
+        self.assertIn("PATH_CPU_TOP10", text)
+        self.assertIn("/api/conversations/*", text)
+
+    def test_sanitized_capture_carries_no_identity_or_secret(self) -> None:
+        import json
+        rows = summ.sanitize_rows(self.ROWS)
+        blob = json.dumps(rows)
+        self.assertNotIn("SECRET", blob)
+        self.assertNotIn("padiem_session", blob)
+        self.assertNotIn("https", blob)
+        self.assertNotIn("ABCDEF", blob)
+        self.assertEqual(rows[0]["path"], "/api/conversations/*")
+        self.assertEqual({r["outcome"] for r in rows}, {"ok", "exceededCpu"})
+        for row in rows:
+            self.assertLessEqual(set(row), {"path", "status", "outcome", "cpuTime",
+                                            "wallTime", "version", "ts"})
+
+    def test_workflow_uploads_the_sanitized_capture_with_short_retention(self) -> None:
+        text = (ROOT / ".github" / "workflows" / "b62-worker-tail-readonly.yml").read_text(encoding="utf-8")
+        self.assertIn("--sanitize-out", text)
+        self.assertIn("b62-tail-sanitized", text)
+        self.assertIn("retention-days: 3", text)
