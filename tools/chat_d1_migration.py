@@ -246,6 +246,13 @@ def load_state(source_path: str, target_path: str) -> dict:
                     (run_id, table, len(rows), _table_digest(hashes), started),
                 )
                 total_rows += len(rows)
+            # Triggers can alter tables copied earlier. Validate the entire
+            # final image before commit, not just each table immediately after
+            # insertion, so a late side effect rolls back all writes.
+            for table, columns, rows, keys, hashes in payloads:
+                actual = [_row_hash(columns, tuple(row)) for row in target.execute(f"SELECT * FROM '{table}'")]
+                if sorted(actual) != sorted(hashes):
+                    raise MigrationRefused(f"final_content_mismatch:{table}")
             target.execute(
                 f"INSERT INTO {RUNS_TABLE} (run_id, started_at, finished_at,"
                 " source_latest_migration, tables, rows) VALUES (?, ?, ?, ?, ?, ?)",
