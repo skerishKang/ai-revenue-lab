@@ -34,14 +34,6 @@ from app.service_binding_response import (
     cloudflare_chunk_bytes,
     read_bounded_service_binding_body,
 )
-from app.claw_automation_due_workspace_discovery import (
-    compose_canonical_due_workspace_discovery,
-)
-from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
-from app.claw_automation_scheduled_execution import (
-    compose_scheduled_automation_execution,
-)
-from app.claw_automation_store import D1ClawAutomationStore
 from app.central_model_policy_d1 import D1CentralModelPolicyStore
 from app.central_model_route_d1 import D1CentralModelRouteStore
 from app.platform_admin_roles import D1PlatformAdminRoleStore
@@ -145,8 +137,6 @@ from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
 from app.claw_search_decision import trusted_claw_search_activation
-from kagent.claw_automation import ClawAutomationTickRuntime
-from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
 
 _worker_app = None
@@ -211,6 +201,14 @@ async def run_scheduled_automation_source(
     identity_binding = binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
     if db_binding is None or identity_binding is None:
         return None
+    # Scheduling is optional and runs separately from HTTP requests. Do not
+    # load its execution graph when the scheduler is disabled or unbound.
+    from app.claw_automation_due_workspace_discovery import compose_canonical_due_workspace_discovery
+    from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
+    from app.claw_automation_scheduled_execution import compose_scheduled_automation_execution
+    from app.claw_automation_store import D1ClawAutomationStore
+    from kagent.claw_automation import ClawAutomationTickRuntime
+    from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
     try:
         store = D1ClawAutomationStore(db_binding)
         # Background automation executes at the default Claw product tier. A
