@@ -44,16 +44,8 @@ function one(params, name) {
 async function diagnosed(stage, operation) {
     try { return await operation(); }
     catch (error) {
-      const name = ['Error', 'TypeError', 'RangeError', 'SyntaxError'].includes(error?.name) ? error.name : 'OtherError';
-      // Never log exception text: it may contain codes, tokens, cookies or URLs.
-      const message = typeof error?.message === 'string' ? error.message.toLowerCase() : '';
-      const reason = message.includes('illegal invocation') || message.includes('incompatible receiver') ? 'invocation' :
-        message.includes('fetch failed') ? 'fetch_failed' : message.includes('network connection lost') ? 'network_lost' :
-        message.includes('disallowed') ? 'disallowed' : message.includes('redirect') ? 'redirect' :
-        message.includes('request body') || message.includes('bodyinit') ? 'request_body' : 'other';
-      const allowedVerify = ['invalid token arguments', 'invalid token', 'invalid token encoding', 'unsupported token header', 'untrusted signing key', 'invalid token signature', 'invalid token issuer', 'invalid token audience', 'invalid token expiry', 'invalid token issued time', 'invalid token nonce', 'invalid token subject', 'google keys unavailable'];
-      const verifyCode = stage === 'google_id_token_verification_failed' && allowedVerify.includes(message) ? message : undefined;
-      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed', reason, verify_code: verifyCode }));
+      // Keep only the stage and status; exception text may contain sensitive data.
+      console.error(JSON.stringify({ auth_stage: stage, status: 503 }));
       throw error;
     }
 }
@@ -107,9 +99,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const googleToken = await diagnosed('google_token_exchange_failed', async () => {
         const response = await diagnosed('google_fetch_failed', () => fetcher('https://oauth2.googleapis.com/token', { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: googleClientId, client_secret: googleClientSecret, redirect_uri: CALLBACK, grant_type: 'authorization_code', code, code_verifier: pending.google_verifier }) }));
         if (!response.ok) {
-          let oauthError = 'other';
-          try { const candidate = (await response.json())?.error; if (['invalid_client','invalid_grant','invalid_request','unauthorized_client','redirect_uri_mismatch'].includes(candidate)) oauthError = candidate; } catch {}
-          console.error(JSON.stringify({ auth_stage: 'google_token_exchange_failed', google_error: oauthError, http_status: response.status }));
+          console.error(JSON.stringify({ auth_stage: 'google_token_exchange_failed', status: response.status }));
           throw new Error('google token endpoint failed');
         }
         return diagnosed('google_response_parse_failed', () => response.json());
