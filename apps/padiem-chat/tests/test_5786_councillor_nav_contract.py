@@ -168,6 +168,49 @@ def test_the_nav_draws_the_pages_own_focus_ring() -> None:
         "the nav must use the same ring every other control on the page uses"
 
 
+def test_the_header_cta_is_painted_from_the_session() -> None:
+    """Measured on Production with the session open: the header kept offering '로그인'
+    to a signed-in visitor, because the label was static markup and the script only set
+    the href. The signed-out text stays in the markup so a visitor before the session
+    answer is still told the truth - and the signed-in text must not appear there."""
+    assert re.search(r'text\(refs\.adminTopLink,\s*name \? "의정3종 열기" : "로그인"\)', JS), \
+        "the CTA has to be painted by the same session answer as the status label"
+    cta = re.search(r'<a[^>]*id="adminTopLink"[^>]*>([^<]*)</a>', PAGE)
+    assert cta and cta.group(1).strip() == "로그인", \
+        "the pre-session label must be the signed-out one, and must not claim a session"
+    assert "의정3종 열기" not in PAGE, "a signed-in label cannot be static markup"
+
+
+def test_an_explicit_signed_out_answer_brings_the_label_back_down() -> None:
+    """authenticated:false is an answer, so the CTA has to come back down with it.
+    A failed request is not an answer, and must leave the page alone - the same
+    fail-closed reading #6127 established for this endpoint."""
+    session = JS[JS.index("async function readSession()"):]
+    session = session[:session.index("\n  }")]
+    assert "data.authenticated === false" in session and "paintUtilLinks(null)" in session
+    assert "if (!res.ok) return;" in session, "a server failure must not be read as signed out"
+
+
+def test_the_session_is_re_read_when_the_visitor_returns() -> None:
+    """Sign-in and sign-out happen on PADIEM's own screen, so the visitor comes back to
+    this tab instead of reloading it. Without the re-read the CTA would keep the state
+    from whenever the page first loaded."""
+    assert re.search(r'addEventListener\(\s*"visibilitychange"', JS)
+    assert 'document.visibilityState === "visible"' in JS
+    tail = JS[JS.index('addEventListener("visibilitychange"'):]
+    assert "readSession()" in tail[:200], "the return to the tab must re-read, not repaint"
+
+
+def test_the_page_does_not_inherit_the_app_shell_width_floor() -> None:
+    """padiem-foundation.css, imported through the theme stack this wrapper reuses,
+    floors `body` at min-width: 320px. On a 320px phone a classic scrollbar leaves a
+    310px content box, so the floor panned the whole page 10px sideways - measured in
+    the user's Tabbit browser, and invisible in headless Chromium, whose scrollbars
+    overlay the content."""
+    assert re.search(r"\.councillor-body \{[^}]*min-width:\s*0\s*;?\s*\}", CSS), \
+        "the councillor page needs its own floor, not the app shell's"
+
+
 def test_the_wrapper_still_owns_no_ai_surface() -> None:
     """Regression guard for the issue's own bar: the three tools stay PADIEM's."""
     assert "#padiem-util/speech" in JS and "#padiem-util/sns" in JS and "#padiem-util/meeting" in JS

@@ -591,6 +591,10 @@
     if (refs.adminGate) refs.adminGate.hidden = true;
     if (refs.adminTools) refs.adminTools.hidden = false;
     text(refs.adminStatus, name ? "의정3종 · " + name : "의정3종");
+    // The header CTA is the same session answer as the status label. Asking a signed-in
+    // visitor to "로그인" is the page contradicting itself; the work they came for is
+    // one tap away, so the CTA hands it over.
+    text(refs.adminTopLink, name ? "의정3종 열기" : "로그인");
     text(refs.adminNote, "축사·인사말, SNS 홍보, 회의정리·활동집 바로가기");
     const list = refs.toolCards;
     if (!list) return;
@@ -618,6 +622,10 @@
         if (data && data.authenticated === true) {
           const user = data.user || {};
           paintUtilLinks(user.name || user.display_name || user.email || null);
+        } else if (data && data.authenticated === false) {
+          // An explicit "no" is an answer, so the label comes back down with it.
+          // A failed request is not an answer, and leaves the page alone.
+          paintUtilLinks(null);
         }
       } finally {
         window.clearTimeout(timer);
@@ -671,6 +679,13 @@
     wireScroll();
     void readSession();
   }
+
+  // Sign-in and sign-out happen on PADIEM's own screen, so a visitor comes back to this
+  // tab rather than reloading it. Re-reading the same endpoint on return is what keeps
+  // the header CTA telling the truth about the session that exists right now.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") void readSession();
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start, { once: true });
