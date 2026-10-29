@@ -186,6 +186,27 @@ def test_service_stand_ins_bind_only_when_their_pair_is_configured(local_env, mo
         build_app()
 
 
+def test_host_mode_requires_https_and_never_mixes_with_the_local_flag(tmp_path, monkeypatch):
+    monkeypatch.setenv("PADIEM_CHAT_CPYTHON_HOST", "1")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
+    monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "mock")
+    monkeypatch.setenv("PADIEM_CHAT_WEB_PROVIDER", "off")
+
+    # No https public base yet: a host run may not fall back to loopback rules.
+    with pytest.raises(ConfigError):
+        build_app()
+
+    monkeypatch.setenv("PADIEM_CHAT_PUBLIC_BASE_URL", "https://chat-com2.padiem.net")
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "off")
+    build_app()
+
+    # Host mode and the local loopback allowance are mutually exclusive.
+    monkeypatch.setenv("PADIEM_LOCAL_DEV", "1")
+    with pytest.raises(ConfigError):
+        build_app()
+
+
 def test_ensure_session_secret_generates_once_and_keeps_cookies_across_restart(tmp_path, monkeypatch):
     # Exactly one tracked setenv, before any direct mutation: the function
     # writes os.environ itself, and monkeypatch can only undo to the value it

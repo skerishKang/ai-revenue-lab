@@ -97,18 +97,30 @@ def _ensure_session_secret(data_dir: Path) -> None:
 def build_app():
     """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings."""
 
-    if os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() not in {"1", "true"}:
+    local_flag = os.getenv("PADIEM_LOCAL_DEV", "").strip().lower() in {"1", "true"}
+    host_flag = os.getenv("PADIEM_CHAT_CPYTHON_HOST", "").strip().lower() in {"1", "true"}
+    if not local_flag and not host_flag:
         raise ConfigError(
-            "app.local_cpython is the explicit local-run entry point: "
-            "set PADIEM_LOCAL_DEV=1 (see tools/run_chat_local_cpython.py)"
+            "app.local_cpython is the explicit CPython entry point: "
+            "PADIEM_LOCAL_DEV=1 for a loopback dev run, or "
+            "PADIEM_CHAT_CPYTHON_HOST=1 for the COM2 parallel host "
+            "(see tools/run_chat_local_cpython.py / deploy/host-com2/chat)"
         )
     data_dir = local_data_dir()
     data_dir.mkdir(parents=True, exist_ok=True)
     _ensure_session_secret(data_dir)
 
     settings = Settings.from_env()
-    if not settings.local_dev:
+    if local_flag and not settings.local_dev:
         raise ConfigError("PADIEM_LOCAL_DEV did not reach Settings — from_env regression")
+    if host_flag:
+        # The host run is the parallel-operation host: its public origin is a
+        # real https hostname, so the loopback allowance must stay off and the
+        # https-only validation applies exactly as in Production.
+        if settings.local_dev:
+            raise ConfigError("host runs must not set PADIEM_LOCAL_DEV")
+        if not str(settings.public_base_url or "").startswith("https://"):
+            raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL must be https on the CPython host")
 
     # Same autocommit stance as the shared facade's connect(), minus the
     # foreign_keys pragma: production D1 never enforces it and the migration

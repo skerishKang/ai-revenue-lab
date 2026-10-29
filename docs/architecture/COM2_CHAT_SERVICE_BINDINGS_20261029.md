@@ -110,6 +110,7 @@ fail-closed이고 로그인·세션은 동작한다(https 공개 오리진이므
 
 | 이름 | 용도 |
 |---|---|
+| `PADIEM_CHAT_CPYTHON_HOST=1` | com2 병행 호스트 실행 옵트인 — https 공개 오리진 필수, `PADIEM_LOCAL_DEV`와 동시 설정 금지 |
 | `PADIEM_CHAT_PUBLIC_BASE_URL=https://chat-com2.padiem.net` | 공개 오리진(https면 local 플래그 불필요) |
 | `PADIEM_CHAT_RUNTIME_MODE=mock|b14`, `PADIEM_CHAT_LIVE_ENABLED` | 모델·자동검색 게이트 |
 | `B14_UPSTREAM_MODE=https`, `B14_UPSTREAM_URL`, `PADIEM_B14_SERVICE_PROOF_SECRET` | 1번 |
