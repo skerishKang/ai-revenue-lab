@@ -570,13 +570,14 @@
     });
     close.addEventListener("click", closePanel);
     // Close when clicking outside the panel. The composer status control that
-    // opens it, and the first-screen computer card that reuses the same entry,
-    // are handled separately so the opening click does not close it.
+    // opens it, the first-screen computer card that reuses the same entry, and
+    // the guidance surface that reads this panel's own rendered states are
+    // handled separately so their clicks do not close (and clear) the panel.
     document.addEventListener("click", (event) => {
       if (!opened) return;
       const target = event && event.target;
       if (target && typeof target.closest === "function" &&
-          target.closest("#composerPcStatus, #pcConnectStarter")) return;
+          target.closest("#composerPcStatus, #pcConnectStarter, #clawDeviceGuidance")) return;
       if (root.contains(target)) return;
       closePanel();
     });

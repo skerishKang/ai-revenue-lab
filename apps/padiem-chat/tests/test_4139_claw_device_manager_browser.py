@@ -201,7 +201,10 @@ def test_bad_json_unscoped_directory_and_revocation_never_show_online(browser, s
 
     page.route("**" + ENDPOINT, mock)
     open_manager(page)
-    page.get_by_text("연결 상태를 확인하지 못했습니다", exact=False).wait_for()
+    # The panel names the real failure. The home computer card shows the same
+    # classified truth now (#5553), so the assertion is scoped to the panel
+    # instead of matching the page-wide text twice.
+    page.locator("#clawDeviceManagerPanel").get_by_text("연결 상태를 확인하지 못했습니다", exact=False).wait_for()
     assert page.locator("#clawDeviceManagerList li").count() == 0
     fixture["body"] = json.dumps({
         "ok": True, "available": True, "ownerScoped": False,
@@ -270,7 +273,13 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
         document.querySelector(".app-shell").setAttribute("data-state", "chat");
     }""")
     page.wait_for_timeout(50)
-    assert page.locator("#clawDeviceManager").is_visible()
+    # #5015: the panel is common now, so switching to Chat keeps it available.
+    # The removed duplicate entry line also removed the manager block's own
+    # in-flow box (the open panel is absolutely positioned), so presence is
+    # asserted by attachment and by the open panel, not by the collapsed root
+    # box.
+    assert page.locator("#clawDeviceManager").count() == 1
+    assert page.locator("#clawDeviceManagerPanel").is_visible()
     assert page.locator("#clawDeviceManagerList li").count() == 1
     assert page.locator("#clawDeviceManagerList li strong", has_text="계정 B PC").count() == 1
     assert not errors
