@@ -6,6 +6,7 @@ from typing import Any
 
 from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
+from identity_account_block_notifier import BlockNotifier  # named private binding, not default RPC
 
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
