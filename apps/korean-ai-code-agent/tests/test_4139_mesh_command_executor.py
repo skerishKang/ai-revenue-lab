@@ -820,12 +820,13 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
                 def __init__(self, data):
                     self.data = data
                     self.waits = []
+                    self.released = 0
 
                 def wait_closed(self, seconds):
                     self.waits.append(seconds)
 
                 def release_slave(self):
-                    return None
+                    self.released += 1
 
                 def wait_for(self, done, seconds):
                     # The stop is answered with the evidence that the script ran; the
@@ -873,6 +874,8 @@ class TestTheOwnerStopEndsThePcProcess(unittest.TestCase):
             (kwargs["stdin"], kwargs["stdout"], kwargs["stderr"]), (77, 77, 77),
             "the session's answer stream is the terminal device, never a discard",
         )
+        self.assertEqual(stops[0].released, 1,
+                         "this host hands the device to the client and keeps no copy")
         self.assertIn(self.MARKED, stops[0].data.decode("utf-8"))
         self.assertEqual(handoffs[0].data.decode("utf-8").splitlines()[0], PASSWORD,
                          "the credential still never enters argv")

@@ -66,6 +66,7 @@ class _Handoff:
     def close(self):
         self.closed = True
 
+
 class _Once:
     """A stdout that yields one transcript and then reports that it is done."""
 
