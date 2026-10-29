@@ -25,6 +25,7 @@ import hmac
 import inspect
 import json
 import re
+import time
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -137,7 +138,7 @@ async def handle_internal_rpc(
         at = int(at_raw)
     except ValueError:
         return _error(403, "rpc_proof_invalid", "Service proof invalid.")
-    current = int(at if now is None else now)
+    current = int(time.time()) if now is None else int(now)
     if abs(current - at) > MAX_CLOCK_SKEW_SECONDS:
         return _error(403, "rpc_proof_stale", "Service proof expired.")
     expected = proof_for(secret, method="POST", path=path, at=at, body=body)
