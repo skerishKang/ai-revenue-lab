@@ -123,62 +123,65 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
 
 
 @pytest.mark.asyncio
-async def test_unauthenticated_plus_alias_cannot_upgrade_grade_without_verified_tier():
+async def test_unauthenticated_plus_text_cannot_upgrade_grade_without_verified_tier():
     calls = 0
+    seen = []
 
     async def handler(request):
         nonlocal calls
         calls += 1
+        seen.append(json.loads(request.content))
         return httpx.Response(200, json=success_payload())
 
     client = B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
     )
-    with pytest.raises(ChatRuntimeError) as error:
-        await client.complete([{"role": "user", "content": "/plus test"}])
-    assert error.value.status_code == 422
-    assert error.value.code == "tier_unavailable"
-    assert calls == 0
+    await client.complete([{"role": "user", "content": "/plus test"}])
+    assert calls == 1
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": "/plus test"}
 
 @pytest.mark.asyncio
-async def test_dormant_agnes_alias_fails_before_any_b14_call():
+async def test_dormant_agnes_text_is_ordinary_prompt_before_b14_call():
     calls = 0
+    seen = []
 
     async def handler(request):
         nonlocal calls
         calls += 1
-        return httpx.Response(500)
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json=success_payload())
 
     client = B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
     )
-    with pytest.raises(ChatRuntimeError) as info:
-        await client.complete([{"role": "user", "content": "/agnes 질문"}])
-    assert info.value.status_code == 422
-    assert info.value.code == "unknown_model_alias"
-    assert calls == 0
+    await client.complete([{"role": "user", "content": "/agnes 질문"}])
+    assert calls == 1
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": "/agnes 질문"}
 
 
 @pytest.mark.asyncio
-async def test_unknown_model_alias_fails_before_any_b14_call():
+async def test_unknown_slash_text_is_ordinary_prompt_before_b14_call():
     calls = 0
+    seen = []
 
     async def handler(request):
         nonlocal calls
         calls += 1
-        return httpx.Response(500)
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json=success_payload())
 
     client = B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
     )
-    with pytest.raises(ChatRuntimeError) as info:
-        await client.complete([{"role": "user", "content": "/unknown 질문"}])
-    assert info.value.status_code == 422
-    assert info.value.code == "unknown_model_alias"
-    assert calls == 0
+    await client.complete([{"role": "user", "content": "/unknown 질문"}])
+    assert calls == 1
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": "/unknown 질문"}
 
 
 @pytest.mark.asyncio
@@ -287,13 +290,15 @@ async def test_api_chat_mock_round_trip_and_validation():
 
 
 @pytest.mark.asyncio
-async def test_api_rejects_unknown_model_alias_before_transport():
+async def test_api_accepts_unknown_slash_text_as_ordinary_prompt():
     calls = 0
+    seen = []
 
     async def handler(request):
         nonlocal calls
         calls += 1
-        return httpx.Response(500)
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json=success_payload())
 
     app = create_app(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
@@ -307,8 +312,10 @@ async def test_api_rejects_unknown_model_alias_before_transport():
             "/api/chat",
             json={"messages": [{"role": "user", "content": "/unknown 질문"}]},
         )
-    assert response.status_code == 422
-    assert calls == 0
+    assert response.status_code == 200
+    assert calls == 1
+    assert seen[-1]["model"] == DEFAULT_B14_MODEL_ID
+    assert seen[-1]["messages"][-1] == {"role": "user", "content": "/unknown 질문"}
 
 
 @pytest.mark.asyncio

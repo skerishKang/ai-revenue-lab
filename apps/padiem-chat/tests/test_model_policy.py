@@ -16,7 +16,6 @@ from app.model_policy import (
     LOW_B14_MODEL_ID,
     MAX_HOLD_MODEL_ID,
     MEDIUM_B14_MODEL_ID,
-    MODEL_ALIASES,
     MODEL_CAPABILITIES,
     PADIEM_MAX,
     PADIEM_PLUS,
@@ -89,56 +88,43 @@ def test_ordinary_chat_uses_executable_free_catjam() -> None:
     assert policy.model_id==FREE_B14_MODEL_ID
     assert policy.profile=="free"
 
-def test_plus_alias_preserves_selected_grade_on_paid_primary() -> None:
-    policy=resolve_model_policy([{"role":"user","content":"/plus 테스트 질문입니다"}])
-    assert policy.model_id==LOW_B14_MODEL_ID==TEST_PHASE_PRIMARY_B14_MODEL_ID
-    assert policy.profile=="low"
-    assert policy.alias=="/plus"
-    assert policy.messages[-1]=={"role":"user","content":"테스트 질문입니다"}
+@pytest.mark.parametrize("slash_text", ["/plus", "/pro", "/max", "/kilo"])
+def test_slash_tier_text_is_ordinary_prompt_and_keeps_default_tier(slash_text: str) -> None:
+    plain = resolve_model_policy([{"role":"user","content":"테스트 질문입니다"}])
+    message = f"{slash_text} 테스트 질문입니다"
+    policy=resolve_model_policy([{"role":"user","content":message}])
+    assert policy.model_id==plain.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID
+    assert policy.profile==plain.profile=="free"
+    assert policy.messages[-1]=={"role":"user","content":message}
     assert model_policy_is_executable(policy.model_id)
 
-@pytest.mark.parametrize("alias", ["/plus", "/pro", "/max"])
-def test_all_product_aliases_select_grade_primaries_and_distinct_grades(alias: str) -> None:
-    policy=resolve_model_policy([{"role":"user","content":f"{alias} 질문"}])
-    assert policy.model_id==TEST_PHASE_PRIMARY_B14_MODEL_ID
-    assert policy.profile=={"/plus":"low","/pro":"medium","/max":"high"}[alias]
-    assert policy.alias==alias
+def test_hidden_tier_alias_symbols_are_gone() -> None:
+    assert not hasattr(model_policy_module, "MODEL_ALIASES")
+    assert not hasattr(model_policy_module, "_strip_hidden_tier_alias")
 
-def test_legacy_kilo_alias_maps_to_pro_grade_without_new_provider() -> None:
-    policy=resolve_model_policy([{"role":"user","content":"/kilo 질문"}])
-    assert policy.model_id==TEST_PHASE_PRIMARY_B14_MODEL_ID
-    assert policy.profile=="medium"
+@pytest.mark.parametrize("slash_text", ["/plus", "/pro", "/max", "/kilo", "/poolside", "/unknown"])
+def test_slash_prefixed_text_without_a_prompt_is_ordinary_text(slash_text: str) -> None:
+    policy=resolve_model_policy([{"role":"user","content":slash_text}])
+    assert policy.model_id==DEFAULT_B14_MODEL_ID
+    assert policy.profile=="free"
+    assert policy.messages[-1]=={"role":"user","content":slash_text}
 
-def test_poolside_alias_is_not_a_fallback() -> None:
-    assert "/poolside" not in MODEL_ALIASES
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
-    assert info.value.code == "unknown_model_alias"
+@pytest.mark.parametrize("content", ["/foo 질문", "/poolside 질문", "/agnes 질문", "/openrouter 질문", "/unknown 질문"])
+def test_unknown_slash_text_is_accepted_as_ordinary_text(content: str) -> None:
+    policy=resolve_model_policy([{"role":"user","content":content}])
+    assert policy.model_id==DEFAULT_B14_MODEL_ID
+    assert policy.profile=="free"
+    assert policy.messages[-1]=={"role":"user","content":content}
+
+def test_poolside_is_not_executable_from_slash_text() -> None:
     assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
     assert model_policy_is_executable("poolside/laguna-s-2.1") is False
 
-
-@pytest.mark.parametrize("alias", ["/agnes", "/openrouter", "/claude", "/gemini"])
-def test_other_provider_aliases_fail_closed_before_b14(alias: str) -> None:
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": f"{alias} 질문"}])
-    assert info.value.code == "unknown_model_alias"
-
-
-def test_unknown_alias_fails_closed_without_provider_hint() -> None:
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": "/unknown 질문"}])
-    assert info.value.code == "unknown_model_alias"
-    message = info.value.message.lower()
+def test_slash_text_is_not_rewritten_with_a_provider_hint() -> None:
+    policy=resolve_model_policy([{"role":"user","content":"/unknown 질문"}])
+    message = policy.messages[-1]["content"].lower()
     for hidden_name in ("poolside", "nvidia", "tencent", "kilo", "nemotron", "hy3", "laguna"):
         assert hidden_name not in message
-
-
-def test_explicit_alias_without_prompt_fails_before_availability_check() -> None:
-    for alias in ("/plus", "/pro", "/max", "/kilo"):
-        with pytest.raises(ModelPolicyError) as info:
-            resolve_model_policy([{"role": "user", "content": alias}])
-        assert info.value.code == "model_alias_requires_prompt"
 
 
 def test_historical_hold_sentinels_claim_no_executable_capabilities() -> None:
@@ -150,6 +136,19 @@ def test_historical_hold_sentinels_claim_no_executable_capabilities() -> None:
         assert model_supports(model_id,"chat") is False
         assert model_supports(model_id,"image") is False
         assert model_policy_is_executable(model_id) is False
+
+def test_raw_provider_ids_are_not_capability_catalog_rows() -> None:
+    # B8: capability rows are keyed by product-tier identity only. A raw
+    # provider model id must not reappear as a selectable catalog row.
+    for provider_id in (
+        "google/gemini-3.5-flash-lite",
+        "opencode-go/muse-spark-1.2-contributor",
+        "opencode-go/muse-spark-1.3-contributor",
+    ):
+        assert provider_id not in MODEL_CAPABILITIES
+        assert model_supports(provider_id, "chat") is False
+        assert model_supports(provider_id, "coding") is False
+        assert model_supports(provider_id, "image") is False
 
 def test_model_id_is_not_an_identity_for_four_distinct_product_grades() -> None:
     assert PROFILE_MODEL_IDS["free"]==FREE_B14_MODEL_ID
