@@ -1,0 +1,131 @@
+name: Connector Lane Watch (#82)
+
+# Owner standard 4: a stop is known within ten minutes.
+#
+# The hourly PC canary (#6129) proves a real round trip and now always prints a
+# verdict. This lane is the cheap read-only half on a ten-minute cadence: it reads the
+# lane's own status route (#6134) and Chat's public /health, judges from state fields,
+# and records the answer as a commit status on the SHA it checked out.
+#
+# It does not deploy, restart, claim or write anything in production. Its only write is
+# a GitHub status. No Cloudflare cron is added or needed: this repository already runs
+# scheduled Actions workflows, and the account-wide trigger budget is the owner's.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/connector-lane-watch.yml"
+      - ".github/scripts/connector_lane_watch.py"
+      - ".github/tests/test_connector_lane_watch.py"
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: connector-lane-watch
+  cancel-in-progress: false
+
+env:
+  CONNECTOR_WATCH_CHAT_ORIGIN: https://chat.padiem.net
+
+jobs:
+  static-contract:
+    name: Verdicts and boundaries (offline)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile and run the offline contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile .github/scripts/connector_lane_watch.py
+          python .github/tests/test_connector_lane_watch.py
+          echo 'CONNECTOR_WATCH_OFFLINE_ONLY=YES'
+
+      - name: The watch cannot change production and asks for no configured secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Only executable lines are inspected: this workflow's own prose explains
+          # that it does not deploy, and the token list below contains the words it
+          # forbids. Checking raw text would make the guard fail on itself.
+          lowered="$(sed -E '/^[[:space:]]*#/d' .github/workflows/connector-lane-watch.yml             | grep -vE 'FORBIDDEN|for forbidden in|^[[:space:]]*(name|description):'             | tr '[:upper:]' '[:lower:]' || true)"
+          for forbidden in deploy rollback promote set_var delete_deployment; do
+            case "${lowered}" in
+              *"${forbidden}"*) echo "CONNECTOR_WATCH_FORBIDDEN_TOKEN=${forbidden}" >&2; exit 1 ;;
+            esac
+          done
+          grep -Fq 'statuses: write' .github/workflows/connector-lane-watch.yml
+          echo 'CONNECTOR_WATCH_MUTATIONS=GITHUB_STATUS_ONLY'
+
+  live-watch:
+    name: Ten-minute read of the lane
+    needs: static-contract
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Read the lane and record what it says
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          # The channel secret is the same credential the executor already uses. It is
+          # read only here, and its absence is UNKNOWN in the verdict — never "ok".
+          ORACLE_MESH_CHANNEL_SECRET: ${{ secrets.ORACLE_MESH_CHANNEL_SECRET }}
+          # Which store is live. Unset means the pre-move default, d1. Reported as
+          # com2 the moment the queue becomes authoritative, and this lane then says
+          # UNKNOWN until the queue-side read is wired, instead of reading a frozen copy.
+          PC_QUEUE_BACKEND: ${{ vars.PC_QUEUE_BACKEND }}
+          CONNECTOR_WATCH_DEVICE_IDS: ${{ vars.CONNECTOR_WATCH_DEVICE_IDS }}
+        run: |
+          set -euo pipefail
+          status=0
+          python .github/scripts/connector_lane_watch.py | tee "${RUNNER_TEMP}/lane-watch.log" || status=$?
+          line="$(grep -E '^CONNECTOR_WATCH=' "${RUNNER_TEMP}/lane-watch.log" | tail -1 || true)"
+          if [ -z "${line}" ]; then
+            line='CONNECTOR_WATCH=unknown reasons=watch_reported_nothing'
+            status=1
+          fi
+          printf '%s\n' "${line}" | tee -a "${GITHUB_STEP_SUMMARY}"
+          grep -E '^CONNECTOR_WATCH_CHECK ' "${RUNNER_TEMP}/lane-watch.log" \
+            | tee -a "${GITHUB_STEP_SUMMARY}" || true
+          echo 'CONNECTOR_WATCH_MUTATIONS=NONE' >> "${GITHUB_STEP_SUMMARY}"
+          state_word="$(printf '%s' "${line}" | sed -nE 's/^CONNECTOR_WATCH=([a-z]+).*/\1/p')"
+          reasons="$(printf '%s' "${line}" | sed -nE 's/^CONNECTOR_WATCH=[a-z]+ reasons=([^ ]*).*/\1/p')"
+          # stall -> failure, unknown -> neutral, ok -> success. Unknown is shown but
+          # does not page: before the route is deployed every run would be unknown, and
+          # an alert that fires from day one is an alert nobody reads. It is still a
+          # visible status word, never "success".
+          case "${state_word}" in
+            ok) gh_state="success" ;;
+            stall) gh_state="failure" ;;
+            *) gh_state="neutral" ;;
+          esac
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="${gh_state}" \
+            -f context="padiem/connector-lane-watch" \
+            -f description="$(printf '%.140s' "${state_word} ${reasons}")" \
+            || echo "CONNECTOR_WATCH_STATUS_NOT_RECORDED=1"
+          exit "${status}"
+        continue-on-error: false
