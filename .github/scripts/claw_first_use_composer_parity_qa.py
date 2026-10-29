@@ -59,6 +59,7 @@ with sync_playwright() as p:
         const cr=card.getBoundingClientRect(),tr=t.getBoundingClientRect();
         return cr.bottom-tr.bottom<26 && cr.right-tr.right<26}).length,
       toggleReady:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const t=c.querySelector('.claw-connection-toggle');if(!t||!c.getClientRects().length)return false;const r=t.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.width>0&&r.height>=44&&hit&&(hit===t||t.contains(hit))}).length,
+      statusInside:[...document.querySelectorAll('.claw-home-card')].filter(c=>{const s=c.querySelector('.claw-card-status');if(!s||!c.getClientRects().length)return false;const cr=c.getBoundingClientRect(),sr=s.getBoundingClientRect();return sr.top>=cr.top-1&&sr.bottom<=cr.bottom+1&&sr.left>=cr.left-1&&sr.right<=cr.right+1}).length,
       title:document.querySelector('#emptyState h1').innerText,
       scroll:Math.round(document.documentElement.scrollWidth-window.innerWidth),
       variant:document.querySelector('.app-shell').dataset.layoutVariant}
@@ -99,9 +100,13 @@ with sync_playwright() as p:
     # the ON/OFF row follows the description; nothing is pinned to the corners.
     assert claw["statusInFlow"]==3,(width,"status-placement",claw)
     assert claw["toggleInFlow"]==3,(width,"toggle-placement",claw)
+    assert claw["toggleReady"]==3,(width,"toggle-touch",claw)
+    assert claw["statusInside"]==3,(width,"status-inside-tile",claw)
   else:
     assert claw["statusTopRight"]==3,(width,"status-placement",claw)
     assert claw["toggleBottomRight"]==3,(width,"toggle-placement",claw)
+    assert claw["toggleReady"]==3,(width,"toggle-touch",claw)
+    assert claw["statusInside"]==3,(width,"status-inside-tile",claw)
   assert "\uD074\uB85C" in claw["title"],(width,claw["title"])
   print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}x{height}=PASS "
         f"eyebrowTopDelta={round(abs(chat['eyebrow'][2]-claw['eyebrow'][2]),2)} "
