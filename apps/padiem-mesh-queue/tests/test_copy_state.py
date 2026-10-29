@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import pathlib
+import subprocess
 import sqlite3
 import sys
 
@@ -126,3 +127,34 @@ def test_a_repeated_copy_is_the_same_shape_as_the_first(tmp_path):
     changes = diff_state(target)
     left = [value for item in changes.values() for value in item.values()]
     assert not any(left), "a second copy of the same export is not a change"
+
+def test_the_command_line_the_runbook_types_actually_runs(tmp_path):
+    """`copy_state.py copy --source … --target …` reached argparse, never the copy.
+
+    Measured on the host 2026-10-30 while running section 4 of the cutover runbook: the
+    entry point handed `sys.argv` - the script path first - to `parse_args`, so the
+    documented invocation died with "invalid choice: '<path>/copy_state.py'" before it
+    opened a database. The suite could not have caught it: every test calls `main` with a
+    list it built itself. This test runs the file the way a person does.
+    """
+    missing = str(tmp_path / "no-such-export.sqlite")
+    target = str(tmp_path / "queue.sqlite")
+    completed = subprocess.run(
+        [sys.executable, str(QUEUE / "copy_state.py"), "copy",
+         "--source", missing, "--target", target],
+        capture_output=True, text=True, timeout=120,
+    )
+    shouted = completed.stdout + completed.stderr
+    assert "invalid choice" not in shouted, "argparse ate the script path again"
+    assert completed.stdout.startswith("PC_STATE_REFUSED"), completed.stdout[:120]
+    assert completed.returncode == 1, "a refused source is a refusal, not a crash"
+
+
+def test_the_diff_shape_parses_from_the_command_line_too(tmp_path):
+    target = _file(tmp_path, "queue.sqlite")
+    completed = subprocess.run(
+        [sys.executable, str(QUEUE / "copy_state.py"), "diff", "--target", target],
+        capture_output=True, text=True, timeout=120,
+    )
+    assert "invalid choice" not in completed.stdout + completed.stderr
+    assert completed.returncode in (0, 1), completed.returncode
