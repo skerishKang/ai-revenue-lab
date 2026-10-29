@@ -42,8 +42,6 @@ jobs:
       TARGET_SHA: ${{ inputs.target_sha }}
       CONFIRMATION: ${{ inputs.confirmation }}
       MODE: ${{ inputs.mode }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       WRANGLER_SEND_METRICS: 'false'
     steps:
       - name: Validate input before checkout
@@ -63,6 +61,9 @@ jobs:
         with:
           node-version: '22'
       - name: Confirm exact main and account without printing account ID or token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         shell: bash
         run: |
           set -euo pipefail
@@ -124,6 +125,9 @@ jobs:
           PY
       - name: Deploy approved exact main SHA
         if: inputs.mode == 'deploy'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         shell: bash
         run: |
           set -euo pipefail
