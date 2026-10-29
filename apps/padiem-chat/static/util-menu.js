@@ -213,6 +213,54 @@
     return null;
   }
 
+  // #6199: re-opening a stored piece reads its body from the existing detail
+  // route. It keeps the HTTP status (and the empty-body case apart) so the
+  // screen can say what actually failed instead of a generic sentence.
+  async function readStoredBody(pid, fileId) {
+    let res;
+    try {
+      res = await fetch(
+        "/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(fileId),
+        { credentials: "include" },
+      );
+    } catch (_error) {
+      return { ok: false, status: 0, text: "" };
+    }
+    if (!res.ok) return { ok: false, status: res.status, text: "" };
+    const data = await res.json().catch(() => null);
+    const file = data && data.file ? data.file : null;
+    const text = file ? (typeof file.content === "string" ? file.content : file.text) : null;
+    if (typeof text !== "string") return { ok: false, status: res.status, text: "" };
+    if (!text.trim()) return { ok: false, status: res.status, text: "", empty: true };
+    return { ok: true, status: res.status, text: text };
+  }
+
+  // Korean picks 을 or 를 from the last syllable. The two labels below end in
+  // 사 (vowel) and 글 (consonant), so one small helper keeps every sentence
+  // grammatical instead of a fixed particle that reads wrong in one tool.
+  function withObjectParticle(word) {
+    const last = word.charCodeAt(word.length - 1);
+    const endsInConsonant = last >= 0xac00 && last <= 0xd7a3 && (last - 0xac00) % 28 !== 0;
+    return word + (endsInConsonant ? "을" : "를");
+  }
+
+  // One sentence per real failure: another account's piece answers 404 and the
+  // copy says so instead of pretending the row vanished.
+  function storedOpenFailureText(label, result) {
+    if (result && result.empty) return label + "의 본문이 비어 있습니다.";
+    if (!result || !result.status) return withObjectParticle(label) + " 열지 못했습니다. 인터넷 연결을 확인해 주세요.";
+    if (result.status === 404) return withObjectParticle(label) + " 찾을 수 없습니다. 다른 계정의 글이거나 삭제된 글입니다.";
+    if (result.status === 401) return "로그인이 필요합니다. 다시 로그인해 주세요.";
+    return withObjectParticle(label) + " 열지 못했습니다 (HTTP " + result.status + ").";
+  }
+
+  // #6199: the edit banner names the stored piece the save will collide with,
+  // so [새 이름으로 저장] / [덮어쓰기] is never a surprise.
+  function editingStateText(target) {
+    return "고쳐 쓰는 중: " + target.name
+      + " · 저장하면 같은 이름은 새 이름 또는 덮어쓰기(이전 내용은 버전으로 남김) 중에서 묻습니다.";
+  }
+
   // #5728: photos persist through the SAME project-file channel as text
   // drafts — binary original upload, owner/project scoped, no new limits.
   // The failure keeps its HTTP status so the screen can say what happened
@@ -605,6 +653,9 @@
     // #5895: the SNS panel is built on first open, so its PC section is handed back
     // to the tab handler that knows when the panel is actually on screen.
     let snsPcRef = null;
+    // #6199: the stored speech currently in the draft editor, if any. It keeps
+    // the name the save offers to the existing 409 check and the kind it keeps.
+    let speechEditing = null;
 
     // #5608 follow-up: the sidebar Util entry expands into its four tools. The
     // submenu rows and the (hidden) in-page tabs drive the same switch, so the
@@ -749,6 +800,9 @@
     async function generateSpeech(form) {
       const prompt = buildPrompt(form);
       lastPayload = prompt;
+      // A fresh generation is no longer an edit of the stored piece, so the
+      // save must not offer that old name back.
+      setSpeechEditing(null);
       speechResult.hidden = false;
       speechOutput.value = "생성 중...";
       try {
@@ -777,17 +831,52 @@
       if (!text) return;
       if (!currentPid) currentPid = await ensureProject();
       if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-      const name = (document.querySelector("#utilSpeechForm [name=event]")?.value || "축사").trim() + ".txt";
+      // #6199: an edited stored speech saves under its OWN name and kind, so
+      // the existing 409 (새 이름으로 저장 / 덮어쓰기) runs instead of a second
+      // row appearing under the form's event name.
+      const editing = speechEditing;
+      const eventName = (document.querySelector("#utilSpeechForm [name=event]")?.value || "축사").trim();
+      const name = editing ? editing.name : (eventName || "축사") + ".txt";
       // #5731: the kind is what makes this row a 축사 for every later list.
-      const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "speech", anchor: saveBtn });
+      const kind = editing && editing.kind ? editing.kind : "speech";
+      const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: kind, anchor: saveBtn });
       if (file) {
         saveBtn.textContent = "저장됨";
         setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+        setSpeechEditing(null);
         await refreshSpeechList();
       } else {
-        alert("저장 실패");
+        alert("저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       }
     });
+
+    // #6199: the line above the draft says an edit of a stored piece is open,
+    // not a fresh generation.
+    const speechEditState = el("p", "util-edit-state");
+    speechEditState.id = "utilSpeechEditState";
+    speechEditState.hidden = true;
+    if (speechOutput && speechOutput.parentNode) {
+      speechOutput.parentNode.insertBefore(speechEditState, speechOutput);
+    }
+
+    function setSpeechEditing(target) {
+      speechEditing = target;
+      speechEditState.hidden = !target;
+      speechEditState.textContent = target ? editingStateText(target) : "";
+    }
+
+    // #6199: [고쳐 쓰기] puts a stored speech back into the SAME draft editor —
+    // no second editor, no second store — so the owner can change it and save.
+    async function openSpeechForEdit(file) {
+      if (!currentPid) currentPid = await ensureProject();
+      if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+      const stored = await readStoredBody(currentPid, file.id);
+      if (!stored.ok) { alert(storedOpenFailureText("저장된 축사", stored)); return; }
+      setSpeechEditing({ id: file.id, name: file.name, kind: file.doc_kind || "speech" });
+      speechResult.hidden = false;
+      speechOutput.value = stored.text;
+      speechOutput.focus();
+    }
 
     const savedList = document.createElement("div");
     savedList.id = "utilSpeechSaved";
@@ -824,22 +913,12 @@
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
-        btn.addEventListener("click", async () => {
-          const res = await fetch("/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
-          if (res.ok) {
-            const data = await res.json();
-            const content = data && data.file && (data.file.content || data.file.text);
-            if (typeof content === "string") {
-              speechOutput.value = content;
-              speechResult.hidden = false;
-            } else {
-              alert("저장된 축사의 본문을 읽을 수 없습니다.");
-            }
-          } else {
-            alert("저장된 축사를 열지 못했습니다.");
-          }
-        });
+        btn.className = "util-edit-stored";
+        btn.dataset.fileId = f.id;
+        // #6199: the row leads with the action — a past speech reopens in the
+        // editable draft instead of only being displayed.
+        btn.textContent = "고쳐 쓰기: " + f.name + " (" + (f.content_chars || 0) + "자)";
+        btn.addEventListener("click", async () => { await openSpeechForEdit(f); });
         li.appendChild(btn);
         // #5731: a stored speech can be picked as the style reference — the
         // same owner/project file the list already reads fills the style
@@ -1313,6 +1392,33 @@
       const previewBox = el("div", "util-sns-preview");
       previewBox.id = "utilSnsPreview";
       previewBox.hidden = true;
+      // #6199: the stored SNS piece currently in the editor, if any, plus the
+      // line that states the save will ask about its name.
+      let snsEditing = null;
+      const snsEditState = el("p", "util-edit-state");
+      snsEditState.id = "utilSnsEditState";
+      snsEditState.hidden = true;
+      function setSnsEditing(target) {
+        snsEditing = target;
+        snsEditState.hidden = !target;
+        snsEditState.textContent = target ? editingStateText(target) : "";
+      }
+      // #6199: [고쳐 쓰기] loads the stored body into the SAME editable draft
+      // the generation writes to. The platform tabs keep whatever the owner has
+      // selected — the stored file does not carry a platform, and guessing one
+      // would be a fake.
+      async function openSnsForEdit(file) {
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
+        const stored = await readStoredBody(currentPid, file.id);
+        if (!stored.ok) { alert(storedOpenFailureText("저장한 글", stored)); return; }
+        setSnsEditing({ id: file.id, name: file.name, kind: file.doc_kind || "sns" });
+        result.hidden = false;
+        output.value = stored.text;
+        if (previewBox) previewBox.hidden = false;
+        renderPreview();
+        output.focus();
+      }
       const actions = el("div", "util-actions");
       const copyB = el("button", null, "복사"); copyB.type = "button"; copyB.id = "utilSnsCopy";
       const dlB = el("button", null, "TXT 다운로드"); dlB.type = "button"; dlB.id = "utilSnsDownload";
@@ -1326,7 +1432,7 @@
       const snsSaved = document.createElement("div");
       snsSaved.id = "utilSnsSaved";
       snsSaved.className = "util-saved-list";
-      result.append(h3, output, previewBox, actions, snsSaved);
+      result.append(h3, snsEditState, output, previewBox, actions, snsSaved);
 
       async function refreshSnsList() {
         if (!currentPid) currentPid = await ensureProject();
@@ -1341,19 +1447,10 @@
           const li = document.createElement("li");
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
-          btn.addEventListener("click", async () => {
-            const res = await fetch(
-              "/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id),
-              { credentials: "include" },
-            );
-            const data = res.ok ? await res.json().catch(() => null) : null;
-            const content = data && data.file && (data.file.content || data.file.text);
-            if (typeof content !== "string") { alert("저장한 글을 열지 못했습니다."); return; }
-            output.value = content;
-            result.hidden = false;
-            renderPreview();
-          });
+          btn.className = "util-edit-stored";
+          btn.dataset.fileId = f.id;
+          btn.textContent = "고쳐 쓰기: " + f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.addEventListener("click", async () => { await openSnsForEdit(f); });
           li.appendChild(btn);
           ul.appendChild(li);
         });
@@ -1471,6 +1568,8 @@
           prompt += `아래는 사용자의 PC에서 가져온 예전 글입니다. 문체와 어휘, 글의 구성을 참고하되 그대로 옮기지 마세요:\n---\n${references}\n---\n`;
         }
         prompt += "\n제목, 본문, 해시태그를 구분하여 작성해 주세요.";
+        // A fresh generation is no longer an edit of the stored piece.
+        setSnsEditing(null);
         result.hidden = false;
         output.value = "생성 중...";
         try { output.value = await apiChat(prompt, "sns"); }
@@ -1492,7 +1591,12 @@
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
         const name = (h3.textContent || "sns").trim() + ".txt";
-        const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "sns", anchor: formSaveB });
+        // #6199: an edited stored SNS piece saves under its own name and kind,
+        // so the existing 409 asks 새 이름/덮어쓰기 instead of stacking a row.
+        const editing = snsEditing;
+        const saveName = editing ? editing.name : name;
+        const kind = editing && editing.kind ? editing.kind : "sns";
+        const file = await saveUtilText({ pid: currentPid, name: saveName, text: text, kind: kind, anchor: formSaveB });
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
@@ -1500,9 +1604,10 @@
           // the text and its platform, not only the photos.
           lastSavedDraft = { text: text, platform: platform };
           writePhotoRoster(currentPid, lastSavedDraft);
+          setSnsEditing(null);
           void refreshSnsList();
         } else {
-          alert("저장 실패");
+          alert("저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
         }
       });
 

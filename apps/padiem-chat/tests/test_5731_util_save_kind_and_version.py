@@ -211,6 +211,71 @@ def test_overwrite_keeps_the_previous_body_as_a_version_file() -> None:
     assert second.json()["previous"]["name"] == "개교기념일 (이전 2).txt"
 
 
+def test_a_stored_speech_reopens_for_editing_and_resaves_with_its_kind() -> None:
+    """#6199 — 목록에서 연 본문을 그대로 고쳐 저장하는 한 흐름.
+
+    The reopen reads the owner's detail route; the edited save lands on the
+    existing 409 (new name) or the existing PUT (overwrite). Neither path makes
+    a second store, and the kind the row was stored under survives both.
+    """
+
+    client = _client()
+    created = _save(client, "개교기념일.txt", "예전 축사 본문", "speech")
+    assert created.status_code == 201, created.text
+    file_id = created.json()["file"]["id"]
+
+    # 1) 고쳐 쓰기 reads this body back — that is what the editor receives.
+    opened = client.get(f"/api/projects/{PROJECT}/files/{file_id}")
+    assert opened.status_code == 200, opened.text
+    assert opened.json()["file"]["content"] == "예전 축사 본문"
+    assert opened.json()["file"]["doc_kind"] == "speech"
+
+    # 2) Saving the edited body under the same name asks (409) and writes nothing.
+    edited = "예전 축사 본문 · 고친 문장"
+    asked = _save(client, "개교기념일.txt", edited, "speech")
+    assert asked.status_code == 409, asked.text
+    assert asked.json()["error"]["existing"] == {"id": file_id, "name": "개교기념일.txt"}
+    assert client.get(f"/api/projects/{PROJECT}/files/{file_id}").json()["file"]["content"] == "예전 축사 본문"
+
+    # 3) 새 이름으로 저장 = exactly one new row, same kind, original untouched.
+    saved_new = _save(client, "개교기념일 (2).txt", edited, "speech")
+    assert saved_new.status_code == 201, saved_new.text
+    assert saved_new.json()["file"]["doc_kind"] == "speech"
+    current = [
+        row for row in client.get(f"/api/projects/{PROJECT}/files").json()["files"]
+        if row["doc_kind"] == "speech" and not row["doc_version_of"]
+    ]
+    assert sorted(row["name"] for row in current) == ["개교기념일 (2).txt", "개교기념일.txt"]
+
+    # 4) 덮어쓰기 = the same row carries the edit, the old body survives as a version.
+    replaced = client.put(
+        f"/api/projects/{PROJECT}/files/{file_id}",
+        content=json.dumps({"text": "예전 축사 본문 · 마지막 수정", "doc_kind": "speech"}).encode("utf-8"),
+        headers={"content-type": "application/json"},
+    )
+    assert replaced.status_code == 200, replaced.text
+    assert replaced.json()["file"]["doc_kind"] == "speech"
+    assert replaced.json()["previous"]["name"] == "개교기념일 (이전 1).txt"
+    after = client.get(f"/api/projects/{PROJECT}/files").json()["files"]
+    listed = [row["name"] for row in after if row["doc_kind"] == "speech" and not row["doc_version_of"]]
+    assert sorted(listed) == ["개교기념일 (2).txt", "개교기념일.txt"]
+    assert client.get(f"/api/projects/{PROJECT}/files/{file_id}").json()["file"]["content"] == (
+        "예전 축사 본문 · 마지막 수정"
+    )
+
+
+def test_another_owner_cannot_open_the_body_for_editing() -> None:
+    """#6199 — 남의 글은 목록에도, id로 열어도 없다(존재 비노출)."""
+
+    owner = _client()
+    created = _save(owner, "개교기념일.txt", "내 축사", "speech")
+    file_id = created.json()["file"]["id"]
+
+    other = _client(USER_B)
+    assert other.get(f"/api/projects/{PROJECT}/files/{file_id}").status_code == 404
+    assert owner.get(f"/api/projects/{PROJECT}/files/{file_id}").status_code == 200
+
+
 def test_another_owner_cannot_overwrite_or_read() -> None:
     owner = _client()
     created = _save(owner, "개교기념일.txt", "내 축사", "speech")

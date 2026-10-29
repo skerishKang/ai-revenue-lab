@@ -56,6 +56,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
+  insertBefore(child, ref) {
+    const i = this.children.indexOf(ref);
+    if (i < 0) return this.appendChild(child);
+    this.children.splice(i, 0, child);
+    child.parentNode = this;
+    return child;
+  }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
@@ -194,17 +201,32 @@ async function fetch(url, opts) {
     return json({ projects: [{ id: PROJECT_ID, name: "유틸 작업" }] });
   }
   if (method === "GET" && path === `/api/projects/${PROJECT_ID}/files`) {
+    // Same projection the real collection route returns for a util row: the
+    // list carries the kind and the version link, never the body.
     return json({
-      files: storedFiles.map((f) => ({ id: f.id, name: f.name, media_type: f.media_type, content_chars: f.content_chars })),
+      files: storedFiles.map((f) => ({
+        id: f.id, name: f.name, media_type: f.media_type, content_chars: f.content_chars,
+        doc_kind: f.doc_kind || "", doc_version_of: f.doc_version_of || null,
+      })),
     });
   }
   if (method === "POST" && path === `/api/projects/${PROJECT_ID}/files` && body) {
+    const kind = String(body.doc_kind || "");
+    // #5731 contract the screen must obey: the same name in the same kind is a
+    // 409 with the existing row, never a second row.
+    if (kind) {
+      const same = storedFiles.find((f) => !f.doc_version_of && f.name === body.name && (f.doc_kind || "") === kind);
+      if (same) {
+        return json({ error: { code: "name_conflict", message: "같은 이름의 글이 이미 있습니다.", existing: { id: same.id, name: same.name } } }, 409);
+      }
+    }
     const file = {
       id: "f" + (storedFiles.length + 1),
       name: body.name,
       media_type: body.media_type,
       content: String(body.text || ""),
       content_chars: String(body.text || "").length,
+      doc_kind: kind,
     };
     storedFiles.push(file);
     return json({ file });
@@ -213,7 +235,32 @@ async function fetch(url, opts) {
   if (method === "GET" && detail) {
     const rec = storedFiles.find((f) => f.id === detail[1]);
     if (!rec) return json({}, 404);
-    return json({ file: { id: rec.id, name: rec.name, media_type: rec.media_type, content_chars: rec.content_chars, content: rec.content } });
+    return json({ file: { id: rec.id, name: rec.name, media_type: rec.media_type, content_chars: rec.content_chars, doc_kind: rec.doc_kind || "", content: rec.content } });
+  }
+  if (method === "PUT" && detail && body) {
+    // #5731 overwrite: the row keeps its id and kind, the displaced body stays
+    // in the same project as `<name> (이전 N)` linked through doc_version_of.
+    const rec = storedFiles.find((f) => f.id === detail[1]);
+    if (!rec) return json({}, 404);
+    const kind = String(body.doc_kind || rec.doc_kind || "");
+    const stem = rec.name.replace(/\.[^.]+$/, "");
+    const ext = (rec.name.match(/\.[^.]+$/) || [""])[0];
+    let n = 1;
+    while (storedFiles.some((f) => f.name === `${stem} (이전 ${n})${ext}`)) n += 1;
+    const version = {
+      id: "f" + (storedFiles.length + 1),
+      name: `${stem} (이전 ${n})${ext}`,
+      media_type: rec.media_type,
+      content: rec.content,
+      content_chars: rec.content.length,
+      doc_kind: rec.doc_kind || kind,
+      doc_version_of: rec.id,
+    };
+    storedFiles.push(version);
+    rec.content = String(body.text || "");
+    rec.content_chars = rec.content.length;
+    rec.doc_kind = kind;
+    return json({ file: rec, previous: version });
   }
   return json({}, 404);
 }
@@ -651,6 +698,129 @@ const SCENARIOS = {
       platformTitles: [blogTitle, afterSwitch.title],
       endpoints: endpointSet(),
       alerts,
+      pageErrors,
+    };
+  },
+
+  // #6199: a stored speech/SNS piece reopens in the SAME editor, is edited, and
+  // saves through the existing 409 (새 이름 / 덮어쓰기) path with its kind kept.
+  // Opening a piece that is gone says so instead of a generic failure.
+  async edit() {
+    storedFiles.push(
+      { id: "f71", name: "작년 신년사.txt", media_type: "text/plain", doc_kind: "speech",
+        content: "작년 신년사 본문입니다.", content_chars: "작년 신년사 본문입니다.".length },
+      { id: "f72", name: "봄 행사 기록.txt", media_type: "text/plain", doc_kind: "meeting",
+        content: "봄 행사 기록 본문입니다.", content_chars: "봄 행사 기록 본문입니다.".length },
+      { id: "f73", name: "개교 소식.txt", media_type: "text/plain", doc_kind: "sns",
+        content: "개교 소식 본문입니다.", content_chars: "개교 소식 본문입니다.".length },
+      { id: "f80", name: "사라진 글.txt", media_type: "text/plain", doc_kind: "speech",
+        content: "곧 사라질 본문입니다.", content_chars: "곧 사라질 본문입니다.".length },
+    );
+    const session = spawnSession();
+    await openTool(session, "speech");
+    await sleep(30);
+
+    const speechRows = () => find(session, "utilSpeechSaved").querySelectorAll(".util-edit-stored");
+    const rowFor = (nodes, name) => nodes.find((b) => text(b).includes(name)) || null;
+    const speechRowNames = (nodes) => labels(nodes);
+
+    const initialRows = speechRowNames(speechRows());
+
+    // 1) 고쳐 쓰기 loads the stored body into the editable draft, no new editor.
+    find(session, "utilSpeechOutput").value = "";
+    await rowFor(speechRows(), "작년 신년사.txt").dispatch("click");
+    await sleep(30);
+    const loadedBody = find(session, "utilSpeechOutput").value;
+    const editStateNode = find(session, "utilSpeechEditState");
+    const editStateVisible = !editStateNode.hidden;
+    const editStateText = text(editStateNode);
+    const editorCount = session.root._descendants().filter((n) => n.id === "utilSpeechOutput").length;
+
+    // 2) Edit + save under the same name: the screen asks, 새 이름 keeps the kind.
+    find(session, "utilSpeechOutput").value = "작년 신년사 본문입니다. 고친 문장입니다.";
+    // The save click stays pending on the same-name question, so it is fired
+    // and then the question is answered — awaiting it here would deadlock.
+    void find(session, "utilSpeechSave").dispatch("click");
+    await sleep(40);
+    const ask = session.root.querySelector(".util-save-choice");
+    const askText = ask ? text(ask.querySelector(".util-save-choice-text")) : "";
+    const askLabels = ask ? labels(ask.querySelectorAll("button")) : [];
+    const rowsBeforeChoice = storedFiles.filter((f) => f.doc_kind === "speech" && !f.doc_version_of).length;
+    if (ask) {
+      await ask.querySelector(".util-save-as-new").dispatch("click");
+      await sleep(40);
+    }
+    const speechRowsAfterNewName = storedFiles
+      .filter((f) => f.doc_kind === "speech" && !f.doc_version_of)
+      .map((f) => ({ name: f.name, id: f.id }));
+    const listAfterNewName = speechRowNames(speechRows());
+
+    // 3) Reopen the original and overwrite: same row, previous body kept.
+    await rowFor(speechRows(), "작년 신년사.txt").dispatch("click");
+    await sleep(30);
+    find(session, "utilSpeechOutput").value = "작년 신년사 본문입니다. 덮어쓴 문장입니다.";
+    void find(session, "utilSpeechSave").dispatch("click");
+    await sleep(40);
+    const overwriteAsk = session.root.querySelector(".util-save-overwrite");
+    if (!overwriteAsk) throw new Error("overwrite choice missing on the second same-name save");
+    await overwriteAsk.dispatch("click");
+    await sleep(40);
+    const original = storedFiles.find((f) => f.id === "f71") || null;
+    const versions = storedFiles.filter((f) => f.doc_version_of === "f71");
+    const listAfterOverwrite = speechRowNames(speechRows());
+
+    // 4) A piece that is gone answers its real status, out loud.
+    const goneIndex = storedFiles.findIndex((f) => f.id === "f80");
+    if (goneIndex >= 0) storedFiles.splice(goneIndex, 1);
+    const alertsBeforeGone = alerts.length;
+    await rowFor(speechRows(), "사라진 글.txt").dispatch("click");
+    await sleep(30);
+    const goneAlert = alerts.length > alertsBeforeGone ? String(alerts[alerts.length - 1]) : "";
+
+    // 5) The same flow for SNS, and the kinds stay apart.
+    await openTool(session, "sns");
+    await sleep(40);
+    const snsRows = () => find(session, "utilSnsSaved").querySelectorAll(".util-edit-stored");
+    const snsLabels = labels(snsRows());
+    await rowFor(snsRows(), "개교 소식.txt").dispatch("click");
+    await sleep(30);
+    const snsLoadedBody = find(session, "utilSnsOutput").value;
+    const snsStateNode = find(session, "utilSnsEditState");
+    const snsStateText = text(snsStateNode);
+    find(session, "utilSnsOutput").value = "개교 소식 본문입니다. 고친 SNS 문장입니다.";
+    void find(session, "utilSnsSave").dispatch("click");
+    await sleep(40);
+    const snsAsk = session.root.querySelector(".util-save-choice");
+    if (snsAsk) {
+      await snsAsk.querySelector(".util-save-as-new").dispatch("click");
+      await sleep(40);
+    }
+    const snsStored = storedFiles.filter((f) => f.doc_kind === "sns" && !f.doc_version_of).map((f) => f.name);
+    const speechStored = storedFiles.filter((f) => f.doc_kind === "speech" && !f.doc_version_of).map((f) => f.name);
+
+    return {
+      initialRows,
+      loadedBody,
+      editStateVisible,
+      editStateText,
+      editorCount,
+      askText,
+      askLabels,
+      rowsBeforeChoice,
+      speechRowsAfterNewName,
+      listAfterNewName,
+      overwrittenBody: original ? original.content : null,
+      overwrittenKind: original ? original.doc_kind : null,
+      versionRows: versions.map((v) => ({ name: v.name, doc_version_of: v.doc_version_of, doc_kind: v.doc_kind, content: v.content })),
+      listAfterOverwrite,
+      goneAlert,
+      snsLabels,
+      snsLoadedBody,
+      snsStateText,
+      snsStored,
+      speechStored,
+      endpoints: endpointSet(),
+      alerts: alerts.slice(),
       pageErrors,
     };
   },
