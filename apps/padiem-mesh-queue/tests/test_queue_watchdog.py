@@ -42,6 +42,8 @@ CORE_KEYS = frozenset({
     "MESH_QUEUE_DB_PATH", "MESH_QUEUE_CHANNEL_SECRET_FILE",
     "MESH_QUEUE_OWNERSHIP_MAP_FILE", "MESH_QUEUE_EXECUTION_MODE",
     "MESH_QUEUE_SERVICE_SECRET_FILE",
+    # #82: the read-only lane-status leg, optional at install.
+    "MESH_QUEUE_WATCH_READ_SECRET_FILE",
 })
 
 
