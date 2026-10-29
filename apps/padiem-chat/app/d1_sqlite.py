@@ -5,10 +5,12 @@ Cloudflare hands `D1HistoryStore` a JS D1 binding: `prepare(sql).bind(*values)` 
 this object, so claim, lease, nonce and consumption rules are not re-implemented in a
 second place — the SQL and the guards stay the single authority they already are.
 
-Only the three methods the stores actually call are provided, and `meta.changes` comes
-from `SELECT CHANGES()` on the same connection because `_changed_rows` treats `0` as
-"this conditional write matched nothing", which is how a losing concurrent writer never
-inherits another writer's row (history.py:_changed_rows).
+Only the methods the stores actually call are provided — `run`, `first`, `all`
+for the queue lane and `batch` for the Chat stores that write through
+`env.DB.batch()` — and `meta.changes` comes from `SELECT CHANGES()` on the same
+connection because `_changed_rows` treats `0` as "this conditional write matched
+nothing", which is how a losing concurrent writer never inherits another
+writer's row (history.py:_changed_rows).
 """
 from __future__ import annotations
 
@@ -47,11 +49,24 @@ class _Statement:
             return []
         return [dict(row) for row in cursor.fetchall()]
 
-    async def run(self) -> dict[str, Any]:
+    def _one_result(self) -> dict[str, Any]:
         rows = self._execute()
-        changes = self._connection.execute("SELECT CHANGES()").fetchone()[0]
-        return {"success": True, "meta": {"changes": changes, "last_row_id": 0},
-                "results": rows}
+        # Positional access: a caller-supplied connection may not use Row access.
+        changes, last_row_id = self._connection.execute(
+            "SELECT CHANGES(), LAST_INSERT_ROWID()"
+        ).fetchone()
+        return {
+            "success": True,
+            "meta": {
+                "changes": changes,
+                "rows_written": changes,
+                "last_row_id": last_row_id,
+            },
+            "results": rows,
+        }
+
+    async def run(self) -> dict[str, Any]:
+        return self._one_result()
 
     async def first(self) -> dict[str, Any] | None:
         rows = self._execute()
@@ -73,3 +88,30 @@ class SqliteD1:
         if not isinstance(sql, str) or not sql.strip():
             raise ValueError("D1 prepare requires statement text")
         return _Statement(self.connection, sql)
+
+    async def batch(self, statements: list["_Statement"]) -> list[dict[str, Any]]:
+        """Run the statements as ONE atomic unit, like `env.DB.batch()`.
+
+        Every statement must come from this binding's own `prepare()`; a foreign
+        object is refused rather than silently executed on another connection.
+        Per-statement `meta` mirrors `run()`, so a guarded `RETURNING` write
+        reads its own row count and a losing conditional writer still sees
+        `changes == 0`.
+        """
+
+        prepared = list(statements)
+        for statement in prepared:
+            if not isinstance(statement, _Statement) or statement._connection is not self.connection:
+                raise TypeError("batch accepts only statements prepared on this binding")
+        results: list[dict[str, Any]] = []
+        # The connection is opened in autocommit mode, so the explicit
+        # transaction is what makes the whole batch all-or-nothing.
+        self.connection.execute("BEGIN")
+        try:
+            for statement in prepared:
+                results.append(statement._one_result())
+            self.connection.execute("COMMIT")
+        except Exception:
+            self.connection.execute("ROLLBACK")
+            raise
+        return results
