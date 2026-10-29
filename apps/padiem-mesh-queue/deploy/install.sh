@@ -25,12 +25,14 @@ id -u "$ACCOUNT" >/dev/null 2>&1 || useradd --system --home-dir "$ROOT" --shell 
 
 echo "== code"
 mkdir -p "$ROOT"
-# The queue's source may be a worktree checked out under $ROOT (src/). `--delete`
-# would otherwise eat the very tree it is copying from on a re-run, so the worktree is
-# excluded from deletion and a nested source outside that one directory is refused.
+# The queue's source may be a worktree checked out under $ROOT/src/. `--delete`
+# would otherwise eat the very tree it is copying from on a re-run, so that worktree is
+# excluded from deletion and any nested source outside it is refused. The source sits at
+# $ROOT/src/apps/padiem-mesh-queue when PADIEM_REPO is the worktree, so the rule is the
+# worktree prefix, not one exact directory.
 case "$QUEUE_SRC/" in
-  "$ROOT/"*) [ "$(dirname "$QUEUE_SRC")" = "$ROOT" ] && [ "$(basename "$QUEUE_SRC")" = "src" ] || {
-    echo "MESH_QUEUE_STEP=source_nested_refused"; exit 1; } ;;
+  "$ROOT/src/"*) ;;
+  "$ROOT/"*) echo "MESH_QUEUE_STEP=source_nested_refused"; exit 1 ;;
 esac
 rsync -a --delete \
   --exclude /src --exclude venv --exclude '__pycache__' --exclude '*.sqlite3*' \
