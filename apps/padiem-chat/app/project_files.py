@@ -16,6 +16,12 @@ DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingm
 #: (attachments.py); no new size or count limits are introduced, images reuse
 #: the existing binary body bound (MAX_BINARY_DOCUMENT_BYTES).
 IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
+
+#: #5731 — the writing tools that store text in a project file. The save stamps
+#: this onto the row (migration 078), so a list can ask for its own kind instead
+#: of guessing from a name prefix. `""` is every row written before the column
+#: existed: the screens group those under 기타 and never hide them.
+UTIL_DOC_KINDS = frozenset({"speech", "sns", "meeting", "book"})
 BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
 #: The stored ceiling of `project_files.content_text`, declared by migration 077
@@ -91,6 +97,11 @@ class ProjectFileRecord:
     updated_at: str = ""
     # #6046 — 기본값이 곧 기존 문서의 호환 규칙이다(컬럼 추가 시 DEFAULT 'kr').
     country: str = "kr"
+    # #5731 — what the save itself recorded about this row (migration 078).
+    # An empty kind is a pre-0731 document, not a damaged one.
+    doc_kind: str = ""
+    # When set, this row holds the body a later save displaced from that file.
+    doc_version_of: str | None = None
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -102,6 +113,8 @@ class ProjectFileRecord:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "country": self.country,
+            "doc_kind": self.doc_kind,
+            "doc_version_of": self.doc_version_of,
         }
 
 
@@ -118,6 +131,19 @@ def _now_iso() -> str:
 
 def _file_id() -> str:
     return "file_" + uuid.uuid4().hex
+
+
+def _version_name(name: str, number: int) -> str:
+    """`행사.txt` -> `행사 (이전 1).txt` for the nth displaced body.
+
+    The displaced body keeps a name a person can recognise in the same list it
+    came from, and the number comes from the versions already linked to the same
+    document, so a second overwrite never reuses a name.
+    """
+    stem, dot, suffix = name.rpartition(".")
+    if not dot or not stem:
+        return name + f" (이전 {number})"
+    return stem + f" (이전 {number})" + "." + suffix
 
 
 def validate_file_id(value: object) -> str | None:
@@ -177,6 +203,8 @@ def _from_row(row: dict[str, Any]) -> ProjectFileRecord:
         created_at=str(row.get("created_at", "")),
         updated_at=str(row.get("updated_at", "")),
         country=str(row.get("country") or "kr"),   # 컬럼이 없는 예전 행도 kr
+        doc_kind=str(row.get("doc_kind") or ""),   # 078 이전 행은 기타('')
+        doc_version_of=(str(row["doc_version_of"]) if row.get("doc_version_of") else None),
     )
 
 
@@ -289,7 +317,8 @@ class D1ProjectFileStore:
         while True:
             if after is None:
                 rows = await self._all(
-                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
+                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country, "
+                    "doc_kind, doc_version_of "
                     "FROM project_files WHERE user_id=? AND project_id=? "
                     + ("AND country=? " if country else "")
                     + "ORDER BY created_at ASC, id ASC LIMIT ?",
@@ -297,7 +326,8 @@ class D1ProjectFileStore:
                 )
             else:
                 rows = await self._all(
-                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
+                    "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country, "
+                    "doc_kind, doc_version_of "
                     "FROM project_files WHERE user_id=? AND project_id=? "
                     + ("AND country=? " if country else "")
                     + "AND (created_at > ? OR (created_at = ? AND id > ?)) "
@@ -348,11 +378,71 @@ class D1ProjectFileStore:
 
     async def get_file(self, user_id: str, project_id: str, file_id: str) -> ProjectFileRecord | None:
         row = await self._first(
-            "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country "
+            "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country, "
+            "doc_kind, doc_version_of "
             "FROM project_files WHERE id=? AND user_id=? AND project_id=?",
             file_id, user_id, project_id,
         )
         return _from_row(row) if row else None
+
+    async def find_current_by_name(
+        self, user_id: str, project_id: str, name: str, doc_kind: str,
+    ) -> ProjectFileRecord | None:
+        """The current document this save would replace, if the name is taken.
+
+        Only a row of the same kind and not itself a version can be overwritten:
+        a speech must never overwrite the meeting record that happens to share
+        its name, and a version row is history, not a target.
+        """
+        row = await self._first(
+            "SELECT id, project_id, name, media_type, content_text, content_chars, created_at, updated_at, country, "
+            "doc_kind, doc_version_of "
+            "FROM project_files WHERE user_id=? AND project_id=? AND name=? AND doc_kind=? "
+            "AND (doc_version_of IS NULL OR doc_version_of='') "
+            "ORDER BY created_at ASC LIMIT 1",
+            user_id, project_id, name, doc_kind,
+        )
+        return _from_row(row) if row else None
+
+    async def replace_text(
+        self, user_id: str, project_id: str, file_id: str, text: str, *,
+        doc_kind: str = "",
+    ) -> tuple[ProjectFileRecord, ProjectFileRecord | None] | None:
+        """Overwrite one document and keep the body it displaced.
+
+        The previous text becomes its own project file (`<name> (이전 N)`) that
+        links back through `doc_version_of` — the same channel, owner and project
+        scope, so nothing new is introduced and nothing is destroyed. Returns
+        (updated, previous-version) or None when the owner/file does not match.
+        """
+        existing = await self.get_file(user_id, project_id, file_id)
+        if existing is None:
+            return None
+        if len(text.encode("utf-8")) > PROJECT_FILE_MAX_TEXT_BYTES:
+            raise ProjectFileLimitError(
+                f"본문이 너무 길어요 — 저장 한도(D1 한 행 약 {PROJECT_FILE_MAX_TEXT_BYTES // 1024 // 1024}MB)를 "
+                "넘었습니다. 내용을 나눠서 올리거나, 원본 파일을 첨부로 올려 주세요."
+            )
+        validate_document_fields(existing.name, existing.media_type, text)
+        now = _now_iso()
+        await self._run(
+            "UPDATE project_files SET content_text=?, content_chars=?, updated_at=? "
+            "WHERE id=? AND user_id=? AND project_id=?",
+            text, len(text), now, file_id, user_id, project_id,
+        )
+        kept = await self._first(
+            "SELECT count(*) AS n FROM project_files "
+            "WHERE user_id=? AND project_id=? AND doc_version_of=?",
+            user_id, project_id, file_id,
+        )
+        number = int((kept or {}).get("n") or 0) + 1
+        version = await self.create_file(
+            user_id, project_id, _version_name(existing.name, number),
+            existing.media_type, existing.content_text,
+            doc_kind=doc_kind or existing.doc_kind, doc_version_of=file_id,
+        )
+        updated = await self.get_file(user_id, project_id, file_id)
+        return (updated or existing, version)
 
     async def create_file(
         self,
@@ -364,6 +454,8 @@ class D1ProjectFileStore:
         *,
         source_media_type: str | None = None,
         country: str = "kr",
+        doc_kind: str = "",
+        doc_version_of: str | None = None,
     ) -> ProjectFileRecord:
         if len(text.encode("utf-8")) > PROJECT_FILE_MAX_TEXT_BYTES:
             raise ProjectFileLimitError(
@@ -395,30 +487,35 @@ class D1ProjectFileStore:
         # #6046 — 기본값(kr)은 컬럼을 아예 쓰지 않는다: DB DEFAULT 가 'kr' 이므로
         # 기존 스키마·기존 테스트 대역에서도 INSERT 문이 오늘과 문자 그대로 같고,
         # 마이그레이션 전 스키마에서도 한국어 저장이 계속 동작한다.
-        if country == "kr":
-            written = await self._run(
-                "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at) "
-                "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ? FROM projects p "
-                "WHERE p.id = ? AND p.user_id = ? "
-                "RETURNING id",
-                fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
-                project_id, user_id,
-            )
-        else:
-            written = await self._run(
-                "INSERT INTO project_files (id, project_id, user_id, name, media_type, content_text, content_chars, created_at, updated_at, country) "
-                "SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ?, ? FROM projects p "
-                "WHERE p.id = ? AND p.user_id = ? "
-                "RETURNING id",
-                fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now, country,
-                project_id, user_id,
-            )
+        # The default save writes exactly the columns it always wrote; a kind or
+        # a version link only adds its own column. The schema itself comes from
+        # the migration ledger (078), never from this statement.
+        optional: list[tuple[str, Any]] = []
+        if country != "kr":
+            optional.append(("country", country))
+        if doc_kind:
+            optional.append(("doc_kind", doc_kind))
+        if doc_version_of:
+            optional.append(("doc_version_of", doc_version_of))
+        sql = (
+            "INSERT INTO project_files (id, project_id, user_id, name, media_type, "
+            "content_text, content_chars, created_at, updated_at"
+            + "".join(", " + column for column, _ in optional)
+            + ") SELECT ?, p.id, ?, ?, ?, ?, ?, ?, ?"
+            + ", ?" * len(optional)
+            + " FROM projects p WHERE p.id = ? AND p.user_id = ? RETURNING id"
+        )
+        written = await self._run(
+            sql,
+            fid, user_id, document.name, document.media_type, document.text, len(document.text), now, now,
+            *(value for _, value in optional), project_id, user_id,
+        )
         if not _rows_from_result(written):
             raise ProjectFileError("project is not owned by current user")
         return ProjectFileRecord(
             id=fid, project_id=project_id, name=document.name, media_type=document.media_type,
             content_text=document.text, content_chars=len(document.text), created_at=now, updated_at=now,
-            country=country,
+            country=country, doc_kind=doc_kind, doc_version_of=doc_version_of,
         )
 
     async def delete_file(self, user_id: str, project_id: str, file_id: str) -> bool:

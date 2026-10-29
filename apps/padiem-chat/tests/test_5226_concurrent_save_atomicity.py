@@ -42,6 +42,9 @@ MIGRATION_NAMES = (
     "015_claw_run_history_workspace.sql",
     "042_conversation_product_scope.sql",
     "075_project_files_country.sql",
+    # #5731: the store selects the kind/version columns, so the schema under
+    # test is the one the release actually runs — migration 078 included.
+    "078_project_files_doc_kind.sql",
 )
 
 OWNER = "usr_" + "a" * 32

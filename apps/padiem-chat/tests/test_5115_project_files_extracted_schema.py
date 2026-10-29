@@ -162,6 +162,7 @@ def test_the_real_store_writes_extracted_pdf_after_068(tmp_path) -> None:
         db,
         "001_auth_history.sql", "002_projects.sql", "003_project_files.sql",
         "068_project_files_extracted_media.sql", "075_project_files_country.sql",
+        "077_project_files_text_byte_bound.sql", "078_project_files_doc_kind.sql",
     )
     _seed_owner(db)
     db.close()

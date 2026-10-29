@@ -25,6 +25,12 @@
   const GEN_OFFLINE_COPY = "인터넷 연결을 확인해 주세요.";
   const GEN_RETRY_LABEL = "다시 시도";
 
+  // #5608: activity books persist under their own name rule so the meeting
+  // record list and the book list stay two separate data flows over the same
+  // project-file store. #5731 reads the same rule for the rows stored before a
+  // kind was recorded, and every list needs it — hence the one place here.
+  const BOOK_PREFIX = "활동집 - ";
+
   function generationFailureText(error) {
     const message = error && typeof error.message === "string" ? error.message.trim() : "";
     return "생성 실패: " + (message || GEN_ERROR_FALLBACK);
@@ -98,18 +104,113 @@
     return data && data.project ? data.project.id : null;
   }
 
-  async function saveProjectFile(pid, name, text, mediaType) {
+  // #5731: a stored writing carries the kind its screen saved it as
+  // (speech/sns/meeting/book), so a list asks for its own kind instead of
+  // reading every .txt in the project. A name already used by the same kind
+  // comes back as 409 with the existing file — the caller asks the owner
+  // rather than quietly stacking a second row.
+  async function saveProjectFile(pid, name, text, mediaType, docKind) {
+    const payload = { name: name, media_type: mediaType || "text/plain", text: text };
+    if (docKind) payload.doc_kind = docKind;
     const res = await fetch("/api/projects/" + pid + "/files", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       // The server refuses a file whose media type contradicts its
       // extension; callers that store .json payloads must say so.
-      body: JSON.stringify({ name: name, media_type: mediaType || "text/plain", text: text }),
+      body: JSON.stringify(payload),
     });
+    if (res.status === 409) {
+      const body = await res.json().catch(() => null);
+      const existing = body && body.error && body.error.existing;
+      return existing && existing.id ? { conflict: existing } : null;
+    }
     if (!res.ok) return null;
     const data = await res.json();
-    return data && data.file ? data.file : null;
+    return data && data.file ? { file: data.file } : null;
+  }
+
+  // #5731: overwriting keeps the displaced body on the server, so the same
+  // name can be reused without losing what was written before.
+  async function overwriteProjectFile(pid, fileId, text, docKind) {
+    const payload = { text: text };
+    if (docKind) payload.doc_kind = docKind;
+    const res = await fetch(
+      "/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(fileId),
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && data.file ? { file: data.file, previous: data.previous || null } : null;
+  }
+
+  // `행사.txt` -> `행사 (2).txt`, first free number. The default the owner is
+  // offered is a NEW file, never a silent overwrite.
+  function nextFreeName(name, taken) {
+    const used = new Set((taken || []).map((item) => String(item || "")));
+    if (!used.has(name)) return name;
+    const stem = name.replace(/\.[^.]+$/, "");
+    const ext = (name.match(/\.[^.]+$/) || [""])[0];
+    let n = 2;
+    while (used.has(stem + " (" + n + ")" + ext)) n += 1;
+    return stem + " (" + n + ")" + ext;
+  }
+
+  // One question, two buttons, and the safe answer is the default: a save that
+  // collides asks instead of guessing. `overwrite` is offered as the second
+  // choice with the version behaviour stated in its label.
+  function askSaveChoice(anchor, name, suggested) {
+    return new Promise((resolve) => {
+      const box = el("div", "util-save-choice");
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", "같은 이름의 글이 이미 있습니다");
+      const text = el("p", "util-save-choice-text",
+        "같은 이름의 글이 이미 있습니다: " + name);
+      const asNew = el("button", "util-save-as-new", "새 이름으로 저장 (" + suggested + ")");
+      asNew.type = "button";
+      const overwrite = el("button", "util-save-overwrite", "덮어쓰기 (이전 내용은 버전으로 남김)");
+      overwrite.type = "button";
+      const done = (choice) => {
+        if (box.parentNode) box.parentNode.removeChild(box);
+        resolve(choice);
+      };
+      asNew.addEventListener("click", () => done("new"));
+      overwrite.addEventListener("click", () => done("overwrite"));
+      box.append(text, asNew, overwrite);
+      const host = anchor && anchor.parentNode ? anchor.parentNode : anchor;
+      if (host && typeof host.appendChild === "function") host.appendChild(box);
+      else resolve(null);
+    });
+  }
+
+  /**
+   * The one save path for a util writing: POST with its kind, and on a name
+   * collision ask the owner (new name is the default) before writing again.
+   * Returns the stored file, or null when nothing was saved.
+   */
+  async function saveUtilText(options) {
+    const pid = options.pid;
+    if (!pid) return null;
+    const first = await saveProjectFile(pid, options.name, options.text, "text/plain", options.kind);
+    if (!first) return null;
+    if (!first.conflict) return first.file;
+    const files = await listProjectFiles(pid);
+    const suggested = nextFreeName(options.name, files.map((f) => f.name));
+    const choice = await askSaveChoice(options.anchor, options.name, suggested);
+    if (choice === "overwrite") {
+      const replaced = await overwriteProjectFile(pid, first.conflict.id, options.text, options.kind);
+      return replaced ? replaced.file : null;
+    }
+    if (choice === "new") {
+      const second = await saveProjectFile(pid, suggested, options.text, "text/plain", options.kind);
+      return second && second.file ? second.file : null;
+    }
+    return null;
   }
 
   // #5728: photos persist through the SAME project-file channel as text
@@ -677,7 +778,8 @@
       if (!currentPid) currentPid = await ensureProject();
       if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
       const name = (document.querySelector("#utilSpeechForm [name=event]")?.value || "축사").trim() + ".txt";
-      const file = await saveProjectFile(currentPid, name, text);
+      // #5731: the kind is what makes this row a 축사 for every later list.
+      const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "speech", anchor: saveBtn });
       if (file) {
         saveBtn.textContent = "저장됨";
         setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
@@ -696,15 +798,29 @@
       if (!currentPid) currentPid = await ensureProject();
       if (!currentPid) return;
       const files = await listProjectFiles(currentPid);
-      const speechFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
+      // #5731: only this tool's own writing, plus the rows stored before the
+      // kind was recorded — those are grouped as 기타, never hidden. A version
+      // row is history of a current file and is not a separate item here.
+      const current = files.filter((f) => !f.doc_version_of);
+      const speechFiles = current.filter((f) => f.doc_kind === "speech");
+      const legacyFiles = current.filter((f) => !f.doc_kind && (f.name || "").endsWith(".txt")
+        && !(f.name || "").startsWith(BOOK_PREFIX));
       savedList.replaceChildren();
-      if (!speechFiles.length) {
+      if (!speechFiles.length && !legacyFiles.length) {
         const p = el("p", "util-empty", "저장된 축사가 없습니다.");
         savedList.appendChild(p);
         return;
       }
-      const ul = document.createElement("ul");
-      speechFiles.forEach((f) => {
+      const group = (title, list) => {
+        if (title) savedList.appendChild(el("h4", "util-saved-group", title));
+        const ul = document.createElement("ul");
+        list.forEach((f) => { ul.appendChild(speechItem(f)); });
+        savedList.appendChild(ul);
+      };
+      if (speechFiles.length) group(null, speechFiles);
+      if (legacyFiles.length) group("기타 (종류가 표시되지 않은 예전 글)", legacyFiles);
+
+      function speechItem(f) {
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
@@ -744,9 +860,8 @@
           styleField.value = content;
         });
         li.appendChild(useAsRef);
-        ul.appendChild(li);
-      });
-      savedList.appendChild(ul);
+        return li;
+      }
     }
 
     // SNS builder
@@ -1205,7 +1320,46 @@
       pcSaveB.type = "button"; pcSaveB.id = "utilSnsPcSave";
       const snsRetry = retryButton("utilSnsRetry", () => { void gen(); });
       actions.append(copyB, dlB, pcSaveB, snsRetry);
-      result.append(h3, output, previewBox, actions);
+      // #5731: SNS had no list at all, so its stored pieces only came back as
+      // the roster's last draft. This list reads the rows this screen saved
+      // (kind = sns) and leaves the other tools' writings out.
+      const snsSaved = document.createElement("div");
+      snsSaved.id = "utilSnsSaved";
+      snsSaved.className = "util-saved-list";
+      result.append(h3, output, previewBox, actions, snsSaved);
+
+      async function refreshSnsList() {
+        if (!currentPid) currentPid = await ensureProject();
+        if (!currentPid) return;
+        const files = await listProjectFiles(currentPid);
+        const own = files.filter((f) => !f.doc_version_of && f.doc_kind === "sns");
+        snsSaved.replaceChildren();
+        if (!own.length) return;
+        snsSaved.appendChild(el("h4", "util-saved-group", "저장한 글"));
+        const ul = document.createElement("ul");
+        own.forEach((f) => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+          btn.addEventListener("click", async () => {
+            const res = await fetch(
+              "/api/projects/" + encodeURIComponent(currentPid) + "/files/" + encodeURIComponent(f.id),
+              { credentials: "include" },
+            );
+            const data = res.ok ? await res.json().catch(() => null) : null;
+            const content = data && data.file && (data.file.content || data.file.text);
+            if (typeof content !== "string") { alert("저장한 글을 열지 못했습니다."); return; }
+            output.value = content;
+            result.hidden = false;
+            renderPreview();
+          });
+          li.appendChild(btn);
+          ul.appendChild(li);
+        });
+        snsSaved.appendChild(ul);
+      }
+      void refreshSnsList();
 
       panel.replaceChildren(form, result);
       const title = h3;
@@ -1338,7 +1492,7 @@
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
         const name = (h3.textContent || "sns").trim() + ".txt";
-        const file = await saveProjectFile(currentPid, name, text);
+        const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "sns", anchor: formSaveB });
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
@@ -1346,6 +1500,7 @@
           // the text and its platform, not only the photos.
           lastSavedDraft = { text: text, platform: platform };
           writePhotoRoster(currentPid, lastSavedDraft);
+          void refreshSnsList();
         } else {
           alert("저장 실패");
         }
@@ -1358,10 +1513,6 @@
       const panel = panels.meeting;
       if (!panel || panel.dataset.loaded) return;
       panel.dataset.loaded = "1";
-      // #5608: activity books persist under their own name rule so the
-      // meeting record list and the book list stay two separate data flows
-      // over the same project-file store.
-      const BOOK_PREFIX = "활동집 - ";
       const form = el("form", "util-form");
       form.id = "utilMeetingForm";
       const fields = [
@@ -1443,7 +1594,7 @@
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) { alert("프로젝트를 찾을 수 없습니다."); return; }
         const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
-        const file = await saveProjectFile(currentPid, name, text);
+        const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "meeting", anchor: formSaveB });
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
@@ -1458,17 +1609,21 @@
         if (!currentPid) currentPid = await ensureProject();
         if (!currentPid) return;
         const files = await listProjectFiles(currentPid);
-        // #5608/#5783: every .txt in the project is a stored record — speech
-        // drafts included. The builder only consumes what the user checks, so
-        // nothing unselected can reach the AI prompt (no cross-record bleed).
-        const meetingFiles = files.filter((f) => (f.name || "").endsWith(".txt"));
-        // #5608: activity books persist under the activity-book name rule;
-        // they surface in their own section, not as raw meeting records.
-        const bookFiles = meetingFiles.filter((f) => (f.name || "").startsWith(BOOK_PREFIX));
+        // #5731: this list reads this tool's own records (kind = meeting) and
+        // the rows saved before the kind existed (기타). Another tool's writing
+        // no longer appears here, and a version row is not a record.
+        const current = files.filter((f) => !f.doc_version_of);
+        const meetingFiles = current.filter((f) => (f.doc_kind === "meeting")
+          || (!f.doc_kind && (f.name || "").endsWith(".txt")
+              && !(f.name || "").startsWith(BOOK_PREFIX)));
+        // #5608: activity books surface in their own section, never as raw
+        // records — by kind now, with the name rule kept for older rows.
+        const bookFiles = current.filter((f) => (f.doc_kind === "book")
+          || (!f.doc_kind && (f.name || "").startsWith(BOOK_PREFIX)));
         arc.replaceChildren();
         const h = el("h3", null, "활동 기록");
         arc.appendChild(h);
-        if (!meetingFiles.length) {
+        if (!meetingFiles.length && !bookFiles.length) {
           const p = el("p", "util-empty", "저장된 회의 기록이 없습니다.");
           arc.appendChild(p);
           return;
@@ -1477,7 +1632,13 @@
         bookBtn.type = "button";
         bookBtn.id = "utilBookGenerate";
         bookBtn.style.marginBottom = "8px";
-        arc.appendChild(bookBtn);
+        if (meetingFiles.length) {
+          arc.appendChild(bookBtn);
+        } else {
+          // #5731: a project that only holds stored books still opens them —
+          // the book section below is not behind a meeting record any more.
+          arc.appendChild(el("p", "util-empty", "저장된 회의 기록이 없습니다."));
+        }
 
         // #5608: the record order here is the book order. The up/down moves
         // re-arrange this list itself, so what the user sees is exactly the
@@ -1628,7 +1789,7 @@
           const firstLine = text.split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
           const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
           const name = BOOK_PREFIX + (safe || "제목 미정") + ".txt";
-          const file = await saveProjectFile(currentPid, name, text);
+          const file = await saveUtilText({ pid: currentPid, name: name, text: text, kind: "book", anchor: bookSave });
           if (file) {
             bookSave.textContent = "저장됨";
             setTimeout(() => { bookSave.textContent = "활동집 저장"; }, 1500);
