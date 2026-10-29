@@ -43,6 +43,10 @@ rsync -a --delete \
 # padiem_control_plane/ stay the source of truth the Worker and the tests use, so a
 # deployed queue cannot be running last week's copy of a rule it shares with Chat.
 ln -sfn "$CHAT_SRC/app" "$ROOT/app"
+# schema.py finds the migrations at ../padiem-chat/migrations relative to itself,
+# which holds in the repository layout. The installed copy lives at $ROOT/service.py,
+# so the same path is kept true with one link to the Chat checkout, not a second copy.
+ln -sfn "$CHAT_SRC" "$ROOT/padiem-chat"
 ln -sfn "$REPO/packages/padiem-ai-core/padiem_ai_core" "$ROOT/padiem_ai_core"
 ln -sfn "$REPO/packages/padiem-control-plane/padiem_control_plane" "$ROOT/padiem_control_plane"
 
@@ -84,7 +88,7 @@ chown -R "$ACCOUNT:$ACCOUNT" "$ROOT"
 chmod 700 "$ROOT"
 
 echo "== import check (before systemd is asked to start a process that cannot import)"
-"$MESH_QUEUE_VENV/bin/python" -c 'import service' \
+PYTHONPATH="$ROOT" "$MESH_QUEUE_VENV/bin/python" -c 'import service' \
   && echo "MESH_QUEUE_IMPORT=OK" || echo "MESH_QUEUE_STEP=import_failed"
 
 echo "== units"
