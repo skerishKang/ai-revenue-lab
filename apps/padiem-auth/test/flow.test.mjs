@@ -39,7 +39,7 @@ async function setup() {
     const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } })); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub');
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
-  return { app, post, login, publicSigning, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
+  return { app, post, login, publicSigning, stateFor, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
 
 test('synthetic Google login, code exchange, refresh, replay revocation and JWKS', async () => {
@@ -91,5 +91,15 @@ test('first login calls authority once; known account and refresh never do', asy
   assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: refresh })).status, 200);
   assert.equal(f.calls(), 1);
   await f.login();
+  assert.equal(f.calls(), 1);
+});
+
+test('simultaneous first registrations serialize the authority lookup', async () => {
+  const f = await setup();
+  const registry = f.stateFor('google-account-registry');
+  const request = { fingerprint: 'synthetic', productId: 'lovetree', userId: 'usr_synthetic', subject: 'synthetic-subject' };
+  const values = await Promise.all([registry.resolveAccount(request), registry.resolveAccount(request)]);
+  assert.equal(values[0].account_id, 'sub_existing');
+  assert.equal(values[1].account_id, 'sub_existing');
   assert.equal(f.calls(), 1);
 });
