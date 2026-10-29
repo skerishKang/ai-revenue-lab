@@ -77,7 +77,6 @@ def _sse_chunks(*, done: bool = True) -> list[bytes]:
     [
         B14_CHAT_COMPLETIONS_PATH,
         B14_STREAM_PREVIEW_PATH,
-        "/api/pilot/v1/chat/completions/auto-stream-preview",
     ],
 )
 async def test_transport_allows_exact_core_owned_paths_only(path: str) -> None:
@@ -91,6 +90,23 @@ async def test_transport_allows_exact_core_owned_paths_only(path: str) -> None:
     assert len(binding.calls) == 1
     assert len(factory.calls) == 1
     assert factory.calls[0].url == B14_INTERNAL_ORIGIN + path
+
+
+@pytest.mark.asyncio
+async def test_transport_rejects_the_retired_auto_stream_preview_path() -> None:
+    """B7: the retired auto preview path left the transport allowlist."""
+    response = FakeResponse(chunks=[b"{}"])
+    transport, binding, factory = transport_for(response=response)
+    request = httpx.Request(
+        "POST",
+        B14_INTERNAL_ORIGIN + "/api/pilot/v1/chat/completions/auto-stream-preview",
+        json={"x": 1},
+    )
+
+    with pytest.raises(httpx.RequestError):
+        await transport.handle_async_request(request)
+    assert binding.calls == []
+    assert factory.calls == []
 
 
 @pytest.mark.asyncio
@@ -136,7 +152,6 @@ async def test_actual_core_manual_stream_client_uses_manual_binding_path() -> No
         messages=({"role": "user", "content": "hi"},),
         model="openrouter/free",
         routing=B14RoutingOptions(
-            allow_external_fallback=False,
         ),
     )
 
@@ -188,7 +203,6 @@ async def test_core_stream_response_ceiling_remains_authoritative() -> None:
         messages=({"role": "user", "content": "hi"},),
         model="openrouter/free",
         routing=B14RoutingOptions(
-            allow_external_fallback=False,
         ),
     )
 
@@ -215,7 +229,6 @@ async def test_core_rejects_stream_without_done_marker() -> None:
         messages=({"role": "user", "content": "hi"},),
         model="openrouter/free",
         routing=B14RoutingOptions(
-            allow_external_fallback=False,
         ),
     )
 
