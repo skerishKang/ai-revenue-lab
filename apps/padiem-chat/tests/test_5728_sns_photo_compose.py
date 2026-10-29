@@ -173,7 +173,18 @@ let fakeFileSeq = 0;
 function nextBinaryId() { return "file_" + String(1000 + ++fakeFileSeq).padStart(32, "0").slice(-32); }
 function nextTextId() { return "f" + (++fakeFileSeq); }
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
-const CURRENT = { alerts: [] };
+const CURRENT = { alerts: [], links: [], exchangeOpens: [], exchangeSelect: null, nativePicks: 0 };
+
+class FakeFile {
+  constructor(parts, name, opts) {
+    this._parts = parts || [];
+    this.name = String(name || "");
+    this.type = (opts && opts.type) || "";
+    const sizes = this._parts.map((p) => Number(p && p.size)).filter(Number.isFinite);
+    this.size = (opts && Number.isFinite(Number(opts.size))) ? Number(opts.size)
+      : sizes.length === this._parts.length ? sizes.reduce((a, b) => a + b, 0) : 0;
+  }
+}
 
 async function fetch(url, opts) {
   opts = opts || {};
@@ -191,6 +202,14 @@ async function fetch(url, opts) {
     const id = nextBinaryId();
     storedFiles.push({ id, name: fname, media_type: ftype, binary: true });
     return json({ file: { id, name: fname, media_type: ftype, content_chars: 0 } });
+  }
+  if (method === "GET" && path === "/api/pc/pairings") {
+    if (CURRENT.links === null) return { ok: false, status: 503, json: async () => ({ error: { code: "pc_pairing_unavailable" } }) };
+    return json({ links: CURRENT.links });
+  }
+  if (method === "GET" && path === "/api/pc/file") {
+    const bytes = new TextEncoder().encode("img:pc사진.jpg");
+    return { ok: true, status: 200, blob: async () => ({ size: bytes.length, arrayBuffer: async () => bytes }) };
   }
   const originalMatch = /^\/api\/projects\/p1\/files\/(file_\d+)\/original$/.exec(path);
   if (method === "GET" && originalMatch) {
@@ -303,13 +322,24 @@ function spawnSession(tag) {
       createElement: (tag) => new N(tag),
       addEventListener() {},
     },
-    window: {},
+    window: {
+      PadiemPcFileExchange: {
+        open: (settings) => {
+          CURRENT.exchangeOpens.push(settings || {});
+          CURRENT.exchangeSelect = (settings && settings.onSelect) || null;
+          return { close() {} };
+        },
+        close() {},
+      },
+    },
     navigator: {},
+    atob: (text) => Buffer.from(String(text), "base64").toString("binary"),
     fetch: fetch,
     alert: (message) => alerts.push(String(message)),
     console: console,
     setTimeout: () => 0,
     Blob: function Blob() {},
+    File: FakeFile,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
     FileReader: FakeFileReader,
@@ -494,6 +524,32 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const cTitle = C.root._descendants().find((n) => n.id === "utilSnsTitle");
   if (!cTitle || cTitle.textContent !== "페이스북 게시글") fail("RESTORE_C_PLATFORM_WRONG", { title: cTitle ? cTitle.textContent : null });
 
+  // 14) #5728: with a linked PC, 사진 추가 opens the shared 가져오기 dialog
+  // and the picked PC file joins the composition through the same pipeline.
+  CURRENT.links = [{ state: "active" }];
+  input.addEventListener("click", () => { CURRENT.nativePicks += 1; });
+  await addBtn.dispatch("click");
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_NOT_OPENED", { opens: CURRENT.exchangeOpens.length });
+  if (CURRENT.exchangeOpens[0].mode !== "import" || typeof CURRENT.exchangeOpens[0].onSelect !== "function") fail("SHARED_DIALOG_MODE_OR_CALLBACK_WRONG");
+  if (CURRENT.nativePicks !== 0) fail("NATIVE_PICKER_USED_WITH_LINKED_PC");
+  await CURRENT.exchangeSelect({ fileId: "d1", name: "pc사진.jpg" });
+  await sleep(30);
+  items = root.findAll(".util-photo-item");
+  if (items.length !== 3 || names()[2] !== "pc사진.jpg") fail("PC_PHOTO_NOT_ADDED", { names: names() });
+
+  // 15) no linked PC (a phone included), and a pairing store that cannot
+  // answer: 사진 추가 keeps the local picker instead of a dead-end dialog.
+  CURRENT.links = [];
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_WITHOUT_PC");
+  if (CURRENT.nativePicks !== 1) fail("NATIVE_PICKER_FALLBACK_MISSING");
+  CURRENT.links = null;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_ON_UNKNOWN_PAIRINGS");
+  if (CURRENT.nativePicks !== 2) fail("NATIVE_PICKER_MISSING_ON_UNKNOWN_PAIRINGS");
+
   console.log(JSON.stringify({
     ok: true,
     photos: root.findAll(".util-photo-item").length,
@@ -505,6 +561,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     promptHead: prompt.slice(0, 60),
     blogSeq: seq.slice(0, 6),
     storedBinary: storedFiles.filter((f) => f.binary).length,
+    pcPhoto: names()[2] || null,
     alertsA: A.alerts, alertsB: B.alerts,
   }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });

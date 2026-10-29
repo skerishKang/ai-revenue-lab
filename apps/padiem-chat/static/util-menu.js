@@ -994,7 +994,51 @@
         writePhotoRoster(currentPid);
       });
 
-      photoAdd.addEventListener("click", () => photoInput.click());
+      // #5728: with a linked PC, 사진 추가 reuses the shared 가져오기 dialog —
+      // the same component the reference-text import uses — and the picked PC
+      // file is read through /api/pc/file into this very upload pipeline.
+      // Without an explicitly linked PC, including a pairing store that
+      // cannot answer (503), the local file picker stays: it works on a phone
+      // too, and the dialog would only open a dead end.
+      function photoImageType(name) {
+        const lower = String(name || "").toLowerCase();
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".webp")) return "image/webp";
+        return "image/jpeg";
+      }
+
+      async function importPickedPhoto(picked) {
+        if (!picked || !picked.fileId) return;
+        const name = picked.name || "사진.jpg";
+        try {
+          const res = await fetch(
+            "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+            { credentials: "include", cache: "no-store" },
+          );
+          if (!res.ok) throw new Error("http_" + res.status);
+          const blob = await res.blob();
+          const bytes = await blob.arrayBuffer();
+          await addPhotoFiles([new File([bytes], name, { type: photoImageType(name) })]);
+        } catch (_error) {
+          // One plain Korean sentence, and the owner opens the dialog again.
+          // The upload-path retry button belongs to files that were picked.
+          photoStatus.textContent = "PC에서 사진을 가져오지 못했어요: " + name + ". 다시 시도해 주세요.";
+          photoStatus.hidden = false;
+        }
+      }
+
+      photoAdd.addEventListener("click", async () => {
+        let linked = null;
+        try { linked = await pcLinked(); } catch (_error) { linked = null; }
+        if (linked !== true) { photoInput.click(); return; }
+        let component;
+        try { component = await loadPcExchange(); } catch (_error) { component = null; }
+        if (!component || typeof component.open !== "function") { photoInput.click(); return; }
+        component.open({
+          mode: "import",
+          onSelect: (picked) => { void importPickedPhoto(picked); },
+        });
+      });
       // #5728: what failed stays available for [다시 시도]; the sentence is the
       // same Korean copy the generation path already uses for that status.
       let failedPhotos = [];
