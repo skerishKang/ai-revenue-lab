@@ -18,14 +18,15 @@ async function setup() {
   const google = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   const googleJwk = await crypto.subtle.exportKey('jwk', google.publicKey); googleJwk.kid = 'google';
   const signing = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  const refreshKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(8), 'AES-GCM', false, ['encrypt', 'decrypt']);
   const identityKey = await crypto.subtle.importKey('raw', new Uint8Array(32).fill(9), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const publicSigning = await crypto.subtle.exportKey('jwk', signing.publicKey); publicSigning.kid = 'auth';
   const client = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const publicClient = await crypto.subtle.exportKey('jwk', client.publicKey); publicClient.kid = 'client';
-  let nonce = ''; let linked = null; let authorityCalls = 0; const t = 1000;
+  let nonce = ''; let linked = null; let authorityCalls = 0; let t = 1000;
   const authority = { async resolve_or_create_product_link(v) { authorityCalls++; linked = v; return { ok: true, link: { state: 'active', product_id: v.product_id, product_user_id: v.product_user_id, canonical_subject_id: 'sub_existing' } }; } };
   const objects = new Map(); const stateFor = id => { if (!objects.has(id)) { let queue = Promise.resolve(); const state = { storage: storage(), blockConcurrencyWhile(fn) { const next = queue.then(fn); queue = next.catch(() => {}); return next; } }; objects.set(id, id === 'google-account-registry' ? new AuthStateObject(state, { IDENTITY_AUTHORITY: authority }) : new AuthState(state)); } return objects.get(id); };
-  const app = createApp({ clients: { lovetree: { id: 'lovetree', redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, adminSecret: 'synthetic-admin-secret', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
+  const app = createApp({ clients: { lovetree: { id: 'lovetree', redirect_uris: ['https://lovetree.example/auth/callback'], jwks: { keys: [publicClient] } } }, googleClientId: 'google-client', googleClientSecret: 'synthetic', identityKey, refreshKey, adminSecret: 'synthetic-admin-secret', signingKey: signing.privateKey, signingKid: 'auth', jwks: { keys: [publicSigning] }, stateFor, now: () => t,
     async fetcher(address) { if (address.includes('/certs')) return Response.json({ keys: [googleJwk] });
       const h = j64({ alg: 'RS256', kid: 'google' }), p = j64({ iss: 'https://accounts.google.com', aud: 'google-client', sub: 'google-sub', nonce, iat: 999, exp: 1100 });
       const input = `${h}.${p}`, sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', google.privateKey, new TextEncoder().encode(input));
@@ -40,7 +41,7 @@ async function setup() {
     const done = await app.fetch(new Request(callback, { headers: { cookie: begun.headers.get('set-cookie').split(';')[0] } })); assert.equal(done.status, 302);
     const target = new URL(done.headers.get('location')); assert.equal(target.searchParams.get('state'), state); assert.equal(linked.provider_subject, 'google-sub');
     return { code: target.searchParams.get('code'), verifier, redirectUri }; }
-  return { app, post, login, publicSigning, stateFor, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
+  return { app, post, login, publicSigning, stateFor, setNow(value) { t = value; }, calls() { return authorityCalls; }, block() { stateFor('google-account-registry').setAccountStatus({ accountId: 'sub_existing', blocked: true }); } };
 }
 
 test('synthetic Google login, code exchange, refresh, replay revocation and JWKS', async () => {
@@ -56,9 +57,13 @@ test('synthetic Google login, code exchange, refresh, replay revocation and JWKS
   assert.equal(JSON.parse(Buffer.from(parts[1], 'base64url')).account_id, 'sub_existing');
   assert.equal(JSON.parse(Buffer.from(parts[1], 'base64url')).sub, 'sub_existing');
   const refreshed = await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token }); assert.equal(refreshed.status, 200);
-  const newToken = (await refreshed.json()).refresh_token;
+  const firstResult = await refreshed.json();
+  const within = await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token });
+  assert.equal(within.status, 200);
+  assert.deepEqual(await within.json(), firstResult);
+  f.setNow(1030);
   assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: minted.refresh_token })).status, 400);
-  assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: newToken })).status, 400);
+  assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: firstResult.refresh_token })).status, 400);
   assert.equal((await f.app.fetch(new Request(`${url}/.well-known/jwks.json`))).status, 200);
 });
 
@@ -130,4 +135,18 @@ test('identity fingerprints are keyed and differ across secrets', async () => {
   assert.equal(a, await identityFingerprint(await key(1), 'google-sub'));
   assert.notEqual(a, await identityFingerprint(await key(2), 'google-sub'));
   assert.equal(a.includes('google-sub'), false);
+});
+
+test('concurrent refresh requests return the same rotated token pair', async () => {
+  const f = await setup(), l = await f.login();
+  const minted = await (await f.post('/token', { grant_type: 'authorization_code', code: l.code, code_verifier: l.verifier, redirect_uri: l.redirectUri })).json();
+  const params = { grant_type: 'refresh_token', refresh_token: minted.refresh_token };
+  const [a, b] = await Promise.all([f.post('/token', params), f.post('/token', params)]);
+  assert.equal(a.status, 200); assert.equal(b.status, 200);
+  const first = await a.json(), second = await b.json();
+  assert.deepEqual(first, second);
+  assert.notEqual(first.refresh_token, minted.refresh_token);
+  assert.equal((await f.post('/token', { grant_type: 'refresh_token', refresh_token: first.refresh_token })).status, 200);
+  // Reusing anything older than the immediate predecessor is still a replay.
+  assert.equal((await f.post('/token', params)).status, 400);
 });

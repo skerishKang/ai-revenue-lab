@@ -25,7 +25,8 @@ export class AuthState {
       expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
-      digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0
+      digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0,
+      grace_until INTEGER, grace_result TEXT, successor TEXT
     )`);
   }
 
@@ -106,19 +107,31 @@ export class AuthState {
     });
   }
 
-  rotate({ id, client, digest, replacement, now }) {
+  inspectRefresh({ id, client, digest, now }) {
+    return this.sql.exec('SELECT s.subject,s.account_id,s.expires FROM sessions s JOIN refresh_tokens t ON t.session_id=s.id WHERE s.id=? AND s.client=? AND t.digest=? AND s.revoked=0 AND s.expires>?', id, client, digest, now).toArray()[0] || null;
+  }
+
+  rotate({ id, client, digest, replacement, encryptedResult, now }) {
     return this.storage.transactionSync(() => {
       const session = this.sql.exec('SELECT * FROM sessions WHERE id=? AND client=?', id, client).toArray()[0];
       if (!session || session.revoked || session.expires <= now) return { ok: false };
       const token = this.sql.exec('SELECT * FROM refresh_tokens WHERE session_id=? AND digest=?', id, digest).toArray()[0];
       if (!token) return { ok: false };
       if (token.used) {
+        // A 30-second retry window covers concurrent browser tabs and a lost
+        // response. Only the immediate predecessor qualifies, and only while
+        // its successor remains unused; older replays still revoke the session.
+        const next = this.sql.exec('SELECT used FROM refresh_tokens WHERE session_id=? AND digest=?', id, token.successor).toArray()[0];
+        if (token.grace_until > now && token.grace_result && next && !next.used) {
+          return { ok: true, encryptedResult: token.grace_result, accountId: session.account_id };
+        }
         this.sql.exec('UPDATE sessions SET revoked=1 WHERE id=?', id);
         return { ok: false, replay: true };
       }
-      this.sql.exec('UPDATE refresh_tokens SET used=1 WHERE session_id=? AND digest=?', id, digest);
+      if (!encryptedResult) throw new Error('encrypted response required');
+      this.sql.exec('UPDATE refresh_tokens SET used=1,grace_until=?,grace_result=?,successor=? WHERE session_id=? AND digest=?', now + 30, encryptedResult, replacement, id, digest);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', replacement, id);
-      return { ok: true, subject: session.subject, accountId: session.account_id, expires: session.expires };
+      return { ok: true, encryptedResult, accountId: session.account_id };
     });
   }
 
@@ -129,3 +142,4 @@ export class AuthState {
     });
   }
 }
+

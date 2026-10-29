@@ -30,16 +30,16 @@ test('code is bound to client, callback, challenge, expiry, and consumed once', 
 
 test('refresh rotates, replay revokes the whole session, wrong client cannot revoke', () => {
   const s = setup(); s.createSession({ id: 's', client: 'lovetree', subject: 'sub', accountId: 'sub_u', expires: 100, digest: 'one' });
-  assert.equal(s.rotate({ id: 's', client: 'wrong', digest: 'one', replacement: 'two', now: 1 }).ok, false);
-  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'one', replacement: 'two', now: 1 }).ok, true);
-  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'one', replacement: 'three', now: 2 }).replay, true);
-  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'two', replacement: 'four', now: 3 }).ok, false);
+  assert.equal(s.rotate({ id: 's', client: 'wrong', digest: 'one', replacement: 'two', encryptedResult: 'box', now: 1 }).ok, false);
+  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'one', replacement: 'two', encryptedResult: 'box', now: 1 }).ok, true);
+  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'one', replacement: 'three', now: 31 }).replay, true);
+  assert.equal(s.rotate({ id: 's', client: 'lovetree', digest: 'two', replacement: 'four', now: 32 }).ok, false);
 });
 
 test('replacement collision rolls back consumption and expired session is rejected', () => {
   const s = setup(); s.createSession({ id: 's', client: 'c', subject: 'sub', accountId: 'sub_u', expires: 100, digest: 'one' });
-  assert.throws(() => s.rotate({ id: 's', client: 'c', digest: 'one', replacement: 'one', now: 1 }));
-  assert.equal(s.rotate({ id: 's', client: 'c', digest: 'one', replacement: 'two', now: 2 }).ok, true);
+  assert.throws(() => s.rotate({ id: 's', client: 'c', digest: 'one', replacement: 'one', encryptedResult: 'box', now: 1 }));
+  assert.equal(s.rotate({ id: 's', client: 'c', digest: 'one', replacement: 'two', encryptedResult: 'box', now: 2 }).ok, true);
   assert.equal(s.rotate({ id: 's', client: 'c', digest: 'two', replacement: 'three', now: 100 }).ok, false);
 });
 
@@ -52,7 +52,7 @@ test('code exchange is single-use and session creation rolls back with a collisi
   assert.throws(() => s.exchangeCode(req));
   assert.deepEqual(s.exchangeCode({ ...req, refreshDigest: 'fresh' }), { subject: 'u', accountId: 'sub_u' });
   assert.equal(s.exchangeCode({ ...req, id: 'other', refreshDigest: 'other' }), false);
-  assert.equal(s.rotate({ id: 'new', client: 'client', digest: 'fresh', replacement: 'next', now: 2 }).ok, true);
+  assert.equal(s.rotate({ id: 'new', client: 'client', digest: 'fresh', replacement: 'next', encryptedResult: 'box', now: 2 }).ok, true);
 });
 
 test('Google login state is browser bound, expires, and is consumed once', () => {

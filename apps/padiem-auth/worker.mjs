@@ -10,6 +10,7 @@ const opaque = /^[A-Za-z0-9_-]{43}$/;
 const validClient = /^[A-Za-z0-9_-]+$/;
 const cookie = '__Host-padiem-auth-state';
 const b64 = (a) => btoa(String.fromCharCode(...a)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+const un64 = (s) => Uint8Array.from(atob(s.replaceAll('-', '+').replaceAll('_', '/').padEnd(Math.ceil(s.length / 4) * 4, '=')), c => c.charCodeAt(0));
 const random = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const digest = async (s) => b64(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s))));
 export async function identityFingerprint(key, subject) {
@@ -41,7 +42,7 @@ function one(params, name) {
 }
 
 // An adapter is injected in tests; the deployed entry point below only uses DO bindings.
-export function createApp({ clients, googleClientId, googleClientSecret, identityKey, adminSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
+export function createApp({ clients, googleClientId, googleClientSecret, identityKey, refreshKey, adminSecret, signingKey, signingKid, jwks, stateFor, fetcher = fetch, now = epoch }) {
   async function verifyClient(params, client, current) {
     const assertion = one(params, 'client_assertion');
     if (one(params, 'client_assertion_type') !== 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer') throw new Error('bad client authentication');
@@ -124,18 +125,22 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
           return revoked ? json(200, { ok: true }) : json(400, { error: 'invalid_grant' });
         }
         if (one(params, 'grant_type') !== 'refresh_token') return json(400, { error: 'invalid_grant' });
-        const result = await stateFor(object).rotate({ id: sessionId, client: id, digest: await digest(token[2]), replacement: await digest(nextSecret), now: current });
+        const oldDigest = await digest(token[2]);
+        const snapshot = await stateFor(object).inspectRefresh({ id: sessionId, client: id, digest: oldDigest, now: current });
+        if (!snapshot) return json(400, { error: 'invalid_grant' });
+        const account = await stateFor('google-account-registry').accountById(snapshot.account_id);
+        if (!account || account.state !== 'active') return json(400, { error: 'invalid_grant' });
+        const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject: snapshot.subject, accountId: snapshot.account_id, sessionId, now: current });
+        const response = { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` };
+        const iv = crypto.getRandomValues(new Uint8Array(12)), aad = encoder.encode(`${id}:${sessionId}`);
+        const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad }, refreshKey, encoder.encode(JSON.stringify(response)));
+        const result = await stateFor(object).rotate({ id: sessionId, client: id, digest: oldDigest, replacement: await digest(nextSecret), encryptedResult: `${b64(iv)}.${b64(new Uint8Array(cipher))}`, now: current });
         if (!result.ok) return json(400, { error: 'invalid_grant' });
-        subject = result.subject;
-        accountId = result.accountId;
-        // A disabled product link must not keep receiving 30 days of fresh access.
-        // A failed authority call closes the flow; the rotated credential was not
-        // returned, so recovery requires a new login instead of a fail-open grant.
-        const account = await stateFor('google-account-registry').accountById(accountId);
-        if (!account || account.state !== 'active') {
-          await stateFor(object).revoke({ id: sessionId, client: id, digest: await digest(nextSecret), now: current });
-          return json(400, { error: 'invalid_grant' });
-        }
+        const currentAccount = await stateFor('google-account-registry').accountById(result.accountId);
+        if (!currentAccount || currentAccount.state !== 'active') return json(400, { error: 'invalid_grant' });
+        const [storedIv, storedCipher] = result.encryptedResult.split('.');
+        const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: un64(storedIv), additionalData: aad }, refreshKey, un64(storedCipher));
+        return json(200, JSON.parse(new TextDecoder().decode(plain)));
       }
       const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
       return json(200, { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` });
@@ -145,7 +150,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
   return { async fetch(request) { try { return await app(request); } catch { return json(503, { error: 'authentication_unavailable' }); } } };
 }
 
-const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'rotate', 'revoke', 'resolveAccount', 'accountById', 'setAccountStatus']);
+const methods = new Set(['createLogin', 'consumeLogin', 'claimAssertion', 'createCode', 'exchangeCode', 'inspectRefresh', 'rotate', 'revoke', 'resolveAccount', 'accountById', 'setAccountStatus']);
 export class AuthStateObject extends AuthState {
   constructor(state, env) { super(state); this.state = state; this.env = env; }
   async resolveAccount({ fingerprint, productId, userId, subject }) {
@@ -175,6 +180,9 @@ export default {
       const identityBytes = Uint8Array.from(atob(env.PADIEM_AUTH_IDENTITY_HMAC_KEY.replaceAll('-', '+').replaceAll('_', '/').padEnd(Math.ceil(env.PADIEM_AUTH_IDENTITY_HMAC_KEY.length / 4) * 4, '=')), c => c.charCodeAt(0));
       if (identityBytes.length !== 32) throw new Error('identity key must be 32 bytes');
       const identityKey = await crypto.subtle.importKey('raw', identityBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+      const refreshBytes = un64(env.PADIEM_AUTH_REFRESH_ENCRYPTION_KEY);
+      if (refreshBytes.length !== 32) throw new Error('refresh key must be 32 bytes');
+      const refreshKey = await crypto.subtle.importKey('raw', refreshBytes, 'AES-GCM', false, ['encrypt', 'decrypt']);
       if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.PADIEM_AUTH_SIGNING_KID || !env.AUTH_STATE || !env.IDENTITY_AUTHORITY) throw new Error('missing binding');
       const stateFor = (name) => new Proxy({}, { get(_target, method) { return async (args) => {
         const stub = env.AUTH_STATE.get(env.AUTH_STATE.idFromName(name));
@@ -182,7 +190,8 @@ export default {
         if (!response.ok) throw new Error('state failed');
         return (await response.json()).value;
       }; } });
-      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
+      return await createApp({ clients, googleClientId: env.GOOGLE_CLIENT_ID, googleClientSecret: env.GOOGLE_CLIENT_SECRET, identityKey, refreshKey, adminSecret: env.PADIEM_AUTH_ADMIN_SECRET, signingKey, signingKid: env.PADIEM_AUTH_SIGNING_KID, jwks, stateFor }).fetch(request);
     } catch { return json(503, { error: 'authentication_unavailable' }); }
   }
 };
+
