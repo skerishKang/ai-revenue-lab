@@ -11,6 +11,12 @@ on the executor's own machine, plus a **second vantage** on Chat:
 | watchdog restarts (#6099, exit 87) | the same properties | the exit code is host-local |
 | `line_blocked_total` / `line_cleared_total` (#6106) | the executor's own journal line | the counters never leave the process |
 | Chat health | `GET https://chat.padiem.net/health` from COM2 | a second region/network path |
+| queue lane state | `POST http://127.0.0.1:8797/api/claw/connector/mesh-reads/lane-status` + `/health`, when `PC_QUEUE_BACKEND=com2` | the queue binds loopback, so only this host can read it |
+
+After the cutover the queue is the live store. The host then asks it with the same
+read-only secret the GitHub-side watch uses, and judges with the **same module**
+(`connector_lane_watch.py`, installed beside this script by `install.sh`) so a rule
+cannot drift between the two watchers.
 
 Verdict: one `HOST_WATCH=<ok|unknown|stall> ... reasons=...` line in the journal, and a
 notification **only when the state word changes**. The notifier reuses the names the

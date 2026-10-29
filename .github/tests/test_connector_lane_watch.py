@@ -159,10 +159,9 @@ class TestChatHealthAndSource(unittest.TestCase):
         self.assertEqual(watch.source_verdict(None), ("ok", "source_d1"))
         # Unset and empty are the pre-move configuration: D1 is the live store then.
         self.assertEqual(watch.source_verdict(""), ("ok", "source_d1"))
-        # After the COM2 move the D1 rows stop changing. Reading them would show a
-        # stopped lane as an idle one, so an unported source is UNKNOWN by name.
-        self.assertEqual(watch.source_verdict("com2"),
-                         ("unknown", "source_com2_read_queue_side"))
+        # After the COM2 move the queue is the live store. Whether this client can
+        # reach it is a separate question, answered by run() from the queue origin.
+        self.assertEqual(watch.source_verdict("com2"), ("ok", "source_com2"))
         for bad in ("mysql", 7, "com2 x"):
             with self.subTest(bad=bad):
                 self.assertEqual(watch.source_verdict(bad)[0], "unknown")
@@ -233,6 +232,102 @@ class TestCloudflareWorkerErrors(unittest.TestCase):
         for bad in (b"", b"not json", b'{"error_code": "1102"}', b"<html>1102</html>"):
             with self.subTest(bad=bad):
                 self.assertIsNone(watch._health_error_code(bad))
+
+
+class TestTheCom2Branch(unittest.TestCase):
+    """#82 item 2: after the cutover the judgement follows the live store.
+
+    The queue binds loopback, so the GitHub runner usually cannot reach it. When an
+    operator exposes a read path this branch reads it with the read-only secret; when
+    nothing is exposed the verdict says the COM2 host timer owns the judgement instead
+    of quietly reading the D1 rows that stopped changing at the cutover.
+    """
+
+    ENV = {
+        "CONNECTOR_WATCH_CHAT_ORIGIN": "https://chat.padiem.net",
+        "CONNECTOR_WATCH_READ_SECRET": "w" * 32,
+        "CONNECTOR_WATCH_DEVICE_IDS": "device-1",
+        "PC_QUEUE_BACKEND": "com2",
+    }
+
+    def _run(self, env, *, lane=None, queue_health=(200, {"ok": True}),
+             chat=(200, 1102 and None)):
+        from unittest import mock
+
+        calls = {"lane": 0, "queue_health": 0}
+
+        def lane_stub(origin, secret, devices):
+            calls["lane"] += 1
+            calls["origin"] = origin
+            return 200, lane if lane is not None else globals()["lane"]()
+
+        def queue_health_stub(origin):
+            calls["queue_health"] += 1
+            return queue_health
+
+        with mock.patch.object(watch, "_post_lane_status", lane_stub),                 mock.patch.object(watch, "_get_queue_health", queue_health_stub),                 mock.patch.object(watch, "_get_health", lambda origin: (chat[0], None)):
+            code = watch.run(dict(self.ENV, **env))
+        return code, calls
+
+    def test_nothing_exposed_is_delegated_and_never_read_as_idle(self) -> None:
+        import contextlib
+        import io
+
+        printed = io.StringIO()
+        with contextlib.redirect_stdout(printed):
+            code, calls = self._run({})
+        self.assertEqual(code, 0, "a delegation is unknown, not a red run")
+        self.assertEqual(calls["lane"], 0, "no lane read is attempted without an origin")
+        line = printed.getvalue()
+        self.assertIn("CONNECTOR_WATCH=unknown", line)
+        self.assertIn("com2_delegated_to_host_watch", line)
+        self.assertIn("queue=unknown reason=host_watch_delegated", line)
+        self.assertNotIn("CONNECTOR_WATCH=ok", line)
+
+    def test_an_exposed_queue_is_read_with_the_watch_secret(self) -> None:
+        env = {"CONNECTOR_WATCH_QUEUE_ORIGIN": "http://127.0.0.1:8797"}
+        code, calls = self._run(env, lane=lane(
+            unclaimed=(1, 120), claimed=(0, None),
+            nodes=[node(waiting=1, waiting_oldest=120)], beats=[beat()]))
+        self.assertEqual(code, 0)
+        self.assertEqual(calls["origin"], "http://127.0.0.1:8797")
+        self.assertEqual(calls["queue_health"], 1)
+
+    def test_a_static_queue_on_com2_is_a_stall(self) -> None:
+        env = {"CONNECTOR_WATCH_QUEUE_ORIGIN": "http://127.0.0.1:8797"}
+        code, _calls = self._run(
+            env,
+            lane={"ok": True,
+                  "unclaimed": {"count": 2, "oldest_seconds": watch.QUEUE_STATIC_SECONDS + 1},
+                  "claimed": {"count": 0, "oldest_seconds": None},
+                  "nodes": [], "beats": [beat()]},
+            queue_health=(200, {"ok": True, "pending_unclaimed": 2,
+                                "pending_claimed": 0, "received": 0}),
+        )
+        self.assertEqual(code, 1, "a stall reddens the run")
+
+    def test_two_views_that_disagree_are_unknown_not_a_guess(self) -> None:
+        verdict = watch.queue_counts_agree(
+            {"unclaimed": {"count": 1}, "claimed": {"count": 0}},
+            {"ok": True, "pending_unclaimed": 3, "pending_claimed": 0},
+        )
+        self.assertEqual(verdict, ("unknown", "queue_counts_disagree_unclaimed"))
+        self.assertEqual(watch.queue_counts_agree(
+            {"unclaimed": {"count": 1}, "claimed": {"count": 2}},
+            {"ok": True, "pending_unclaimed": 1, "pending_claimed": 2}),
+            ("ok", "queue_counts_agree"))
+        self.assertEqual(watch.queue_counts_agree({}, {"ok": True})[0], "unknown")
+        self.assertEqual(watch.queue_counts_agree(
+            {"unclaimed": {"count": 0}, "claimed": {"count": 0}}, "not a dict")[0],
+            "unknown")
+
+    def test_an_origin_that_is_not_a_read_path_is_refused_by_name(self) -> None:
+        code, calls = self._run(
+            {"CONNECTOR_WATCH_QUEUE_ORIGIN": "ftp://example"},
+            chat=(200, None),
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(calls["lane"], 0, "a refused origin is never posted to")
 
 
 if __name__ == "__main__":

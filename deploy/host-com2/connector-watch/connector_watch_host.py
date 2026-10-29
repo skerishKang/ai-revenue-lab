@@ -41,6 +41,18 @@ from typing import Any
 
 EXECUTOR_UNIT = os.environ.get("CONNECTOR_WATCH_EXECUTOR_UNIT", "padiem-oracle-mesh-executor.service")
 CHAT_HEALTH_URL = os.environ.get("CONNECTOR_WATCH_CHAT_HEALTH_URL", "https://chat.padiem.net/health")
+#: After the cutover the queue is the live store, and this timer sits next to it. Both
+#: reads are loopback, so this host is the one place that can see the queue at all.
+QUEUE_ORIGIN = os.environ.get("CONNECTOR_WATCH_QUEUE_ORIGIN", "http://127.0.0.1:8797").rstrip("/")
+QUEUE_BACKEND = os.environ.get("PC_QUEUE_BACKEND", "d1").strip().lower()
+READ_SECRET = os.environ.get("CONNECTOR_WATCH_READ_SECRET", "").strip()
+DEVICE_IDS = os.environ.get("CONNECTOR_WATCH_DEVICE_IDS", "")
+#: The same verdict code the GitHub-side watch uses, installed beside this file by
+#: install.sh. One implementation of "static queue", "silent PC" and "counts agree".
+try:  # pragma: no cover - exercised by the installed layout and by the tests' path
+    import connector_lane_watch as lane_watch
+except Exception:  # pragma: no cover
+    lane_watch = None
 STATE_DIR = Path(os.environ.get("CONNECTOR_WATCH_STATE_DIR", "/var/lib/padiem-connector-watch"))
 JOURNAL_MINUTES = int(os.environ.get("CONNECTOR_WATCH_JOURNAL_MINUTES", "90"))
 REQUEST_TIMEOUT_SECONDS = 20
@@ -210,6 +222,60 @@ def _remember(payload: dict[str, Any]) -> None:
         pass
 
 
+def _lane_read(origin: str, secret: str, device_ids: list[str]) -> tuple[int | None, Any]:
+    if not secret or not device_ids:
+        return None, None
+    body = json.dumps({"device_ids": device_ids}).encode("utf-8")
+    request = urllib.request.Request(
+        f"{origin}/api/claw/connector/mesh-reads/lane-status", data=body, method="POST",
+        headers={"Content-Type": "application/json", "Accept": "application/json",
+                 "X-Oracle-Mesh-Secret": secret},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+            return response.status, json.loads(response.read().decode("utf-8", "replace"))
+    except urllib.error.HTTPError as exc:
+        return exc.code, None
+    except Exception:
+        return None, None
+
+
+def _queue_health(origin: str) -> Any:
+    try:
+        with urllib.request.urlopen(
+            urllib.request.Request(f"{origin}/health",
+                                   headers={"Accept": "application/json"}),
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        ) as response:
+            return json.loads(response.read().decode("utf-8", "replace"))
+    except Exception:
+        return None
+
+
+def queue_checks(*, origin: str = QUEUE_ORIGIN, secret: str = READ_SECRET,
+                 device_ids: str = DEVICE_IDS) -> dict[str, tuple[str, str]]:
+    """The three lane verdicts on the queue side, or UNKNOWN by name.
+
+    Uses the shared module's decisions so a rule cannot drift between the runner and
+    this host, and reports every reason it could not read as itself.
+    """
+    if lane_watch is None:
+        return {"queue": (UNKNOWN, "lane_verdicts_not_installed"),
+                "pc": (UNKNOWN, "lane_verdicts_not_installed")}
+    devices = lane_watch._device_ids(device_ids)
+    status, lane = _lane_read(origin, secret, devices)
+    if status != 200 or not isinstance(lane, dict) or lane.get("ok") is not True:
+        reason = "read_secret_absent" if not secret else (
+            f"lane_status_http_{status if status is not None else 'none'}")
+        return {"queue": (UNKNOWN, reason), "pc": (UNKNOWN, "not_read")}
+    health = _queue_health(origin)
+    return {
+        "queue": lane_watch.queue_verdict(lane),
+        "pc": lane_watch.pc_silence_verdict(lane),
+        "queue_counts": lane_watch.queue_counts_agree(lane, health),
+    }
+
+
 def _notify(text: str) -> str:
     """Reuse the notifier the product already configures. No channel, no new service."""
     token = os.environ.get("B66_ALERT_TELEGRAM_BOT_TOKEN", "").strip()
@@ -252,6 +318,8 @@ def run(*, unit: str = EXECUTOR_UNIT, journal_minutes: int = JOURNAL_MINUTES,
         "counters": counters_verdict(counters),
         "chat": health_verdict(read_health(health_url)),
     }
+    if QUEUE_BACKEND == "com2":
+        checks.update(queue_checks())
     state, reasons = combine(checks)
     print(f"HOST_WATCH={state} unit={unit} reasons={','.join(reasons) if reasons else 'none'}")
     for name in sorted(checks):
