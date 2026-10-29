@@ -12,6 +12,11 @@ const cookie = '__Host-padiem-auth-state';
 const b64 = (a) => btoa(String.fromCharCode(...a)).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
 const random = () => b64(crypto.getRandomValues(new Uint8Array(32)));
 const digest = async (s) => b64(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(s))));
+export async function googleProductUserId(subject) {
+  if (typeof subject !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(subject)) throw new Error('invalid google subject');
+  const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`google:${subject}`)));
+  return 'usr_' + [...hash].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32);
+}
 const epoch = () => Math.floor(Date.now() / 1000);
 const headers = { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
 const json = (status, value) => new Response(JSON.stringify(value), { status, headers: { ...headers, 'content-type': 'application/json' } });
@@ -70,12 +75,11 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
       const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'error' });
       if (!keyResponse.ok) throw new Error('google keys unavailable');
       const identity = await verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
-      const userHash = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`google:${identity.sub}`)));
-      const userId = 'usr_' + [...userHash].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32);
+      const userId = await googleProductUserId(identity.sub);
       const linked = await authority.resolve_or_create_product_link({ product_id: pending.client, product_user_id: userId, auth_provider: 'google', provider_subject: identity.sub });
-      if (linked?.ok !== true || linked?.link?.state !== 'active' || !linked?.link?.canonical_subject_id) throw new Error('identity authority failed');
+      if (linked?.ok !== true || linked?.link?.state !== 'active' || linked?.link?.product_id !== pending.client || linked?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(linked?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
       const codeSecret = random();
-      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: identity.sub, expires: current + 60 });
+      await stateFor(state[0]).createCode({ digest: await digest(codeSecret), client: pending.client, redirect: pending.redirect, challenge: pending.service_challenge, subject: identity.sub, accountId: linked.link.canonical_subject_id, expires: current + 60 });
       const target = new URL(pending.redirect); target.searchParams.set('code', `${state[0]}.${codeSecret}`); target.searchParams.set('state', pending.service_state);
       return redirect(target.href, { 'set-cookie': cookieHeader('', 0), 'referrer-policy': 'no-referrer' });
     }
@@ -84,7 +88,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
       const id = one(params, 'client_id'), client = clients[id];
       if (!client || client.id !== id) return json(401, { error: 'invalid_client' });
       try { await verifyClient(params, client, current); } catch { return json(401, { error: 'invalid_client' }); }
-      let subject, object, sessionId, nextSecret = random();
+      let subject, accountId, object, sessionId, nextSecret = random();
       if (url.pathname === '/token' && one(params, 'grant_type') === 'authorization_code') {
         const code = split(one(params, 'code')), verifier = one(params, 'code_verifier'), returnTo = one(params, 'redirect_uri');
         if (!code || !opaque.test(verifier) || !client.redirect_uris.includes(returnTo)) return json(400, { error: 'invalid_grant' });
@@ -92,6 +96,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
         const result = await stateFor(object).exchangeCode({ codeDigest: await digest(code[1]), client: id, redirect: returnTo, challenge: await digest(verifier), now: current, id: sessionId, expires: current + 30 * 24 * 3600, refreshDigest: await digest(nextSecret) });
         if (!result) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
+        accountId = result.accountId;
       } else {
         const token = one(params, 'refresh_token').split('.');
         if (token.length !== 3 || !token.every(x => opaque.test(x))) return json(400, { error: 'invalid_grant' });
@@ -104,8 +109,9 @@ export function createApp({ clients, googleClientId, googleClientSecret, signing
         const result = await stateFor(object).rotate({ id: sessionId, client: id, digest: await digest(token[2]), replacement: await digest(nextSecret), now: current });
         if (!result.ok) return json(400, { error: 'invalid_grant' });
         subject = result.subject;
+        accountId = result.accountId;
       }
-      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, sessionId, now: current });
+      const access = await issueAccessToken({ key: signingKey, kid: signingKid, issuer: ORIGIN, audience: id, subject, accountId, sessionId, now: current });
       return json(200, { access_token: access, token_type: 'Bearer', expires_in: 900, refresh_token: `${object}.${sessionId}.${nextSecret}` });
     }
     return json(404, { error: 'not_found' });

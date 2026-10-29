@@ -13,10 +13,10 @@ export class AuthState {
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (
       digest TEXT PRIMARY KEY, client TEXT NOT NULL, redirect TEXT NOT NULL,
-      challenge TEXT NOT NULL, subject TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
+      challenge TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL, expires INTEGER NOT NULL, consumed INTEGER NOT NULL DEFAULT 0
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL,
+      id TEXT PRIMARY KEY, client TEXT NOT NULL, subject TEXT NOT NULL, account_id TEXT NOT NULL,
       expires INTEGER NOT NULL, revoked INTEGER NOT NULL DEFAULT 0
     )`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -43,8 +43,8 @@ export class AuthState {
     });
   }
 
-  createCode({ digest, client, redirect, challenge, subject, expires }) {
-    this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,expires) VALUES(?,?,?,?,?,?)', digest, client, redirect, challenge, subject, expires);
+  createCode({ digest, client, redirect, challenge, subject, accountId, expires }) {
+    this.sql.exec('INSERT INTO codes(digest,client,redirect,challenge,subject,account_id,expires) VALUES(?,?,?,?,?,?,?)', digest, client, redirect, challenge, subject, accountId, expires);
   }
 
   consumeCode({ digest, client, redirect, challenge, now }) {
@@ -54,9 +54,9 @@ export class AuthState {
     });
   }
 
-  createSession({ id, client, subject, expires, digest }) {
+  createSession({ id, client, subject, accountId, expires, digest }) {
     return this.storage.transactionSync(() => {
-      this.sql.exec('INSERT INTO sessions(id,client,subject,expires) VALUES(?,?,?,?)', id, client, subject, expires);
+      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires) VALUES(?,?,?,?,?)', id, client, subject, accountId, expires);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', digest, id);
     });
   }
@@ -66,11 +66,11 @@ export class AuthState {
   // verification happen before calling this method.
   exchangeCode({ codeDigest, client, redirect, challenge, now, id, expires, refreshDigest }) {
     return this.storage.transactionSync(() => {
-      const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject', codeDigest, client, redirect, challenge, now).toArray();
+      const rows = this.sql.exec('UPDATE codes SET consumed=1 WHERE digest=? AND client=? AND redirect=? AND challenge=? AND consumed=0 AND expires>? RETURNING subject,account_id', codeDigest, client, redirect, challenge, now).toArray();
       if (rows.length !== 1) return false;
-      this.sql.exec('INSERT INTO sessions(id,client,subject,expires) VALUES(?,?,?,?)', id, client, rows[0].subject, expires);
+      this.sql.exec('INSERT INTO sessions(id,client,subject,account_id,expires) VALUES(?,?,?,?,?)', id, client, rows[0].subject, rows[0].account_id, expires);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', refreshDigest, id);
-      return { subject: rows[0].subject };
+      return { subject: rows[0].subject, accountId: rows[0].account_id };
     });
   }
 
@@ -86,7 +86,7 @@ export class AuthState {
       }
       this.sql.exec('UPDATE refresh_tokens SET used=1 WHERE session_id=? AND digest=?', id, digest);
       this.sql.exec('INSERT INTO refresh_tokens(digest,session_id) VALUES(?,?)', replacement, id);
-      return { ok: true, subject: session.subject, expires: session.expires };
+      return { ok: true, subject: session.subject, accountId: session.account_id, expires: session.expires };
     });
   }
 
