@@ -32,6 +32,12 @@ to. What is *not* served by the queue is the result submission: framing the answ
 and writing the conversation stay in the Worker, which asks the queue only for the
 atomic `consume` decision.
 
+Since #82 the queue also serves the read-only lane-status leg
+(`/api/claw/connector/mesh-reads/lane-status`) — the same route function the Chat
+Worker mounts, behind a separate read secret (`MESH_QUEUE_WATCH_READ_SECRET_FILE`,
+optional). Counters and ages can be handed to a monitor without handing anything that
+claims, renews, cancels or consumes.
+
 Nothing here adds a ceiling to a running command. The claim lease (#5895), renewal
 (#5997) and "no time limit on execution" are unchanged; the queue holds a command
 open for as long as the PC takes, exactly as the D1 lane does.
@@ -45,10 +51,12 @@ terminates here. No public bind address is created at any step.
 | Purpose | Path / identity |
 |---|---|
 | Code and venv | `/opt/padiem/mesh-queue`, `/opt/padiem/mesh-queue/venv/bin/python` |
+| Its own source | `/opt/padiem/mesh-queue/src` — a worktree of main, see section 3 |
 | Database (SQLite, WAL) | `/opt/padiem/mesh-queue/queue.sqlite3` |
 | Private environment | `/opt/padiem/mesh-queue/queue.env`, mode 0600 |
 | Channel secret (reused) | `/opt/padiem/oracle-mesh/channel-secret.txt`, mode 0600 |
 | Service-to-service secret | `/opt/padiem/mesh-queue/service-secret.txt`, mode 0600 |
+| Watch read secret (optional) | `/opt/padiem/mesh-queue/watch-read-secret.txt`, mode 0600 |
 | Ownership map | `/opt/padiem/mesh-queue/ownership-map.json` |
 | Unit / account | `padiem-mesh-queue.service` / `padiem-mesh` |
 | HTTP | `127.0.0.1:8797` |
@@ -64,35 +72,51 @@ the design, and a fourth secret would be a fourth thing to rotate out of step.
 
 ## 3. Install the service (no traffic yet)
 
+The queue installs from **its own worktree of main**, not from the host's shared
+checkout. That checkout (`/opt/padiem/oracle-mesh/repo`) is what the file lane, b14 and
+the other units' paths read; moving it forward to today's main would move their running
+source as a side effect of installing this one service. A worktree costs nothing to keep
+and nothing else to touch:
+
 ```bash
-sudo bash apps/padiem-mesh-queue/deploy/install.sh
+sudo -u padiem-mesh git -C /opt/padiem/oracle-mesh/repo worktree add \
+  --detach /opt/padiem/mesh-queue/src origin/main
+sudo PADIEM_REPO=/opt/padiem/mesh-queue/src \
+  bash /opt/padiem/mesh-queue/src/apps/padiem-mesh-queue/deploy/install.sh
 ```
+
+`install.sh` copies into `/opt/padiem/mesh-queue` with `rsync --delete`, so its own
+source — `$ROOT/src` — is excluded from deletion and any other source nested under the
+install root is refused before anything moves (`source_nested_refused`). Re-running the
+installer is the documented way to pick up a new main: refresh the worktree
+(`git -C /opt/padiem/mesh-queue/src fetch && git -C … checkout <sha>`) and run it again.
 
 The installer is re-runnable and refuses to guess material: it prints
 `MESH_QUEUE_STEP=service_secret_missing`, `channel_secret_missing` or
 `ownership_map_missing` instead of creating an empty file, then it rsyncs the queue,
 links the modules the queue imports (`app`, `padiem_ai_core`, `padiem_control_plane`)
 rather than copying them into a shape that can drift, builds the venv from
-`requirements.txt`, installs the units and the timer, and answers `/health` once.
+`requirements.txt`, installs the units and the timers, and answers `/health` once.
+`MESH_QUEUE_WATCH_READ_SECRET_FILE` is optional and left unset until the monitor's own
+install hands that file over (#82): with no file the queue keeps the channel-secret-only
+behaviour rather than failing to start a read it cannot serve.
 
 Order that matters:
 
-1. The Worker has a route to a loopback service only through the tunnel: one ingress
-   rule on 컴2's `cloudflared` maps a hostname to `http://127.0.0.1:8797`. That rule is
-   the tunnel lane's own change (COM2_TUNNEL_RUNBOOK), not something this service
-   opens — it binds loopback and stays that way. Everything the tunnel does expose is
-   guarded by the service secret header, the allowlist and the constant-time compare;
-   nothing on the executor's side of the door needs a hostname at all, because the
-   executor is on the same host.
-2. `provision_service_secret.sh` creates `service-secret.txt` (`umask 077`, mode
+1. `provision_service_secret.sh` creates `service-secret.txt` (`umask 077`, mode
    0600). It never prints the value; the same text is handed to the Cloudflare side
    from the file, on stdin, never as a shell argument.
-3. The Cloudflare side is set through the deploy gate: `PC_QUEUE_SERVICE_SECRET` (the
-   same text), `PC_QUEUE_ORIGIN` (the tunnel hostname, https origin, bare) and
+2. The Cloudflare side is set through the deploy gate: `PC_QUEUE_SERVICE_SECRET` (the
+   same text), `PC_QUEUE_ORIGIN` (the hostname section 5 opens, https origin, bare) and
    `PC_QUEUE_BACKEND=d1` so the adapter stays off. A secret is not logged, echoed or
    committed on either side, and neither value is compared by printing it — the Chat
-   side's first successful call *is* the verification.
-4. `install.sh` runs last, because the service refuses to start without the files.
+   side's first successful call *is* the verification. `PC_QUEUE_ORIGIN` can wait for
+   the cutover step; nothing before it needs the hostname.
+3. `install.sh` runs last, because the service refuses to start without the files.
+
+**No tunnel hostname is created in this section.** Installing, verifying `/health` and
+copying state all happen on loopback; the only thing that needs a public route is the
+Worker's store call, and that opens at cutover with the path restriction in section 5.
 
 Then, still with the Chat Worker on `d1`, prove the two halves talk:
 
@@ -148,9 +172,37 @@ claim out.
 2. `curl …/health` → all three zero. If not zero, wait; do not switch.
 3. Re-run `copy_state.py diff` for whatever the queue changed since section 4 and copy
    again, so the queue's last write is the newest state.
-4. Set `PC_QUEUE_BACKEND=com2` on the Chat Worker through the deploy gate, publish,
-   and confirm the Worker's own start-up line `PC_QUEUE_BACKEND=com2`.
-5. Give the executor the queue as its claim lane, in its `executor.env`:
+4. Open the tunnel route **for the store door only**, with the path rule first —
+   `cloudflared` matches ingress rules in order and stops at the first hit, so a
+   hostname catch-all placed before the path rule would silently expose everything:
+
+   ```yaml
+   ingress:
+     - hostname: queue.padiem.net
+       path: ^/internal/store$
+       service: http://127.0.0.1:8797
+     - hostname: queue.padiem.net
+       service: http_status:404
+   ```
+
+   Every other path on that hostname — `poll`, `renew`, `cancel`, `busy`,
+   `lane-status`, `/health` — is answered `404` by the tunnel and never reaches the
+   process. The claim legs do not need a public route: the executor calls loopback on
+   this host, and so does the host-side health/monitor read. Proving it costs one
+   request: `curl -s -o /dev/null -w '%{http_code}' https://queue.padiem.net/api/claw/connector/mesh-reads/poll`
+   must say 404 before the flag is set, not after.
+
+   *Optional second barrier (Owner decision, applied at this step if chosen):* put a
+   Cloudflare Access application on the hostname with a service-token policy — free at
+   this scale, and it means a leaked `PC_QUEUE_SERVICE_SECRET` alone is not enough to
+   reach the door. The cost is real: the Worker's call then has to present the service
+   token headers, which is a code change on the Chat side (`queue_store_proxy`), not a
+   config line. Without that change an Access policy would simply break the store call,
+   so it must not be switched on beside the running lane.
+5. Set `PC_QUEUE_BACKEND=com2` (and `PC_QUEUE_ORIGIN=https://queue.padiem.net`) on the
+   Chat Worker through the deploy gate, publish, and confirm the Worker's own start-up
+   line `PC_QUEUE_BACKEND=com2`.
+6. Give the executor the queue as its claim lane, in its `executor.env`:
 
    ```
    ORACLE_MESH_QUEUE_ORIGIN=http://127.0.0.1:8797
@@ -162,10 +214,10 @@ claim out.
    are not the queue's job. `ORACLE_MESH_CHAT_ORIGIN` keeps its current value, which
    is what makes the rollback in section 6 a one-line removal rather than a
    reconfiguration.
-6. Watch for 30 minutes: one short read, one `find` that returns a completed result,
+7. Watch for 30 minutes: one short read, one `find` that returns a completed result,
    one pairing. Record the counts before and after.
 
-Steps 4 and 5 are one move, in that order. A queue origin set while the Worker still
+Steps 4 through 6 are one move, in that order. A queue origin set while the Worker still
 reads D1 means the two halves decide from two different copies of the same row: the
 claim is handed out of the queue's database while the submission is checked against
 D1's nonce, so the work the PC did is refused or, on a row that has drifted the other
@@ -194,6 +246,11 @@ no queue origin every leg, the claim included, asks the Worker, which is the lan
 original shape. The queue keeps running; it simply stops being asked. Anything the
 queue claimed after the switch stays in its database and is read back with
 `copy_state.py diff`, so a rollback loses nothing that was not copied forward again.
+
+The tunnel route is not part of the rollback. A path-restricted hostname whose only
+passable path is a door the Worker stops knocking on carries no traffic, and pulling an
+ingress rule is a second live change made while the first is still being judged. Close it
+deliberately, later, as its own step.
 
 ## 7. Watchdog, backups and what an operator reads
 
@@ -252,7 +309,12 @@ crashed one is systemd's, so what it adds is a readable record of the hours arou
 incident rather than a guess afterwards.
 
 The executor-side monitoring — poll refusals, queue silence, 1102/1010 detection — is
-아스트라1's handover (#82); this lane installs nothing beyond its own `/health`.
+아스트라1's handover (#82). What this lane owes that handover is two things and nothing
+more: the queue already answers the read-only `lane-status` leg, and `install.sh` wires
+`MESH_QUEUE_WATCH_READ_SECRET_FILE` into `queue.env` when — and only when — the monitor
+has put its 0600 file at
+`/opt/padiem/mesh-queue/watch-read-secret.txt`. Installing the monitor itself (its
+`install.sh`, its `.env`, its own unit) is that lane's script, not this one's.
 
 The tests that decide whether a switch is allowed run on GitHub, not on a workstation:
 `com2-mesh-queue-contract-tests.yml` executes `apps/padiem-mesh-queue/tests` on every PR
