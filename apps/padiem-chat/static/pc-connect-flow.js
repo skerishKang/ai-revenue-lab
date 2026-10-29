@@ -42,6 +42,16 @@
   const STARTER_ID = "pcConnectStarter";
   const CHIP_ID = "composerPcStatus";
 
+  // The shared connector vocabulary owns the four state lines and the name;
+  // this module only decides when a state is true.
+  function vocabStatus(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.status === "function" ? (v.status(key) || fallback) : fallback;
+  }
+  function vocabName(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.name === "function" ? (v.name(key) || fallback) : fallback;
+  }
   const COPY = Object.freeze({
     ko: {
       title: "이 컴퓨터를 연결할게요",
@@ -56,8 +66,8 @@
       notReady: "PC 연결 기능은 아직 준비 중입니다. 잠시 후 다시 시도해 주세요.",
       failed: "연결 파일을 준비하지 못했습니다. 다시 시도해 주세요.",
       close: "닫기",
-      toast: "내 PC 연결됨 ✓",
-      popoverTitle: "내 PC",
+      toast: "내 컴퓨터 연결됨 ✓",
+      popoverTitle: "내 컴퓨터",
       popoverEmpty: "연결된 PC가 없습니다.",
       unnamed: "이름 없는 PC",
       connectedChip: "내 PC 연결됨",
@@ -78,8 +88,8 @@
       notReady: "PC pairing is not ready yet. Please try again shortly.",
       failed: "Could not prepare the connect file. Please retry.",
       close: "Close",
-      toast: "My PC connected ✓",
-      popoverTitle: "My PCs",
+      toast: "My computer connected ✓",
+      popoverTitle: "My computer",
       popoverEmpty: "No connected PC yet.",
       unnamed: "Unnamed PC",
       connectedChip: "My PC connected",
@@ -270,7 +280,7 @@
     if (starter) {
       const line = starter.querySelector("[data-pc-connect-state]");
       if (line) {
-        line.textContent = connected ? t.starterConnected : t.starterDisconnected;
+        line.textContent = connected ? vocabStatus("connected", t.starterConnected) : vocabStatus("disconnected", t.starterDisconnected);
       }
     }
   }
@@ -454,7 +464,7 @@
     if (popoverView.root) return popoverView;
     const root = element("div", "pc-connect-popover");
     root.hidden = true;
-    const title = element("p", "pc-connect-popover-title", locale().popoverTitle);
+    const title = element("p", "pc-connect-popover-title", vocabName("computer", locale().popoverTitle));
     const list = element("ul", "pc-pairing-list");
     const empty = element("p", "pc-connect-popover-empty", locale().popoverEmpty);
     root.append(title, list, empty);
@@ -503,7 +513,7 @@
   function paintPopover() {
     const v = installPopover();
     const t = locale();
-    v.title.textContent = t.popoverTitle;
+    v.title.textContent = vocabName("computer", t.popoverTitle);
     v.empty.textContent = t.popoverEmpty;
     v.list.replaceChildren();
     const shown = state.links.filter((link) => link && link.state !== "revoked");

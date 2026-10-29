@@ -325,7 +325,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     measured = page.evaluate(MEASURE)
     assert measured["present"] is True
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 미연결"
+    assert measured["label"] == "○ 연결 안 됨"
     assert "컴퓨터" in (measured["ariaLabel"] or "")
     assert measured["tooltip"] == measured["ariaLabel"]
 
@@ -335,7 +335,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "connected")
     connected = page.evaluate(MEASURE)
     assert connected["state"] == "connected"
-    assert connected["label"] == "PC 연결됨"
+    assert connected["label"] == "● 연결됨"
 
     _unroute_directory(page)
     _route_directory(page, _directory([_device("REVOKED", False, revoked=True)]))
@@ -343,7 +343,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     revoked = page.evaluate(MEASURE)
     assert revoked["state"] == "unavailable"
-    assert revoked["label"] == "상태 확인 불가"
+    assert revoked["label"] == "확인 실패 · 다시 시도"
 
     # A server that cannot answer the directory is an "unavailable" state, never a
     # connected one.
@@ -353,7 +353,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     failed = page.evaluate(MEASURE)
     assert failed["state"] == "unavailable"
-    assert failed["label"] == "상태 확인 불가"
+    assert failed["label"] == "확인 실패 · 다시 시도"
     assert not errors, errors
     page.close()
 
@@ -387,7 +387,7 @@ def test_the_claw_execution_target_decides_the_state(browser, server) -> None:
     _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 미연결"
+    assert measured["label"] == "○ 연결 안 됨"
     assert not errors, errors
     page.close()
 
@@ -509,7 +509,7 @@ def test_a_mesh_execution_target_is_unconfirmed_not_disconnected(browser, server
     _wait_state(page, "unavailable")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "unavailable"
-    assert measured["label"] == "상태 확인 불가"
+    assert measured["label"] == "확인 실패 · 다시 시도"
     assert "온라인 상태는 확인되지 않았습니다" in (measured["ariaLabel"] or "")
     assert not errors, errors
     page.close()

@@ -183,7 +183,7 @@ def test_the_first_card_is_the_computer_connection_entry():
     # #5573 step 1: the status line on the card belongs to the connect flow's
     # own PC-list state, so the locale key for the old static copy is gone.
     assert 'data-locale-key="pc-connect-copy"' not in card
-    assert "컴퓨터 연결" in card
+    assert "내 컴퓨터" in card
     # The card the first screen used to open with is gone for good.
     assert 'data-skill="explain"' not in INDEX
     assert "AI를 처음 쓰는 사람에게" not in INDEX
@@ -213,8 +213,8 @@ def test_the_starter_grid_keeps_four_cards_without_a_duplicate_prompt():
 
 
 def test_the_locale_covers_the_new_card_in_both_languages():
-    assert '"pc-connect-title": "컴퓨터 연결"' in LOCALE_JS
-    assert '"pc-connect-title": "Connect computer"' in LOCALE_JS
+    assert '"pc-connect-title": "내 컴퓨터"' in LOCALE_JS
+    assert '"pc-connect-title": "My computer"' in LOCALE_JS
     assert '["#pcConnectStarter strong", "pc-connect-title"]' in LOCALE_JS
     # #5573 step 1: the card's status line is the connect flow's own PC-list
     # state, so the locale sheet no longer owns (or clobbers) it.
@@ -426,7 +426,7 @@ def test_the_first_card_opens_the_modal_and_the_panel_keeps_its_shape(static_url
 
             before = _measure(page)
             labels = [item["strong"] for item in before["cardLabels"] if item["visible"]]
-            assert "컴퓨터 연결" in labels
+            assert "내 컴퓨터" in labels
             assert "쉽게 설명해줘" not in labels
             assert len(labels) == 4
             assert before["card"]["height"] > 2
