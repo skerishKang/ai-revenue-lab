@@ -16,7 +16,9 @@ NoNewPrivileges=false
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadOnlyPaths=/mnt/d/padiem /opt/padiem/backups
+# The D1 generation root is backed up too, and only ever read: listing it here makes
+# a write into a published generation impossible rather than merely unintended.
+ReadOnlyPaths=/mnt/d/padiem /opt/padiem/backups /mnt/d/PADIEM-Servers
 ReadWritePaths=/var/lib/padiem-offsite-backup
 StandardOutput=journal
 StandardError=journal
