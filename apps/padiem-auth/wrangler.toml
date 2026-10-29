@@ -15,3 +15,7 @@ class_name = "AuthStateObject"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["AuthStateObject"]
+
+[vars]
+GOOGLE_CLIENT_ID = '1048661701189-og06nd5mprmiq5urm6fsa738ecq6am1i.apps.googleusercontent.com'
+PADIEM_AUTH_CLIENTS = '''{"lovetree-4-0":{"id":"lovetree-4-0","redirect_uris":["https://ai-astra4-preview-auth-callb.lovetree-4-0.pages.dev/auth/callback"],"jwks":{"keys":[{"kty":"EC","x":"TpkYKKU2VmskAm_ylxS9u4xkukjNZmWCGbWp-TxmGl4","y":"TlcoupvRFk7QIRUVwH6aJx8F_vuvAF_EXBwVqMU8wsU","crv":"P-256","kid":"lovetree-preview-51d0b53d5a4d6fb1","alg":"ES256","use":"sig"}]}}}'''
