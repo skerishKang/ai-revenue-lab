@@ -24,7 +24,7 @@ from app.history import (
     validate_project_fields,
 )
 from app.main import create_app
-from app.skills import get_skill
+from app.task_modes import get_task_mode
 
 SESSION_SECRET = "phase10-project-session-secret-not-a-real-key-000000"
 
@@ -323,8 +323,8 @@ async def test_new_project_chat_persists_project_and_injects_one_system_message(
     upstream = seen["body"]
     systems = [item for item in upstream["messages"] if item["role"] == "system"]
     assert len(systems) == 1
-    assert get_skill("auto").system_instruction is None
-    assert get_skill("auto").max_tokens is None
+    assert get_task_mode("auto").system_instruction is None
+    assert get_task_mode("auto").max_tokens is None
     assert "max_tokens" not in upstream
     assert "프로젝트 컨텍스트 규칙" in systems[0]["content"]
     assert project.instructions in systems[0]["content"]
