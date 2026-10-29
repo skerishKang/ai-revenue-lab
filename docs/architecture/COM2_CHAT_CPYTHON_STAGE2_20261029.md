@@ -107,6 +107,8 @@ Workers/Pyodide 전용 요소와 로컬 처리:
    (`MODEL_CHANGE_OWNER_APPROVAL_POLICY`) — 이 문서가 선택을 대체하지 않는다.
 3. **커넥터 WSS가 필요하면**: uvicorn 사이드카(별도 프로세스·별도 포트) 또는
    ASGI WebSocket 레인 설계. 현재 커넥터 게이트웨이는 worker.py 전용이다.
+   broker/device 레인은 **Stage 2-C**(com2 이전 단계, `docs/architecture/
+   COM2_CONTROL_PLANE_RPC_INGRESS_20261029.md` §5)로 옮긴다 — 그 전까지 fail-closed.
 4. **마이그레이션 운영**: 장부가 wrangler가 아니라면 컴2 적용 절차(실행 시점·
    롤백)를 배포 정책 안에서 별도 결정.
 5. **Telemetry/Cron**: 컴2에서 필요 확정 시 OS 스케줄러/별도 워커 프로세스로 분리.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -16,6 +17,7 @@ from identity_connector_ticket import (
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
 )
+from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     ControlPlaneContractError,
@@ -25,6 +27,21 @@ from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
 _ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
+# #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Proof-gated,
+# allowlisted, and only present when the secret binding exists; the Service
+# Binding RPC surface and the product pin above are untouched.
+IDENTITY_RPC_INGRESS_SECRET_BINDING = "PADIEM_IDENTITY_RPC_INGRESS_SECRET"
+IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
+    "resolve_or_create_product_link",
+    "establish_auth_session",
+    "resolve_auth_session",
+    "resolve_current_auth_session",
+    "revoke_auth_session",
+    "revoke_all_auth_sessions",
+    "resolve_product_user_for_subject",
+    "resolve_connector_workspace",
+    "resolve_connector_context",
+})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
@@ -574,11 +591,31 @@ class Default(WorkerEntrypoint):
         return await self._stub().revoke_connector_enrollment_consent(payload)
 
     async def fetch(self, request):
+        secret = await resolve_ingress_secret(
+            getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
+        )
+        if secret is not None:
+            handled = await handle_internal_rpc(
+                request,
+                secret=secret,
+                allowed_methods=IDENTITY_RPC_INGRESS_METHODS,
+                dispatcher=self,
+            )
+            if handled is not None:
+                status, payload, headers = handled
+                return Response(
+                    json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+                    status=status,
+                    headers=headers,
+                )
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
 CANONICAL_IDENTITY_AUTHORITY_WORKER_SOURCE = True
+INTERNAL_RPC_HTTPS_INGRESS = True
+INTERNAL_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
+INTERNAL_RPC_HTTPS_INGRESS_PROOF = "v1"
 SQLITE_BACKED_DURABLE_OBJECT = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PROVIDER_SUBJECT_PERSISTED = False
