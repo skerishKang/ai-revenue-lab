@@ -220,19 +220,6 @@ export function Sidebar({
           </span>
           <span data-locale-key="nav-connectors">{t("nav-connectors")}</span>
         </button>
-        <button
-          className="side-item"
-          id="skillsNavButton"
-          type="button"
-          disabled
-          aria-disabled="true"
-          aria-haspopup="dialog"
-        >
-          <span className="side-icon" aria-hidden="true">
-            ✦
-          </span>
-          <span data-locale-key="nav-skills">{t("nav-skills")}</span>
-        </button>
       </nav>
 
       <section className="recent-section" id="historySection" aria-labelledby="historyTitle">
