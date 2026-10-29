@@ -128,12 +128,47 @@ PC request at a known second after the lane has been quiet for ten minutes and r
 beat then reads stale anywhere, the ceiling comes down before anything else does; the
 schedule's shape does not.
 
+## 7. The other half of the same assignment: one device table per round
+
+The row above (`2N+1`) is the before-number for the second PR on this lane. A quiet round
+with two named devices ran **five** full `meshctrl.js listdevices` enumerations, because
+the beat asked `is_connected` and `name_of` per device and `pairing_candidates` once on
+top, and each of those starts its own official client on this host
+(`local_agent_mesh_failover.py:518-584`).
+
+Now `_PresenceBeat` takes the table once per round and both halves of the beat read it:
+the named devices' reachability and names, and the whole table's tagged connected devices
+as pairing candidates - the #5573 scope is unchanged, a name without a tag still never
+travels.
+
+| | before | after |
+|---|---|---|
+| enumerations per round, N named devices | 2N+1 (5 at N=2) | 1 |
+| at rest (0.92 rounds/min), N=2 | ~4.6 official-client runs/min | ~0.92 |
+| during work (10 rounds/min), N=2 | ~50/min | ~10/min |
+
+Two things were kept on purpose:
+
+* the share lasts no longer than the loop's own shortest gap, **and** the round boundary is
+  stated out loud (`presence_round_begin`, called before either provider is read). A busy
+  lane, which does not sleep between rounds at all, must not report last round's PC as
+  this round's answer.
+* a presence object that cannot hand over one table is answered `None` and the caller
+  falls back to the per-device questions it always had. The beat is evidence; a narrower
+  probe is not worth a wrong statement about a machine.
+
+`tests/test_4139_lighter_poll_beat.py` counts the enumerations (11 tests), and the real
+`MeshCentralDevicePresence` was measured directly: one run for the shared table, two more
+for the two per-device questions it replaced.
+
 ## Sources
 
 - `apps/korean-ai-code-agent/src/kagent/local_agent_oracle_mesh_executor.py` — the loop,
   `IDLE_POLL_*`, `ROUND_*`, `last_round`.
 - `apps/korean-ai-code-agent/tests/test_4139_idle_poll_backoff.py` — the schedule, the
   ratios, and both measured rows.
+- `apps/korean-ai-code-agent/tests/test_4139_lighter_poll_beat.py` and `_PresenceBeat` —
+  the enumeration count per round, §7.
 - `apps/padiem-chat/app/oracle_mesh_read_return_routes.py:1879-1892`,
   `apps/padiem-chat/app/claw_local_access_source.py:102`,
   `apps/padiem-chat/app/history.py:38-45`,

@@ -250,6 +250,7 @@ class OracleMeshExecutor:
         claim_gate: Optional[Callable[[], bool]] = None,
         presence_provider: Optional[Callable[[], Any]] = None,
         pairing_provider: Optional[Callable[[], Any]] = None,
+        presence_round_begin: Optional[Callable[[], None]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -344,6 +345,11 @@ class OracleMeshExecutor:
         if pairing_provider is not None and not callable(pairing_provider):
             raise ContractError("the pairing provider must be callable")
         self._pairing_provider = pairing_provider
+        # The round boundary of a shared device table, if the deployment hands one
+        # over. It is called before either provider is read, never after.
+        if presence_round_begin is not None and not callable(presence_round_begin):
+            raise ContractError("the presence round boundary must be callable")
+        self._presence_round_begin = presence_round_begin
         self._reported_pairing_tags: set[str] = set()
         self._carried_pairing_tags: list[str] = []
 
@@ -440,6 +446,10 @@ class OracleMeshExecutor:
         pairing_provider = self._pairing_provider
         if provider is None and pairing_provider is None:
             return None
+        if self._presence_round_begin is not None:
+            # A new poll asks the local server anew. Without this boundary a second
+            # round behind a fast first one could report the previous round's table.
+            self._presence_round_begin()
         try:
             carried: list[str] = []
             tagged: list[dict[str, Any]] = []
@@ -1679,6 +1689,7 @@ def make_oracle_mesh_executor(
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,
+    presence_round_begin: Optional[Callable[[], None]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1762,6 +1773,7 @@ def make_oracle_mesh_executor(
         claim_gate=claim_gate,
         presence_provider=presence_provider,
         pairing_provider=pairing_provider,
+        presence_round_begin=presence_round_begin,
     )
 
 
@@ -1794,6 +1806,68 @@ def _read_secret_file(path: str, name: str) -> str:
     if not value:
         raise ContractError(f"the {name} file is empty")
     return value
+
+
+class _PresenceBeat:
+    """One device table per poll round, read by both halves of the beat.
+
+    A quiet round used to enumerate the local server five times for two named devices:
+    `is_connected` and `name_of` per device, and `pairing_candidates` once on top, each
+    of which starts its own ``meshctrl.js listdevices`` on this host. One round now
+    reads one table and answers both questions from it.
+
+    The share lasts no longer than the service loop's own shortest gap, and the round
+    boundary is stated out loud as well (`begin_round`): a poll that runs with no gap
+    at all - a busy lane, where the loop does not sleep between rounds - must still not
+    carry last round's answer about somebody's PC into this one.
+
+    A presence object that cannot hand over one table is answered ``None``, and the
+    caller falls back to the per-device questions it always had. The beat is evidence;
+    a narrower probe is not worth a wrong statement about a PC.
+    """
+
+    def __init__(self, presence: Any, fresh_for_seconds: float) -> None:
+        self._presence = presence
+        self._fresh_for = float(fresh_for_seconds)
+        self._rows: Optional[list[dict[str, Any]]] = None
+        self._taken_at = 0.0
+
+    def begin_round(self) -> None:
+        self._rows = None
+
+    def rows(self) -> Optional[list[dict[str, Any]]]:
+        listing = getattr(self._presence, "listing", None)
+        if not callable(listing):
+            return None
+        now = time.monotonic()
+        if self._rows is None or now - self._taken_at >= self._fresh_for:
+            self._rows = [_beat_row(row) for row in listing() or ()]
+            self._taken_at = now
+        return self._rows
+
+
+def _beat_row(row: Any) -> dict[str, Any]:
+    """One server row in the shape both halves of the beat read.
+
+    `conn` is the field the official client prints for reachability, and the pairing
+    tag is recognised here once rather than in every caller, so a name that carries no
+    tag is never treated as pairing evidence twice over.
+    """
+    if type(row) is not dict:
+        return {"device_id": "", "connected": False, "agent_name": "", "tagged": False}
+    device_id = row.get("id")
+    name = row.get("name")
+    name = name.strip()[:256] if isinstance(name, str) else ""
+    try:
+        connected = int(row.get("conn", 0) or 0) == 1
+    except (TypeError, ValueError):
+        connected = False
+    return {
+        "device_id": device_id if isinstance(device_id, str) else "",
+        "connected": connected,
+        "agent_name": name,
+        "tagged": bool(name) and _pairing_tag_of(name) is not None,
+    }
 
 
 def main(environ: Optional[dict[str, str]] = None) -> int:
@@ -1842,6 +1916,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # An unnamed target omits the field instead of guessing a device.
         presence_provider = None
         pairing_provider = None
+        beat = None
         raw_devices = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
         presence_device_ids = list(dict.fromkeys(part.strip() for part in raw_devices.split(","))) if raw_devices else []
         if (len(presence_device_ids) > MAX_PRESENCE_ENTRIES
@@ -1856,15 +1931,41 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 login_user=need("ORACLE_MESH_LOGIN_USER"),
                 password_provider=password_provider,
             )
+            beat = _PresenceBeat(presence, IDLE_POLL_BASE_SECONDS)
 
             def pairing_provider():
                 # #5573: one enumeration, tag-carrying nodes only. An untagged
                 # name is never sent, and no bound is applied to the candidates -
                 # the beat budget that limits what travels, decided below.
+                shared = beat.rows()
+                if shared is not None:
+                    return [
+                        {"device_id": row["device_id"], "connected": True,
+                         "agent_name": row["agent_name"]}
+                        for row in shared
+                        if row.get("tagged") and row.get("connected")
+                    ]
                 listing = getattr(presence, "pairing_candidates", None)
                 return listing() if callable(listing) else []
 
             def presence_provider():
+                shared = beat.rows()
+                if shared is not None:
+                    # The one table answers every named device: whether it is
+                    # connected and what it is called. This is the shape that used to
+                    # cost two enumerations per device.
+                    by_id = {row["device_id"]: row for row in shared}
+                    entries = []
+                    for presence_device_id in presence_device_ids:
+                        row = by_id.get(presence_device_id)
+                        entry = {
+                            "device_id": presence_device_id,
+                            "connected": bool(row and row.get("connected")),
+                        }
+                        if row and isinstance(row.get("agent_name"), str) and row["agent_name"]:
+                            entry["agent_name"] = row["agent_name"]
+                        entries.append(entry)
+                    return entries
                 entries = []
                 for presence_device_id in presence_device_ids:
                     entry = {
@@ -1899,6 +2000,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
             presence_provider=presence_provider,
             pairing_provider=pairing_provider,
+            presence_round_begin=beat.begin_round if beat is not None else None,
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
         # The idle ceiling is readable for the operator who wants to weigh the old
