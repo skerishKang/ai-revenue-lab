@@ -203,55 +203,91 @@ def _push_delivery_parts(env: Any, db_binding: Any) -> tuple[Any, Any, str]:
 
 
 async def run_scheduled_automation_source(
-    env: Any, *, now: datetime | None = None, execution_ports: Any | None = None
+    env: Any,
+    *,
+    now: datetime | None = None,
+    execution_ports: Any | None = None,
+    automation_store: Any | None = None,
+    identity_authority: Any | None = None,
+    discovery: Any | None = None,
 ) -> Any:
+    """One cron tick of the Claw automation lane.
+
+    In production every authority is read from the reviewed Worker bindings. The
+    ``automation_store`` / ``identity_authority`` / ``discovery`` keywords are the
+    injection seam: an injected value replaces the one that would be built from a
+    binding, and an injected store or identity means the matching binding is not
+    required at all. The default path — no keyword injected — builds exactly the
+    objects it built before, so the deployed lane is unchanged.
+    """
+
     if not _automation_source_enabled(env):
         return None
     db_binding = binding_value(env, D1_BINDING_NAME)
     identity_binding = binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
-    if db_binding is None or identity_binding is None:
+    if automation_store is None and db_binding is None:
+        return None
+    if identity_authority is None and identity_binding is None:
         return None
     try:
-        store = D1ClawAutomationStore(db_binding)
+        store = automation_store if automation_store is not None else D1ClawAutomationStore(db_binding)
         # Background automation executes at the default Claw product tier. A
         # stored central route supplies the exact model; without one the
         # existing adapter contract is untouched. A stored row that resolves to
         # nothing (disabled, or every candidate blocked) fails the pass closed
         # rather than silently reusing the historical static route.
-        try:
-            route_store = D1CentralModelRouteStore(db_binding)
-            policy_store = D1CentralModelPolicyStore(db_binding)
-        except Exception:
-            route_store = None
-            policy_store = None
-        claw_route = await resolve_claw_tier_model_from_stores(
-            route_store, policy_store, "plus"
+        #
+        # The route stores live beside the automation rows in the same D1
+        # binding. An injected store has no binding of its own, and inventing a
+        # route authority for it would be a different lane — so the central
+        # resolve only runs when the binding is present.
+        central_route_model_id: str | None = None
+        if db_binding is not None:
+            try:
+                route_store = D1CentralModelRouteStore(db_binding)
+                policy_store = D1CentralModelPolicyStore(db_binding)
+            except Exception:
+                route_store = None
+                policy_store = None
+            claw_route = await resolve_claw_tier_model_from_stores(
+                route_store, policy_store, "plus"
+            )
+            if not claw_route.ok:
+                return None
+            central_route_model_id = (
+                claw_route.model_id if claw_route.source == "central" else None
+            )
+        resolved_identity = (
+            identity_authority if identity_authority is not None
+            else CloudflareControlPlaneIdentityAuthority(identity_binding)
         )
-        if not claw_route.ok:
-            return None
-        central_route_model_id = (
-            claw_route.model_id if claw_route.source == "central" else None
-        )
-        identity_authority = CloudflareControlPlaneIdentityAuthority(identity_binding)
         boundary = ClawAutomationTriggerBoundary(ClawAutomationTickRuntime(store))
-        discovery = compose_canonical_due_workspace_discovery(
+        # The default discovery is the canonical one over these exact authorities;
+        # an injected discovery runs instead of it, over the same boundary and
+        # store, so the claim/dedup authority never moves.
+        due_discovery = discovery if discovery is not None else compose_canonical_due_workspace_discovery(
             automation_store=store,
-            control_plane_identity_authority=identity_authority,
+            control_plane_identity_authority=resolved_identity,
             trigger_boundary=boundary,
         )
         if execution_ports is None:
+            # The execution ports (adapter, owner resolution, history, Task-Alert,
+            # push) are D1/service-bound in production; without the D1 binding
+            # they cannot be built, so a fully injected tick must inject them.
+            if db_binding is None:
+                return None
             adapter = build_claw_p01_adapter(env, request_factory=Request)
             if adapter is None:
                 return None
             shadow_store = D1IdentityShadowStore(db_binding)
             owner_resolver = ClawAutomationOwnerResolver(
-                owner_authority=identity_authority,
-                session_authority=identity_authority,
+                owner_authority=resolved_identity,
+                session_authority=resolved_identity,
                 shadow_store=shadow_store,
                 # #3247: the production owner identity source. Background rules
                 # carry a canonical subject, so resolution derives identity from
                 # Control Plane canonical facts through this authority.
-                canonical_owner_authority=identity_authority,
+                canonical_owner_authority=resolved_identity,
             )
             history_store = D1HistoryStore(db_binding)
             task_alert_store = D1ClawTaskAlertStore(db_binding)
@@ -270,7 +306,7 @@ async def run_scheduled_automation_source(
             ):
                 return None
         return await compose_scheduled_automation_execution(
-            discovery=discovery,
+            discovery=due_discovery,
             boundary=boundary,
             store=store,
             adapter=adapter,
