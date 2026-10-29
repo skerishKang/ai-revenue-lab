@@ -151,6 +151,176 @@ async def test_concurrent_claims_let_exactly_one_win() -> None:
     assert reread is not None and reread.status is ClawScheduledRunStatus.RUNNING
 
 
+# --------------------------------------------------------------------------
+# #2833 — store / identity / discovery 주입 seam
+#
+# 스케줄러 진입점이 Worker 바인딩을 직접 읽는 탓에, 한 번 실행·중복 방지를 다른
+# store·identity 구현으로 확인하려면 env 전체를 흔들어야 했다. 이제 세 가지를
+# 키워드로 주입할 수 있고, 주입하지 않으면 예전 그대로 바인딩에서 만든다.
+# --------------------------------------------------------------------------
+
+
+class _CountingDiscovery:
+    """An injected discovery: the real one, plus a call counter.
+
+    The seam's point is that the caller's object runs — and that the claim and
+    dedup authority underneath it does not move.
+    """
+
+    def __init__(self, inner) -> None:
+        self._inner = inner
+        self.calls = 0
+
+    async def aadiscover_and_trigger(self, *, now):
+        self.calls += 1
+        return await self._inner.aadiscover_and_trigger(now=now)
+
+
+class _IdentityBindingDouble:
+    """인증 평면 대역. 주입된 identity authority가 이것을 읽는다."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def resolve_active_tenant_membership(self, payload: dict):
+        self.calls += 1
+        return {
+            "ok": True,
+            "membership": {
+                "tenant_id": payload["tenant_id"],
+                "canonical_subject_id": payload["canonical_subject_id"],
+                "state": "active",
+                "created_at": "2025-01-01T00:00:00+00:00",
+                "role": "owner",
+            },
+        }
+
+
+def _injected_tick(db, monkeypatch: pytest.MonkeyPatch):
+    """Only the enable flag in env: store, identity and discovery are injected."""
+    from app.claw_automation_due_workspace_discovery import (
+        compose_canonical_due_workspace_discovery,
+    )
+    from kagent.claw_automation_trigger import (
+        ClawAutomationTickRuntime,
+        ClawAutomationTriggerBoundary,
+    )
+
+    from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+
+    store = D1ClawAutomationStore(db)
+    identity_binding = _IdentityBindingDouble()
+    identity = CloudflareControlPlaneIdentityAuthority(identity_binding)
+    boundary = ClawAutomationTriggerBoundary(ClawAutomationTickRuntime(store))
+    discovery = _CountingDiscovery(
+        compose_canonical_due_workspace_discovery(
+            automation_store=store,
+            control_plane_identity_authority=identity,
+            trigger_boundary=boundary,
+        )
+    )
+    adapter = OutcomeAdapter()
+    history = RecordingHistoryStore()
+
+    async def tick():
+        module = _load_worker(monkeypatch)
+        return await module.run_scheduled_automation_source(
+            SimpleNamespace(**{"PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED": True}),
+            now=NOW,
+            execution_ports=SimpleNamespace(
+                adapter=adapter,
+                owner_resolver=resolver(),
+                history_store=history,
+                task_alert_store=RecordingTaskAlertStore(),
+            ),
+            automation_store=store,
+            identity_authority=identity,
+            discovery=discovery,
+        )
+
+    return store, identity_binding, discovery, adapter, history, tick
+
+
+async def test_injected_store_and_identity_run_the_lane_without_worker_bindings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = _route_db()
+    store, identity_binding, discovery, adapter, history, tick = _injected_tick(db, monkeypatch)
+    await store.save_rule(make_rule())
+
+    receipt = await tick()
+
+    assert receipt is not None, "the injected tick must run, not fall back to None"
+    assert discovery.calls == 1, "the injected discovery is the one that ran"
+    assert identity_binding.calls >= 1, "the injected identity authority answered membership"
+    assert len(adapter.calls) == 1, adapter.calls
+    assert len(receipt.executions) == 1
+    assert len(receipt.executions[0].terminal_run_ids) == 1
+    assert history.rows, "the run is still projected into Claw run history"
+    rows = await store.list_runs(WORKSPACE)
+    assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+async def test_the_injected_tick_does_not_double_run_the_same_occurrence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = _route_db()
+    store, _identity_binding, discovery, adapter, _history, tick = _injected_tick(db, monkeypatch)
+    await store.save_rule(make_rule())
+
+    first = await tick()
+    second = await tick()
+
+    assert first is not None and len(first.executions) == 1
+    assert second is not None
+    # The second tick of the same instant claims nothing: dedup stayed with the
+    # store's occurrence claim, not with the injected objects.
+    for receipt in second.executions:
+        assert receipt.newly_claimed_run_ids == ()
+        assert receipt.execution_claimed_run_ids == ()
+        assert receipt.terminal_run_ids == ()
+    assert discovery.calls == 2, "both ticks reached the injected discovery"
+    assert len(adapter.calls) == 1, adapter.calls
+    assert len(await store.list_runs(WORKSPACE)) == 1
+
+
+async def test_the_enable_flag_still_gates_an_injected_tick(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = _route_db()
+    store, _identity_binding, discovery, adapter, _history, _tick = _injected_tick(db, monkeypatch)
+    await store.save_rule(make_rule())
+
+    module = _load_worker(monkeypatch)
+    from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+
+    off = await module.run_scheduled_automation_source(
+        SimpleNamespace(**{"PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED": "false"}),
+        now=NOW,
+        automation_store=store,
+        identity_authority=CloudflareControlPlaneIdentityAuthority(_IdentityBindingDouble()),
+        discovery=discovery,
+    )
+
+    assert off is None, "the switch still decides whether the lane runs at all"
+    assert discovery.calls == 0
+    assert adapter.calls == []
+
+
+async def test_without_injection_the_lane_still_needs_the_worker_bindings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """기본 경로는 그대로다: 바인딩도 주입도 없으면 아무 것도 하지 않는다."""
+
+    module = _load_worker(monkeypatch)
+    receipt = await module.run_scheduled_automation_source(
+        SimpleNamespace(**{"PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED": True}),
+        now=NOW,
+    )
+
+    assert receipt is None
+
+
 def test_the_cron_entrypoint_calls_the_automation_lane() -> None:
     """`Default.scheduled` 가 그 체인을 호출한다는 소스 계약 (문자열 존재보다 강하게)."""
     source = (_CHAT / "worker.py").read_text(encoding="utf-8")
