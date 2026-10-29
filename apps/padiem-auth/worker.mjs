@@ -51,7 +51,9 @@ async function diagnosed(stage, operation) {
         message.includes('fetch failed') ? 'fetch_failed' : message.includes('network connection lost') ? 'network_lost' :
         message.includes('disallowed') ? 'disallowed' : message.includes('redirect') ? 'redirect' :
         message.includes('request body') || message.includes('bodyinit') ? 'request_body' : 'other';
-      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed', reason }));
+      const allowedVerify = ['invalid token arguments', 'invalid token', 'invalid token encoding', 'unsupported token header', 'untrusted signing key', 'invalid token signature', 'invalid token issuer', 'invalid token audience', 'invalid token expiry', 'invalid token issued time', 'invalid token nonce', 'invalid token subject', 'google keys unavailable'];
+      const verifyCode = stage === 'google_id_token_verification_failed' && allowedVerify.includes(message) ? message : undefined;
+      console.error(JSON.stringify({ auth_stage: stage, exception: name, message: 'stage failed', reason, verify_code: verifyCode }));
       throw error;
     }
 }
@@ -115,7 +117,7 @@ export function createApp({ clients, googleClientId, googleClientSecret, identit
       const identity = await diagnosed('google_id_token_verification_failed', async () => {
         const keyResponse = await fetcher('https://www.googleapis.com/oauth2/v3/certs', { redirect: 'manual' });
         if (!keyResponse.ok) throw new Error('google keys unavailable');
-        return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: current });
+        return verifyGoogleIdToken({ token: googleToken.id_token, jwks: await keyResponse.json(), clientId: googleClientId, nonce: pending.google_nonce, now: now() });
       });
       const account = await diagnosed('identity_lookup_failed', async () => {
         const userId = await googleProductUserId(identity.sub);
