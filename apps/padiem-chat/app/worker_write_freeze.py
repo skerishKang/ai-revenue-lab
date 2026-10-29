@@ -16,3 +16,12 @@ def reject_request(value, method, upgrade=None, path=""):
     if not freeze_active(value):
         return False
     return str(method).upper() not in ('GET', 'HEAD', 'OPTIONS') or str(upgrade or '').lower() == 'websocket' or path in WRITE_ON_GET
+
+
+def schedule_unless_frozen(value, awaitable, schedule):
+    if freeze_active(value):
+        close = getattr(awaitable, "close", None)
+        if callable(close): close()
+        return False
+    schedule(awaitable)
+    return True
