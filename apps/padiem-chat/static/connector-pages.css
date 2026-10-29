@@ -1,0 +1,170 @@
+/* Connector pages — one tile per connector, one dedicated page per tile.
+ * Scoped to the connectors view; the existing cards keep their own styles. */
+
+#connectorsGrid.connector-tiles,
+#connectorsView .capability-grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+#connectorsGrid .capability-card.connector-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 84px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+#connectorsGrid .capability-card.connector-tile:hover,
+#connectorsGrid .capability-card.connector-tile:focus-visible {
+  border-color: var(--accent, #6557e8);
+}
+
+#connectorsGrid .capability-card.connector-tile:focus-visible {
+  outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24));
+  outline-offset: 2px;
+}
+
+/* The tile shows one line of state; everything else lives on its own page. */
+#connectorsGrid .capability-card.connector-tile > .capability-workspace,
+#connectorsGrid .capability-card.connector-tile > .capability-read,
+#connectorsGrid .capability-card.connector-tile > .capability-read-state,
+#connectorsGrid .capability-card.connector-tile > .capability-soon,
+#connectorsGrid .capability-card.connector-tile > .connector-retry,
+#connectorsGrid .capability-card.connector-tile > .connector-live-status,
+#connectorsGrid .capability-card.connector-tile #pcPairingSection {
+  display: none !important;
+}
+
+.connector-tile-status {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted, #5b6672);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ── dedicated page ─────────────────────────────────────────────────────── */
+
+.connector-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 24px;
+}
+
+.connector-detail[hidden] {
+  display: none;
+}
+
+.connector-back {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12));
+  border-radius: 10px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.connector-back:hover {
+  border-color: var(--accent, #6557e8);
+}
+
+.connector-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.connector-detail-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-soft, #efedff);
+  color: var(--accent-strong, #2f6f99);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.connector-detail-mark:empty {
+  display: none;
+}
+
+.connector-detail-copy h3 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text, #17202a);
+}
+
+.connector-detail-copy p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted, #5b6672);
+}
+
+.connector-detail-actions[hidden] {
+  display: none;
+}
+
+.connector-detail-connect {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--accent, #6557e8);
+  border-radius: 10px;
+  background: var(--accent-soft, #efedff);
+  color: var(--text, #17202a);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.connector-detail-body .capability-card {
+  width: 100%;
+}
+
+.connector-detail-body .connector-tile-status {
+  display: none;
+}
+
+/* The page itself owns the one connect action; the card's own heading and
+ * duplicate connect button fold away on the dedicated page. */
+.connector-detail-body .pc-pairing-heading,
+.connector-detail-body .pc-pairing-help,
+.connector-detail-body .pc-pairing > .pc-pairing-connect {
+  display: none;
+}
+
+/* The computer page keeps the existing card; its advanced lane folds to one
+ * summary so the page leads with the PC list and one action. */
+.pc-connector-advanced {
+  margin-top: 12px;
+  border-top: 1px solid var(--line, rgba(26, 34, 48, .12));
+  padding-top: 10px;
+}
+
+.pc-connector-advanced-summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted, #5b6672);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  #connectorsView .capability-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
