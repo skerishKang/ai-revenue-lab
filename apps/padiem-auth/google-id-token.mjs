@@ -16,7 +16,7 @@ export async function verifyGoogleIdToken({ token, jwks, clientId, nonce, now })
   if (parts.length !== 3) throw new Error('invalid token');
   const header = JSON.parse(decoder.decode(decode(parts[0])));
   const claims = JSON.parse(decoder.decode(decode(parts[1])));
-  if (header.alg !== 'RS256' || typeof header.kid !== 'string' || !header.kid) throw new Error('unsupported token header');
+  if (header.alg !== 'RS256' || typeof header.kid !== 'string' || !header.kid || header.crit || header.jku || header.jwk || header.x5u) throw new Error('unsupported token header');
   const matching = (Array.isArray(jwks?.keys) ? jwks.keys : []).filter((key) => key.kid === header.kid && key.kty === 'RSA' && (!key.alg || key.alg === 'RS256') && (!key.use || key.use === 'sig'));
   if (matching.length !== 1) throw new Error('untrusted signing key');
   const key = await crypto.subtle.importKey('jwk', matching[0], { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);

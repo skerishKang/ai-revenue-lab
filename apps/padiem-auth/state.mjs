@@ -4,6 +4,7 @@ export class AuthState {
   constructor(state) {
     this.storage = state.storage;
     this.sql = this.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS client_assertions (jti TEXT PRIMARY KEY, expires INTEGER NOT NULL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS login_requests (
       state_digest TEXT PRIMARY KEY, browser_digest TEXT NOT NULL, client TEXT NOT NULL,
       redirect TEXT NOT NULL, service_state TEXT NOT NULL, service_challenge TEXT NOT NULL,
@@ -21,6 +22,14 @@ export class AuthState {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS refresh_tokens (
       digest TEXT PRIMARY KEY, session_id TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0
     )`);
+  }
+
+  claimAssertion({ key, expires, now }) {
+    return this.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM client_assertions WHERE expires<=?', now);
+      const rows = this.sql.exec('INSERT INTO client_assertions(jti,expires) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING jti', key, expires).toArray();
+      return rows.length === 1;
+    });
   }
 
   createLogin({ stateDigest, browserDigest, client, redirect, serviceState, serviceChallenge, googleNonce, googleVerifier, expires }) {
@@ -81,7 +90,10 @@ export class AuthState {
     });
   }
 
-  revoke({ id, client }) {
-    return this.storage.transactionSync(() => this.sql.exec('UPDATE sessions SET revoked=1 WHERE id=? AND client=?', id, client));
+  revoke({ id, client, digest, now }) {
+    return this.storage.transactionSync(() => {
+      const rows = this.sql.exec('UPDATE sessions SET revoked=1 WHERE id=? AND client=? AND revoked=0 AND expires>? AND EXISTS (SELECT 1 FROM refresh_tokens WHERE session_id=? AND digest=? AND used=0) RETURNING id', id, client, now, id, digest).toArray();
+      return rows.length === 1;
+    });
   }
 }
