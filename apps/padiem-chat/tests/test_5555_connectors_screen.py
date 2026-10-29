@@ -89,8 +89,6 @@ def test_every_service_card_has_a_mark_before_its_name():
         ('data-connector-id="connector:telegram:bot@1"', "T"),
         ('data-connector-id="connector:slack:workspace@1"', "S"),
         ('data-connector-id="connector:google:calendar@1"', "C"),
-        ('data-connector="discord"', "DC"),
-        ('data-connector="kakao-business"', "KB"),
     ):
         card = _card(anchor)
         assert f'data-service-mark="{mark}"' in card, anchor
@@ -102,6 +100,14 @@ def test_every_service_card_has_a_mark_before_its_name():
             default=len(card),
         )
         assert card.index("<strong") < status, anchor
+    # The two permanently "preparing" cards are gone: the server projection
+    # never carried Discord or Kakao Business, so they could never activate.
+    for anchor, mark in (
+        ('data-connector="discord"', "DC"),
+        ('data-connector="kakao-business"', "KB"),
+    ):
+        assert anchor not in HTML
+        assert f'data-service-mark="{mark}"' not in HTML
     # The chip is a letter in the card's own tokens: no image asset and no
     # provider logo is introduced.
     assert "[data-service-mark]::before" in CSS
