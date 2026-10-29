@@ -230,8 +230,17 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
  if(state==="on"&&id==="drive"){
   // OFF is a temporary pause, not credential revocation. The Google authority
   // has no reversible pause operation yet; never silently delete its grant.
-  feedback("Google Drive 일시 중지는 아직 준비 중입니다. 연결 삭제는 커넥터 관리에서 선택해 주세요.",
-    "Google Drive pause is not available yet. Remove authorization in Connectors.");
+  feedback("Google 권한은 잠시 멈출 수 없어요. 완전히 끊으려면 Google 계정 > 보안 > 타사 앱에서 해제하세요.",
+    "Google permissions cannot be paused. To revoke them, open Google Account > Security > third-party apps.");
+  const feedbackEl=document.getElementById("clawConnectionFeedback");
+  if(feedbackEl){
+   const revokeLink=document.createElement("a");
+   revokeLink.href="https://myaccount.google.com/connections";
+   revokeLink.target="_blank";
+   revokeLink.rel="noopener noreferrer";
+   revokeLink.textContent=message("Google 계정 보안 설정 열기","Open Google Account security");
+   feedbackEl.append(document.createTextNode(" "),revokeLink);
+  }
   return;
  }
  if(state==="on"&&id==="github"){
