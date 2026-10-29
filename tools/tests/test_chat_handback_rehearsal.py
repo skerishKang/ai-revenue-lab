@@ -29,3 +29,20 @@ class Tests(unittest.TestCase):
    with sqlite3.connect(b) as db:db.executescript("UPDATE item SET val='temp' WHERE id='a'; UPDATE item SET val='one' WHERE id='b'; UPDATE item SET val='two' WHERE id='a';")
    with self.assertRaises(sqlite3.IntegrityError):h.apply_local(a,b,c)
    with sqlite3.connect(a) as x,sqlite3.connect(c) as y:self.assertEqual(x.execute('select * from item order by id').fetchall(),y.execute('select * from item order by id').fetchall())
+ def test_late_d1_insert_replayed_on_unchanged_com2(self):
+  with tempfile.TemporaryDirectory() as d:
+   base,late,com2=[Path(d)/n for n in ('export','late_d1','com2')]
+   for p in (base,late,com2):self.setupdb(p)
+   with sqlite3.connect(late) as db:db.execute("INSERT INTO item VALUES('late','after export')")
+   self.assertEqual(h.plan(base,late,com2)['item'],{'insert':1,'update':0,'delete':0})
+   h.apply_local(base,late,com2)
+   with sqlite3.connect(late) as x,sqlite3.connect(com2) as y:
+    self.assertEqual(h._snapshot(x,'item'),h._snapshot(y,'item'))
+ def test_late_replay_refuses_com2_writes(self):
+  with tempfile.TemporaryDirectory() as d:
+   base,late,com2=[Path(d)/n for n in ('export','late_d1','com2')]
+   for p in (base,late,com2):self.setupdb(p)
+   with sqlite3.connect(late) as db:db.execute("INSERT INTO item VALUES('late','after export')")
+   with sqlite3.connect(com2) as db:db.execute("INSERT INTO item VALUES('new','com2 write')")
+   with self.assertRaisesRegex(h.Refused,'d1_baseline_drift'):h.apply_local(base,late,com2)
+   with sqlite3.connect(com2) as db:self.assertEqual(db.execute('select count(*) from item').fetchone()[0],3)
