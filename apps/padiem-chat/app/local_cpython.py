@@ -53,24 +53,8 @@ def local_data_dir() -> Path:
 
 
 def apply_migrations(connection: sqlite3.Connection, migrations_dir: Path = MIGRATIONS_DIR) -> int:
-    """Apply every pending migration in filename order; return how many ran."""
-
-    connection.execute(
-        f"CREATE TABLE IF NOT EXISTS {LOCAL_LEDGER_TABLE} ("
-        "name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
-    )
-    applied = {row[0] for row in connection.execute(f"SELECT name FROM {LOCAL_LEDGER_TABLE}")}
-    count = 0
-    for path in sorted(migrations_dir.glob("*.sql")):
-        if path.name in applied:
-            continue
-        connection.executescript(path.read_text(encoding="utf-8"))
-        connection.execute(
-            f"INSERT INTO {LOCAL_LEDGER_TABLE} (name, applied_at) VALUES (?, ?)",
-            (path.name, datetime.now(timezone.utc).isoformat()),
-        )
-        count += 1
-    return count
+    from .migration_bootstrap import apply_checked_migrations
+    return apply_checked_migrations(connection, migrations_dir)
 
 
 def _ensure_session_secret(data_dir: Path) -> None:
