@@ -20,6 +20,7 @@ import logging
 import time
 from typing import Any, Callable
 
+from .history import VerifiedDispatch, _tagged
 from . import httpx_compat as httpx
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,11 @@ QUEUE_USER_AGENT = "PadiemChat-Queue/1.0"
 #: purpose: the over-budget original lives in private R2 and the delivered answer in the
 #: conversation, and both stay with this Worker.
 QUEUE_DISPATCH_METHODS = frozenset({
+    "get_oracle_mesh_dispatch_pin",
+    "get_oracle_mesh_run_correlation",
+    "get_oracle_mesh_run_command",
+    "get_oracle_mesh_run_open_state",
+    "oracle_mesh_lane_status",
     "claim_oracle_mesh_dispatch",
     "cancel_oracle_mesh_dispatches_for_run",
     "consume_oracle_mesh_dispatch",
@@ -260,6 +266,14 @@ class QueueBackedPresenceStore:
         return await self._client.call("load", **arguments)
 
 
+#: Reads whose rows arrive already scoped to one owner, so they may carry the handle.
+_OWNER_SCOPED_ROW_READS = frozenset({
+    "consume_oracle_mesh_dispatch", "get_oracle_mesh_dispatch_for_owner",
+    "get_oracle_mesh_dispatch_pin", "get_oracle_mesh_run_correlation",
+    "get_oracle_mesh_run_command",
+})
+
+
 class QueueForwardingHistoryStore:
     """The Chat store surface, with the dispatch names answered by the queue.
 
@@ -273,10 +287,25 @@ class QueueForwardingHistoryStore:
             raise QueueUnavailable("a D1 store is required underneath the queue")
         self._inner = inner
         self._client = client
+        # The dispatch rows are the queue's now, so anything the conversation side reads
+        # from them must be asked there. Without this the browser's result read-back re-read
+        # D1, found nothing, and answered 503 on a run that had completed fine.
+        setter = getattr(inner, "set_dispatch_authority", None)
+        if callable(setter):
+            setter(self)
 
     def __getattr__(self, name: str) -> Any:
         if name.startswith("_"):
             raise AttributeError(name)
         if name in QUEUE_DISPATCH_METHODS:
-            return lambda **arguments: self._client.call(name, **arguments)
+            if name not in _OWNER_SCOPED_ROW_READS:
+                return lambda **arguments: self._client.call(name, **arguments)
+
+            async def read(**arguments):
+                # The queue answered for one named owner; tag the row so the original
+                # stores accept it as proof and never re-read a table they do not own.
+                row = await self._client.call(name, **arguments)
+                return _tagged(row) if isinstance(row, dict) else row
+
+            return read
         return getattr(self._inner, name)

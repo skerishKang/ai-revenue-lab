@@ -56,6 +56,14 @@ DISPATCH_METHODS = frozenset({
     "oracle_mesh_node_live_claims",
     "record_oracle_mesh_first_result",
     "renew_oracle_mesh_claim",
+    # Reads the conversation side needs when the dispatch rows live here: the pin an
+    # original store checks, the terminal receipt of a run, and the run's open commands.
+    # They read only the tables the queue owns, and they answer for one named owner.
+    "get_oracle_mesh_dispatch_pin",
+    "get_oracle_mesh_run_correlation",
+    "get_oracle_mesh_run_command",
+    "get_oracle_mesh_run_open_state",
+    "oracle_mesh_lane_status",
 })
 
 #: The whole pairing directory, so every browser path reads one authority (#5573).
