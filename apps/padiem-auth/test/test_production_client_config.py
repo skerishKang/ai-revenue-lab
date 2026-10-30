@@ -7,6 +7,7 @@ class AuthClientConfigTest(unittest.TestCase):
     def test_lovetree_callbacks_and_public_keys(self):
         config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text())
         client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['lovetree-4-0']
+        self.assertNotIn('profile_claims', client)
         self.assertEqual(set(client['redirect_uris']), {
             'https://lovetree-4-0.pages.dev/auth/callback',
             'https://ai-astra4-preview-auth-callb.lovetree-4-0.pages.dev/auth/callback',
@@ -21,6 +22,7 @@ class AuthClientConfigTest(unittest.TestCase):
         config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text())
         client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b62']
         self.assertEqual(client['id'], 'b62')
+        self.assertEqual(client['profile_claims'], ['email', 'email_verified', 'name', 'picture'])
         self.assertEqual(client['redirect_uris'], [
             'https://chat.padiem.net/_test/auth/account-comparison/callback',
             'https://chat.padiem.net/auth/shared/callback',
