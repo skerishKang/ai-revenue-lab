@@ -41,7 +41,12 @@ def validate_config(config, baseline, live_clients=None, reviewed_config=None):
         raise ValueError('unreviewed service option')
     if any(set(x) - {'name', 'class_name', 'script_name'} for x in configured_objects):
         raise ValueError('unreviewed DO option')
-    planned_services = sorted((x['binding'], x.get('service'), x.get('environment'), x.get('entrypoint')) for x in configured_services)
+    live_service_environments = {x['name']: x.get('environment') for x in services}
+    def planned_environment(item):
+        if 'environment' not in item and live_service_environments.get(item['binding']) == 'production':
+            return 'production'
+        return item.get('environment')
+    planned_services = sorted((x['binding'], x.get('service'), planned_environment(x), x.get('entrypoint')) for x in configured_services)
     expected_objects = sorted((x['name'], x.get('class_name'), x.get('script_name')) for x in objects)
     planned_objects = sorted((x['name'], x.get('class_name'), x.get('script_name')) for x in configured_objects)
     def diagnose(expected, planned, properties, marker):

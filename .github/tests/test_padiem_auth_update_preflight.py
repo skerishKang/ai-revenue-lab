@@ -115,14 +115,23 @@ class Check(unittest.TestCase):
             self.assertIn(('IDENTITY_AUTHORITY service' if kind == 'service' else 'AUTH_STATE class_name'), text)
             self.assertNotIn('SYNTHETIC_PRIVATE_VALUE', text)
 
-    def test_environment_omission_not_assumed_equivalent_to_production(self):
+    def test_only_omitted_environment_matches_production(self):
         import contextlib, io
-        changed = {**base, 'bindings':[dict(b) for b in base['bindings']]}
-        changed['bindings'][0]['environment'] = 'production'
-        output = io.StringIO()
-        with contextlib.redirect_stderr(output), self.assertRaises(ValueError):
-            m.validate_config(config, changed)
-        self.assertIn('IDENTITY_AUTHORITY environment', output.getvalue())
-        self.assertNotIn('production', output.getvalue())
+        def live(environment):
+            changed = {**base, 'bindings':[dict(b) for b in base['bindings']]}
+            changed['bindings'][0]['environment'] = environment
+            return changed
+        m.validate_config(config, live('production'))
+        for environment in ('staging', ''):
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+                m.validate_config(config, live(environment))
+        for explicit in (None, 'staging'):
+            candidate = {**config, 'services':[{**config['services'][0], 'environment':explicit}]}
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+                m.validate_config(candidate, live('production'))
+        changed = {**config, 'services':[{**config['services'][0], 'service':'other-target'}]}
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+            m.validate_config(changed, live('production'))
+
 
 if __name__ == '__main__': unittest.main()
