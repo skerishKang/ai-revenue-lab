@@ -79,3 +79,16 @@ async def test_cancelled_stream_reports_reason_and_closes(caplog):
         await task
     assert closed.is_set()
     assert "stage=stream_ended run_hash=" + run_hash(RUN) + " reason=cancelled" in caplog.text
+
+@pytest.mark.asyncio
+async def test_missing_browser_run_id_is_assigned_once(monkeypatch, caplog):
+    caplog.set_level(logging.INFO)
+    app, bridge, _ = h._wire(monkeypatch)
+    async with h._client(app) as client:
+        response = await client.post("/api/orchestration", headers={"Origin": h.ORIGIN},
+           json={"messages": [{"role": "user", "content": "synthetic"}], "skill": "auto"})
+        assert response.status_code == 200
+    token = run_hash(bridge.requests[0]["session_id"])
+    assert token
+    for stage in ("request_received", "contract_accepted", "stream_started", "stream_ended"):
+        assert "stage=" + stage + " run_hash=" + token in caplog.text
