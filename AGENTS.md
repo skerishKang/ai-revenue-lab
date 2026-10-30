@@ -244,6 +244,8 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 
 `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md` applies to **every** Business/app/package and to Engine/Core/Control Plane/Chat/Claw/Desktop work.
 
+로컬 테스트가 실패하면 결함 단정 전에 먼저 `scripts/dev/check_venv_freshness.py`를 실행해 낡은 venv 설치본을 배제한다.
+
 Default for a bounded bug fix:
 
 ```text
