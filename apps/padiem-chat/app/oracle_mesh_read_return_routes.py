@@ -3221,12 +3221,19 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 message_id=message_id,
                 summary=summary,
                 content=part,
-                status=status,
+                status=("failed" if command_scope is not None and outcome == "failed" else status),
                 # A terminal result is the only caller that opts out of the
                 # shared edge trim; every other message keeps today's behavior.
                 preserve_edges=(dispatch.get("kind") == "command"),
                 command_scope=command_scope,
             ) or appended
+        if command_scope is not None and outcome == "failed":
+            # Seal before acknowledging the queue result: an unavailable Chat
+            # store leaves the dispatch retryable with the same pinned result.
+            await history_store.seal_run_terminal(
+                user_id=dispatch["user_id"], run_id=dispatch["run_id"],
+                summary="pc_read_failed", status="failed",
+            )
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.
         try:

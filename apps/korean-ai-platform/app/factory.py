@@ -129,10 +129,6 @@ def create_app() -> Starlette:
     # observes the same installed validation authority as the main gateway.
     from app.pilot.stream_gateway import router as pilot_stream_router
 
-    # Slice 16: staged Router-owned b14/auto streaming preview. Keep this
-    # separate from both the manual preview and canonical endpoint promotion.
-    from app.pilot.auto_stream_gateway import router as pilot_auto_stream_router
-
     # Provider-neutral readiness truth for deployment gates. This endpoint is
     # read-only and never performs an upstream Provider call.
     from app.pilot.provider_readiness import router as provider_readiness_router
@@ -147,7 +143,6 @@ def create_app() -> Starlette:
     for route in [
         *pilot_api_router.routes,
         *pilot_stream_router.routes,
-        *pilot_auto_stream_router.routes,
         *provider_readiness_router.routes,
         *call_ledger_admin_router.routes,
     ]:

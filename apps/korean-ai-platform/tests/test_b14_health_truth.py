@@ -226,18 +226,14 @@ def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
     assert "openrouter" not in models.text.lower()
 
 
-def test_health_reports_fixed_chain_routing_policy(client):
-    """D14 (#2044): health pins the owner-designated b14/auto chain."""
+def test_health_no_longer_reports_an_auto_chain(client):
+    """B7: the retired fixed-chain descriptor is gone from public health."""
     _set_live()
 
     data = client.get("/api/pilot/health").json()
 
-    policy = data["business14"]["routing_policy"]
-    assert policy["id"] == "fixed_chain_v1"
-    assert policy["chain"] == [
-        "agnes-ai/agnes-3.0-flash",
-        "poolside/laguna-s-2.1",
-    ]
+    assert "routing_policy" not in data["business14"]
+    assert "fixed_chain_v1" not in client.get("/api/pilot/health").text
 
 
 def test_catalog_contains_exact_owner_models_not_a_synthetic_auto_choice(client):

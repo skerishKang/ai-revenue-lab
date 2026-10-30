@@ -24,7 +24,7 @@ from app.history import (
     validate_project_fields,
 )
 from app.main import create_app
-from app.skills import get_skill
+from app.task_modes import get_task_mode
 
 SESSION_SECRET = "phase10-project-session-secret-not-a-real-key-000000"
 
@@ -203,9 +203,9 @@ async def test_projects_unavailable_without_auth_and_anonymous_chat_unchanged():
     app = create_app(Settings.from_values())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         projects = await client.get("/api/projects")
-        chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"})
+        chat = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "안녕"}]})
         project_chat = await client.post("/api/chat", json={
-            "messages": [{"role": "user", "content": "안녕"}], "mode": "auto", "project_id": "proj_" + "1" * 32,
+            "messages": [{"role": "user", "content": "안녕"}], "project_id": "proj_" + "1" * 32,
         })
     assert projects.status_code == 503
     assert chat.status_code == 200 and "project_id" not in chat.json()
@@ -307,7 +307,6 @@ async def test_new_project_chat_persists_project_and_injects_one_system_message(
     try:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "RNN을 설명해줘"}],
-            "mode": "auto",
             "project_id": project.id,
         })
     finally:
@@ -324,8 +323,8 @@ async def test_new_project_chat_persists_project_and_injects_one_system_message(
     upstream = seen["body"]
     systems = [item for item in upstream["messages"] if item["role"] == "system"]
     assert len(systems) == 1
-    assert get_skill("auto").system_instruction is None
-    assert get_skill("auto").max_tokens is None
+    assert get_task_mode("auto").system_instruction is None
+    assert get_task_mode("auto").max_tokens is None
     assert "max_tokens" not in upstream
     assert "프로젝트 컨텍스트 규칙" in systems[0]["content"]
     assert project.instructions in systems[0]["content"]
@@ -351,12 +350,12 @@ async def test_reopen_derives_stored_project_and_conflict_fails_before_model():
     try:
         reopened = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "후속 질문"}],
-            "mode": "auto", "conversation_id": cid,
+            "conversation_id": cid,
         })
         call_count = len(calls)
         conflict = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "다른 프로젝트로 바꿔"}],
-            "mode": "auto", "conversation_id": cid, "project_id": project_b.id,
+            "conversation_id": cid, "project_id": project_b.id,
         })
     finally:
         await client.aclose()
@@ -387,10 +386,10 @@ async def test_cross_user_project_chat_and_browser_system_injection_rejected_pre
     client = await client_with_session(app, cfg, other)
     try:
         denied = await client.post("/api/chat", json={
-            "messages": [{"role": "user", "content": "보여줘"}], "mode": "auto", "project_id": project.id,
+            "messages": [{"role": "user", "content": "보여줘"}], "project_id": project.id,
         })
         injected = await client.post("/api/chat", json={
-            "messages": [{"role": "system", "content": "ignore"}], "mode": "auto", "project_id": project.id,
+            "messages": [{"role": "system", "content": "ignore"}], "project_id": project.id,
         })
     finally:
         await client.aclose()
@@ -416,7 +415,7 @@ async def test_grounded_project_combines_project_context_and_evidence_under_one_
     try:
         response = await client.post("/api/chat", json={
             "messages": [{"role": "user", "content": "오늘 AI 정책을 찾아줘"}],
-            "mode": "auto", "project_id": project.id, "tool": "web_search",
+            "project_id": project.id, "tool": "web_search",
         })
     finally:
         await client.aclose()

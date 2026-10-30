@@ -60,7 +60,6 @@ def _core_error(code: str, safe_message: str) -> ExecutionRuntimeError:
 def _payload() -> dict:
     return {
         "messages": [{"role": "user", "content": "스트리밍으로 답해 주세요"}],
-        "mode": "auto",
     }
 
 

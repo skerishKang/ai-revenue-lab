@@ -111,7 +111,15 @@ class SqliteD1:
             for statement in prepared:
                 results.append(statement._one_result())
             self.connection.execute("COMMIT")
-        except Exception:
-            self.connection.execute("ROLLBACK")
+        except BaseException:
+            # Not `Exception`: a call cancelled at this point raises CancelledError, which
+            # is a BaseException. Leaking it past the rollback leaves the BEGIN open on the
+            # one connection the whole process shares, and every later write then fails for
+            # the life of that process. The rollback itself must not replace the reason the
+            # caller is unwinding, so its own failure is swallowed after the original raise.
+            try:
+                self.connection.execute("ROLLBACK")
+            except sqlite3.Error:
+                pass
             raise
         return results

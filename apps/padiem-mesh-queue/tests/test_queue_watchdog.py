@@ -21,7 +21,6 @@ import subprocess
 import sys
 import threading
 import time
-
 QUEUE = pathlib.Path(__file__).resolve().parents[1]
 CHAT = QUEUE.parents[1] / "apps" / "padiem-chat"
 DOCS = QUEUE.parents[1] / "docs" / "operations"
@@ -30,6 +29,8 @@ sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(QUEUE))
 
 from app.d1_sqlite import SqliteD1, connect  # noqa: E402
+import internal_store  # noqa: E402
+import service  # noqa: E402  (the module, so a test can look at what it hands the rounds)
 from schema import apply  # noqa: E402
 from service import (  # noqa: E402
     EXIT_UNRESPONSIVE, LIVENESS_ANSWERED, LIVENESS_FAILED, LIVENESS_FAILURES_BEFORE_RESTART,
@@ -72,6 +73,17 @@ OPS_KEYS = frozenset({
 
 class _Stop(Exception):
     """Raised from the injected sleep so an endless loop can be observed and ended."""
+
+
+class _FakeExit:
+    """A stand-in for the `os` module: `_exit` records the code and does not leave."""
+
+    def __init__(self) -> None:
+        self.codes: list[int] = []
+
+    def _exit(self, code: int) -> None:
+        self.codes.append(code)
+        raise _Stop("a real os._exit never returns")
 
 
 class _Stuck:
@@ -194,6 +206,44 @@ def test_an_answer_resets_the_count():
     assert len(check.rounds) == 5
 
 
+def test_the_watchdog_is_wired_to_end_the_process_not_only_its_thread():
+    """The rounds were only ever proven with an injected `exit_process`.
+
+    Nothing checked that the running service hands one over. Without it the third failed
+    read returns from the loop, the thread ends quietly and `Restart=always` has nothing to
+    restart — a wedged queue would stay `active` and serve nobody, which is the one state
+    this watchdog exists to avoid.
+    """
+
+    submitted: dict = {}
+
+    def record(_database, **kwargs):
+        submitted.update(kwargs)
+
+    original = service.liveness_rounds
+    service.liveness_rounds = record
+    try:
+        pool = service.start_liveness_watchdog(None)
+        pool.shutdown(wait=True)
+    finally:
+        service.liveness_rounds = original
+
+    exit_process = submitted.get("exit_process")
+    assert callable(exit_process), "the watchdog must be handed a way to end the process"
+
+    fake = _FakeExit()
+    original_os = service.os
+    service.os = fake
+    try:
+        try:
+            exit_process(EXIT_UNRESPONSIVE)
+        except _Stop:
+            pass
+    finally:
+        service.os = original_os
+    assert fake.codes == [EXIT_UNRESPONSIVE]
+
+
 def test_the_unit_and_installer_name_the_keys_the_code_reads():
     unit = (DEPLOY / "padiem-mesh-queue.service").read_text(encoding="utf-8")
     installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
@@ -206,8 +256,13 @@ def test_the_unit_and_installer_name_the_keys_the_code_reads():
     assert "UMask=0077" in unit
 
     named = set(re.findall(r"\bMESH_QUEUE_[A-Z_]+", installer + runbook))
+    # Line kinds are not environment keys, but they look exactly like them to a scan of the
+    # deploy text - the runbook has to name the line an operator greps for. The exemption is
+    # read from the code that prints it, so it cannot be invented here to hide a real key.
+    markers = {internal_store.log_line("p", "q", 200, 0, "ok").split()[0],
+               internal_store.STORE_FAILURE_PREFIX, internal_store.TXN_RECOVERY_PREFIX}
     read = code_keys()
-    unknown = named - read - OPS_KEYS
+    unknown = named - read - OPS_KEYS - (named & markers)
     assert not unknown, "deploy names a key the service does not read: %s" % sorted(unknown)
     missing = read - named
     assert not missing, "the service reads a key the deploy never sets: %s" % sorted(missing)
@@ -283,6 +338,16 @@ def test_the_suite_runs_in_ci_and_needs_no_credential():
     assert "secrets." not in workflow, "this lane is offline; a secret makes it not so"
     assert "${{ secrets" not in workflow and "CLOUDFLARE_API_TOKEN" not in workflow
     assert "wrangler" not in workflow
+
+
+def test_the_installer_hands_the_backup_dir_to_the_service_user():
+    """backup.sh writes as the service user; a root-owned parent fails with no-file."""
+
+    installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
+    assert "install -d -m 0700 -o \"$ACCOUNT\" -g \"$ACCOUNT\" /opt/padiem/backups/mesh-queue" in installer
+    # A re-install must preserve both switches, and write today's behaviour when absent.
+    assert "REQUEST_LOG=${REQUEST_LOG:-off}" in installer
+    assert "MESH_QUEUE_REQUEST_LOG=$REQUEST_LOG" in installer
 
 
 def test_the_installer_protects_the_tree_it_copies_from():

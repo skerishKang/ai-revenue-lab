@@ -117,12 +117,13 @@ def test_third_party_photo_credit_is_text_and_never_a_link() -> None:
 
 
 def test_binaries_are_limited_to_recorded_assets_and_captures() -> None:
-    """바이너리는 (1) 출처가 기록된 화면 자산, (2) 검토 캡처 두 자리만 허용한다."""
+    """바이너리는 (1) 출처가 기록된 화면 자산, (2) 검토 캡처, (3) #5967 시안 원본 정본
+    (`design-originals/`, 출처·SHA-256이 그 README에 기록된 무변형 사본) 세 자리만 허용한다."""
     def hidden(p: Path) -> bool:
         return any(part.startswith(".") or part == "__pycache__" for part in p.relative_to(ROOT).parts)
 
     shipped = sorted(p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*") if p.is_file() and not hidden(p))
-    code = [p for p in shipped if not p.startswith(("assets/", "docs/screenshots/"))]
+    code = [p for p in shipped if not p.startswith(("assets/", "docs/screenshots/", "design-originals/"))]
     assert code, "the prototype must ship its own source files"
     assert all(Path(p).suffix in {".html", ".css", ".js", ".md", ".py"} for p in code), code
     images = [p for p in shipped if p.startswith("assets/") and Path(p).suffix in {".jpg", ".jpeg", ".png", ".webp"}]
@@ -132,6 +133,11 @@ def test_binaries_are_limited_to_recorded_assets_and_captures() -> None:
         assert Path(image).name in attribution, f"{image} ships without a recorded source"
     for probe in ("AI 생성", "리사이즈", "재인코딩", "1672", "업스케일"):
         assert probe in attribution, f"the asset record is missing {probe}"
+    originals = {p.name for p in (ROOT / "design-originals").iterdir() if p.is_file()}
+    assert originals == {
+        "README.md", "01_uk_classic.png", "02_us_cinematic.png",
+        "03_global_theme_matrix.png", "04_korea_cinematic_home.png",
+    }, f"design-originals holds exactly the #5967 package, nothing else: {originals}"
 
 
 # ── 축 1 · 국가 = 음계만 정의하고 역할은 배정하지 않는다 ─────────────────────

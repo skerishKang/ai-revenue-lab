@@ -38,6 +38,30 @@ CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
 #: here is a time ceiling: the command runs until the console answers.
 LEASE_RENEW_PATH = "/api/claw/connector/mesh-reads/renew"
 RENEW_INTERVAL_SECONDS = 20
+#: What the loop waits after a round that asked for work and got none. A poll already
+#: holds five seconds on the live channel and the lane answers the moment a dispatch
+#: exists, so an empty answer is a fact about the queue rather than a timeout, and the
+#: next ask may come later.
+#: The ceiling is a measurement, not a product rule: the beat that says "this executor
+#: is alive and this PC was reachable" rides the poll body, and the product calls a
+#: presence row stale at 180 seconds
+#: (`apps/padiem-chat/app/claw_local_access_source.py:102`,
+#: `MESH_PRESENCE_MAX_AGE_SECONDS`) while the connector watch alarms at 300
+#: (`.github/scripts/connector_lane_watch.py:59`, `BEAT_STALL_SECONDS`). Sixty seconds
+#: of gap plus the five the lane already holds leaves a beat at most 65 seconds old -
+#: 2.8 times inside the freshness the product actually acts on. What it costs is one
+#: longer wait before a dispatch that arrives into a quiet lane is claimed, measured in
+#: `docs/architecture/PADIEM_CONNECTOR_IDLE_POLL_BACKOFF_4139_20261029.md` together with
+#: the rounds per minute before and after.
+IDLE_POLL_BASE_SECONDS = 1
+IDLE_POLL_MAX_SECONDS = 60
+#: Only an empty answer from the lane earns a longer wait. A round this host skipped -
+#: the failover gate closed, or a held result still waiting to be sent - proves nothing
+#: about the queue, and backing off there would slow exactly the moment a handover needs
+#: the new host to start claiming at once.
+ROUND_IDLE = "idle"
+ROUND_SKIPPED = "skipped"
+ROUND_WORKED = "worked"
 #: #6106 follow-up: before anything on a customer PC is ended, the executor asks the
 #: server whether that PC has a live claim at all. The connector's own map covers the
 #: host it runs on; this is the only view that also covers the failover partner
@@ -117,6 +141,13 @@ MAX_READ_BYTES = 6_000_000
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
+#: How much of a refusal's own message reaches the trace. The reason is what a
+#: silent read_failed cost on 2026-10-30; the bound keeps one line one line.
+_ERROR_TEXT_CHARS = 160
+#: The base deadline for one PC step when the deployment names none. This is the
+#: value every executor had before 2026-10-17, and the read/desktop lanes still
+#: multiply it by four, so no new ceiling is introduced by naming it.
+DEFAULT_STEP_TIMEOUT_SECONDS = 30
 #: A result the server refuses for a non-retryable reason is quarantined to
 #: the pending dir instead of dropped: the bytes survive a restart, the cause
 #: is recorded next to them, and the queue moves on. Retrying forever would
@@ -139,7 +170,17 @@ _PENDING_BODY_SUFFIX = ".body"
 
 
 class OracleMeshChannelRefused(RuntimeError):
-    """Bounded refusal of one executor/server exchange. Never carries content."""
+    """Bounded refusal of one executor/server exchange. Never carries content.
+
+    `leg` says which server was asked - `chat` or `queue` - and it is an attribute, not
+    part of the message: the message text is what the operator and the monitor already
+    read, and #5881's cutover proved that one text for two servers makes an edge block
+    indistinguishable from a Worker failure. Nothing here carries a URL or a secret.
+    """
+
+    def __init__(self, message: str, *, leg: str | None = None) -> None:
+        super().__init__(message)
+        self.leg = leg
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -200,6 +241,43 @@ def _require_text(value: Any, name: str) -> str:
     return value
 
 
+def _safe_error_text(exc: BaseException) -> str:
+    """One bounded line naming a failure, never the bytes it was about.
+
+    A decode error's message quotes the offending bytes, which is file content,
+    so only the class travels for it. Every other reason is collapsed to a
+    single line and cut at ``_ERROR_TEXT_CHARS``.
+    """
+    name = exc.__class__.__name__
+    if isinstance(exc, UnicodeDecodeError):
+        return name
+    text = " ".join(str(exc).split())[:_ERROR_TEXT_CHARS]
+    return f"{name}:{text}" if text else name
+
+
+def _step_timeout_seconds(env: dict[str, str]) -> int:
+    """The deployment's own PC-step deadline, in seconds.
+
+    Absent, this is the value every executor had before 2026-10-17. The read and
+    desktop lanes multiply it by four themselves, so the variable is the base
+    deadline, not the wire deadline. No second ceiling is invented here.
+    """
+    raw = env.get("ORACLE_MESH_READ_TIMEOUT_SECONDS", "").strip()
+    if not raw:
+        return DEFAULT_STEP_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        raise ContractError(
+            "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
+        ) from None
+    if isinstance(value, bool) or value < 1:
+        raise ContractError(
+            "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
+        )
+    return value
+
+
 class OracleMeshExecutor:
     """Single-thread executor over one authenticated Chat channel.
 
@@ -226,6 +304,7 @@ class OracleMeshExecutor:
         claim_gate: Optional[Callable[[], bool]] = None,
         presence_provider: Optional[Callable[[], Any]] = None,
         pairing_provider: Optional[Callable[[], Any]] = None,
+        presence_round_begin: Optional[Callable[[], None]] = None,
     ) -> None:
         if not isinstance(chat_origin, str) or not chat_origin.startswith("https://"):
             raise ContractError("the chat channel must be an https origin")
@@ -277,6 +356,10 @@ class OracleMeshExecutor:
         #: guards is a loop that stopped asking at all, not a channel that answers
         #: badly.
         self._last_round_at = time.monotonic()
+        #: Which of the three shapes the last round had, read by the service loop to
+        #: decide whether the queue really is empty. Starts as a skip: no lane has
+        #: answered for this process yet, so nothing has been earned.
+        self.last_round = ROUND_SKIPPED
         self._transport = transport or self._https_post
         self._pending: Optional[tuple[OracleMeshDispatch, OracleMeshExecutionOutcome]] = None
         #: The connector's own answer to "is a dispatch running on this PC right now".
@@ -316,6 +399,11 @@ class OracleMeshExecutor:
         if pairing_provider is not None and not callable(pairing_provider):
             raise ContractError("the pairing provider must be callable")
         self._pairing_provider = pairing_provider
+        # The round boundary of a shared device table, if the deployment hands one
+        # over. It is called before either provider is read, never after.
+        if presence_round_begin is not None and not callable(presence_round_begin):
+            raise ContractError("the presence round boundary must be callable")
+        self._presence_round_begin = presence_round_begin
         self._reported_pairing_tags: set[str] = set()
         self._carried_pairing_tags: list[str] = []
 
@@ -332,6 +420,15 @@ class OracleMeshExecutor:
         if self._queue_origin is not None and path not in CHAT_ONLY_PATHS:
             return self._queue_origin
         return self._origin
+
+    def _leg_for(self, path: str) -> str:
+        """One word for which server `_origin_for` would ask: `chat` or `queue`.
+
+        Derived from the routing rule itself rather than repeated here, so the two can
+        never disagree about where a request was going.
+        """
+
+        return "chat" if self._origin_for(path) == self._origin else "queue"
 
     def _https_post(
         self, path: str, payload: Optional[dict[str, Any]] | bytes,
@@ -380,7 +477,8 @@ class OracleMeshExecutor:
         except OracleMeshChannelRefused:
             raise
         except Exception as exc:  # transport refused/unreachable
-            raise OracleMeshChannelRefused("chat channel transport refused") from exc
+            raise OracleMeshChannelRefused("chat channel transport refused",
+                                           leg=self._leg_for(path)) from exc
         finally:
             self._last_round_at = time.monotonic()
         try:
@@ -397,7 +495,8 @@ class OracleMeshExecutor:
         except OracleMeshChannelRefused:
             raise
         except Exception as exc:
-            raise OracleMeshChannelRefused("chat channel transport refused") from exc
+            raise OracleMeshChannelRefused("chat channel transport refused",
+                                           leg=self._leg_for(path)) from exc
 
     # ---- legs ----------------------------------------------------------
     def _poll_payload(self) -> Optional[dict[str, Any]]:
@@ -412,6 +511,10 @@ class OracleMeshExecutor:
         pairing_provider = self._pairing_provider
         if provider is None and pairing_provider is None:
             return None
+        if self._presence_round_begin is not None:
+            # A new poll asks the local server anew. Without this boundary a second
+            # round behind a fast first one could report the previous round's table.
+            self._presence_round_begin()
         try:
             carried: list[str] = []
             tagged: list[dict[str, Any]] = []
@@ -503,9 +606,10 @@ class OracleMeshExecutor:
     def poll_once(self) -> Optional[OracleMeshDispatch]:
         """Claim the oldest dispatch, or None when the queue is empty."""
         payload = self._poll_payload()
+        leg = self._leg_for(POLL_PATH)
         status, data = self._post(POLL_PATH, payload)
         if status != 200 or data.get("ok") is not True:
-            raise OracleMeshChannelRefused("chat channel refused the poll")
+            raise OracleMeshChannelRefused("chat channel refused the poll", leg=leg)
         if self._carried_pairing_tags and isinstance(payload, dict) and payload.get("presence"):
             # Reported only once the server took the beat: a poll that was
             # refused or lost leaves the tag unreported so a later poll offers
@@ -516,16 +620,18 @@ class OracleMeshExecutor:
         if dispatch is None:
             return None
         if not isinstance(dispatch, dict):
-            raise OracleMeshChannelRefused("chat channel returned a malformed dispatch")
+            raise OracleMeshChannelRefused("chat channel returned a malformed dispatch", leg=leg)
         kind = dispatch.get("kind") or "read"
         if kind not in ("read", "command", "desktop"):
-            raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind")
+            raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind", leg=leg)
         command_text = dispatch.get("command_text")
         if kind in ("command", "desktop"):
             # The server owns the command; the executor never invents one and
             # never falls back to the file lane when it is missing.
             if not isinstance(command_text, str) or not command_text.strip():
-                raise OracleMeshChannelRefused("chat channel returned a command dispatch without a command")
+                raise OracleMeshChannelRefused(
+                    "chat channel returned a command dispatch without a command", leg=leg,
+                )
         else:
             command_text = None
         max_bytes = None
@@ -541,7 +647,7 @@ class OracleMeshExecutor:
                     or not 0 < supplied <= MAX_READ_BYTES_ENVELOPE
                 ):
                     raise OracleMeshChannelRefused(
-                        "chat channel returned an unbounded read limit"
+                        "chat channel returned an unbounded read limit", leg=leg,
                     )
                 max_bytes = supplied
         request_id = dispatch.get("request_id")
@@ -588,25 +694,39 @@ class OracleMeshExecutor:
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
             "file_path": dispatch.file_path,
-            "timeout_seconds": (self._timeout * 4 if self._timeout is not None else None),
         }
+        # The port validates this deadline outright and refuses before the
+        # official client runs. An executor with no deadline of its own must
+        # therefore leave the argument out so the port's default applies; the
+        # None that used to travel here refused every read from 2026-10-29 on.
+        if self._timeout is not None:
+            call["timeout_seconds"] = self._timeout * 4
         if dispatch.max_bytes is not None:
             # Pass the server-computed bound only when the poll supplied one;
             # older servers keep the port's historical default.
             call["max_bytes"] = read_bound
+        started = time.monotonic()
         try:
             body = self._read_port.read_bytes(**call)
-        except MeshCentralReadTooLarge:
+        except MeshCentralReadTooLarge as exc:
+            self._trace_read(dispatch, "read_too_large", started,
+                             error=_safe_error_text(exc))
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
             )
-        except Exception:
+        except Exception as exc:
+            # The class and a bounded message are the only explanation a refused
+            # read ever leaves; the file itself is never part of the trace.
+            self._trace_read(dispatch, "read_failed", started,
+                             error=_safe_error_text(exc))
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
             )
         if not isinstance(body, (bytes, bytearray)):
+            self._trace_read(dispatch, "read_failed", started,
+                             error="body_not_bytes")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
@@ -614,6 +734,8 @@ class OracleMeshExecutor:
         raw = bytes(body)
         if len(raw) > read_bound:
             # Oversize is refused, never truncated.
+            self._trace_read(dispatch, "read_too_large", started,
+                             error="staged_oversize")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
@@ -621,6 +743,7 @@ class OracleMeshExecutor:
         try:
             raw.decode("utf-8")
         except UnicodeDecodeError:
+            self._trace_read(dispatch, "read_failed", started, error="not_utf8")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
@@ -661,6 +784,38 @@ class OracleMeshExecutor:
             )
         except Exception:
             # Instrumentation is best-effort; the command outcome is authoritative.
+            pass
+
+    def _trace_read(
+        self, dispatch: OracleMeshDispatch, phase: str, started: float,
+        **fields: Any,
+    ) -> None:
+        """Bounded read-lane correlation: a class and a reason, never content.
+
+        Every read failure used to leave the process as one fixed marker, so a
+        refused read could not be told apart from a missing file or a dead
+        channel. This line is the observable that answers "why" without ever
+        carrying bytes the PC was asked to hand over.
+        """
+        try:
+            elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+            safe = " ".join(
+                f"{key}={value}"
+                for key, value in fields.items()
+                if value is not None and isinstance(value, (str, int, bool))
+            )
+            print(
+                "oracle-mesh-read"
+                f" phase={phase}"
+                f" ts={datetime.now(timezone.utc).isoformat()}"
+                f" elapsed_ms={elapsed_ms}"
+                f" dispatch_id={dispatch.dispatch_id}"
+                f" run_id={dispatch.run_id}"
+                + (f" {safe}" if safe else ""),
+                file=sys.stderr,
+                flush=True,
+            )
+        except Exception:
             pass
 
     def _cancel_probe(self, dispatch: OracleMeshDispatch) -> Callable[[], bool]:
@@ -1489,16 +1644,23 @@ class OracleMeshExecutor:
     def run_once(self) -> Optional[dict[str, Any]]:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
+            self.last_round = ROUND_SKIPPED
             return self.resend_pending_result()
         # #5462: a held result is still resent while this host is not the
         # active one — the bytes the PC really produced must reach the
         # server exactly once. Only a NEW claim is gated, because claiming
         # is what could execute the same work twice.
         if self._claim_gate is not None and not self._claim_gate():
+            self.last_round = ROUND_SKIPPED
             return None
         dispatch = self.poll_once()
         if dispatch is None:
+            self.last_round = ROUND_IDLE
             return None
+        # Claimed: the lane had something for this host, which is the one answer that
+        # ends an idle stretch. Set before the work, not after the submission, so a
+        # round that dies mid-command still says the queue was not empty.
+        self.last_round = ROUND_WORKED
         renewer = self.start_lease_renewal(dispatch)
         self._mark_active(dispatch)
         try:
@@ -1608,6 +1770,8 @@ __all__ = [
     "CHANNEL_HEADER",
     "CHANNEL_SOCKET_TIMEOUT_SECONDS",
     "CHANNEL_STALL_SECONDS",
+    "IDLE_POLL_BASE_SECONDS",
+    "IDLE_POLL_MAX_SECONDS",
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
@@ -1620,6 +1784,9 @@ __all__ = [
     "OracleMeshDispatch",
     "OracleMeshExecutionOutcome",
     "OracleMeshExecutor",
+    "ROUND_IDLE",
+    "ROUND_SKIPPED",
+    "ROUND_WORKED",
     "deployment_secret_password_provider",
     "make_oracle_mesh_executor",
 ]
@@ -1639,6 +1806,7 @@ def make_oracle_mesh_executor(
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,
+    presence_round_begin: Optional[Callable[[], None]] = None,
 ) -> OracleMeshExecutor:
     """Build the executor with the REAL official meshctrl read port.
 
@@ -1722,6 +1890,7 @@ def make_oracle_mesh_executor(
         claim_gate=claim_gate,
         presence_provider=presence_provider,
         pairing_provider=pairing_provider,
+        presence_round_begin=presence_round_begin,
     )
 
 
@@ -1756,6 +1925,82 @@ def _read_secret_file(path: str, name: str) -> str:
     return value
 
 
+class _PresenceBeat:
+    """One device table per poll round, read by both halves of the beat.
+
+    A quiet round used to enumerate the local server five times for two named devices:
+    `is_connected` and `name_of` per device, and `pairing_candidates` once on top, each
+    of which starts its own ``meshctrl.js listdevices`` on this host. One round now
+    reads one table and answers both questions from it.
+
+    The share lasts no longer than the service loop's own shortest gap, and the round
+    boundary is stated out loud as well (`begin_round`): a poll that runs with no gap
+    at all - a busy lane, where the loop does not sleep between rounds - must still not
+    carry last round's answer about somebody's PC into this one.
+
+    A presence object that cannot hand over one table is answered ``None``, and the
+    caller falls back to the per-device questions it always had. The beat is evidence;
+    a narrower probe is not worth a wrong statement about a PC.
+    """
+
+    def __init__(self, presence: Any, fresh_for_seconds: float) -> None:
+        self._presence = presence
+        self._fresh_for = float(fresh_for_seconds)
+        self._rows: Optional[list[dict[str, Any]]] = None
+        self._taken_at = 0.0
+
+    def begin_round(self) -> None:
+        self._rows = None
+
+    def rows(self) -> Optional[list[dict[str, Any]]]:
+        listing = getattr(self._presence, "listing", None)
+        if not callable(listing):
+            return None
+        now = time.monotonic()
+        if self._rows is None or now - self._taken_at >= self._fresh_for:
+            self._rows = [_beat_row(row) for row in listing() or ()]
+            self._taken_at = now
+        return self._rows
+
+
+def _beat_row(row: Any) -> dict[str, Any]:
+    """One server row in the shape both halves of the beat read.
+
+    `conn` is the field the official client prints for reachability, and the pairing
+    tag is recognised here once rather than in every caller, so a name that carries no
+    tag is never treated as pairing evidence twice over.
+    """
+    if type(row) is not dict:
+        return {"device_id": "", "connected": False, "agent_name": "", "tagged": False}
+    device_id = row.get("id")
+    name = row.get("name")
+    name = name.strip()[:256] if isinstance(name, str) else ""
+    try:
+        connected = int(row.get("conn", 0) or 0) == 1
+    except (TypeError, ValueError):
+        connected = False
+    return {
+        "device_id": device_id if isinstance(device_id, str) else "",
+        "connected": connected,
+        "agent_name": name,
+        "tagged": bool(name) and _pairing_tag_of(name) is not None,
+    }
+
+
+def channel_refusal_line(exc: BaseException) -> str:
+    """One journal line for a refused exchange: the message as it always was, plus the leg.
+
+    #5881's cutover is why the leg is on this line at all. While the queue and the Worker
+    printed the same words, an edge bot block was indistinguishable from a Worker failure,
+    and the lane had to be diagnosed by comparing two databases. The message text itself is
+    unchanged - operators and monitors already read it - and neither an origin nor any
+    credential belongs on this line.
+    """
+    leg = getattr(exc, "leg", None)
+    return "oracle-mesh-executor channel refusal: %s%s" % (
+        exc, " leg=" + leg if leg in ("chat", "queue") else "")
+
+
 def main(environ: Optional[dict[str, str]] = None) -> int:
     """Startup entrypoint: one poll/execute/submit loop on the Oracle host.
 
@@ -1773,7 +2018,14 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_PASSWORD_FILE     mode-0600 file holding the operator password
       ORACLE_MESH_URL               optional, default wss://127.0.0.1:4443
       ORACLE_MESH_WORK_DIR          optional scratch directory
-      ORACLE_MESH_POLL_SECONDS      optional idle interval, default 5
+      ORACLE_MESH_POLL_SECONDS      optional interval after a refused channel, default 5
+      ORACLE_MESH_IDLE_POLL_MAX_SECONDS
+                                    optional ceiling on the idle wait, default 60;
+                                    one reproduces the pre-backoff cadence verbatim
+      ORACLE_MESH_READ_TIMEOUT_SECONDS
+                                    optional PC-step deadline in seconds, default
+                                    30; the read and desktop lanes wait four times
+                                    this, exactly as they did before 2026-10-17
       MESH_FAILOVER_DEVICE_ID       optional comma-separated devices (max 8);
                                     poll carries one beat per device
     Secrets are read from files at call time; they never appear on argv.
@@ -1799,6 +2051,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # An unnamed target omits the field instead of guessing a device.
         presence_provider = None
         pairing_provider = None
+        beat = None
         raw_devices = env.get("MESH_FAILOVER_DEVICE_ID", "").strip()
         presence_device_ids = list(dict.fromkeys(part.strip() for part in raw_devices.split(","))) if raw_devices else []
         if (len(presence_device_ids) > MAX_PRESENCE_ENTRIES
@@ -1813,15 +2066,41 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                 login_user=need("ORACLE_MESH_LOGIN_USER"),
                 password_provider=password_provider,
             )
+            beat = _PresenceBeat(presence, IDLE_POLL_BASE_SECONDS)
 
             def pairing_provider():
                 # #5573: one enumeration, tag-carrying nodes only. An untagged
                 # name is never sent, and no bound is applied to the candidates -
                 # the beat budget that limits what travels, decided below.
+                shared = beat.rows()
+                if shared is not None:
+                    return [
+                        {"device_id": row["device_id"], "connected": True,
+                         "agent_name": row["agent_name"]}
+                        for row in shared
+                        if row.get("tagged") and row.get("connected")
+                    ]
                 listing = getattr(presence, "pairing_candidates", None)
                 return listing() if callable(listing) else []
 
             def presence_provider():
+                shared = beat.rows()
+                if shared is not None:
+                    # The one table answers every named device: whether it is
+                    # connected and what it is called. This is the shape that used to
+                    # cost two enumerations per device.
+                    by_id = {row["device_id"]: row for row in shared}
+                    entries = []
+                    for presence_device_id in presence_device_ids:
+                        row = by_id.get(presence_device_id)
+                        entry = {
+                            "device_id": presence_device_id,
+                            "connected": bool(row and row.get("connected")),
+                        }
+                        if row and isinstance(row.get("agent_name"), str) and row["agent_name"]:
+                            entry["agent_name"] = row["agent_name"]
+                        entries.append(entry)
+                    return entries
                 entries = []
                 for presence_device_id in presence_device_ids:
                     entry = {
@@ -1854,10 +2133,23 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             password_provider=password_provider,
             mesh_url=mesh_url,
             work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
+            # A deployment that names no deadline gets the pre-2026-10-17 one.
+            # Sending None instead refused every PC read inside the port before
+            # the official client was ever started.
+            timeout_seconds=_step_timeout_seconds(env),
             presence_provider=presence_provider,
             pairing_provider=pairing_provider,
+            presence_round_begin=beat.begin_round if beat is not None else None,
         )
         idle = max(1, min(int(env.get("ORACLE_MESH_POLL_SECONDS", "5") or 5), 300))
+        # The idle ceiling is readable for the operator who wants to weigh the old
+        # cadence against the new one on a live host: one is exactly the behaviour every
+        # executor had before this schedule existed.
+        idle_max = max(
+            IDLE_POLL_BASE_SECONDS,
+            min(int(env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS",
+                            str(IDLE_POLL_MAX_SECONDS)) or IDLE_POLL_MAX_SECONDS), 300),
+        )
     except (ContractError, ValueError) as exc:
         print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
         return 2
@@ -1874,19 +2166,31 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     # revived from inside the round that is stuck.
     executor.start_channel_watchdog()
 
+    #: The wait before the next ask. It grows only across rounds the lane itself
+    #: answered empty, and resets the moment the queue produces work.
+    gap = IDLE_POLL_BASE_SECONDS
     while True:
         try:
             result = executor.run_once()
         except OracleMeshChannelRefused as exc:
-            # Bounded: the message never carries dispatch content or secrets.
-            print(f"oracle-mesh-executor channel refusal: {exc}", file=sys.stderr)
+            # Bounded: the message never carries dispatch content or secrets. A
+            # channel that will not complete rounds is not a quiet queue, so the wait
+            # returns to the base and the interval the operator named.
+            print(channel_refusal_line(exc), file=sys.stderr)
+            gap = IDLE_POLL_BASE_SECONDS
             time.sleep(idle)
             continue
         if result is None:
-            # Empty work queue was already awaited on the live HTTPS channel.
-            # Brief idle gap prevents a retry storm on older Chat versions.
-            time.sleep(1)
+            # The lane held this request five seconds and answered "nothing waiting",
+            # or this host asked for nothing at all. Only the first of those says
+            # something about the queue, and only for it does the next ask wait
+            # longer - a skipped round goes back to the base so a failover landing on
+            # this host starts claiming on the next second.
+            time.sleep(gap)
+            gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
+                   else min(gap * 2, idle_max))
             continue
+        gap = IDLE_POLL_BASE_SECONDS
         observations = executor.line_observations()
         print(
             f"oracle-mesh-executor result ok={result.get('ok')} "

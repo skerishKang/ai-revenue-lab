@@ -740,7 +740,7 @@ if (!transport) {
     const before = calls.length;
     // claw-device-manager.js wires the same hint; false mirrors no selection.
     deviceHint = step.selectedDevice === false ? null : "office-pc";
-    const payload = { messages: step.messages, mode: "auto", skill: "auto" };
+    const payload = { messages: step.messages, skill: "auto" };
     let pcRunId = null;
     if (step.mint === true) {
       pcRunId = transport.createChatPcRunId();

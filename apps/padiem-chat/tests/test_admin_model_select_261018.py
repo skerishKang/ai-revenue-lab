@@ -86,7 +86,9 @@ def test_admin_request_context_resolves_exact_muse_model() -> None:
 
 
 def test_admin_model_is_pinned_and_gate_kept_even_as_tier_executable() -> None:
-    assert MUSE_MODEL_ID in (
+    # B8: raw provider model ids are not capability catalog rows. The admin
+    # lane remains pinned by its exact route and the verified gate below.
+    assert MUSE_MODEL_ID not in (
         __import__("app.model_policy", fromlist=["MODEL_CAPABILITIES"]).MODEL_CAPABILITIES
     )
     # #5009: Muse Spark is now the Plus/Pro/Max tier executable, so it belongs
@@ -205,7 +207,8 @@ def test_only_exact_admin_pair_bypasses_product_tier_executability() -> None:
 def test_popup_probes_server_admin_and_never_username_matching() -> None:
     assert "/api/b66/admin/me" in CAPABILITIES
     assert "/api/admin/models/me" not in CAPABILITIES
-    assert "Padiem 관리자" in CAPABILITIES
+    assert 'admin: "Padiem 관리자"' in CAPABILITIES
+    assert 'admin: "Padiem Admin"' in CAPABILITIES
     assert "refreshAdminPresence" in CAPABILITIES
     assert 'tier === "admin"' in CAPABILITIES
     assert "charliekant" not in CAPABILITIES

@@ -206,7 +206,7 @@ export function Composer({
               className="model-pill composer-tier-trigger"
               type="button"
               data-mode-control="true"
-              aria-label={tOr("mode", "AI 등급")}
+              aria-label={tOr("tier", "AI 등급")}
               aria-haspopup="true"
               aria-expanded={modelOpen ? "true" : "false"}
               aria-controls="cloneModelPicker"

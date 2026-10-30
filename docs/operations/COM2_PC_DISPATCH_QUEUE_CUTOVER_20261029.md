@@ -101,6 +101,61 @@ rather than copying them into a shape that can drift, builds the venv from
 install hands that file over (#82): with no file the queue keeps the channel-secret-only
 behaviour rather than failing to start a read it cannot serve.
 
+`MESH_QUEUE_REQUEST_LOG` is the store door's own answer to a question this operation has
+already had to ask twice: whether a Chat call reached the queue at all. `off` (the written
+default) is today's behaviour; `refusals` prints one line per non-2xx answer, so a healthy
+lane prints nothing; `all` is for a bounded window during a switch. The line carries five
+fields — `path`, the allowlisted method name, `status`, `ms`, and whether the presented
+proof matched — and never the secret, the header, the body or any argument, because an
+argument can name a customer's path. The installer preserves whatever value `queue.env`
+already holds, so a re-install cannot silently turn the instrument back off mid-window.
+
+**`queue.env` is the only place that switch takes effect.** Measured on 컴2 on 2026-10-30:
+with `Environment=MESH_QUEUE_REQUEST_LOG=refusals` in a drop-in and `off` in `queue.env`,
+the process started with `off` — `EnvironmentFile=` was applied after the drop-in's
+`Environment=`, and `systemctl show -p Environment` still reported `refusals`, so the unit
+config said one thing and the running process another. Setting `queue.env` itself is what
+made the line appear. Check the process, not the unit:
+
+```bash
+tr '\0' '\n' < /proc/$(systemctl show -p MainPID --value padiem-mesh-queue.service)/environ \
+  | grep -oE '^MESH_QUEUE_REQUEST_LOG=[a-z]+'
+```
+
+The proof that the door is listening is one unauthenticated call, which answers 403 and
+leaves exactly one line carrying the five fields above — `path=/internal/store rpc=none
+status=403 ms=0 proof=absent`. A call that presents the secret answers 200 and leaves
+nothing, which is what "a healthy lane prints nothing" has to mean before the line is used
+as evidence.
+
+Two further line kinds exist because the 2026-10-30 attempt could not be read from the five
+fields alone. When a store call raises, the door answers 502 with a fixed code and printed
+nothing about why, so an hour went into blaming the database, the secret and the edge; what
+had actually happened was that `received_at` was missing from the boundary's list of moment
+arguments, the presence beat crossed as text, and the store refused it as "trusted aware
+receipt time required" in 0 ms. Now `MESH_QUEUE_STORE_FAILURE` names the exception's class
+from a fixed list — never its text, which can carry the customer path — and
+`MESH_QUEUE_TXN_RECOVERED` is printed when the door had to close a transaction it did not
+open, which is printed even on a 200 because a success that needed repairing is not normal.
+Both shapes are asserted in `test_queue_request_log`, so neither can become a channel for
+caller-controlled text, and the moment list is now derived from the stores' own signatures
+in `test_queue_store_boundary` — the next `datetime` argument added without a name there
+fails CI instead of failing a cutover.
+
+Restarting the queue is a normal event, and it has not always been. `schema.apply()` used
+to run its nine migration files at *every* open, which the files cannot survive: 048 ends
+with `ALTER TABLE … ADD COLUMN kind`, and 063 and 070 rebuild their table with `DROP` plus
+`RENAME`. A database that had those columns could therefore only ever be opened by a
+process that was already running — the first restart of the 컴2 queue after its state copy,
+on 2026-10-30, crash-looped on `duplicate column name: kind` and served nobody until the
+database was rebuilt from a fresh generation. `queue_schema_applied` is the ledger that
+fixes it: each file runs once per database and is recorded, a database built before the
+ledger is backfilled rather than replayed, and the shape the stores read is verified at the
+end of every open so a tolerated statement can never hide a missing column. An operator
+refreshing the worktree to a main that adds migration 075 or later should expect `apply` to
+run only the new file; a file that was edited after it ran is skipped and named on stderr,
+because that is exactly how the queue would otherwise disagree with D1 about a schema.
+
 Order that matters:
 
 1. `provision_service_secret.sh` creates `service-secret.txt` (`umask 077`, mode

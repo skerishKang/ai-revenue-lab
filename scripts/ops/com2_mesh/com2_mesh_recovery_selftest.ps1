@@ -110,17 +110,13 @@ function New-TestConfig {
         com2_ssh_user = 'selftest'
         com2_ssh_key = (Join-Path $Directory 'id_selftest')
         com2_probe_script = 'C:\probe.cmd'
-        tunnel_local_host = '127.0.0.1'
-        tunnel_local_port = 14443
-        tunnel_task = 'PADIEM-Selftest-NoSuchTask'
-        mesh_url = 'https://127.0.0.1:14443/'
+        mesh_url = 'https://192.0.2.10:4443/'
         health_log = (Join-Path $Directory 'health.log')
         recovery_log = (Join-Path $Directory 'recovery.jsonl')
         lock_file = (Join-Path $Directory 'recovery.lock')
         state_file = (Join-Path $Directory 'state.json')
         status_file = (Join-Path $Directory 'status.json')
         ssh_timeout_seconds = 2
-        tunnel_restart_wait_seconds = 1
         verify_timeout_seconds = 1
         tcp_timeout_ms = 200
         recovery_lock_seconds = 600
@@ -204,7 +200,7 @@ function Test-Case {
         Assert-Contains -Text ([string]$rec.error) -Token $ErrorContains -Label "$Name error"
     }
     foreach ($field in @('schema', 'ts', 'mode', 'trigger', 'executed', 'class', 'com2_ssh',
-            'tunnel_tcp', 'mesh_http', 'remote_ok', 'remote_http', 'remote_keeper', 'remote_unit',
+            'mesh_http', 'remote_ok', 'remote_http', 'remote_keeper', 'remote_unit',
             'remote_cause', 'com2_state_source', 'first_fault', 'attempt', 'planned_action',
             'action', 'recovery_ok', 'recovery_at', 'elapsed_sec', 'fault_age_sec',
             'retry_decision', 'retry_attempt', 'retry_max', 'next_attempt_at',
@@ -220,7 +216,7 @@ function Test-Case {
     Assert-True -Value (Test-Path -LiteralPath $statusPath) -Label "$Name status file written"
     $healthPath = Join-Path $Directory 'health.log'
     $healthTail = if (Test-Path -LiteralPath $healthPath) { Get-Content -LiteralPath $healthPath -Tail 1 } else { '' }
-    foreach ($token in @('com2_ssh=', 'tunnel_tcp=', 'mesh_http=', 'remote_cause=',
+    foreach ($token in @('com2_ssh=', 'mesh_http=', 'remote_cause=',
             'com2_state_source=', 'first_fault=', 'attempt=', 'action=', 'recovery_at=',
             'elapsed_sec=', 'fault_age_sec=', 'retry_decision=', 'retry_attempt=', 'retry_max=',
             'next_attempt_at=', 'class_started_at=', 'class_age_sec=', 'recovery_state=',
@@ -277,7 +273,7 @@ Assert-True -Value ([string]$loaded.com2_keeper_start_command).Contains('nohup')
 Assert-True -Value ([string]$loaded.com2_keeper_start_command).Contains('sleep infinity') -Label 'keeper start runs the keeper'
 
 $badConfig = New-TestConfig -Directory $work
-$badConfig.Remove('tunnel_task')
+$badConfig.Remove('com2_probe_script')
 $badConfigPath = Join-Path $work 'config-missing-key.json'
 Write-JsonFile -Path $badConfigPath -Object $badConfig
 $badRes = Invoke-BoundedProcess -FilePath 'powershell.exe' -Arguments @(
@@ -291,31 +287,23 @@ Assert-Equal -Expected 1 -Actual $badRes.exit -Label 'missing config key exits 1
 
 Write-Output '-- failure branches'
 Test-Case -Name 'healthy' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '200'
+    com2_ssh = $true; mesh_http = '200'
     remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
 } -Expected @{
     class = 'healthy'; planned_action = 'none'; action = 'none'
     recovery_ok = 'n/a'; code = 'HTTP_200'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
-Test-Case -Name 'tunnel_broken' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+Test-Case -Name 'healthy_remote_200_local_path_down' -Fixture @{
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'restart_tunnel'
-    recovery_ok = 'planned'; code = 'PLANNED_RESTART_TUNNEL'
-} -Engine $EnginePath -ConfigPath $configPath -Directory $work
-
-Test-Case -Name 'tunnel_listener_down' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $false; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
-} -Expected @{
-    class = 'tunnel_listener_down'; planned_action = 'restart_tunnel'; action = 'restart_tunnel'
-    recovery_ok = 'planned'; code = 'PLANNED_RESTART_TUNNEL'
+    class = 'healthy'; planned_action = 'none'; action = 'none'
+    recovery_ok = 'n/a'; code = 'HTTP_200'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_mesh_down_keeper_missing' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'start_keeper'
@@ -323,7 +311,7 @@ Test-Case -Name 'com2_mesh_down_keeper_missing' -Fixture @{
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_mesh_down_unit_inactive' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'failed'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'restart_mesh_service'; action = 'restart_mesh_service'
@@ -331,7 +319,7 @@ Test-Case -Name 'com2_mesh_down_unit_inactive' -Fixture @{
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_mesh_down_no_action' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'active'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'record_only'; action = 'record_only'
@@ -340,14 +328,14 @@ Test-Case -Name 'com2_mesh_down_no_action' -Fixture @{
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_ssh_unreachable' -Fixture @{
-    com2_ssh = $false; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $false; mesh_http = '000'
 } -Expected @{
     class = 'com2_ssh_unreachable'; planned_action = 'record_only'; action = 'record_only'
     recovery_ok = 'no'; code = 'COM2_SSH_UNREACHABLE'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'remote_probe_failed' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'; remote_ok = $false
+    com2_ssh = $true; mesh_http = '000'; remote_ok = $false
 } -Expected @{
     class = 'remote_probe_failed'; planned_action = 'record_only'; action = 'record_only'
     recovery_ok = 'no'; code = 'REMOTE_PROBE_FAILED'; com2_state_source = 'unverified'
@@ -355,7 +343,7 @@ Test-Case -Name 'remote_probe_failed' -Fixture @{
 } -DetailContains 'not directly observed' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'remote_probe_timeout' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'; remote_ok = $false
+    com2_ssh = $true; mesh_http = '000'; remote_ok = $false
     remote_cause = 'ssh_timeout'; remote_error = 'remote probe timeout'
 } -Expected @{
     class = 'remote_probe_failed'; planned_action = 'record_only'; action = 'record_only'
@@ -365,7 +353,7 @@ Test-Case -Name 'remote_probe_timeout' -Fixture @{
     -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'remote_probe_auth_failed' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'; remote_ok = $false
+    com2_ssh = $true; mesh_http = '000'; remote_ok = $false
     remote_cause = 'ssh_auth_failed'; remote_error = 'Permission denied (publickey)'
 } -Expected @{
     class = 'remote_probe_failed'; planned_action = 'record_only'; action = 'record_only'
@@ -374,7 +362,7 @@ Test-Case -Name 'remote_probe_auth_failed' -Fixture @{
 } -DetailContains 'cause=ssh_auth_failed' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'remote_probe_no_verdict' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'; remote_ok = $false
+    com2_ssh = $true; mesh_http = '000'; remote_ok = $false
     remote_cause = 'probe_no_verdict'; remote_error = 'remote probe produced no verdict'
 } -Expected @{
     class = 'remote_probe_failed'; planned_action = 'record_only'; action = 'record_only'
@@ -383,7 +371,7 @@ Test-Case -Name 'remote_probe_no_verdict' -Fixture @{
 } -DetailContains 'cause=probe_no_verdict' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_mesh_down_unit_unknown' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'unknown'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'record_only'; action = 'record_only'
@@ -391,7 +379,7 @@ Test-Case -Name 'com2_mesh_down_unit_unknown' -Fixture @{
 } -DetailContains 'not directly observed' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'com2_mesh_down_keeper_unknown' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'unknown'; remote_unit = 'active'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'record_only'; action = 'record_only'
@@ -400,19 +388,19 @@ Test-Case -Name 'com2_mesh_down_keeper_unknown' -Fixture @{
     -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'lock_collision' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'skipped_locked'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'skipped_locked'
     recovery_ok = 'no'; code = 'RECOVERY_LOCKED'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work -LockPid $PID -ExpectLockRemoved $false
 
 Test-Case -Name 'stale_lock_taken_over' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'restart_tunnel'
-    recovery_ok = 'planned'; code = 'PLANNED_RESTART_TUNNEL'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'start_keeper'
+    recovery_ok = 'planned'; code = 'PLANNED_START_KEEPER'
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work -LockPid 999999 -LockAgeSeconds 3600
 
 # --- retry policy ---------------------------------------------------------
@@ -428,113 +416,99 @@ $emptySchedule = [pscustomobject]@{ recovery_backoff_schedule_seconds = @() }
 Assert-Equal -Expected 300 -Actual (Get-RecoveryBackoffSeconds -Cfg $emptySchedule -AttemptCount 1) -Label 'backoff default'
 
 $retryState = [ordered]@{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = $fixedNow.AddSeconds(-10).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $fixedNow.AddSeconds(600).ToString('yyyy-MM-dd HH:mm:ss')
 }
-$retryDecision = Get-RetryDecision -State $retryState -ActionKey 'tunnel_broken|restart_tunnel' -Now $fixedNow -Cfg $policyCfg
+$retryDecision = Get-RetryDecision -State $retryState -ActionKey 'com2_mesh_down|start_keeper' -Now $fixedNow -Cfg $policyCfg
 Assert-Equal -Expected 'backoff' -Actual $retryDecision.decision -Label 'helper backoff decision'
 Assert-Equal -Expected 1 -Actual $retryDecision.attempts -Label 'helper backoff attempts'
 $cooldownState = [ordered]@{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 0
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 0
     last_attempt_at = $fixedNow.AddSeconds(-10).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = ''
 }
-$cooldownDecision = Get-RetryDecision -State $cooldownState -ActionKey 'tunnel_broken|restart_tunnel' -Now $fixedNow -Cfg $policyCfg
+$cooldownDecision = Get-RetryDecision -State $cooldownState -ActionKey 'com2_mesh_down|start_keeper' -Now $fixedNow -Cfg $policyCfg
 Assert-Equal -Expected 'backoff' -Actual $cooldownDecision.decision -Label 'helper cooldown decision'
-$newKeyDecision = Get-RetryDecision -State $retryState -ActionKey 'com2_mesh_down|start_keeper' -Now $fixedNow -Cfg $policyCfg
+$newKeyDecision = Get-RetryDecision -State $retryState -ActionKey 'com2_mesh_down|restart_mesh_service' -Now $fixedNow -Cfg $policyCfg
 Assert-Equal -Expected 'execute' -Actual $newKeyDecision.decision -Label 'helper new class executes'
 Assert-Equal -Expected 0 -Actual $newKeyDecision.attempts -Label 'helper new class resets attempts'
 $exhaustedState = [ordered]@{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
     last_attempt_at = $fixedNow.AddSeconds(-60).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $fixedNow.AddSeconds(-10).ToString('yyyy-MM-dd HH:mm:ss')
 }
-$exhaustedDecision = Get-RetryDecision -State $exhaustedState -ActionKey 'tunnel_broken|restart_tunnel' -Now $fixedNow -Cfg $policyCfg
+$exhaustedDecision = Get-RetryDecision -State $exhaustedState -ActionKey 'com2_mesh_down|start_keeper' -Now $fixedNow -Cfg $policyCfg
 Assert-Equal -Expected 'exhausted' -Actual $exhaustedDecision.decision -Label 'helper exhausted decision'
 $windowState = [ordered]@{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
     last_attempt_at = $fixedNow.AddSeconds(-7200).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $fixedNow.AddSeconds(-7100).ToString('yyyy-MM-dd HH:mm:ss')
 }
-$windowDecision = Get-RetryDecision -State $windowState -ActionKey 'tunnel_broken|restart_tunnel' -Now $fixedNow -Cfg $policyCfg
+$windowDecision = Get-RetryDecision -State $windowState -ActionKey 'com2_mesh_down|start_keeper' -Now $fixedNow -Cfg $policyCfg
 Assert-Equal -Expected 'execute' -Actual $windowDecision.decision -Label 'helper retry window reopens'
 Assert-Equal -Expected 0 -Actual $windowDecision.attempts -Label 'helper retry window resets attempts'
 
 Write-Output '-- retry state transitions'
-$retryFixture = Join-Path $work 'fixture-retry-tunnel.json'
+$retryFixture = Join-Path $work 'fixture-retry-mesh-down.json'
 Write-JsonFile -Path $retryFixture -Object @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 }
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = $now.AddSeconds(-10).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(600).ToString('yyyy-MM-dd HH:mm:ss')
 }
 Test-Case -Name 'retry_backoff' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'skipped_backoff'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'skipped_backoff'
     recovery_ok = 'no'; code = 'RECOVERY_BACKOFF'; retry_decision = 'backoff'
     retry_attempt = 1; retry_max = 3
 } -DetailContains 'retry deferred by policy' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = $now.AddSeconds(-400).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(-1).ToString('yyyy-MM-dd HH:mm:ss')
 }
 Test-Case -Name 'retry_due_after_backoff' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'restart_tunnel'
-    recovery_ok = 'planned'; code = 'PLANNED_RESTART_TUNNEL'; retry_decision = 'execute'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'start_keeper'
+    recovery_ok = 'planned'; code = 'PLANNED_START_KEEPER'; retry_decision = 'execute'
     retry_attempt = 1
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
     last_attempt_at = $now.AddSeconds(-60).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(-10).ToString('yyyy-MM-dd HH:mm:ss')
 }
 Test-Case -Name 'retry_exhausted' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'skipped_exhausted'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'skipped_exhausted'
     recovery_ok = 'no'; code = 'RECOVERY_RETRY_EXHAUSTED'; retry_decision = 'exhausted'
     retry_attempt = 3; retry_max = 3
 } -DetailContains 'retry budget exhausted' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
     last_attempt_at = $now.AddSeconds(-7200).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(-7100).ToString('yyyy-MM-dd HH:mm:ss')
 }
 Test-Case -Name 'retry_window_reopens' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
-} -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'restart_tunnel'
-    recovery_ok = 'planned'; code = 'PLANNED_RESTART_TUNNEL'; retry_decision = 'execute'
-    retry_attempt = 0
-} -Engine $EnginePath -ConfigPath $configPath -Directory $work
-
-$now = Get-Date
-Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
-    last_attempt_at = $now.AddSeconds(-60).ToString('yyyy-MM-dd HH:mm:ss')
-}
-Test-Case -Name 'retry_new_class_resets' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 } -Expected @{
     class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'start_keeper'
@@ -544,12 +518,26 @@ Test-Case -Name 'retry_new_class_resets' -Fixture @{
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 2
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
+    last_attempt_at = $now.AddSeconds(-60).ToString('yyyy-MM-dd HH:mm:ss')
+}
+Test-Case -Name 'retry_new_class_resets' -Fixture @{
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'failed'
+} -Expected @{
+    class = 'com2_mesh_down'; planned_action = 'restart_mesh_service'; action = 'restart_mesh_service'
+    recovery_ok = 'planned'; code = 'PLANNED_RESTART_MESH_SERVICE'; retry_decision = 'execute'
+    retry_attempt = 0
+} -Engine $EnginePath -ConfigPath $configPath -Directory $work
+
+$now = Get-Date
+Write-StateFile -Directory $work -State @{
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 2
     last_attempt_at = $now.AddSeconds(-120).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(300).ToString('yyyy-MM-dd HH:mm:ss')
 }
 Test-Case -Name 'retry_healthy_clears' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '200'
+    com2_ssh = $true; mesh_http = '200'
     remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
 } -Expected @{
     class = 'healthy'; planned_action = 'none'; action = 'none'; code = 'HTTP_200'
@@ -561,7 +549,7 @@ Assert-True -Value ([string]$cleared.last_success_at -ne '') -Label 'healthy rec
 
 $now = Get-Date
 Write-StateFile -Directory $work -State @{
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = $now.AddSeconds(-400).ToString('yyyy-MM-dd HH:mm:ss')
     next_attempt_at = $now.AddSeconds(-1).ToString('yyyy-MM-dd HH:mm:ss')
 }
@@ -570,7 +558,7 @@ $planTwo = Invoke-EngineSimulate -Engine $EnginePath -ConfigPath $configPath -Fi
 Assert-True -Value ($planOne.record -ne $null -and $planTwo.record -ne $null) -Label 'simulate retry records present'
 $kept = Get-Content -LiteralPath (Join-Path $work 'state.json') -Raw | ConvertFrom-Json
 Assert-Equal -Expected 1 -Actual $kept.attempt_count -Label 'simulate does not consume attempts'
-Assert-Equal -Expected 'tunnel_broken|restart_tunnel' -Actual $kept.action_key -Label 'simulate keeps action key'
+Assert-Equal -Expected 'com2_mesh_down|start_keeper' -Actual $kept.action_key -Label 'simulate keeps action key'
 
 # --- pending verification window -----------------------------------------
 
@@ -581,40 +569,40 @@ function New-Stamp {
 
 Write-Output '-- pending is not success'
 $pendingFixture = @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 }
 $healthyFixture2 = @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '200'
+    com2_ssh = $true; mesh_http = '200'
     remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
 }
 
 Test-Case -Name 'pending_active_suppresses_action' -Fixture $pendingFixture -SeedState @{
-    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = (New-Stamp -60)
     class_started_at = (New-Stamp -600)
-    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -60); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp 600)
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    class = 'com2_mesh_down'; planned_action = 'none'; action = 'none'
     recovery_ok = 'pending'; recovery_state = 'pending'
     code = 'RECOVERY_PENDING_AWAITING_VERIFY'
     retry_decision = 'pending'; retry_attempt = 1
-    pending_action = 'restart_tunnel'
+    pending_action = 'start_keeper'
 } -DetailContains 'no new action taken' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'pending_expired_turns_failed' -Fixture $pendingFixture -SeedState @{
-    first_fault = (New-Stamp -1200); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -1200); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -900); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = (New-Stamp -900)
     class_started_at = (New-Stamp -1200)
-    pending_since = (New-Stamp -900); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -900); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp -60)
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    class = 'com2_mesh_down'; planned_action = 'none'; action = 'none'
     recovery_ok = 'no'; recovery_state = 'failed'
     code = 'RECOVERY_FAILED_PENDING_EXPIRED'
     pending_invalidation = 'pending_expired'
@@ -628,33 +616,33 @@ Assert-True -Value ([string]$expiredState.next_attempt_at -ne '') -Label 'expiry
 
 # The run after the expiry must obey the retry budget, not act again.
 Test-Case -Name 'pending_expiry_enters_backoff' -Fixture $pendingFixture -Expected @{
-    class = 'tunnel_broken'; planned_action = 'restart_tunnel'; action = 'skipped_backoff'
+    class = 'com2_mesh_down'; planned_action = 'start_keeper'; action = 'skipped_backoff'
     recovery_ok = 'no'; code = 'RECOVERY_BACKOFF'
     retry_decision = 'backoff'; retry_attempt = 2
 } -DetailContains 'retry deferred by policy' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'pending_expired_exhausts' -Fixture $pendingFixture -SeedState @{
-    first_fault = (New-Stamp -2400); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -2400); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -1800); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 3
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 3
     last_attempt_at = (New-Stamp -1800)
     class_started_at = (New-Stamp -2400)
-    pending_since = (New-Stamp -1800); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -1800); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp -60)
 } -Expected @{
-    class = 'tunnel_broken'; planned_action = 'none'; action = 'none'
+    class = 'com2_mesh_down'; planned_action = 'none'; action = 'none'
     recovery_ok = 'no'; recovery_state = 'failed'
     code = 'RECOVERY_FAILED_PENDING_EXPIRED'
     retry_decision = 'exhausted'; retry_attempt = 4; retry_max = 3
 } -DetailContains 'retry budget' -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'pending_resolved_on_later_check' -Fixture $healthyFixture2 -SeedState @{
-    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -300); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = (New-Stamp -300)
     class_started_at = (New-Stamp -600)
-    pending_since = (New-Stamp -300); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -300); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp 600)
 } -Expected @{
     class = 'healthy'; recovery_ok = 'yes'; recovery_state = 'recovered'
@@ -675,14 +663,14 @@ Assert-Equal -Expected '' -Actual $resolvedState.first_fault -Label 'observed 20
 
 Write-Output '-- pending is not carried past a non-actionable class'
 Test-Case -Name 'pending_closed_when_class_not_actionable' -Fixture @{
-    com2_ssh = $false; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $false; mesh_http = '000'
 } -SeedState @{
-    first_fault = (New-Stamp -600); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -60); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = (New-Stamp -60)
     class_started_at = (New-Stamp -600)
-    pending_since = (New-Stamp -60); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -60); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp 600)
 } -Expected @{
     class = 'com2_ssh_unreachable'; action = 'record_only'; recovery_ok = 'no'
@@ -695,7 +683,7 @@ Assert-Equal -Expected '' -Actual $classChangedState.pending_since -Label 'class
 Assert-True -Value ([string]$classChangedState.class_started_at -ne '') -Label 'class clock set for the new class'
 
 Test-Case -Name 'pending_closed_same_class_not_actionable' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'active'
 } -SeedState @{
     first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
@@ -711,7 +699,7 @@ Test-Case -Name 'pending_closed_same_class_not_actionable' -Fixture @{
 } -Engine $EnginePath -ConfigPath $configPath -Directory $work
 
 Test-Case -Name 'pending_closed_on_action_changed' -Fixture @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
+    com2_ssh = $true; mesh_http = '000'
     remote_ok = $true; remote_http = '000'; remote_keeper = 'OK'; remote_unit = 'failed'
 } -SeedState @{
     first_fault = (New-Stamp -600); last_class = 'com2_mesh_down'
@@ -750,12 +738,12 @@ if ($classRun.record) {
 
 Write-Output '-- observed 200 is never back-dated'
 Write-StateFile -Directory $work -State @{
-    first_fault = (New-Stamp -900); last_class = 'tunnel_broken'
+    first_fault = (New-Stamp -900); last_class = 'com2_mesh_down'
     last_ts = (New-Stamp -300); last_code = 'RECOVERY_PENDING_HTTP_000'
-    action_key = 'tunnel_broken|restart_tunnel'; attempt_count = 1
+    action_key = 'com2_mesh_down|start_keeper'; attempt_count = 1
     last_attempt_at = (New-Stamp -300)
     class_started_at = (New-Stamp -900)
-    pending_since = (New-Stamp -300); pending_action = 'restart_tunnel'
+    pending_since = (New-Stamp -300); pending_action = 'start_keeper'
     pending_deadline = (New-Stamp 600)
 }
 $observedFixture = Join-Path $work 'fixture-observed.json'
@@ -781,11 +769,11 @@ Remove-Item -LiteralPath $lockPath -Force -ErrorAction SilentlyContinue
 $faultFixture = Join-Path $work 'fixture-persist-fault.json'
 $healthyFixture = Join-Path $work 'fixture-persist-healthy.json'
 Write-JsonFile -Path $faultFixture -Object @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '000'
-    remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
+    com2_ssh = $true; mesh_http = '000'
+    remote_ok = $true; remote_http = '000'; remote_keeper = 'MISSING'; remote_unit = 'active'
 }
 Write-JsonFile -Path $healthyFixture -Object @{
-    com2_ssh = $true; tunnel_tcp = $true; mesh_http = '200'
+    com2_ssh = $true; mesh_http = '200'
     remote_ok = $true; remote_http = '200'; remote_keeper = 'OK'; remote_unit = 'active'
 }
 $first = Invoke-EngineSimulate -Engine $EnginePath -ConfigPath $configPath -FixturePath $faultFixture

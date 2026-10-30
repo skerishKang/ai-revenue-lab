@@ -451,6 +451,7 @@ async def build_item_detail_projection(
                 getattr(task_alert_store, "get_task", None),
                 task_id,
                 workspace_id=workspace_id,
+                member_id=user_id,
             )
             if record is not None and getattr(record, "member_id", None) == user_id:
                 try:
@@ -595,7 +596,9 @@ async def build_range_projection(
     # If user_id is None, fail closed (0 tasks projected).
     if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
-        raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit)
+        raw_tasks = await _safe_call(
+            list_tasks, workspace_id, member_id=user_id, limit=bounded_limit
+        )
         if raw_tasks:
             for t in raw_tasks:
                 if getattr(t, "member_id", None) == user_id:
@@ -793,7 +796,9 @@ async def build_upcoming_projection(
     # If user_id is None, fail closed (0 tasks projected).
     if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
-        raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit * 2)
+        raw_tasks = await _safe_call(
+            list_tasks, workspace_id, member_id=user_id, limit=bounded_limit * 2
+        )
         if raw_tasks:
             for t in raw_tasks:
                 if getattr(t, "member_id", None) != user_id:

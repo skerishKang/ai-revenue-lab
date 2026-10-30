@@ -9,7 +9,6 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from padiem_ai_core.document_parser_boundary import binary_document_parser_ready_async
 
 from .android_auth_routes import (
     android_handoff_claim,
@@ -399,7 +398,7 @@ from .drive_case_pdf_routes import (
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
-from .file_lane import FileLaneClient, file_upload_ticket, file_capabilities
+from .file_lane import BINARY_KINDS, KINDS, FileLaneClient, file_upload_ticket, file_capabilities
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -431,7 +430,7 @@ async def health(request: Request) -> JSONResponse:
         "deep_research_ready": research_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
-        "binary_document_attachment_ready": binary_document_parser_ready_async(),
+        "binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys()),
         "auth_configured": settings.auth_mode != "off",
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
@@ -536,6 +535,7 @@ def create_app(
     custom_provider_client=None,
     file_lane_client=None,
     account_model_selection_store=None,
+    shared_auth_comparison_flow=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -1038,6 +1038,9 @@ def create_app(
                 Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
+    # Only explicitly injected test flows expose comparison routes.
+    if shared_auth_comparison_flow is not None:
+        routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)
     app = Starlette(routes=routes)
     # #5225: the canonical session guard resolves the Control Plane session
     # behind the session cookie once per request. It is added first so it stays

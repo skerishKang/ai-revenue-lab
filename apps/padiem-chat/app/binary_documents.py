@@ -31,6 +31,7 @@ _BINARY_ERROR_MESSAGES = {
     "empty_document": "빈 문서는 첨부할 수 없습니다.",
     "pdf_magic_mismatch": "PDF 형식과 실제 파일 내용이 일치하지 않습니다.",
     "pdf_encrypted": "암호화된 PDF는 현재 첨부할 수 없습니다.",
+    "ooxml_link_entry": "문서 압축 안에 안전하지 않은 경로 항목이 있어 열지 않았습니다.",
     "pdf_no_pages": "PDF에서 읽을 페이지를 찾지 못했습니다.",
     "pdf_empty_text": "이 PDF에서는 텍스트를 읽지 못했습니다. 스캔 문서 OCR은 아직 지원하지 않습니다.",
     "pdf_invalid": "PDF를 안전하게 읽지 못했습니다.",
@@ -52,11 +53,23 @@ _BINARY_ERROR_MESSAGES = {
 _OOXML_CODES = {
     "ooxml_archive_size",
     "ooxml_unsafe_path",
-    "ooxml_encrypted",
     "ooxml_entry_size",
     "ooxml_dtd_rejected",
     "ooxml_malformed",
     "ooxml_invalid_xml",
+}
+# An encrypted document is not a damaged one. "안전하게 읽지 못했습니다" sends the
+# owner to look for a corrupt file when the real answer is a password they set.
+_OOXML_ENCRYPTED_MESSAGES = {
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
+        "암호화된 DOCX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": (
+        "암호화된 PPTX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
+        "암호화된 XLSX는 현재 첨부할 수 없습니다."
+    ),
 }
 
 
@@ -77,6 +90,11 @@ def _decode_payload(payload: Any) -> bytes:
 
 
 def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
+    if exc.code == "ooxml_encrypted":
+        return BinaryDocumentValidationError(
+            _OOXML_ENCRYPTED_MESSAGES.get(media_type)
+            or "암호화된 문서는 현재 첨부할 수 없습니다."
+        )
     if exc.code in _OOXML_CODES:
         if media_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             return BinaryDocumentValidationError("XLSX 압축 구조를 안전하게 읽지 못했습니다.")

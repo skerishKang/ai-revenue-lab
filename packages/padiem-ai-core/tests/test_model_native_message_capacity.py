@@ -18,7 +18,7 @@ from padiem_ai_core.b14_execution import (
 from padiem_ai_core.b14_multimodal import B14MultimodalChatRequest
 from padiem_ai_core.contracts import AgentProfile
 from padiem_ai_core.execution_runtime import (
-    ExecutionRequest, ExecutionRuntime, MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+    ExecutionRequest, ExecutionRuntime,
 )
 from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRequest
 

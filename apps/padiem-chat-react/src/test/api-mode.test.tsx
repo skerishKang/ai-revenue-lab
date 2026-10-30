@@ -127,12 +127,13 @@ describe("React clone against the real Chat API path", () => {
     const streamCall = calls.find((call) => call.url.includes("/api/chat/stream"));
     expect(streamCall).toBeTruthy();
     expect(streamCall?.method).toBe("POST");
-    // The operational Chat payload: the outbound messages and the automatic
-    // mode. The account tier is never claimed by the clone.
+    // The operational Chat payload is the outbound messages only. The account tier
+    // is never claimed by the clone, and the `mode` key was the remnant of the
+    // abolished B14 auto selection (#4844) — the request contract refuses it now.
     expect(streamCall?.body).toMatchObject({
-      mode: "auto",
       messages: [{ role: "user", content: "실제 API에 연결해줘" }],
     });
+    expect((streamCall?.body as Record<string, unknown>).mode).toBeUndefined();
     expect((streamCall?.body as Record<string, unknown>).tier).toBeUndefined();
   });
 

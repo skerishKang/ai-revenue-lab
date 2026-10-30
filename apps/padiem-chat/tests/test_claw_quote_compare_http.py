@@ -9,7 +9,6 @@ must hand its document to the existing bounded artifact + download path.
 from __future__ import annotations
 
 import ast
-import hashlib
 import io
 import json
 import zipfile
@@ -35,7 +34,6 @@ from padiem_control_plane import (
 from kagent.ops_comparison import SupplierComparisonEngine
 
 COMPARE_ROUTE = "/api/claw/manual-intake/quote-compare"
-ARTIFACT_ROUTE_TEMPLATE = "/api/claw/manual-intake/artifact/{document_id}"
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
@@ -93,36 +91,16 @@ def client() -> TestClient:
     return TestClient(app)
 
 
-class _RoundTripDocumentStore:
-    """In-memory stand-in with the real put/get signatures and tenant check."""
+class _NeverTouchedDocumentStore:
+    """#2952 follow-up tripwire: the comparison must never use the artifact store."""
 
-    def __init__(self) -> None:
-        self.rows: dict[str, tuple[object, bytes]] = {}
-        self.put_calls: list[dict[str, object]] = []
+    def __getattr__(self, name):
+        def _refuse(*args, **kwargs):
+            raise AssertionError(
+                f"quote-compare must not reach workspace_document_store.{name}"
+            )
 
-    async def put_generated_docx(self, *, tenant_id: str, filename: str, body: bytes):
-        self.put_calls.append({"tenant_id": tenant_id, "filename": filename, "body": body})
-        document_id = "doc_" + hashlib.sha256(filename.encode("utf-8")).hexdigest()[:32]
-        metadata = MagicMock()
-        metadata.document_id = document_id
-        metadata.tenant_id = tenant_id
-        metadata.filename = filename
-        metadata.media_type = DOCX_MEDIA_TYPE
-        metadata.byte_length = len(body)
-        metadata.public_projection.return_value = {
-            "document_id": document_id,
-            "filename": filename,
-            "media_type": DOCX_MEDIA_TYPE,
-            "byte_length": len(body),
-        }
-        self.rows[document_id] = (metadata, body)
-        return metadata
-
-    async def get_for_tenant(self, *, tenant_id: str, document_id: str):
-        record = self.rows.get(document_id)
-        if record is None or record[0].tenant_id != tenant_id:
-            return None
-        return record
+        return _refuse
 
 
 def _identity_shadow_store() -> MagicMock:
@@ -159,7 +137,7 @@ def _authority() -> MagicMock:
     return authority
 
 
-def _signed_in_client(store: _RoundTripDocumentStore | None = None) -> TestClient:
+def _signed_in_client(store: _NeverTouchedDocumentStore | None = None) -> TestClient:
     app = create_app(
         settings=_settings(),
         history_store=MagicMock(),
@@ -306,42 +284,51 @@ def test_route_never_dispatches_p01_quota_or_history(client: TestClient) -> None
     app.state.history_store.record_claw_run.assert_not_called()
 
 
-def test_artifact_is_stored_and_downloaded_through_the_existing_path() -> None:
-    store = _RoundTripDocumentStore()
+def test_artifact_is_returned_as_response_bytes_and_never_stored() -> None:
+    """#2952 follow-up ②: the document is the response, so nothing can be re-downloaded."""
+    store = _NeverTouchedDocumentStore()
     client = _signed_in_client(store)
-    resp = client.post(COMPARE_ROUTE, json=_payload(SUPPLIER_A, SUPPLIER_B, SUPPLIER_UNKNOWN, artifact="docx"))
+    resp = client.post(
+        COMPARE_ROUTE,
+        json=_payload(SUPPLIER_A, SUPPLIER_B, SUPPLIER_UNKNOWN, artifact="docx"),
+        headers={"Accept": DOCX_MEDIA_TYPE},
+    )
     assert resp.status_code == 200
-    descriptor = resp.json()["artifact"]
-    assert descriptor["document_id"].startswith("doc_")
-    assert descriptor["media_type"] == DOCX_MEDIA_TYPE
-    assert descriptor["byte_length"] > 0
-    assert len(store.put_calls) == 1
-    assert store.put_calls[0]["tenant_id"] == "tenant_test"
+    assert resp.headers["content-type"] == DOCX_MEDIA_TYPE
+    assert resp.headers["content-disposition"].startswith("attachment; filename*=UTF-8''")
+    assert "no-store" in resp.headers["cache-control"]
+    assert resp.headers["x-content-type-options"] == "nosniff"
 
-    body = store.put_calls[0]["body"]
+    body = resp.content
+    assert body[:2] == b"PK"
     with zipfile.ZipFile(io.BytesIO(body)) as package:
         document_xml = package.read("word/document.xml").decode("utf-8")
     for marker in ("공급업체 견적 비교", "산업용 랙", "미확인", "DRAFT ONLY", "1,200,000 KRW"):
         assert marker in document_xml
 
-    download = client.get(ARTIFACT_ROUTE_TEMPLATE.format(document_id=descriptor["document_id"]))
-    assert download.status_code == 200
-    assert download.headers["content-type"] == DOCX_MEDIA_TYPE
-    assert download.content == body
-    assert "attachment" in download.headers["content-disposition"]
+    # Nothing was persisted, so no artifact id exists for a company-mate to open,
+    # and the existing "no Claw Ops ledger write" contract still holds.
+    client.app.state.history_store.record_claw_run.assert_not_called()
 
 
-def test_artifact_requires_canonical_tenant_and_store(client: TestClient) -> None:
+def test_artifact_needs_no_document_store_or_canonical_tenant_authority(client: TestClient) -> None:
+    """② replacement for the old storage-authority gate: the bytes answer stores nothing.
+
+    The previous contract required a canonical tenant plus the generated-document
+    store because the comparison wrote a shared object. With no write there is no
+    shared object to authorize, and the route must not consult either.
+    """
     resp = client.post(COMPARE_ROUTE, json=_payload(SUPPLIER_A, SUPPLIER_B, artifact="docx"))
-    assert resp.status_code == 503
-    assert resp.json()["error"]["code"] == "workspace_scope_unavailable"
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == DOCX_MEDIA_TYPE
+    assert resp.content[:2] == b"PK"
 
     signed_in = _signed_in_client(None)
     if hasattr(signed_in.app.state, "workspace_document_store"):
         del signed_in.app.state.workspace_document_store
     resp = signed_in.post(COMPARE_ROUTE, json=_payload(SUPPLIER_A, SUPPLIER_B, artifact="docx"))
-    assert resp.status_code == 503
-    assert resp.json()["error"]["code"] == "workspace_storage_unavailable"
+    assert resp.status_code == 200
+    assert resp.content[:2] == b"PK"
 
 
 def test_comparison_without_artifact_needs_no_storage_authority(client: TestClient) -> None:
@@ -535,14 +522,15 @@ class TestRouteSourceBoundary:
             }
         )
 
-    def test_handler_reuses_the_existing_document_and_download_path(self) -> None:
-        assert "build_document_artifact" in self._names()
-        assert "put_generated_docx" in self._awaited()
-        assert "_resolve_canonical_tenant" in self._awaited()
-        # Same projection seam the execute route already uses: the stored
-        # metadata object owns the public descriptor, never raw bytes.
-        assert "public_projection" in self._names()
-        assert "content_bytes" in self._names()
+    def test_handler_returns_the_document_bytes_and_stores_nothing(self) -> None:
+        """② #2952 follow-up: the comparison builds the same document but never stores it."""
+        names, awaited = self._names(), self._awaited()
+        assert "build_document_artifact" in names
+        assert "content_bytes" in names
+        # No store write, no stored descriptor, no tenant gate for a shared object:
+        # a document that is never stored cannot be re-downloaded by a company-mate.
+        assert names.isdisjoint({"put_generated_docx", "public_projection", "metadata"})
+        assert awaited.isdisjoint({"put_generated_docx", "_resolve_canonical_tenant"})
         execute = next(
             node
             for node in ast.walk(self.tree)

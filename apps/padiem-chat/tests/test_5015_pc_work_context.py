@@ -677,7 +677,6 @@ def test_chat_model_call_carries_the_verified_pc_context():
                 domain="chat.example.test", path="/",
             )
             return await client.post("/api/chat", json={
-                "mode": "auto",
                 "messages": [{"role": "user", "content": "드라이브 연결됨?"}],
             })
 

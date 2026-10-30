@@ -333,10 +333,8 @@ async def api_chat_stream(request: Request):
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -345,7 +343,7 @@ async def api_chat_stream(request: Request):
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     if tool_request is not None or attachments:
         return JSONResponse(
@@ -866,10 +864,8 @@ async def api_chat(request: Request) -> JSONResponse:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -878,7 +874,7 @@ async def api_chat(request: Request) -> JSONResponse:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):

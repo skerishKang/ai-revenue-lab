@@ -2,7 +2,7 @@
 
 The contract is: Korea is a no-op (prompt text and request body stay exactly as
 they are today), the other three countries append a language/expression
-instruction and send `country` on the request.
+instruction. The chat request itself no longer carries a `country` key (B3).
 """
 from __future__ import annotations
 
@@ -25,7 +25,8 @@ def test_korea_is_a_no_op_and_the_other_three_add_an_instruction():
     for code in ("us", "uk", "fr"):
         assert re.search(rf"\n    {code}: \"", JS), code
     # 요청 본문도 kr 에서는 지금과 같아야 한다
-    assert 'if (country !== "kr") payload.country = country;' in JS
+    # B3: chat 요청은 country 키를 받지 않는다 — 화면도 더 이상 보내지 않는다.
+    assert "payload.country" not in JS
 
 
 def test_the_country_is_read_from_local_storage_with_a_korean_default():

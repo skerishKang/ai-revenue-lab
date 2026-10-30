@@ -32,7 +32,7 @@ LIVE_CONNECTORS = {
     "slack": "connector:slack:workspace@1",
     "google-calendar": "connector:google:calendar@1",
 }
-STATIC_PREPARING = ("discord", "kakao-business")
+REMOVED_PREPARING_CARDS = ("discord", "kakao-business")
 SUPPORT_STATES = ("complete", "source_ready", "deferred")
 WORKSPACE_STATES = ("connected", "not_connected", "unverified", "ambiguous")
 LOCALE_KEYS = (
@@ -151,7 +151,7 @@ def test_connectors_nav_is_enabled_and_bound_to_standalone_page() -> None:
 def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
     cards = _cards()
     # Claw PC and GitHub have dedicated setup cards; neither represents an OAuth grant.
-    assert set(cards) == set(LIVE_CONNECTORS) | set(STATIC_PREPARING) | {"computer", "github"}
+    assert set(cards) == set(LIVE_CONNECTORS) | {"computer", "github"}
     for slug in ("computer", "github"):
         assert cards[slug]["connector_id"] == ""
         assert cards[slug]["status"] == ("preparing" if slug == "computer" else "loading")
@@ -162,11 +162,12 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
         assert "data-connector-support" in card["inner"]
         assert "data-connector-workspace" in card["inner"]
 
-    for slug in STATIC_PREPARING:
-        card = cards[slug]
-        assert card["connector_id"] == ""
-        assert card["status"] == "preparing"
-        assert 'data-locale-key="coming-soon"' in card["inner"]
+    # The permanently "preparing" Discord / Kakao Business cards are gone: the
+    # server projection never carried them, so they could never activate.
+    dialog = _dialog_element()
+    for slug in REMOVED_PREPARING_CARDS:
+        assert slug not in cards
+        assert f'data-connector="{slug}"' not in dialog
 
     assert "google-calendar" in cards
     assert 'data-google-connector-connect="google-calendar"' in cards["google-calendar"]["inner"]
@@ -175,7 +176,6 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
     assert 'data-google-connector-connect="google-drive"' in cards["google-drive"]["inner"]
     for slug in ("gmail", "telegram", "slack"):
         assert "data-google-connector-connect" not in cards[slug]["inner"]
-    assert "discord" in cards and "kakao-business" in cards
 
 
 def test_dialog_has_bounded_loading_error_retry_surface() -> None:

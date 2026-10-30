@@ -88,7 +88,10 @@ def test_the_browser_module_keeps_the_util_payload_and_declares_the_util_scope()
         line for line in source.splitlines()
         if not line.lstrip().startswith(("*", "/*", "//"))
     )
-    assert 'mode: "auto"' in code_only
+    # `mode` was the chat-mode remnant (B14 auto selection was abolished in #4844 and
+    # the server accepted only "auto"); the request contract now refuses the key, so
+    # this module must not send it.
+    assert 'mode: "auto"' not in code_only
     assert "PadiemTierSelection" in code_only
     # The #5916 execution-boundary contract: the module declares which
     # utility it is, or the shared calendar branch can hijack a meeting

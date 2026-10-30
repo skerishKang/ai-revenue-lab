@@ -59,7 +59,7 @@ def test_no_role_or_browser_authority_added_at_worker_entrypoint():
     assert 'binding_value(self.env, "PADIEM_SUPER_ADMIN_GOOGLE_EMAIL")' in worker
     assert "b66_admin_google_email=b66_operator_email" in worker
     assert "central_model_admin_google_email=central_operator_email" in worker
-    assert "request.query_params" not in worker[worker.index("b66_operator_email, central_operator_email"):worker.index("_worker_app = create_app")]
+    assert "request.query_params" not in worker[worker.index("b66_operator_email, central_operator_email"):worker.index("worker_app = create_app")]
 
 
 def test_product_authorizers_still_validate_immutable_google_subject():

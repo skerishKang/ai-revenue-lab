@@ -37,6 +37,10 @@ def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
     assert 'id="documentFormatsToggle"' in INDEX_HTML
     assert 'id="documentFormatsPanel"' in INDEX_HTML
+    # The empty "formats will be announced later" promise is gone; the shipped
+    # capability projection remains the only format truth.
+    assert "지원 형식은 추후 안내합니다." not in INDEX_HTML
+    assert '"document-formats-soon"' not in LOCALE_JS
     assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"' in INDEX_HTML
     assert 'id="attachmentButton" title=' not in INDEX_HTML
     assert '<script src="./shared-tooltip.js"></script>' in INDEX_HTML

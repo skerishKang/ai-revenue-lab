@@ -95,8 +95,8 @@ class _FakeResponse:
         self.status_code = status_code
         self._payload = payload
 
-    def json(self):
-        return self._payload
+    async def aiter_bytes(self):
+        yield json.dumps(self._payload).encode("utf-8")
 
 
 def _db():
@@ -128,9 +128,15 @@ def _client(queue_app):
         async def __aexit__(self, *exc):
             return False
 
-        async def post(self, url, json=None, headers=None):
-            response = await handler(_FakeRequest(headers, json))
-            return _FakeResponse(response.status_code, _json_loads(response.body))
+        def stream(self, method, url, json=None, headers=None):
+            assert method == "POST"
+            class Context:
+                async def __aenter__(self):
+                    response = await handler(_FakeRequest(headers, json))
+                    return _FakeResponse(response.status_code, _json_loads(response.body))
+                async def __aexit__(self, *exc):
+                    return False
+            return Context()
 
     return QueueStoreClient(origin="https://queue.padiem.net",
                             service_secret=SERVICE_SECRET,

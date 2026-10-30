@@ -16,9 +16,16 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import json
+import logging
+import time
 from typing import Any, Callable
 
+from .history import VerifiedDispatch, _tagged
 from . import httpx_compat as httpx
+from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispatch_id
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
@@ -26,11 +33,20 @@ QUEUE_BACKEND_D1 = "d1"
 QUEUE_BACKEND_COM2 = "com2"
 MAX_SECRET_CHARS = 256
 QUEUE_TIMEOUT_SECONDS = 8.0
+#: The Workers Python runtime stamps outbound fetches with `Python-urllib/3.12`,
+#: and the Cloudflare edge bot rule answers that UA with 403 error 1010 before
+#: the request reaches the queue. Every queue call names itself instead.
+QUEUE_USER_AGENT = "PadiemChat-Queue/1.0"
 
 #: The `oracle_mesh_dispatch` methods the queue owns. The result *content* is absent on
 #: purpose: the over-budget original lives in private R2 and the delivered answer in the
 #: conversation, and both stay with this Worker.
 QUEUE_DISPATCH_METHODS = frozenset({
+    "get_oracle_mesh_dispatch_pin",
+    "get_oracle_mesh_run_correlation",
+    "get_oracle_mesh_run_command",
+    "get_oracle_mesh_run_open_state",
+    "oracle_mesh_lane_status",
     "claim_oracle_mesh_dispatch",
     "cancel_oracle_mesh_dispatches_for_run",
     "consume_oracle_mesh_dispatch",
@@ -137,24 +153,74 @@ class QueueStoreClient:
             "follow_redirects": False,
         }
         factory = self._client_factory or httpx.AsyncClient
+        started = time.perf_counter()
+        stage, status = "request", 0
+        trace_run = run_hash(arguments.get("run_id"))
+        trace_dispatch = dispatch_id(arguments.get("dispatch_id"))
+        trace_headers = {}
+        if trace_run:
+            trace_headers[RUN_HASH_HEADER] = trace_run
+        if trace_dispatch:
+            trace_headers[DISPATCH_ID_HEADER] = trace_dispatch
+        # Only declared operation names are observable. Never log arguments,
+        # origins, headers, body bytes or exception messages/tracebacks.
+        safe_method = method if method in (
+            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
+        ) else "other"
+
+        def record(outcome, reason, exception="none"):
+            log = logger.info if outcome == "ok" else logger.warning
+            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s run_hash=%s dispatch_id=%s",
+                safe_method, stage, status, outcome, reason,
+                int((time.perf_counter() - started) * 1000), exception, trace_run or "none", trace_dispatch or "none")
+
         try:
             async with factory(**client_options) as client:
-                response = await client.post(
-                    self._origin + INTERNAL_STORE_PATH, json=payload,
+                # Workers compat exposes stream(), not post(); its Response
+                # exposes aiter_bytes(), not json()/aread()/content. Real httpx
+                # supports this same streaming interface and closes on exit.
+                async with client.stream(
+                    "POST", self._origin + INTERNAL_STORE_PATH, json=payload,
                     headers={QUEUE_SERVICE_SECRET_HEADER: self._secret,
                              "Accept": "application/json",
                              "Content-Type": "application/json",
-                             "Cache-Control": "no-store"},
-                )
-                if response.status_code != 200:
-                    raise QueueUnavailable("the queue refused the call")
-                body = response.json()
+                             "Cache-Control": "no-store",
+                             "User-Agent": QUEUE_USER_AGENT, **trace_headers},
+                ) as response:
+                    stage, status = "status", response.status_code
+                    if status != 200:
+                        record("error", "http_status")
+                        raise QueueUnavailable("the queue refused the call")
+                    stage = "body_read"
+                    raw = b"".join([chunk async for chunk in response.aiter_bytes()])
+                    stage = "json_decode"
+                    body = json.loads(raw)
         except QueueUnavailable:
             raise
         except (httpx.HTTPError, ValueError, TypeError) as exc:
-            raise QueueUnavailable("the queue could not be reached") from exc
+            reason = ("transport_error" if isinstance(exc, httpx.HTTPError)
+                      else "invalid_json" if stage == "json_decode" else "invalid_response")
+            kind = type(exc).__name__
+            if kind not in {"HTTPError", "RequestError", "ConnectError", "ReadError", "ReadTimeout", "ProtocolError", "JSONDecodeError", "UnicodeDecodeError", "ValueError", "TypeError"}:
+                kind = "other"
+            record("error", reason, kind)
+            raise QueueUnavailable("the queue could not be reached") from None
+        except Exception as exc:
+            # Never include exception text: it can contain URLs or credentials.
+            # The fixed allowlist makes a missing API observable without logging
+            # arbitrary attacker-controlled class names.
+            kind = "AttributeError" if isinstance(exc, AttributeError) else "other"
+            record("error", "unexpected_" + kind, kind)
+            raise QueueUnavailable("the queue could not be reached") from None
+        stage = "envelope"
         if not isinstance(body, dict) or body.get("ok") is not True or "result" not in body:
+            record("error", "invalid_envelope")
             raise QueueUnavailable("the queue answer was not usable")
+        stage = "complete"
+        result = body["result"]
+        if isinstance(result, dict):
+            trace_dispatch = dispatch_id(result.get("dispatch_id")) or trace_dispatch
+        record("ok", "ok")
         return body["result"]
 
 
@@ -212,6 +278,14 @@ class QueueBackedPresenceStore:
         return await self._client.call("load", **arguments)
 
 
+#: Reads whose rows arrive already scoped to one owner, so they may carry the handle.
+_OWNER_SCOPED_ROW_READS = frozenset({
+    "consume_oracle_mesh_dispatch", "get_oracle_mesh_dispatch_for_owner",
+    "get_oracle_mesh_dispatch_pin", "get_oracle_mesh_run_correlation",
+    "get_oracle_mesh_run_command",
+})
+
+
 class QueueForwardingHistoryStore:
     """The Chat store surface, with the dispatch names answered by the queue.
 
@@ -225,10 +299,25 @@ class QueueForwardingHistoryStore:
             raise QueueUnavailable("a D1 store is required underneath the queue")
         self._inner = inner
         self._client = client
+        # The dispatch rows are the queue's now, so anything the conversation side reads
+        # from them must be asked there. Without this the browser's result read-back re-read
+        # D1, found nothing, and answered 503 on a run that had completed fine.
+        setter = getattr(inner, "set_dispatch_authority", None)
+        if callable(setter):
+            setter(self)
 
     def __getattr__(self, name: str) -> Any:
         if name.startswith("_"):
             raise AttributeError(name)
         if name in QUEUE_DISPATCH_METHODS:
-            return lambda **arguments: self._client.call(name, **arguments)
+            if name not in _OWNER_SCOPED_ROW_READS:
+                return lambda **arguments: self._client.call(name, **arguments)
+
+            async def read(**arguments):
+                # The queue answered for one named owner; tag the row so the original
+                # stores accept it as proof and never re-read a table they do not own.
+                row = await self._client.call(name, **arguments)
+                return _tagged(row) if isinstance(row, dict) else row
+
+            return read
         return getattr(self._inner, name)

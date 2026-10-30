@@ -23,13 +23,11 @@ export async function verifyGoogleIdToken({ token, jwks, clientId, nonce, now })
   const good = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, decode(parts[2]), encoder.encode(`${parts[0]}.${parts[1]}`));
   if (!good) throw new Error('invalid token signature');
   const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
-  if (!['https://accounts.google.com', 'accounts.google.com'].includes(claims.iss) ||
-      !aud.includes(clientId) || (aud.length > 1 && claims.azp !== clientId) ||
-      (claims.azp !== undefined && claims.azp !== clientId) ||
-      !Number.isSafeInteger(claims.exp) || claims.exp <= now ||
-      !Number.isSafeInteger(claims.iat) || claims.iat > now ||
-      claims.nonce !== nonce || typeof claims.sub !== 'string' || !claims.sub) {
-    throw new Error('invalid token claims');
-  }
+  if (!['https://accounts.google.com', 'accounts.google.com'].includes(claims.iss)) throw new Error('invalid token issuer');
+  if (!aud.includes(clientId) || (aud.length > 1 && claims.azp !== clientId) || (claims.azp !== undefined && claims.azp !== clientId)) throw new Error('invalid token audience');
+  if (!Number.isSafeInteger(claims.exp) || claims.exp <= now) throw new Error('invalid token expiry');
+  if (!Number.isSafeInteger(claims.iat) || claims.iat > now) throw new Error('invalid token issued time');
+  if (claims.nonce !== nonce) throw new Error('invalid token nonce');
+  if (typeof claims.sub !== 'string' || !claims.sub) throw new Error('invalid token subject');
   return { sub: claims.sub };
 }

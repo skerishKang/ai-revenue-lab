@@ -188,7 +188,6 @@ def test_declared_util_request_never_takes_the_calendar_branch(util, user_text):
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": _shipped_meeting_prompt(user_text)}],
-                "mode": "auto",
                 "tier": "free",
                 "util": util,
             },
@@ -216,7 +215,6 @@ def test_invalid_util_scope_is_refused_before_any_model_call(util):
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": _shipped_meeting_prompt("안건 확인.")}],
-                "mode": "auto",
                 "util": util,
             },
             headers={"Origin": "https://chat.example.test"},

@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 
 REQUIRED = {
+    "queue_store": ("workers_compat", "no_httpx_only_methods", "mock_fetch_once", "parsed_result"),
     "timeout": (
         "abortsignal_import", "abortsignal_timeout_call",
         "fetch_accepts_signal", "local_normal_fetch", "local_post_form",
@@ -31,8 +32,9 @@ REQUIRED = {
         "bucket_get_called_once", "stream_body_not_used", "payload_matches",
     ),
 }
-REQUIRED_FALSE = {"p01_binding": "unexpected_exception", "r2_read": "unexpected_exception"}
+REQUIRED_FALSE = {"queue_store": "unexpected_exception", "p01_binding": "unexpected_exception", "r2_read": "unexpected_exception"}
 SUCCESS = {
+    "queue_store": "WORKER_QUEUE_STORE_COMPAT_PASS",
     "timeout": "WORKER_TIMEOUT_RUNTIME_PASS",
     "web_transport": "WORKER_WEB_TRANSPORT_PASS",
     "p01_binding": "WORKER_P01_BINDING_COMPOSITION_PASS",

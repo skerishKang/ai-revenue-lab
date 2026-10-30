@@ -77,10 +77,8 @@
     const tier = ["free", "plus", "pro", "max", "admin"].includes(selected) ? selected : "free";
     const country = currentCountry();
     const content = prompt + countryInstruction(country);
-    const payload = { messages: [{ role: "user", content: content }], mode: "auto", tier };
+    const payload = { messages: [{ role: "user", content: content }], tier };
     if (util) payload.util = util;
-    // 계약: 값이 없으면 kr 이므로, kr 요청은 지금과 같은 본문을 보낸다(하위 호환).
-    if (country !== "kr") payload.country = country;
     const res = await fetch("/api/chat", {
       method: "POST",
       credentials: "include",

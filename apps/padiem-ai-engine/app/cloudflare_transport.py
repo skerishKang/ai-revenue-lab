@@ -19,7 +19,6 @@ from padiem_ai_core.b14_execution import (
     MAX_B14_RESPONSE_BYTES,
     MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
-from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 from padiem_ai_core.b14_upstream import (
     BINDING_ORIGIN as B14_INTERNAL_ORIGIN,
     UPSTREAM_MODE_ENV,
@@ -37,7 +36,6 @@ _ALLOWED_B14_PATHS = frozenset(
     {
         B14_CHAT_COMPLETIONS_PATH,
         B14_STREAM_PREVIEW_PATH,
-        B14_AUTO_STREAM_PREVIEW_PATH,
     }
 )
 

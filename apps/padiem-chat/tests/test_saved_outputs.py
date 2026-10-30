@@ -284,7 +284,7 @@ async def test_saved_output_is_not_automatic_chat_context():
         saved_output_store=store,
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "새 질문"}], "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "새 질문"}]})
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
         assert secret not in json.dumps(seen["body"], ensure_ascii=False)
@@ -305,7 +305,6 @@ async def test_document_chat_does_not_create_saved_output_implicitly():
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": "이 문서를 요약해줘"}],
-                "mode": "auto",
                 "attachments": [{
                     "type": "document",
                     "name": "private.txt",
@@ -392,7 +391,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "innerHTML" not in js
     assert "D1SavedOutputStore" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",

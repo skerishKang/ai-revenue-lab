@@ -340,5 +340,6 @@ def test_public_gateway_still_rejects_stream_true():
             "stream": True,
         },
     )
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7: the retired id is refused at validation, before any stream handling.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"

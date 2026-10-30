@@ -76,7 +76,6 @@ class B62ScopeTests(unittest.TestCase):
         # #5341: an independent Core utility cannot change the B62 runtime.
         for independent in (
             "packages/padiem-ai-core/padiem_ai_core/pdf_authoring.py",
-            "packages/padiem-ai-core/padiem_ai_core/template_cloner_skill.py",
             "packages/padiem-ai-core/padiem_ai_core/workspace_storage.py",
         ):
             with self.subTest(independent=independent):

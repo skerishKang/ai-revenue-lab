@@ -25,24 +25,28 @@ from .web_tools import MAX_QUERY_CHARS, SEARCH_QUERY_TOO_LONG_MESSAGE, normalize
 # finite value; a finite value is still a PADIEM total, so the limit is
 # removed instead of enlarged.
 MAX_BROWSER_BODY_BYTES: int | None = None
-# Deprecated model-input caps remain importable for compatibility; no product
-# pilot count/character ceiling applies before B14. HTTP body safety is separate.
-MAX_MESSAGES: int | None = None
-MAX_MESSAGE_CHARS: int | None = None
-MAX_TOTAL_MESSAGE_CHARS: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
 # Routing label for the three 의원3종 utilities. It grants no identity, tier,
 # entitlement or tool scope, and it is not an authentication input.
 _UTIL_SCOPES = frozenset({"speech", "sns", "meeting"})
-# #6046: content country for the three 의원3종 utilities. Like `util` this is a
-# presentation/routing label — it selects the output language and wording and
-# grants no identity, tier, entitlement, legal jurisdiction or storage region.
+# #6046: the content-country vocabulary shared with project files. The chat
+# request no longer accepts a `country` key (B3): it was validated here and then
+# never read. `project_file_routes` still uses this set for the project-file
+# country filter, which is a live feature and unchanged.
 COUNTRIES = frozenset({"kr", "us", "uk", "fr"})
-DEFAULT_COUNTRY = "kr"
 
 
 class BrowserRequestError(ValueError):
-    pass
+    code = "invalid_request"
+
+
+class StaleChatClientError(BrowserRequestError):
+    """A removed browser contract needs a page refresh."""
+    code = "stale_chat_client"
+
+
+_RETIRED_TASK_MODES = frozenset({"explain", "write", "translate", "summarize", "code", "brainstorm"})
+_STALE_CHAT_MESSAGE = '화면이 오래되었습니다. 새로고침이 필요합니다.'
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,30 +135,30 @@ def declared_util_scope(raw: Any) -> str | None:
     return scope if isinstance(scope, str) and scope in _UTIL_SCOPES else None
 
 
-def declared_country(raw: Any) -> str:
-    """Content country of a request. Absent means kr, so every existing client
-    keeps today's Korean behaviour without sending anything new."""
-    value = raw.get("country") if isinstance(raw, dict) else None
-    return value if isinstance(value, str) and value in COUNTRIES else DEFAULT_COUNTRY
-
-
 def _validate_payload_parts(
     raw: Any,
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
+    # An old tab can still send fields removed from the current browser contract.
+    # Only recognize the known retired keys/modes; unknown input stays invalid.
+    if "mode" in raw or "country" in raw or (
+        isinstance(raw.get("skill"), str) and raw["skill"].strip() in _RETIRED_TASK_MODES
+    ):
+        raise StaleChatClientError(_STALE_CHAT_MESSAGE)
+    # `mode` is gone, not merely unvalidated: B14 automatic model selection was
+    # abolished (#4844), the server accepted only "auto", and the four-mode catalog
+    # in `app/chat_modes.py` (자동/빠르게/균형/깊게) had no call site at all. A key that
+    # no client may meaningfully set is refused here rather than ignored, so nothing
+    # can grow a mode-shaped promise again.
     # The tail order below is a load-bearing literal: test_5015 pins
     # `"pc_run_id", "web_search"}` as the end of this set.
-    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "country", "pc_run_id", "web_search"}:
+    if set(raw) - {"messages", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id", "timezone", "calendar_turn_id", "custom", "device_id", "util", "pc_run_id", "web_search"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if "util" in raw:
         util_scope = raw["util"]
         if not isinstance(util_scope, str) or util_scope not in _UTIL_SCOPES:
             raise BrowserRequestError("유틸 업무 식별자가 올바르지 않습니다.")
-    if "country" in raw:
-        country = raw["country"]
-        if not isinstance(country, str) or country not in COUNTRIES:
-            raise BrowserRequestError("국가 식별자가 올바르지 않습니다.")
     if "pc_run_id" in raw:
         try:
             validate_chat_pc_run_id(raw.get("pc_run_id"))
@@ -164,8 +168,6 @@ def _validate_payload_parts(
         turn_id = raw["calendar_turn_id"]
         if not isinstance(turn_id, str) or not turn_id.strip() or len(turn_id) > 128:
             raise BrowserRequestError("Calendar 요청 식별자 형식이 올바르지 않습니다.")
-    if raw.get("mode", "auto") != "auto":
-        raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
 
     skill_id = raw.get("skill", "auto")
     if not isinstance(skill_id, str) or not skill_id.strip():
@@ -262,8 +264,8 @@ def _apply_b62_model_policy(
     """Resolve browser tier selection without exposing provider/model authority.
 
     Explicit browser tier ids are resolved server-side through the shared Padiem
-    product-tier contract. With no tier field, hidden slash aliases remain a
-    compatibility/test surface.
+    product-tier contract. With no tier field, ordinary chat resolves the
+    default product tier; slash-prefixed text is ordinary prompt text.
     """
     try:
         if tier_id is None:
@@ -276,7 +278,6 @@ def _apply_b62_model_policy(
             policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
-    # Preserve validated browser messages until the B14/tier-identity dispatch
-    # boundary. Hidden slash selectors are stripped by the existing client-side
-    # model policy there; explicit browser tier selection rides request context.
+    # Preserve validated browser messages verbatim; explicit browser tier
+    # selection rides request context and prompt text is never rewritten.
     return policy.model_id, [dict(message) for message in messages]

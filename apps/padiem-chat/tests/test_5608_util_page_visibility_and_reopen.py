@@ -130,8 +130,12 @@ def test_shipped_services_do_not_advertise_themselves_as_unavailable() -> None:
 def test_speech_reopen_contract_reads_the_file_body() -> None:
     js = UTIL_MENU_JS.read_text(encoding="utf-8")
     assert "[저장된 파일" not in js
-    assert "저장된 축사의 본문을 읽을 수 없습니다." in js
-    assert "저장된 축사를 열지 못했습니다." in js
+    # #6199: one reader for a stored body, and the failure is the real status
+    # instead of a generic sentence.
+    assert "async function readStoredBody(" in js
+    assert " 찾을 수 없습니다. 다른 계정의 글이거나 삭제된 글입니다." in js
+    assert "async function openSpeechForEdit(" in js
+    assert "setSpeechEditing({ id: file.id, name: file.name" in js
 
 
 # --------------------------------------------------------------------------
@@ -179,6 +183,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
+  insertBefore(child, ref) {
+    const i = this.children.indexOf(ref);
+    if (i < 0) return this.appendChild(child);
+    this.children.splice(i, 0, child);
+    child.parentNode = this;
+    return child;
+  }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}

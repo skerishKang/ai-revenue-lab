@@ -22,7 +22,13 @@ from .documents import DocumentAttachment, _safe_name, _validate_text
 from .config import _normalize_base_url
 
 FILE_ID = re.compile(r"file_[a-f0-9]{32}\Z")
-KINDS = {"txt": "text/plain", "md": "text/markdown", "csv": "text/csv", "pdf": "application/pdf"}
+KINDS = {
+    "txt": "text/plain", "md": "text/markdown", "csv": "text/csv", "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
+BINARY_KINDS = frozenset({"pdf", "docx", "pptx", "xlsx"})
 TICKET_LIFETIME_SECONDS = 600
 
 

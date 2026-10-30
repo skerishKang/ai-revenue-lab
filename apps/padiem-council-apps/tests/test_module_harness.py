@@ -28,11 +28,13 @@ def test_every_tool_generates_through_the_one_model_lane() -> None:
         observed["meeting"]["prompt"],
         observed["book"]["prompt"],
     ):
-        assert prompt["mode"] == "auto"
+        # `mode` left the request contract with the chat-mode remnant; a body that
+        # still carried it would now be refused as an unknown item.
+        assert "mode" not in prompt
         assert prompt["tier"] == "free"
         assert [m["role"] for m in prompt["messages"]] == ["user"]
         assert prompt["messages"][0]["content"].strip()
-        assert set(prompt) == {"messages", "mode", "tier", "util"}
+        assert set(prompt) == {"messages", "tier", "util"}
 
 
 def test_every_tool_declares_which_utility_it_is() -> None:
@@ -56,7 +58,7 @@ def test_a_meeting_text_with_calendar_vocabulary_still_reaches_the_model() -> No
     )
     for row in observed["cases"]:
         assert row["prompt"]["util"] == "meeting", row
-        assert row["prompt"]["mode"] == "auto" and row["prompt"]["tier"] == "free"
+        assert row["prompt"]["tier"] == "free" and "mode" not in row["prompt"]
         for phrase in calendar_answers:
             assert phrase not in row["output"], (row["userText"], phrase)
         assert row["output"].startswith("생성된 초안 본문입니다."), row

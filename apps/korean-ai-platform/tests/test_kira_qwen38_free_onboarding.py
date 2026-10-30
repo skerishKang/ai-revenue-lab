@@ -73,7 +73,7 @@ def test_public_catalog_exact_manual_only_and_secret_free():
     assert "Authorization" not in r.text
 
 def test_manual_route_cannot_select_another_provider(live):
-    route=resolve_manual_route(MODEL,allow_external_fallback=False)
+    route=resolve_manual_route(MODEL)
     assert route.selected_model==MODEL
     assert route.selected_upstream_model==UPSTREAM
     assert route.platform_provider_id=="kira"

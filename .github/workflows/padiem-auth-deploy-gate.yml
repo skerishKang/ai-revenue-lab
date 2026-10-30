@@ -33,6 +33,13 @@ jobs:
         with:
           node-version: '22'
       - run: node --test apps/padiem-auth/test/*.test.mjs
+      - run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Test synthetic secrets through stdin in dry-run
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' '{"PADIEM_SYNTHETIC_SECRET":"synthetic-test-only"}' | npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --secrets-file /dev/stdin --outdir "$RUNNER_TEMP/auth-stdin-test" >/dev/null 2>&1
+          echo 'Synthetic stdin dry-run: PASS'
   gate:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -70,14 +77,23 @@ jobs:
           [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
           [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
           python - <<'PY'
-          import json, os, urllib.error, urllib.request
+          import json, os, re, urllib.error, urllib.request
+          from pathlib import Path
           account = os.environ['CLOUDFLARE_ACCOUNT_ID']
           request = urllib.request.Request('https://api.cloudflare.com/client/v4/accounts/' + account, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
           with urllib.request.urlopen(request, timeout=15) as response:
               data = json.load(response)
-          if data.get('success') is not True or data.get('result', {}).get('name') != 'Charliekant':
+          evidence = Path('docs/operations/PADIEM_WEB_SEARCH_PROVIDER_POLICY_3385.md').read_text(encoding='utf-8')
+          known = re.findall(r'Charliekant Account ID `([0-9a-f]{32})`', evidence)
+          if len(known) != 1 or data.get('success') is not True or data.get('result', {}).get('id') != known[0] or account != known[0]:
               raise SystemExit('Cloudflare account mismatch or unreadable')
-          print('Cloudflare account match: Charliekant')
+          existing_url = 'https://api.cloudflare.com/client/v4/accounts/' + account + '/workers/scripts/padiem-chat'
+          existing_request = urllib.request.Request(existing_url, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          try:
+              urllib.request.urlopen(existing_request, timeout=15).close()
+          except urllib.error.HTTPError:
+              raise SystemExit('Existing Chat Worker could not be read') from None
+          print('Approved account and existing Chat Worker match: PASS')
           script_url = 'https://api.cloudflare.com/client/v4/accounts/' + account + '/workers/scripts/padiem-auth'
           script_request = urllib.request.Request(script_url, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
           try:
@@ -132,4 +148,4 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
-          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml
+          node apps/padiem-auth/bootstrap-deploy.mjs

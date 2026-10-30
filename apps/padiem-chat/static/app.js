@@ -878,8 +878,12 @@
       if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
         throw new Error(uiT("claw-image-attachment-unsupported"));
       }
-      if (window.PadiemFileLane?.shouldUse(file) && await window.PadiemFileLane.available()) {
+      const useFileLane = window.PadiemFileLane?.shouldUse(file);
+      const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
+      if (useFileLane && fileLaneAvailable) {
         next = window.PadiemFileLane.pending(file);
+      } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
+        throw new Error(uiT("file-lane-unavailable"));
       } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
       else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
       else next = await readDocumentFile(file);
@@ -2809,7 +2813,11 @@
       }
       if (result.status !== "completed" || typeof result.answer !== "string") {
         window.PadiemChatLifecycle?.setTaskHint?.(article, null);
-        showPcRuntimeStatus(article, "run_failed");
+        if (result.reason === "pc_read_failed") {
+          showPcRuntimeStatus(article, "pc_read_failed");
+        } else {
+          showPcRuntimeStatus(article, "run_failed");
+        }
         PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
         return;
       }
@@ -3299,7 +3307,7 @@
       // is read, so a request never leaves with a tier that was not verified
       // for this account yet.
       await window.PadiemTierSelection?.ready?.();
-      const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };
       if (window.PadiemSearchSources && typeof window.PadiemSearchSources.isActive === "function" && window.PadiemSearchSources.isActive()) {
         payload.web_search = true;
       }

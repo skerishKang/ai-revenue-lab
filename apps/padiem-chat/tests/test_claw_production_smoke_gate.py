@@ -22,8 +22,8 @@ def test_claw_phase_a_production_smoke_gate_is_exact_main_bounded_and_secret_fre
         "PRODUCTION_MUTATION=0",
         "environment: production",
         "git fetch --no-tags --depth=1 origin main",
-        'test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"',
-        'test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"',
+        'test "$(git rev-parse HEAD)" = "${{ needs.source-contract.outputs.target_sha }}"',
+        'test "$(git rev-parse origin/main)" = "${{ needs.source-contract.outputs.target_sha }}"',
         'test "${{ inputs.confirmation }}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"',
         "--max-time 45",
     )
@@ -83,7 +83,13 @@ def test_claw_phase_a_smoke_gate_event_context_safe_for_all_triggers() -> None:
     )
     assert "ref: ${{ github.event.pull_request.head.sha }}" in text
     assert "ref: ${{ github.sha }}" in text
-    assert "ref: ${{ inputs.target_sha }}" in text
+    # #6209: 체크아웃 전 가드가 정규화한 값을 발행하고, 이후 모든 체크아웃과
+    # exact-main 대조는 그 값을 쓴다. 원시 dispatch 입력은 가드 자신의 env 한 곳에서만 읽는다.
+    raw_input = "$" + "{{ inputs.target_sha }}"
+    assert text.count(raw_input) == 1
+    assert "B62_TARGET_SHA_RAW: " + raw_input in text
+    assert "ref: ${{ steps.b62_target_sha.outputs.target_sha }}" in text
+    assert "ref: ${{ needs.source-contract.outputs.target_sha }}" in text
 
     top_level = text.split("jobs:")[0]
     top_env = top_level.split("env:")[1] if "env:" in top_level else ""

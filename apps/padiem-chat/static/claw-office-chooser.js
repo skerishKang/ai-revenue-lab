@@ -257,7 +257,6 @@
   const api = Object.freeze({ parseCandidates, initChooser });
   if (typeof module === "object" && module.exports) module.exports = api;
   if (typeof window === "object") {
-    window.PadiemHarkOfficeChooser = api;
     if (typeof document === "object") initChooser(document);
   }
 })();
