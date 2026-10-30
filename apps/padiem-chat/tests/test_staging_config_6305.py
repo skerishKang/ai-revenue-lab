@@ -6,7 +6,7 @@ spec = importlib.util.spec_from_file_location("staging_config", Path(__file__).p
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 DB = module.STAGING_DB
-CHAT = "https://padiem-chat-staging.example.workers.dev"
+CHAT = "https://padiem-chat-staging.charliekant.workers.dev"
 QUEUE = "https://queue-staging.padiem.net"
 
 class StagingConfigTest(unittest.TestCase):

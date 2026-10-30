@@ -20,7 +20,7 @@ def make_config(database_id, public_origin, queue_origin):
             raise ValueError("isolated HTTPS origin required")
         return u.hostname
     chat_host, queue_host = host(public_origin), host(queue_origin)
-    if not re.fullmatch(r"padiem-chat-staging\.[a-z0-9-]+\.workers\.dev", chat_host):
+    if chat_host != "padiem-chat-staging.charliekant.workers.dev":
         raise ValueError("unexpected staging worker origin")
     if queue_host != "queue-staging.padiem.net":
         raise ValueError("unexpected staging queue host")

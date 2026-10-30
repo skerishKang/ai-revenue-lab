@@ -1,4 +1,4 @@
-name: B62 Chat staging (draft)
+name: B62 Chat staging
 
 on:
   workflow_dispatch:
@@ -8,10 +8,10 @@ on:
         required: true
         type: string
       mode:
-        description: Deployment remains disabled until staging integration is ready
+        description: Dry run or deploy the isolated staging Worker
         required: true
         type: choice
-        options: [dry-run]
+        options: [dry-run, deploy]
 
 permissions:
   contents: read
@@ -50,7 +50,42 @@ jobs:
       - name: Build staging Worker without uploading
         working-directory: apps/padiem-chat
         run: uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --config .staging.generated.json --dry-run --outdir "$RUNNER_TEMP/staging-worker"
+      - name: Check staging account and exact D1 identity
+        if: inputs.mode == 'deploy'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 d1 list --json > "$RUNNER_TEMP/staging-d1.json"
+          python apps/padiem-chat/scripts/staging_verify.py d1 "$RUNNER_TEMP/staging-d1.json"
+          npx --yes wrangler@4 deployments list --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before.json"
+          version="$(python apps/padiem-chat/scripts/staging_verify.py active "$RUNNER_TEMP/staging-before.json")"
+          npx --yes wrangler@4 versions view "$version" --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before-version.json"
+          python apps/padiem-chat/scripts/staging_verify.py bindings "$RUNNER_TEMP/staging-before-version.json"
+      - name: Deploy staging Worker
+        if: inputs.mode == 'deploy'
+        working-directory: apps/padiem-chat
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --config .staging.generated.json --keep-vars > "$RUNNER_TEMP/staging-deploy.log" 2>&1 || { echo 'Staging deployment failed'; exit 1; }
+      - name: Verify the serving version and bindings
+        if: inputs.mode == 'deploy'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deployments list --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-deployments.json"
+          version="$(python apps/padiem-chat/scripts/staging_verify.py active "$RUNNER_TEMP/staging-deployments.json")"
+          npx --yes wrangler@4 versions view "$version" --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-version.json"
+          python apps/padiem-chat/scripts/staging_verify.py bindings "$RUNNER_TEMP/staging-version.json"
+          echo "Staging version: $version"
 
-# Deployment is intentionally not wired yet. Before enabling it, the workflow
-# must verify account + D1 identity against Cloudflare, use a token scoped only
-# to staging, preserve staging secrets, and pass real Worker boot tests.
+# The environment must use a token scoped exclusively to the staging Worker and
+# its D1; do not reuse the production deployment token. This PR remains draft
+# until token scope, deployed-binding checks, and actual Worker health pass.
