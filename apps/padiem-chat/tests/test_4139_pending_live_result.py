@@ -1,5 +1,6 @@
 """One accepted PC run can be read only by its owner, without redispatch."""
 import asyncio
+from store_seam import attach_dispatch_seam
 import json
 import sqlite3
 from types import SimpleNamespace
@@ -87,9 +88,9 @@ def test_oracle_result_uses_its_durable_dispatch_correlation():
         assert args[:4] == (cid, "owner", PRODUCT_SCOPE_CHAT, mid)
         return [{"id": mid, "content": "Padiem-Command-Center"}]
 
-    store = SimpleNamespace(
+    store = attach_dispatch_seam(SimpleNamespace(
         get_local_task_correlation=no_ltr, _first=first, _all=all_rows,
-    )
+    ))
     result = asyncio.run(D1HistoryStore.get_claw_run_result_message(
         store, "owner", "run_" + "f"*24, cid,
     ))

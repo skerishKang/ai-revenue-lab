@@ -59,15 +59,7 @@ def _store(*, dispatch=None, run_row=None, messages=None, reads=None,
     store._first = first
     store._all = all_rows
     store.get_local_task_correlation = local_correlation
-    # The dispatch-row reads answer through the store's authority seam. This double is a
-    # D1HistoryStore with scripted reads, so it carries the same reads and no authority —
-    # which is exactly d1 mode.
-    store.dispatch_authority = None
-    for name in ("get_oracle_mesh_run_correlation", "get_oracle_mesh_dispatch_pin",
-                 "get_oracle_mesh_run_command", "get_oracle_mesh_run_open_state"):
-        setattr(store, name, getattr(D1HistoryStore, name).__get__(store))
-    store._verified = D1HistoryStore._verified
-    store._dispatch = D1HistoryStore._dispatch.__get__(store)
+    attach_dispatch_seam(store)  # the seam the real store answers dispatch reads through
     return store
 
 
