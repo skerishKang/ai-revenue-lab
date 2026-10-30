@@ -65,3 +65,39 @@ def test_all_table_counts_quote_identifiers_and_compare(monkeypatch, tmp_path):
     assert mod.table_counts()=={"odd'name":1}
     assert all(q.startswith("SELECT ") for q in queries)
     assert db.execute('SELECT count(*) FROM "odd\'name"').fetchone()[0]==1
+
+
+def test_provider_table_excluded_but_other_tables_counted(monkeypatch):
+    import sys
+    sys.path.insert(0,str(SCRIPTS))
+    try: mod=load("b54_engine_d1_0012_0013_inspect")
+    finally: sys.path.pop(0)
+    queries=[]
+    def q(sql):
+        queries.append(sql)
+        if "sqlite_master" in sql:
+            return {"success":True,"result":[{"success":True,"results":[
+                {"name":"_cf_KV","sql":"CREATE TABLE _cf_KV (x)"},
+                {"name":"app","sql":"CREATE TABLE app (x)"}]}]}
+        assert '"_cf_KV"' not in sql and '"app"' in sql
+        return {"success":True,"result":[{"success":True,"results":[{"name":"app","n":2}]}]}
+    monkeypatch.setattr(mod,"query",q)
+    assert mod.table_counts()=={"app":2}
+    assert len(queries)==2
+
+
+def test_http_error_logs_status_and_safe_cloudflare_errors(monkeypatch,capsys):
+    import sys, io, json, urllib.error
+    sys.path.insert(0,str(SCRIPTS))
+    try: mod=load("b54_engine_d1_0012_0013_inspect")
+    finally: sys.path.pop(0)
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID",mod.ACCOUNT)
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN","sensitive-token")
+    body=json.dumps({"errors":[{"code":7500,"message":"not authorized sensitive-token"}]}).encode()
+    def fail(*a,**k):
+        raise urllib.error.HTTPError("https://example.invalid",400,"bad",{},io.BytesIO(body))
+    monkeypatch.setattr(mod.urllib.request,"urlopen",fail)
+    with pytest.raises(urllib.error.HTTPError): mod.query("SELECT 1")
+    output=capsys.readouterr().err
+    assert '"status": 400' in output and '"code": 7500' in output
+    assert "sensitive-token" not in output and "[REDACTED]" in output
