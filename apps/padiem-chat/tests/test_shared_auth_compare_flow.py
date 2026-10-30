@@ -1,0 +1,99 @@
+import asyncio
+import base64
+import json
+import unittest
+from http.cookies import SimpleCookie
+from types import SimpleNamespace
+from urllib.parse import parse_qs, urlsplit
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
+from starlette.datastructures import QueryParams
+
+from app.shared_auth_compare_flow import CALLBACK, COOKIE, ComparisonFlow
+
+
+def b64int(value):
+    return base64.urlsafe_b64encode(value.to_bytes(32, 'big')).rstrip(b'=').decode()
+
+
+def jwk():
+    key = ec.generate_private_key(ec.SECP256R1()).private_numbers()
+    return {'kty':'EC', 'crv':'P-256', 'd':b64int(key.private_value),
+            'x':b64int(key.public_numbers.x), 'y':b64int(key.public_numbers.y)}
+
+
+class FlowTests(unittest.TestCase):
+    def setUp(self):
+        self.now = 1000
+        self.user = 'usr_synthetic'
+        self.calls = []
+        async def exchange(url, data):
+            self.calls.append((url, data))
+            return {'access_token':'synthetic-access'}
+        async def compare(request, token):
+            self.assertEqual(token, 'synthetic-access')
+            return 'MATCH'
+        self.flow = ComparisonFlow(state_key=b's' * 32, client_id='b62', client_jwk=jwk(),
+            kid='synthetic-kid', operator_guard=lambda r: True, legacy_user=lambda r: self.user,
+            comparator=compare, exchange=exchange, clock=lambda:self.now)
+
+    def run_flow(self, value):
+        return asyncio.run(value)
+
+    def start(self):
+        response = self.run_flow(self.flow.start(SimpleNamespace()))
+        cookie = SimpleCookie()
+        cookie.load(response.headers['set-cookie'])
+        target = urlsplit(response.headers['location'])
+        params = parse_qs(target.query)
+        return response, cookie[COOKIE].value, params
+
+    def callback(self, cookie, state, code='synthetic-code'):
+        request = SimpleNamespace(cookies={COOKIE:cookie}, query_params=QueryParams({'state':state,'code':code}))
+        return self.run_flow(self.flow.callback(request))
+
+    def test_default_off_and_bound_code_exchange(self):
+        self.assertEqual(self.flow.routes(), [])
+        self.assertEqual(len(self.flow.routes(enabled=True)), 2)
+        response, cookie, params = self.start()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(params['redirect_uri'], [CALLBACK])
+        self.assertEqual(params['code_challenge_method'], ['S256'])
+        result = self.callback(cookie, params['state'][0])
+        self.assertEqual(json.loads(result.body), {'result':'MATCH'})
+        self.assertEqual(result.headers['cache-control'], 'no-store')
+        self.assertNotIn(b'synthetic-access', result.body)
+        self.assertEqual(len(self.calls), 1)
+        sent = self.calls[0][1]
+        digest = base64.urlsafe_b64encode(__import__('hashlib').sha256(sent['code_verifier'].encode()).digest()).rstrip(b'=').decode()
+        self.assertEqual(digest, params['code_challenge'][0])
+
+    def test_bad_state_wrong_user_and_expiry_never_exchange(self):
+        _, cookie, params = self.start()
+        state = params['state'][0]
+        for check in ('bad_state', 'wrong_user', 'expired'):
+            self.user = 'different' if check == 'wrong_user' else 'usr_synthetic'
+            self.now = 1601 if check == 'expired' else 1000
+            result = self.callback(cookie, 'bad' if check == 'bad_state' else state)
+            self.assertEqual(json.loads(result.body), {'result':'UNKNOWN'})
+        self.assertEqual(self.calls, [])
+
+    def test_wrong_operator_cannot_start_or_exchange(self):
+        _, cookie, params = self.start()
+        self.flow.guard = lambda r: False
+        self.assertEqual(self.run_flow(self.flow.start(SimpleNamespace())).status_code, 403)
+        self.assertEqual(json.loads(self.callback(cookie, params['state'][0]).body), {'result':'UNKNOWN'})
+        self.assertEqual(self.calls, [])
+
+    def test_client_assertion_has_auth_contract_and_valid_es256_signature(self):
+        encoded = self.flow._assertion(self.now)
+        head, body, signature = encoded.split('.')
+        decode = lambda value: base64.urlsafe_b64decode(value + '=' * (-len(value) % 4))
+        claims = json.loads(decode(body))
+        self.assertEqual(claims['aud'], 'https://auth.padiem.net/token')
+        self.assertEqual(claims['iss'], 'b62')
+        raw = decode(signature)
+        der = encode_dss_signature(int.from_bytes(raw[:32], 'big'), int.from_bytes(raw[32:], 'big'))
+        self.flow.key.public_key().verify(der, (head + '.' + body).encode(), ec.ECDSA(hashes.SHA256()))
