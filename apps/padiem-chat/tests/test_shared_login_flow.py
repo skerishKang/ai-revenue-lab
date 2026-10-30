@@ -8,7 +8,7 @@ from starlette.responses import RedirectResponse
 
 from app.shared_auth_compare_flow import _b64
 from app.shared_login_flow import (CALLBACK, STATE_COOKIE, ACCESS_COOKIE, REFRESH_COOKIE,
-                                   SharedLoginFlow, issue_shared_cookies)
+                                   SharedLoginFlow, create_worker_shared_login_flow)
 
 
 class FakeCrypto:
@@ -107,3 +107,16 @@ async def test_logout_fails_closed_when_revoke_fails_and_rejects_cross_origin():
     result = await flow.logout(request(cookie=REFRESH_COOKIE + '=x', origin='https://chat.padiem.net'))
     assert result.status_code == 503 and calls
     assert not result.headers.getlist('set-cookie')
+
+
+@pytest.mark.asyncio
+async def test_default_off_never_resolves_secrets(monkeypatch):
+    from app import worker_config
+    reads = []
+    monkeypatch.setattr(worker_config, 'binding_value', lambda env, name: None)
+    async def read(*args):
+        reads.append(True)
+        raise AssertionError('secrets must not be read')
+    monkeypatch.setattr(worker_config, 'resolve_secret_binding', read)
+    assert await create_worker_shared_login_flow(object(), object()) is None
+    assert reads == []

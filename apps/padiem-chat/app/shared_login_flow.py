@@ -12,6 +12,7 @@ import secrets
 from urllib.parse import urlencode
 
 from starlette.responses import JSONResponse, RedirectResponse
+from starlette.routing import Route
 
 from .shared_auth_compare_flow import AUTH, TOKEN_URL, ComparisonFlow, _await, _b64, _encoded, _un64
 
@@ -19,6 +20,7 @@ CALLBACK = 'https://chat.padiem.net/auth/shared/callback'
 STATE_COOKIE = '__Host-padiem-shared-state'
 ACCESS_COOKIE = '__Host-padiem-shared-access'
 REFRESH_COOKIE = 'padiem_shared_refresh'
+MARKER_COOKIE = '__Host-padiem-shared-marker'
 REFRESH_PATH = '/auth/shared'
 ACCESS_SECONDS = 15 * 60
 REFRESH_SECONDS = 30 * 24 * 60 * 60
@@ -30,12 +32,16 @@ def issue_shared_cookies(response, access, refresh):
                         samesite='lax', path='/', max_age=ACCESS_SECONDS)
     response.set_cookie(REFRESH_COOKIE, refresh, secure=True, httponly=True,
                         samesite='lax', path=REFRESH_PATH, max_age=REFRESH_SECONDS)
+    # Presentation-only hint: never carries a credential or authorizes access.
+    response.set_cookie(MARKER_COOKIE, '1', secure=True, httponly=True,
+                        samesite='lax', path='/', max_age=REFRESH_SECONDS)
     return response
 
 
 def clear_shared_cookies(response):
     response.delete_cookie(ACCESS_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite='lax')
+    response.delete_cookie(MARKER_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     return response
 
 
@@ -148,3 +154,49 @@ class SharedLoginFlow(ComparisonFlow):
             except Exception:
                 return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
+
+    def login_routes(self):
+        return [Route('/auth/shared/start', self.start_login, methods=['GET']),
+                Route('/auth/shared/callback', self.finish_login, methods=['GET']),
+                Route('/auth/shared/refresh', self.refresh, methods=['POST']),
+                Route('/auth/shared/logout', self.logout, methods=['POST'])]
+
+
+async def revoke_with_httpx(data):
+    from . import httpx_compat as httpx
+    async with httpx.AsyncClient(follow_redirects=False) as client:
+        async with client.stream('POST', AUTH + '/logout', data=data) as response:
+            if response.status_code != 200:
+                raise ValueError('revoke_failed')
+
+
+async def create_worker_shared_login_flow(env, authority):
+    """No secrets or routes are loaded while the explicit switch is off."""
+    from .worker_config import binding_value, resolve_secret_binding
+    if str(binding_value(env, 'PADIEM_CHAT_SHARED_LOGIN_ENABLED') or '').strip().lower() != 'true':
+        return None
+    from .auth_routes import current_user_id
+    from .shared_auth_adapter import SharedChatAuth
+    from .shared_auth_compare_flow import WorkerJwksVerifier, exchange_with_httpx
+    try:
+        if authority is None:
+            raise ValueError('identity_unavailable')
+        private = await resolve_secret_binding(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK')
+        state = await resolve_secret_binding(env, 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY')
+        kid = binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID')
+        if not private or not state or not kid:
+            raise ValueError('configuration_unavailable')
+        auth = SharedChatAuth(verifier=WorkerJwksVerifier(), authority=authority, legacy=current_user_id)
+
+        async def issue(request, user, access, refresh):
+            return issue_shared_cookies(RedirectResponse('/', status_code=302), access, refresh)
+
+        flow = SharedLoginFlow(state_key=_un64(state), client_id='b62', client_jwk=json.loads(private),
+            kid=str(kid), operator_guard=lambda request: False, legacy_user=current_user_id,
+            comparator=lambda *args: None, exchange=exchange_with_httpx, resolve_account=auth.user_id,
+            issue_session=issue, revoke_session=revoke_with_httpx)
+        flow.auth = auth
+        return flow
+    except Exception:
+        print('shared_login: unavailable')
+        return None

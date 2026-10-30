@@ -49,6 +49,7 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK', 'type': 'secrets_store_secret'},
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY', 'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'type': 'plain_text'},
                   {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_BACKEND', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_ORIGIN', 'type': 'plain_text'},
@@ -122,3 +123,4 @@ def test_normal_deploy_has_no_legacy_live_target_or_variable_prerequisite():
     steps = yaml.safe_load(text)['jobs']['deploy-production-code']['steps']
     legacy = next(s for s in steps if 'deploy-prereq' in s.get('run', ''))
     assert legacy['if'] == "${{ inputs.mode == 'recover_p01_sse_off' }}"
+

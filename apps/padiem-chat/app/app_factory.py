@@ -537,6 +537,7 @@ def create_app(
     file_lane_client=None,
     account_model_selection_store=None,
     shared_auth_comparison_flow=None,
+    shared_login_flow=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -1042,13 +1043,19 @@ def create_app(
     # Only explicitly injected test flows expose comparison routes.
     if shared_auth_comparison_flow is not None:
         routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)
+    if shared_login_flow is not None:
+        routes[0:0] = shared_login_flow.login_routes()
     app = Starlette(routes=routes)
+    app.state.shared_login_flow = shared_login_flow
     # #5225: the canonical session guard resolves the Control Plane session
     # behind the session cookie once per request. It is added first so it stays
     # the innermost of the three layers: the same-origin guard refuses a
     # cross-origin mutation before any canonical authority read happens, and
     # the telemetry layer stays outermost so it still records guard rejections.
     app.add_middleware(SessionRevocationGuardMiddleware)
+    if shared_login_flow is not None:
+        from .shared_session_middleware import SharedSessionMiddleware
+        app.add_middleware(SharedSessionMiddleware, flow=shared_login_flow)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
     # recording guard rejections.
@@ -1767,3 +1774,4 @@ def create_app(
             _claw_automation_store = None
     app.state.claw_automation_store = _claw_automation_store
     return app
+
