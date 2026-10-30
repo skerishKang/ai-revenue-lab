@@ -187,11 +187,11 @@ def test_the_owner_memory_projection_carries_the_original_fields_and_body():
         applied_at=datetime(2026, 10, 21, 9, 6, tzinfo=timezone.utc),
     )
 
-    projection = store.projection("ws-a")
+    projection = store.projection("ws-a", member_id="member-1")
 
     assert [record["name"] for record in projection["parties"]] == ["삼성상사"]
     assert OWNER_BODY in repr(projection)
-    diagnostic = store.projection("ws-a", include_raw=False)
+    diagnostic = store.projection("ws-a", member_id="member-1", include_raw=False)
     assert OWNER_BODY not in repr(diagnostic)
     assert sha256_text(OWNER_BODY) in repr(diagnostic)
 
@@ -200,8 +200,8 @@ def test_a_different_workspace_never_reads_the_owner_memory():
     store = InMemoryClawMemoryStore()
     store.submit_candidate(_candidate(), proposal_id="prop-5360")
 
-    assert store.projection("ws-b")["parties"] == []
-    assert store.projection("ws-b")["proposals"] == []
+    assert store.projection("ws-b", member_id="member-1")["parties"] == []
+    assert store.projection("ws-b", member_id="member-1")["proposals"] == []
     with pytest.raises(ClawMemoryError):
         store.decide_proposal(
             "prop-5360",
