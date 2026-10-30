@@ -156,10 +156,10 @@ def test_comments_and_sse_metadata_are_ignored():
 @pytest.mark.parametrize(
     "req",
     [
-        request(model="b14/auto"),
+        request(model="fixture/explicit-model"),
     ],
 )
-def test_retired_model_b14_refusal_survives_streaming(req: B14ChatRequest):
+def test_b14_refusal_survives_streaming(req: B14ChatRequest):
     """Core forwards the request and preserves the B14 422 refusal."""
     calls = 0
 

@@ -166,7 +166,7 @@ def test_a_tool_choice_must_name_a_declared_tool() -> None:
 def test_a_request_without_a_tool_keeps_the_previous_payload_shape() -> None:
     payload = B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
-        model="b14/auto",
+        model="fixture/explicit-model",
     ).to_payload()
 
     assert "tools" not in payload
@@ -176,7 +176,7 @@ def test_a_request_without_a_tool_keeps_the_previous_payload_shape() -> None:
 def test_a_declared_tool_travels_with_the_request() -> None:
     payload = B14ChatRequest(
         messages=({"role": "user", "content": "화면을 만들어줘"},),
-        model="b14/auto",
+        model="fixture/explicit-model",
         tools=(DESIGNER_TOOL,),
         tool_choice={"type": "function", "function": {"name": "generateSandboxedUi"}},
     ).to_payload()
@@ -208,7 +208,7 @@ def test_a_tool_choice_without_a_tool_is_refused() -> None:
     with pytest.raises(ValueError):
         B14ChatRequest(
             messages=({"role": "user", "content": "hi"},),
-            model="b14/auto",
+            model="fixture/explicit-model",
             tool_choice="auto",
         )
 

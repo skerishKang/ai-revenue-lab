@@ -76,7 +76,7 @@ def _compiled():
             max_tokens=800,
             max_steps_cap=4,
             context_policy={},
-            model_policy={"model": "b14/auto"},
+            model_policy={"model": "fixture/explicit-model"},
             output_contract={"type": "text"},
             tool_bindings=(
                 ToolRuntimeBinding(

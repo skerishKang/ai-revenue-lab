@@ -52,7 +52,7 @@ def make_policy(**overrides):
         "max_tokens": 1200,
         "max_steps_cap": 4,
         "context_policy": {"mode": "reference_only"},
-        "model_policy": {"model": "b14/auto"},
+        "model_policy": {"model": "fixture/explicit-model"},
         "output_contract": {"type": "text"},
         "tool_bindings": (
             ToolRuntimeBinding(

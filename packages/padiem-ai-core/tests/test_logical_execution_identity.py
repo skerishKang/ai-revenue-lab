@@ -29,7 +29,7 @@ def _agent(**overrides) -> AgentProfile:
         "allowed_tools": (),
         "required_capabilities": ("chat",),
         "context_policy": {"memory": "bounded"},
-        "model_policy": {"model": "b14/auto", "temperature": 0.2},
+        "model_policy": {"model": "fixture/explicit-model", "temperature": 0.2},
         "max_steps": 5,
         "output_contract": {"type": "text"},
     }

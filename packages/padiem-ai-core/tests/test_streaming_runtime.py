@@ -37,7 +37,7 @@ def agent(**overrides) -> AgentProfile:
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("free",),
-        "model_policy": {"model": "b14/auto"},
+        "model_policy": {"model": "fixture/explicit-model"},
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -118,7 +118,7 @@ def test_stream_dispatches_once_and_surfaces_progress_before_completion() -> Non
     # fixture's retired auto id through the same manual surface, and the B14
     # gateway refuses the id before any routing (pinned platform-side).
     assert kind == "manual"
-    assert b14_request.model == "b14/auto"
+    assert b14_request.model == "fixture/explicit-model"
     assert [event.delta_content for event in events[:-1]] == ["안녕", "하세요"]
     assert all(event.done is False for event in events[:-1])
     assert all(event.metadata.status is RunStatus.MODEL_RUNNING for event in events[:-1])
@@ -494,7 +494,7 @@ def test_stream_event_public_contract_separates_delta_and_terminal_answer() -> N
 
 
 
-@pytest.mark.parametrize("model", ["b14/auto", "google/gemini-3.1-flash-lite"])
+@pytest.mark.parametrize("model", ["fixture/explicit-model", "google/gemini-3.1-flash-lite"])
 def test_stream_runtime_forwards_native_tools_and_surfaces_tool_only_completion(model):
     call = B14StreamToolCall(id="call_1", name="pc_files", arguments={"plan": "files_list"}, index=0)
     client = FakeStreamClient((
