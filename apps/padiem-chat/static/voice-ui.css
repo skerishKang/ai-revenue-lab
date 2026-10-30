@@ -151,7 +151,8 @@
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  /* state · timer · mute · end · transcript (#4816 M4) */
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
   gap: 0;
   padding: 14px 16px 16px;
   z-index: 70;
@@ -178,6 +179,40 @@
 }
 .voice-call-panel__btn--end { color: #b3261e; border-color: #b3261e; }
 .voice-call-panel__btn[aria-pressed="true"] { background: #f2f7fb; font-weight: 700; }
+/* #4816 M4: elapsed call time, then the per-turn history under the panel. */
+.voice-call-panel__timer {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+  color: #4a6576;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.voice-call-history {
+  display: grid;
+  gap: 6px;
+}
+.voice-call-history:empty { display: none; }
+.voice-call-turn {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.voice-call-turn__role {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #587c97;
+  white-space: nowrap;
+}
+.voice-call-turn--assistant .voice-call-turn__role { color: #2a6d55; }
+.voice-call-turn--assistant .voice-call-turn__text { color: #2b4453; }
+.voice-call-interim {
+  margin: 6px 0 0;
+  min-height: 1em;
+  color: #587c97;
+  font-style: italic;
+}
+.voice-call-interim:empty { display: none; }
 .voice-call-panel__transcript {
   border-top: 1px solid #e4eaef;
   padding-top: 10px;
