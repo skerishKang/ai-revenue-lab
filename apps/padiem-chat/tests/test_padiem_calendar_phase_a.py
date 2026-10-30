@@ -119,19 +119,22 @@ class FakeTaskAlertStore:
         ]
         return raw[:limit]
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> Any | None:
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> Any | None:
+        # Mirrors the durable store after #2952: the member is part of the read.
         for task in self.tasks.get(workspace_id, []):
-            if getattr(task, "task_id", None) == task_id:
+            if getattr(task, "task_id", None) == task_id and getattr(task, "member_id", None) == member_id:
                 return task
         return None
 
     async def get_alert(
-        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+        self, alert_id: str, *, workspace_id: str, member_id: str
     ) -> Any | None:
         for alert in self.alerts.get(workspace_id, []):
             if getattr(alert, "alert_id", None) != alert_id:
                 continue
-            if member_id is not None and not alert.is_visible_to(member_id):
+            if not alert.is_visible_to(member_id):
                 return None
             return alert
         return None
