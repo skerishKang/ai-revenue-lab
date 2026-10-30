@@ -392,3 +392,23 @@ def test_missing_session_fails_closed_without_synthetic_fallback():
     with pytest.raises(ControlPlaneContractError) as exc:
         store.resolve_auth_session(session_id="sess_missing")
     assert exc.value.code == "canonical_auth_session_not_found"
+
+
+def test_expected_subject_mismatch_does_not_create_subject_or_product_link():
+    store, storage = fixture(allowed_product_ids=frozenset({'b62', 'lovetree'}))
+    first = link(store, user='usr_existing', provider_subject='provider-A')
+    before = (storage.count('canonical_identity_subject'), storage.count('canonical_product_identity_link'))
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.resolve_or_create_product_link(
+            product_id='b62', product_user_id='usr_new', auth_provider='google',
+            provider_subject='provider-B', now=NOW,
+            expected_canonical_subject_id=first.canonical_subject_id,
+        )
+    assert exc.value.code == 'identity_rebind_forbidden'
+    assert (storage.count('canonical_identity_subject'), storage.count('canonical_product_identity_link')) == before
+    same = store.resolve_or_create_product_link(
+        product_id='lovetree', product_user_id='usr_new', auth_provider='google',
+        provider_subject='provider-A', now=NOW,
+        expected_canonical_subject_id=first.canonical_subject_id,
+    )
+    assert same.canonical_subject_id == first.canonical_subject_id

@@ -206,7 +206,9 @@ export class AuthStateObject extends AuthState {
       const current = this.accountByFingerprint(fingerprint);
       if (current && (current.state !== 'active' || productId !== 'b62')) return current;
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
-        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link({ product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject });
+        const request = { product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject };
+        if (current) request.expected_canonical_subject_id = current.account_id;
+        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request);
         if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
         return result;
       });

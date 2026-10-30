@@ -194,7 +194,7 @@ test('b62 existing account rejects a different canonical identity', async () => 
   const store = storage();
   let t = Promise.resolve();
   const state = {storage: store, blockConcurrencyWhile(fn) {const next = t.then(fn); t = next.catch(() => {}); return next;}};
-  const authority = {async resolve_or_create_product_link(v) {return {ok:true, link:{state:'active', product_id:v.product_id, product_user_id:v.product_user_id, canonical_subject_id:'sub_wrong'}};}};
+  const authority = {async resolve_or_create_product_link(v) {assert.equal(v.expected_canonical_subject_id, 'sub_original'); return {ok:true, link:{state:'active', product_id:v.product_id, product_user_id:v.product_user_id, canonical_subject_id:'sub_wrong'}};}};
   const registry = new AuthStateObject(state, {IDENTITY_AUTHORITY:authority});
   registry.putAccount({fingerprint:'test', accountId:'sub_original'});
   await assert.rejects(() => registry.resolveAccount({fingerprint:'test', productId:'b62', userId:'usr_test', subject:'google-sub'}));
