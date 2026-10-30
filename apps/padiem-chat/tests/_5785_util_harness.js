@@ -317,6 +317,42 @@ function spawnSession(windowState = {}) {
     utilView.appendChild(tab);
   });
 
+  // #5908: the quick-run toolbox grid and the sidebar submenu the shipped
+  // markup carries around the panels, plus the Claw entries two cards route
+  // to. Clicks on the fake Claw controls are recorded so the tools scenario
+  // can observe the real module's routing.
+  const toolGrid = mk("section", "utilToolGrid", "util-tool-grid");
+  toolGrid.setAttribute("aria-label", "빠른 실행 도구함");
+  [["speech", "열기"], ["sns", "열기"], ["meeting", "열기"], ["pdfmd", "이력 열기"], ["claw-quote", "Claw에서 작성"], ["claw-excel", "Claw에서 진행"]].forEach(([key, label]) => {
+    const card = mk("div", null, "util-tool-card");
+    const open = mk("button", null, "util-tool-open");
+    open.setAttribute("data-util-tool", key);
+    open.textContent = label;
+    card.appendChild(open);
+    toolGrid.appendChild(card);
+  });
+  utilView.appendChild(toolGrid);
+
+  const utilSubmenu = mk("div", "utilSubmenu", "util-submenu");
+  ["speech", "sns", "meeting", "pdfmd"].forEach((key) => {
+    const item = mk("button", null, "util-submenu-item");
+    // dataset, not setAttribute: the shim does not sync data-* attributes
+    // into dataset, and the shipped module reads item.dataset.util here.
+    item.dataset.util = key;
+    utilSubmenu.appendChild(item);
+  });
+  shell.appendChild(utilSubmenu);
+
+  const clawNavClicks = [];
+  const clawChipClicks = [];
+  const clawNav = mk("button", "clawNavButton", "side-item");
+  clawNav.addEventListener("click", () => clawNavClicks.push("claw"));
+  shell.appendChild(clawNav);
+  const clawChip = mk("button", "clawQuoteCard", "claw-chip");
+  clawChip.setAttribute("aria-pressed", "false");
+  clawChip.addEventListener("click", () => clawChipClicks.push("quote"));
+  shell.appendChild(clawChip);
+
   // The speech form is shipped markup in index.html, so the harness builds the
   // same field set the browser would hand to `new FormData(form)`.
   const speechPanel = mk("div", "utilSpeechPanel", "util-panel");
@@ -418,7 +454,7 @@ function spawnSession(windowState = {}) {
   };
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(utilMenuPath, "utf8"), ctx, { filename: "util-menu.js" });
-  return { root, utilView, navBtn, byId };
+  return { root, utilView, navBtn, byId, clawNavClicks, clawChipClicks };
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -1420,6 +1456,52 @@ const SCENARIOS = {
       reentryRecordCount: reentryRecordButtons.length,
       endpoints: endpointSet(),
       alerts,
+      pageErrors,
+    };
+  },
+
+  // #5908: the quick-run toolbox cards. The four util cards must land on the
+  // same panels/switch the submenu drives; the two Claw cards must route to
+  // the existing Claw workspace (and, for 견적서, preselect its existing chip)
+  // instead of inventing a second engine here.
+  async tools() {
+    const session = spawnSession();
+    await session.navBtn.dispatch("click");
+    await sleep(10);
+    const grid = find(session, "utilToolGrid");
+    const buttons = grid.querySelectorAll("[data-util-tool]");
+    const keys = buttons.map((b) => b.getAttribute("data-util-tool"));
+
+    const panelIds = ["utilSpeechPanel", "utilSnsPanel", "utilMeetingPanel", "utilPdfmdPanel"];
+    const visiblePanels = () => panelIds.filter((id) => !find(session, id).hidden);
+    const activeSubmenu = () => session.byId.utilSubmenu.querySelectorAll(".util-submenu-item")
+      .filter((i) => i.classList.contains("active"))
+      .map((i) => i.dataset.util);
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "speech").dispatch("click");
+    await sleep(10);
+    const visibleAfterSpeech = visiblePanels();
+    const activeSubAfterSpeech = activeSubmenu();
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "pdfmd").dispatch("click");
+    await sleep(10);
+    const visibleAfterPdfmd = visiblePanels();
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "claw-quote").dispatch("click");
+    await sleep(10);
+    const afterQuote = { clawNav: session.clawNavClicks.length, chip: session.clawChipClicks.length };
+
+    await buttons.find((b) => b.getAttribute("data-util-tool") === "claw-excel").dispatch("click");
+    await sleep(10);
+    const afterExcel = { clawNav: session.clawNavClicks.length, chip: session.clawChipClicks.length };
+
+    return {
+      keys,
+      visibleAfterSpeech,
+      activeSubAfterSpeech,
+      visibleAfterPdfmd,
+      afterQuote,
+      afterExcel,
       pageErrors,
     };
   },
