@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import tomllib
 
 spec = importlib.util.spec_from_file_location("staging_config", Path(__file__).parents[1] / "scripts/staging_config.py")
 module = importlib.util.module_from_spec(spec)
@@ -14,9 +15,18 @@ class StagingConfigTest(unittest.TestCase):
         config = module.make_config(DB, CHAT, QUEUE)
         self.assertEqual(config["name"], "padiem-chat-staging")
         self.assertEqual(config["d1_databases"][0]["database_id"], DB)
-        self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "false")
+        self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "true")
         self.assertEqual(config["vars"]["PC_QUEUE_BACKEND"], "d1")
         self.assertFalse({"routes", "services", "r2_buckets", "secrets_store_secrets"} & config.keys())
+
+    def test_production_config_is_unchanged_and_login_defaults_off(self):
+        manifest = Path(__file__).parents[1] / "wrangler.toml"
+        before = manifest.read_bytes()
+        config = module.make_config(DB, CHAT, QUEUE)
+        self.assertEqual(manifest.read_bytes(), before)
+        production_vars = tomllib.loads(before.decode("utf-8")).get("vars", {})
+        self.assertNotEqual(production_vars.get("PADIEM_CHAT_SHARED_LOGIN_ENABLED", "false").lower(), "true")
+        self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "true")
 
     def test_reject_production_or_invalid_destinations(self):
         for database, chat, queue in [
