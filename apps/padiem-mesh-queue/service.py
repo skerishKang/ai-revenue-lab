@@ -42,7 +42,12 @@ Configuration is files and environment, mirroring the executor's own unit:
                                     method name, status, ms, and whether the proof
                                     matched). refusals prints only non-2xx, so a healthy
                                     lane prints nothing; arguments, the secret, the
-                                    header and any caller-supplied name are never printed
+                                    header and any caller-supplied name are never printed.
+                                    Two further fixed lines appear only when the door had
+                                    to do something it should not have: MESH_QUEUE_
+                                    STORE_FAILURE (the exception's class name, from a list)
+                                    and MESH_QUEUE_TXN_RECOVERED (a transaction found open
+                                    and closed before the call).
 
 The service binds 127.0.0.1:8797. The executor reaches it there with
 `ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither

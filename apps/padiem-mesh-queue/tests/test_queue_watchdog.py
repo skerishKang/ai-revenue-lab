@@ -29,6 +29,7 @@ sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(QUEUE))
 
 from app.d1_sqlite import SqliteD1, connect  # noqa: E402
+import internal_store  # noqa: E402
 import service  # noqa: E402  (the module, so a test can look at what it hands the rounds)
 from schema import apply  # noqa: E402
 from service import (  # noqa: E402
@@ -255,8 +256,13 @@ def test_the_unit_and_installer_name_the_keys_the_code_reads():
     assert "UMask=0077" in unit
 
     named = set(re.findall(r"\bMESH_QUEUE_[A-Z_]+", installer + runbook))
+    # Line kinds are not environment keys, but they look exactly like them to a scan of the
+    # deploy text - the runbook has to name the line an operator greps for. The exemption is
+    # read from the code that prints it, so it cannot be invented here to hide a real key.
+    markers = {internal_store.log_line("p", "q", 200, 0, "ok").split()[0],
+               internal_store.STORE_FAILURE_PREFIX, internal_store.TXN_RECOVERY_PREFIX}
     read = code_keys()
-    unknown = named - read - OPS_KEYS
+    unknown = named - read - OPS_KEYS - (named & markers)
     assert not unknown, "deploy names a key the service does not read: %s" % sorted(unknown)
     missing = read - named
     assert not missing, "the service reads a key the deploy never sets: %s" % sorted(missing)

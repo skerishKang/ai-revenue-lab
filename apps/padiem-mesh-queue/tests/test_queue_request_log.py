@@ -38,6 +38,14 @@ LINE = re.compile(
     r"\AMESH_QUEUE_REQUEST path=/internal/store rpc=[a-z_]{1,64} status=[0-9]{3} "
     r"ms=[0-9]{1,7} proof=(ok|bad|absent)\Z")
 
+#: The door's other two shapes (#5881, after the 2026-10-30 attempt). Fixed forms, a class
+#: name from a list and a status word - nothing a caller can put words into.
+FAILURE_LINE = re.compile(
+    r"\AMESH_QUEUE_STORE_FAILURE path=/internal/store rpc=[a-z_]{1,64} "
+    r"fail=[A-Za-z_]{1,40}\Z")
+RECOVERY_LINE = re.compile(
+    r"\AMESH_QUEUE_TXN_RECOVERED path=/internal/store rpc=[a-z_]{1,64}\Z")
+
 
 class _Headers(dict):
     def get(self, key, default=None):
@@ -116,7 +124,12 @@ def test_the_line_carries_no_secret_no_argument_and_no_customer_path():
     response, shouted = _say(app, {"method": "device_scope",
                                    "arguments": {"device_id": marker, "unexpected": 1}})
     assert response.status_code == 502
-    assert LINE.fullmatch(shouted.strip()), shouted
+    # Two lines now: the five-field request line, and the store-failure line that names
+    # only a class. Each still has exactly one fixed shape.
+    lines = [line for line in shouted.splitlines() if line.strip()]
+    assert len(lines) == 2, shouted
+    assert LINE.fullmatch(lines[0]), lines[0]
+    assert FAILURE_LINE.fullmatch(lines[1]), lines[1]
     for forbidden in (SERVICE_SECRET, marker, "unexpected", "device_id", "usr_"):
         assert forbidden not in shouted, forbidden
 

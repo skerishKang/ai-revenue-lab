@@ -30,7 +30,15 @@ MAX_METHOD_NAME_CHARS = 64
 #: Arguments the store takes as a real instant. JSON has no datetime, and every one of
 #: these already arrives as the same ISO `...Z` text the stores write into their columns,
 #: so the boundary parses it and nothing else changes.
-MOMENT_ARGUMENTS = frozenset({"now", "issued_at"})
+#:
+#: This set is complete only while it names every datetime-typed argument of every
+#: allowlisted method, and that is a rule a name can silently stop satisfying: on the
+#: 2026-10-30 cutover attempt `received_at` was missing, so the presence beat arrived as
+#: text, `_stamp()` refused it as "trusted aware receipt time required", and every write
+#: answered 502 in 0 ms — reads and the secret kept working, which is exactly what made it
+#: look like a broken database. `test_queue_store_boundary` derives this list from the
+#: stores' own signatures, so the next argument added without a name here fails CI.
+MOMENT_ARGUMENTS = frozenset({"now", "issued_at", "received_at"})
 
 #: The dispatch rows the queue owns. Result *content* is deliberately absent: the
 #: over-budget original lives in private R2 and the delivered answer lives in the
@@ -111,13 +119,54 @@ def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str) -> s
 
 __all__ = [
     "DISPATCH_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
-    "PRESENCE_METHODS", "QUEUE_SERVICE_SECRET_HEADER", "make_internal_handler",
+    "PRESENCE_METHODS", "QUEUE_SERVICE_SECRET_HEADER", "STORE_FAILURE_CLASSES",
+    "STORE_FAILURE_PREFIX", "TXN_RECOVERY_PREFIX", "make_internal_handler",
 ]
+
+
+#: The door's other two line kinds. Each has a fixed shape and each appears only when the
+#: door had to do something it should not have had to do, so `grep -c` on either name is a
+#: count of surprises. Neither touches the five-field request line.
+TXN_RECOVERY_PREFIX = "MESH_QUEUE_TXN_RECOVERED"
+STORE_FAILURE_PREFIX = "MESH_QUEUE_STORE_FAILURE"
+
+#: A store exception's *class name* is ours to print; its text is not — that text can carry
+#: the customer path or the value that was rejected. Anything outside this list is printed
+#: as `other`, so the label can never become a channel for caller-controlled content.
+STORE_FAILURE_CLASSES = frozenset({
+    "HistoryError", "MeshDevicePresenceStoreError", "PcPairingError",
+    "IntegrityError", "OperationalError", "ProgrammingError", "DataError",
+})
 
 
 def _error(status: int, code: str) -> JSONResponse:
     return JSONResponse({"ok": False, "error": {"code": code}},
                         status_code=status, headers=_NO_STORE)
+
+
+def _failure_label(exc: BaseException) -> str:
+    return type(exc).__name__ if type(exc).__name__ in STORE_FAILURE_CLASSES else "other"
+
+
+def _release_transaction(state: Any, facts: dict[str, str]) -> None:
+    """Close a transaction the door did not open, before serving a call.
+
+    One connection serves the whole process, so anything that leaves a `BEGIN` open poisons
+    every later write for the life of the process - a call cancelled inside `batch()` was
+    the route by which that happens. `batch()` no longer leaks it; this is the net under the
+    door. It gets its own line kind because a queue that had to clean up after itself should
+    not look ordinary in the request log.
+    """
+
+    database = getattr(state, "queue_database", None)
+    connection = getattr(database, "connection", None)
+    if connection is None or not getattr(connection, "in_transaction", False):
+        return
+    facts["txn"] = "rolled_back"
+    try:
+        connection.rollback()
+    except Exception:
+        facts["txn"] = "stuck"
 
 
 def _json_safe(value: Any) -> tuple[bool, Any]:
@@ -144,12 +193,21 @@ def make_internal_handler(*, state: Any, service_secret: str,
 
     async def handle(request: Request) -> JSONResponse:
         started = time.monotonic()
-        facts = {"rpc": "none", "proof": "absent"}
+        facts = {"rpc": "none", "proof": "absent", "fail": "none", "txn": "none"}
         response = await _answered(request, facts)
         if mode != LOG_OFF and (mode == LOG_ALL or response.status_code >= 400):
             print(log_line(INTERNAL_STORE_PATH, facts["rpc"], response.status_code,
                            int((time.monotonic() - started) * 1000), facts["proof"]),
                   flush=True)
+            if facts["fail"] != "none":
+                print("%s path=%s rpc=%s fail=%s" % (
+                    STORE_FAILURE_PREFIX, INTERNAL_STORE_PATH, facts["rpc"], facts["fail"]),
+                    flush=True)
+        if mode != LOG_OFF and facts["txn"] != "none":
+            # Printed even when the call answered 200: the door had to repair the
+            # connection to get there, and a success that needed that is not a normal lane.
+            print("%s path=%s rpc=%s" % (
+                TXN_RECOVERY_PREFIX, INTERNAL_STORE_PATH, facts["rpc"]), flush=True)
         return response
 
     async def _answered(request: Request, facts: dict[str, str]) -> JSONResponse:
@@ -195,12 +253,17 @@ def make_internal_handler(*, state: Any, service_secret: str,
         method = getattr(bound, name, None)
         if not callable(method):
             return _error(503, "queue_store_unavailable")
+        _release_transaction(state, facts)
         try:
             result = method(**arguments)
             if hasattr(result, "__await__"):
                 result = await result
-        except Exception:
-            # The arguments are never echoed: they can name a customer's path.
+        except Exception as exc:
+            # The arguments are never echoed: they can name a customer's path, and neither
+            # is the exception's own text. The class name, from a fixed list, is enough to
+            # tell a refused argument from a broken database - which on 2026-10-30 was the
+            # difference between an hour of guessing and one line.
+            facts["fail"] = _failure_label(exc)
             return _error(502, "queue_store_failed")
         safe, decoded = _json_safe(result)
         if not safe:

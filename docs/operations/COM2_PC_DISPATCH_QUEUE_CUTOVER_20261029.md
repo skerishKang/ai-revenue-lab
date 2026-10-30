@@ -128,6 +128,20 @@ status=403 ms=0 proof=absent`. A call that presents the secret answers 200 and l
 nothing, which is what "a healthy lane prints nothing" has to mean before the line is used
 as evidence.
 
+Two further line kinds exist because the 2026-10-30 attempt could not be read from the five
+fields alone. When a store call raises, the door answers 502 with a fixed code and printed
+nothing about why, so an hour went into blaming the database, the secret and the edge; what
+had actually happened was that `received_at` was missing from the boundary's list of moment
+arguments, the presence beat crossed as text, and the store refused it as "trusted aware
+receipt time required" in 0 ms. Now `MESH_QUEUE_STORE_FAILURE` names the exception's class
+from a fixed list — never its text, which can carry the customer path — and
+`MESH_QUEUE_TXN_RECOVERED` is printed when the door had to close a transaction it did not
+open, which is printed even on a 200 because a success that needed repairing is not normal.
+Both shapes are asserted in `test_queue_request_log`, so neither can become a channel for
+caller-controlled text, and the moment list is now derived from the stores' own signatures
+in `test_queue_store_boundary` — the next `datetime` argument added without a name there
+fails CI instead of failing a cutover.
+
 Restarting the queue is a normal event, and it has not always been. `schema.apply()` used
 to run its nine migration files at *every* open, which the files cannot survive: 048 ends
 with `ALTER TABLE … ADD COLUMN kind`, and 063 and 070 rebuild their table with `DROP` plus
