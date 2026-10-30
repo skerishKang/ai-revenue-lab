@@ -1,0 +1,114 @@
+name: B62 Chat staging
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b62-chat-staging-deploy.yml'
+      - 'apps/padiem-chat/scripts/staging_config.py'
+      - 'apps/padiem-chat/scripts/staging_verify.py'
+      - 'apps/padiem-chat/tests/test_staging_*_6305.py'
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Reviewed full source commit SHA
+        required: true
+        type: string
+      mode:
+        description: Dry run or deploy the isolated staging Worker
+        required: true
+        type: choice
+        options: [dry-run, deploy]
+
+permissions:
+  contents: read
+
+env:
+  STAGING_CHAT_D1_ID: e064ac35-6e45-4fd8-9a2c-c3ae6583c964
+  STAGING_CHAT_ORIGIN: https://padiem-chat-staging.charliekant.workers.dev
+  STAGING_QUEUE_ORIGIN: https://queue-staging.padiem.net
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Validate full source SHA
+        env:
+          TARGET_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+        run: '[[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.13.5'
+      - name: Test staging isolation
+        run: |
+          python apps/padiem-chat/tests/test_staging_config_6305.py
+          python apps/padiem-chat/tests/test_staging_verify_6305.py
+      - name: Generate staging configuration
+        working-directory: apps/padiem-chat
+        run: python scripts/staging_config.py .staging.generated.json
+      - name: Build without uploading
+        working-directory: apps/padiem-chat
+        run: uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --config .staging.generated.json --dry-run --outdir "$RUNNER_TEMP/staging-worker"
+
+  deploy:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'deploy'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: padiem-chat-staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_STAGING_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_STAGING_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.13.5'
+      - name: Generate staging configuration
+        working-directory: apps/padiem-chat
+        run: python scripts/staging_config.py .staging.generated.json
+      - name: Verify staging D1 and current bindings
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 d1 list --json > "$RUNNER_TEMP/staging-d1.json"
+          python apps/padiem-chat/scripts/staging_verify.py d1 "$RUNNER_TEMP/staging-d1.json"
+          npx --yes wrangler@4 deployments list --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before.json"
+          version="$(python apps/padiem-chat/scripts/staging_verify.py active "$RUNNER_TEMP/staging-before.json")"
+          npx --yes wrangler@4 versions view "$version" --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-before-version.json"
+          python apps/padiem-chat/scripts/staging_verify.py bindings "$RUNNER_TEMP/staging-before-version.json"
+      - name: Deploy staging Worker
+        working-directory: apps/padiem-chat
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --config .staging.generated.json --keep-vars > "$RUNNER_TEMP/staging-deploy.log" 2>&1 || { echo 'Staging deployment failed'; exit 1; }
+      - name: Verify serving version and bindings
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deployments list --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-deployments.json"
+          version="$(python apps/padiem-chat/scripts/staging_verify.py active "$RUNNER_TEMP/staging-deployments.json")"
+          npx --yes wrangler@4 versions view "$version" --name padiem-chat-staging --json > "$RUNNER_TEMP/staging-version.json"
+          python apps/padiem-chat/scripts/staging_verify.py bindings "$RUNNER_TEMP/staging-version.json"
+          echo "Staging version: $version"
+
+# Deploy is opt-in and unavailable until the staging environment is separately
+# configured with a staging-scoped token; no token is used by pull request builds.
