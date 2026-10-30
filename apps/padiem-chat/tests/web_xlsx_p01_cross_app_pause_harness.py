@@ -41,13 +41,6 @@ from zipfile import ZipFile
 CHAT = Path(__file__).resolve().parents[1]
 ROOT = CHAT.parents[1]
 ENGINE = ROOT / "apps" / "padiem-ai-engine"
-# The subprocess runs from tests/, so relative parent PYTHONPATH entries no
-# longer point at the workspace packages. Use source paths for this checkout.
-for path in (ROOT / "apps" / "korean-ai-code-agent" / "src",
-             ROOT / "packages" / "padiem-ai-core",
-             ROOT / "packages" / "padiem-control-plane",
-             ENGINE / "clients" / "python"):
-    sys.path.insert(0, str(path))
 sys.path.insert(0, str(ENGINE))
 
 # The Engine's ``app`` package must be imported BEFORE B62's alias below.
