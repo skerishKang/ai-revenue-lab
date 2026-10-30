@@ -74,6 +74,10 @@
       connectChip: "연결하기",
       starterConnected: "● 내 PC 연결됨",
       starterDisconnected: "○ 연결 안 됨",
+      // Fallbacks only. The shared connector vocabulary owns these four lines;
+      // these exist for the moment before it loads, and say the same words.
+      starterChecking: "확인 중…",
+      starterFailed: "확인 실패 · 다시 시도",
     },
     en: {
       title: "Let's connect this computer",
@@ -96,6 +100,8 @@
       connectChip: "Connect",
       starterConnected: "● My PC connected",
       starterDisconnected: "○ Not connected",
+      starterChecking: "Checking…",
+      starterFailed: "Check failed · Try again",
     },
   });
 
@@ -214,6 +220,7 @@
   const state = {
     links: [],
     read: "idle", // idle | ok | not_ready | unavailable
+    everRead: false, // display only: has any read answered this session
     polling: null,
   };
 
@@ -226,6 +233,18 @@
     if (state.read === "not_ready") return "preparing";
     if (state.read === "unavailable") return "unavailable";
     return "connecting";
+  }
+
+  // Which of the four shared vocabulary lines a read result deserves. This does
+  // not decide what counts as connected — classifiedState() keeps doing that
+  // alone. It only stops the card from calling a state it never read
+  // "연결 안 됨": a refused or failed lookup says the check failed, and a
+  // session with no answer yet says it is still checking.
+  function displayState() {
+    const kind = classifiedState();
+    if (kind === "connected" || kind === "disconnected") return kind;
+    if (kind === "connecting") return "checking";
+    return state.everRead ? "failed" : "checking";
   }
 
   function publish() {
@@ -243,6 +262,7 @@
     if (result.ok && result.body && Array.isArray(result.body.links)) {
       state.links = result.body.links;
       state.read = "ok";
+      state.everRead = true;
     } else if (result.code === "pc_pairing_not_ready" || result.status === 503) {
       state.read = "not_ready";
     } else {
@@ -280,7 +300,14 @@
     if (starter) {
       const line = starter.querySelector("[data-pc-connect-state]");
       if (line) {
-        line.textContent = connected ? vocabStatus("connected", t.starterConnected) : vocabStatus("disconnected", t.starterDisconnected);
+        const shown = displayState();
+        const fallback = {
+          connected: t.starterConnected,
+          disconnected: t.starterDisconnected,
+          checking: t.starterChecking,
+          failed: t.starterFailed,
+        }[shown];
+        line.textContent = vocabStatus(shown, fallback);
       }
     }
   }
