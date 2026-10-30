@@ -147,3 +147,30 @@ class ComparisonFlow:
             return []
         return [Route('/_test/auth/account-comparison/start', self.start, methods=['GET']),
                 Route('/_test/auth/account-comparison/callback', self.callback, methods=['GET'])]
+
+
+def create_chat_comparison_flow(*, state_key, client_jwk, kid, verifier, authority,
+                                exchange=exchange_with_httpx):
+    """Wire the real Chat session, admin gate and read-only identity adapter.
+
+    Configuration remains an explicit injection; this does not read secrets,
+    enable the feature, or create any identity link.
+    """
+    from .auth_routes import auth_ready, current_user_id
+    from .platform_admin_routes import platform_authority_for
+    from .shared_auth_adapter import SharedChatAuth
+    if getattr(verifier, 'audience', None) != 'b62':
+        raise ValueError('comparison_audience_mismatch')
+
+    async def is_operator(request):
+        if not auth_ready(request):
+            return False
+        user = current_user_id(request)
+        if not user:
+            return False
+        return await platform_authority_for(request).is_super_admin(user_id=user) is True
+
+    compare = SharedChatAuth(verifier=verifier, authority=authority, legacy=current_user_id)
+    return ComparisonFlow(state_key=state_key, client_id='b62', client_jwk=client_jwk,
+        kid=kid, operator_guard=is_operator, legacy_user=current_user_id,
+        comparator=compare.compare_existing_account, exchange=exchange)
