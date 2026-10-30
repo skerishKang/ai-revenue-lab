@@ -150,6 +150,24 @@ from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
 
+class ChatInitUnavailableError(RuntimeError):
+    """The shared app initialization did not finish inside its bound.
+
+    Raised to a waiting request so it can answer a controlled 503 instead of
+    hanging until the runtime reaps it — a hung build must cost a retryable
+    refusal, never a runtime cancellation storm.
+    """
+
+
+#: #6225 follow-up: a waiting request must answer before the runtime's own
+#: hung-request reaper fires. Healthy cold starts finish well inside this; a
+#: window that outlasts it says "still starting" honestly and retryably.
+CHAT_INIT_WAIT_SECONDS = 10
+#: The init task bounds itself, so one hung build cannot brick the isolate:
+#: past this ceiling the attempt is cancelled, the state resets, and the next
+#: request starts a fresh initialization instead of waiting forever.
+CHAT_INIT_TASK_SECONDS = 45
+
 _worker_app = None
 _worker_app_initialization = None
 _AUTOMATION_SCHEDULER_ENABLED_ENV = "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED"
@@ -1684,9 +1702,22 @@ class Default(WorkerEntrypoint):
             async def initialize():
                 global _worker_app, _worker_app_initialization
                 try:
-                    app = await self._build_worker_app()
-                    _worker_app = app
-                    return app
+                    # The attempt bounds itself: one hung build must never
+                    # brick the isolate. Past the ceiling the attempt is
+                    # cancelled, the finally below resets the shared state,
+                    # and the next request starts a fresh initialization. The
+                    # cancellation is delivered but not awaited — an await
+                    # stuck inside a JS bridge cannot block this reset.
+                    build_task = asyncio.ensure_future(self._build_worker_app())
+                    done, pending = await asyncio.wait(
+                        {build_task}, timeout=CHAT_INIT_TASK_SECONDS,
+                    )
+                    if pending:
+                        build_task.cancel()
+                        raise ChatInitUnavailableError(
+                            "chat initialization did not complete in time")
+                    _worker_app = build_task.result()
+                    return _worker_app
                 finally:
                     if _worker_app_initialization is asyncio.current_task():
                         _worker_app_initialization = None
@@ -1703,8 +1734,17 @@ class Default(WorkerEntrypoint):
                     completed.exception()
 
             task.add_done_callback(finished)
-        # One cancelled request must not cancel initialization for other waiters.
-        return await asyncio.shield(_worker_app_initialization)
+        # One cancelled request must not cancel initialization for other
+        # waiters, and one slow initialization must not hold a request open
+        # until the runtime reaps it: the waiter answers a controlled 503 and
+        # the next request retries, while the shared task keeps running.
+        try:
+            return await asyncio.wait_for(
+                asyncio.shield(_worker_app_initialization), CHAT_INIT_WAIT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            raise ChatInitUnavailableError(
+                "chat initialization is still running") from None
 
     async def fetch(self, request: Any) -> Any:
         import asgi
@@ -1722,6 +1762,15 @@ class Default(WorkerEntrypoint):
         except ConfigError:
             response = Response(
                 "Padiem Chat runtime configuration is invalid.",
+                status=503,
+                headers={"Content-Type": "text/plain; charset=utf-8"},
+            )
+            return _apply_headers(response, path)
+        except ChatInitUnavailableError:
+            # A slow or hung initialization answers a retryable 503 instead of
+            # holding the request open until the runtime reaps it.
+            response = Response(
+                "Padiem Chat is still starting. Try again shortly.",
                 status=503,
                 headers={"Content-Type": "text/plain; charset=utf-8"},
             )
