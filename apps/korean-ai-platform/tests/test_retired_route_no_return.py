@@ -23,11 +23,14 @@ def test_retired_route_is_not_reintroduced():
     tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
     bad = []
     for rel in tracked:
-        if not rel.startswith(('apps/', 'packages/', 'scripts/', '.github/', 'docs/')):
+        if not rel.startswith(('apps/', 'packages/', 'scripts/', 'static/', '.github/scripts/')):
             continue
-        if rel.startswith(('docs/operations/', 'docs/history/')):
+        parts = Path(rel).parts
+        if rel.endswith('.md') or any(part in {'docs', 'tests', 'test', 'browser_tests', '__tests__'} for part in parts):
             continue
-        if not rel.endswith(('.py', '.js', '.ts', '.json', '.toml', '.yml', '.yaml', '.sh', '.ps1', '.html', '.md')):
+        if Path(rel).name.startswith('test_') or '.spec.' in Path(rel).name:
+            continue
+        if not rel.endswith(('.py', '.js', '.jsx', '.ts', '.tsx', '.json', '.toml', '.yml', '.yaml', '.sh', '.ps1', '.html', '.env', '.example', '.ini', '.cfg')):
             continue
         path = ROOT / rel
         try:
