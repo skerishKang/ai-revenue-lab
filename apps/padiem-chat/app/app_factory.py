@@ -536,6 +536,7 @@ def create_app(
     custom_provider_client=None,
     file_lane_client=None,
     account_model_selection_store=None,
+    shared_auth_comparison_flow=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -1038,6 +1039,9 @@ def create_app(
                 Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
                 Route(ORACLE_MESH_READ_ORIGINAL_PATH, oracle_mesh_read_original, methods=["GET"]),
             ]
+    # Only explicitly injected test flows expose comparison routes.
+    if shared_auth_comparison_flow is not None:
+        routes[0:0] = shared_auth_comparison_flow.routes(enabled=True)
     app = Starlette(routes=routes)
     # #5225: the canonical session guard resolves the Control Plane session
     # behind the session cookie once per request. It is added first so it stays
