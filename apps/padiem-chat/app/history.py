@@ -744,12 +744,31 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
-    def __init__(self, db: Any, *, full_context_bucket: Any = None):
+    def __init__(self, db: Any, *, full_context_bucket: Any = None,
+                 run_ownership: Any = None):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
         # Existing private workspace R2 binding, never an incoming browser key.
         self.full_context_bucket = full_context_bucket
+        # Where "does this run belong to this user" is answered. Absent, it is answered
+        # from `claw_run_history` — the D1 that owns conversation rows. The 컴2 queue
+        # deliberately does not own that table, so it supplies its own answer; without
+        # this seam every dispatch creation on the queue died on `no such table` and the
+        # PC lane stopped working the moment the switch went live (2026-10-30 14:11).
+        self.run_ownership = run_ownership
+
+    async def _run_is_owned(self, run_id: str, user_id: str) -> bool:
+        if self.run_ownership is not None:
+            owned = self.run_ownership(run_id, user_id)
+            if hasattr(owned, "__await__"):
+                owned = await owned
+            return bool(owned)
+        row = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        return row is not None
 
     @staticmethod
     def _context_key(conversation_id: str, message_id: str) -> str:
@@ -2687,11 +2706,10 @@ class D1HistoryStore:
             # file call's own replay protection.
             correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
-        owned = await self._first(
-            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
-            run_id, user_id,
-        )
-        if owned is None:
+        # The owner is established by the layer that holds the run rows: on D1 that is
+        # `claw_run_history`; on the 컴2 queue it is the Worker, whose route already fetched
+        # this run for this user and answered 404 before forwarding (see `run_ownership`).
+        if not await self._run_is_owned(run_id, user_id):
             raise HistoryForbidden("claw run is not owned by current user")
         existing = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "

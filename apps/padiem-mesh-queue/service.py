@@ -111,6 +111,24 @@ __all__ = ["DEFAULT_DB_PATH", "EXIT_UNRESPONSIVE", "HEALTH_PATH", "LIVENESS_ANSW
            "store_resolvers"]
 
 
+async def _forwarded_run_ownership(run_id: Any, user_id: Any) -> bool:
+    """Ownership, answered where the run rows live — which is not this database.
+
+    `create_oracle_mesh_dispatch` guards a staging with "is this run this user's". On D1
+    that reads `claw_run_history`; the queue does not own conversation rows by design, so
+    the same query raised `no such table` here and every dispatch creation failed with 502
+    the moment the switch went live (2026-10-30 14:11). The Worker establishes the owner
+    before it forwards: all four dispatch routes fetch `get_claw_run(uid, run_id)`, compare
+    the workspace and conversation, and answer 404 without calling the queue. The only
+    caller of this door is that Worker, and the door itself only opens for a caller that
+    presents the service secret (`proof=ok`). So the queue's answer is "the forwarded
+    owner stands", and it refuses only an argument that is not a usable identity at all.
+    """
+
+    return (isinstance(run_id, str) and bool(run_id)
+            and isinstance(user_id, str) and bool(user_id))
+
+
 def store_resolvers():
     """Which allowlisted name is answered by which assembled object.
 
@@ -216,7 +234,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,
               methods=["POST"]),
     ])
-    app.state.history_store = D1HistoryStore(database)
+    app.state.history_store = D1HistoryStore(database, run_ownership=_forwarded_run_ownership)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
     app.state.pc_device_pairing_store = D1PcPairingStore(database)
     app.state.queue_database = database
