@@ -164,6 +164,22 @@
       "type": "secret_text"
     },
     {
+      "name": "PADIEM_CHAT_SHARED_AUTH_CLIENT_KID",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "PADIEM_CHAT_TEST_GUARD_DIGEST",
       "type": "plain_text"
     },

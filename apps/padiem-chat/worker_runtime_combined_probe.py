@@ -27,6 +27,37 @@ PROBES = {
 }
 
 
+async def _shared_auth_es256_state():
+    """Test real Workers WebCrypto with public synthetic shared vectors only."""
+    from js import JSON as JSJSON, Object, crypto
+    from pyodide.ffi import to_js
+    from app.shared_auth_compare_flow import WorkerJwksVerifier
+    from app.shared_auth_compare_webcrypto import WorkerES256
+    from worker_runtime_shared_auth_fixture import VECTOR
+
+    verifier = WorkerJwksVerifier(clock=lambda:VECTOR['now'])
+    verifier.audience = VECTOR['audience']
+    verifier.keys, verifier.until = VECTOR['jwks'], VECTOR['now'] + 300
+    verified = await verifier.verify(VECTOR['tokens']['valid'])
+    if verified.get('accountId') != 'sub_existing':
+        return False
+    for name in ('wrong_audience', 'wrong_issuer', 'expired', 'forged'):
+        try:
+            await verifier.verify(VECTOR['tokens'][name])
+        except Exception:
+            continue
+        return False
+    convert = lambda value: to_js(value, dict_converter=Object.fromEntries, create_pyproxies=False)
+    pair = await crypto.subtle.generateKey(
+        convert({'name':'ECDSA','namedCurve':'P-256'}), True, convert(['sign','verify'])
+    )
+    private = json.loads(str(JSJSON.stringify(await crypto.subtle.exportKey('jwk', pair.privateKey))))
+    public = json.loads(str(JSJSON.stringify(await crypto.subtle.exportKey('jwk', pair.publicKey))))
+    port = WorkerES256()
+    signature = await port.sign(private, b'synthetic-message')
+    return await port.verify(public, signature, b'synthetic-message') and not await port.verify(public, signature, b'tampered')
+
+
 # #4139: temporary Workerd ONLY; never import this synthetic gateway from the
 # production padiem-chat/worker.py. A 101 here proves the real Cloudflare
 # Python ASGI/WS upgrade transport, NOT canonical Identity/Broker or TLS.
@@ -452,6 +483,13 @@ class Default(WorkerEntrypoint):
         if set(params) != {"case"} or len(params["case"]) != 1:
             return Response("invalid probe case", status=400)
         case = params["case"][0]
+        if case == "shared_auth_es256":
+            try:
+                ok = await _shared_auth_es256_state()
+            except Exception:
+                ok = False
+            return Response(json.dumps({"state": "ok" if ok else "failed"}), status=200,
+                            headers={"Content-Type": "application/json"})
         # #5479/#5664: the real password KDF contract — the stored credential
         # format is PBKDF2-HMAC-SHA512 at PBKDF2_ITERATIONS (220,000), and the
         # 3.14 snapshot's WebCrypto bridge refuses iterations above 100,000.

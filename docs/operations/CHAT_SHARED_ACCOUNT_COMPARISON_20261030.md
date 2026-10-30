@@ -4,16 +4,16 @@
 
 - 대조 경로는 기본 미등록이며 명시적으로 시험 흐름이 주입될 때만 등록된다. Chat 운영 배포·설정 변경은 하지 않았다.
 - 서버는 기존 Chat 인증 세션 및 super-admin 권한을 확인하고 공통 표를 검증한 뒤 identity authority의 b62 역방향 조회 결과와 비교한다. 결과는 MATCH / MISMATCH / UNKNOWN만 표시한다. 실제 대표 계정의 결과는 UNKNOWN이다.
-- Cloudflare Secrets Store에 새 항목 `PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK`, `PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY`를 만들었다. 값은 접근하거나 출력하지 않았다. Worker에는 아직 바인딩하지 않았다.
-- 공개키와 유일한 콜백 `https://chat.padiem.net/_test/auth/account-comparison/callback` 등록은 #6273에서 준비했다. 해당 PR은 아직 미머지다. 인증 서버 재배포 시 `--keep-vars`를 사용하고 인증 서버의 기존 서명·지문 키를 재생성하지 않는다.
+- Cloudflare Secrets Store에 새 항목 `PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK`, `PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY`를 만들었다. 값은 접근하거나 출력하지 않았다. 운영 Worker에는 아직 바인딩하지 않았다. PR에 바인딩·기준선·기본 OFF 스위치를 추가했다.
+- 공개키와 유일한 콜백 `https://chat.padiem.net/_test/auth/account-comparison/callback` 등록은 #6273으로 머지됐고 main `4766fdcfe61b8e3c6bb09259288b4a2d0c0a8e8c`를 `--keep-vars`로 인증 서버에 배포했다. b62 시작 302, 러브트리 시작 302, 기존 JWKS kid 유지를 확인했다.
 
 ## 운영 시험 전에 필요한 것
 
-1. #6273을 승인된 경로로 머지하고 인증 서버에 배포한 뒤 기존 JWKS kid, 러브트리 로그인과 허용 목록 밖 거절을 확인한다.
-2. #6267의 검증 라이브러리를 Chat Worker 빌드에 포함한다. JWKS를 Worker fetch 호환 경계로 비동기 수신·캐시하는 어댑터와 공통 ES256 벡터 검증은 준비했으나 패키징과 실제 Worker 실사용은 미검증이다. 일반 Python HTTPX의 소켓 경로도 Worker에서 사용할 수 없어 Chat의 `httpx_compat`를 사용한다.
-3. 두 Secrets Store 항목을 Chat Worker 설정에 바인딩하고 요청 시 비동기 `.get()`으로 가져오는 구성, 기본 OFF 스위치와 인증 흐름 생성 코드를 연결한다. private key·state key는 로그·응답·브라우저 저장소·최상위 스냅숏에 넣지 않는다. 다른 레인의 배포와 충돌하지 않게 CTO가 정한 배포 시점까지 적용하지 않는다.
+1. #6273 인증 서버 등록은 완료했다. 러브트리 미리보기 허용 목록은 대표 계정 비교 뒤 정리한다.
+2. ES256 서명·검증은 새 패키지를 추가하지 않고 Workers WebCrypto를 사용한다. 공통 ES256 벡터와 키 회전은 국소 테스트했고 실제 Pyodide 프로브를 CI에 추가했다. CI 결과가 나오기 전에는 실제 Worker 통과로 보지 않는다.
+3. PR에 두 Secrets Store 바인딩·게이트 기준선·기본 OFF 스위치·서버 측 흐름 생성을 연결했다. 활성화한 경우에만 비동기 `.get()`으로 비밀을 읽는다. private key·state key는 로그·응답·브라우저 저장소·최상위 스냅숏에 넣지 않는다. CTO가 정한 Chat 배포 시점까지 적용하지 않는다.
 4. 대표의 현재 Chat 세션이 플랫폼 super-admin인지 기존 역할 확인 경로로 검사한다. 실제 권한은 미확인이다. 권한이 없거나 확인 불가면 UNKNOWN이며 임의로 권한을 부여하지 않는다.
-5. 격리된 Python Worker 환경에서 서명·공개키 갱신·코드 교환·identity binding·권한 및 기본 OFF, 쿠키/state/PKCE를 검증한다. CPython 합성 시험과 Worker fetch 호환 계층을 가짜 JS fetch로 구동한 시험은 통과했다. 현재 비교 흐름과 공통 Python 검증기는 cryptography를 사용하지만 Chat pylock.toml에는 cryptography 항목이 없어, 실제 Worker에서 제공되는지 확인하거나 WebCrypto 경로로 이식해야 한다. 실제 Pyodide에서 활성화된 대조 흐름의 E2E는 미검증이며 현재 PR의 Worker 계약 CI는 별도 결과를 확인한다.
+5. 격리된 Python Worker에서 WebCrypto 서명·공통 검증 벡터를 실제 구동하는 CI 결과를 확인한다. 전체 OAuth 교환·identity binding·운영자 권한을 포함한 실제 활성화 E2E는 배포 전 별도 확인이 필요하다.
 6. CTO가 Chat 게이트 배포 시점을 정하면 정확한 SHA로 배포하고, 대표의 기존 Chat 세션과 공통 로그인으로 시험한다. 일치 결과만 Chat 전환 준비의 통과로 간주한다. 불일치 또는 UNKNOWN에서는 전환을 멈추고 데이터를 합치지 않는다.
 
 ## 시험 종료 후 정리 목록

@@ -178,6 +178,14 @@ case "$KDFBENCH_BODY" in
 esac
 
 
+# Same nonproduction Workerd: shared ES256 vectors and a synthetic
+# WebCrypto sign/verify roundtrip; no production keys or resources are used.
+SHARED_AUTH_BODY="$(curl -fsS --max-time 15 'http://127.0.0.1:8795/probe?case=shared_auth_es256')"
+case "$SHARED_AUTH_BODY" in
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_SHARED_AUTH_ES256=PASS' ;;
+  *) echo 'B62_WORKER_SHARED_AUTH_ES256=FAIL' >&2; exit 1 ;;
+esac
+
 failed=0
 count=0
 # P01 synthetic monkeypatch belongs last, after transport/R2 assertions.

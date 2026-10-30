@@ -1,18 +1,17 @@
 import asyncio
-import importlib.util
 import json
 from pathlib import Path
 
 from app.shared_auth_compare_flow import WorkerJwksVerifier
+from tests.shared_es256_test_crypto import TestES256
 
 
 def test_shared_vectors_use_cached_jwks_and_fail_closed():
     root = Path(__file__).resolve().parents[3] / 'packages' / 'padiem-auth-verify'
-    spec = importlib.util.spec_from_file_location('shared_auth_test_verifier', root / 'verify.py')
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
     vector = json.loads((root / 'tests' / 'vectors.json').read_text())
-    wrapper = WorkerJwksVerifier(module.Verifier, clock=lambda:vector['now'])
+    from worker_runtime_shared_auth_fixture import VECTOR
+    assert VECTOR == vector
+    wrapper = WorkerJwksVerifier(crypto=TestES256(), clock=lambda:vector['now'])
     # Shared vectors use LoveTree's audience. Production construction fixes b62.
     wrapper.audience = vector['audience']
     calls = []
@@ -36,7 +35,7 @@ def test_shared_vectors_use_cached_jwks_and_fail_closed():
 
 
 def test_unknown_kid_refreshes_cached_keys_once():
-    wrapper = WorkerJwksVerifier(lambda **kwargs: None, clock=lambda:1000)
+    wrapper = WorkerJwksVerifier(crypto=TestES256(), clock=lambda:1000)
     wrapper.keys, wrapper.until = {'keys':[]}, 1100
     calls = []
     async def fetch():
@@ -45,9 +44,10 @@ def test_unknown_kid_refreshes_cached_keys_once():
     wrapper._fetch = fetch
     # A syntactically valid but unknown kid must trigger one refresh, then fail.
     import base64
-    header = base64.urlsafe_b64encode(b'{"kid":"new-key"}').rstrip(b'=').decode()
+    header = base64.urlsafe_b64encode(b'{"alg":"ES256","typ":"JWT","kid":"new-key"}').rstrip(b'=').decode()
+    body = base64.urlsafe_b64encode(b'{}').rstrip(b'=').decode()
     try:
-        asyncio.run(wrapper.verify(header + '.x.y'))
+        asyncio.run(wrapper.verify(header + '.' + body + '.AA'))
     except ValueError:
         pass
     else:

@@ -156,8 +156,20 @@ binding = "ORACLE_MESH_OWNERSHIP_MAP"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "ORACLE_MESH_OWNERSHIP_MAP"
 
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY"
+
 # Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
+PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED = "false"
+PADIEM_CHAT_SHARED_AUTH_CLIENT_KID = "b62-42c57a6725c907f7f3cf"
 PADIEM_GRAFANA_OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
 PADIEM_GRAFANA_OTLP_USERNAME = "1876517"
 
