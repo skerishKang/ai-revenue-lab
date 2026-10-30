@@ -2,6 +2,7 @@
 
 The caller supplies local metadata-only API responses. No values are printed.
 """
+import hashlib
 import json
 import re
 import sys
@@ -14,9 +15,20 @@ UUID = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12
 
 
 def validate_config(config, baseline):
-    if config.get('name') != 'padiem-auth' or config.get('vars'):
-        raise ValueError('wrong Worker or declared vars would change existing values')
+    if config.get('name') != 'padiem-auth':
+        raise ValueError('wrong Worker')
     bindings = baseline.get('bindings', [])
+    declared = config.get('vars', {})
+    if not isinstance(declared, dict):
+        raise ValueError('invalid declared vars')
+    reviewed = {b.get('name'): b for b in bindings if b.get('type') == 'plain_text'}
+    for name, value in declared.items():
+        if name not in {'GOOGLE_CLIENT_ID', 'PADIEM_AUTH_CLIENTS'} or not isinstance(value, str):
+            raise ValueError('unreviewed declared variable')
+        expected = reviewed.get(name, {}).get('sha256')
+        if expected != hashlib.sha256(value.encode('utf-8')).hexdigest():
+            raise ValueError('declared variable differs from reviewed baseline')
+
     services = [b for b in bindings if b.get('type') == 'service']
     objects = [b for b in bindings if b.get('type') == 'durable_object_namespace']
     configured_services = config.get('services', [])
@@ -34,7 +46,7 @@ def validate_config(config, baseline):
     # Updates to Durable Object classes need a separately reviewed migration.
     if config.get('migrations') != [{'tag': 'v1', 'new_sqlite_classes': ['AuthStateObject']}]:
         raise ValueError('DO migration plan differs')
-    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations'}
+    known = {'name', 'main', 'compatibility_date', 'workers_dev', 'services', 'durable_objects', 'migrations', 'vars'}
     if set(config) - known:
         raise ValueError('unreviewed Worker config')
 

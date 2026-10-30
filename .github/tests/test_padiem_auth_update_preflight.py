@@ -18,4 +18,32 @@ class Check(unittest.TestCase):
         m.verify_deployment([{'created_on': '2026-01-01', 'versions': [{'version_id': version, 'percentage': 100}]}], version)
         with self.assertRaises(ValueError): m.verify_deployment([{'versions': [{'version_id': version, 'percentage': 50}]}], version)
         with self.assertRaises(ValueError): m.verify_deployment([], version)
+
+    def test_real_wrangler_config_path_and_secret_var_override_rejected(self):
+        import hashlib
+        import tomllib
+        root = Path(__file__).resolve().parents[2]
+        with (root / 'apps/padiem-auth/wrangler.toml').open('rb') as stream:
+            actual = tomllib.load(stream)
+        baseline = {'status': 'approved', 'bindings': []}
+        for svc in actual.get('services', []):
+            baseline['bindings'].append({'name': svc['binding'], 'type': 'service',
+                                         'service': svc['service']})
+        for item in actual.get('durable_objects', {}).get('bindings', []):
+            baseline['bindings'].append({'name': item['name'],
+                                         'type': 'durable_object_namespace',
+                                         'class_name': item['class_name']})
+        for name, value in actual.get('vars', {}).items():
+            baseline['bindings'].append({'name': name, 'type': 'plain_text',
+                                         'sha256': hashlib.sha256(value.encode('utf-8')).hexdigest()})
+        m.validate_config(actual, baseline)
+        altered = dict(actual)
+        altered['vars'] = {**actual['vars'], 'PADIEM_AUTH_IDENTITY_HMAC_KEY': 'synthetic'}
+        with self.assertRaises(ValueError):
+            m.validate_config(altered, baseline)
+        changed = dict(actual)
+        changed['vars'] = {**actual['vars'], 'PADIEM_AUTH_CLIENTS': 'changed'}
+        with self.assertRaises(ValueError):
+            m.validate_config(changed, baseline)
+
 if __name__ == '__main__': unittest.main()
