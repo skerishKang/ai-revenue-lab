@@ -83,10 +83,10 @@
        The data attribute keeps interaction-polish.js from injecting a
        duplicate sheet. -->
   <link rel="stylesheet" href="./interaction-polish.css" data-interaction-polish-styles="true" />
-  <!-- #5805: opt-in phone header design variants (?mobileHeader=). The merged
-       glass menu in interaction-polish.css stays the production default;
-       this sheet only reacts to the explicit variant attribute. -->
-  <link rel="stylesheet" href="./mobile-header-variants.css" data-mobile-header-variants="true" />
+  <!-- #5805: the phone header row collapses while a primary surface scrolls
+       (CTO decision on PR #6274). Sits after interaction-polish.css so the
+       collapse rules override the glass-menu block below 920px. -->
+  <link rel="stylesheet" href="./mobile-header-collapse.css" data-mobile-header-collapse="true" />
 </head>
 <body>
   <div class="app-shell" data-state="home" data-page-id="home" data-layout-variant="conversation">
@@ -1291,10 +1291,9 @@
   <script src="./voice-answer-ui.js"></script>
   <script src="./voice-call-ui.js"></script>
   <script src="./app.js"></script>
-  <!-- #5805: opt-in phone header design variants (?mobileHeader=floating|collapse).
-       Writes no state without the parameter; the merged glass menu stays the
-       production default. -->
-  <script src="./mobile-header-variants.js"></script>
+  <!-- #5805: the phone header collapse scroll mirror. No parameter, no
+       routing, no network; the surface CSS is mobile-header-collapse.css. -->
+  <script src="./mobile-header-collapse.js"></script>
   <!-- #5034 LOCAL4: the common notification inbox. Presentation-only over the
        existing /api/claw/inbox/{alerts,tasks} contract: no new endpoint, no
        second inbox, no polling loop. -->
