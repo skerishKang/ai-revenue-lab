@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import zlib
+from datetime import datetime, timezone
 
 UNAVAILABLE = "unavailable"
 
@@ -23,11 +24,17 @@ UNAVAILABLE = "unavailable"
 LINUX = r'''
 import json, os, re, shutil, subprocess, urllib.request
 U = "unavailable"
+journal_warnings = set()
 def run(args, timeout=4):
     try:
         p = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
-        return p.stdout if p.returncode == 0 and not (args[0] == "journalctl" and p.stderr) else None
+        if args[0] == "journalctl" and p.stderr:
+            journal_warnings.add("truncated_file" if "is truncated, ignoring file" in p.stderr else "other_warning")
+            return None
+        if args[0] == "journalctl" and p.returncode != 0: journal_warnings.add("unavailable")
+        return p.stdout if p.returncode == 0 else None
     except (OSError, subprocess.TimeoutExpired):
+        if args[0] == "journalctl": journal_warnings.add("unavailable")
         return None
 def state(unit):
     loaded = prop(unit, "LoadState")
@@ -79,8 +86,9 @@ try:
     times = [x.get("at") for x in records if isinstance(x, dict) and isinstance(x.get("at"), str)
              and re.fullmatch(r"[0-9T:.+Z-]{10,40}", x["at"])]
     if times: out["offsite_latest"] = max(times)
-    out["offsite_by_service"] = {service: max((x["at"] for x in records if isinstance(x, dict) and x.get("service") == service and isinstance(x.get("at"), str) and re.fullmatch(r"[0-9T:.+Z-]{10,40}", x["at"])), default=U) for service in ("chat", "mesh-queue", "broker", "d1-chat", "d1-engine")}
+    out["offsite_by_service"] = {service: max((x["at"] for x in records if isinstance(x, dict) and x.get("service") == service and isinstance(x.get("at"), str) and re.fullmatch(r"[0-9T:.+Z-]{10,40}", x["at"])), default=U) for service in ("chat", "queue", "broker", "d1-chat", "d1-engine")}
 except (OSError, ValueError): pass
+out["journal_integrity"] = sorted(journal_warnings) if journal_warnings else "no_warning"
 print(json.dumps(out, separators=(",",":")))
 '''
 
@@ -101,9 +109,9 @@ foreach ($d in @('C','D')) {
 try { $t=Get-ScheduledTaskInfo -TaskName 'PADIEM-COM2-D1-R2-Sync' -ErrorAction Stop
   if ($t.LastRunTime.Year -gt 2000) { $r.d1_sync=@{last_run=$t.LastRunTime.ToUniversalTime().ToString('o'); result=[int64]$t.LastTaskResult} }
 } catch {}
-try { $s=Get-CimInstance Win32_Service -Filter "Name='MeshCentral'" -ErrorAction Stop
+try { $s=Get-Service -Name 'MeshCentral' -ErrorAction Stop
   if ($s) {
-    $r.legacy_meshcentral=@{state=[string]$s.State; start_mode=[string]$s.StartMode; crashes_24h='unavailable'}
+    $r.legacy_meshcentral=@{state=[string]$s.Status; start_mode=[string]$s.StartType; crashes_24h='unavailable'; classification='informational'}
     try { $events=Get-WinEvent -FilterHashtable @{LogName='System'; ProviderName='Service Control Manager'; Id=7031,7034; StartTime=(Get-Date).AddHours(-24)} -ErrorAction Stop
       $r.legacy_meshcentral.crashes_24h=@($events | Where-Object { $_.Message -match 'MeshCentral' }).Count
     } catch { if ($_.FullyQualifiedErrorId -match 'NoMatchingEventsFound') { $r.legacy_meshcentral.crashes_24h=0 } }
@@ -111,7 +119,7 @@ try { $s=Get-CimInstance Win32_Service -Filter "Name='MeshCentral'" -ErrorAction
 } catch {}
 try {
   $p = '__LINUX__'
-  $raw = & wsl.exe -d Ubuntu -e python3 -c $p 2>$null
+  $raw = & wsl.exe -d Ubuntu -u root -e python3 -c $p 2>$null
   if ($LASTEXITCODE -eq 0) { $r.linux = ($raw | ConvertFrom-Json -ErrorAction Stop) }
 } catch {}
 $r | ConvertTo-Json -Depth 9 -Compress
@@ -135,7 +143,7 @@ def recovery(path: str | None):
     return records[-10:]
 
 def diagnose(config, runner=subprocess.run):
-    result = {"schema":"com2-diagnosis-v1", "remote":UNAVAILABLE,
+    result = {"schema":"com2-diagnosis-v1", "observed_at":datetime.now(timezone.utc).isoformat(), "remote":UNAVAILABLE,
               "recovery_history":recovery(config.get("recovery_log"))}
     try:
         timeout = min(max(int(config.get("ssh_timeout_seconds",15)), 10), 90)
@@ -164,8 +172,9 @@ def main():
     try:
         cfg = json.loads(Path(args.config).read_text(encoding="utf-8-sig"))
         result = diagnose(cfg)
-    except (OSError, ValueError): result = {"schema":"com2-diagnosis-v1","remote":UNAVAILABLE,"recovery_history":UNAVAILABLE}
+    except (OSError, ValueError): result = {"schema":"com2-diagnosis-v1","observed_at":datetime.now(timezone.utc).isoformat(),"remote":UNAVAILABLE,"recovery_history":UNAVAILABLE}
     if not args.json:
+        print("observed_at | " + result["observed_at"])
         print("SIGNAL | VALUE")
         print("-------|------")
         remote = result["remote"]

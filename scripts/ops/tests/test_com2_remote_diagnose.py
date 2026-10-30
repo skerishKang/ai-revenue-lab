@@ -14,7 +14,8 @@ CFG = {"com2_host":"host", "com2_ssh_user":"reader", "com2_ssh_key":"key", "com2
 def test_fixed_collector_compiles_and_is_read_only():
     compile(diag.LINUX, "<collector>", "exec")
     program = diag.remote_command()
-    assert "wsl.exe -d Ubuntu -e python3" in program
+    assert "wsl.exe -d Ubuntu -u root -e python3" in program
+    assert "Get-Service -Name 'MeshCentral'" in program
     assert "Get-ScheduledTaskInfo" in program
     for forbidden in ("Restart-Service", "Start-Service", "Set-Service", "runcommand", "Set-Content"):
         assert forbidden not in program
@@ -89,3 +90,25 @@ def test_linux_collector_projects_sample_without_secrets(monkeypatch, capsys):
     assert obj["queue_refusals"] == 1 and obj["queue_health"]["received"] == 3
     assert obj["offsite_latest"] == "2026-10-30T01:02:03Z"
     assert "do-not-print" not in output
+
+
+def test_journal_warning_does_not_claim_zero_or_emit_log(monkeypatch, capsys):
+    import builtins
+    import io
+    import shutil
+    import urllib.request
+    def fake_run(args, **kwargs):
+        if args[0] == "journalctl":
+            return SimpleNamespace(returncode=0, stdout="private log line\n", stderr="Journal file /secret/path is truncated, ignoring file.\n")
+        return SimpleNamespace(returncode=0, stdout="loaded\n" if "--property=LoadState" in args else "active\n", stderr="")
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(builtins, "open", lambda *a, **k: (_ for _ in ()).throw(OSError()))
+    monkeypatch.setattr(urllib.request, "urlopen", lambda *a, **k: (_ for _ in ()).throw(OSError()))
+    monkeypatch.setattr(shutil, "disk_usage", lambda _: SimpleNamespace(free=123))
+    exec(diag.LINUX, {})
+    output = capsys.readouterr().out
+    obj = json.loads(output)
+    assert obj["journal_integrity"] == ["truncated_file"]
+    assert obj["queue_refusals"] == "unavailable"
+    assert obj["errors"]["padiem-mesh-queue.service"] == "unavailable"
+    assert "private" not in output and "/secret" not in output
