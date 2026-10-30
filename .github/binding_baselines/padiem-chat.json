@@ -128,6 +128,10 @@
       "type": "d1"
     },
     {
+      "name": "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
       "type": "plain_text"
     },
