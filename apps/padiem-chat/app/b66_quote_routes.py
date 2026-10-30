@@ -590,7 +590,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     reasoning_level = data.get("reasoning_level")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
-    if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
+    if model_id.startswith("padiem-profile/"):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if custom is None and access is not None and model_id in access["disabled_models"]:
         return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")

@@ -352,7 +352,6 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     if (
         not isinstance(model_id, str)
         or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id)
-        or model_id == "b14/auto"
         or model_id.startswith("padiem-profile/")
     ):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")

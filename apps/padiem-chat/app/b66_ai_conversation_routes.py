@@ -220,7 +220,6 @@ async def conversation_turn(request: Request) -> JSONResponse:
     if (
         not isinstance(model_id, str)
         or not _MODEL_ID_RE.fullmatch(model_id)
-        or model_id == "b14/auto"
         or model_id.startswith("padiem-profile/")
     ):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
