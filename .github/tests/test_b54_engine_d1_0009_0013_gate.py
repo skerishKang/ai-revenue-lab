@@ -52,3 +52,20 @@ def test_count_query_only_present_tables():
     q=m.count_sql(states)
     rows=db.execute(q).fetchall()
     assert len(rows)==2 and all(r[1]==0 for r in rows)
+
+
+def test_drift_table_counts_can_be_inspected_without_mutation():
+    db=make("0012")
+    db.execute("CREATE INDEX unexpected ON padiem_engine_agent_runs_v1(epoch)")
+    states, grouped = m.classify(payload(db))
+    assert states["0013"] == "DRIFT"
+    assert any(name == m.TABLES["0011"] for name, count in db.execute(m.count_sql(states, grouped)))
+    assert all(s.strip().upper().startswith("SELECT") for s in [m.schema_sql(),m.count_sql(states,grouped)])
+
+def test_dispatch_workflow_is_read_only_and_sha_pinned():
+    text=(P.parents[1]/"workflows/b54-engine-d1-0009-0013-readonly.yml").read_text(encoding="utf8")
+    assert "workflow_dispatch:" in text and "pull_request:" not in text
+    assert "^[0-9a-f]{40}$" in text and "git rev-parse FETCH_HEAD" in text
+    assert "ENGINE_IDEMPOTENCY" in text and "padiem-ai-engine/settings" in text
+    assert "PRODUCTION_MUTATION=0" in text
+    assert "d1 export" not in text and "d1 execute" not in text

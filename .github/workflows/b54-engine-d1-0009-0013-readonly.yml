@@ -1,0 +1,77 @@
+name: B54 Engine D1 0009-0013 Readonly Plan
+
+# #5359: read-only classification. Mutation gate is not yet implemented.
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Full 40-character current main SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Validate SHA before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify exact current main and authorized account
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_SHA"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "$CLOUDFLARE_API_TOKEN"
+      - name: Verify Engine Worker binding and DB identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 30 \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/padiem-ai-engine/settings" \
+            -o "$RUNNER_TEMP/settings.json"
+          python3 - "$RUNNER_TEMP/settings.json" <<'PY'
+          import json, sys
+          x=json.load(open(sys.argv[1]))
+          if x.get("success") is not True: raise SystemExit("worker settings unavailable")
+          b=[v for v in x["result"]["bindings"] if v.get("name")=="ENGINE_IDEMPOTENCY" and v.get("type")=="d1"]
+          if len(b)!=1 or b[0].get("id")!="6b77ad02-bc27-488f-bb97-6325f6750cba": raise SystemExit("engine binding mismatch")
+          print("ENGINE_BINDING_ID=VERIFIED")
+          PY
+      - name: Query and classify schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b54_engine_d1_0009_0013_schema.py
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database/6b77ad02-bc27-488f-bb97-6325f6750cba/query"
+          python3 "$script" query "$RUNNER_TEMP/schema-query.json"
+          curl --fail --silent --show-error --max-time 30 \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary @"$RUNNER_TEMP/schema-query.json" "$api" -o "$RUNNER_TEMP/schema.json"
+          drift=0
+          python3 "$script" classify "$RUNNER_TEMP/schema.json" || drift=$?
+          python3 "$script" counts-query "$RUNNER_TEMP/schema.json" > "$RUNNER_TEMP/count-query.json"
+          curl --fail --silent --show-error --max-time 30 \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary @"$RUNNER_TEMP/count-query.json" "$api" -o "$RUNNER_TEMP/counts.json"
+          python3 "$script" counts "$RUNNER_TEMP/counts.json"
+          echo "PRODUCTION_MUTATION=0"
+          test "$drift" -eq 0

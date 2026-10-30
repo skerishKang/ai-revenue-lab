@@ -84,25 +84,30 @@ def classify(payload):
     else: states["0013"] = "DRIFT"
     return states, grouped
 
-def count_sql(states):
-    # Only tables confirmed present by schema inspection are queried.
-    present = [v for k,v in TABLES.items() if states[k] == "EXACT"]
+def count_sql(states, grouped=None):
+    # Fixed identifiers only; count even DRIFT when the table itself exists.
+    present = [v for k,v in TABLES.items() if states[k] == "EXACT" or (grouped is not None and any(r[0] == "table" and r[1] == v for r in grouped[v]))]
     if not present: return "SELECT 'none' AS name, 0 AS n WHERE 0"
     return " UNION ALL ".join("SELECT '"+name+"' AS name, count(*) AS n FROM "+name for name in present)
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("mode", choices=("query","classify","counts-query"))
+    p.add_argument("mode", choices=("query","classify","counts-query","counts"))
     p.add_argument("path", type=Path)
     a=p.parse_args()
     if a.mode == "query":
         reference()
         a.path.write_text(json.dumps({"sql":schema_sql()}),encoding="utf-8")
+    elif a.mode == "counts":
+        data = api_rows(json.loads(a.path.read_text(encoding="utf-8")))
+        allowed = set(TABLES.values())
+        if any(not isinstance(r, dict) or r.get("name") not in allowed or type(r.get("n")) is not int or r["n"] < 0 for r in data):
+            raise ValueError("invalid count results")
+        print(json.dumps({"row_counts": {r["name"]: r["n"] for r in data}}, indent=2))
     else:
         states, grouped = classify(json.loads(a.path.read_text(encoding="utf-8")))
         if a.mode == "counts-query":
-            if "DRIFT" in states.values(): raise ValueError("schema drift; stop")
-            print(json.dumps({"sql":count_sql(states)}))
+            print(json.dumps({"sql":count_sql(states, grouped)}))
         else:
             print(json.dumps({"migrations":states,
                 "indexes":sorted(x[1] for x in grouped[TABLES["0011"]] if x[0]=="index"),
