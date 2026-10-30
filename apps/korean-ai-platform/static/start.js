@@ -235,9 +235,7 @@
 
     if (DOM.routePreview) {
       var txt = document.createTextNode(
-        state.activeRouteMode === "auto"
-          ? "자동으로 최적 모델을 선택합니다. (" + t("optimize_for") + ": " + state.optimizeFor + ")"
-          : "선택한 모델로 요청을 전송합니다: " + model
+        "선택한 모델로 요청을 전송합니다: " + model
       );
       DOM.routePreview.replaceChildren(txt);
     }
@@ -249,9 +247,7 @@
       DOM.selectedProvider.textContent = cm ? cm.provider : "Padiem AI";
     }
     if (DOM.selectedReason) {
-      DOM.selectedReason.textContent = state.activeRouteMode === "auto"
-        ? "b14/auto가 " + (state.optimizeFor === "korean" ? "한국어 적합도" : state.optimizeFor === "cost" ? "비용" : state.optimizeFor === "latency" ? "속도" : "균형") + " 기준으로 선택"
-        : "수동 선택";
+      DOM.selectedReason.textContent = "수동 선택";
     }
 
     _updateModeBadges();
