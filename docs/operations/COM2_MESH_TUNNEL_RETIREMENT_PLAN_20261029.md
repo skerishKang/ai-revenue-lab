@@ -2,7 +2,7 @@
 
 ```text
 DOC_ROLE=MESH_TUNNEL_RETIREMENT_PLAN
-STATUS=정리안(문서만) / 실행은 Qoder·운영 승인 후, 이 PR은 아무것도 삭제·변경하지 않음
+STATUS=정리안(문서만) / §2.1 소스 절반은 2026-10-30 #5643 정리 PR로 실행(삭제·축소·selftest 3종 갱신), §4-2 호스트 절반은 대기열 전환 완료 신호 뒤 CTO 신호로 실행
 ISSUE=#5643 (관련 #5578, #5015, #5573)
 전제: 2026-10-23 20:58 KST 관측 — COM1 Mesh Agent가 192.168.0.101:4443으로 직접 TCP 연결,
       PADIEM-Mesh-Tunnel은 Settings.Enabled=false이나 State=Running(중지·제거의 증거 아님).
