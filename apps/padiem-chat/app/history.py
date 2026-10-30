@@ -292,15 +292,6 @@ def _normalize_search_query(query: object) -> str:
     return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
 
 
-def _escape_like(query: object) -> str:
-    """Make a user query a literal LIKE substring under ESCAPE '\\'.
-
-    The escape character is escaped first, then the LIKE wildcards.
-    """
-    normalized = _normalize_search_query(query)
-    return normalized.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-
-
 def _search_snippet(hit: object, query: object) -> str:
     """Short excerpt around the first literal match. '' when there is no body hit."""
     if not isinstance(hit, str) or not hit:
@@ -1274,26 +1265,32 @@ class D1HistoryStore:
         """Owner-scoped search over the signed-in user's own conversations.
 
         Matches conversation titles and recent message text. Every value is a
-        bound parameter; LIKE wildcards in the query are escaped so it is always
-        a literal substring. Results and scanned rows are bounded. Stored
-        conversations are never truncated.
+        bound parameter and the query is always a literal substring. Results and
+        scanned rows are bounded. Stored conversations are never truncated.
+
+        Membership is `instr`, not `LIKE`. D1 refuses a LIKE pattern longer than
+        50 bytes as "too complex", and a 17-character Korean query is already 53
+        bytes once wrapped in `%…%` — the store accepts 80 characters. `instr`
+        takes an ordinary bound value, so no query length can reach that
+        ceiling; the run-result read below uses the same route for the same
+        reason. `lower()` on both sides keeps the ASCII case-insensitivity that
+        `LIKE` gave, and there is no wildcard left to escape.
         """
-        needle = _escape_like(query)
+        needle = _normalize_search_query(query)
         if not needle:
             return []
         scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
-        pattern = f"%{needle}%"
         rows = await self._all(
             "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, "
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            " AND m.content LIKE ? ESCAPE '\\' ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
+            " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND c.product_scope=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE scan.content LIKE ? ESCAPE '\\')) "
+            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
             "ORDER BY c.updated_at DESC LIMIT ?",
-            pattern, user_id, scope, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
+            needle, user_id, scope, needle, MAX_CONVERSATION_SEARCH_SCAN_ROWS, needle, bounded,
         )
         return [{
             "id": str(row.get("id", "")),
