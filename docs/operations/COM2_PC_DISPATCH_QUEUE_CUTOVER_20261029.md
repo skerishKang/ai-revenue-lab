@@ -110,6 +110,20 @@ proof matched — and never the secret, the header, the body or any argument, be
 argument can name a customer's path. The installer preserves whatever value `queue.env`
 already holds, so a re-install cannot silently turn the instrument back off mid-window.
 
+Restarting the queue is a normal event, and it has not always been. `schema.apply()` used
+to run its nine migration files at *every* open, which the files cannot survive: 048 ends
+with `ALTER TABLE … ADD COLUMN kind`, and 063 and 070 rebuild their table with `DROP` plus
+`RENAME`. A database that had those columns could therefore only ever be opened by a
+process that was already running — the first restart of the 컴2 queue after its state copy,
+on 2026-10-30, crash-looped on `duplicate column name: kind` and served nobody until the
+database was rebuilt from a fresh generation. `queue_schema_applied` is the ledger that
+fixes it: each file runs once per database and is recorded, a database built before the
+ledger is backfilled rather than replayed, and the shape the stores read is verified at the
+end of every open so a tolerated statement can never hide a missing column. An operator
+refreshing the worktree to a main that adds migration 075 or later should expect `apply` to
+run only the new file; a file that was edited after it ran is skipped and named on stderr,
+because that is exactly how the queue would otherwise disagree with D1 about a schema.
+
 Order that matters:
 
 1. `provision_service_secret.sh` creates `service-secret.txt` (`umask 077`, mode
