@@ -87,6 +87,19 @@ _ZIP_MAGICS = (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08")
 
 HWPX_MEDIA_TYPE = "application/hwp+zip"
 
+#: ZIP keeps the general-purpose flags in two places: one local file header and
+#: the central directory. ``zipfile`` reports only the central copy, so an entry
+#: whose local header says ``encrypted`` and whose central record says ``plain``
+#: is never classified as encrypted through the stdlib view. The gate reads the
+#: local copy too, because one field with two disagreeing values is refused
+#: rather than admitted as an ordinary archive.
+_ENCRYPTED_FLAG = 0x1
+
+#: Office wraps a password-protected OOXML package in an OLE compound file
+#: carrying an ``EncryptedPackage`` stream, with directory-entry names stored as
+#: UTF-16LE. That wrapper is an encrypted document, not an unknown format.
+_ENCRYPTED_PACKAGE_MARKER = "EncryptedPackage".encode("utf-16-le")
+
 # How many decompressed bytes are read to decide whether an entry is itself an
 # archive. Enough for every ZIP local/empty/spanned-header magic.
 _NESTED_PREFIX_BYTES = 12
@@ -348,6 +361,18 @@ def _is_link_entry(info: zipfile.ZipInfo) -> bool:
     return mode == _S_IFLNK
 
 
+def _local_header_declares_encryption(payload: bytes, info: zipfile.ZipInfo) -> bool:
+    """Read the entry's own local copy of the general-purpose flags."""
+
+    offset = info.header_offset
+    if offset < 0 or offset + 8 > len(payload):
+        return False
+    if payload[offset:offset + 4] != _ZIP_MAGICS[0]:
+        return False
+    flags = int.from_bytes(payload[offset + 6:offset + 8], "little")
+    return bool(flags & _ENCRYPTED_FLAG)
+
+
 def _result(
     decision: IntakeDecision,
     reason_code: str,
@@ -457,6 +482,9 @@ def _walk_archive(payload: bytes, depth: int, budget: _ArchiveBudget) -> str | N
                     budget.encrypted = True
                     # Fail closed immediately: never attempt to read or recurse
                     # into an encrypted entry.
+                    return "archive_encrypted"
+                if _local_header_declares_encryption(payload, info):
+                    budget.encrypted = True
                     return "archive_encrypted"
                 if info.file_size > policy.max_single_archive_entry_bytes:
                     return "archive_entry_size"
@@ -684,6 +712,20 @@ def inspect_file(
         )
 
     if detected is DetectedFormat.OLE_COMPOUND:
+        if _ENCRYPTED_PACKAGE_MARKER in data:
+            # A password-protected Office document is an OLE wrapper, not a ZIP.
+            # It is still an encrypted document, and classifying it as one is
+            # what the caller needs to tell the user.
+            return _result(
+                IntakeDecision.ENCRYPTED,
+                "archive_encrypted",
+                detected=detected,
+                extension_media=extension_media,
+                raw_bytes=len(data),
+                filename=safe_name,
+                encrypted=True,
+                mismatch=_mismatch(detected, extension_media),
+            )
         return _result(
             IntakeDecision.UNSUPPORTED,
             "legacy_ole_compound_unsupported",
