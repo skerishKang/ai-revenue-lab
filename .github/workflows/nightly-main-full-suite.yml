@@ -106,6 +106,8 @@ jobs:
       - name: Install test dependencies
         working-directory: apps/claw-connect
         run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'cryptography' -r requirements-wss-review.txt
+      - name: Make padiem_ai_core importable for the contract tests
+        run: python -m pip install --disable-pip-version-check --no-deps packages/padiem-ai-core
       - name: Run contract tests
         working-directory: apps/claw-connect
         run: python -m pytest -q tests
@@ -204,6 +206,9 @@ jobs:
       - name: uv sync
         working-directory: packages/padiem-control-plane
         run: uv sync --extra dev
+      - name: Make padiem_ai_core importable for the 4139 integration tests
+        run: uv pip install --no-deps ../../packages/padiem-ai-core
+        working-directory: packages/padiem-control-plane
       - name: pytest
         working-directory: packages/padiem-control-plane
         run: uv run pytest -q tests
@@ -223,6 +228,9 @@ jobs:
       - name: uv sync
         working-directory: apps/korean-ai-code-agent
         run: uv sync
+      - name: Make padiem_ai_core importable for the test suite
+        run: uv pip install --no-deps ../../packages/padiem-ai-core
+        working-directory: apps/korean-ai-code-agent
       - name: pytest
         working-directory: apps/korean-ai-code-agent
         run: uv run --with 'pytest>=8,<10' pytest -q tests
@@ -247,6 +255,37 @@ jobs:
         working-directory: apps/living-fiction
         run: python -m compileall -q app deploy/cloudflare/worker.py
 
+  app-padiem-file-lane:
+    name: tests — padiem-file-lane
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: uv sync
+        working-directory: apps/padiem-file-lane
+        run: uv sync --frozen --group dev --extra windows
+      - name: pytest
+        working-directory: apps/padiem-file-lane
+        run: uv run --frozen pytest -q
+
+  app-padiem-auth:
+    name: tests — padiem-auth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: node --test
+        run: node --test apps/padiem-auth/test/*.test.mjs
+
   nightly-failure-issue:
     name: failure issue (create or update)
     needs:
@@ -261,6 +300,8 @@ jobs:
       - app-padiem-control-plane
       - app-korean-ai-code-agent
       - app-living-fiction
+      - app-padiem-file-lane
+      - app-padiem-auth
     if: always() && contains(needs.*.result, 'failure')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
