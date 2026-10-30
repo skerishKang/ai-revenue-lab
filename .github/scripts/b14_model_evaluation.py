@@ -28,7 +28,6 @@ if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
 from b14_candidate_live_smoke import (  # noqa: E402
-    AUTO_MODEL_ID,
     CHAT_PATH,
     CANDIDATE_REGISTRY,
     CandidateSpec,

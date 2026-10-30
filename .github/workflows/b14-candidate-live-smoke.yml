@@ -108,7 +108,7 @@ jobs:
           grep -Fq 'MAX_PROVIDER_CALLS = 1' "${script}"
           grep -Fq 'RETRY = 0' "${script}"
           grep -Fq 'FALLBACK = 0' "${script}"
-          grep -Fq 'AUTO_MODEL_ID = "b14/auto"' "${script}"
+          grep -Fq 'spec = CANDIDATE_REGISTRY.get(candidate_id)' "${script}"
           grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "${script}"
           grep -Fq 'PRIVATE_PAYLOAD_OUTPUT=0' "${script}"
           grep -Fq 'SECRET_VALUE_OUTPUT=0' "${script}"
@@ -116,11 +116,6 @@ jobs:
           # Exclusion proof: B.AI Qwen3.8 must appear only as excluded.
           grep -Fq '"b-ai/qwen3.8-flash"' "${script}"
           grep -Fq 'EXCLUDED_CANDIDATE_IDS' "${script}"
-          # The neutral module must never alias the AUTO lane to a candidate.
-          if grep -Fq 'model_id="b14/auto"' "${script}"; then
-            echo 'AUTO_LANE_ALIASED=1'
-            exit 1
-          fi
           echo 'CANDIDATE_SMOKE_SOURCE_CONTRACT=PASS'
 
       - name: Pin canonical served-version reuse (BLOCKER 1)

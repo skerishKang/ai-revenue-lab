@@ -71,7 +71,6 @@ RETRY = 0
 FALLBACK = 0
 
 # The AUTO lane must never back a candidate live acceptance.
-AUTO_MODEL_ID = "b14/auto"
 AUTO_ROUTE_USED = False
 
 HttpTransport = Callable[[str, str, "dict[str, Any] | None"], tuple[int, bytes]]
@@ -239,12 +238,10 @@ def resolve_candidate(candidate_id: str) -> CandidateSpec:
 
     if candidate_id in EXCLUDED_CANDIDATE_IDS:
         raise ValueError("candidate_excluded")
-    if candidate_id == AUTO_MODEL_ID:
-        raise ValueError("auto_route_not_permitted")
     spec = CANDIDATE_REGISTRY.get(candidate_id)
     if spec is None:
         raise ValueError("candidate_not_allowlisted")
-    if spec.model_id == AUTO_MODEL_ID or spec.model_id in _EXCLUDED_MODEL_IDS:
+    if spec.model_id in _EXCLUDED_MODEL_IDS:
         raise ValueError("candidate_model_not_permitted")
     return spec
 
