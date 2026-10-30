@@ -122,7 +122,7 @@ def current_user_id(request: Request) -> str | None:
         if legacy_user:
             return legacy_user
     # Set only by SharedSessionMiddleware after ES256 verification and mapping.
-    shared_user = getattr(request.state, 'padiem_shared_user_id', None)
+    shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
     return shared_user if isinstance(shared_user, str) and shared_user else None
 
 

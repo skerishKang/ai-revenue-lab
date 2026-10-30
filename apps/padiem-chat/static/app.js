@@ -1598,7 +1598,8 @@
     // The button element and its text stay: the auth projection and the
     // outputs feature read them as the session signal.
     loginButton.hidden = presentation.loginHidden;
-    loginButton.style.visibility = "";
+    const pendingLogin = document.getElementById("loginPending");
+    if (pendingLogin) { pendingLogin.hidden = true; pendingLogin.style.display = "none"; }
     loginButton.disabled = presentation.loginDisabled;
     syncAuthDialogMethods();
     loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
@@ -2570,6 +2571,10 @@
       applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false, status_reachable: false });
     }
   }
+  // Background tabs may have their timers suspended beyond access expiry.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && authState.shared_login_enabled === true) void loadAuthStatus();
+  });
   async function openSavedConversation(id) {
     if (!authState.authenticated || inFlight) return;
     try {
