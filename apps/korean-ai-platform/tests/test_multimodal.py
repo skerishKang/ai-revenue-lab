@@ -107,7 +107,7 @@ def test_valid_multimodal_manual_route_passes_the_validated_array(
 def test_only_user_role_may_use_multimodal_array(client, role):
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": "b14/auto", "messages": [{"role": role, "content": multimodal_content()}]},
+        json={"model": "google/gemini-3.1-flash-lite", "messages": [{"role": role, "content": multimodal_content()}]},
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "invalid_body"
