@@ -39,27 +39,19 @@ def query(sql):
             print("D1_HTTP_ERROR="+json.dumps({"status":exc.code,"errors":"unavailable"}),file=sys.stderr)
         raise
 
-def table_counts():
-    inventory=fk.rows(query(fk.TABLES_QUERY))
-    names=[]
-    for row in inventory:
-        if not isinstance(row,dict) or not isinstance(row.get("name"),str) or not row["name"] or "\x00" in row["name"] or row["name"] in names:
-            raise ValueError("invalid table list")
-        # Cloudflare reserves _cf_KV; even SELECT is rejected by D1.
-        # It is provider metadata, not an application table to preserve.
-        if row["name"] == "_cf_KV": continue
-        names.append(row["name"])
-    if not names or len(names)>450: raise ValueError("unsupported table count")
-    def lit(name): return "'"+name.replace("'","''")+"'"
-    def ident(name): return '"'+name.replace('"','""')+'"'
-    sql=" UNION ALL ".join("SELECT "+lit(n)+" AS name, count(*) AS n FROM "+ident(n) for n in names)
-    return evidence.counts(query(sql),set(names))
+def table_counts(states, grouped):
+    # Reuse the bounded migration-table query from the successful readonly gate.
+    names = {name for name in schema.TABLES.values() if any(
+        row[0] == "table" and row[1] == name for row in grouped[name])}
+    sql = schema.count_sql(states, grouped)
+    return evidence.counts(query(sql), names)
+
 
 def inspect():
     payload=query(schema.schema_sql())
     states,grouped=schema.classify(payload)
     data={"migrations":states,"indexes":sorted(x[1] for x in grouped[evidence.RUNS] if x[0]=="index"),"rebuild_table":evidence.RUNS}
-    counts=table_counts()
+    counts=table_counts(states,grouped)
     return data,counts
 
 def as_payload(counts):

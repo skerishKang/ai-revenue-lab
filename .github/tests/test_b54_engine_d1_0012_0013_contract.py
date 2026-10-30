@@ -44,46 +44,30 @@ def test_dispatch_order_and_scope():
     assert "for migration in 0012 0013" in text
     assert 'inspect.py before' in text and 'inspect.py after' in text
 
-def test_all_table_counts_quote_identifiers_and_compare(monkeypatch, tmp_path):
-    import sys
-    sys.path.insert(0,str(SCRIPTS))
-    try:
-        mod=load("b54_engine_d1_0012_0013_inspect")
-    finally:
-        sys.path.pop(0)
-    import sqlite3
-    db=sqlite3.connect(":memory:")
-    db.execute('CREATE TABLE "odd\'name" (x)')
-    db.execute('INSERT INTO "odd\'name" VALUES (1)')
-    queries=[]
-    def query(sql):
-        queries.append(sql)
-        cur=db.execute(sql)
-        rows=[dict(zip([col[0] for col in cur.description],row)) for row in cur]
-        return {"success":True,"result":[{"success":True,"results":rows}]}
-    monkeypatch.setattr(mod,"query",query)
-    assert mod.table_counts()=={"odd'name":1}
-    assert all(q.startswith("SELECT ") for q in queries)
-    assert db.execute('SELECT count(*) FROM "odd\'name"').fetchone()[0]==1
-
-
-def test_provider_table_excluded_but_other_tables_counted(monkeypatch):
-    import sys
+def test_count_query_is_bounded_to_existing_migration_tables(monkeypatch):
+    import sys, sqlite3
     sys.path.insert(0,str(SCRIPTS))
     try: mod=load("b54_engine_d1_0012_0013_inspect")
     finally: sys.path.pop(0)
+    db=sqlite3.connect(":memory:")
+    names=list(mod.schema.TABLES.values())
+    for name in names[:3]:
+        db.execute('CREATE TABLE "'+name+'" (x)')
+        db.execute('INSERT INTO "'+name+'" VALUES (1)')
+    db.execute('CREATE TABLE unrelated (x)')
+    states={k:("EXACT" if i<3 else "MISSING") for i,k in enumerate(mod.schema.TABLES)}
+    grouped={name:([("table",name,name,"")] if i<3 else []) for i,name in enumerate(names)}
     queries=[]
     def q(sql):
         queries.append(sql)
-        if "sqlite_master" in sql:
-            return {"success":True,"result":[{"success":True,"results":[
-                {"name":"_cf_KV","sql":"CREATE TABLE _cf_KV (x)"},
-                {"name":"app","sql":"CREATE TABLE app (x)"}]}]}
-        assert '"_cf_KV"' not in sql and '"app"' in sql
-        return {"success":True,"result":[{"success":True,"results":[{"name":"app","n":2}]}]}
+        cur=db.execute(sql)
+        rows=[dict(zip([c[0] for c in cur.description],r)) for r in cur]
+        return {"success":True,"result":[{"success":True,"results":rows}]}
     monkeypatch.setattr(mod,"query",q)
-    assert mod.table_counts()=={"app":2}
-    assert len(queries)==2
+    assert mod.table_counts(states,grouped)=={name:1 for name in names[:3]}
+    assert len(queries)==1 and queries[0]==mod.schema.count_sql(states,grouped)
+    assert "unrelated" not in queries[0] and "_cf_KV" not in queries[0]
+    assert queries[0].count("UNION ALL") == 2
 
 
 def test_http_error_logs_status_and_safe_cloudflare_errors(monkeypatch,capsys):
