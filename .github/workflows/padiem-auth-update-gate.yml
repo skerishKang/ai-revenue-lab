@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/padiem-auth-update-gate.yml'
       - '.github/scripts/padiem_auth_binding_check.py'
+      - '.github/scripts/padiem_auth_post_update_guard.py'
       - '.github/scripts/padiem_auth_client_delta.py'
       - '.github/scripts/padiem_auth_update_preflight.py'
       - '.github/scripts/padiem_auth_update_live.py'
@@ -12,6 +13,7 @@ on:
       - '.github/scripts/padiem_auth_update_served.py'
       - '.github/scripts/padiem_auth_update_rollback_check.py'
       - '.github/tests/test_padiem_auth_binding_check.py'
+      - '.github/tests/test_padiem_auth_post_update_guard.py'
       - '.github/tests/test_padiem_auth_client_delta.py'
       - '.github/tests/test_padiem_auth_update_preflight.py'
       - '.github/tests/test_padiem_auth_update_key_guard.py'
@@ -48,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python .github/tests/test_padiem_auth_binding_check.py && python .github/tests/test_padiem_auth_client_delta.py && python .github/tests/test_padiem_auth_update_preflight.py && python .github/tests/test_padiem_auth_update_rollback_check.py && python .github/tests/test_padiem_auth_update_workflow.py && python .github/tests/test_padiem_auth_update_key_guard.py
+      - run: python .github/tests/test_padiem_auth_binding_check.py && python .github/tests/test_padiem_auth_post_update_guard.py && python .github/tests/test_padiem_auth_client_delta.py && python .github/tests/test_padiem_auth_update_preflight.py && python .github/tests/test_padiem_auth_update_rollback_check.py && python .github/tests/test_padiem_auth_update_workflow.py && python .github/tests/test_padiem_auth_update_key_guard.py
   gate:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -88,6 +90,7 @@ jobs:
           [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
           [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
           python .github/tests/test_padiem_auth_binding_check.py
+          python .github/tests/test_padiem_auth_post_update_guard.py
           python .github/tests/test_padiem_auth_client_delta.py
           python .github/tests/test_padiem_auth_update_preflight.py
           python .github/tests/test_padiem_auth_update_rollback_check.py
@@ -113,6 +116,12 @@ jobs:
               if not runs: raise SystemExit('required readonly evidence missing')
               page += 1
           PY
+      - name: Load reviewed staging client configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin cfff2b9a2ac7f293eaf6992b8dbc2dcdf4b8b59b
+          git show cfff2b9a2ac7f293eaf6992b8dbc2dcdf4b8b59b:apps/padiem-auth/wrangler.toml > "$RUNNER_TEMP/auth-reviewed-staging.toml"
       - name: Check account, baseline and current deployed version
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -122,7 +131,7 @@ jobs:
           set -euo pipefail
           python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings.json"
           npx --no-install wrangler deployments list --name padiem-auth --json > "$RUNNER_TEMP/auth-deployments.json"
-          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments.json" "$CURRENT_VERSION"
+          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments.json" "$CURRENT_VERSION" "$RUNNER_TEMP/auth-reviewed-staging.toml"
           python .github/scripts/padiem_auth_update_key_guard.py capture "$RUNNER_TEMP/auth-jwks-before.json"
           echo "PRE_DEPLOY_SERVED_VERSION_ID=$CURRENT_VERSION"
           if [[ "$MODE" == rollback ]]; then
@@ -140,7 +149,7 @@ jobs:
           [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
           python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings-latest.json"
           npx --no-install wrangler deployments list --name padiem-auth --json > "$RUNNER_TEMP/auth-deployments-latest.json"
-          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings-latest.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments-latest.json" "$CURRENT_VERSION"
+          python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings-latest.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments-latest.json" "$CURRENT_VERSION" "$RUNNER_TEMP/auth-reviewed-staging.toml"
           python .github/scripts/padiem_auth_update_key_guard.py compare "$RUNNER_TEMP/auth-jwks-before.json"
           if [[ "$MODE" == update ]]; then
             python .github/scripts/padiem_auth_update_key_guard.py deploy --keep-vars
@@ -154,6 +163,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           python .github/scripts/padiem_auth_update_live.py "$RUNNER_TEMP/auth-settings-after.json"
+          if [[ "$MODE" == update ]]; then
+            if ! python .github/scripts/padiem_auth_post_update_guard.py "$RUNNER_TEMP/auth-settings-latest.json" "$RUNNER_TEMP/auth-settings-after.json" apps/padiem-auth/wrangler.toml "$RUNNER_TEMP/auth-reviewed-staging.toml"; then
+              echo 'PADIEM_AUTH_POSTDEPLOY_BINDING_MISMATCH=FAIL'
+              echo "PRE_DEPLOY_SERVED_VERSION_ID=$CURRENT_VERSION"
+              exit 1
+            fi
+          fi
           python .github/scripts/padiem_auth_binding_check.py "$RUNNER_TEMP/auth-settings-after.json" .github/binding_baselines/padiem-auth.json
           python .github/scripts/padiem_auth_update_served.py .github/binding_baselines/padiem-auth.json
           python .github/scripts/padiem_auth_update_key_guard.py compare "$RUNNER_TEMP/auth-jwks-before.json"

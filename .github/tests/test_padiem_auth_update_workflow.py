@@ -21,4 +21,12 @@ class Workflow(unittest.TestCase):
         self.assertIn('padiem_auth_update_preflight.py', text)
         self.assertIn('padiem_auth_update_rollback_check.py', text)
         self.assertIn('padiem_auth_update_served.py', text)
+    def test_postdeploy_mismatch_fails_with_version_marker(self):
+        text = (Path(__file__).resolve().parents[1] / 'workflows/padiem-auth-update-gate.yml').read_text()
+        self.assertIn('if ! python .github/scripts/padiem_auth_post_update_guard.py', text)
+        self.assertIn('PADIEM_AUTH_POSTDEPLOY_BINDING_MISMATCH=FAIL', text)
+        start = text.index('PADIEM_AUTH_POSTDEPLOY_BINDING_MISMATCH=FAIL')
+        self.assertIn('PRE_DEPLOY_SERVED_VERSION_ID=$CURRENT_VERSION', text[start:start + 240])
+        self.assertIn('exit 1', text[start:start + 240])
+
 if __name__ == '__main__': unittest.main()
