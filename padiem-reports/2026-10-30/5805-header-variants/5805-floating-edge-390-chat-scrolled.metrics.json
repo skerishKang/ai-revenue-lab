@@ -1,0 +1,27 @@
+{
+ "state": "chat",
+ "variant": "floating",
+ "collapsed": false,
+ "bar": {
+  "y": 0,
+  "h": 0
+ },
+ "barPosition": "absolute",
+ "barBackground": "rgba(0, 0, 0, 0)",
+ "barShadow": "none",
+ "btn": {
+  "x": 8,
+  "y": 8,
+  "w": 44,
+  "h": 44
+ },
+ "btnRadius": "50%",
+ "btnBackdrop": "blur(14px) saturate(1.4)",
+ "convScrollTop": 669,
+ "target": "floating",
+ "browser": "edge",
+ "width": 390,
+ "surface": "chat",
+ "scroll": "scrolled",
+ "page_errors": []
+}
