@@ -101,4 +101,37 @@ class Check(unittest.TestCase):
             with patch.object(sys, 'argv', ['preflight', *map(str, paths), version]), self.assertRaises(ValueError):
                 m.main()
 
+    def test_service_and_do_diagnostics_never_print_values(self):
+        import contextlib, io
+        for kind in ('service', 'do'):
+            changed = {**base, 'bindings':[dict(b) for b in base['bindings']]}
+            b = changed['bindings'][0 if kind == 'service' else 1]
+            b['service' if kind == 'service' else 'class_name'] = 'SYNTHETIC_PRIVATE_VALUE'
+            output = io.StringIO()
+            with contextlib.redirect_stderr(output), self.assertRaises(ValueError):
+                m.validate_config(config, changed)
+            text = output.getvalue()
+            self.assertIn('PADIEM_AUTH_PREFLIGHT_' + ('SERVICE' if kind == 'service' else 'DO') + '_MISMATCH=FAIL', text)
+            self.assertIn(('IDENTITY_AUTHORITY service' if kind == 'service' else 'AUTH_STATE class_name'), text)
+            self.assertNotIn('SYNTHETIC_PRIVATE_VALUE', text)
+
+    def test_only_omitted_environment_matches_production(self):
+        import contextlib, io
+        def live(environment):
+            changed = {**base, 'bindings':[dict(b) for b in base['bindings']]}
+            changed['bindings'][0]['environment'] = environment
+            return changed
+        m.validate_config(config, live('production'))
+        for environment in ('staging', ''):
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+                m.validate_config(config, live(environment))
+        for explicit in (None, 'staging'):
+            candidate = {**config, 'services':[{**config['services'][0], 'environment':explicit}]}
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+                m.validate_config(candidate, live('production'))
+        changed = {**config, 'services':[{**config['services'][0], 'service':'other-target'}]}
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(ValueError):
+            m.validate_config(changed, live('production'))
+
+
 if __name__ == '__main__': unittest.main()

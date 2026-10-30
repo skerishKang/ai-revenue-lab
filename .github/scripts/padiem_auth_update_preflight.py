@@ -41,11 +41,38 @@ def validate_config(config, baseline, live_clients=None, reviewed_config=None):
         raise ValueError('unreviewed service option')
     if any(set(x) - {'name', 'class_name', 'script_name'} for x in configured_objects):
         raise ValueError('unreviewed DO option')
-    planned_services = sorted((x['binding'], x.get('service'), x.get('environment'), x.get('entrypoint')) for x in configured_services)
+    live_service_environments = {x['name']: x.get('environment') for x in services}
+    def planned_environment(item):
+        if 'environment' not in item and live_service_environments.get(item['binding']) == 'production':
+            return 'production'
+        return item.get('environment')
+    planned_services = sorted((x['binding'], x.get('service'), planned_environment(x), x.get('entrypoint')) for x in configured_services)
     expected_objects = sorted((x['name'], x.get('class_name'), x.get('script_name')) for x in objects)
     planned_objects = sorted((x['name'], x.get('class_name'), x.get('script_name')) for x in configured_objects)
-    if expected_services != planned_services or expected_objects != planned_objects:
-        raise ValueError('planned service/DO bindings do not match approved baseline')
+    def diagnose(expected, planned, properties, marker):
+        if expected == planned:
+            return
+        def by_name(rows):
+            result = {}
+            for row in rows:
+                name = row[0]
+                if not isinstance(name, str) or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', name) or name in result:
+                    print(marker + '=FAIL', file=sys.stderr)
+                    raise ValueError('invalid or duplicate binding name')
+                result[name] = row[1:]
+            return result
+        old, new = by_name(expected), by_name(planned)
+        print(marker + '=FAIL', file=sys.stderr)
+        for name in sorted(set(old) | set(new)):
+            if name not in old or name not in new:
+                print(name + ' binding', file=sys.stderr)
+                continue
+            for index, prop in enumerate(properties):
+                if old[name][index] != new[name][index]:
+                    print(name + ' ' + prop, file=sys.stderr)
+        raise ValueError('planned binding metadata mismatch')
+    diagnose(expected_services, planned_services, ('service', 'environment', 'entrypoint'), 'PADIEM_AUTH_PREFLIGHT_SERVICE_MISMATCH')
+    diagnose(expected_objects, planned_objects, ('class_name', 'script_name'), 'PADIEM_AUTH_PREFLIGHT_DO_MISMATCH')
     # Updates to Durable Object classes need a separately reviewed migration.
     if config.get('migrations') != [{'tag': 'v1', 'new_sqlite_classes': ['AuthStateObject']}]:
         raise ValueError('DO migration plan differs')

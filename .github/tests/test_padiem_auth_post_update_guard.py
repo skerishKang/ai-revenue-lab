@@ -29,5 +29,17 @@ class PostUpdate(unittest.TestCase):
             verify_after(before, after, {'vars': {'PADIEM_AUTH_CLIENTS': bad}}, config)
 
 
+    def test_deployed_service_target_or_environment_change_is_rejected(self):
+        clients = json.dumps({'b62': {'value': 'existing'}})
+        service = {'name':'IDENTITY_AUTHORITY','type':'service','service':'expected','environment':'production'}
+        plain = {'name':'PADIEM_AUTH_CLIENTS','type':'plain_text','sha256':digest(clients)}
+        before = {'success':True,'result':{'bindings':[service,plain]},'client_fingerprints':fingerprints(clients)}
+        config = {'vars':{'PADIEM_AUTH_CLIENTS':clients}}
+        self.assertTrue(verify_after(before, before, config, config))
+        for change in ({**service,'service':'wrong'}, {**service,'environment':'staging'}):
+            after = {'success':True,'result':{'bindings':[change,plain]}}
+            with self.assertRaises(ValueError):
+                verify_after(before, after, config, config)
+
 if __name__ == '__main__':
     unittest.main()
