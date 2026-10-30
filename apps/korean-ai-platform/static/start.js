@@ -370,10 +370,7 @@
 
     var model = state.activeModel;
     var b14_opts = {
-      task_type: _getTaskType(),
       required_capabilities: ["chat"],
-      optimize_for: state.optimizeFor,
-      allow_external_fallback: false,
     };
 
     try {
@@ -387,11 +384,7 @@
         endpoint += "/stream-preview";
         payload.stream = true;
         payload.business14 = {
-          task_type: b14_opts.task_type,
           required_capabilities: b14_opts.required_capabilities,
-          optimize_for: b14_opts.optimize_for,
-          allow_external_fallback: false,
-          max_attempts: 1,
           max_retries: 0,
         };
       }
@@ -423,17 +416,6 @@
       }
       scrollToBottom();
     }
-  }
-
-  function _getTaskType() {
-    var mapping = {
-      general: "general",
-      korean: "korean",
-      code: "coding",
-      document: "document",
-      batch: "batch",
-    };
-    return mapping[state.preset] || "general";
   }
 
   // ── Display helpers ─────────────────────────────────────────────────

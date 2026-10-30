@@ -22,7 +22,6 @@ from padiem_ai_core.b14_execution import (
     B14_CHAT_COMPLETIONS_PATH,
 )
 from padiem_ai_core.b14_streaming import (
-    B14_AUTO_STREAM_PREVIEW_PATH,
     B14_STREAM_PREVIEW_PATH,
 )
 from padiem_ai_core.b14_upstream import (
@@ -34,11 +33,11 @@ from padiem_ai_core.b14_upstream import (
 from app.b14_service_proof import service_proof_headers
 
 # The paths B14 may be asked for, whichever upstream answers. Model execution and
-# the two bounded model-authority reads the product already performs.
+# the bounded model-authority read the product performs. The retired auto
+# stream preview path (B7) is no longer a B14 surface.
 B14_UPSTREAM_POST_PATHS = frozenset({
     B14_CHAT_COMPLETIONS_PATH,
     B14_STREAM_PREVIEW_PATH,
-    B14_AUTO_STREAM_PREVIEW_PATH,
 })
 B14_UPSTREAM_READ_PATHS = frozenset({
     "/api/pilot/models",

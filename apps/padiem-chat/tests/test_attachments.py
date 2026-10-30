@@ -93,7 +93,8 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
         assert "max_tokens" not in seen["body"]
         assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
-        assert seen["body"]["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["body"]["business14"]
         assert "max_attempts" not in seen["body"]["business14"]
         assert "attachments" not in response.json()
     else:

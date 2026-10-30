@@ -391,34 +391,30 @@ async def test_b14_auto_is_not_served_by_a_request_key(live_lane, captured):
 
 
 @pytest.mark.asyncio
-async def test_the_auto_stream_lane_does_not_quietly_ignore_a_credential(
+async def test_the_auto_stream_lane_is_gone_for_a_credential_holder(
     live_lane, captured
 ):
-    """A credential cannot borrow the platform's own auto roster by landing there.
-
-    The roster would answer with a provider the caller's key never offered, so
-    both spellings are refused before any outbound request — with the key left
-    out of the answer.
-    """
+    """B7: a credential cannot borrow the platform's own auto roster because
+    the auto surface no longer exists and the retired id is refused outright."""
     calls, _written = captured
     app = _app_with(_transport(calls, lambda _r: _sse()))
 
     from starlette.testclient import TestClient
 
     with TestClient(app) as client:
-        concrete_model = client.post(
+        auto_preview = client.post(
             AUTO_PREVIEW, json={**_reference(), "stream": True, "model": REQUESTED_MODEL}
         )
         auto_model = client.post(
-            AUTO_PREVIEW, json={**_reference(), "stream": True, "model": "b14/auto"}
+            CHAT_COMPLETIONS, json={**_reference(), "model": "b14/auto"}
         )
     await drain()
 
-    assert concrete_model.status_code == 400
-    assert concrete_model.json()["error"]["code"] == "invalid_request"
-    assert auto_model.status_code != 200
+    assert auto_preview.status_code == 404
+    assert auto_model.status_code == 422
     assert "choices" not in auto_model.json()
-    for response in (concrete_model, auto_model):
+    assert calls == []
+    for response in (auto_preview, auto_model):
         assert SENTINEL not in response.text
     assert calls == []
 

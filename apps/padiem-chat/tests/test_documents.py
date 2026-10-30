@@ -140,7 +140,8 @@ async def test_ephemeral_document_is_untrusted_single_system_context_and_not_pub
     assert upstream["messages"][1] == {"role": "user", "content": "이 문서에서 중요한 내용을 알려줘"}
     assert upstream["model"] == DEFAULT_B14_MODEL_ID
     assert upstream["business14"]["required_capabilities"] == ["chat"]
-    assert upstream["business14"]["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in upstream["business14"]
     assert "max_attempts" not in upstream["business14"]
 
     public = response.json()

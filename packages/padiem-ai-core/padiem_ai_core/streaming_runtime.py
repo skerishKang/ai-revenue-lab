@@ -30,8 +30,6 @@ from .execution_runtime import (
 class B14StreamExecutor(Protocol):
     def stream(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]: ...
 
-    def stream_auto(self, request: B14ChatRequest) -> AsyncIterator[B14StreamEvent]: ...
-
 
 def _has_usage(usage: UsageMetadata) -> bool:
     return any(
@@ -118,8 +116,6 @@ class StreamingExecutionRuntime:
         self._app_id = _safe_identifier("app_id", app_id)
         if not callable(getattr(b14_stream_client, "stream", None)):
             raise ValueError("b14_stream_client must expose stream(request)")
-        if not callable(getattr(b14_stream_client, "stream_auto", None)):
-            raise ValueError("b14_stream_client must expose stream_auto(request)")
         if not callable(clock):
             raise ValueError("clock must be callable")
         self._b14_stream_client = b14_stream_client
@@ -217,11 +213,9 @@ class StreamingExecutionRuntime:
             )
 
         try:
-            iterator = (
-                self._b14_stream_client.stream_auto(b14_request)
-                if b14_request.model == "b14/auto"
-                else self._b14_stream_client.stream(b14_request)
-            )
+            # B7: the retired auto id never reaches the stream client — request
+            # validation refuses it upstream, so every streamed route is manual.
+            iterator = self._b14_stream_client.stream(b14_request)
         except Exception:
             metadata = self._metadata(
                 request=request,

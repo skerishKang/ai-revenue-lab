@@ -95,10 +95,9 @@ async def test_skill_maps_routing_hints_without_response_shaping():
     body = seen["body"]
     assert body["model"] == DEFAULT_B14_MODEL_ID
     assert "max_tokens" not in body
-    assert body["business14"]["task_type"] == "general"
-    assert body["business14"]["optimize_for"] == "korean"
-    assert body["business14"]["allow_external_fallback"] is False
-    assert "max_attempts" not in body["business14"]
+    # B4/B5: the scorer-era fields and the fallback knob no longer travel.
+    for retired in ("task_type", "optimize_for", "allow_external_fallback", "max_attempts"):
+        assert retired not in body["business14"]
     assert body["business14"]["required_capabilities"] == ["chat"]
     system_messages = [item for item in body["messages"] if item["role"] == "system"]
     assert len(system_messages) == 1

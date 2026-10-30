@@ -163,7 +163,7 @@ def test_malformed_35_falls_back_once_to_31_with_unchanged_attempt_code(client, 
     monkeypatch.setattr(plat, "call_platform_chat_completions", call)
     result = client.post("/api/pilot/v1/chat/completions", json={"model": MODEL,
         "messages": [{"role": "user", "content": "offline fixture"}],
-        "business14": {"product_tier": "plus", "allow_external_fallback": False}})
+        "business14": {"product_tier": "plus"}})
     if status == 400:
         assert result.status_code == 502
         assert result.json()["error"]["code"] == "malformed_upstream_response"
