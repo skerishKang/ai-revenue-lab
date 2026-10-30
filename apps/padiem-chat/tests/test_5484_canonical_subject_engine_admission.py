@@ -316,10 +316,10 @@ class _StreamTransport:
     async def request(self, **kwargs):
         raise AssertionError("stream must not fall back to buffered orchestration")
 
-    async def stream_request(self, **kwargs):
+    async def stream_request(self, *, method, url, headers, body):
         from padiem_ai_engine_client import EngineStreamTransportResponse
 
-        self.calls.append(kwargs)
+        self.calls.append({"method": method, "url": url, "headers": headers, "body": body})
         event = {
             "event_id": "evt_1", "run_id": "run_1", "trace_id": "trace_1",
             "app_id": "padiem-chat", "kind": "run_started", "sequence": 1,
