@@ -2305,7 +2305,7 @@ async def test_byok_missing_reference_is_refused_without_company_runtime_fallbac
 @pytest.mark.asyncio
 async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
     from padiem_ai_core import B14ExecutionClient, B14ExecutionConfig, ExecutionRuntime
-    from test_cloudflare_transport import transport_for, FakeResponse, valid_b14_json, B14_INTERNAL_ORIGIN
+    from tests.test_cloudflare_transport import transport_for, FakeResponse, valid_b14_json, B14_INTERNAL_ORIGIN
     ref = 'unit-opaque-request-credential'
     transport, binding, factory = transport_for(response=FakeResponse(chunks=[valid_b14_json('user answer')]))
     client = B14ExecutionClient(B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN), transport=transport)
@@ -2319,7 +2319,8 @@ async def test_byok_real_core_runtime_and_binding_receive_one_user_attempt():
     assert len(binding.calls) == 1
     sent = json.loads(factory.calls[0].kwargs['body'])
     assert sent['user_credential_ref'] == ref
-    assert sent['business14']['allow_external_fallback'] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert 'allow_external_fallback' not in sent['business14']
     assert sent['business14']['max_retries'] == 0
     assert 'byok_selection' not in json.dumps(sent)
     assert ref not in json.dumps(response.body)

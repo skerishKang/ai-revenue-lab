@@ -12,7 +12,7 @@ from urllib.parse import quote
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from .claw_routes import _resolve_canonical_tenant
+from .claw_routes import _owns_generated_document, _resolve_canonical_owner
 from .workspace_storage import WorkspaceStorageAccessError
 
 _ID = re.compile(r"^doc_[A-Za-z0-9]{32}$")
@@ -77,9 +77,13 @@ async def claw_artifact_inline_preview(request: Request) -> JSONResponse | Respo
     document_id = request.path_params.get("document_id", "")
     if not isinstance(document_id, str) or not _ID.fullmatch(document_id):
         return _deny(400, "invalid_document_id")
-    tenant = await _resolve_canonical_tenant(request)
-    if tenant is None:
+    owner = await _resolve_canonical_owner(request)
+    if owner is None:
         return _deny(401, "workspace_scope_unavailable")
+    product_user_id, tenant = owner
+    # Same #2952 rule as the byte route: the minting run's owner, not the tenant.
+    if not await _owns_generated_document(request, product_user_id, document_id):
+        return _deny(404, "artifact_not_found")
     store = getattr(request.app.state, "workspace_document_store", None)
     if store is None:
         return _deny(503, "workspace_storage_unavailable")

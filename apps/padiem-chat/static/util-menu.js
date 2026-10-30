@@ -871,6 +871,37 @@
       tab.addEventListener("click", () => activateUtilTab(tab));
     });
 
+    // #5908: the quick-run toolbox cards. The four util cards reuse the same
+    // activateUtilTab switch as the submenu rows (the sidebar highlight keeps
+    // its one owner); the two Claw cards route to the existing Claw workspace
+    // and its own chip handler stays the owner of the quote action — no
+    // second engine, no duplicated state here.
+    const toolGrid = document.getElementById("utilToolGrid");
+    const toolButtons = toolGrid
+      ? Array.from(toolGrid.querySelectorAll("[data-util-tool]"))
+      : [];
+    toolButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-util-tool");
+        if (key === "claw-quote" || key === "claw-excel") {
+          const clawNav = document.getElementById("clawNavButton");
+          if (clawNav) clawNav.click();
+          if (key === "claw-quote") {
+            const chip = document.getElementById("clawQuoteCard");
+            if (chip) chip.click();
+          }
+          return;
+        }
+        const tab = Array.prototype.find.call(
+          tabs, (t) => t.dataset.util === key
+        );
+        if (tab) {
+          activateUtilTab(tab);
+          markActiveUtilSubmenuItem(key);
+        }
+      });
+    });
+
     // Speech
     function buildPrompt(form) {
       const d = new FormData(form);
@@ -1069,7 +1100,6 @@
     function buildSns() {
       const panel = panels.sns;
       if (!panel || panel.dataset.loaded) return;
-      panel.dataset.loaded = "1";
       const form = el("form", "util-form");
       form.id = "utilSnsForm";
       // 참고 글: the PC reference leads the form in its own titled section —
@@ -1504,8 +1534,10 @@
       // #5783: the save status lives in the form, above the two buttons — the
       // same place the 409 ask appears.
       const snsSaveState = saveStatusLine("utilSnsSaveState");
-      form.insertBefore(snsSaveState, formActions);
+      // The actions row has to be in the form before it can be a reference
+      // node — insertBefore with a node that is not a child yet throws.
       form.appendChild(formActions);
+      form.insertBefore(snsSaveState, formActions);
 
       const result = el("div", "util-result");
       result.id = "utilSnsResult";
@@ -1743,6 +1775,10 @@
         // outcome.none: the 409 ask is on screen and owns the next move.
       }
       formSaveB.addEventListener("click", () => runSnsSave());
+      // Set only once the form is on screen: a build that throws has to be
+      // retryable on the next entry instead of leaving the panel on its
+      // placeholder for the rest of the session.
+      panel.dataset.loaded = "1";
 
     }
 
@@ -1750,7 +1786,6 @@
     function buildMeeting() {
       const panel = panels.meeting;
       if (!panel || panel.dataset.loaded) return;
-      panel.dataset.loaded = "1";
       const form = el("form", "util-form");
       form.id = "utilMeetingForm";
       const fields = [
@@ -1784,8 +1819,10 @@
       // #5783: the save status lives in the form, above the two buttons — the
       // same place the 409 ask appears.
       const meetingSaveState = saveStatusLine("utilMeetingSaveState");
-      form.insertBefore(meetingSaveState, formActions);
+      // Same order constraint as the SNS builder: append first, then insert
+      // the status line above the action row.
       form.appendChild(formActions);
+      form.insertBefore(meetingSaveState, formActions);
 
       const result = el("div", "util-result");
       result.id = "utilMeetingResult";
@@ -2115,6 +2152,7 @@
         }
       }
       refreshArchive(archive);
+      panel.dataset.loaded = "1";
     }
   });
 })();

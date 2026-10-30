@@ -99,9 +99,7 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
     assert seen["body"]["messages"][-1] == USER_MESSAGES[0]
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"] == {
-        "task_type": "general",
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
+        # B4/B5: the scorer-era fields and the fallback knob no longer travel.
         # #5362 removed the default one-step agent execution ceiling, so no
         # attempt ceiling is sent.
         "required_capabilities": ["chat"],
@@ -253,7 +251,7 @@ async def test_api_chat_mock_round_trip_and_validation():
             json={"messages": USER_MESSAGES, "skill": "explain"},
         )
         assert refused.status_code == 422
-        assert refused.json()["error"]["message"] == "지원하지 않는 작업 모드입니다."
+        assert refused.json()["error"] == {"code": "stale_chat_client", "message": '\ud654\uba74\uc774 \uc624\ub798\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \uc0c8\ub85c\uace0\uce68\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.'}
 
         assert (
             await client.post(

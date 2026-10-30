@@ -480,5 +480,39 @@ def chat_pc_orchestration_sse(
             close = getattr(stream, "aclose", None)
             if callable(close):
                 await close()
-    return StreamingResponse(events(), media_type="text/event-stream",
+    async def traced_events():
+        import asyncio
+        import logging
+        from .pc_correlation import run_hash
+        trace_run = run_hash(pc_run_id) or "none"
+        log = logging.getLogger("padiem_chat.pc_correlation")
+        log.setLevel(logging.INFO)
+        reason = "closed"
+        source = events()
+        log.info("pc_chat stage=stream_started run_hash=%s", trace_run)
+        try:
+            async for frame in source:
+                if frame.startswith(b"event: error"):
+                    reason = "error_record"
+                elif frame.startswith(b"event: done"):
+                    reason = "pending" if b'"pc_pending":true' in frame else "completed"
+                elif frame.startswith(b"event: orchestration_pause"):
+                    reason = "paused"
+                yield frame
+        except asyncio.CancelledError:
+            reason = "cancelled"
+            raise
+        except GeneratorExit:
+            reason = "closed"
+            raise
+        except Exception:
+            reason = "exception"
+            raise
+        finally:
+            try:
+                await source.aclose()
+            finally:
+                log.info("pc_chat stage=stream_ended run_hash=%s reason=%s", trace_run, reason)
+
+    return StreamingResponse(traced_events(), media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})

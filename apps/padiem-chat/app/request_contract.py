@@ -37,7 +37,16 @@ COUNTRIES = frozenset({"kr", "us", "uk", "fr"})
 
 
 class BrowserRequestError(ValueError):
-    pass
+    code = "invalid_request"
+
+
+class StaleChatClientError(BrowserRequestError):
+    """A removed browser contract needs a page refresh."""
+    code = "stale_chat_client"
+
+
+_RETIRED_TASK_MODES = frozenset({"explain", "write", "translate", "summarize", "code", "brainstorm"})
+_STALE_CHAT_MESSAGE = '화면이 오래되었습니다. 새로고침이 필요합니다.'
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,6 +140,12 @@ def _validate_payload_parts(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
+    # An old tab can still send fields removed from the current browser contract.
+    # Only recognize the known retired keys/modes; unknown input stays invalid.
+    if "mode" in raw or "country" in raw or (
+        isinstance(raw.get("skill"), str) and raw["skill"].strip() in _RETIRED_TASK_MODES
+    ):
+        raise StaleChatClientError(_STALE_CHAT_MESSAGE)
     # `mode` is gone, not merely unvalidated: B14 automatic model selection was
     # abolished (#4844), the server accepted only "auto", and the four-mode catalog
     # in `app/chat_modes.py` (자동/빠르게/균형/깊게) had no call site at all. A key that

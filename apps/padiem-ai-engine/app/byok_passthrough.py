@@ -56,7 +56,7 @@ def core_model_policy(policy):
     # model-policy contract must never see them or the opaque credential.
     return {**{k: v for k, v in policy.items()
                if k not in {'user_credential_required', 'byok_selection'}},
-            'allow_external_fallback': False, 'max_retries': 0}
+            'max_retries': 0}
 
 
 def core_request(request):

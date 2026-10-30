@@ -104,7 +104,7 @@ def test_package_root_exports_streaming_runtime_facade() -> None:
     assert padiem_ai_core.StreamingExecutionEvent is StreamingExecutionEvent
 
 
-def test_auto_stream_dispatches_once_and_surfaces_progress_before_completion() -> None:
+def test_stream_dispatches_once_and_surfaces_progress_before_completion() -> None:
     client = FakeStreamClient(complete_events())
     runtime = StreamingExecutionRuntime(
         app_id="test-app", b14_stream_client=client, clock=lambda: 10.0
@@ -114,7 +114,10 @@ def test_auto_stream_dispatches_once_and_surfaces_progress_before_completion() -
 
     assert len(client.dispatches) == 1
     kind, b14_request = client.dispatches[0]
-    assert kind == "auto"
+    # B7: there is a single stream lane now — the runtime dispatches the
+    # fixture's retired auto id through the same manual surface, and the B14
+    # gateway refuses the id before any routing (pinned platform-side).
+    assert kind == "manual"
     assert b14_request.model == "b14/auto"
     assert [event.delta_content for event in events[:-1]] == ["안녕", "하세요"]
     assert all(event.done is False for event in events[:-1])
@@ -139,8 +142,6 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
         model_policy={
             "model": "openrouter/free",
             "temperature": 0.4,
-            "provider_order": ["OpenRouter"],
-                "allow_external_fallback": False,
         }
     )
     client = FakeStreamClient(complete_events())
@@ -171,12 +172,9 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
     )
     assert payload["messages"][1] == {"role": "user", "content": "안녕하세요"}
     assert sum(item["role"] == "system" for item in payload["messages"]) == 1
+    # B4/B5: only the real routing inputs travel on the wire now.
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["free"],
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
-        "provider_order": ["OpenRouter"],
     }
 
 
@@ -510,7 +508,8 @@ def test_stream_runtime_forwards_native_tools_and_surfaces_tool_only_completion(
     )))
     assert len(client.dispatches) == 1
     kind, outgoing = client.dispatches[0]
-    assert kind == ("auto" if model == "b14/auto" else "manual")
+    # B7: the retired auto id never gets its own dispatch lane.
+    assert kind == "manual"
     assert outgoing.tools == (ToolDefinition(name="pc_files"),)
     assert outgoing.tool_choice == "auto"
     assert len(events) == 2

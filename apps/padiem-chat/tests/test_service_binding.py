@@ -65,7 +65,7 @@ async def test_service_binding_transport_wins_and_preserves_explicit_agnes_paylo
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == DEFAULT_B14_MODEL_ID
     assert payload["business14"]["required_capabilities"] == ["chat"]
-    assert payload["business14"]["allow_external_fallback"] is False
+    assert "allow_external_fallback" not in payload["business14"]
     assert "max_attempts" not in payload["business14"]
     assert "provider" not in payload
     assert "authorization" not in {key.lower() for key in payload}

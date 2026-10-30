@@ -83,6 +83,10 @@
        The data attribute keeps interaction-polish.js from injecting a
        duplicate sheet. -->
   <link rel="stylesheet" href="./interaction-polish.css" data-interaction-polish-styles="true" />
+  <!-- #5805: the phone header row collapses while a primary surface scrolls
+       (CTO decision on PR #6274). Sits after interaction-polish.css so the
+       collapse rules override the glass-menu block below 920px. -->
+  <link rel="stylesheet" href="./mobile-header-collapse.css" data-mobile-header-collapse="true" />
 </head>
 <body>
   <div class="app-shell" data-state="home" data-page-id="home" data-layout-variant="conversation">
@@ -556,6 +560,51 @@
           <button class="util-tab" data-util="meeting">회의정리·책 제작</button>
           <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
         </nav>
+        <!-- #5908: the quick-run toolbox. One glanceable card row over the
+             EXISTING panels and flows: the four util cards drive the same
+             activateUtilTab switch, the two Claw cards route to the existing
+             Claw composer (its own chip stays the owner). No second engine,
+             no new routes. Flow-linked cards say so in their buttons — they
+             are not direct-run claims. -->
+        <section class="util-tool-grid" id="utilToolGrid" aria-label="빠른 실행 도구함">
+          <div class="util-tool-card">
+            <span class="util-tool-icon" aria-hidden="true">✎</span>
+            <strong class="util-tool-name">축사·인사말</strong>
+            <span class="util-tool-desc">행사 축사·인사말 초안 생성·저장</span>
+            <button type="button" class="util-tool-open" data-util-tool="speech">열기</button>
+          </div>
+          <div class="util-tool-card">
+            <span class="util-tool-icon" aria-hidden="true">✦</span>
+            <strong class="util-tool-name">SNS 홍보</strong>
+            <span class="util-tool-desc">블로그·페이스북·인스타그램 초안</span>
+            <button type="button" class="util-tool-open" data-util-tool="sns">열기</button>
+          </div>
+          <div class="util-tool-card">
+            <span class="util-tool-icon" aria-hidden="true">▥</span>
+            <strong class="util-tool-name">회의정리·활동집</strong>
+            <span class="util-tool-desc">회의 요약·책/활동집 누적 생성</span>
+            <button type="button" class="util-tool-open" data-util-tool="meeting">열기</button>
+          </div>
+          <div class="util-tool-card util-tool-paused">
+            <span class="util-tool-icon" aria-hidden="true">⇩</span>
+            <strong class="util-tool-name">PDF → Markdown</strong>
+            <span class="util-tool-desc">기존 작업 이력·결과 다운로드</span>
+            <span class="util-tool-note">일시 중단 · 신규 업로드는 COM2 이전 후</span>
+            <button type="button" class="util-tool-open" data-util-tool="pdfmd">이력 열기</button>
+          </div>
+          <div class="util-tool-card">
+            <span class="util-tool-icon" aria-hidden="true">◇</span>
+            <strong class="util-tool-name">견적서 초안</strong>
+            <span class="util-tool-desc">요청을 붙이면 견적서·발주서·답장 초안 — 서버에서 생성</span>
+            <button type="button" class="util-tool-open" data-util-tool="claw-quote">Claw에서 작성</button>
+          </div>
+          <div class="util-tool-card">
+            <span class="util-tool-icon" aria-hidden="true">▦</span>
+            <strong class="util-tool-name">Excel 열기/검토</strong>
+            <span class="util-tool-desc">XLSX 원본을 Claw 대화에서 열어 검토·작업</span>
+            <button type="button" class="util-tool-open" data-util-tool="claw-excel">Claw에서 진행</button>
+          </div>
+        </section>
         <div class="util-panel" id="utilSpeechPanel">
           <form class="util-form" id="utilSpeechForm">
             <!-- 참고 글 leads the form — the SNS tool's #6098 lane language: the
@@ -1287,6 +1336,9 @@
   <script src="./voice-answer-ui.js"></script>
   <script src="./voice-call-ui.js"></script>
   <script src="./app.js"></script>
+  <!-- #5805: the phone header collapse scroll mirror. No parameter, no
+       routing, no network; the surface CSS is mobile-header-collapse.css. -->
+  <script src="./mobile-header-collapse.js"></script>
   <!-- #5034 LOCAL4: the common notification inbox. Presentation-only over the
        existing /api/claw/inbox/{alerts,tasks} contract: no new endpoint, no
        second inbox, no polling loop. -->

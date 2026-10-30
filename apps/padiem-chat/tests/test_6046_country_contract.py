@@ -35,7 +35,7 @@ def test_the_chat_country_reader_is_gone() -> None:
 def test_the_chat_request_refuses_a_country_key() -> None:
     with pytest.raises(BrowserRequestError) as exc:
         _validate_payload_parts(payload(country="kr"))
-    assert "지원하지 않는 요청 항목이 있습니다." in str(exc.value)
+    assert exc.value.code == "stale_chat_client"
 
 
 def test_the_council_client_no_longer_sends_the_key() -> None:

@@ -48,8 +48,6 @@ _MODEL_POLICY_FIELDS = frozenset(
     {
         "model",
         "temperature",
-        "allow_external_fallback",
-        "provider_order",
         "max_retries",
         "product_tier",  # trusted product-side grade carried through Core to B14
         # #3977: explicitly requested provider-native overrides. Absent means
@@ -242,15 +240,6 @@ def _normalize_model_policy(
     ):
         raise ValueError("model_policy.temperature must be numeric")
 
-    provider_order_value = policy.get("provider_order")
-    if provider_order_value is None:
-        provider_order = None
-    elif isinstance(provider_order_value, (tuple, list)):
-        provider_order = tuple(provider_order_value)
-    else:
-        raise ValueError("model_policy.provider_order must be a sequence")
-
-    allow_external_fallback = policy.get("allow_external_fallback")
     max_retries = policy.get("max_retries")
     if max_retries is not None and (
         isinstance(max_retries, bool) or not isinstance(max_retries, int)
@@ -258,13 +247,9 @@ def _normalize_model_policy(
         raise ValueError("model_policy.max_retries must be an integer or None")
 
     routing = B14RoutingOptions(
-        task_type=agent.task_type,
         required_capabilities=(
             agent.required_capabilities if agent.required_capabilities else None
         ),
-        optimize_for=agent.optimize_for,
-        allow_external_fallback=allow_external_fallback,
-        provider_order=provider_order,
         max_retries=max_retries,
         product_tier=policy.get("product_tier"),
     )
