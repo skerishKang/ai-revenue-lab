@@ -50,3 +50,18 @@ def test_retired_route_is_not_reintroduced():
                 continue
             bad.append(f'{rel}:{number}')
     assert not bad, 'Retired route references need classification/removal:\n' + '\n'.join(bad)
+
+
+def test_internal_identity_fields_do_not_appear_in_b14_wire_implementations():
+    # These fields remain valid for Agent-to-Engine identity and replay, but
+    # the Core B14 request builders may not serialize or reference them.
+    for relative in (
+        "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+        "packages/padiem-ai-core/padiem_ai_core/b14_streaming.py",
+    ):
+        tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"), filename=relative)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and node.value in ("task_type", "optimize_for"):
+                raise AssertionError(f"retired field in B14 wire: {relative}:{node.lineno}")
+            if isinstance(node, ast.Attribute) and node.attr in ("task_type", "optimize_for"):
+                raise AssertionError(f"retired field in B14 wire: {relative}:{node.lineno}")
