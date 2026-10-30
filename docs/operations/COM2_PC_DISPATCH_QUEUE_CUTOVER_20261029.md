@@ -123,9 +123,10 @@ tr '\0' '\n' < /proc/$(systemctl show -p MainPID --value padiem-mesh-queue.servi
 ```
 
 The proof that the door is listening is one unauthenticated call, which answers 403 and
-leaves exactly one line — `MESH_QUEUE_REQUEST path=/internal/store rpc=none status=403
-ms=… proof=absent`. A call that presents the secret answers 200 and leaves nothing, which
-is what "a healthy lane prints nothing" has to mean before the line is used as evidence.
+leaves exactly one line carrying the five fields above — `path=/internal/store rpc=none
+status=403 ms=0 proof=absent`. A call that presents the secret answers 200 and leaves
+nothing, which is what "a healthy lane prints nothing" has to mean before the line is used
+as evidence.
 
 Restarting the queue is a normal event, and it has not always been. `schema.apply()` used
 to run its nine migration files at *every* open, which the files cannot survive: 048 ends
