@@ -261,7 +261,7 @@ class ReconstructTrustedResumeRequestTests(SyntheticPlusRouteTestCase):
         self.assertEqual(
             set(request.payload["agent"]),
             set(_TRUSTED_AGENT_KEYS)
-            - {"allowed_tools", "context_policy", "max_steps", "output_contract", "task_type", "optimize_for"},
+            - {"allowed_tools", "context_policy", "max_steps", "output_contract"},
         )
         self.assertEqual(request.payload["agent"]["id"], P01_AGENT_ID)
         self.assertEqual(request.payload["agent"]["model_policy"], {"model": MODEL_ID})
@@ -269,17 +269,6 @@ class ReconstructTrustedResumeRequestTests(SyntheticPlusRouteTestCase):
         self.assertNotIn("additional_system_context", request.payload)
         # The snapshot is preserved unchanged for a possible next pause.
         self.assertEqual(request.snapshot, trusted_snapshot())
-
-    def test_legacy_routing_fields_do_not_change_resume_wire(self) -> None:
-        snapshot = trusted_snapshot()
-        changed = trusted_snapshot()
-        changed["agent"]["task_type"] = "different_legacy_task"
-        changed["agent"]["optimize_for"] = "different_legacy_preference"
-        original_request = _reconstruct(trusted_request=snapshot)
-        changed_request = _reconstruct(trusted_request=changed)
-        self.assertEqual(original_request.payload, changed_request.payload)
-        self.assertNotIn("task_type", original_request.payload["agent"])
-        self.assertNotIn("optimize_for", original_request.payload["agent"])
 
     def test_additional_system_context_is_replayed_when_present(self) -> None:
         snapshot = trusted_snapshot(additional_system_context="workspace 규칙")

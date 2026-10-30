@@ -109,8 +109,6 @@ _TRUSTED_AGENT_KEYS = frozenset(
 # payload; the remaining fields are validated as inert and never silently
 # dropped.
 _WIRE_AGENT_KEYS = _TRUSTED_AGENT_KEYS - {
-    "task_type",
-    "optimize_for",
     "allowed_tools",
     "context_policy",
     "max_steps",

@@ -533,6 +533,8 @@ class P01EngineOrchestrationClient:
                 "title": agent.title,
                 "description": agent.description,
                 "system_instruction": agent.system_instruction,
+                "task_type": agent.task_type,
+                "optimize_for": agent.optimize_for,
                 "max_tokens": agent.max_tokens,
                 "required_capabilities": list(agent.required_capabilities),
                 "model_policy": model_policy,
