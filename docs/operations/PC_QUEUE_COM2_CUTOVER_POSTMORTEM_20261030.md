@@ -1,14 +1,14 @@
 # PC 작업 대기열 컴2 전환 사후 기록 (2026-10-30)
 
-- 작성 기준: 2026-10-30 19:27 KST (최초 작성 18:42:56)
+- 작성 기준: 2026-10-30 19:44 KST (최초 작성 18:42:56)
 - 대상: PC 작업 대기열 D1 → 컴2 큐 전환
 - 관련: #5573, #5881, #6216, #6261, #6270, #6279, #6281, #6283, #6291, #6303, #6104
 - 상태: PR (미병합). 병합·배포 판단은 CTO가 한다.
 
 ## 1. 요약 (5줄)
 
-- 2026-10-30 PC 작업 대기열을 D1에서 컴2 큐로 옮기는 전환을 네 차례 시도했고, 19:10 기준 실제 PC 작업 1건 E2E는 아직 통과하지 못했다.
-- 확인된 직접 원인은 7개다. 6개는 수정·배포됐고, 마지막 `create_oracle_mesh_dispatch` 소유권 조회 결함 #6303은 18:36:42에 병합된 뒤 큐 호스트에 적용됐다. 생성 경로는 복구됐지만 결과 조회가 503으로 막혀 E2E는 미통과다.
+- 2026-10-30 PC 작업 대기열을 D1에서 컴2 큐로 옮기는 전환을 네 차례 시도했고, 19:10 재시험 기준 실제 PC 작업 1건 E2E는 아직 통과하지 못했다.
+- 확인된 직접 원인은 8개다. 6개는 수정·배포됐고, `create_oracle_mesh_dispatch` 소유권 조회 결함 #6303은 18:36:42에 병합된 뒤 큐 호스트에 적용됐다. 8번째는 Chat Worker가 결과 저장 때 dispatch를 D1에서 다시 읽는 결함으로, Qoder 수정 PR이 진행 중이다. E2E는 여전히 미통과다.
 - 전환 창에서는 코드 배포와 백엔드 값 전환이 한 배포에 묶였고, 가짜 클라이언트·신선한 DB·presence 성공이 실제 경로를 대신했다.
 - PC 작업을 받을 수 없는 창은 1차 31분, 2차 11분 33초, 3차 4분 30초, 4차 14:13 이후 지속(18:42 기준 약 4시간 29분, 19:10 기준 종료 미확정)이다.
 - 이 문서는 PR로만 올린다. 병합과 운영 판단은 CTO가 한다.
@@ -38,13 +38,14 @@
 | 13:11:26 | `30c8d635` | 3차 d1 롤백, 13:14:56 활성 | [run 41001496619](https://github.com/skerishKang/ai-revenue-lab/actions/runs/41001496619) |
 | 13:56:25 | — | #6291 병합 | [#6291](https://github.com/skerishKang/ai-revenue-lab/pull/6291) |
 | 14:07:34 | `7751d8b7` | 4차 com2 전환, 14:13:08 활성 | [run 41006660288](https://github.com/skerishKang/ai-revenue-lab/actions/runs/41006660288) |
-| 14:11–지속 | — | 4차 전환 창: `create_oracle_mesh_dispatch` 502, `no such table: claw_run_history`; 19:09 이후 생성 경로는 복구됐지만 결과 조회 503으로 E2E 미통과 | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303) |
+| 14:11–지속 | — | 4차 전환 창: `create_oracle_mesh_dispatch` 502, `no such table: claw_run_history`; 19:09 생성 경로 복구 후 결과 저장 403(`oracle_mesh_conversation_forbidden`)으로 E2E 미통과 | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303) |
 | 17:49:21 | — | `win.ini` 실제 요청이 큐에 도달(`proof=ok`)한 뒤 create에서 실패, 원인 확정 | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303) |
 | 18:13:39 | — | #6303 PR 생성 | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303) |
 | 18:36:42 | `e6692fcc` (main) | #6303 병합. 19:09 이전 큐 호스트 적용 확인(src → `e6692fcc137b`, install exit 0, 재시작 1회) | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303), [commit e6692fcc](https://github.com/skerishKang/ai-revenue-lab/commit/e6692fcc137b388e7dbb4120e3e0d5960580a6f4), Qoder 보고(CTO 전달) |
 | 18:42:56 | — | 최초 작성 기준 시각. 4차 전환 유지, 실사용 PC 작업 차단 지속(공개 기록 기준) | 확인 시각 |
 | 19:09:04 | — | 컴1 브라우저 레인 `win.ini` 재시험(#6303 반영 후). run_id `chat_pcq_0eae40eca6c34e4fb1bc47a7af402cb4`. "PC 요청 접수"까지 진행(생성 경로 복구 확인) → 결과 조회 `GET /api/claw/runs/<run_id>/pending-result` HTTP 503 → 19:10:20 연결 오류 | CTO 전달 — Qoder 보고(19:27) |
-| 19:10:20 | — | 결과 조회 503/연결 오류 원인 조사 중(Qoder). 실제 작업 1건 E2E는 아직 미통과 | CTO 전달 — Qoder 보고(19:27) |
+| 19:09:20.426 | — | dispatch 생성 성공. 이어 claim·PC 읽기 실행·결과 제출·큐 저널 거부 0건으로 큐 레인은 전부 성공 | Qoder 추적(CTO 전달, 19:44) |
+| 19:10:20 | — | 원인 확정(Qoder 추적): Chat Worker가 결과 원본 저장 때 dispatch를 D1에서 다시 읽어 `mesh dispatch is not owned by current user` → finish(failed) → Chat Worker HTTP 403 `oracle_mesh_conversation_forbidden`. 상세 경로와 수정 방향은 D8. E2E 미통과 | Qoder 추적(CTO 전달, 19:44) |
 
 ## 3. 결함 목록
 
@@ -104,7 +105,16 @@
 - **수정 PR:** #6303 — `run_ownership` 기본값을 None으로 두고, D1은 기존 경로를 유지하며, 큐는 `service._forwarded_run_ownership`을 사용한다. 18:36:42 병합됐고 19:09 이전 큐 호스트에 적용됐다(src → `e6692fcc137b`, install exit 0, 재시작 1회).
 - **왜 놓쳤나:** 공유 코드가 D1 스키마를 전제했다. 큐 테스트가 `claw_run_history`를 만들거나 소유권 경로를 우회했고, E2E는 presence만 확인했다.
 
-### D8. 롤백 절차 — 코드 버전만 되돌리고 바인딩 값을 확인하지 않음 (원인 일부 추정)
+### D8. 19:09 재시험의 결과 저장 403 — Chat Worker가 dispatch를 D1에서 다시 읽음
+
+- **증상:** 19:09:04 `win.ini` 재시험은 "PC 요청 접수"까지 진행됐지만, 결과 조회 `GET /api/claw/runs/<run_id>/pending-result`가 HTTP 503, 19:10:20 연결 오류. 실제 작업 1건 E2E는 미통과.
+- **진짜 원인:** 큐 쪽은 전부 성공했다 — dispatch 생성 19:09:20.426, claim, PC 읽기 실행, 결과 제출, 큐 저널 거부 0건. 실패는 Chat Worker의 결과 원본 저장 단계 `_store_oracle_mesh_read_original` → `store_oracle_mesh_original`이 dispatch를 D1에서 다시 읽은 것이다. com2 모드에서는 그 행이 큐에만 있어 D1에 없고, "mesh dispatch is not owned by current user"로 거부돼 `finish(failed)` 후 Chat Worker HTTP 403 `oracle_mesh_conversation_forbidden`이 됐다. 명령 레인 `store_oracle_mesh_command_result`에도 같은 읽기가 있다.
+- **최초 오진:** 큐 재시작(19:08:28·19:08:51)과 시각이 겹쳐 재시작 영향을 의심했지만, dispatch 생성 성공으로 원인 아님이 확인됐다.
+- **수정 PR:** Qoder 수정 PR 진행 중(번호 미정).
+- **수정 방향:** 같은 요청에서 소유자 확인을 거친 dispatch로 핀을 검증하고 D1 재읽기를 없앤다. Worker 전체에서 D1 직접 읽기를 전수 점검하고, com2 모드 경로 전체 계약 테스트를 추가한다.
+- **왜 놓쳤나:** 큐 이전 시 표를 읽는 모든 호출부를 찾지 않았다. #6303과 같은 종류(큐로 옮긴 표를 다른 곳이 아직 옛 위치에서 읽음)이며, 위치만 Worker 쪽이다.
+
+### D9. 롤백 절차 — 코드 버전만 되돌리고 바인딩 값을 확인하지 않음 (원인 일부 추정)
 
 - **증상:** 08:03:55 코드 롤백(run 40970377476) 후에도 08:14 재배포가 필요했고, 08:17:44에 새 버전이 활성화됐다. 그 값이 d1이었다는 직접 로그는 없다.
 - **진짜 원인(추정):** Cloudflare 버전 롤백은 코드만 되돌리고 `PC_QUEUE_BACKEND` 같은 바인딩 값은 현재 배포 값을 유지했을 가능성이 있다. 확인된 사실은 코드 롤백 후 재배포가 있었고, 08:17:44에 새 버전이 활성화됐다는 점이다.
@@ -119,10 +129,10 @@
 | 1차 | 07:46:45–08:17:44 | 31분 | poll 503(92/92) | [#6270](https://github.com/skerishKang/ai-revenue-lab/pull/6270), [run 40968011015](https://github.com/skerishKang/ai-revenue-lab/actions/runs/40968011015) |
 | 2차 | 09:02:23–09:13:56 | 11분 33초 | 큐 재시작 크래시 루프 | [#6281](https://github.com/skerishKang/ai-revenue-lab/pull/6281), [run 40976675777](https://github.com/skerishKang/ai-revenue-lab/actions/runs/40976675777) |
 | 3차 | 13:10:26–13:14:56 | 4분 30초 | presence 502(`received_at`) | [#6291](https://github.com/skerishKang/ai-revenue-lab/pull/6291), [run 41000953269](https://github.com/skerishKang/ai-revenue-lab/actions/runs/41000953269) |
-| 4차 | 14:13:08–지속 | 18:42:56 기준 4시간 29분 48초, 이후 지속 | create dispatch 502(`claw_run_history`) → 생성 경로 복구 후 결과 조회 503 | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303), [run 41006660288](https://github.com/skerishKang/ai-revenue-lab/actions/runs/41006660288), Qoder 보고 |
+| 4차 | 14:13:08–지속 | 18:42:56 기준 4시간 29분 48초, 이후 지속 | create dispatch 502(`claw_run_history`) → 생성 복구 후 결과 저장 403(`oracle_mesh_conversation_forbidden`) | [#6303](https://github.com/skerishKang/ai-revenue-lab/pull/6303), [run 41006660288](https://github.com/skerishKang/ai-revenue-lab/actions/runs/41006660288), Qoder 보고 |
 | **합계** | — | **약 5시간 17분 + 지속(19:10 기준)** | 4차는 진행 중 | 19:10 기준 |
 
-- 19:09:04 재시험에서 #6303 적용 후 생성 경로는 복구됐지만("PC 요청 접수"), `pending-result`가 503/19:10:20 연결 오류로 실제 작업은 완료되지 않았다. 4차 종료 시각은 **미확인**이다.
+- 19:09:04 재시험에서 #6303 적용 후 생성 경로는 복구됐지만("PC 요청 접수"), Chat Worker의 결과 저장 단계가 dispatch를 D1에서 다시 읽어 403 `oracle_mesh_conversation_forbidden`으로 실패했다. `pending-result`는 503/19:10:20 연결 오류였고, 4차 종료 시각은 **미확인**이다.
 - 위 수치는 **PC 작업을 받을 수 없는 창**의 합계다. 창 안에서 실제 사용자 요청이 몇 건 있었는지, 어떤 계정이 영향을 받았는지는 **미확인**이다.
 - 전환/롤백 입력값은 Actions 로그에 남지 않는다. 구간은 버전 활성 시각과 PR 기록으로 계산했으며, 1차 종료 버전이 d1이었다는 직접 로그는 없다.
 - 4차는 #6303의 "14:11부터" 기록과 배포 활성 14:13:08 사이에 2분 차이가 있다. 첫 실패 시각은 14:11–14:13 사이로 보며, 정확한 초 단위는 **미확인**이다.
@@ -136,6 +146,7 @@
 - **가짜는 계약을 맞춰야 한다.** fake가 production interface의 메서드를 모두 갖추지 않으면, 테스트가 배선 누락을 숨긴다.
 - **신선한 DB는 운영 DB가 아니다.** 마이그레이션은 적용 이력, backfill, 중복 허용, 필수 테이블 검증을 갖춰야 한다.
 - **presence/pairing은 dispatch가 아니다.** "보인다"와 "실제 PC 작업이 된다"를 분리해서 봐야 한다.
+- **표를 옮길 때는 그 표를 읽는 모든 호출부를 grep으로 전수 확인하고, 옛 위치에 행이 없는 상태로 경로 전체 테스트를 돌린다.**
 - **row-level 오류를 보존해야 한다.** 92/92, 0 rows 같은 집계는 형태 결함과 원인을 숨긴다.
 - **롤백은 코드만 되돌리는 것이 아니다.** 바인딩/환경값과 실제 요청까지 확인해야 한다.
 - **설정은 실행 프로세스에서 확인해야 한다.** `systemctl show`나 drop-in만 믿지 말고 `/proc/<pid>/environ`을 읽어야 한다.
@@ -156,9 +167,10 @@
 
 ## 6. 남은 작업
 
-- **[P0] 실제 작업 1건 E2E 통과.** #6303은 큐 호스트에 적용됐고 19:09:04 재시험에서 "PC 요청 접수"까지 진행돼 생성 경로 복구를 확인했다. 그러나 `pending-result` 503/19:10:20 연결 오류로 **E2E는 아직 미통과**다. 결과 조회 원인을 해결하고 `create_oracle_mesh_dispatch` → claim → result → Chat 답변까지 확인해야 한다.
-- **[P0] 4차 전환 유지/롤백 결정.** E2E 미통과가 이어지면 PC 작업 차단도 계속된다. 결과 조회 수정이 지연되면 d1로 롤백해 PC 작업을 복구하는 것이 안전하다. 최종 판단은 CTO.
-- **[P1] 결과 조회 503 원인 수정 후 30분 관찰.** poll/claim/renew/result, create dispatch, 실제 PC 명령을 d1과 비교한다. 4차 창의 종료 시각을 기록한다.
+- **[P0] 실제 작업 1건 E2E 통과.** #6303은 큐 호스트에 적용됐고 19:09:04 재시험에서 "PC 요청 접수"까지 진행돼 생성 경로 복구를 확인했다. 큐 레인(생성 19:09:20.426·claim·PC 읽기·결과 제출·저널 거부 0건)도 성공했지만, Chat Worker가 결과 저장 때 dispatch를 D1에서 다시 읽어 403 `oracle_mesh_conversation_forbidden`으로 실패했다. Qoder 수정 PR 반영·배포 후 `win.ini` E2E를 다시 돌려 **E2E 통과**를 확인해야 한다.
+- **[P0] 4차 전환 유지/롤백 결정.** E2E 미통과가 이어지면 PC 작업 차단도 계속된다. Qoder 수정 PR 배포가 지연되면 d1로 롤백해 PC 작업을 복구하는 것이 안전하다. 최종 판단은 CTO.
+- **[P1] Qoder 수정 PR 배포 후 30분 관찰.** poll/claim/renew/result, create dispatch, 실제 PC 명령을 d1과 비교한다. 4차 창의 종료 시각을 기록한다.
+- **[P1] Worker 전체 D1 직접 읽기 전수 점검.** com2 모드에서 D1 테이블을 직접 읽는 경로를 모두 찾아 큐 저장소로 바꾸거나 명시적으로 분기하고, com2 경로 전체 계약 테스트를 추가한다.
 - **[P1] 롤백 절차 보강.** 코드 버전 + `PC_QUEUE_BACKEND`/`ORACLE_MESH_QUEUE_ORIGIN` + 실행 프로세스 환경 + 실제 요청을 한 세트로 확인하는 절차를 런북에 넣는다.
 - **[P1] 실제 경로 CI 추가.** Workerd 큐 클라이언트, 복사된 DB에 대한 마이그레이션, dispatch create ownership을 운영 형태로 검증한다.
 - **[P2] 실행기 loopback 전환 결정.** `COM2_EXECUTOR_QUEUE_SWITCH_20261030.md`는 실행 전 문서이며, `ORACLE_MESH_QUEUE_ORIGIN`의 호스트 적용 여부는 **미확인**이다. 큐 안정화 후 별도 창에서 결정한다.
