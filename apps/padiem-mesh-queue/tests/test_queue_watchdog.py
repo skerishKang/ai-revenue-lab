@@ -21,7 +21,6 @@ import subprocess
 import sys
 import threading
 import time
-
 QUEUE = pathlib.Path(__file__).resolve().parents[1]
 CHAT = QUEUE.parents[1] / "apps" / "padiem-chat"
 DOCS = QUEUE.parents[1] / "docs" / "operations"
@@ -30,6 +29,7 @@ sys.path.insert(0, str(CHAT))
 sys.path.insert(0, str(QUEUE))
 
 from app.d1_sqlite import SqliteD1, connect  # noqa: E402
+import service  # noqa: E402  (the module, so a test can look at what it hands the rounds)
 from schema import apply  # noqa: E402
 from service import (  # noqa: E402
     EXIT_UNRESPONSIVE, LIVENESS_ANSWERED, LIVENESS_FAILED, LIVENESS_FAILURES_BEFORE_RESTART,
@@ -72,6 +72,17 @@ OPS_KEYS = frozenset({
 
 class _Stop(Exception):
     """Raised from the injected sleep so an endless loop can be observed and ended."""
+
+
+class _FakeExit:
+    """A stand-in for the `os` module: `_exit` records the code and does not leave."""
+
+    def __init__(self) -> None:
+        self.codes: list[int] = []
+
+    def _exit(self, code: int) -> None:
+        self.codes.append(code)
+        raise _Stop("a real os._exit never returns")
 
 
 class _Stuck:
@@ -192,6 +203,44 @@ def test_an_answer_resets_the_count():
         pass
     assert exits == []
     assert len(check.rounds) == 5
+
+
+def test_the_watchdog_is_wired_to_end_the_process_not_only_its_thread():
+    """The rounds were only ever proven with an injected `exit_process`.
+
+    Nothing checked that the running service hands one over. Without it the third failed
+    read returns from the loop, the thread ends quietly and `Restart=always` has nothing to
+    restart — a wedged queue would stay `active` and serve nobody, which is the one state
+    this watchdog exists to avoid.
+    """
+
+    submitted: dict = {}
+
+    def record(_database, **kwargs):
+        submitted.update(kwargs)
+
+    original = service.liveness_rounds
+    service.liveness_rounds = record
+    try:
+        pool = service.start_liveness_watchdog(None)
+        pool.shutdown(wait=True)
+    finally:
+        service.liveness_rounds = original
+
+    exit_process = submitted.get("exit_process")
+    assert callable(exit_process), "the watchdog must be handed a way to end the process"
+
+    fake = _FakeExit()
+    original_os = service.os
+    service.os = fake
+    try:
+        try:
+            exit_process(EXIT_UNRESPONSIVE)
+        except _Stop:
+            pass
+    finally:
+        service.os = original_os
+    assert fake.codes == [EXIT_UNRESPONSIVE]
 
 
 def test_the_unit_and_installer_name_the_keys_the_code_reads():

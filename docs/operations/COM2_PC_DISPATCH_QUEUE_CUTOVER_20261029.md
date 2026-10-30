@@ -110,6 +110,24 @@ proof matched — and never the secret, the header, the body or any argument, be
 argument can name a customer's path. The installer preserves whatever value `queue.env`
 already holds, so a re-install cannot silently turn the instrument back off mid-window.
 
+**`queue.env` is the only place that switch takes effect.** Measured on 컴2 on 2026-10-30:
+with `Environment=MESH_QUEUE_REQUEST_LOG=refusals` in a drop-in and `off` in `queue.env`,
+the process started with `off` — `EnvironmentFile=` was applied after the drop-in's
+`Environment=`, and `systemctl show -p Environment` still reported `refusals`, so the unit
+config said one thing and the running process another. Setting `queue.env` itself is what
+made the line appear. Check the process, not the unit:
+
+```bash
+tr '\0' '\n' < /proc/$(systemctl show -p MainPID --value padiem-mesh-queue.service)/environ \
+  | grep -oE '^MESH_QUEUE_REQUEST_LOG=[a-z]+'
+```
+
+The proof that the door is listening is one unauthenticated call, which answers 403 and
+leaves exactly one line carrying the five fields above — `path=/internal/store rpc=none
+status=403 ms=0 proof=absent`. A call that presents the secret answers 200 and leaves
+nothing, which is what "a healthy lane prints nothing" has to mean before the line is used
+as evidence.
+
 Restarting the queue is a normal event, and it has not always been. `schema.apply()` used
 to run its nine migration files at *every* open, which the files cannot survive: 048 ends
 with `ALTER TABLE … ADD COLUMN kind`, and 063 and 070 rebuild their table with `DROP` plus

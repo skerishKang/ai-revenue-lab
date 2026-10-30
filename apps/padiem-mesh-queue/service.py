@@ -296,11 +296,22 @@ def liveness_rounds(database: Any, *, interval: float = LIVENESS_INTERVAL_SECOND
         exit_process(EXIT_UNRESPONSIVE)
 
 
+def _exit_unresponsive(code: int) -> None:
+    """End the whole process from the watchdog thread.
+
+    `sys.exit` in a thread ends only that thread, which is the difference between a wedge
+    that is loud in the journal and a service that stays `active` while serving nobody.
+    The database is WAL, so leaving without closing it is crash-safe.
+    """
+
+    os._exit(code)
+
+
 def start_liveness_watchdog(database: Any) -> ThreadPoolExecutor:
     """Run the liveness rounds on their own thread, away from the serving loop."""
 
     pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="mesh-queue-liveness")
-    pool.submit(liveness_rounds, database, pool=pool)
+    pool.submit(liveness_rounds, database, pool=pool, exit_process=_exit_unresponsive)
     return pool
 
 
