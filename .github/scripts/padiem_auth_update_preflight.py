@@ -78,7 +78,7 @@ def main():
         with open(sys.argv[5], 'rb') as approved:
             reviewed = tomllib.load(approved)
     with open('apps/padiem-auth/wrangler.toml', 'rb') as f:
-        validate_config(tomllib.load(f), baseline, settings.get('client_fingerprints'), reviewed)
+        validate_config(tomllib.load(f), settings['result'], settings.get('client_fingerprints'), reviewed)
     verify_deployment(read(sys.argv[3]), sys.argv[4])
     print('approved binding baseline, planned config and active version: PASS')
 

@@ -1,15 +1,46 @@
 {
-  "status": "pending",
+  "status": "approved",
   "bindings": [
-    {"name": "AUTH_STATE", "type": "durable_object_namespace"},
-    {"name": "GOOGLE_CLIENT_ID", "type": "plain_text"},
-    {"name": "GOOGLE_CLIENT_SECRET", "type": "secret_text"},
-    {"name": "IDENTITY_AUTHORITY", "type": "service"},
-    {"name": "PADIEM_AUTH_CLIENTS", "type": "plain_text"},
-    {"name": "PADIEM_AUTH_ES256_PRIVATE_JWK", "type": "secret_text"},
-    {"name": "PADIEM_AUTH_IDENTITY_HMAC_KEY", "type": "secret_text"},
-    {"name": "PADIEM_AUTH_JWKS", "type": "plain_text"},
-    {"name": "PADIEM_AUTH_REFRESH_ENCRYPTION_KEY", "type": "secret_text"},
-    {"name": "PADIEM_AUTH_SIGNING_KID", "type": "plain_text"}
-  ]
+    {
+      "name": "AUTH_STATE",
+      "type": "durable_object_namespace"
+    },
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "type": "plain_text"
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "IDENTITY_AUTHORITY",
+      "type": "service"
+    },
+    {
+      "name": "PADIEM_AUTH_CLIENTS",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_AUTH_ES256_PRIVATE_JWK",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_AUTH_IDENTITY_HMAC_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_AUTH_JWKS",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_AUTH_REFRESH_ENCRYPTION_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_AUTH_SIGNING_KID",
+      "type": "plain_text"
+    }
+  ],
+  "source": "2026-10-31 name and type lookup (values not inspected)"
 }

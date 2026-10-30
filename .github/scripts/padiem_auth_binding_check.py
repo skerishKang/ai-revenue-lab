@@ -47,7 +47,22 @@ def verify(settings, baseline):
         raise ValueError('baseline not approved')
     if not isinstance(settings, dict) or settings.get('success') is not True or not isinstance(settings.get('result'), dict):
         raise ValueError('settings unavailable')
-    if binding_pairs(settings['result'].get('bindings')) != binding_pairs(baseline.get('bindings')):
+    kinds = {'service', 'durable_object_namespace', 'plain_text', 'secret_text'}
+    def metadata(items, baseline_items=False):
+        if not isinstance(items, list) or not items:
+            raise ValueError('bindings missing')
+        pairs = []
+        for item in items:
+            if not isinstance(item, dict) or (baseline_items and set(item) != {'name', 'type'}):
+                raise ValueError('invalid baseline binding fields')
+            name, kind = item.get('name'), item.get('type')
+            if not isinstance(name, str) or not name.strip() or kind not in kinds:
+                raise ValueError('invalid binding metadata')
+            pairs.append((name, kind))
+        if len({name for name, _ in pairs}) != len(pairs):
+            raise ValueError('duplicate binding name')
+        return sorted(pairs)
+    if metadata(settings['result'].get('bindings')) != metadata(baseline.get('bindings'), True):
         raise ValueError('binding metadata mismatch')
     return True
 

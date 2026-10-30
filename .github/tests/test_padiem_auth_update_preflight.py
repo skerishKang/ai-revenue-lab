@@ -66,4 +66,39 @@ class Check(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.validate_config(actual, baseline)
 
+    def test_readonly_main_with_approved_metadata_and_synthetic_snapshot(self):
+        import hashlib, json, tempfile, tomllib
+        from unittest.mock import patch
+        from padiem_auth_client_delta import fingerprints
+        repo = Path(__file__).resolve().parents[2]
+        baseline = json.loads((repo / '.github/binding_baselines/padiem-auth.json').read_text(encoding='utf-8'))
+        config = tomllib.loads((repo / 'apps/padiem-auth/wrangler.toml').read_text(encoding='utf-8'))
+        bindings = []
+        for item in baseline['bindings']:
+            entry = dict(item)
+            name, kind = item['name'], item['type']
+            if kind == 'plain_text':
+                value = config.get('vars', {}).get(name, 'synthetic-' + name)
+                entry['sha256'] = hashlib.sha256(value.encode()).hexdigest()
+            elif kind == 'service':
+                candidate = next(s for s in config['services'] if s['binding'] == name)
+                entry.update({k: v for k, v in candidate.items() if k != 'binding'})
+            elif kind == 'durable_object_namespace':
+                candidate = next(d for d in config['durable_objects']['bindings'] if d['name'] == name)
+                entry.update(candidate)
+            bindings.append(entry)
+        snapshot = {'success': True, 'result': {'bindings': bindings},
+                    'client_fingerprints': fingerprints(config['vars']['PADIEM_AUTH_CLIENTS'])}
+        deployments = [{'created_on':'2026-10-31', 'versions':[{'version_id':version, 'percentage':100}]}]
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = [Path(tmp)/x for x in ('settings.json','baseline.json','deployments.json')]
+            for path, data in zip(paths, (snapshot, baseline, deployments)):
+                path.write_text(json.dumps(data), encoding='utf-8')
+            with patch.object(sys, 'argv', ['preflight', *map(str, paths), version]):
+                m.main()
+            bad = dict(snapshot); bad['result'] = {'bindings': bindings[:-1]}
+            paths[0].write_text(json.dumps(bad), encoding='utf-8')
+            with patch.object(sys, 'argv', ['preflight', *map(str, paths), version]), self.assertRaises(ValueError):
+                m.main()
+
 if __name__ == '__main__': unittest.main()
