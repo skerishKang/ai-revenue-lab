@@ -132,16 +132,24 @@ class _InMemoryInboxStore:
         self.tasks: dict[str, ClawFollowupTask] = {}
         self.alerts: dict[str, ClawAlert] = {}
         self.status_writes = 0
+        self.list_scopes: list[tuple[str, str]] = []
 
-    async def list_tasks(self, workspace_id, *, limit=256):
-        rows = [t for t in self.tasks.values() if t.workspace_id == workspace_id]
+    async def list_tasks(self, workspace_id, *, member_id, limit=256):
+        # Mirrors the durable store after #2952 follow-up: the owner predicate is
+        # part of the read itself, so a caller cannot express a tenant-wide scan.
+        self.list_scopes.append(("tasks", member_id))
+        rows = [
+            t
+            for t in self.tasks.values()
+            if t.workspace_id == workspace_id and t.member_id == member_id
+        ]
         rows.sort(key=lambda t: t.created_at, reverse=True)
         return tuple(rows[: max(1, min(int(limit), 256))])
 
-    async def list_alerts(self, workspace_id, *, member_id=None, limit=256):
+    async def list_alerts(self, workspace_id, *, member_id, limit=256):
+        self.list_scopes.append(("alerts", member_id))
         rows = [a for a in self.alerts.values() if a.workspace_id == workspace_id]
-        if member_id is not None:
-            rows = [a for a in rows if a.is_visible_to(member_id)]
+        rows = [a for a in rows if a.is_visible_to(member_id)]
         rows.sort(key=lambda a: a.created_at, reverse=True)
         return tuple(rows[: max(1, min(int(limit), 256))])
 
@@ -340,6 +348,8 @@ def test_tasks_from_another_member_are_not_listed() -> None:
     assert response.status_code == 200
     ids = [item["task_id"] for item in response.json()["items"]]
     assert ids == ["mine"]
+    # The read itself carries the owner: a tenant-wide scan is never issued.
+    assert store.list_scopes == [("tasks", SIGNED_IN_USER_ID)]
 
 
 def test_another_members_task_cannot_be_patched() -> None:
