@@ -17,8 +17,8 @@ Proofs, grouped:
 * the optional routes (drawings, drawing rels, sharedStrings, VML) still produce their facts, and an
   embedded archive is neither opened nor recursed into;
 * single authority -- the analyzer's bounds, path predicate and link predicate are asserted against
-  **this checkout's** Core and KAgent through a pinned subprocess, on the same DTD archives, so the
-  parity runs in CI instead of skipping;
+  **this checkout's** Core and KAgent through a pinned subprocess, on the same DTD and link archives,
+  so the parity runs in CI instead of skipping;
 * the refusal surface -- the CLI exits non-zero with a code and writes no evidence JSON.
 """
 
@@ -84,8 +84,13 @@ DTD_RELS = (
 )
 
 
-def xlsx_bytes(extra=None, overrides=None):
-    """A minimal but genuinely parseable XLSX, plus any caller-supplied members."""
+def xlsx_bytes(extra=None, overrides=None, links=None):
+    """A minimal but genuinely parseable XLSX, plus any caller-supplied members.
+
+    ``links`` adds members whose stored mode says symbolic link -- the shape a
+    POSIX archiver writes, and the one #3637's Core gate now refuses alongside
+    unsafe paths.
+    """
 
     members = {
         "[Content_Types].xml": "<Types/>",
@@ -104,6 +109,13 @@ def xlsx_bytes(extra=None, overrides=None):
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, payload in members.items():
             archive.writestr(name, payload)
+        for name, payload in (links or {}).items():
+            member = zipfile.ZipInfo(name)
+            member.filename = name
+            member.compress_type = zipfile.ZIP_STORED
+            member.create_system = 3
+            member.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(member, payload)
     return buf.getvalue()
 
 
@@ -922,6 +934,34 @@ def test_dtd_refusals_match_canonical_core_behaviour(tmp_path):
 
     verdict = _parity_probe(paths)
     assert verdict["core_codes"] == ["ooxml_dtd_rejected"] * len(cases), verdict["core_codes"]
+
+
+def test_link_entry_refusals_match_canonical_core_behaviour(tmp_path):
+    """Core now refuses a link member too, so the two authorities must agree part by part.
+
+    Before #2824 filled this gap Core admitted the same bytes this analyzer
+    refused, which made the predicate parity above necessary but not sufficient:
+    agreeing about a *name* is not agreeing about an *archive*. Feeding both
+    authorities the identical file is what pins the agreement.
+    """
+
+    cases = {
+        "link beside the workbook": xlsx_bytes(links={"xl/link.xml": "../../Windows/win.ini"}),
+        "link inside worksheets": xlsx_bytes(links={"xl/worksheets/link.xml": "../secret"}),
+        "link in the relationships folder": xlsx_bytes(
+            links={"xl/_rels/link.xml": "../../secret"}
+        ),
+    }
+    paths = []
+    for label, payload in cases.items():
+        path = write(tmp_path, payload, f"link{len(paths)}.xlsx")
+        with pytest.raises(analyze.ArchivePolicyError) as excinfo:
+            analyze.analyze_xlsx(path)
+        assert excinfo.value.code == "ooxml_link_entry", label
+        paths.append(path)
+
+    verdict = _parity_probe(paths)
+    assert verdict["core_codes"] == ["ooxml_link_entry"] * len(cases), verdict["core_codes"]
 
 
 # --------------------------------------------------------------------------- #

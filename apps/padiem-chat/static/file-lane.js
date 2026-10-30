@@ -1,13 +1,21 @@
 (() => {
   "use strict";
   const AUTO_BYTES = 10_000_000;
-  const TYPES = Object.freeze({txt: "text/plain", md: "text/markdown", csv: "text/csv", pdf: "application/pdf"});
+  const TYPES = Object.freeze({
+    txt: "text/plain", md: "text/markdown", csv: "text/csv", pdf: "application/pdf",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+  const BINARY = new Set(["pdf", "docx", "pptx", "xlsx"]);
   const extension = (file) => String(file?.name || "").split(".").pop().toLowerCase();
   function shouldUse(file) {
-    const needsPdfParser = extension(file) === "pdf" && window.PadiemAttachmentCapabilities?.binarySupported === false
-      && window.PadiemAttachmentCapabilities?.fileLaneSupported === true;
-    return Number.isSafeInteger(file?.size) && file.size > 0 && (file.size >= AUTO_BYTES || needsPdfParser)
-      && Object.hasOwn(TYPES, extension(file));
+    const kind = extension(file);
+    const needsBinaryLane = BINARY.has(kind) &&
+      (window.PadiemAttachmentCapabilities?.fileLaneSupported === true ||
+       window.PadiemAttachmentCapabilities?.binarySupported === true);
+    return Number.isSafeInteger(file?.size) && file.size > 0 &&
+      (file.size >= AUTO_BYTES || needsBinaryLane) && Object.hasOwn(TYPES, kind);
   }
   async function available() {
     try {
@@ -15,6 +23,7 @@
       return response.ok && (await response.json()).ready === true;
     } catch (_) { return false; }
   }
+  function isBinary(file) { return BINARY.has(extension(file)); }
   function pending(file) {
     return {type: "document", name: file.name, mediaType: TYPES[extension(file)], byteSize: file.size,
       file, fileLane: true};
@@ -37,12 +46,12 @@
     return {fileId: data.file_id};
   }
   // Refresh the picker only after the current product authentication changed.
-  // A missing/unconfigured lane cannot advertise a PDF parser it does not have.
+  // A missing/unconfigured lane cannot advertise a binary parser it does not have.
   window.addEventListener?.("padiem:auth-state", () => {
     void available().then((ready) => {
       window.PadiemAttachmentCapabilities?.setFileLaneSupport?.(ready);
       window.dispatchEvent(new CustomEvent("padiem:file-lane-capability"));
     });
   });
-  window.PadiemFileLane = Object.freeze({AUTO_BYTES, shouldUse, available, pending, upload});
+  window.PadiemFileLane = Object.freeze({AUTO_BYTES, shouldUse, isBinary, available, pending, upload});
 })();

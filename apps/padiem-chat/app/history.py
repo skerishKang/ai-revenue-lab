@@ -2106,6 +2106,27 @@ class D1HistoryStore:
             run_id, user_id,
         )
 
+    async def get_claw_run_for_artifact_document(
+        self, user_id: str, document_id: str
+    ) -> dict[str, Any] | None:
+        """#2952 follow-up — the owner row that minted one generated document.
+
+        ``claw_document_metadata`` carries no owner column, so the only existing
+        canonical authority binding a document to a product user is the run row
+        that recorded ``artifact_document_id``. A read that finds nothing here has
+        no verified owner and must fail closed.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(document_id, str) or not document_id:
+            raise HistoryError("document_id is required")
+        return await self._first(
+            "SELECT run_id, artifact_document_id, artifact_filename, artifact_media_type "
+            "FROM claw_run_history WHERE artifact_document_id=? AND user_id=?",
+            document_id, user_id,
+        )
+
     async def get_claw_run_result_message(
         self, user_id: str, run_id: str, conversation_id: str,
     ) -> str | None:

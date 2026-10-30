@@ -81,7 +81,9 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
         )
     try:
         if kind == "tasks":
-            records = await _call(store.list_tasks(workspace_id, limit=_STORE_SCAN_LIMIT))
+            records = await _call(
+                store.list_tasks(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT)
+            )
             items = [item.safe_dict() for item in records if getattr(item, "member_id", None) == uid][:limit]
         else:
             records = await _call(store.list_alerts(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT))

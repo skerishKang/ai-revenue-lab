@@ -141,6 +141,13 @@ MAX_READ_BYTES = 6_000_000
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
+#: How much of a refusal's own message reaches the trace. The reason is what a
+#: silent read_failed cost on 2026-10-30; the bound keeps one line one line.
+_ERROR_TEXT_CHARS = 160
+#: The base deadline for one PC step when the deployment names none. This is the
+#: value every executor had before 2026-10-17, and the read/desktop lanes still
+#: multiply it by four, so no new ceiling is introduced by naming it.
+DEFAULT_STEP_TIMEOUT_SECONDS = 30
 #: A result the server refuses for a non-retryable reason is quarantined to
 #: the pending dir instead of dropped: the bytes survive a restart, the cause
 #: is recorded next to them, and the queue moves on. Retrying forever would
@@ -231,6 +238,43 @@ class OracleMeshExecutionOutcome:
 def _require_text(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value or len(value) > 1024:
         raise OracleMeshChannelRefused(f"{name} is not a bounded reference")
+    return value
+
+
+def _safe_error_text(exc: BaseException) -> str:
+    """One bounded line naming a failure, never the bytes it was about.
+
+    A decode error's message quotes the offending bytes, which is file content,
+    so only the class travels for it. Every other reason is collapsed to a
+    single line and cut at ``_ERROR_TEXT_CHARS``.
+    """
+    name = exc.__class__.__name__
+    if isinstance(exc, UnicodeDecodeError):
+        return name
+    text = " ".join(str(exc).split())[:_ERROR_TEXT_CHARS]
+    return f"{name}:{text}" if text else name
+
+
+def _step_timeout_seconds(env: dict[str, str]) -> int:
+    """The deployment's own PC-step deadline, in seconds.
+
+    Absent, this is the value every executor had before 2026-10-17. The read and
+    desktop lanes multiply it by four themselves, so the variable is the base
+    deadline, not the wire deadline. No second ceiling is invented here.
+    """
+    raw = env.get("ORACLE_MESH_READ_TIMEOUT_SECONDS", "").strip()
+    if not raw:
+        return DEFAULT_STEP_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        raise ContractError(
+            "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
+        ) from None
+    if isinstance(value, bool) or value < 1:
+        raise ContractError(
+            "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
+        )
     return value
 
 
@@ -650,25 +694,39 @@ class OracleMeshExecutor:
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
             "file_path": dispatch.file_path,
-            "timeout_seconds": (self._timeout * 4 if self._timeout is not None else None),
         }
+        # The port validates this deadline outright and refuses before the
+        # official client runs. An executor with no deadline of its own must
+        # therefore leave the argument out so the port's default applies; the
+        # None that used to travel here refused every read from 2026-10-29 on.
+        if self._timeout is not None:
+            call["timeout_seconds"] = self._timeout * 4
         if dispatch.max_bytes is not None:
             # Pass the server-computed bound only when the poll supplied one;
             # older servers keep the port's historical default.
             call["max_bytes"] = read_bound
+        started = time.monotonic()
         try:
             body = self._read_port.read_bytes(**call)
-        except MeshCentralReadTooLarge:
+        except MeshCentralReadTooLarge as exc:
+            self._trace_read(dispatch, "read_too_large", started,
+                             error=_safe_error_text(exc))
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
             )
-        except Exception:
+        except Exception as exc:
+            # The class and a bounded message are the only explanation a refused
+            # read ever leaves; the file itself is never part of the trace.
+            self._trace_read(dispatch, "read_failed", started,
+                             error=_safe_error_text(exc))
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
             )
         if not isinstance(body, (bytes, bytearray)):
+            self._trace_read(dispatch, "read_failed", started,
+                             error="body_not_bytes")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
@@ -676,6 +734,8 @@ class OracleMeshExecutor:
         raw = bytes(body)
         if len(raw) > read_bound:
             # Oversize is refused, never truncated.
+            self._trace_read(dispatch, "read_too_large", started,
+                             error="staged_oversize")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_TOO_LARGE_MARKER.encode("utf-8"),
@@ -683,6 +743,7 @@ class OracleMeshExecutor:
         try:
             raw.decode("utf-8")
         except UnicodeDecodeError:
+            self._trace_read(dispatch, "read_failed", started, error="not_utf8")
             return OracleMeshExecutionOutcome(
                 termination="exited", exit_code=1,
                 body=PC_FILE_READ_FAILED_MARKER.encode("utf-8"),
@@ -723,6 +784,38 @@ class OracleMeshExecutor:
             )
         except Exception:
             # Instrumentation is best-effort; the command outcome is authoritative.
+            pass
+
+    def _trace_read(
+        self, dispatch: OracleMeshDispatch, phase: str, started: float,
+        **fields: Any,
+    ) -> None:
+        """Bounded read-lane correlation: a class and a reason, never content.
+
+        Every read failure used to leave the process as one fixed marker, so a
+        refused read could not be told apart from a missing file or a dead
+        channel. This line is the observable that answers "why" without ever
+        carrying bytes the PC was asked to hand over.
+        """
+        try:
+            elapsed_ms = max(0, int((time.monotonic() - started) * 1000))
+            safe = " ".join(
+                f"{key}={value}"
+                for key, value in fields.items()
+                if value is not None and isinstance(value, (str, int, bool))
+            )
+            print(
+                "oracle-mesh-read"
+                f" phase={phase}"
+                f" ts={datetime.now(timezone.utc).isoformat()}"
+                f" elapsed_ms={elapsed_ms}"
+                f" dispatch_id={dispatch.dispatch_id}"
+                f" run_id={dispatch.run_id}"
+                + (f" {safe}" if safe else ""),
+                file=sys.stderr,
+                flush=True,
+            )
+        except Exception:
             pass
 
     def _cancel_probe(self, dispatch: OracleMeshDispatch) -> Callable[[], bool]:
@@ -1929,6 +2022,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
       ORACLE_MESH_IDLE_POLL_MAX_SECONDS
                                     optional ceiling on the idle wait, default 60;
                                     one reproduces the pre-backoff cadence verbatim
+      ORACLE_MESH_READ_TIMEOUT_SECONDS
+                                    optional PC-step deadline in seconds, default
+                                    30; the read and desktop lanes wait four times
+                                    this, exactly as they did before 2026-10-17
       MESH_FAILOVER_DEVICE_ID       optional comma-separated devices (max 8);
                                     poll carries one beat per device
     Secrets are read from files at call time; they never appear on argv.
@@ -2036,6 +2133,10 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             password_provider=password_provider,
             mesh_url=mesh_url,
             work_dir=env.get("ORACLE_MESH_WORK_DIR", "").strip() or None,
+            # A deployment that names no deadline gets the pre-2026-10-17 one.
+            # Sending None instead refused every PC read inside the port before
+            # the official client was ever started.
+            timeout_seconds=_step_timeout_seconds(env),
             presence_provider=presence_provider,
             pairing_provider=pairing_provider,
             presence_round_begin=beat.begin_round if beat is not None else None,
