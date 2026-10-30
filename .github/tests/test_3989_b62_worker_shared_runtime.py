@@ -41,8 +41,8 @@ spec.loader.exec_module(checker)
 
 class SharedWorkerSourceProof(unittest.TestCase):
     def test_all_four_original_result_predicates_unchanged(self):
-        self.assertEqual(set(checker.REQUIRED), set(CASES))
-        self.assertEqual(checker.SUCCESS, OLD_SUCCESS)
+        self.assertEqual(set(checker.REQUIRED), set(CASES) | {"queue_store"})
+        self.assertEqual({case: checker.SUCCESS[case] for case in CASES}, OLD_SUCCESS)
         for case in CASES:
             old = (SCRIPTS / ("b62_worker_probe_" + case + ".sh")).read_text(encoding="utf-8")
             match = re.search(r"required\s*=\s*\((.*?)\n\)", old, re.S)
@@ -71,7 +71,7 @@ class SharedWorkerSourceProof(unittest.TestCase):
         self.assertEqual(script.count('setsid npx --yes wrangler@4.130.0 dev'), 1)
         self.assertIn('main = "worker_runtime_combined_probe.py"', script)
         self.assertIn('--port 8795 --inspector-port 9235 --persist-to "$PERSIST_DIR"', script)
-        self.assertIn("for case in timeout web_transport r2_read p01_binding; do", script)
+        self.assertIn("for case in timeout web_transport r2_read queue_store p01_binding; do", script)
         self.assertIn('B62_PROBE_CASE="$case"', script)
         self.assertIn('B62_PROBE_RESULT_PATH="$result"', script)
         self.assertIn("B62_WORKER_PROBE_COUNT=$count", script)
@@ -83,7 +83,7 @@ class SharedWorkerSourceProof(unittest.TestCase):
         self.assertIn("uv run --locked python tests/worker_runtime_probe_origin.py --port 9100", script)
         self.assertIn('kill -TERM -- "-$WORKER_PID"', script)
         self.assertIn('kill -KILL -- "-$WORKER_PID"', script)
-        self.assertLess(script.index("r2_read p01_binding"), script.index("B62_WORKER_PROBES=PASS"))
+        self.assertLess(script.index("queue_store p01_binding"), script.index("B62_WORKER_PROBES=PASS"))
 
     def test_original_four_scripts_still_exist_and_can_run_standalone(self):
         original = OLD_RUNNER.read_text(encoding="utf-8")
@@ -108,6 +108,17 @@ class SharedWorkerSourceProof(unittest.TestCase):
         self.assertIn("b62-test", source)
         self.assertIn('test_3989_b62_worker_shared_runtime.py',
                       source)
+
+    def test_queue_compat_case_is_fail_closed(self):
+        passed = {key: True for key in checker.REQUIRED["queue_store"]}
+        passed["unexpected_exception"] = False
+        self.assertEqual(checker.check("queue_store", passed), "WORKER_QUEUE_STORE_COMPAT_PASS")
+        for key in passed:
+            failed = dict(passed)
+            failed[key] = not failed[key]
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                checker.check("queue_store", failed)
+        self.assertIn('"$count" -ne 5', NEW_RUNNER.read_text())
 
     def test_unknown_cases_and_incomplete_json_fail_closed(self):
         for bad in ("unknown", "", "TIMEOUT"):
