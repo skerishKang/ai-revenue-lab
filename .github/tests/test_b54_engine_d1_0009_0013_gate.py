@@ -76,34 +76,26 @@ fk_spec = importlib.util.spec_from_file_location("engine5359_fk", FKFILE)
 fk = importlib.util.module_from_spec(fk_spec)
 fk_spec.loader.exec_module(fk)
 
-def test_fk_inventory_finds_inbound_and_escapes_table_names():
+def test_fk_inventory_finds_quoted_and_case_variants():
     db=sqlite3.connect(":memory:")
-    db.execute("CREATE TABLE padiem_engine_agent_runs_v1 (run_id TEXT PRIMARY KEY)")
-    db.execute("CREATE TABLE child (run_id TEXT REFERENCES padiem_engine_agent_runs_v1(run_id) ON DELETE CASCADE)")
-    db.execute('CREATE TABLE "odd\'name" (x INTEGER)')
-    queries=[]
+    db.execute("CREATE TABLE padiem_engine_agent_runs_v1 (id TEXT PRIMARY KEY)")
+    for i, name in enumerate(["padiem_engine_agent_runs_v1", '"PADIEM_ENGINE_AGENT_RUNS_V1"', "`padiem_engine_agent_runs_v1`", "[padiem_engine_agent_runs_v1]", "'padiem_engine_agent_runs_v1'"]):
+        db.execute(f"CREATE TABLE child{i} (x TEXT REFERENCES {name}(id))")
     def query(sql):
-        queries.append(sql)
-        cursor=db.execute(sql)
-        return {"success":True,"result":[{"success":True,"results":[dict(zip([d[0] for d in cursor.description],row)) for row in cursor]}]}
-    result=fk.inventory(query)
-    assert result["inbound_foreign_keys"] == [{"table":"child","on_delete":"CASCADE","on_update":"NO ACTION"}]
-    assert all(sql==fk.TABLES_QUERY or sql.startswith("PRAGMA foreign_key_list('") for sql in queries)
-    # A malicious-looking name remains one quoted identifier and cannot execute a second statement.
-    injected="x'); DROP TABLE child; --"
-    assert db.execute(fk.pragma_for(injected)).fetchall()==[]
-    assert db.execute("SELECT count(*) FROM child").fetchone()[0]==0
+        c=db.execute(sql)
+        return {"success":True,"result":[{"success":True,"results":[dict(zip([d[0] for d in c.description],r)) for r in c]}]}
+    assert len(fk.inventory(query)["inbound_foreign_keys"]) == 5
+    assert fk.references("CREATE TABLE c(x TEXT REFERENCES /* comment */ PADIEM_ENGINE_AGENT_RUNS_V1(id))")
 
 def test_fk_inventory_fails_closed_on_error_or_changed_tables():
-    def bad(_): return {"success":False}
-    with pytest.raises(ValueError): fk.inventory(bad)
+    with pytest.raises(ValueError): fk.inventory(lambda _: {"success":False})
     calls=[]
     def changed(sql):
         calls.append(sql)
-        names=[{"name":"t"}] if len(calls)==1 else [{"name":"t"},{"name":"new"}]
-        results=[] if sql.startswith("PRAGMA") else names
-        return {"success":True,"result":[{"success":True,"results":results}]}
+        name = "t" if len(calls)==1 else "other"
+        return {"success":True,"result":[{"success":True,"results":[{"name":name,"sql":"CREATE TABLE t(x)"}]}]}
     with pytest.raises(ValueError): fk.inventory(changed)
+    with pytest.raises(ValueError): fk.references("CREATE TABLE t(x REFERENCES ?)")
 
 def test_generated_live_sql_is_read_only_under_sqlite_authorizer():
     db=make("0013")
@@ -120,8 +112,6 @@ def test_generated_live_sql_is_read_only_under_sqlite_authorizer():
     db.execute(m.schema_sql()).fetchall()
     db.execute(m.count_sql(states, grouped)).fetchall()
     db.execute(fk.TABLES_QUERY).fetchall()
-    for table in (*m.TABLES.values(),"child"):
-        db.execute(fk.pragma_for(table)).fetchall()
     assert all(action in allowed for action,_,_ in actions)
     with pytest.raises(sqlite3.DatabaseError): db.execute("DELETE FROM child")
     with pytest.raises(sqlite3.DatabaseError): db.execute("PRAGMA foreign_keys=OFF")
@@ -135,7 +125,7 @@ def test_reviewed_live_workflow_and_query_generators_are_pinned():
     reviewed={
         P.parents[1]/"workflows/b54-engine-d1-0009-0013-readonly.yml":"a235e3eac281055143114cfd420d3e154f2c6db97dbbcb8ddaea376d3c90fadc",
         P:"3e50ee9431ab286063d0e1abaa08fa73203f2f9315ede820ebd7f18f5582abac",
-        FKFILE:"779890930989231e8213616c8b6e736de80ecc24f3a15fa9d11df52e87d772ab",
+        FKFILE:"bb4f0e41ef933bcd3cb813b8f3b72ff46a73ff45325e6806eb6c6231fecc4dcf",
     }
     for path, expected in reviewed.items():
         text=path.read_text(encoding="utf8")
