@@ -878,8 +878,12 @@
       if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
         throw new Error(uiT("claw-image-attachment-unsupported"));
       }
-      if (window.PadiemFileLane?.shouldUse(file) && await window.PadiemFileLane.available()) {
+      const useFileLane = window.PadiemFileLane?.shouldUse(file);
+      const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
+      if (useFileLane && fileLaneAvailable) {
         next = window.PadiemFileLane.pending(file);
+      } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
+        throw new Error("파일 서버에 연결하지 못했습니다. 로그인과 연결을 확인해 주세요.");
       } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
       else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
       else next = await readDocumentFile(file);

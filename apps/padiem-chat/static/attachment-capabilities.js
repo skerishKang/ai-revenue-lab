@@ -35,14 +35,13 @@
   const allDocuments = Object.freeze([...textDocuments, ...binaryDocuments]);
 
   // #2824: the runtime is the authority for whether binary parsing can run in
-  // this deployment. Unknown defaults to supported, so a transient health
-  // failure never hides a capability the server would accept.
-  let binaryEnabled = true;
+  // this deployment. Until the health check succeeds, do not promise binary
+  // formats whose configured file lane has not yet been confirmed.
+  let binaryEnabled = false;
   let fileLaneEnabled = false;
 
   function activeDocuments() {
-    return binaryEnabled ? allDocuments : fileLaneEnabled
-      ? [...textDocuments, binaryDocuments[0]] : textDocuments;
+    return binaryEnabled || fileLaneEnabled ? allDocuments : textDocuments;
   }
 
   function buildAccept() {
