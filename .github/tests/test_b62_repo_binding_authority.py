@@ -35,6 +35,9 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
     #     binding baseline entry and the OWNER-stored secret value: both must be
     #     live in the same deploy window, because an undeclared live secret is a
     #     refused removal and a declared missing one fails the served readback.
+    #   - The default-OFF account-comparison route adds two Secrets Store
+    #     bindings, a public key id and an opt-in switch. The production gate
+    #     must verify these exact additions just like every other binding.
     # Each one is named here as a pending addition - never unexplained drift, and
     # never a silent removal of something serving traffic. Each returns to an empty
     # diff as its own deploy lands.
@@ -42,6 +45,10 @@ def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(caps
         'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
                   {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
                    'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK', 'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY', 'type': 'secrets_store_secret'},
                   {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_BACKEND', 'type': 'plain_text'},
                   {'name': 'PC_QUEUE_ORIGIN', 'type': 'plain_text'},
