@@ -313,33 +313,12 @@ class TestManualRoute:
 
 
 # ============================================================================
-# Automatic route (b14/auto)
+# Manual route resolution
 # ============================================================================
 
 class TestAutoRoute:
 
-    def test_auto_route_id_is_rejected(self, client, monkeypatch):
-        """B7: b14/auto is retired; the string is refused before any routing."""
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-        resp = client.post(
-            "/api/pilot/v1/chat/completions",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"required_capabilities": ["chat"]},
-            },
-        )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
 
-    def test_resolve_endpoint_rejects_retired_auto_id(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
-        )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
 
     def test_resolve_endpoint_still_resolves_catalog_models(self, client):
         resp = client.post(
@@ -411,20 +390,6 @@ class TestFallbackLogic:
         assert is_error_fallback_allowed("invalid_request") is False
 
 
-class TestFallbackExecution:
-    def test_retired_auto_chain_cannot_walk_anymore(self, client):
-        """B7: the fixed chain is gone; the retired id is refused outright."""
-        from app.pilot.errors import UpstreamRateLimited  # noqa: F401  (contract kept by tier-roster suites)
-        resp = client.post(
-            "/api/pilot/v1/chat/completions",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"max_attempts": 3},
-            },
-        )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
 
 
 class TestLiveFailClosed:
@@ -503,16 +468,6 @@ class TestMockMode:
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
         assert data["choices"][0]["message"]["content"]
 
-    def test_mock_mode_rejects_retired_auto_model(self, client, monkeypatch):
-        """B7: mock mode answers the retired id with the same 422 refusal."""
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-        resp = client.post(
-            "/api/pilot/v1/chat/completions",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
-        )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
 
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
@@ -828,9 +783,8 @@ class TestEndpoints:
         assert resp.status_code == 200
         data = resp.json()
         catalog = data.get("catalog", [])
-        assert len(catalog) >= len(CATALOG_MODELS)  # includes b14/auto
+        assert len(catalog) >= len(CATALOG_MODELS)
         ids = {m["id"] for m in catalog}
-        assert "b14/auto" not in ids
         assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in ids
         from app.pilot.catalog import CATALOG_BY_ID
         assert ids == {mid for mid, item in CATALOG_BY_ID.items() if item.enabled}
@@ -960,7 +914,6 @@ class TestKoreanUIJourney:
         resp=client.get("/workspace")
         assert resp.status_code == 200
         # B7: the retired auto id is not offered anywhere in the workspace.
-        assert "b14/auto" not in resp.text
         assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in resp.text
 
     def test_start_js_loaded(self, client):
@@ -1247,33 +1200,6 @@ class TestFallbackFailClosed:
         assert len(calls) == 1
 
 
-class TestFallbackActualEvidence:
-    def test_retired_auto_chain_is_refused_before_any_dispatch(self, client):
-        """B7: the auto chain (and its two-model walk) is gone; the id is refused."""
-        _set_live()
-        original = plat.call_platform_chat_completions
-        calls = []
-
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id,
-                       messages, temperature=0.2, max_tokens=300, transport=None):
-            calls.append(model_id)
-
-        plat.call_platform_chat_completions = fake
-        try:
-            resp = client.post(
-                "/api/pilot/v1/chat/completions",
-                json={
-                    "model": "b14/auto",
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"max_attempts": 3},
-                },
-            )
-        finally:
-            plat.call_platform_chat_completions = original
-
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
-        assert calls == []
 
 
 class TestOptionEnforcement:
@@ -1362,7 +1288,7 @@ class TestOptionEnforcement:
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "b14/auto",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"unsupported_option": True},
             },
