@@ -2024,8 +2024,9 @@ class D1HistoryStore:
         result = await self._run(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
             "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
-            "WHERE run_id=? AND user_id=? AND status<>'completed'",
-            status, _now_iso(), summary, summary, run_id, user_id,
+            "WHERE run_id=? AND user_id=? AND status<>'completed' "
+            "AND (? <> 'running' OR action <> 'pc_files_query' OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
+            status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
 
@@ -2396,7 +2397,9 @@ class D1HistoryStore:
             # completed keeps that terminal: a late command result never
             # reopens it.
             self.db.prepare(
-                "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? "
+                "UPDATE claw_run_history SET status=CASE WHEN status='failed' THEN status ELSE ? END, updated_at=?, "
+                "result_summary=CASE WHEN status='failed' AND result_summary='pc_read_failed' "
+                "THEN result_summary ELSE ? END "
                 "WHERE id=? AND status != 'completed' "
                 "AND EXISTS (SELECT 1 FROM messages WHERE id=? AND conversation_id=?)"
             ).bind(aggregate_status, now, aggregate_summary, str(owned.get("id")),
@@ -2472,9 +2475,10 @@ class D1HistoryStore:
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
         statements = [self.db.prepare(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
-            "result_summary=CASE WHEN result_summary IS NULL THEN ? ELSE result_summary END "
+            "result_summary=CASE WHEN ? = 'pc_read_failed' AND ? = 'failed' THEN ? "
+            "WHEN result_summary IS NULL THEN ? ELSE result_summary END "
             "WHERE id=? AND status != 'completed'"
-        ).bind(status, now, bounded_summary, str(owned.get("id")))]
+        ).bind(status, now, bounded_summary, status, bounded_summary, bounded_summary, str(owned.get("id")))]
         if message_id is not None and content is not None:
             body = _bounded_text(content, "local_task_result")
             if len(body) > MAX_HISTORY_MESSAGE_CHARS:
