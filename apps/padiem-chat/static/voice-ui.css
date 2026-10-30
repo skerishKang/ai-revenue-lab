@@ -1,16 +1,88 @@
 /* #4816 voice mode toolbar and M3/M4 surfaces.
-   The microphone (M1) keeps its own 44x44 CSS px touch target.
-   #5561: the waveform picker (M2/M3/M4) no longer owns a separate button.
-   It shares the composer's primary action slot with the send arrow, so the
-   slot keeps its 44x44 touch target and only its face changes. */
-#composerForm .send-button[data-primary-action="voice"] {
-  background: #355977;
-  border-color: #294b64;
+   Owner 2026-10-31 (A안): the microphone (M1) and the voice waveform picker
+   (M2/M3/M4) are two fixed 44x44 controls in the composer row. The waveform
+   never takes the send slot, so typing text cannot remove it and the send
+   button always shows the arrow. The microphone's own styles live in
+   voice-composer.css; these mirror them so the pair reads as one toolbar. */
+#voiceWaveformButton {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #bed0dd;
+  border-radius: 14px;
+  color: #587c97;
+  background: #eaf2f7;
+  box-shadow: 0 2px 8px rgba(36, 68, 92, .07);
+  cursor: pointer;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
-#composerForm .send-button[data-primary-action="voice"] .send-waveform-icon {
+#voiceWaveformButton .voice-waveform-glyph {
   width: 23px;
   height: 23px;
   display: block;
+}
+#voiceWaveformButton:hover:not(:disabled):not([aria-pressed="true"]) {
+  color: #355d79;
+  background: #deebf3;
+  border-color: #a7c0d2;
+}
+#voiceWaveformButton[aria-pressed="true"],
+#voiceWaveformButton[data-voice-state="active"] {
+  color: #fff;
+  background: #2f7d61;
+  border-color: #2a6d55;
+  box-shadow: 0 0 0 3px rgba(47, 125, 97, .16);
+}
+#voiceWaveformButton:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+/* Visible but inactive: an icon that disappears teaches nothing. The reason
+   arrives through the tooltip, the aria-label and the notice after a press. */
+#voiceWaveformButton[data-voice-state="unavailable"] {
+  color: #8aa2b3;
+  background: #f1f5f8;
+  border-color: #d6e2ea;
+  box-shadow: none;
+}
+#voiceWaveformButton:focus-visible,
+.voice-mode-menu-item:focus-visible {
+  outline: 3px solid #6a9abc;
+  outline-offset: 3px;
+}
+/* Narrow screens cannot hold the tier pill, the attach tool and three 44px
+   controls in one 344px row: 215 + 44 + 44 + 44 + gaps > 344. Rather than let
+   the row fold and grow the composer on the first screen, the tier pill gives
+   up its extra width (ellipsis) so all four controls keep their 44px target and
+   the composer keeps one line. Scoped to the composer row only. */
+@media (max-width: 480px) {
+  #composerForm .composer-actions {
+    column-gap: 6px;
+  }
+  #composerForm .composer-actions > .composer-tools {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  #composerForm .composer-actions > .composer-tools .model-pill {
+    min-width: 0;
+    max-width: 132px;
+  }
+  /* The spark is decorative (aria-hidden); at this width its pixels are the
+     difference between the tier word fitting and being clipped. */
+  #composerForm .composer-actions > .composer-tools .model-pill .status-spark {
+    display: none;
+  }
+  #composerForm .composer-actions > .composer-tools .model-pill > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 /* Mode picker popover */
