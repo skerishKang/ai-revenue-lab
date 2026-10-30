@@ -451,6 +451,7 @@ async def build_item_detail_projection(
                 getattr(task_alert_store, "get_task", None),
                 task_id,
                 workspace_id=workspace_id,
+                member_id=user_id,
             )
             if record is not None and getattr(record, "member_id", None) == user_id:
                 try:
