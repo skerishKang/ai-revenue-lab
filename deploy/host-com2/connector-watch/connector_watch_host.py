@@ -60,6 +60,12 @@ REQUEST_TIMEOUT_SECONDS = 20
 OK, STALL, UNKNOWN = "ok", "stall", "unknown"
 _SEVERITY = {OK: 0, UNKNOWN: 1, STALL: 2}
 _COUNTER = re.compile(r"\b(line_blocked_total|line_cleared_total)=(\d{1,9})\b")
+#: One refused exchange, as the executor prints it. #5881's cutover proved that the same
+#: words covered two servers: an edge bot block looked exactly like a Worker failure. The
+#: line now names the leg, and this counts the legs apart. A refusal printed by an
+#: executor that predates the field is `unattributed` - never guessed as chat.
+_REFUSAL = re.compile(r"oracle-mesh-executor channel refusal:")
+_REFUSAL_LEG = re.compile(r"oracle-mesh-executor channel refusal:.*\bleg=(chat|queue)\b")
 
 
 def parse_counters(text: str) -> dict[str, int | None]:
@@ -73,6 +79,21 @@ def parse_counters(text: str) -> dict[str, int | None]:
     for match in _COUNTER.finditer(text or ""):
         latest[match.group(1)] = int(match.group(2))
     return latest
+
+
+def count_refusals(text: str) -> dict[str, int]:
+    """How many refusals each leg printed in the read window.
+
+    Unlike the #6106 counters these are counts of lines, so absence is a real zero and not
+    "not seen": the same journal text was read, and there were no refusals in it.
+    """
+    window = text or ""
+    total = len(_REFUSAL.findall(window))
+    by_leg = {"chat": 0, "queue": 0}
+    for match in _REFUSAL_LEG.finditer(window):
+        by_leg[match.group(1)] += 1
+    by_leg["unattributed"] = max(total - by_leg["chat"] - by_leg["queue"], 0)
+    return by_leg
 
 
 def parse_systemd(props: dict[str, Any]) -> dict[str, Any]:
@@ -311,7 +332,9 @@ def run(*, unit: str = EXECUTOR_UNIT, journal_minutes: int = JOURNAL_MINUTES,
         health_url: str = CHAT_HEALTH_URL) -> int:
     props = parse_systemd(read_properties(unit))
     previous = _previous()
-    counters = parse_counters(read_journal(unit, journal_minutes))
+    window = read_journal(unit, journal_minutes)
+    counters = parse_counters(window)
+    refusals = count_refusals(window)
     checks = {
         "process": process_verdict(props),
         "restart": restart_verdict(props, previous),
@@ -325,6 +348,8 @@ def run(*, unit: str = EXECUTOR_UNIT, journal_minutes: int = JOURNAL_MINUTES,
     for name in sorted(checks):
         verdict, reason = checks[name]
         print(f"HOST_WATCH_CHECK {name}={verdict} reason={reason}")
+    print("HOST_WATCH_REFUSALS chat=%d queue=%d unattributed=%d window_minutes=%d" % (
+        refusals["chat"], refusals["queue"], refusals["unattributed"], journal_minutes))
     if should_notify(state, previous):
         told = _notify(f"커넥터 감시(COM2): {state} " + (", ".join(reasons) or "all ok"))
         print(f"HOST_WATCH_NOTIFY={told}")

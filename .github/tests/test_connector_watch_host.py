@@ -45,6 +45,52 @@ class TestCounterParsing(unittest.TestCase):
             ("unknown", "counters_not_seen"))
 
 
+class TestRefusalsPerLeg(unittest.TestCase):
+    """The line is counted per leg, because one text covered two servers once already."""
+
+    def test_each_leg_is_counted_and_an_older_line_is_unattributed(self) -> None:
+        window = (
+            "oracle-mesh-executor channel refusal: chat channel refused the poll leg=chat\n"
+            "oracle-mesh-executor channel refusal: chat channel refused the poll leg=chat\n"
+            "oracle-mesh-executor channel refusal: chat channel refused the poll leg=queue\n"
+            "oracle-mesh-executor channel refusal: chat channel transport refused\n"
+            "unrelated journal noise\n"
+        )
+        self.assertEqual(host.count_refusals(window),
+                         {"chat": 2, "queue": 1, "unattributed": 1})
+
+    def test_an_empty_window_is_zero_and_not_unknown(self) -> None:
+        # These are counts of lines in text that was read, so absence is a real answer -
+        # unlike line_blocked_total, whose absence means "not seen".
+        self.assertEqual(host.count_refusals(""),
+                         {"chat": 0, "queue": 0, "unattributed": 0})
+        self.assertEqual(host.count_refusals("leg=queue with no refusal line"),
+                         {"chat": 0, "queue": 0, "unattributed": 0})
+
+    def test_the_leg_word_is_not_counted_from_another_line(self) -> None:
+        window = ("oracle-mesh-executor result ok=True leg=queue\n"
+                  "oracle-mesh-executor channel refusal: chat channel refused the poll leg=chat\n")
+        self.assertEqual(host.count_refusals(window),
+                         {"chat": 1, "queue": 0, "unattributed": 0})
+
+    def test_the_run_prints_one_refusal_line_per_leg(self) -> None:
+        from unittest import mock
+        journal = ("oracle-mesh-executor channel refusal: chat channel refused the poll leg=queue\n"
+                   * 3)
+        with mock.patch.object(host, "read_properties", lambda unit: {}), \
+                mock.patch.object(host, "read_journal", lambda unit, minutes: journal), \
+                mock.patch.object(host, "read_health", lambda url: 200), \
+                mock.patch.object(host, "should_notify", lambda state, prev: False), \
+                mock.patch.object(host, "_previous", lambda: None), \
+                mock.patch.object(host, "_remember", lambda payload: None), \
+                mock.patch("sys.stdout", new_callable=lambda: __import__("io").StringIO()) as out:
+            host.run(journal_minutes=7)
+        line = [row for row in out.getvalue().splitlines()
+                if row.startswith("HOST_WATCH_REFUSALS")]
+        self.assertEqual(len(line), 1, out.getvalue())
+        self.assertEqual(line[0], "HOST_WATCH_REFUSALS chat=0 queue=3 unattributed=0 window_minutes=7")
+
+
 class TestSystemdJudgement(unittest.TestCase):
     def test_only_failed_or_inactive_is_a_stop(self) -> None:
         for active in ("active", "reloading", "activating", "deactivating"):

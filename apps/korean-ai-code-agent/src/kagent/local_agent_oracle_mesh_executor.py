@@ -163,7 +163,17 @@ _PENDING_BODY_SUFFIX = ".body"
 
 
 class OracleMeshChannelRefused(RuntimeError):
-    """Bounded refusal of one executor/server exchange. Never carries content."""
+    """Bounded refusal of one executor/server exchange. Never carries content.
+
+    `leg` says which server was asked - `chat` or `queue` - and it is an attribute, not
+    part of the message: the message text is what the operator and the monitor already
+    read, and #5881's cutover proved that one text for two servers makes an edge block
+    indistinguishable from a Worker failure. Nothing here carries a URL or a secret.
+    """
+
+    def __init__(self, message: str, *, leg: str | None = None) -> None:
+        super().__init__(message)
+        self.leg = leg
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -367,6 +377,15 @@ class OracleMeshExecutor:
             return self._queue_origin
         return self._origin
 
+    def _leg_for(self, path: str) -> str:
+        """One word for which server `_origin_for` would ask: `chat` or `queue`.
+
+        Derived from the routing rule itself rather than repeated here, so the two can
+        never disagree about where a request was going.
+        """
+
+        return "chat" if self._origin_for(path) == self._origin else "queue"
+
     def _https_post(
         self, path: str, payload: Optional[dict[str, Any]] | bytes,
     ) -> tuple[int, dict[str, Any]]:
@@ -414,7 +433,8 @@ class OracleMeshExecutor:
         except OracleMeshChannelRefused:
             raise
         except Exception as exc:  # transport refused/unreachable
-            raise OracleMeshChannelRefused("chat channel transport refused") from exc
+            raise OracleMeshChannelRefused("chat channel transport refused",
+                                           leg=self._leg_for(path)) from exc
         finally:
             self._last_round_at = time.monotonic()
         try:
@@ -431,7 +451,8 @@ class OracleMeshExecutor:
         except OracleMeshChannelRefused:
             raise
         except Exception as exc:
-            raise OracleMeshChannelRefused("chat channel transport refused") from exc
+            raise OracleMeshChannelRefused("chat channel transport refused",
+                                           leg=self._leg_for(path)) from exc
 
     # ---- legs ----------------------------------------------------------
     def _poll_payload(self) -> Optional[dict[str, Any]]:
@@ -541,9 +562,10 @@ class OracleMeshExecutor:
     def poll_once(self) -> Optional[OracleMeshDispatch]:
         """Claim the oldest dispatch, or None when the queue is empty."""
         payload = self._poll_payload()
+        leg = self._leg_for(POLL_PATH)
         status, data = self._post(POLL_PATH, payload)
         if status != 200 or data.get("ok") is not True:
-            raise OracleMeshChannelRefused("chat channel refused the poll")
+            raise OracleMeshChannelRefused("chat channel refused the poll", leg=leg)
         if self._carried_pairing_tags and isinstance(payload, dict) and payload.get("presence"):
             # Reported only once the server took the beat: a poll that was
             # refused or lost leaves the tag unreported so a later poll offers
@@ -554,16 +576,18 @@ class OracleMeshExecutor:
         if dispatch is None:
             return None
         if not isinstance(dispatch, dict):
-            raise OracleMeshChannelRefused("chat channel returned a malformed dispatch")
+            raise OracleMeshChannelRefused("chat channel returned a malformed dispatch", leg=leg)
         kind = dispatch.get("kind") or "read"
         if kind not in ("read", "command", "desktop"):
-            raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind")
+            raise OracleMeshChannelRefused("chat channel returned an unknown dispatch kind", leg=leg)
         command_text = dispatch.get("command_text")
         if kind in ("command", "desktop"):
             # The server owns the command; the executor never invents one and
             # never falls back to the file lane when it is missing.
             if not isinstance(command_text, str) or not command_text.strip():
-                raise OracleMeshChannelRefused("chat channel returned a command dispatch without a command")
+                raise OracleMeshChannelRefused(
+                    "chat channel returned a command dispatch without a command", leg=leg,
+                )
         else:
             command_text = None
         max_bytes = None
@@ -579,7 +603,7 @@ class OracleMeshExecutor:
                     or not 0 < supplied <= MAX_READ_BYTES_ENVELOPE
                 ):
                     raise OracleMeshChannelRefused(
-                        "chat channel returned an unbounded read limit"
+                        "chat channel returned an unbounded read limit", leg=leg,
                     )
                 max_bytes = supplied
         request_id = dispatch.get("request_id")
@@ -1870,6 +1894,20 @@ def _beat_row(row: Any) -> dict[str, Any]:
     }
 
 
+def channel_refusal_line(exc: BaseException) -> str:
+    """One journal line for a refused exchange: the message as it always was, plus the leg.
+
+    #5881's cutover is why the leg is on this line at all. While the queue and the Worker
+    printed the same words, an edge bot block was indistinguishable from a Worker failure,
+    and the lane had to be diagnosed by comparing two databases. The message text itself is
+    unchanged - operators and monitors already read it - and neither an origin nor any
+    credential belongs on this line.
+    """
+    leg = getattr(exc, "leg", None)
+    return "oracle-mesh-executor channel refusal: %s%s" % (
+        exc, " leg=" + leg if leg in ("chat", "queue") else "")
+
+
 def main(environ: Optional[dict[str, str]] = None) -> int:
     """Startup entrypoint: one poll/execute/submit loop on the Oracle host.
 
@@ -2037,7 +2075,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # Bounded: the message never carries dispatch content or secrets. A
             # channel that will not complete rounds is not a quiet queue, so the wait
             # returns to the base and the interval the operator named.
-            print(f"oracle-mesh-executor channel refusal: {exc}", file=sys.stderr)
+            print(channel_refusal_line(exc), file=sys.stderr)
             gap = IDLE_POLL_BASE_SECONDS
             time.sleep(idle)
             continue
