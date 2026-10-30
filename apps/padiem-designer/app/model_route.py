@@ -42,10 +42,6 @@ from .contracts import (
 #: the B62 product post to.
 B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 
-#: The B14 automatic route. It is the default when no model id is configured,
-#: and B14 owns which model that route serves.
-B14_AUTO_MODEL_ID = "b14/auto"
-
 
 @dataclass(frozen=True, slots=True)
 class ModelRequest:
@@ -379,6 +375,16 @@ class B14Route:
                 "The B14 route is not bound in this process. It is reached "
                 "through a service binding in the Worker runtime.",
             )
+        if not self._settings.b14_model_id:
+            # The retired automatic route is not a default, and this app does
+            # not choose models: an unset model id is a deployment
+            # configuration error, refused before any request is built.
+            raise DesignerError(
+                503,
+                "b14_route_model_not_configured",
+                "DESIGNER_B14_MODEL_ID is not configured. Set it to one "
+                "registered Business 14 model.",
+            )
 
         messages: list[dict[str, Any]] = [
             {"role": "system", "content": request.system_prompt}
@@ -388,7 +394,7 @@ class B14Route:
 
         url = self._settings.b14_base_url.rstrip("/") + B14_CHAT_COMPLETIONS_PATH
         payload = {
-            "model": self._settings.b14_model_id or B14_AUTO_MODEL_ID,
+            "model": self._settings.b14_model_id,
             "messages": messages,
             "tools": [designer_tool_schema()],
             "tool_choice": {
