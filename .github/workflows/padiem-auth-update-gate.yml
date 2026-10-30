@@ -5,12 +5,14 @@ on:
     paths:
       - '.github/workflows/padiem-auth-update-gate.yml'
       - '.github/scripts/padiem_auth_binding_check.py'
+      - '.github/scripts/padiem_auth_client_delta.py'
       - '.github/scripts/padiem_auth_update_preflight.py'
       - '.github/scripts/padiem_auth_update_live.py'
       - '.github/scripts/padiem_auth_update_key_guard.py'
       - '.github/scripts/padiem_auth_update_served.py'
       - '.github/scripts/padiem_auth_update_rollback_check.py'
       - '.github/tests/test_padiem_auth_binding_check.py'
+      - '.github/tests/test_padiem_auth_client_delta.py'
       - '.github/tests/test_padiem_auth_update_preflight.py'
       - '.github/tests/test_padiem_auth_update_key_guard.py'
       - '.github/tests/test_padiem_auth_update_rollback_check.py'
@@ -46,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python .github/tests/test_padiem_auth_binding_check.py && python .github/tests/test_padiem_auth_update_preflight.py && python .github/tests/test_padiem_auth_update_rollback_check.py && python .github/tests/test_padiem_auth_update_workflow.py && python .github/tests/test_padiem_auth_update_key_guard.py
+      - run: python .github/tests/test_padiem_auth_binding_check.py && python .github/tests/test_padiem_auth_client_delta.py && python .github/tests/test_padiem_auth_update_preflight.py && python .github/tests/test_padiem_auth_update_rollback_check.py && python .github/tests/test_padiem_auth_update_workflow.py && python .github/tests/test_padiem_auth_update_key_guard.py
   gate:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -86,6 +88,7 @@ jobs:
           [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
           [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
           python .github/tests/test_padiem_auth_binding_check.py
+          python .github/tests/test_padiem_auth_client_delta.py
           python .github/tests/test_padiem_auth_update_preflight.py
           python .github/tests/test_padiem_auth_update_rollback_check.py
           node --test apps/padiem-auth/test/*.test.mjs
