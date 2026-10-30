@@ -95,7 +95,7 @@ def test_an_oversized_response_fails() -> None:
 
 def test_the_request_declares_a_tier_and_names_no_model_of_its_own() -> None:
     body = json.loads(smoke.request_body())
-    assert body["model"] == smoke.REQUESTED_ROUTE == "b14/auto"
+    assert body["model"] == smoke.active_route_for(smoke.ProductTierLabel.FREE).model_id
     assert body["business14"]["product_tier"] == smoke.PRODUCT_TIER
     assert body["business14"]["max_retries"] == 0
     assert 0 < body["max_tokens"] <= 64
@@ -106,7 +106,7 @@ def test_the_unsafe_model_name_never_reaches_the_verdict_line() -> None:
     payload = {"model": "leak" + chr(10) + "x" * 200,
                "choices": [{"message": {"content": "ok"}}]}
     status, raw = 200, json.dumps(payload).encode()
-    assert smoke.decide(status, raw) == ("PASS", "b14/auto")
+    assert smoke.decide(status, raw) == ("PASS", smoke.REQUESTED_ROUTE)
 
 
 def test_a_provider_text_never_appears_in_the_verdict_output() -> None:
