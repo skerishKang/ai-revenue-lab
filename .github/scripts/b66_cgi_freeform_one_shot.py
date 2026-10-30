@@ -28,7 +28,7 @@ def run():
         print("B66_CGI_FREEFORM=FAIL_INVALID_FLOW")
         return 2
     allowed_posts=1 if flow=="complete" else 2
-    if not user or not password or not base._B66_EXACT_MODEL_RE.fullmatch(model) or model=="b14/auto":
+    if not user or not password or not base._B66_EXACT_MODEL_RE.fullmatch(model):
         print("B66_CGI_FREEFORM=FAIL_PREFLIGHT")
         return 2
     counts={"interpret":0,"blocked":0,"pdf":0}

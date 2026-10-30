@@ -9,7 +9,7 @@ name: B14 Candidate Live Smoke (provider-neutral)
 #
 # It never merges, deploys, mutates Production, or changes product routing.
 # It cannot select the AUTO lane: the candidate id must be an allowlisted
-# manual-pin candidate, and `b14/auto` is explicitly rejected by the script.
+# manual-pin candidate, with explicit allowlist admission.
 
 on:
   pull_request:

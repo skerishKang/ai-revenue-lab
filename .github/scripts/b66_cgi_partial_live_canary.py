@@ -69,7 +69,6 @@ def selected_model_id(value: object, models: object) -> str:
     if (
         not isinstance(value, str)
         or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", value) is None
-        or value == "b14/auto"
         or value.startswith("padiem-profile/")
     ):
         raise ValueError("explicit_exact_model_id_required")
