@@ -20,6 +20,10 @@ class VerifyStagingTest(unittest.TestCase):
         bindings = [{'type': 'd1', 'name': 'PADIEM_CHAT_DB', 'id': module.DB},
                     {'type': 'assets', 'name': 'ASSETS'}, {'type': 'version_metadata', 'name': 'CF_VERSION_METADATA'},
                     {'type': 'plain_text', 'name': 'PC_QUEUE_BACKEND', 'text': 'd1'},
+                    {'type': 'plain_text', 'name': 'PC_QUEUE_ORIGIN', 'text': 'https://queue-staging.padiem.net'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_LIVE_ENABLED', 'text': 'false'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_RUNTIME_MODE', 'text': 'mock'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'text': 'false'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'text': 'false'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_PUBLIC_BASE_URL', 'text': 'https://padiem-chat-staging.charliekant.workers.dev'}]
         module.verify_bindings({'resources': {'bindings': bindings}})

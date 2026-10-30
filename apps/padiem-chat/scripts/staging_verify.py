@@ -28,12 +28,19 @@ def verify_bindings(data):
     dbs = [b for b in bindings if b.get("type") == "d1"]
     if len(dbs) != 1 or dbs[0].get("name") != "PADIEM_CHAT_DB" or (dbs[0].get("id") or dbs[0].get("database_id")) != DB:
         raise ValueError("staging D1 binding mismatch")
-    if any(b.get("type") in {"service", "r2_bucket"} for b in bindings):
-        raise ValueError("unexpected service or bucket binding")
+    allowed = {("assets", "ASSETS"), ("version_metadata", "CF_VERSION_METADATA"),
+               ("d1", "PADIEM_CHAT_DB")}
+    allowed.update(("plain_text", name) for name in ["PADIEM_CHAT_LIVE_ENABLED", "PADIEM_CHAT_PUBLIC_BASE_URL",
+                   "PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED", "PADIEM_CHAT_SHARED_LOGIN_ENABLED",
+                   "PC_QUEUE_BACKEND", "PC_QUEUE_ORIGIN"])
+    if any((b.get("type"), b.get("name")) not in allowed for b in bindings):
+        raise ValueError("unexpected binding")
     names = {b.get("name") for b in bindings}
     if not {"ASSETS", "CF_VERSION_METADATA", "PC_QUEUE_BACKEND"}.issubset(names):
         raise ValueError("missing staging binding")
-    expected = {"PC_QUEUE_BACKEND": "d1", "PADIEM_CHAT_SHARED_LOGIN_ENABLED": "false",
+    expected = {"PC_QUEUE_BACKEND": "d1", "PC_QUEUE_ORIGIN": "https://queue-staging.padiem.net",
+                "PADIEM_CHAT_SHARED_LOGIN_ENABLED": "false", "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED": "false",
+                "PADIEM_CHAT_RUNTIME_MODE": "mock", "PADIEM_CHAT_LIVE_ENABLED": "false",
                 "PADIEM_CHAT_PUBLIC_BASE_URL": "https://padiem-chat-staging.charliekant.workers.dev"}
     for name, value in expected.items():
         if len([b for b in bindings if b.get("name") == name and b.get("type") == "plain_text" and b.get("text") == value]) != 1:
