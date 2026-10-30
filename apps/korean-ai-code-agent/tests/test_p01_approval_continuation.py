@@ -261,7 +261,7 @@ class ReconstructTrustedResumeRequestTests(SyntheticPlusRouteTestCase):
         self.assertEqual(
             set(request.payload["agent"]),
             set(_TRUSTED_AGENT_KEYS)
-            - {"allowed_tools", "context_policy", "max_steps", "output_contract"},
+            - {"allowed_tools", "context_policy", "max_steps", "output_contract", "task_type", "optimize_for"},
         )
         self.assertEqual(request.payload["agent"]["id"], P01_AGENT_ID)
         self.assertEqual(request.payload["agent"]["model_policy"], {"model": MODEL_ID})

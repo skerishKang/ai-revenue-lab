@@ -188,6 +188,9 @@ class P01ExplicitModelPropagationTests(SyntheticPlusRouteTestCase):
                 )
                 self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
                 self.assertNotIn("b14/auto", json.dumps(payload).lower())
+                for retired in ("task_type", "optimize_for", "allow_external_fallback"):
+                    self.assertNotIn(retired, payload["agent"])
+                    self.assertNotIn(retired, payload["agent"]["model_policy"])
 
     def test_syntax_only_admission_does_not_claim_registration(self) -> None:
         # The executable set the fixture installs holds the Plus identity only, so

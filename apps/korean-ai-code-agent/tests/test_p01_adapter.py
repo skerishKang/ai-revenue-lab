@@ -6,8 +6,6 @@ import unittest
 from padiem_ai_core.b14_execution import (
     B14RouteMetadata,
     B14RoutingOptions,
-    _OPTIMIZE_FOR,
-    _TASK_TYPES,
 )
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_runtime import ExecutionResult, _normalize_model_policy
@@ -649,31 +647,15 @@ if __name__ == "__main__":
 
 
 class ClawP01ProfileContractTests(unittest.TestCase):
-    """The Claw P01 profile must satisfy the Core routing contract.
-
-    Core validates ``task_type`` and ``optimize_for`` only when the B14 routing
-    options are built. A profile carrying an unsupported value therefore fails
-    at execution time, before any provider/model call, and the failure looks
-    like a routing error rather than a product-profile bug. These tests pin the
-    profile to the Core-owned enums so the drift cannot return.
-    """
+    """The Claw P01 profile normalizes without retired B14 routing fields."""
 
     @with_synthetic_plus_route
-    def test_profile_routing_values_are_accepted_by_core(self) -> None:
-        profile = _agent_profile()
-        routing = B14RoutingOptions(
-            task_type=profile.task_type,
-            optimize_for=profile.optimize_for,
-        )
-        self.assertEqual(routing.task_type, "coding")
-        self.assertEqual(routing.optimize_for, "balanced")
-
-    @with_synthetic_plus_route
-    def test_profile_normalizes_into_core_model_policy(self) -> None:
+    def test_profile_normalizes_without_retired_routing_fields(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
         self.assertEqual(model, self.plus_route_model)
-        self.assertIn(routing.task_type, _TASK_TYPES)
-        self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
+        self.assertFalse(hasattr(routing, "task_type"))
+        self.assertFalse(hasattr(routing, "optimize_for"))
+        self.assertFalse(hasattr(routing, "allow_external_fallback"))
 
     @with_synthetic_plus_route
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
