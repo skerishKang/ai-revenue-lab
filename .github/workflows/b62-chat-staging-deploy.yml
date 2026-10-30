@@ -3,7 +3,7 @@ name: B62 Chat staging
 on:
   pull_request:
     paths:
-      - '.github/workflows/b62-chat-staging.yml'
+      - '.github/workflows/b62-chat-staging-deploy.yml'
       - 'apps/padiem-chat/scripts/staging_config.py'
       - 'apps/padiem-chat/scripts/staging_verify.py'
       - 'apps/padiem-chat/tests/test_staging_*_6305.py'
