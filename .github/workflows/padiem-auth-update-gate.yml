@@ -172,4 +172,9 @@ jobs:
           fi
           python .github/scripts/padiem_auth_binding_check.py "$RUNNER_TEMP/auth-settings-after.json" .github/binding_baselines/padiem-auth.json
           python .github/scripts/padiem_auth_update_served.py .github/binding_baselines/padiem-auth.json
-          python .github/scripts/padiem_auth_update_key_guard.py compare "$RUNNER_TEMP/auth-jwks-before.json"
+          if ! python .github/scripts/padiem_auth_update_key_guard.py compare "$RUNNER_TEMP/auth-jwks-before.json"; then
+            if [[ "$MODE" == rollback ]]; then
+              echo 'PADIEM_AUTH_ROLLBACK_SIGNING_KEY_MISMATCH=FAIL'
+            fi
+            exit 1
+          fi

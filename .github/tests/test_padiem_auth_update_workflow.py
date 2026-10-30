@@ -29,4 +29,11 @@ class Workflow(unittest.TestCase):
         self.assertIn('PRE_DEPLOY_SERVED_VERSION_ID=$CURRENT_VERSION', text[start:start + 240])
         self.assertIn('exit 1', text[start:start + 240])
 
+    def test_rollback_key_failure_marker_is_wired(self):
+        text = (Path(__file__).resolve().parents[1] / 'workflows/padiem-auth-update-gate.yml').read_text()
+        start = text.rindex('if ! python .github/scripts/padiem_auth_update_key_guard.py compare')
+        tail = text[start:]
+        self.assertIn('PADIEM_AUTH_ROLLBACK_SIGNING_KEY_MISMATCH=FAIL', tail)
+        self.assertIn('exit 1', tail)
+
 if __name__ == '__main__': unittest.main()
