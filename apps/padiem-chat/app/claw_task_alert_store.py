@@ -328,16 +328,27 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         return record
 
     async def list_tasks(
-        self, workspace_id: str, *, limit: int = _MAX_INBOX_LIST
+        self, workspace_id: str, *, member_id: str, limit: int = _MAX_INBOX_LIST
     ) -> tuple[ClawFollowupTask, ...]:
+        """#2952 follow-up: a task read is scoped by its owner in the SQL itself.
+
+        ``member_id`` is required rather than optional because the row already
+        carries its owner and the tenant-wide scan was bounded: with the scope
+        applied after the ``LIMIT``, one member's volume pushed another
+        member's own rows out of their inbox and calendar. Filtering inside the
+        query makes that structurally impossible and a read with no verified
+        owner cannot even be expressed.
+        """
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("member_id", member_id)
         bounded = max(1, min(limit, _MAX_INBOX_LIST))
         rows = await self._all(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
             f"linked_ref, severity, kind_value, visible_to_all FROM {_TASK_ALERT_TABLE} "
-            f"WHERE workspace_id=? AND kind='task' "
+            f"WHERE workspace_id=? AND member_id=? AND kind='task' "
             f"ORDER BY created_at DESC LIMIT {int(bounded)}",
             workspace_id,
+            member_id,
         )
         return tuple(self._task_row_to_record(r) for r in rows)
 
@@ -345,10 +356,11 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         self,
         workspace_id: str,
         *,
-        member_id: str | None = None,
+        member_id: str,
         limit: int = _MAX_INBOX_LIST,
     ) -> tuple[ClawAlert, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("member_id", member_id)
         bounded = max(1, min(limit, _MAX_INBOX_LIST))
         rows = await self._all(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
@@ -357,13 +369,13 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
             f"ORDER BY created_at DESC LIMIT {int(bounded)}",
             workspace_id,
         )
-        records = [self._alert_row_to_record(r) for r in rows]
-        if member_id is not None:
-            records = [r for r in records if r.is_visible_to(member_id)]
+        # ``visible_to_all`` rows are company-shared by design, so the member
+        # predicate stays in ``is_visible_to`` instead of the WHERE clause.
+        records = [r for r in (self._alert_row_to_record(row) for row in rows) if r.is_visible_to(member_id)]
         return tuple(records[:bounded])
 
     async def projection(
-        self, workspace_id: str, *, member_id: str | None = None,
+        self, workspace_id: str, *, member_id: str,
         include_raw: bool = True,
     ) -> dict[str, Any]:
         """The workspace-scoped Task/Alert projection of this Claw memory store.
@@ -375,7 +387,7 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         the switch only keeps this adapter callable through the contract.
         """
         _safe_identifier("workspace_id", workspace_id)
-        tasks = await self.list_tasks(workspace_id)
+        tasks = await self.list_tasks(workspace_id, member_id=member_id)
         alerts = await self.list_alerts(workspace_id, member_id=member_id)
         return {
             "contract_version": CONTRACT_VERSION,
