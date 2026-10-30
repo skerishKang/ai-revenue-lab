@@ -28,6 +28,7 @@ def main():
         raise ValueError('served version identity mismatch')
     verify({'success': True, 'result': {'bindings': version.get('resources', {}).get('bindings')}}, baseline)
     print('served version binding baseline: PASS')
+    print('PADIEM_AUTH_SERVED_VERSION_ID=' + version_id)
 
 
 if __name__ == '__main__':

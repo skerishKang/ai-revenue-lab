@@ -121,6 +121,7 @@ jobs:
           npx --no-install wrangler deployments list --name padiem-auth --json > "$RUNNER_TEMP/auth-deployments.json"
           python .github/scripts/padiem_auth_update_preflight.py "$RUNNER_TEMP/auth-settings.json" .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-deployments.json" "$CURRENT_VERSION"
           python .github/scripts/padiem_auth_update_key_guard.py capture "$RUNNER_TEMP/auth-jwks-before.json"
+          echo "PRE_DEPLOY_SERVED_VERSION_ID=$CURRENT_VERSION"
           if [[ "$MODE" == rollback ]]; then
             npx --no-install wrangler versions view "$ROLLBACK_VERSION" --name padiem-auth --json > "$RUNNER_TEMP/auth-rollback-version.json"
             python .github/scripts/padiem_auth_update_rollback_check.py .github/binding_baselines/padiem-auth.json "$RUNNER_TEMP/auth-rollback-version.json" "$ROLLBACK_VERSION"
