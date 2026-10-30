@@ -15,6 +15,7 @@ class StagingConfigTest(unittest.TestCase):
         self.assertEqual(config["name"], "padiem-chat-staging")
         self.assertEqual(config["d1_databases"][0]["database_id"], DB)
         self.assertEqual(config["vars"]["PADIEM_CHAT_SHARED_LOGIN_ENABLED"], "false")
+        self.assertEqual(config["vars"]["PC_QUEUE_BACKEND"], "d1")
         self.assertFalse({"routes", "services", "r2_buckets", "secrets_store_secrets"} & config.keys())
 
     def test_reject_production_or_invalid_destinations(self):
