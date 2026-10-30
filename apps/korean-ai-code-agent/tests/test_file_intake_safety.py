@@ -34,6 +34,18 @@ GIF_BYTES = b"GIF89a" + b"\x00" * 32
 WEBP_BYTES = b"RIFF" + (32).to_bytes(4, "little") + b"WEBP" + b"\x00" * 16
 UNKNOWN_BYTES = b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c"
 OLE_BYTES = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + b"\x00" * 32
+#: A directory-entry-shaped UTF-16LE ``EncryptedPackage`` stream name inside the
+#: OLE wrapper Office writes for a password-protected package. Core's own suite
+#: builds a spec-valid compound file here and reads it back with ``olefile``;
+#: this gate test stays independent of Core and pins only the two facts the
+#: classification keys on: the OLE signature and that stream name.
+OLE_ENCRYPTED_BYTES = (
+    b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+    + b"\x00" * 504
+    + "EncryptedPackage".encode("utf-16-le")
+    + b"\x00\x00"
+    + b"\x00" * 62
+)
 
 _S_IFLNK_MODE = 0o120777
 
@@ -79,6 +91,24 @@ def mark_encrypted(payload: bytes) -> bytes:
         if index == -1:
             break
         data[index + 8] |= 0x01
+        position = index + 4
+    return bytes(data)
+
+
+def mark_local_encrypted(payload: bytes) -> bytes:
+    """Set the encrypted flag on every *local* file header and nothing else.
+
+    The central-directory copy stays clean, so ``zipfile`` reports the archive as
+    unencrypted. That is precisely the shape the gate has to read for itself.
+    """
+
+    data = bytearray(payload)
+    position = 0
+    while True:
+        index = data.find(b"PK\x03\x04", position)
+        if index == -1:
+            break
+        data[index + 6] |= 0x01
         position = index + 4
     return bytes(data)
 
@@ -281,6 +311,68 @@ class ArchivePathSafetyTests(unittest.TestCase):
         result = inspect_file("t.zip", payload)
         self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
         self.assertEqual(result.reason_code, "archive_link_entry")
+
+
+class EntryEncryptionSourceTests(unittest.TestCase):
+    """The ZIP general-purpose flags exist twice; the gate has to read both.
+
+    ``zipfile`` exposes only the central-directory copy. An entry whose local
+    file header declares ``encrypted`` while its central record declares ``plain``
+    is therefore invisible to every stdlib consumer, and #2824 requires encrypted
+    documents to be *classified*, not merely refused somewhere downstream.
+    """
+
+    def test_local_header_only_encryption_is_classified_encrypted(self) -> None:
+        payload = mark_local_encrypted(build_zip([("a.txt", b"secret")]))
+        with zipfile.ZipFile(BytesIO(payload)) as archive:
+            # Proof the fixture really is the evasion shape rather than a
+            # mislabelled ordinary archive.
+            self.assertFalse(archive.infolist()[0].flag_bits & 0x1)
+        result = inspect_file("locked.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.ENCRYPTED)
+        self.assertEqual(result.reason_code, "archive_encrypted")
+        self.assertTrue(result.encrypted)
+        self.assertFalse(result.safe_to_parse)
+
+    def test_the_local_header_read_does_not_refuse_an_ordinary_archive(self) -> None:
+        payload = build_zip([("a.txt", b"hello")])
+        result = inspect_file("plain.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.SAFE_CANDIDATE)
+        self.assertFalse(result.encrypted)
+
+    def test_nested_entry_local_encryption_is_classified_encrypted(self) -> None:
+        inner = mark_local_encrypted(build_zip([("deep.txt", b"secret")]))
+        outer = build_zip([("mimetype", b"application/zip"), ("inner.zip", inner)])
+        result = inspect_file(
+            "outer.zip",
+            outer,
+            policy=FileIntakePolicy(max_archive_depth=1),
+        )
+        self.assertEqual(result.decision, IntakeDecision.ENCRYPTED)
+        self.assertTrue(result.encrypted)
+
+
+class EncryptedOleWrapperTests(unittest.TestCase):
+    """Office wraps a password-protected package in OLE, not ZIP.
+
+    The wrapper must not be reported as an unknown or legacy format: the user
+    holds a document they protected with a password, and the intake answer has to
+    say so.
+    """
+
+    def test_ole_wrapped_encrypted_package_is_classified_encrypted(self) -> None:
+        result = inspect_file("report.docx", OLE_ENCRYPTED_BYTES)
+        self.assertEqual(result.decision, IntakeDecision.ENCRYPTED)
+        self.assertEqual(result.reason_code, "archive_encrypted")
+        self.assertTrue(result.encrypted)
+        self.assertEqual(result.detected_format, DetectedFormat.OLE_COMPOUND)
+        self.assertFalse(result.safe_to_parse)
+
+    def test_plain_ole_keeps_the_legacy_unsupported_posture(self) -> None:
+        result = inspect_file("legacy.doc", OLE_BYTES)
+        self.assertEqual(result.decision, IntakeDecision.UNSUPPORTED)
+        self.assertEqual(result.reason_code, "legacy_ole_compound_unsupported")
+        self.assertFalse(result.encrypted)
 
 
 class HwpxSafetyTests(unittest.TestCase):
