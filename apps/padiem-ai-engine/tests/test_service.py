@@ -23,6 +23,7 @@ from app.service import (
     MAX_REQUEST_BODY_BYTES,
     MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     EngineService,
+    build_execution_request,
 )
 
 # #5002: an inert, syntactically valid model route. It is used only to prove
@@ -53,6 +54,15 @@ def valid_payload() -> dict:
         "session_id": "session-1",
         "trace_id": "trace-1",
     }
+
+
+def test_agent_request_omitting_retired_routing_fields_is_accepted():
+    payload = valid_payload()
+    payload["agent"].pop("task_type")
+    payload["agent"].pop("optimize_for")
+    payload["agent"]["model_policy"].pop("allow_external_fallback")
+    _, request, _ = build_execution_request(payload)
+    assert request.agent.model_policy["model"] == _INERT_MODEL_ID
 
 
 def result() -> ExecutionResult:
