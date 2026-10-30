@@ -94,19 +94,21 @@ def test_an_explicit_attempt_count_does_not_narrow_the_nonstreaming_contract(mon
     ]
 
 
-def test_b14_no_longer_accepts_the_attempt_option():
-    """B4: the scorer-era attempt option is an unknown business14 field now.
-
-    There is no bound to return and nothing to validate: the option cannot
-    reach the router at all.
+def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
+    """B4 grace: the scorer-era attempt option is accepted, logged, and
+    dropped — the deployed callers still send it, and it can never reach the
+    router. The next B14 release refuses it as an unknown field again.
     """
-    from app.pilot.gateway import _InvalidBody, _validate_b14_options
-    with pytest.raises(_InvalidBody):
-        _validate_b14_options({"max_attempts": 50})
-    with pytest.raises(_InvalidBody):
-        _validate_b14_options({"max_attempts": 0})
-    with pytest.raises(_InvalidBody):
-        _validate_b14_options({"max_attempts": 1.5})
+    import logging
+
+    from app.pilot.gateway import _validate_b14_options
+    with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+        for value in (50, 0, 1.5, "50"):
+            assert "max_attempts" not in _validate_b14_options({"max_attempts": value})
+    assert any(
+        "b14_deprecated_business14_fields_ignored" in record.message
+        for record in caplog.records
+    )
 
 
 @pytest.mark.parametrize("tier", ["plus", "pro", "max", "admin"])

@@ -1278,28 +1278,75 @@ class TestFallbackActualEvidence:
 
 class TestOptionEnforcement:
 
-    def test_allow_external_fallback_field_is_rejected(self, client):
-        """B5: the retired fallback knob is no longer a business14 field."""
-        for value in (False, True):
-            resp = client.post(
-                "/api/pilot/v1/chat/completions",
-                json={
-                    "model": "agnes-ai/agnes-3.0-flash",
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": value},
-                },
-            )
-            assert resp.status_code == 422
-            assert "Unexpected business14 fields" in resp.json()["error"]["message"]
+    def test_allow_external_fallback_field_is_ignored_with_deprecation_log(
+        self, client, caplog
+    ):
+        """B5 grace: the retired knob is accepted, logged, and dropped.
 
-    def test_scorer_era_options_are_rejected_as_unknown_fields(self, client):
-        """B4: scorer-era options are unknown business14 fields now."""
+        The deployed callers still send it, so this release must not refuse it;
+        the value never reaches routing, and the next release refuses it again.
+        """
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+            for value in (False, True):
+                resp = client.post(
+                    "/api/pilot/v1/chat/completions",
+                    json={
+                        "model": "agnes-ai/agnes-3.0-flash",
+                        "messages": [{"role": "user", "content": "hi"}],
+                        "business14": {"allow_external_fallback": value},
+                    },
+                )
+                assert resp.status_code == 200
+                biz14 = resp.json()["business14"]
+                assert "allow_external_fallback" not in biz14
+        assert any(
+            "b14_deprecated_business14_fields_ignored" in record.message
+            and "allow_external_fallback" in record.getMessage()
+            for record in caplog.records
+        )
+
+    def test_scorer_era_options_are_ignored_with_deprecation_log(
+        self, client, caplog
+    ):
+        """B4 grace: scorer-era options are accepted, logged, and dropped."""
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+            for option in (
+                {"task_type": "coding"},
+                {"optimize_for": "cost"},
+                {"provider_order": [SECONDARY_PROVIDER]},
+                {"allow_paid": True},
+                {"max_attempts": 3},
+            ):
+                resp = client.post(
+                    "/api/pilot/router/resolve",
+                    json={
+                        "model": "agnes-ai/agnes-3.0-flash",
+                        "messages": [{"role": "user", "content": "hi"}],
+                        "business14": option,
+                    },
+                )
+                assert resp.status_code == 200, option
+                # The dropped value never reaches routing: the decision carries
+                # no ignored_options recording for it.
+                assert not any(
+                    rc.startswith("ignored_options:")
+                    for rc in resp.json()["reason_codes"]
+                ), option
+        assert any(
+            "b14_deprecated_business14_fields_ignored" in record.message
+            for record in caplog.records
+        )
+
+    def test_deprecated_options_ignore_even_invalid_values(self, client):
+        """Grace drops the retired names whatever the value; only genuinely
+        unknown fields are refused."""
         for option in (
-            {"task_type": "coding"},
-            {"optimize_for": "cost"},
-            {"provider_order": [SECONDARY_PROVIDER]},
-            {"allow_paid": True},
-            {"max_attempts": 3},
+            {"provider_order": "Anthropic"},
+            {"task_type": "not-a-task"},
         ):
             resp = client.post(
                 "/api/pilot/router/resolve",
@@ -1309,31 +1356,7 @@ class TestOptionEnforcement:
                     "business14": option,
                 },
             )
-            assert resp.status_code == 422, option
-            assert "Unexpected business14 fields" in resp.json()["error"]["message"]
-
-    def test_provider_order_invalid_type_422(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "agnes-ai/agnes-3.0-flash",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"provider_order": "Anthropic"},
-            },
-        )
-        assert resp.status_code == 422
-
-
-    def test_task_type_invalid_422(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "agnes-ai/agnes-3.0-flash",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"task_type": "not-a-task"},
-            },
-        )
-        assert resp.status_code == 422
+            assert resp.status_code == 200, option
 
     def test_unknown_business14_field_422(self, client):
         resp = client.post(
@@ -1560,7 +1583,8 @@ class TestManualRouteDefaultFallback:
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_explicit_false_resolve(self, client):
-        """manual model, allow_external_fallback=false → rejected unknown field (B5)."""
+        """manual model, allow_external_fallback=false → accepted-and-dropped
+        during the B5 grace release; the resolve still offers no candidates."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1569,11 +1593,14 @@ class TestManualRouteDefaultFallback:
                 "business14": {"allow_external_fallback": False},
             },
         )
-        assert resp.status_code == 422
-        assert "Unexpected business14 fields" in resp.json()["error"]["message"]
+        assert resp.status_code == 200
+        assert resp.json()["fallback_allowed"] is False
+        assert resp.json()["eligible_fallback"] == []
+        assert resp.json()["attempt_candidates"] == 1
 
     def test_manual_model_explicit_true_resolve(self, client, two_model_catalog):
-        """manual model, allow_external_fallback=true → rejected unknown field (B5)."""
+        """manual model, allow_external_fallback=true → the value is dropped, so
+        no catalog substitution appears even in the grace release (B5)."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1582,8 +1609,10 @@ class TestManualRouteDefaultFallback:
                 "business14": {"allow_external_fallback": True},
             },
         )
-        assert resp.status_code == 422
-        assert "Unexpected business14 fields" in resp.json()["error"]["message"]
+        assert resp.status_code == 200
+        assert resp.json()["fallback_allowed"] is False
+        assert resp.json()["eligible_fallback"] == []
+        assert resp.json()["attempt_candidates"] == 1
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):
         """manual model, no business14 → only 1 upstream call, no fallback."""

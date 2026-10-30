@@ -51,7 +51,14 @@ def test_retired_auto_id_resolves_to_no_route():
 
 def test_no_external_fallback_knob_exists():
     assert "allow_external_fallback" not in inspect.signature(resolve_manual_route).parameters
-    assert "allow_external_fallback" not in _app_source()
+    # B5 grace: the retired name is tolerated on the wire only to be logged and
+    # dropped — the validator never returns it, so routing can never see it.
+    from app.pilot.gateway import _validate_b14_options
+
+    for value in (True, False):
+        assert "allow_external_fallback" not in _validate_b14_options(
+            {"allow_external_fallback": value}
+        )
     from app.pilot import platform_secrets
 
     assert (

@@ -185,6 +185,15 @@ _ALLOWED_B14_FIELDS = frozenset({
     "required_capabilities",
     "max_retries", "product_tier",
 })
+# B4/B5 retirement grace (one release): the currently deployed callers (Chat
+# b14_client, Engine PC/Claw drivers and BYOK replay, B66 quote dispatch) still
+# send these names. This release accepts them, logs, and drops them so the
+# callers can cycle in any deploy order. The NEXT B14 release removes them from
+# this set so they are refused again as unknown business14 fields.
+_DEPRECATED_B14_FIELDS = frozenset({
+    "task_type", "optimize_for", "provider_order",
+    "allow_paid", "max_attempts", "allow_external_fallback",
+})
 
 
 class _InvalidBody(PilotError):
@@ -349,9 +358,19 @@ def _validate_b14_options(raw: Any) -> dict:
     if not isinstance(raw, dict):
         raise _InvalidBody("business14 must be a JSON object")
 
-    extra = set(raw) - _ALLOWED_B14_FIELDS
+    extra = set(raw) - _ALLOWED_B14_FIELDS - _DEPRECATED_B14_FIELDS
     if extra:
         raise _InvalidBody(f"Unexpected business14 fields: {', '.join(sorted(extra))}")
+
+    deprecated = sorted(set(raw) & _DEPRECATED_B14_FIELDS)
+    if deprecated:
+        # B4/B5 grace: accepted, logged, and dropped — the value never reaches
+        # routing. The next B14 release removes these names from the tolerated
+        # set so they are refused as unknown fields again.
+        logger.warning(
+            "b14_deprecated_business14_fields_ignored fields=%s",
+            ",".join(deprecated),
+        )
 
     opts: dict = {}
 

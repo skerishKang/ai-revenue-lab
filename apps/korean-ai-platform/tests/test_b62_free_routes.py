@@ -81,9 +81,12 @@ def test_unknown_price_model_is_never_implicitly_classified_free():
 
 
 
-def test_gateway_rejects_the_retired_auto_id_and_scorer_options(client):
-    """B4/B7: b14/auto is refused outright and scorer-era options are unknown
-    business14 fields; nothing is accepted-and-ignored anymore."""
+def test_gateway_rejects_the_retired_auto_id_and_drops_scorer_options(
+    client, monkeypatch
+):
+    """B7: b14/auto is refused outright. B4 grace: the scorer-era names are
+    accepted, logged, and dropped — they never reach routing."""
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
     resp_default = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -95,6 +98,7 @@ def test_gateway_rejects_the_retired_auto_id_and_scorer_options(client):
     assert resp_default.status_code == 422
     assert resp_default.json()["error"]["code"] == "invalid_body"
 
+    # B4 grace: the retired names are accepted, logged, and dropped.
     resp_opt_in = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -103,12 +107,13 @@ def test_gateway_rejects_the_retired_auto_id_and_scorer_options(client):
             "business14": {"task_type": "coding", "allow_paid": True},
         },
     )
-    assert resp_opt_in.status_code == 422
-    assert "Unexpected business14 fields" in resp_opt_in.json()["error"]["message"]
+    assert resp_opt_in.status_code == 200
+    assert resp_opt_in.json()["selected_model"] == "agnes-ai/agnes-3.0-flash"
 
 
-def test_gateway_allow_paid_must_be_boolean_422(client):
-    """business14.allow_paid with non-boolean value returns 422."""
+def test_gateway_allow_paid_is_dropped_whatever_the_value(client, monkeypatch):
+    """B4 grace: allow_paid is ignored (logged), so its type is not checked."""
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
     resp = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -117,5 +122,6 @@ def test_gateway_allow_paid_must_be_boolean_422(client):
             "business14": {"allow_paid": "yes"},
         },
     )
-    assert resp.status_code == 422
-    assert "Unexpected business14 fields" in resp.json()["error"]["message"]
+    # B4 grace: allow_paid is dropped whatever the value.
+    assert resp.status_code == 200
+    assert "allow_paid" not in (resp.json().get("business14") or {})

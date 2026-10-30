@@ -197,10 +197,18 @@ def test_retired_scorer_options_are_unknown_fields(client, monkeypatch):
     """B4: scorer-era options are rejected as unknown business14 fields."""
     monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-    response = post_image(client, model="agnes-ai/agnes-3.0-flash",
-                          business14={"task_type": "coding", "required_capabilities": ["coding"]})
-    assert response.status_code == 422
-    assert "Unexpected business14 fields" in response.json()["error"]["message"]
+    response = client.post(
+        "/api/pilot/v1/chat/completions",
+        json={
+            "model": "agnes-ai/agnes-3.0-flash",
+            "messages": [{"role": "user", "content": "안녕"}],
+            "business14": {"task_type": "coding", "required_capabilities": ["coding"]},
+        },
+    )
+    # B4 grace: task_type is accepted, logged, and dropped; the text-only text
+    # contract still answers through the catalog route.
+    assert response.status_code == 200
+    assert "task_type" not in response.json()["business14"]
 
 
 @pytest.mark.asyncio

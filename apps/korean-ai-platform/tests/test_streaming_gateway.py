@@ -411,7 +411,6 @@ def test_preview_requires_stream_true():
     "payload_update",
     [
         {"model": "b14/auto"},
-        {"business14": {"allow_external_fallback": True}},
     ],
 )
 def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_update):
@@ -427,11 +426,40 @@ def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
-    # B7/B5: both are refused at validation now, before the stream surface
-    # and before any network call.
+    # B7: the retired auto id is refused at validation, before the stream
+    # surface and before any network call.
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "invalid_body"
     assert calls == 0
+
+
+@pytest.mark.asyncio
+async def test_external_fallback_value_on_stream_preview_is_dropped_in_grace():
+    """B5 grace: a caller still sending the retired knob gets the value logged
+    and dropped; the stream proceeds as one manual attempt with no fallback."""
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            content=b"".join(_valid_sse_chunks()),
+        )
+
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(
+        STREAM_URL, json=_payload(business14={"allow_external_fallback": True})
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    # The dropped value cannot enable any fallback walk: the manual stream ran
+    # exactly once against the single declared route.
+    assert calls == 1
 
 
 
@@ -784,9 +812,10 @@ def test_canonical_stream_true_does_not_enable_fallback_or_extra_calls():
     response = _client().post(CHAT_URL, json=_payload(
         business14={"allow_external_fallback": True},
     ))
-    # B5: the retired knob is an unknown business14 field now.
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "invalid_body"
+    # B5 grace: the retired knob is logged and dropped, so the canonical stream
+    # opt-in still serves the manual route with no fallback semantics.
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
 
 
 def test_canonical_stream_true_does_not_enable_byok_without_secret():
