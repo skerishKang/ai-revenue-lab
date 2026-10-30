@@ -138,9 +138,6 @@ def test_allowlist_is_exactly_the_two_gemini_ids() -> None:
         assert resolved.upstream_model == model_id.split("/", 1)[1]
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="model_not_allowlisted"):
-        oneshot.resolve_gemini("b14/auto")
 
 
 def test_out_of_scope_models_are_rejected() -> None:

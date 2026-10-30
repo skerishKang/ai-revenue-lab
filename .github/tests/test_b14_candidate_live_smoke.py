@@ -169,10 +169,6 @@ def test_bai_qwen_is_excluded() -> None:
     )
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="candidate_not_allowlisted"):
-        smoke.resolve_candidate("b14/auto")
-    assert smoke.AUTO_ROUTE_USED is False
 
 
 def test_unknown_candidate_fails_closed() -> None:

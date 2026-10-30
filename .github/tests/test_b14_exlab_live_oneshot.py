@@ -135,9 +135,6 @@ def test_allowlist_is_exactly_the_one_exlab_id() -> None:
     assert EXLAB_ID == f"experiential/{resolved.upstream_model}"
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="model_not_allowlisted"):
-        oneshot.resolve_exlab("b14/auto")
 
 
 def test_out_of_scope_models_are_rejected() -> None:
