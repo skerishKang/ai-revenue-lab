@@ -59,6 +59,20 @@ disk exhausted: 507; storage failure: 503. Partial uploads are removed on size,
 disk, disconnect or cancellation failure. Raw parser exceptions are not echoed.
 Access logging is disabled; ticket headers must not be printed by a proxy.
 
+## Request journal (#6338 observation gap follow-up)
+
+Every HTTP request appends exactly one JSONL line to
+`<FILE_LANE_ROOT>/journal/requests-<UTC date>.jsonl`. A row carries only:
+`ts` (UTC, millisecond ISO-8601), `method`, `path` (no query — the upload
+filename never enters the journal), `status`, `error_code` (the constant
+`FileError` code, `null` on success), `duration_ms`, and `file_size` (bytes of
+the committed file, the attempted Content-Length of a failed upload, or
+`null`). Filenames, file content, ticket or secret values, exception message
+text and raw owner identifiers are never journaled. A journal write failure is
+swallowed — the request it observes is unaffected. The journal exists for
+incident reconstruction; it does not replace the disabled access log and adds
+no request-path restriction.
+
 ## Ticket wire (Chat issuer in PR-2)
 
 Dedicated deployment secret: `FILE_LANE_TICKET_SECRET` (at least 32 characters).

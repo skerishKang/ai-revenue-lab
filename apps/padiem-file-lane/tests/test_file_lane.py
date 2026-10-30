@@ -63,7 +63,9 @@ def test_invalid_tickets_cannot_store_or_read(client, tmp_path, headers):
     response = upload(client, headers=headers)
     assert response.status_code == 401
     assert client.get("/files/file_" + "a" * 32 + "/meta", headers=headers).status_code == 401
-    assert list(tmp_path.iterdir()) == []
+    # The request journal (#6338 follow-up) is the one allowed disk trace; an
+    # unauthenticated attempt still creates no owner directory and stores no bytes.
+    assert [path.name for path in tmp_path.iterdir() if path.name != "journal"] == []
 
 
 def test_tampering_any_signed_claim_is_rejected(client):
