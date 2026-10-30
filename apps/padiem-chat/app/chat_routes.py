@@ -343,7 +343,7 @@ async def api_chat_stream(request: Request):
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     if tool_request is not None or attachments:
         return JSONResponse(
@@ -874,7 +874,7 @@ async def api_chat(request: Request) -> JSONResponse:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
