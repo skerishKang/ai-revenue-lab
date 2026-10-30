@@ -1,6 +1,5 @@
 """One accepted PC run can be read only by its owner, without redispatch."""
 import asyncio
-from store_seam import attach_dispatch_seam
 import json
 import sqlite3
 from types import SimpleNamespace
@@ -8,6 +7,7 @@ from types import SimpleNamespace
 from starlette.requests import Request
 from app.claw_general_routes import _claw_general_sse
 from app.claw_routes import claw_pending_result
+from store_seam import attach_dispatch_seam
 
 
 def test_pc_receipt_reports_pending_instead_of_done():
