@@ -10,17 +10,19 @@
 |---|---|---|
 | Chat Worker | `padiem-chat-staging`, `https://padiem-chat-staging.<account-subdomain>.workers.dev` | 별도 Worker·배포 버전·변수·시크릿. 운영 `chat.padiem.net` route 미등록. 실제 호스트는 계정에서 확인. |
 | Chat D1 | `padiem-chat-staging-db`, 바인딩명 `PADIEM_CHAT_DB` | 별도 DB ID. 검토된 동일 마이그레이션으로 빈 DB에 스키마만 생성. 운영 데이터·백업·계정 복사 금지. |
-| Auth callback | 위 스테이징 origin의 `/auth/shared/callback` 한 개 | padiem-auth의 b62 허용 목록에 정확한 URL과 해당 클라이언트 공개키를 추가하는 별도 PR. 실제 콜백은 #6282 코드의 최종 경로와 대조. 기존 운영 콜백·키 유지. |
-| Auth 클라이언트 | 기존 b62 프로토콜, 스테이징 전용 클라이언트 서명키와 세션·상태 키 | 값은 별도 시크릿으로 주입, 저장소·로그에 기록 금지. 개인키 생성·보관은 승인된 절차로 시행하고 운영 padiem-auth의 키는 재생성하지 않음. |
+| Auth callback | 위 스테이징 origin의 `/auth/shared/callback` 한 개 | padiem-auth에 스테이징 전용 클라이언트와 정확한 URL·공개키를 추가하는 별도 PR. 실제 콜백은 #6282 코드의 최종 경로와 대조. 기존 운영 콜백·키 유지. |
+| Auth 클라이언트 | `b62-staging` 제안: 운영 b62와 별도 client ID/audience·kid·클라이언트 서명키와 세션·상태 키 | 값은 별도 시크릿으로 주입, 저장소·로그에 기록 금지. 운영 padiem-auth의 키는 재생성하지 않음. |
 | COM2 큐 | `PC_QUEUE_BACKEND=com2`; `PC_QUEUE_ORIGIN`은 Qoder가 제공할 전용 스테이징 HTTPS Tunnel 주소; `PC_QUEUE_SERVICE_SECRET`은 전용 시크릿 | Qoder가 별도 포트·DB·자격증명·터널 및 합성 실행기 구성. 운영 큐 URL/DB/시크릿·실제 PC에 연결 금지. |
 | 기타 서비스 | `ASSETS`, `CF_VERSION_METADATA`는 스테이징 Worker 자체 것 | 운영 D1·R2·P01·B14·Broker·파일 레인 등 쓰기 가능한 바인딩은 미연결. 필요한 것은 별도 스테이징 또는 fail-closed 테스트 대체만 사용. 실제 경로라고 주장하려면 대체 여부를 결과에 명시. |
 | 관찰 | 스테이징 Worker 로그·버전 메타데이터 | 시각·단계·상태·안전한 상관값만 기록. 본문·헤더·비밀·사용자 식별 정보 금지. |
 
-## 인증 경계: 구현 전 결정 필요
+## 인증 경계: CTO 결정 (2026-10-30)
 
 현재 padiem-auth는 자체 상태 저장소와 `IDENTITY_AUTHORITY`에 연결된다. #6296/#6282는 프로필 교환과 identity authority의 신규 RPC를 요구한다. **운영 padiem-auth에 콜백만 추가해도 실제 로그인은 운영 인증 상태와 identity authority에 쓰기를 일으킬 수 있다.** 별도 Chat D1만으로 전체 인증이 격리되는 것은 아니다. 또한 운영 authority가 새 RPC를 지원하지 않으면 정상 통합이 불가능하다.
 
-CTO는 실제 로그인 시험에서 운영 padiem-auth/identity authority에 남을 시험 계정 및 일회성 인증 상태 쓰기를 허용할지, 아니면 별도 스테이징 auth·identity authority와 별도 상태 저장소를 사용할지 결정한다. 후자는 추가 리소스와 설정이 필요하며 반나절 목표를 재평가한다. 어떤 선택이든 운영 Chat D1과 운영 padiem-auth 키는 변경하지 않는다. 결정 전에는 콜백 추가 PR 설계만 진행하고 로그인 시험·인증 서버 배포는 하지 않는다. 단순 모의 authority 통과는 실제 로그인 통과로 보고하지 않는다.
+운영 padiem-auth와 기존 identity authority를 사용하고 스테이징 전용 클라이언트 한 개와 콜백 한 개를 등록한다. 별도 `kid` 및 audience를 사용한다. 이미 MATCH가 확인된 `charliekant@gmail.com` 한 계정만 시험하며 처음 보는 계정으로 로그인하지 않는다. 새 계정 생성과 옛 계정 권위 호출 없이 진행하고, 시험 종료 시 스테이징 세션을 로그아웃으로 폐기한다. 운영 padiem-auth 재배포는 별도 CTO 승인 후 `--keep-vars`로만 하며 운영 키는 재생성하지 않는다. 단순 모의 authority 통과는 실제 로그인 통과로 보고하지 않는다.
+
+현재 #6296은 클라이언트 ID를 제품 ID로 사용하며, 기존 계정이라도 `b62` 제품이면 identity authority RPC를 호출한다. #6282도 b62 audience를 전제하는 부분이 있다. 별도 audience의 스테이징 클라이언트가 같은 b62 계정을 사용하면서 신규 링크나 권위 호출을 일으키지 않는지, 로그아웃이 auth 서버 세션까지 폐기하는지 코드와 통합 시험으로 확인해야 한다. 검증 전에는 위 조건이나 운영에 세션 한 건만 남는다는 점을 완료 사실로 취급하지 않는다. 불일치가 있으면 시험을 중단하고 수정 PR로 해결한다.
 
 ## 무료 한도와 타당성
 
@@ -30,7 +32,7 @@ CTO는 실제 로그인 시험에서 운영 padiem-auth/identity authority에 �
 
 ## 구현·검증 순서
 
-1. CTO 설계 확인 및 위 인증 경계 결정 후, 실제 스테이징 호스트·계정 플랜·가용 한도와 격리된 서비스 대상을 확정한다. 운영 배포 창에는 main 머지 금지.
+1. CTO 설계 확인 후, 실제 스테이징 호스트·계정 플랜·가용 한도와 격리된 서비스 대상을 확정한다. 운영 배포 창에는 main 머지 금지.
 2. 스테이징 전용 Wrangler 설정과 최소 수동 workflow를 별도 PR로 작성한다. 기존 B62 운영 게이트를 복제하지 않는다. 고정된 검토 head, `padiem-chat-staging` 이름 및 스테이징 DB ID를 엄격 검증하고 운영 route·운영 DB·운영 자격증명 사용 시 실패한다. PR은 CTO가 머지한다.
 3. 승인 후 빈 스테이징 D1에 스키마만 적용하고 리소스와 바인딩을 확인한다. Qoder가 별도 큐와 합성 실행기를 준비하면 스테이징 변수만 연결한다. 테스트 행 외 데이터 없음 확인.
 4. #6296·identity authority 계약 준비, 스테이징 콜백 허용 목록 PR을 검토한다. padiem-auth 변경·재배포는 별도 CTO 승인 후 기존 키를 유지하며 `--keep-vars`를 사용한다. 해당 auth/authority 경계와 실제 RPC 지원 버전을 명시한다. #6282 코드가 반영된 스테이징 Chat을 배포한다.
@@ -39,4 +41,4 @@ CTO는 실제 로그인 시험에서 운영 padiem-auth/identity authority에 �
 
 ## 복귀
 
-스테이징 장애는 스테이징의 직전 Worker 버전·설정으로 복귀하거나 테스트를 중단한다. 격리 DB는 그대로 보존하며 운영 리소스에 복귀 명령을 적용하지 않는다. 운영 padiem-auth에 콜백이 추가된 경우 제거도 별도 승인·PR과 `--keep-vars` 배포로 수행한다. 진행 중인 로그인은 실패할 수 있으므로 스테이징 세션을 종료한 뒤 재시험한다. 테스트 계정과 만료된 인증 상태의 정리 방법은 인증 경계 결정 때 확정한다.
+스테이징 장애는 스테이징의 직전 Worker 버전·설정으로 복귀하거나 테스트를 중단한다. 격리 DB는 그대로 보존하며 운영 리소스에 복귀 명령을 적용하지 않는다. 운영 padiem-auth에 콜백이 추가된 경우 제거도 별도 승인·PR과 `--keep-vars` 배포로 수행한다. 진행 중인 로그인은 실패할 수 있으므로 스테이징 세션을 종료한 뒤 재시험한다. 시험 후 스테이징 세션은 로그아웃으로 폐기하고, 실제 폐기 여부를 확인한다.
