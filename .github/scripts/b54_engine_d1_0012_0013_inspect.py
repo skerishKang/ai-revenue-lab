@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import urllib.request
+import urllib.error
 from pathlib import Path
 import b54_engine_d1_0009_0013_schema as schema
 import b54_engine_d1_0009_0013_foreign_keys as fk
@@ -17,8 +18,26 @@ def query(sql):
     if not token: raise ValueError("token unavailable")
     url=f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT}/d1/database/{DB}/query"
     request=urllib.request.Request(url,data=json.dumps({"sql":sql}).encode(),headers={"Authorization":"Bearer "+token,"Content-Type":"application/json"},method="POST")
-    with urllib.request.urlopen(request,timeout=30) as response:
-        return json.load(response)
+    try:
+        with urllib.request.urlopen(request,timeout=30) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as exc:
+        try:
+            payload=json.loads(exc.read(65536))
+            errors=payload.get("errors", []) if isinstance(payload, dict) else []
+            if not isinstance(errors, list): errors=[]
+            safe=[]
+            for item in errors[:10]:
+                if not isinstance(item, dict): continue
+                code=item.get("code")
+                message=item.get("message")
+                if not isinstance(code, (int, str)) or not isinstance(message, str): continue
+                message=message.replace(token, "[REDACTED]")[:500]
+                safe.append({"code": code, "message": message})
+            print("D1_HTTP_ERROR="+json.dumps({"status":exc.code,"errors":safe},ensure_ascii=True),file=sys.stderr)
+        except Exception:
+            print("D1_HTTP_ERROR="+json.dumps({"status":exc.code,"errors":"unavailable"}),file=sys.stderr)
+        raise
 
 def table_counts():
     inventory=fk.rows(query(fk.TABLES_QUERY))
@@ -26,6 +45,9 @@ def table_counts():
     for row in inventory:
         if not isinstance(row,dict) or not isinstance(row.get("name"),str) or not row["name"] or "\x00" in row["name"] or row["name"] in names:
             raise ValueError("invalid table list")
+        # Cloudflare reserves _cf_KV; even SELECT is rejected by D1.
+        # It is provider metadata, not an application table to preserve.
+        if row["name"] == "_cf_KV": continue
         names.append(row["name"])
     if not names or len(names)>450: raise ValueError("unsupported table count")
     def lit(name): return "'"+name.replace("'","''")+"'"
