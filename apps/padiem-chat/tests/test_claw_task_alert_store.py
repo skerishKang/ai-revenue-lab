@@ -192,10 +192,13 @@ class _FakeStatement:
         sql = self._sql
         ws = self._values[0]
         kind = _parse_kind_from_sql(sql)
+        member = self._values[1] if "member_id=?" in sql else None
         matched = [
             {c: r[c] for c in COLUMNS}
             for r in self._db.rows.values()
-            if r["workspace_id"] == ws and r["kind"] == kind
+            if r["workspace_id"] == ws
+            and r["kind"] == kind
+            and (member is None or r["member_id"] == member)
         ]
         matched.sort(key=lambda r: r["created_at"], reverse=True)
         if "LIMIT" in sql.upper():
@@ -230,7 +233,7 @@ async def test_task_create_and_get_and_list():
     assert got.status == ClawTaskStatus.OPEN
     assert got.title == "Follow up with supplier"
     assert got.member_id == "member-1"
-    listed = await store.list_tasks("ws-1")
+    listed = await store.list_tasks("ws-1", member_id="member-1")
     assert len(listed) == 1
     assert listed[0].task_id == "task-1"
     assert listed[0].title == "Follow up with supplier"
@@ -251,7 +254,7 @@ async def test_alert_create_and_get_and_list():
     assert got.kind == ClawAlertKind.FOLLOWUP_DUE
     assert got.severity == ClawAlertSeverity.WARN
     assert got.title == "Due follow-up needed"
-    listed = await store.list_alerts("ws-1")
+    listed = await store.list_alerts("ws-1", member_id="member-1")
     assert len(listed) == 1
     assert listed[0].alert_id == "alert-1"
     assert listed[0].is_visible_to(None)
@@ -281,7 +284,7 @@ async def test_alert_result_reference_round_trips_in_order():
     got = await store.get_alert("alert-1", workspace_id="ws-1")
     assert got is not None
     assert got.linked_refs == ("sched_run_" + "a" * 64, "rule-1")
-    listed = await store.list_alerts("ws-1")
+    listed = await store.list_alerts("ws-1", member_id="member-1")
     assert listed[0].linked_refs == ("sched_run_" + "a" * 64, "rule-1")
 
 
@@ -336,8 +339,8 @@ async def test_list_is_hard_bounded():
     store, _ = _store()
     for i in range(300):
         await store.add_task(_T(f"task-{i}", title=f"title {i}", member_id="m-1"))
-    assert len(await store.list_tasks("ws-1")) == 256
-    assert len(await store.list_tasks("ws-1", limit=5)) == 5
+    assert len(await store.list_tasks("ws-1", member_id="m-1")) == 256
+    assert len(await store.list_tasks("ws-1", member_id="m-1", limit=5)) == 5
 
 
 # ---- 6. owner/workspace isolation ----
@@ -349,10 +352,13 @@ async def test_owner_workspace_isolation():
     t2 = await store.get_task("task-2", workspace_id="ws-2")
     assert t1 is not None and t1.member_id == "m-a"
     assert t2 is not None and t2.member_id == "m-b"
-    listed_ws1 = await store.list_tasks("ws-1")
-    listed_ws2 = await store.list_tasks("ws-2")
+    listed_ws1 = await store.list_tasks("ws-1", member_id="m-a")
+    listed_ws2 = await store.list_tasks("ws-2", member_id="m-b")
     assert len(listed_ws1) == 1 and listed_ws1[0].member_id == "m-a"
     assert len(listed_ws2) == 1 and listed_ws2[0].member_id == "m-b"
+    # #2952 follow-up: inside ONE workspace a tenant-mate reads nothing.
+    assert await store.list_tasks("ws-1", member_id="m-b") == ()
+    assert await store.list_tasks("ws-2", member_id="m-a") == ()
 
 
 # ---- 7. foreign/missing non-disclosure ----
@@ -482,7 +488,7 @@ async def test_task_with_due_date_round_trips():
     got = await store.get_task("task-1", workspace_id="ws-1")
     assert got is not None
     assert got.due_date == _dt.date(2026, 9, 30)
-    listed = await store.list_tasks("ws-1")
+    listed = await store.list_tasks("ws-1", member_id="member-1")
     assert [t.task_id for t in listed] == ["task-1"]
     assert listed[0].due_date == _dt.date(2026, 9, 30)
 

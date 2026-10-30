@@ -98,19 +98,25 @@ class FakeTaskAlertStore:
         self.alerts: dict[str, list[Any]] = {}
 
     async def list_tasks(
-        self, workspace_id: str, limit: int = 256
+        self, workspace_id: str, *, member_id: str, limit: int = 256
     ) -> list[Any]:
-        return list(self.tasks.get(workspace_id, []))[:limit]
+        # Mirrors the durable store after the #2952 follow-up: the owner
+        # predicate is part of the read, not applied by the caller afterwards.
+        raw = [
+            t
+            for t in self.tasks.get(workspace_id, [])
+            if getattr(t, "member_id", None) == member_id
+        ]
+        return raw[:limit]
 
     async def list_alerts(
-        self, workspace_id: str, *, member_id: str | None = None, limit: int = 256
+        self, workspace_id: str, *, member_id: str, limit: int = 256
     ) -> list[Any]:
         raw = list(self.alerts.get(workspace_id, []))
-        if member_id is not None:
-            raw = [
-                a for a in raw
-                if getattr(a, "is_visible_to", lambda m: True)(member_id)
-            ]
+        raw = [
+            a for a in raw
+            if getattr(a, "is_visible_to", lambda m: True)(member_id)
+        ]
         return raw[:limit]
 
     async def get_task(self, task_id: str, *, workspace_id: str) -> Any | None:
