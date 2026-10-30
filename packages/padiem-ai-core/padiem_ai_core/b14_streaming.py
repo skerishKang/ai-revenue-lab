@@ -335,14 +335,10 @@ def _parse_data_frame(frame: _SSEFrame, *, tools_requested: bool = False) -> B14
 def _validate_stream_request(request: B14ChatRequest) -> None:
     if not isinstance(request, B14ChatRequest):
         raise ValueError("request must be B14ChatRequest")
-    if request.model == "b14/auto":
-        raise B14ExecutionError(
-            "streaming_request_unsupported",
-            "Business 14 streaming currently requires an explicit model route.",
-        )
-    # #4317: there is no attempt budget to constrain. The streaming lane tries
-    # the candidates the declared product grade allows, in order, and the
-    # gateway owns that list.
+    # No automatic route exists; an id outside the registered catalog is
+    # refused by B14's ordinary unknown-model handling. #4317: there is no
+    # attempt budget to constrain. The streaming lane tries the candidates the
+    # declared product grade allows, in order, and the gateway owns that list.
 
 
 def _raise_status_error(status_code: int) -> None:
