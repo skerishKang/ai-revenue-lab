@@ -1,7 +1,12 @@
 """Validate common-auth profile data before any Chat account mutation."""
 from __future__ import annotations
 
+import logging
 import re
+
+from .history import HistoryConflict
+
+logger = logging.getLogger(__name__)
 
 
 async def provision_shared_profile(request, user_id, access_token, tokens, *, verifier, store, legacy_user, notify):
@@ -22,6 +27,11 @@ async def provision_shared_profile(request, user_id, access_token, tokens, *, ve
         raise ValueError('invalid_profile')
     existing_session = legacy_user(request)
     if existing_session is not None and existing_session != user_id:
+        logger.warning('shared_profile_identity_conflict')
         raise ValueError('legacy_account_conflict')
-    await store.upsert_shared_user(user_id, account_id, email, name, picture)
+    try:
+        await store.upsert_shared_user(user_id, account_id, email, name, picture)
+    except HistoryConflict:
+        logger.warning('shared_profile_identity_conflict')
+        raise
     await notify(request, user_id)
