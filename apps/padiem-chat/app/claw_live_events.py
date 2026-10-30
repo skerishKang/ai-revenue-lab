@@ -485,7 +485,8 @@ def chat_pc_orchestration_sse(
         import logging
         from .pc_correlation import run_hash
         trace_run = run_hash(pc_run_id) or "none"
-        log = logging.getLogger(__name__)
+        log = logging.getLogger("padiem_chat.pc_correlation")
+        log.setLevel(logging.INFO)
         reason = "closed"
         source = events()
         log.info("pc_chat stage=stream_started run_hash=%s", trace_run)

@@ -24,6 +24,7 @@ from . import httpx_compat as httpx
 from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispatch_id
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
