@@ -42,12 +42,22 @@ async def exchange_with_httpx(url, data):
     """Fixed-origin server-side exchange; never log the request or response."""
     if url != TOKEN_URL:
         raise ValueError('invalid_token_endpoint')
-    import httpx
+    from . import httpx_compat as httpx
+    from .auth import MAX_AUTH_RESPONSE_BYTES
     async with httpx.AsyncClient(follow_redirects=False) as client:
-        response = await client.post(TOKEN_URL, data=data)
-        if response.status_code != 200:
-            raise ValueError('exchange_failed')
-        return response.json()
+        async with client.stream('POST', TOKEN_URL, data=data) as response:
+            if response.status_code != 200:
+                raise ValueError('exchange_failed')
+            body = bytearray()
+            async for chunk in response.aiter_bytes():
+                body.extend(chunk)
+                # Use the established Chat authentication response limit.
+                if len(body) > MAX_AUTH_RESPONSE_BYTES:
+                    raise ValueError('exchange_response_too_large')
+            value = json.loads(body)
+            if not isinstance(value, dict):
+                raise ValueError('exchange_invalid_response')
+            return value
 
 
 class ComparisonFlow:
