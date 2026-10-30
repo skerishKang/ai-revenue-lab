@@ -4,6 +4,15 @@ on:
   pull_request:
     paths:
       - 'apps/korean-ai-code-agent/**'
+      # #6265 retroactive guard: KAgent's CI installs the shared Core with
+      # ``pip install -e ../../packages/padiem-ai-core[...]`` and its tests
+      # import ``padiem_ai_core.b14_execution`` and friends directly, so a
+      # Core source change is a KAgent surface change even when no Claw or
+      # individual-listed file moves. The per-file entries below stay for
+      # their contract comments; the glob makes a partial Core edit (the
+      # #6265 _OPTIMIZE_FOR removal that only surfaced later through #6280)
+      # fail this lane on the same pull request.
+      - 'packages/padiem-ai-core/**'
       # The KAgent image facade is a thin wrapper over the Core image helper, and
       # the Core receipt module is what selects the wheel below, so a Core change
       # has to run this suite even when no Claw file moves.
@@ -30,6 +39,9 @@ on:
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
       - '.github/scripts/kagent_parallel_contract_tests.py'
+      # #6265: the reverse-dependency trigger contract lives here so a
+      # future partial-list regression fails on the same PR.
+      - '.github/tests/test_ci_reverse_dependency_paths.py'
       - '.github/scripts/kagent_pytest_style_contract_tests.py'
   workflow_dispatch:
 
@@ -224,6 +236,11 @@ jobs:
         run: |
           set -euo pipefail
           python "$GITHUB_WORKSPACE/.github/scripts/kagent_parallel_contract_tests.py"
+      # #6265: every app CI that installs a shared monorepo package must
+      # trigger on that package's whole source tree. This contract is the
+      # mechanical proof; the incident it encodes is documented in the test.
+      - name: Test the reverse-dependency trigger contract
+        run: python -m unittest discover -s .github/tests -p test_ci_reverse_dependency_paths.py -q
 
       # unittest discovery collects TestCase cases only, so a pytest-style
       # module in this package contributed zero cases and its assertions ran
