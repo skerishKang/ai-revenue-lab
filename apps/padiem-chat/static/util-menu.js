@@ -871,6 +871,37 @@
       tab.addEventListener("click", () => activateUtilTab(tab));
     });
 
+    // #5908: the quick-run toolbox cards. The four util cards reuse the same
+    // activateUtilTab switch as the submenu rows (the sidebar highlight keeps
+    // its one owner); the two Claw cards route to the existing Claw workspace
+    // and its own chip handler stays the owner of the quote action — no
+    // second engine, no duplicated state here.
+    const toolGrid = document.getElementById("utilToolGrid");
+    const toolButtons = toolGrid
+      ? Array.from(toolGrid.querySelectorAll("[data-util-tool]"))
+      : [];
+    toolButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-util-tool");
+        if (key === "claw-quote" || key === "claw-excel") {
+          const clawNav = document.getElementById("clawNavButton");
+          if (clawNav) clawNav.click();
+          if (key === "claw-quote") {
+            const chip = document.getElementById("clawQuoteCard");
+            if (chip) chip.click();
+          }
+          return;
+        }
+        const tab = Array.prototype.find.call(
+          tabs, (t) => t.dataset.util === key
+        );
+        if (tab) {
+          activateUtilTab(tab);
+          markActiveUtilSubmenuItem(key);
+        }
+      });
+    });
+
     // Speech
     function buildPrompt(form) {
       const d = new FormData(form);
