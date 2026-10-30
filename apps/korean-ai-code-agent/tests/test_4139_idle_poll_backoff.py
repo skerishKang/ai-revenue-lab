@@ -186,6 +186,21 @@ class TestTheIdleWaitGrows(unittest.TestCase):
         self.assertEqual(clock.gaps[10], IDLE_POLL_BASE_SECONDS,
                          "the ask right after work waits one second, as before")
 
+    def test_eight_second_setting_caps_actual_idle_loop(self):
+        clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=160.0,
+                             environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "8"})
+        self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 8, 8, 8])
+
+    def test_invalid_ceiling_falls_back_to_60_and_logs_once(self):
+        for value in ("0", "-3", "abc", "", "1.5"):
+            with self.subTest(value=value), patch("sys.stderr") as stderr:
+                clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=600.0,
+                                     environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": value})
+                self.assertEqual(clock.gaps[:7], [1, 2, 4, 8, 16, 32, 60])
+                self.assertEqual(stderr.write.call_count, 2)
+                self.assertIn("invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS",
+                              stderr.write.call_args_list[0].args[0])
+
     def test_one_second_ceiling_is_exactly_the_cadence_this_lane_had(self):
         clock, _ = _run_loop(lambda _round: ROUND_IDLE, stop_at=120.0,
                              environ={"ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "1"})

@@ -174,3 +174,5 @@ for the two per-device questions it replaced.
   `apps/padiem-chat/app/history.py:38-45`,
   `.github/scripts/connector_lane_watch.py:55-59`,
   `apps/padiem-mesh-queue/service.py:71,189`.
+
+COM2 local-queue drop-in example: `Environment=ORACLE_MESH_IDLE_POLL_MAX_SECONDS=8` — loopback polling has low overhead; the default remains 60 seconds.

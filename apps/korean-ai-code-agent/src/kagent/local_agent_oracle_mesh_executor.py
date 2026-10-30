@@ -2145,11 +2145,19 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # The idle ceiling is readable for the operator who wants to weigh the old
         # cadence against the new one on a live host: one is exactly the behaviour every
         # executor had before this schedule existed.
-        idle_max = max(
-            IDLE_POLL_BASE_SECONDS,
-            min(int(env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS",
-                            str(IDLE_POLL_MAX_SECONDS)) or IDLE_POLL_MAX_SECONDS), 300),
-        )
+        raw_idle_max = env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS")
+        if raw_idle_max is None:
+            idle_max = IDLE_POLL_MAX_SECONDS
+        else:
+            try:
+                idle_max = int(raw_idle_max)
+                if idle_max <= 0:
+                    raise ValueError
+                idle_max = min(idle_max, 300)
+            except (ValueError, TypeError):
+                idle_max = IDLE_POLL_MAX_SECONDS
+                print("oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default 60",
+                      file=sys.stderr)
     except (ContractError, ValueError) as exc:
         print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
         return 2
