@@ -38,7 +38,7 @@ def deploy_command(config, *, keep_vars):
 def main(args):
     mode = args[0]
     if mode == "capture" and len(args) == 2:
-        request = urllib.request.Request(JWKS_URL, headers={"Accept": "application/json"})
+        request = urllib.request.Request(JWKS_URL, headers={"Accept": "application/json", "User-Agent": "PadiemAuthUpdateGuard/1.0"})
         with urllib.request.urlopen(request, timeout=15) as response:
             value = json.load(response)
         verify_jwks(value, value)
@@ -46,7 +46,7 @@ def main(args):
         print("signing public key present: PASS")
     elif mode == "compare" and len(args) == 2:
         before = json.loads(Path(args[1]).read_text(encoding="utf-8"))
-        request = urllib.request.Request(JWKS_URL, headers={"Accept": "application/json"})
+        request = urllib.request.Request(JWKS_URL, headers={"Accept": "application/json", "User-Agent": "PadiemAuthUpdateGuard/1.0"})
         with urllib.request.urlopen(request, timeout=15) as response:
             after = json.load(response)
         verify_jwks(before, after)
