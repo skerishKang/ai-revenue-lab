@@ -299,6 +299,7 @@ class OracleMeshExecutor:
         desktop_port: Any = None,
         timeout_seconds: int | None = None,
         channel_timeout_seconds: int = CHANNEL_SOCKET_TIMEOUT_SECONDS,
+        idle_poll_max_seconds: int = IDLE_POLL_MAX_SECONDS,
         transport: Optional[Callable[..., tuple[int, dict[str, Any]]]] = None,
         pending_dir: Optional[str] = None,
         claim_gate: Optional[Callable[[], bool]] = None,
@@ -351,6 +352,7 @@ class OracleMeshExecutor:
         self._desktop_port = desktop_port
         self._timeout = timeout_seconds
         self._channel_timeout = channel_timeout_seconds
+        self.idle_poll_max_seconds = idle_poll_max_seconds
         #: When the last channel round reached an answer or a classified failure.
         #: Only the watchdog reads it, and a round that fails counts: the stall this
         #: guards is a loop that stopped asking at all, not a channel that answers
@@ -1803,6 +1805,7 @@ def make_oracle_mesh_executor(
     work_dir: str | None = None,
     timeout_seconds: int | None = None,
     channel_timeout_seconds: int = CHANNEL_SOCKET_TIMEOUT_SECONDS,
+    idle_poll_max_seconds: int = IDLE_POLL_MAX_SECONDS,
     claim_gate: Optional[Callable[[], bool]] = None,
     presence_provider: Optional[Callable[[], Any]] = None,
     pairing_provider: Optional[Callable[[], Any]] = None,
@@ -1886,6 +1889,7 @@ def make_oracle_mesh_executor(
         desktop_port=desktop_port,
         timeout_seconds=timeout_seconds,
         channel_timeout_seconds=channel_timeout_seconds,
+        idle_poll_max_seconds=idle_poll_max_seconds,
         pending_dir=work_dir,
         claim_gate=claim_gate,
         presence_provider=presence_provider,
@@ -2122,12 +2126,27 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
                     entries.append(entry)
                 return entries
 
+        raw_idle_max = env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS")
+        if raw_idle_max is None:
+            idle_max = IDLE_POLL_MAX_SECONDS
+        else:
+            try:
+                idle_max = int(raw_idle_max)
+                if idle_max <= 0:
+                    raise ValueError
+                idle_max = min(idle_max, 300)
+            except (ValueError, TypeError):
+                idle_max = IDLE_POLL_MAX_SECONDS
+                print("oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default 60",
+                      file=sys.stderr)
+
         executor = make_oracle_mesh_executor(
             chat_origin=need("ORACLE_MESH_CHAT_ORIGIN"),
             channel_secret=_read_secret_file(
                 need("ORACLE_MESH_CHANNEL_SECRET_FILE"), "channel secret"
             ),
             queue_origin=env.get("ORACLE_MESH_QUEUE_ORIGIN", "").strip() or None,
+            idle_poll_max_seconds=idle_max,
             meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"),
             login_user=need("ORACLE_MESH_LOGIN_USER"),
             password_provider=password_provider,
@@ -2145,19 +2164,6 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
         # The idle ceiling is readable for the operator who wants to weigh the old
         # cadence against the new one on a live host: one is exactly the behaviour every
         # executor had before this schedule existed.
-        raw_idle_max = env.get("ORACLE_MESH_IDLE_POLL_MAX_SECONDS")
-        if raw_idle_max is None:
-            idle_max = IDLE_POLL_MAX_SECONDS
-        else:
-            try:
-                idle_max = int(raw_idle_max)
-                if idle_max <= 0:
-                    raise ValueError
-                idle_max = min(idle_max, 300)
-            except (ValueError, TypeError):
-                idle_max = IDLE_POLL_MAX_SECONDS
-                print("oracle-mesh-executor: invalid ORACLE_MESH_IDLE_POLL_MAX_SECONDS; using default 60",
-                      file=sys.stderr)
     except (ContractError, ValueError) as exc:
         print(f"oracle-mesh-executor refused to start: {exc}", file=sys.stderr)
         return 2
@@ -2196,7 +2202,7 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
             # this host starts claiming on the next second.
             time.sleep(gap)
             gap = (IDLE_POLL_BASE_SECONDS if executor.last_round != ROUND_IDLE
-                   else min(gap * 2, idle_max))
+                   else min(gap * 2, executor.idle_poll_max_seconds))
             continue
         gap = IDLE_POLL_BASE_SECONDS
         observations = executor.line_observations()
