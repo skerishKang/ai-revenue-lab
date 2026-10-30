@@ -2,6 +2,9 @@ import asyncio
 import base64
 import json
 import unittest
+from unittest.mock import patch
+import sys
+import types
 from http.cookies import SimpleCookie
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
@@ -13,7 +16,7 @@ from starlette.datastructures import QueryParams
 from starlette.applications import Starlette
 import httpx
 
-from app.shared_auth_compare_flow import CALLBACK, COOKIE, ComparisonFlow
+from app.shared_auth_compare_flow import CALLBACK, COOKIE, TOKEN_URL, ComparisonFlow, exchange_with_httpx
 
 
 def b64int(value):
@@ -112,3 +115,29 @@ class FlowTests(unittest.TestCase):
                 self.assertEqual(response.json(), {'result':'MATCH'})
                 self.assertEqual(response.headers['cache-control'], 'no-store')
         self.run_flow(scenario())
+
+    def test_exchange_uses_workers_compatible_stream_and_fixed_url(self):
+        seen = []
+        class Response:
+            status_code = 200
+            async def __aenter__(self): return self
+            async def __aexit__(self, *args): return None
+            async def aiter_bytes(self):
+                yield b'{"access_token":"synthetic"}'
+        class Client:
+            def __init__(self, **kwargs): self.options = kwargs
+            async def __aenter__(self): return self
+            async def __aexit__(self, *args): return None
+            def stream(self, method, url, **kwargs):
+                seen.append((method, url, self.options))
+                return Response()
+        shim = types.ModuleType('app.httpx_compat')
+        shim.AsyncClient = Client
+        auth = types.ModuleType('app.auth')
+        auth.MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
+        with patch.dict(sys.modules, {'app.httpx_compat':shim, 'app.auth':auth}):
+            result = self.run_flow(exchange_with_httpx(TOKEN_URL, {'code':'synthetic'}))
+            with self.assertRaises(ValueError):
+                self.run_flow(exchange_with_httpx('https://invalid.example/token', {}))
+        self.assertEqual(result, {'access_token':'synthetic'})
+        self.assertEqual(seen, [('POST',TOKEN_URL,{'follow_redirects':False})])
