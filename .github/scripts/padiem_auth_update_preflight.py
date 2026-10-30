@@ -9,12 +9,13 @@ import sys
 import tomllib
 from pathlib import Path
 from padiem_auth_binding_check import verify
+from padiem_auth_client_delta import verify_delta
 
 
 UUID = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')
 
 
-def validate_config(config, baseline):
+def validate_config(config, baseline, live_clients=None, reviewed_config=None):
     if config.get('name') != 'padiem-auth':
         raise ValueError('wrong Worker')
     bindings = baseline.get('bindings', [])
@@ -27,7 +28,9 @@ def validate_config(config, baseline):
             raise ValueError('unreviewed declared variable')
         expected = reviewed.get(name, {}).get('sha256')
         if expected != hashlib.sha256(value.encode('utf-8')).hexdigest():
-            raise ValueError('declared variable differs from reviewed baseline')
+            if name != 'PADIEM_AUTH_CLIENTS' or reviewed_config is None:
+                raise ValueError('declared variable differs from reviewed baseline')
+            verify_delta(live_clients, value, reviewed_config['vars']['PADIEM_AUTH_CLIENTS'])
 
     services = [b for b in bindings if b.get('type') == 'service']
     objects = [b for b in bindings if b.get('type') == 'durable_object_namespace']
@@ -63,14 +66,19 @@ def verify_deployment(deployments, expected):
 
 
 def main():
-    if len(sys.argv) != 5:
-        raise SystemExit('usage: SETTINGS BASELINE DEPLOYMENTS EXPECTED_VERSION')
+    if len(sys.argv) not in (5, 6):
+        raise SystemExit('usage: SETTINGS BASELINE DEPLOYMENTS EXPECTED_VERSION [REVIEWED_CONFIG]')
     def read(path):
         return json.loads(Path(path).read_text(encoding='utf-8'))
     baseline = read(sys.argv[2])
-    verify(read(sys.argv[1]), baseline)
+    settings = read(sys.argv[1])
+    verify(settings, baseline)
+    reviewed = None
+    if len(sys.argv) == 6:
+        with open(sys.argv[5], 'rb') as approved:
+            reviewed = tomllib.load(approved)
     with open('apps/padiem-auth/wrangler.toml', 'rb') as f:
-        validate_config(tomllib.load(f), baseline)
+        validate_config(tomllib.load(f), baseline, settings.get('client_fingerprints'), reviewed)
     verify_deployment(read(sys.argv[3]), sys.argv[4])
     print('approved binding baseline, planned config and active version: PASS')
 

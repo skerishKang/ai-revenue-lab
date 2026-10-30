@@ -46,4 +46,24 @@ class Check(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.validate_config(changed, baseline)
 
+
+    def test_real_preflight_config_enforces_only_reviewed_staging_addition(self):
+        from padiem_auth_client_delta import fingerprints
+        import hashlib
+        import json
+        old = json.dumps({'b62': {'redirect': ['before']}})
+        new = json.dumps({'b62': {'redirect': ['before']}, 'b62-staging': {'id': 'b62-staging'}})
+        reviewed = {'vars': {'PADIEM_AUTH_CLIENTS': new}}
+        baseline = {**base, 'bindings': base['bindings'] + [
+            {'name': 'PADIEM_AUTH_CLIENTS', 'type': 'plain_text',
+             'sha256': hashlib.sha256(old.encode()).hexdigest()}]}
+        actual = {**config, 'vars': {'PADIEM_AUTH_CLIENTS': new}}
+        m.validate_config(actual, baseline, fingerprints(old), reviewed)
+        changed = json.dumps({'b62': {'redirect': ['changed']}, 'b62-staging': {'id': 'b62-staging'}})
+        with self.assertRaises(ValueError):
+            m.validate_config({**config, 'vars': {'PADIEM_AUTH_CLIENTS': changed}},
+                              baseline, fingerprints(old), reviewed)
+        with self.assertRaises(ValueError):
+            m.validate_config(actual, baseline)
+
 if __name__ == '__main__': unittest.main()

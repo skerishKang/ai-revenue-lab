@@ -6,6 +6,7 @@ import re
 import sys
 import urllib.request
 from pathlib import Path
+from padiem_auth_client_delta import fingerprints
 
 
 def main():
@@ -30,6 +31,7 @@ def main():
     if result.get('success') is not True or not isinstance(result.get('result', {}).get('bindings'), list):
         raise ValueError('binding settings unavailable')
     bindings = []
+    clients = None
     for b in result['result']['bindings']:
         if not isinstance(b, dict):
             raise ValueError('invalid binding')
@@ -42,6 +44,8 @@ def main():
             if not isinstance(b.get('text'), str):
                 raise ValueError('plain variable unavailable')
             out['sha256'] = hashlib.sha256(b['text'].encode()).hexdigest()
+            if b.get('name') == 'PADIEM_AUTH_CLIENTS':
+                clients = fingerprints(b['text'])
         elif kind == 'service':
             for k in ('service', 'environment', 'entrypoint'):
                 if k in b: out[k] = b[k]
@@ -54,7 +58,7 @@ def main():
     target = Path(sys.argv[1])
     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(fd, 'w', encoding='utf-8') as out:
-        json.dump({'success': True, 'result': {'bindings': bindings}}, out)
+        json.dump({'success': True, 'result': {'bindings': bindings}, 'client_fingerprints': clients}, out)
     print('approved-account binding metadata read: PASS')
 
 
