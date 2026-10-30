@@ -1598,6 +1598,7 @@
     // The button element and its text stay: the auth projection and the
     // outputs feature read them as the session signal.
     loginButton.hidden = presentation.loginHidden;
+    loginButton.style.visibility = "";
     loginButton.disabled = presentation.loginDisabled;
     syncAuthDialogMethods();
     loginButton.setAttribute("aria-disabled", presentation.loginDisabled ? "true" : "false");
@@ -2519,6 +2520,17 @@
     if (!response.ok || !data) throw new Error("auth status unavailable");
     return data;
   }
+  let sharedRefreshTimer = null;
+  function scheduleSharedRefresh() {
+    if (sharedRefreshTimer) clearTimeout(sharedRefreshTimer);
+    if (authState.shared_login_enabled !== true || !document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) return;
+    sharedRefreshTimer = setTimeout(async () => {
+      try {
+        const response = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
+        if (response.ok) await loadAuthStatus();
+      } catch (_) { /* The next status read retries without treating failure as sign-out. */ }
+    }, 14 * 60 * 1000);
+  }
   async function loadAuthStatus() {
     // #6114: a Python Worker restart can eat the first status read (1101/1102).
     // A request that produced NO answer is never a signed-out answer: ask once
@@ -2528,6 +2540,13 @@
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
         data = await fetchAuthStatusOnce();
+        // The hint is display-only; the refresh cookie remains HttpOnly.
+        if (data.shared_login_enabled === true && !data.authenticated &&
+            document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) {
+          const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
+          if (!renewed.ok) throw new Error("shared session unavailable");
+          data = await fetchAuthStatusOnce();
+        }
         break;
       } catch (_) {
         if (attempt === 1) data = null;
@@ -2536,6 +2555,7 @@
     try {
       if (!data) throw new Error("auth status unavailable");
       applyAuthState(data);
+      scheduleSharedRefresh();
       if (authState.authenticated) {
         await loadProjects();
         await loadRecentConversations();
@@ -3643,6 +3663,10 @@
   // the local conversation reset are the same in both paths.
   async function signOutCurrentAccount() {
     try {
+      if (authState.shared_login_enabled === true && document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) {
+        const sharedLogout = await fetch("/auth/shared/logout", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
+        if (!sharedLogout.ok) throw new Error("shared logout unavailable");
+      }
       await fetch("/api/auth/logout", { method: "POST", headers: { "Accept": "application/json" } });
     } finally {
       // #5034: drop this device's Web Push subscription on sign-out so a
@@ -7132,3 +7156,4 @@
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
   automationDestinationReady = true;
 })();
+

@@ -116,10 +116,14 @@ def current_user_id(request: Request) -> str | None:
     """
 
     verdict = session_verdict(request)
-    if verdict is not None and not verdict.authenticated:
-        return None
     settings: Settings = request.app.state.settings
-    return decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+    if verdict is None or verdict.authenticated:
+        legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+        if legacy_user:
+            return legacy_user
+    # Set only by SharedSessionMiddleware after ES256 verification and mapping.
+    shared_user = getattr(request.state, 'padiem_shared_user_id', None)
+    return shared_user if isinstance(shared_user, str) and shared_user else None
 
 
 def _wants_html(request: Request) -> bool:
@@ -284,6 +288,8 @@ async def auth_status(request: Request) -> JSONResponse:
         "history_ready": ready and store is not None,
         "user": user,
     }
+    if getattr(request.app.state, 'shared_login_flow', None) is not None:
+        payload['shared_login_enabled'] = True
     # Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane,
     # bounded by the usage gate; paid tiers, Claw, Custom and projects still
     # need a session. This flag is the server-authoritative condition the
@@ -318,6 +324,10 @@ def _bridge_origin(request: Request) -> str | None:
 
 
 async def google_start(request: Request) -> Response:
+    shared_flow = getattr(request.app.state, 'shared_login_flow', None)
+    # Preserve existing handoffs and explicit return targets during migration.
+    if shared_flow is not None and not request.query_params:
+        return await shared_flow.start_login(request)
     if not google_auth_ready(request):
         return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
@@ -1251,3 +1261,4 @@ async def logout(request: Request) -> JSONResponse:
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
+
