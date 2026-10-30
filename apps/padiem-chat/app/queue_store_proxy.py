@@ -153,11 +153,11 @@ class QueueStoreClient:
             QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
         ) else "other"
 
-        def record(outcome, reason):
+        def record(outcome, reason, exception="none"):
             log = logger.info if outcome == "ok" else logger.warning
-            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s",
+            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s",
                 safe_method, stage, status, outcome, reason,
-                int((time.perf_counter() - started) * 1000))
+                int((time.perf_counter() - started) * 1000), exception)
 
         try:
             async with factory(**client_options) as client:
@@ -185,14 +185,17 @@ class QueueStoreClient:
         except (httpx.HTTPError, ValueError, TypeError) as exc:
             reason = ("transport_error" if isinstance(exc, httpx.HTTPError)
                       else "invalid_json" if stage == "json_decode" else "invalid_response")
-            record("error", reason)
+            kind = type(exc).__name__
+            if kind not in {"HTTPError", "RequestError", "ConnectError", "ReadError", "ReadTimeout", "ProtocolError", "JSONDecodeError", "UnicodeDecodeError", "ValueError", "TypeError"}:
+                kind = "other"
+            record("error", reason, kind)
             raise QueueUnavailable("the queue could not be reached") from None
         except Exception as exc:
             # Never include exception text: it can contain URLs or credentials.
             # The fixed allowlist makes a missing API observable without logging
             # arbitrary attacker-controlled class names.
             kind = "AttributeError" if isinstance(exc, AttributeError) else "other"
-            record("error", "unexpected_" + kind)
+            record("error", "unexpected_" + kind, kind)
             raise QueueUnavailable("the queue could not be reached") from None
         stage = "envelope"
         if not isinstance(body, dict) or body.get("ok") is not True or "result" not in body:
