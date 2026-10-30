@@ -2523,7 +2523,7 @@
   let sharedRefreshTimer = null;
   function scheduleSharedRefresh() {
     if (sharedRefreshTimer) clearTimeout(sharedRefreshTimer);
-    if (authState.shared_login_enabled !== true || !document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) return;
+    if (authState.shared_login_enabled !== true || authState.shared_session_present !== true) return;
     sharedRefreshTimer = setTimeout(async () => {
       try {
         const response = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
@@ -2540,9 +2540,8 @@
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
         data = await fetchAuthStatusOnce();
-        // The hint is display-only; the refresh cookie remains HttpOnly.
-        if (data.shared_login_enabled === true && !data.authenticated &&
-            document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) {
+        // The server reports a display-only hint; cookies remain HttpOnly.
+        if (data.shared_login_enabled === true && !data.authenticated && data.shared_session_present === true) {
           const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
           if (!renewed.ok) throw new Error("shared session unavailable");
           data = await fetchAuthStatusOnce();
@@ -3663,7 +3662,7 @@
   // the local conversation reset are the same in both paths.
   async function signOutCurrentAccount() {
     try {
-      if (authState.shared_login_enabled === true && document.cookie.split(";").some((item) => item.trim() === "__Host-padiem-shared-marker=1")) {
+      if (authState.shared_login_enabled === true && authState.shared_session_present === true) {
         const sharedLogout = await fetch("/auth/shared/logout", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
         if (!sharedLogout.ok) throw new Error("shared logout unavailable");
       }

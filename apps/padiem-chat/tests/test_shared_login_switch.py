@@ -84,6 +84,8 @@ def test_login_callback_refresh_and_logout_roundtrip():
         state = parse_qs(urlparse(start.headers['location']).query)['state'][0]
         callback = client.get('/auth/shared/callback', params={'state': state, 'code': 'synthetic-code'}, follow_redirects=False)
         assert callback.status_code == 302
+        status = client.get('/api/auth/status').json()
+        assert status['shared_login_enabled'] is True and status['shared_session_present'] is True
         assert client.get('/identity-test').json()['user'] == 'usr_shared'
         assert client.post('/auth/shared/refresh', headers={'origin': 'https://chat.padiem.net'}).status_code == 200
         assert client.get('/identity-test').json()['user'] == 'usr_shared'

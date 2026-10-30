@@ -290,6 +290,8 @@ async def auth_status(request: Request) -> JSONResponse:
     }
     if getattr(request.app.state, 'shared_login_flow', None) is not None:
         payload['shared_login_enabled'] = True
+        # Presentation hint only; authentication never trusts this value.
+        payload['shared_session_present'] = request.cookies.get('__Host-padiem-shared-marker') == '1'
     # Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane,
     # bounded by the usage gate; paid tiers, Claw, Custom and projects still
     # need a session. This flag is the server-authoritative condition the

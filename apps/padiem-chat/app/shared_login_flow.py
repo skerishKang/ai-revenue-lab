@@ -33,7 +33,7 @@ def issue_shared_cookies(response, access, refresh):
     response.set_cookie(REFRESH_COOKIE, refresh, secure=True, httponly=True,
                         samesite='lax', path=REFRESH_PATH, max_age=REFRESH_SECONDS)
     # Presentation-only hint: never carries a credential or authorizes access.
-    response.set_cookie(MARKER_COOKIE, '1', secure=True, httponly=False,
+    response.set_cookie(MARKER_COOKIE, '1', secure=True, httponly=True,
                         samesite='lax', path='/', max_age=REFRESH_SECONDS)
     return response
 
@@ -41,7 +41,7 @@ def issue_shared_cookies(response, access, refresh):
 def clear_shared_cookies(response):
     response.delete_cookie(ACCESS_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite='lax')
-    response.delete_cookie(MARKER_COOKIE, path='/', secure=True, httponly=False, samesite='lax')
+    response.delete_cookie(MARKER_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
     return response
 
 
