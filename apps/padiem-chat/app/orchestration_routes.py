@@ -5,6 +5,7 @@ from __future__ import annotations
 from .file_lane import file_resolver
 
 import json
+import logging
 import re
 from typing import Any
 
@@ -29,6 +30,7 @@ from .model_policy import (
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .public_chat import public_chat_result
 from .request_contract import BrowserRequestError, _validate_payload_async
+from .pc_correlation import run_hash
 from .usage_gate import UsageGate
 
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
@@ -177,7 +179,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
+        trace_run = run_hash(raw.get("pc_run_id")) if isinstance(raw, dict) else None
+        logging.getLogger(__name__).info("pc_chat stage=request_received run_hash=%s", trace_run or "none")
         messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        logging.getLogger(__name__).info("pc_chat stage=contract_accepted run_hash=%s", trace_run or "none")
         user_credential_ref = None
         if custom is not None:
             from .byok_bridge import resolve_reference
