@@ -17,6 +17,26 @@ from .shared_auth_compare_flow import AUTH, TOKEN_URL, ComparisonFlow, _await, _
 
 CALLBACK = 'https://chat.padiem.net/auth/shared/callback'
 STATE_COOKIE = '__Host-padiem-shared-state'
+ACCESS_COOKIE = '__Host-padiem-shared-access'
+REFRESH_COOKIE = 'padiem_shared_refresh'
+REFRESH_PATH = '/auth/shared'
+ACCESS_SECONDS = 15 * 60
+REFRESH_SECONDS = 30 * 24 * 60 * 60
+
+
+def issue_shared_cookies(response, access, refresh):
+    """Service host only; refresh is sent only to the common-auth endpoints."""
+    response.set_cookie(ACCESS_COOKIE, access, secure=True, httponly=True,
+                        samesite='lax', path='/', max_age=ACCESS_SECONDS)
+    response.set_cookie(REFRESH_COOKIE, refresh, secure=True, httponly=True,
+                        samesite='lax', path=REFRESH_PATH, max_age=REFRESH_SECONDS)
+    return response
+
+
+def clear_shared_cookies(response):
+    response.delete_cookie(ACCESS_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
+    response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, secure=True, httponly=True, samesite='lax')
+    return response
 
 
 class SharedLoginFlow(ComparisonFlow):
@@ -27,12 +47,13 @@ class SharedLoginFlow(ComparisonFlow):
     convert a shared access token to an unbounded legacy session.
     """
 
-    def __init__(self, *, issue_session, resolve_account, **kwargs):
+    def __init__(self, *, issue_session, resolve_account, revoke_session=None, **kwargs):
         super().__init__(**kwargs)
         if not callable(issue_session) or not callable(resolve_account):
             raise ValueError('invalid_session_integration')
         self.issue_session = issue_session
         self.resolve_account = resolve_account
+        self.revoke_session = revoke_session
 
     async def start_login(self, request):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
@@ -83,3 +104,47 @@ class SharedLoginFlow(ComparisonFlow):
             response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response
+
+    async def refresh(self, request):
+        """The authority owns rotation and the 30-second concurrent-use grace."""
+        headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
+        try:
+            if request.headers.get('origin') != 'https://chat.padiem.net':
+                return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
+            old = request.cookies.get(REFRESH_COOKIE)
+            if not old:
+                return JSONResponse({'error': 'not_authenticated'}, status_code=401, headers=headers)
+            tokens = await _await(self.exchange(TOKEN_URL, {
+                'client_id': self.client_id,
+                'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+                'client_assertion': await self._assertion(int(self.clock())),
+                'grant_type': 'refresh_token', 'refresh_token': old,
+            }))
+            access, refresh = tokens.get('access_token'), tokens.get('refresh_token')
+            if not isinstance(access, str) or not access or not isinstance(refresh, str) or not refresh:
+                raise ValueError('invalid_exchange')
+            user = await _await(self.resolve_account(request, access))
+            if not isinstance(user, str) or not user:
+                raise ValueError('unknown_account')
+            return issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
+        except Exception:
+            return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+
+    async def logout(self, request):
+        headers = {'cache-control': 'no-store'}
+        if request.headers.get('origin') != 'https://chat.padiem.net':
+            return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
+        old = request.cookies.get(REFRESH_COOKIE)
+        if old:
+            try:
+                if not callable(self.revoke_session):
+                    raise ValueError('revoke_unavailable')
+                await _await(self.revoke_session({
+                    'client_id': self.client_id,
+                    'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+                    'client_assertion': await self._assertion(int(self.clock())),
+                    'refresh_token': old,
+                }))
+            except Exception:
+                return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+        return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
