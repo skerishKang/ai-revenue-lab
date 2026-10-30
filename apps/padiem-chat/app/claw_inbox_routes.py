@@ -137,16 +137,28 @@ async def claw_inbox_status(request: Request) -> JSONResponse:
     try:
         if kind == "tasks":
             status = ClawTaskStatus(status_value)
-            current = await _call(store._get_task_locked(item_id, workspace_id=workspace_id))
-            if current is None or getattr(current, "member_id", None) != uid:
+            current = await _call(
+                store._get_task_locked(item_id, workspace_id=workspace_id, member_id=uid)
+            )
+            if current is None:
                 return _error(404, "inbox_item_not_found", "Inbox item not found.")
-            updated = await _call(store.set_task_status(item_id, status, workspace_id=workspace_id))
+            updated = await _call(
+                store.set_task_status(
+                    item_id, status, workspace_id=workspace_id, member_id=uid
+                )
+            )
         else:
             status = ClawAlertStatus(status_value)
-            current = await _call(store._get_alert_locked(item_id, workspace_id=workspace_id))
-            if current is None or not current.is_visible_to(uid):
+            current = await _call(
+                store._get_alert_locked(item_id, workspace_id=workspace_id, member_id=uid)
+            )
+            if current is None:
                 return _error(404, "inbox_item_not_found", "Inbox item not found.")
-            updated = await _call(store.set_alert_status(item_id, status, workspace_id=workspace_id))
+            updated = await _call(
+                store.set_alert_status(
+                    item_id, status, workspace_id=workspace_id, member_id=uid
+                )
+            )
     except (ValueError, ClawMemoryError):
         return _error(400, "invalid_status", "Invalid inbox status.")
     except WorkspaceStorageError:

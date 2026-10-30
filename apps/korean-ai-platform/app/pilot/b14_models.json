@@ -109,6 +109,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
       "enabled": false
+    },
+    "sakura-ai-engine": {
+      "base_origin": "https://api.ai.sakura.ad.jp/v1",
+      "allowed_hosts": [
+        "api.ai.sakura.ad.jp"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_SAKURA_AI_ENGINE_API_KEY",
+      "enabled": false
     }
   },
   "models": [
@@ -491,6 +500,22 @@
       "output_price_usd_per_1m": null,
       "source": "Account-authenticated GET https://zanslab.id/v1/models (200; exact id op/gpt-6-luna) on 2026-10-12; https://zanslab.id/documentation; completion/SSE unverified",
       "source_checked_at": "2026-10-12",
+      "enabled": false
+    },
+    {
+      "id": "sakura-ai-engine/gpt-oss-120b",
+      "provider_id": "sakura-ai-engine",
+      "upstream_model": "gpt-oss-120b",
+      "display_name": "Sakura AI Engine: GPT-OSS 120B",
+      "provider_name": "Sakura Internet AI Engine",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://manual.sakura.ad.jp/cloud/ai-engine/02-howto.html",
+      "source_checked_at": "2026-10-30",
       "enabled": false
     }
   ],

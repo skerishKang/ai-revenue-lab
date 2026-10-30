@@ -377,6 +377,30 @@ async function main() {
     && !cardLine(lostAfterGoodRead).includes("연결됨"),
     cardLine(lostAfterGoodRead));
 
+  // -- the composer chip's connect affordance follows the same rule -----------
+  const chipState = (dom) => {
+    const action = dom.chip.querySelector(".pc-connect-chip-action") || { hidden: null, text: "" };
+    return { hidden: action.hidden, text: action.allText(), display: dom.chip.dataset.pcConnectDisplay };
+  };
+  check("a 500 does not offer 연결하기 on the chip",
+    chipState(serverDown).hidden === true && chipState(serverDown).display === "checking",
+    JSON.stringify(chipState(serverDown)));
+  check("a network failure does not offer 연결하기 on the chip",
+    chipState(networkDown).hidden === true && chipState(networkDown).display === "checking",
+    JSON.stringify(chipState(networkDown)));
+  check("a not-ready pairing surface does not offer 연결하기 on the chip",
+    chipState(preparing).hidden === true, JSON.stringify(chipState(preparing)));
+  check("a chip that lost an earlier good read says failed, not connect",
+    chipState(lostAfterGoodRead).hidden === true
+    && chipState(lostAfterGoodRead).display === "failed",
+    JSON.stringify(chipState(lostAfterGoodRead)));
+  const emptyRead = makeDom({ "GET *": { status: 200, body: { ok: true, links: [], codes: [] } } });
+  await settle();
+  check("the read-empty chip still offers 연결하기 (unchanged path)",
+    chipState(emptyRead).hidden === false && chipState(emptyRead).text.includes("연결하기")
+    && chipState(emptyRead).display === "disconnected",
+    JSON.stringify(chipState(emptyRead)));
+
   // -- the popover: names and states, nothing else -----------------------------
   const listed = makeDom({
     "GET *": { status: 200, body: { ok: true, links: [LINK, PAUSED_LINK], codes: [] } },
