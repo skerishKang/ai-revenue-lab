@@ -59,7 +59,7 @@ async def test_the_browser_request_refuses_each_removed_task_mode(skill_id):
             json={"messages": USER_MESSAGES, "skill": skill_id},
         )
     assert response.status_code == 422
-    assert response.json()["error"]["message"] == "지원하지 않는 작업 모드입니다."
+    assert response.json()["error"] == {"code": "stale_chat_client", "message": '\ud654\uba74\uc774 \uc624\ub798\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \uc0c8\ub85c\uace0\uce68\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.'}
 
 
 def test_get_skill_defaults_to_auto_and_rejects_unknown():

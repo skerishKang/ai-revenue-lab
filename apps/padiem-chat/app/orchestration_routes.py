@@ -223,7 +223,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             policy = resolve_model_policy(messages)
             product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
-        return _error("invalid_request", str(exc), 422)
+        return _error(exc.code, str(exc), 422)
     except ModelPolicyError as exc:
         return _error(exc.code, exc.message, 422)
     except B62OrchestrationError as exc:

@@ -69,7 +69,7 @@ def test_mode_is_refused_as_an_unknown_request_item():
     _validate_payload_parts(_body())
     with pytest.raises(BrowserRequestError) as info:
         _validate_payload_parts(_body(mode="auto"))
-    assert str(info.value) == "지원하지 않는 요청 항목이 있습니다."
+    assert info.value.code == "stale_chat_client"
     for value in ("fast", "balanced", "deep"):
         with pytest.raises(BrowserRequestError):
             _validate_payload_parts(_body(mode=value))
