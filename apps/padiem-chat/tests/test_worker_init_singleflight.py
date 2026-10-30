@@ -180,3 +180,65 @@ async def test_a_slow_but_real_initialization_survives_the_waiter_bound(monkeypa
     assert builds == [1]
     assert observed == [app]
     assert module._worker_app is app
+
+async def test_fetch_unhandled_exceptions_are_bounded_and_reraised(monkeypatch, capsys):
+    import pytest
+    from starlette.routing import Route
+
+    for stage in ("entry", "init", "asgi"):
+        module = _load_worker(monkeypatch)
+        worker = _runtime(monkeypatch, module, [])
+        worker.env.CF_VERSION_METADATA = SimpleNamespace(id="30c8d635-890b-4cac-ba1f-bb05a4f0bae9")
+        request = SimpleNamespace(url="https://example.invalid/api/claw/SECRET_ID?token=SECRET_QUERY",
+                                  method="GET", js_object=object())
+        app = SimpleNamespace(state=SimpleNamespace(ready=True),
+                              routes=[Route("/api/claw/{item}", lambda request: None)])
+        secret_exception = ValueError("SECRET_EXCEPTION")
+        async def explode(*args, **kwargs):
+            raise secret_exception
+        async def build(self):
+            if stage == "init":
+                raise secret_exception
+            return app
+        monkeypatch.setattr(module.Default, "_build_worker_app", build)
+        if stage == "entry":
+            monkeypatch.setattr(module, "maybe_dispatch_connector_gateway", explode)
+        elif stage == "asgi":
+            monkeypatch.setattr(sys.modules["asgi"], "fetch", explode)
+        with pytest.raises(ValueError) as raised:
+            await worker.fetch(request)
+        assert raised.value is secret_exception
+        out = capsys.readouterr().out.splitlines()
+        lines = [line for line in out if line.startswith("chat_fetch_exception ")]
+        assert len(lines) == 1
+        line = lines[0]
+        assert f"stage={stage}" in line
+        assert "exception=ValueError" in line
+        assert "version=30c8d635-890b-4cac-ba1f-bb05a4f0bae9" in line
+        assert "elapsed_ms=" in line
+        assert "route=/api/claw/{item}" in line if stage == "asgi" else "route=<unmatched>" in line
+        assert "SECRET_" not in line
+
+
+async def test_fetch_observability_never_masks_original_or_logs_handled_refusal(monkeypatch, capsys):
+    import pytest
+
+    module = _load_worker(monkeypatch)
+    worker = _runtime(monkeypatch, module, [])
+    original = ValueError("PRIVATE")
+    async def fail(**kwargs):
+        raise original
+    monkeypatch.setattr(module, "maybe_dispatch_connector_gateway", fail)
+    monkeypatch.setattr(module, "_log_fetch_exception", lambda *args: (_ for _ in ()).throw(RuntimeError()))
+    with pytest.raises(ValueError) as raised:
+        await worker.fetch(_request())
+    assert raised.value is original
+    assert "PRIVATE" not in capsys.readouterr().out
+
+    monkeypatch.setattr(module, "maybe_dispatch_connector_gateway", _no_gateway)
+    async def invalid(self):
+        raise module.ConfigError("PRIVATE")
+    monkeypatch.setattr(module.Default, "_build_worker_app", invalid)
+    response = await worker.fetch(_request())
+    assert response.status == 503
+    assert "chat_fetch_exception" not in capsys.readouterr().out
