@@ -141,3 +141,32 @@ async def test_profile_provision_failure_never_issues_session_or_exposes_profile
     assert result.status_code == 503 and not issued
     assert b'private@example.invalid' not in result.body
     assert all(not value.startswith(ACCESS_COOKIE + '=') for value in result.headers.getlist('set-cookie'))
+
+
+@pytest.mark.asyncio
+async def test_verified_profile_is_provisioned_before_cookie_and_stays_server_side():
+    from app.shared_profile_provision import provision_shared_profile
+    saved, notified, issued = [], [], []
+    uid = 'usr_' + 'a' * 32
+    profile = {'email':'private@example.invalid', 'email_verified':True, 'name':'Synthetic', 'picture':''}
+    class Verifier:
+        async def verify(self, token): return {'accountId':'sub_test'}
+    class Store:
+        async def upsert_shared_user(self, *args): saved.append(args)
+    async def notify(request, user): notified.append(user)
+    async def exchange(*args):
+        return {'access_token':'synthetic-access', 'refresh_token':'synthetic-refresh', 'account_id':'sub_test', 'profile':profile}
+    async def provision(req, user, access, tokens):
+        await provision_shared_profile(req, user, access, tokens, verifier=Verifier(), store=Store(), legacy_user=lambda _:None, notify=notify)
+    async def issue(req, user, access, refresh):
+        assert saved and notified == [uid]
+        issued.append(user)
+        return RedirectResponse('/', status_code=302)
+    flow = make_flow(exchange, lambda *args:uid, issue)
+    flow.provision_profile = provision
+    start = await flow.start_login(request())
+    state = parse_qs(urlparse(start.headers['location']).query)['state'][0]
+    result = await flow.finish_login(request('state=' + state + '&code=synthetic-code', start.headers['set-cookie'].split(';', 1)[0]))
+    assert result.status_code == 302 and issued == [uid]
+    assert 'private@example.invalid' not in str(result.headers)
+    assert b'private@example.invalid' not in result.body
