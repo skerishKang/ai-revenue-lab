@@ -187,11 +187,13 @@ class QueueStoreClient:
                       else "invalid_json" if stage == "json_decode" else "invalid_response")
             record("error", reason)
             raise QueueUnavailable("the queue could not be reached") from None
-        except Exception:
-            # Preserve unexpected exceptions for existing callers while making
-            # a missing runtime method distinguishable from an HTTP refusal.
-            record("error", "unexpected_error")
-            raise
+        except Exception as exc:
+            # Never include exception text: it can contain URLs or credentials.
+            # The fixed allowlist makes a missing API observable without logging
+            # arbitrary attacker-controlled class names.
+            kind = "AttributeError" if isinstance(exc, AttributeError) else "other"
+            record("error", "unexpected_" + kind)
+            raise QueueUnavailable("the queue could not be reached") from None
         stage = "envelope"
         if not isinstance(body, dict) or body.get("ok") is not True or "result" not in body:
             record("error", "invalid_envelope")

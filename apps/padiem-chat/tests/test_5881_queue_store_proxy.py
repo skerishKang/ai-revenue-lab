@@ -300,3 +300,42 @@ def test_success_log_does_not_echo_an_unknown_method_or_result(caplog):
     assert 'method=other stage=complete status=200 outcome=ok reason=ok elapsed_ms=' in line
     for forbidden in ('customer_private_method', MARKER, SECRET, ORIGIN):
         assert forbidden not in line
+
+
+@pytest.mark.parametrize("status,raw,expected", [
+    (200, b'{"ok":true,"result":[1]}', [1]),
+    (403, b'{"ok":false,"error":{}}', None),
+    (200, b'not-json', None),
+])
+def test_workers_forced_load_transport_handles_status_and_body(monkeypatch, status, raw, expected):
+    from test_httpx_compat_workers_timeout import _load_workers_shim
+    shim = _load_workers_shim(None)
+    monkeypatch.setattr(proxy, "httpx", shim)
+    class Stream(shim.AsyncByteStream):
+        async def __aiter__(self):
+            yield raw
+    class Transport(shim.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            assert request.method == "POST"
+            return shim.Response(status, stream=Stream())
+    client = proxy.QueueStoreClient(origin=ORIGIN, service_secret=SECRET,
+        client_factory=lambda **options: shim.AsyncClient(transport=Transport(), **options))
+    if status == 200 and expected is not None:
+        assert asyncio.run(client.call("list_links")) == expected
+    else:
+        with pytest.raises(proxy.QueueUnavailable):
+            asyncio.run(client.call("list_links"))
+
+
+def test_unexpected_attribute_error_is_safe_and_classified(caplog):
+    import logging
+    class Broken:
+        async def __aenter__(self): return self
+        async def __aexit__(self, *args): return False
+        def stream(self, *args, **kwargs): raise AttributeError(MARKER + SECRET)
+    client = proxy.QueueStoreClient(origin=ORIGIN, service_secret=SECRET, client_factory=lambda **kw: Broken())
+    with caplog.at_level(logging.WARNING, logger=proxy.__name__), pytest.raises(proxy.QueueUnavailable) as caught:
+        asyncio.run(client.call("list_links"))
+    assert "reason=unexpected_AttributeError" in caplog.text
+    assert MARKER not in caplog.text and SECRET not in caplog.text
+    assert MARKER not in str(caught.value) and SECRET not in str(caught.value)
