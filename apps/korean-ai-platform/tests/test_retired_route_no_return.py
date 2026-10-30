@@ -32,7 +32,8 @@ def test_retired_route_is_not_reintroduced():
         path = ROOT / rel
         try:
             lines = path.read_text(encoding='utf-8').splitlines()
-        except (OSError, UnicodeError):
+        except (OSError, UnicodeError) as exc:
+            bad.append(f'{rel}:unreadable:{type(exc).__name__}')
             continue
         approved_lines = set()
         if rel == REFUSAL_TEST:
