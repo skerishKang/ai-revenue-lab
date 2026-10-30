@@ -120,7 +120,7 @@ class AgentSessionTests(unittest.TestCase):
         first = AgentSession.open(root, "로그인 오류를 분석해줘").business14_mock_response()
         second = AgentSession.open(root, "로그인 오류를 분석해줘").business14_mock_response()
         self.assertEqual(first, second)
-        self.assertEqual(first["route"], "b14/auto")
+        self.assertEqual(first["route"], "business14/auto")
         self.assertEqual(first["provider_mode"], "mock")
         self.assertFalse(first["network_called"])
         self.assertEqual(first["status"], "resolved_not_called")
