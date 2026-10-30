@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 from starlette.datastructures import QueryParams
 from starlette.applications import Starlette
 import httpx
+import app
 
 from app.shared_auth_compare_flow import CALLBACK, COOKIE, TOKEN_URL, ComparisonFlow, exchange_with_httpx
 
@@ -136,8 +137,9 @@ class FlowTests(unittest.TestCase):
         auth = types.ModuleType('app.auth')
         auth.MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
         with patch.dict(sys.modules, {'app.httpx_compat':shim, 'app.auth':auth}):
-            result = self.run_flow(exchange_with_httpx(TOKEN_URL, {'code':'synthetic'}))
-            with self.assertRaises(ValueError):
-                self.run_flow(exchange_with_httpx('https://invalid.example/token', {}))
+            with patch.object(app, 'httpx_compat', shim, create=True):
+                result = self.run_flow(exchange_with_httpx(TOKEN_URL, {'code':'synthetic'}))
+                with self.assertRaises(ValueError):
+                    self.run_flow(exchange_with_httpx('https://invalid.example/token', {}))
         self.assertEqual(result, {'access_token':'synthetic'})
         self.assertEqual(seen, [('POST',TOKEN_URL,{'follow_redirects':False})])
