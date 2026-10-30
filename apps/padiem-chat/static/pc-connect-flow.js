@@ -292,9 +292,16 @@
         chip.append(action);
       }
       action.textContent = t.connectChip;
-      action.hidden = connected || classifiedState() === "connecting";
+      // The affordance is an instruction to go connect, so it appears only when
+      // the pairing list was actually read and answered "no PC". A read still in
+      // flight or refused must not tell the owner to connect — the status label
+      // next to it (owned by the composer connection status view) already says
+      // 확인 중/확인 실패 honestly, and this attribute carries the same word.
+      const shown = displayState();
+      action.hidden = shown !== "disconnected";
       if (connected) chip.dataset.pcConnect = "connected";
       else chip.dataset.pcConnect = classifiedState();
+      chip.dataset.pcConnectDisplay = shown;
     }
     const starter = document.getElementById(STARTER_ID);
     if (starter) {
