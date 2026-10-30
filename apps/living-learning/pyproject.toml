@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3,<9",
+    "pypdf>=6.19.0,<6.20",
     "httpx>=0.28,<1",
 ]
 
