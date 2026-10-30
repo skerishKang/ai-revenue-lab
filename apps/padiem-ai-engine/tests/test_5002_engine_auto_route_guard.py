@@ -1,18 +1,10 @@
-"""#5002: the Engine never dispatches the suspended Router auto route.
+"""#5002 + B7: the Engine forwards the account's validated model verbatim.
 
-The Engine is the product-facing internal service, so it is the boundary that
-must refuse the suspended ``b14/auto`` route before any external invocation.
-The research route already refused it; the completed-run and streaming routes
-did not, and a ``b14/auto`` model travelled to Business 14's auto-stream
-preview binding.
-
-These regressions prove one rule on every Engine route:
-
-* a model in the reserved ``b14/auto`` namespace is refused with the stable
-  ``auto_routing_deferred`` 422 before any runtime, provider or network call;
-* a missing model still fails closed with the field-level ``invalid_request``;
-* the account's own server-validated model and grade reach the B14 request
-  body verbatim, for an ordinary member grade and for the administrator lane.
+The retired automatic route has no Engine-side special case any more. Every
+model id — including unknown ones — travels to Business 14, which owns
+availability and refuses unknown ids; the Engine never rewrites a model into
+another default. A missing model still fails closed with the field-level
+``invalid_request`` before any runtime or provider call.
 """
 from __future__ import annotations
 
@@ -26,7 +18,7 @@ from padiem_ai_core import (
     StreamingExecutionRuntime,
 )
 
-from app.service import EngineService, is_suspended_auto_model
+from app.service import EngineService
 from app.streaming_service import PreparedStream, STREAM_PATH, StreamingEngineService
 from app.web_research_service import WebResearchEngineService
 
@@ -35,7 +27,7 @@ from app.web_research_service import WebResearchEngineService
 # are registered models.
 _MEMBER_MODEL_ID = "testowner/member-route.v1"
 _ADMIN_MODEL_ID = "testowner/administrator-route.v1"
-_AUTO_MODEL_ID = "b14/auto"
+_UNKNOWN_MODEL_ID = "vendor/unknown"
 
 
 def _payload(model: str, *, product_tier: str | None = None) -> dict:
@@ -71,14 +63,9 @@ class _FakeB14:
 class _FakeB14StreamClient:
     def __init__(self) -> None:
         self.manual_calls: list[object] = []
-        self.auto_calls: list[object] = []
 
     def stream(self, request):
         self.manual_calls.append(request)
-        return self._events()
-
-    def stream_auto(self, request):
-        self.auto_calls.append(request)
         return self._events()
 
     async def _events(self):
@@ -99,28 +86,26 @@ class _NoExecutionRuntime:
         raise AssertionError("a refused model must never reach a runtime")
 
 
-# --- one rule: the reserved auto namespace never leaves the Engine -----------
+# --- one rule: the Engine forwards whatever model the account validated ------
 
 
 @pytest.mark.asyncio
-async def test_the_execute_route_refuses_the_suspended_auto_route_before_any_b14_call() -> None:
-    runtime = _NoExecutionRuntime()
+async def test_the_execute_route_forwards_the_model_verbatim_including_unknown_id() -> None:
     b14 = _FakeB14()
     service = EngineService(
         runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
         b14_service_bound=True,
     )
 
-    response = await service.execute_payload(_payload(_AUTO_MODEL_ID))
+    response = await service.execute_payload(_payload(_UNKNOWN_MODEL_ID))
 
-    assert response.status_code == 422
-    assert response.body["error"]["code"] == "auto_routing_deferred"
-    assert runtime.calls == []
-    assert b14.calls == []
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    assert b14.calls[0].to_payload()["model"] == _UNKNOWN_MODEL_ID
 
 
 @pytest.mark.asyncio
-async def test_the_stream_route_refuses_the_suspended_auto_route_before_any_b14_call() -> None:
+async def test_the_stream_route_dispatches_the_single_manual_lane_for_unknown_id() -> None:
     b14 = _FakeB14StreamClient()
     service = StreamingEngineService(
         runtime_factory=lambda app_id: StreamingExecutionRuntime(
@@ -133,25 +118,22 @@ async def test_the_stream_route_refuses_the_suspended_auto_route_before_any_b14_
         method="POST",
         path=STREAM_PATH,
         content_type="application/json",
-        body=json.dumps(_payload(_AUTO_MODEL_ID)).encode(),
+        body=json.dumps(_payload(_UNKNOWN_MODEL_ID)).encode(),
     )
 
-    assert not isinstance(prepared, PreparedStream)
-    assert prepared.status_code == 422
-    assert prepared.body["error"]["code"] == "auto_routing_deferred"
-    assert b14.manual_calls == []
-    assert b14.auto_calls == []
+    assert isinstance(prepared, PreparedStream)
+    assert len(b14.manual_calls) == 1
+    assert b14.manual_calls[0].to_payload()["model"] == _UNKNOWN_MODEL_ID
 
 
 @pytest.mark.asyncio
-async def test_the_research_route_refuses_the_suspended_auto_route_before_any_b14_call() -> None:
-    class _NoExecutionRuntime:
-        async def run(self, request):
-            raise AssertionError("a refused model must never reach a runtime")
-
+async def test_the_research_route_forwards_the_model_verbatim_including_unknown_id() -> None:
+    b14 = _FakeB14()
     service = WebResearchEngineService(
         research_runtime_factory=lambda _app_id: None,
-        execution_runtime_factory=lambda _app_id: _NoExecutionRuntime(),
+        execution_runtime_factory=lambda _app_id: ExecutionRuntime(
+            app_id=_app_id, b14_client=b14
+        ),
         b14_service_bound=True,
     )
     research_payload = {
@@ -166,23 +148,25 @@ async def test_the_research_route_refuses_the_suspended_auto_route_before_any_b1
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 512,
-            "model_policy": {"model": _AUTO_MODEL_ID},
+            "model_policy": {"model": _UNKNOWN_MODEL_ID},
         },
     }
 
     response = await service.research_payload(research_payload)
 
-    assert response.status_code == 422
-    assert response.body["error"]["code"] == "auto_routing_deferred"
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    assert b14.calls[0].to_payload()["model"] == _UNKNOWN_MODEL_ID
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "model",
-    ["b14/auto", "b14/auto ", " B14/AUTO", "b14/auto-preview"],
+    ["vendor/unknown", "vendor/unknown ", " VENDOR/UNKNOWN", "vendor/unknown-preview"],
 )
-async def test_every_spelling_of_the_reserved_auto_namespace_is_refused(model: str) -> None:
-    runtime = _NoExecutionRuntime()
+async def test_no_spelling_of_unknown_id_gets_an_engine_side_special_case(model: str) -> None:
+    """B7: the Engine has no auto-route rule left, so every spelling of the
+    unknown id is forwarded verbatim and Business 14 owns the refusal."""
     b14 = _FakeB14()
     service = EngineService(
         runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
@@ -191,20 +175,10 @@ async def test_every_spelling_of_the_reserved_auto_namespace_is_refused(model: s
 
     response = await service.execute_payload(_payload(model))
 
-    assert response.status_code == 422
-    assert response.body["error"]["code"] == "auto_routing_deferred"
-    assert runtime.calls == []
-    assert b14.calls == []
-
-
-def test_the_reserved_auto_namespace_is_one_shared_rule() -> None:
-    assert is_suspended_auto_model("b14/auto") is True
-    assert is_suspended_auto_model("  b14/auto  ") is True
-    assert is_suspended_auto_model("b14/auto-preview") is True
-    assert is_suspended_auto_model(_MEMBER_MODEL_ID) is False
-    assert is_suspended_auto_model(_ADMIN_MODEL_ID) is False
-    assert is_suspended_auto_model(None) is False
-    assert is_suspended_auto_model(42) is False
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    # Core strips surrounding whitespace on the model route before dispatch.
+    assert b14.calls[0].to_payload()["model"] == model.strip()
 
 
 # --- the account's own validated model and grade still reach B14 -------------
@@ -237,8 +211,8 @@ async def test_the_exact_validated_model_and_grade_reach_the_b14_request_verbati
     assert body["model"] == model
     assert body["business14"]["product_tier"] == product_tier
     assert body["business14"]["max_retries"] == 0
-    # The suspended route never appears in an outbound body.
-    assert "b14/auto" not in json.dumps(body, ensure_ascii=False)
+    # No hidden substitution ever appears in an outbound body.
+    assert "testowner/other-route" not in json.dumps(body, ensure_ascii=False)
 
 
 @pytest.mark.asyncio
