@@ -49,3 +49,9 @@ apps/padiem-mesh-queue/requirements.txt text eol=lf
 # a CRLF checkout (core.autocrlf=true on Windows) breaks `bash -n` locally.
 deploy/host-com2/**/*.sh text eol=lf
 apps/padiem-broker/deploy/*.sh text eol=lf
+
+# Chat first-paint byte checks require LF on Windows checkouts.
+apps/padiem-chat/static/index.html text eol=lf
+apps/padiem-chat/static/padiem-glass.css text eol=lf
+apps/padiem-chat/static/padiem-glass-portrait.css text eol=lf
+apps/padiem-chat/static/theme-init.js text eol=lf

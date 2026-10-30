@@ -27,7 +27,7 @@ def _run_node_spec() -> subprocess.CompletedProcess[str]:
     node = shutil.which("node")
     assert node, "node runtime is required for the voice input adapter spec"
     return subprocess.run(
-        [node, "--test", str(NODE_SPEC)],
+        [node, "--test", "--test-reporter=tap", str(NODE_SPEC)],
         capture_output=True,
         text=True,
         timeout=180,

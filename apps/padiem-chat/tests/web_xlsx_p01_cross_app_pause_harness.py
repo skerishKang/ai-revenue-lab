@@ -41,6 +41,13 @@ from zipfile import ZipFile
 CHAT = Path(__file__).resolve().parents[1]
 ROOT = CHAT.parents[1]
 ENGINE = ROOT / "apps" / "padiem-ai-engine"
+# The subprocess runs from tests/, so relative parent PYTHONPATH entries no
+# longer point at the workspace packages. Use source paths for this checkout.
+for path in (ROOT / "apps" / "korean-ai-code-agent" / "src",
+             ROOT / "packages" / "padiem-ai-core",
+             ROOT / "packages" / "padiem-control-plane",
+             ENGINE / "clients" / "python"):
+    sys.path.insert(0, str(path))
 sys.path.insert(0, str(ENGINE))
 
 # The Engine's ``app`` package must be imported BEFORE B62's alias below.
@@ -67,6 +74,10 @@ def _load_b62_app():
 
 
 _load_b62_app()
+# The Engine owns the app package in this subprocess. Chat also has a small
+# number of absolute app imports; resolve those missing modules from Chat.
+# Engine modules already imported above keep their original identities.
+sys.modules["app"].__path__.append(str(CHAT / "app"))
 
 import httpx  # noqa: E402
 from chatapp.app_factory import create_app  # noqa: E402
