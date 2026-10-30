@@ -18,6 +18,7 @@ import httpx
 import app
 
 from app.shared_auth_compare_flow import CALLBACK, COOKIE, TOKEN_URL, ComparisonFlow, exchange_with_httpx
+from tests.shared_es256_test_crypto import TestES256
 
 
 def b64int(value):
@@ -41,9 +42,10 @@ class FlowTests(unittest.TestCase):
         async def compare(request, token):
             self.assertEqual(token, 'synthetic-access')
             return 'MATCH'
-        self.flow = ComparisonFlow(state_key=b's' * 32, client_id='b62', client_jwk=jwk(),
+        self.jwk = jwk()
+        self.flow = ComparisonFlow(state_key=b's' * 32, client_id='b62', client_jwk=self.jwk,
             kid='synthetic-kid', operator_guard=lambda r: True, legacy_user=lambda r: self.user,
-            comparator=compare, exchange=exchange, clock=lambda:self.now)
+            comparator=compare, exchange=exchange, crypto=TestES256(), clock=lambda:self.now)
 
     def run_flow(self, value):
         return asyncio.run(value)
@@ -94,7 +96,7 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(self.calls, [])
 
     def test_client_assertion_has_auth_contract_and_valid_es256_signature(self):
-        encoded = self.flow._assertion(self.now)
+        encoded = self.run_flow(self.flow._assertion(self.now))
         head, body, signature = encoded.split('.')
         decode = lambda value: base64.urlsafe_b64decode(value + '=' * (-len(value) % 4))
         claims = json.loads(decode(body))
@@ -102,7 +104,8 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(claims['iss'], 'b62')
         raw = decode(signature)
         der = encode_dss_signature(int.from_bytes(raw[:32], 'big'), int.from_bytes(raw[32:], 'big'))
-        self.flow.key.public_key().verify(der, (head + '.' + body).encode(), ec.ECDSA(hashes.SHA256()))
+        private = ec.derive_private_key(int.from_bytes(decode(self.jwk['d']), 'big'), ec.SECP256R1())
+        private.public_key().verify(der, (head + '.' + body).encode(), ec.ECDSA(hashes.SHA256()))
 
     def test_bound_flow_runs_through_an_isolated_asgi_app(self):
         async def scenario():
