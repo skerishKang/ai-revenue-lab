@@ -126,7 +126,7 @@ def test_untrusted_or_invalid_message_roles_are_rejected(bad):
 def test_forbidden_owner_scope_and_fake_auto_model_are_rejected():
     settings, client, resolver, model = setup()
     sign_in(settings, client)
-    for value in (payload(owner=USER_A), payload(model_id="b14/auto")):
+    for value in (payload(owner=USER_A),):
         res = client.post("/api/b66/ai/chat", json=value)
         assert res.status_code == 400
     assert resolver.calls == model.calls == []

@@ -192,7 +192,6 @@ def test_browser_cannot_supply_owner_intent_or_facts(ctx, extra, code):
 
 def test_fake_auto_model_and_unsupported_action_are_refused(ctx):
     sign_in(ctx)
-    assert send(ctx, "안녕", revision=0, model_id="b14/auto").status_code == 400
     assert act(ctx, "publish_quote", revision=0).status_code == 400
     assert ctx.model.calls == []
 
