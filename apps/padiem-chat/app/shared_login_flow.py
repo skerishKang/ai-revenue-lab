@@ -53,13 +53,14 @@ class SharedLoginFlow(ComparisonFlow):
     convert a shared access token to an unbounded legacy session.
     """
 
-    def __init__(self, *, issue_session, resolve_account, revoke_session=None, **kwargs):
+    def __init__(self, *, issue_session, resolve_account, revoke_session=None, provision_profile=None, **kwargs):
         super().__init__(**kwargs)
         if not callable(issue_session) or not callable(resolve_account):
             raise ValueError('invalid_session_integration')
         self.issue_session = issue_session
         self.resolve_account = resolve_account
         self.revoke_session = revoke_session
+        self.provision_profile = provision_profile
 
     async def start_login(self, request):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
@@ -102,6 +103,8 @@ class SharedLoginFlow(ComparisonFlow):
             user = await _await(self.resolve_account(request, access))
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
+            if self.provision_profile is not None:
+                await _await(self.provision_profile(request, user, access, tokens))
             response = await _await(self.issue_session(request, user, access, refresh))
             if not isinstance(response, RedirectResponse):
                 raise ValueError('invalid_session_response')
@@ -186,7 +189,17 @@ async def create_worker_shared_login_flow(env, authority):
         kid = binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID')
         if not private or not state or not kid:
             raise ValueError('configuration_unavailable')
-        auth = SharedChatAuth(verifier=WorkerJwksVerifier(), authority=authority, legacy=current_user_id)
+        verifier = WorkerJwksVerifier()
+        auth = SharedChatAuth(verifier=verifier, authority=authority, legacy=current_user_id)
+
+        async def provision(request, user, access, tokens):
+            from .b66_signup_notifications import deliver_after_signup
+            from .shared_profile_provision import provision_shared_profile
+            store = getattr(request.app.state, 'history_store', None)
+            if store is None or not callable(getattr(store, 'upsert_shared_user', None)):
+                raise ValueError('profile_store_unavailable')
+            await provision_shared_profile(request, user, access, tokens, verifier=verifier,
+                store=store, legacy_user=current_user_id, notify=deliver_after_signup)
 
         async def issue(request, user, access, refresh):
             return issue_shared_cookies(RedirectResponse('/', status_code=302), access, refresh)
@@ -194,7 +207,7 @@ async def create_worker_shared_login_flow(env, authority):
         flow = SharedLoginFlow(state_key=_un64(state), client_id='b62', client_jwk=json.loads(private),
             kid=str(kid), operator_guard=lambda request: False, legacy_user=current_user_id,
             comparator=lambda *args: None, exchange=exchange_with_httpx, resolve_account=auth.user_id,
-            issue_session=issue, revoke_session=revoke_with_httpx)
+            issue_session=issue, revoke_session=revoke_with_httpx, provision_profile=provision)
         flow.auth = auth
         return flow
     except Exception:

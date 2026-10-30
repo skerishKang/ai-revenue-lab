@@ -120,3 +120,24 @@ async def test_default_off_never_resolves_secrets(monkeypatch):
     monkeypatch.setattr(worker_config, 'resolve_secret_binding', read)
     assert await create_worker_shared_login_flow(object(), object()) is None
     assert reads == []
+
+
+@pytest.mark.asyncio
+async def test_profile_provision_failure_never_issues_session_or_exposes_profile():
+    issued = []
+    async def exchange(*args):
+        return {'access_token':'synthetic-access', 'refresh_token':'synthetic-refresh',
+                'account_id':'sub_a', 'profile':{'email':'private@example.invalid'}}
+    async def issue(*args):
+        issued.append(True)
+        return RedirectResponse('/', status_code=302)
+    async def reject(*args):
+        raise ValueError('conflicting_account')
+    flow = make_flow(exchange, lambda *args:'synthetic-user', issue)
+    flow.provision_profile = reject
+    start = await flow.start_login(request())
+    state = parse_qs(urlparse(start.headers['location']).query)['state'][0]
+    result = await flow.finish_login(request('state=' + state + '&code=synthetic-code', start.headers['set-cookie'].split(';', 1)[0]))
+    assert result.status_code == 503 and not issued
+    assert b'private@example.invalid' not in result.body
+    assert all(not value.startswith(ACCESS_COOKIE + '=') for value in result.headers.getlist('set-cookie'))
