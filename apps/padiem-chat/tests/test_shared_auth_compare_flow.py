@@ -10,6 +10,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 from starlette.datastructures import QueryParams
+from starlette.applications import Starlette
+import httpx
 
 from app.shared_auth_compare_flow import CALLBACK, COOKIE, ComparisonFlow
 
@@ -97,3 +99,16 @@ class FlowTests(unittest.TestCase):
         raw = decode(signature)
         der = encode_dss_signature(int.from_bytes(raw[:32], 'big'), int.from_bytes(raw[32:], 'big'))
         self.flow.key.public_key().verify(der, (head + '.' + body).encode(), ec.ECDSA(hashes.SHA256()))
+
+    def test_bound_flow_runs_through_an_isolated_asgi_app(self):
+        async def scenario():
+            app = Starlette(routes=self.flow.routes(enabled=True))
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
+                                         base_url='https://chat.padiem.net') as client:
+                start = await client.get('/_test/auth/account-comparison/start')
+                state = parse_qs(urlsplit(start.headers['location']).query)['state'][0]
+                response = await client.get('/_test/auth/account-comparison/callback',
+                                            params={'state':state, 'code':'synthetic-code'})
+                self.assertEqual(response.json(), {'result':'MATCH'})
+                self.assertEqual(response.headers['cache-control'], 'no-store')
+        self.run_flow(scenario())
