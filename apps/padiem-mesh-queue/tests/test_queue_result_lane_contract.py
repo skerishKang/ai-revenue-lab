@@ -302,6 +302,7 @@ def test_failed_pc_result_stays_terminal_and_pending_lookup_reports_reason(tmp_p
     # in the queue. A later PC step must not reopen the failed run.
     import sys
     sys.path.insert(0, str(CHAT / "tests"))
+    sys.path.insert(0, str(CHAT.parent / "korean-ai-code-agent" / "src"))
     import test_5015_multi_tool_result_storage as fixture
     from app import claw_routes
 
