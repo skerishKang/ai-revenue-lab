@@ -261,18 +261,22 @@ def test_the_b14_route_declares_the_tool_and_reads_the_call_out_of_the_answer() 
     assert [message["role"] for message in payload["messages"]] == ["system", "user"]
 
 
-def test_the_b14_route_uses_the_automatic_route_when_no_model_is_configured() -> None:
+def test_the_b14_route_fails_closed_when_no_model_is_configured() -> None:
+    """The retired automatic route is not a default: an unset model id is a
+    deployment configuration error refused before any request is built."""
     transport = _FakeB14Transport()
     route = B14Route(_b14_settings(b14_model_id=""), transport=transport)
 
     import asyncio
 
-    asyncio.run(
-        route.generate(ModelRequest(system_prompt="system", user_prompt="make a form"))
-    )
+    with pytest.raises(DesignerError) as error:
+        asyncio.run(
+            route.generate(ModelRequest(system_prompt="system", user_prompt="make a form"))
+        )
 
-    _, payload = transport.calls[0]
-    assert payload["model"] == "b14/auto"
+    assert error.value.status_code == 503
+    assert error.value.code == "b14_route_model_not_configured"
+    assert transport.calls == []
 
 
 def test_the_b14_route_is_refused_when_it_is_not_bound() -> None:
