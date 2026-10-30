@@ -101,6 +101,15 @@ rather than copying them into a shape that can drift, builds the venv from
 install hands that file over (#82): with no file the queue keeps the channel-secret-only
 behaviour rather than failing to start a read it cannot serve.
 
+`MESH_QUEUE_REQUEST_LOG` is the store door's own answer to a question this operation has
+already had to ask twice: whether a Chat call reached the queue at all. `off` (the written
+default) is today's behaviour; `refusals` prints one line per non-2xx answer, so a healthy
+lane prints nothing; `all` is for a bounded window during a switch. The line carries five
+fields — `path`, the allowlisted method name, `status`, `ms`, and whether the presented
+proof matched — and never the secret, the header, the body or any argument, because an
+argument can name a customer's path. The installer preserves whatever value `queue.env`
+already holds, so a re-install cannot silently turn the instrument back off mid-window.
+
 Order that matters:
 
 1. `provision_service_secret.sh` creates `service-secret.txt` (`umask 077`, mode

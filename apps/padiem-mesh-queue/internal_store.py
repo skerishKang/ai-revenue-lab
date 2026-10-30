@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import time
 from typing import Any, Callable
 
 from starlette.requests import Request
@@ -77,6 +78,37 @@ PRESENCE_METHODS = frozenset({"upsert", "load"})
 
 _NO_STORE = {"Cache-Control": "no-store"}
 
+#: Whether one line is printed per call on this door. The 2026-10-30 cutover attempt
+#: could not say whether the Chat Worker's calls reached this process at all: uvicorn is
+#: deliberately quiet, the refusal path is a normal response, and nothing in the queue
+#: wrote a row - so "blocked at the edge", "refused here" and "answered 200 and disliked"
+#: left exactly the same trace, which is none. `refusals` prints the non-2xx answers only
+#: (a healthy lane prints nothing), `all` is for a bounded window during a switch.
+#: Default `off` is the behaviour every deployment has run with.
+LOG_OFF = "off"
+LOG_REFUSALS = "refusals"
+LOG_ALL = "all"
+LOG_MODES = frozenset({LOG_OFF, LOG_REFUSALS, LOG_ALL})
+
+
+def log_mode(value: Any) -> str:
+    """The switch, read the way every other queue switch is read: unknown is `off`."""
+
+    text = value.strip().lower() if isinstance(value, str) else ""
+    return text if text in LOG_MODES else LOG_OFF
+
+
+def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str) -> str:
+    """One line, five fields, no spaces inside a value.
+
+    This is the whole surface. The secret, the header, the body, every argument (one of
+    which can name a customer's path), the caller's address and the method name when it
+    was not ours are all absent by construction: `rpc` is only ever filled from the
+    allowlist, and an unknown name stays `none`.
+    """
+    return "MESH_QUEUE_REQUEST path=%s rpc=%s status=%d ms=%d proof=%s" % (
+        path, rpc, status, elapsed_ms, proof)
+
 __all__ = [
     "DISPATCH_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
     "PRESENCE_METHODS", "QUEUE_SERVICE_SECRET_HEADER", "make_internal_handler",
@@ -97,19 +129,36 @@ def _json_safe(value: Any) -> tuple[bool, Any]:
 
 
 def make_internal_handler(*, state: Any, service_secret: str,
-                          resolvers: dict[str, Callable[[Any], Any]]) -> Callable:
+                          resolvers: dict[str, Callable[[Any], Any]],
+                          request_log: str = LOG_OFF) -> Callable:
     """Build the handler bound to one assembled app state.
 
     `resolvers` maps an allowlisted method name to the function that finds its object on
     the app state, so a name can never reach an object the queue did not declare.
+    `request_log` decides whether the door says it was knocked on (see `LOG_MODES`).
     """
 
     if not isinstance(service_secret, str) or not 16 <= len(service_secret) <= 256:
         raise ValueError("the queue service secret is required")
+    mode = log_mode(request_log)
 
     async def handle(request: Request) -> JSONResponse:
+        started = time.monotonic()
+        facts = {"rpc": "none", "proof": "absent"}
+        response = await _answered(request, facts)
+        if mode != LOG_OFF and (mode == LOG_ALL or response.status_code >= 400):
+            print(log_line(INTERNAL_STORE_PATH, facts["rpc"], response.status_code,
+                           int((time.monotonic() - started) * 1000), facts["proof"]),
+                  flush=True)
+        return response
+
+    async def _answered(request: Request, facts: dict[str, str]) -> JSONResponse:
         presented = request.headers.get(QUEUE_SERVICE_SECRET_HEADER, "")
-        if not _proof_ok(presented, service_secret):
+        if not presented:
+            facts["proof"] = "absent"
+        else:
+            facts["proof"] = "ok" if _proof_ok(presented, service_secret) else "bad"
+        if facts["proof"] != "ok":
             return _error(403, "queue_channel_rejected")
         declared = request.headers.get("content-length")
         if declared is not None and (not declared.isdecimal()
@@ -132,7 +181,10 @@ def make_internal_handler(*, state: Any, service_secret: str,
         if not isinstance(name, str) or len(name) > MAX_METHOD_NAME_CHARS:
             return _error(400, "queue_invalid_body")
         if name not in resolvers:
+            # The name itself is not repeated: it is caller-supplied text.
             return _error(400, "queue_method_not_allowed")
+        # Only a name from this list can ever reach the log line.
+        facts["rpc"] = name
         if not isinstance(arguments, dict):
             return _error(400, "queue_invalid_body")
         try:

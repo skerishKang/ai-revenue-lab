@@ -59,6 +59,10 @@ echo "== environment"
 # queue.env wins; a fresh install writes today's behaviour ("on").
 LEGACY_MAP_LANE=$(grep -s '^MESH_QUEUE_LEGACY_MAP_LANE=' "$ROOT/queue.env" 2>/dev/null | cut -d= -f2)
 LEGACY_MAP_LANE=${LEGACY_MAP_LANE:-on}
+# Same rule for the store door's arrival log: a re-install must not turn off an instrument
+# someone switched on for a cutover window. Absence is today's behaviour ("off").
+REQUEST_LOG=$(grep -s '^MESH_QUEUE_REQUEST_LOG=' "$ROOT/queue.env" 2>/dev/null | cut -d= -f2)
+REQUEST_LOG=${REQUEST_LOG:-off}
 WATCH_LINE=""
 if [ -s "$ROOT/watch-read-secret.txt" ]; then
   WATCH_LINE="MESH_QUEUE_WATCH_READ_SECRET_FILE=$ROOT/watch-read-secret.txt"
@@ -72,6 +76,7 @@ MESH_QUEUE_CHANNEL_SECRET_FILE=$CHANNEL_SECRET_FILE
 MESH_QUEUE_OWNERSHIP_MAP_FILE=$ROOT/ownership-map.json
 MESH_QUEUE_SERVICE_SECRET_FILE=$ROOT/service-secret.txt
 MESH_QUEUE_LEGACY_MAP_LANE=$LEGACY_MAP_LANE
+MESH_QUEUE_REQUEST_LOG=$REQUEST_LOG
 $WATCH_LINE
 MESH_QUEUE_EXECUTION_MODE=mesh
 PYTHONPATH=$ROOT

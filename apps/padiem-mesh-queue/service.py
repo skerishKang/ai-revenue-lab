@@ -37,6 +37,12 @@ Configuration is files and environment, mirroring the executor's own unit:
     MESH_QUEUE_LEGACY_MAP_LANE      "off" composes the channel source without any
                                     ownership map (the retired lane authorizes nobody),
                                     so the queue never depends on a map it does not use
+    MESH_QUEUE_REQUEST_LOG          off (default) | refusals | all - whether the store
+                                    door prints one line per call (path, allowlisted
+                                    method name, status, ms, and whether the proof
+                                    matched). refusals prints only non-2xx, so a healthy
+                                    lane prints nothing; arguments, the secret, the
+                                    header and any caller-supplied name are never printed
 
 The service binds 127.0.0.1:8797. The executor reaches it there with
 `ORACLE_MESH_QUEUE_ORIGIN`; the Chat Worker reaches it through the tunnel. Neither
@@ -139,7 +145,8 @@ def _no_store(content: dict[str, Any]) -> JSONResponse:
 def create_app(*, db_path: str | None = None, channel_secret: str,
                ownership_map: str | None = None, mode: str = "mesh",
                service_secret: str | None = None, watch_secret: str | None = None,
-               connection: Any = None, legacy_map_lane: bool = True) -> Starlette:
+               connection: Any = None, legacy_map_lane: bool = True,
+               request_log: str = "off") -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
     if not isinstance(channel_secret, str) or not 16 <= len(channel_secret) <= 256:
@@ -221,7 +228,8 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         app.routes.append(Route(
             INTERNAL_STORE_PATH,
             make_internal_handler(state=app.state, service_secret=service_secret,
-                                  resolvers=store_resolvers()),
+                                  resolvers=store_resolvers(),
+                                  request_log=request_log),
             methods=["POST"]))
     return app
 
@@ -324,6 +332,7 @@ def app_from_environment() -> Starlette:
                         if service_secret_file else None),
         watch_secret=(read_secret_file(watch_secret_file, label="watch read secret")
                       if watch_secret_file else None),
+        request_log=os.environ.get("MESH_QUEUE_REQUEST_LOG", "off"),
     )
     start_liveness_watchdog(app.state.queue_database)
     return app

@@ -290,6 +290,9 @@ def test_the_installer_hands_the_backup_dir_to_the_service_user():
 
     installer = (DEPLOY / "install.sh").read_text(encoding="utf-8")
     assert "install -d -m 0700 -o \"$ACCOUNT\" -g \"$ACCOUNT\" /opt/padiem/backups/mesh-queue" in installer
+    # A re-install must preserve both switches, and write today's behaviour when absent.
+    assert "REQUEST_LOG=${REQUEST_LOG:-off}" in installer
+    assert "MESH_QUEUE_REQUEST_LOG=$REQUEST_LOG" in installer
 
 
 def test_the_installer_protects_the_tree_it_copies_from():
