@@ -1,0 +1,56 @@
+name: B62 Chat staging (draft)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Reviewed full source commit SHA
+        required: true
+        type: string
+      mode:
+        description: Deployment remains disabled until staging integration is ready
+        required: true
+        type: choice
+        options: [dry-run]
+
+permissions:
+  contents: read
+
+jobs:
+  staging-dry-run:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: padiem-chat-staging
+    steps:
+      - name: Validate full source SHA
+        env:
+          TARGET_SHA: ${{ inputs.source_sha }}
+        run: '[[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.13.5'
+      - name: Verify isolated targets and generate staging config
+        working-directory: apps/padiem-chat
+        env:
+          STAGING_CHAT_D1_ID: e064ac35-6e45-4fd8-9a2c-c3ae6583c964
+          STAGING_CHAT_ORIGIN: ${{ vars.STAGING_CHAT_ORIGIN }}
+          STAGING_QUEUE_ORIGIN: ${{ vars.STAGING_QUEUE_ORIGIN }}
+        run: python scripts/staging_config.py .staging.generated.json
+      - name: Build staging Worker without uploading
+        working-directory: apps/padiem-chat
+        run: uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --config .staging.generated.json --dry-run --outdir "$RUNNER_TEMP/staging-worker"
+
+# Deployment is intentionally not wired yet. Before enabling it, the workflow
+# must verify account + D1 identity against Cloudflare, use a token scoped only
+# to staging, preserve staging secrets, and pass real Worker boot tests.

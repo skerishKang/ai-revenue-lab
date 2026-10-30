@@ -6,12 +6,13 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 PRODUCTION_DB = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+STAGING_DB = "e064ac35-6e45-4fd8-9a2c-c3ae6583c964"
 PRODUCTION_HOSTS = {"chat.padiem.net", "queue.padiem.net"}
 UUID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")
 
 
 def make_config(database_id, public_origin, queue_origin):
-    if not UUID.fullmatch(database_id) or database_id == PRODUCTION_DB:
+    if not UUID.fullmatch(database_id) or database_id != STAGING_DB or database_id == PRODUCTION_DB:
         raise ValueError("staging database ID required")
     def host(origin):
         u = urlsplit(origin)

@@ -5,7 +5,7 @@ import unittest
 spec = importlib.util.spec_from_file_location("staging_config", Path(__file__).parents[1] / "scripts/staging_config.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-DB = "12345678-1234-1234-1234-123456789abc"
+DB = module.STAGING_DB
 CHAT = "https://padiem-chat-staging.example.workers.dev"
 QUEUE = "https://queue-staging.padiem.net"
 
@@ -19,7 +19,7 @@ class StagingConfigTest(unittest.TestCase):
 
     def test_reject_production_or_invalid_destinations(self):
         for database, chat, queue in [
-            (module.PRODUCTION_DB, CHAT, QUEUE), ("", CHAT, QUEUE),
+            (module.PRODUCTION_DB, CHAT, QUEUE), ("", CHAT, QUEUE), ("12345678-1234-1234-1234-123456789abc", CHAT, QUEUE),
             (DB, "https://chat.padiem.net", QUEUE),
             (DB, CHAT, "https://queue.padiem.net"),
             (DB, CHAT, QUEUE + "/path"),
