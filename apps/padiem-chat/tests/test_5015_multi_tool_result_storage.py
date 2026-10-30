@@ -1131,3 +1131,40 @@ def test_streamed_pc_completion_reuses_the_verified_result_and_terminal_guards()
             asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="replay"))
     finally:
         connection.close()
+
+
+def test_failed_run_cannot_be_reopened_by_a_later_pc_step(monkeypatch):
+    from app import claw_routes
+    _setup_route(monkeypatch)
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection)
+        store = _store(connection)
+        nonce = "nonce-failed-read-d1"
+        dispatch_id = _stage_and_claim(
+            store, READ_CALL, suffix="read",
+            command="Get-Content -LiteralPath missing.txt", nonce=nonce,
+        )
+        status, body, _ = _call(
+            routes.oracle_mesh_read_result,
+            _Request(_result_body(dispatch_id, nonce, "", termination="no_reply"),
+                     _state(store)),
+        )
+        assert status == 200 and body["status"] == "failed"
+        asyncio.run(store.update_claw_run_status(OWNER, RUN, "running"))
+        assert _run_row(connection)["status"] == "failed"
+        _stage_command(store, "late")
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN, command_scope="oracle_mesh_cmd_late",
+            message_id=_command_message_id("oracle_mesh_cmd_late", "oracle_mesh_rev_late"),
+            summary="no_exit_code", content="late result", status="completed",
+        ))
+        assert _run_row(connection) == {"status": "failed", "result_summary": "pc_read_failed"}
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        result = json.loads(response.body)["result"]
+        assert response.status_code == 200
+        assert result["status"] == "failed" and result["reason"] == "pc_read_failed"
+    finally:
+        connection.close()

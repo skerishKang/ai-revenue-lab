@@ -295,3 +295,47 @@ def test_the_d1_path_still_answers_from_its_own_table(tmp_path):
     assert isinstance(key, str)
     found = asyncio.run(store.get_oracle_mesh_run_correlation(user_id=USER, run_id=RUN))
     assert found is None  # 'done' state not reached yet; the read is served, not refused
+
+
+def test_failed_pc_result_stays_terminal_and_pending_lookup_reports_reason(tmp_path, monkeypatch):
+    # Exercise the real result route and pending lookup with dispatch rows only
+    # in the queue. A later PC step must not reopen the failed run.
+    import sys
+    sys.path.insert(0, str(CHAT / "tests"))
+    sys.path.insert(0, str(CHAT.parent / "korean-ai-code-agent" / "src"))
+    sys.path.insert(0, str(CHAT.parent / "padiem-ai-engine" / "clients" / "python"))
+    import test_5015_multi_tool_result_storage as fixture
+    from app import claw_routes
+
+    fixture._setup_route(monkeypatch)
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: fixture.OWNER)
+    old_store, queue_db, old_d1 = _lane(tmp_path)
+    d1 = fixture._database()
+    fixture._stage_run(d1)
+    d1.execute("DROP TABLE oracle_mesh_dispatch")
+    d1.commit()
+    store = QueueForwardingHistoryStore(fixture._store(d1), old_store._client)
+    nonce = "nonce-failed-read-5015"
+    dispatch_id = fixture._stage_and_claim(
+        store, fixture.READ_CALL, suffix="read",
+        command="Get-Content -LiteralPath missing.txt", nonce=nonce,
+    )
+    status, body, _ = fixture._call(
+        fixture.routes.oracle_mesh_read_result,
+        fixture._Request(fixture._result_body(dispatch_id, nonce, "", termination="no_reply"),
+                         fixture._state(store)),
+    )
+    assert status == 200 and body["status"] == "failed"
+    assert queue_db.execute("SELECT state FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+                            (dispatch_id,)).fetchone()[0] == "failed"
+    # The dispatch path issues this status-only update at the next PC step.
+    asyncio.run(store.update_claw_run_status(fixture.OWNER, fixture.RUN, "running"))
+    assert fixture._run_row(d1)["status"] == "failed"
+    response = asyncio.run(claw_routes.claw_pending_result(fixture._pending_request(fixture.RUN, store)))
+    result = json.loads(response.body)["result"]
+    assert response.status_code == 200
+    assert result["status"] == "failed" and result["reason"] == "pc_read_failed"
+    d1.close()
+    old_d1.close()
+    queue_db.close()
