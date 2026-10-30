@@ -74,4 +74,5 @@ jobs:
             --data-binary @"$RUNNER_TEMP/count-query.json" "$api" -o "$RUNNER_TEMP/counts.json"
           python3 "$script" counts "$RUNNER_TEMP/counts.json"
           echo "PRODUCTION_MUTATION=0"
+          python3 .github/scripts/b54_engine_d1_0009_0013_foreign_keys.py
           test "$drift" -eq 0

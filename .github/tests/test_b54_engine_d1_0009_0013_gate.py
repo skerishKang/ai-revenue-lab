@@ -69,3 +69,74 @@ def test_dispatch_workflow_is_read_only_and_sha_pinned():
     assert "ENGINE_IDEMPOTENCY" in text and "padiem-ai-engine/settings" in text
     assert "PRODUCTION_MUTATION=0" in text
     assert "d1 export" not in text and "d1 execute" not in text
+
+
+FKFILE = P.parents[1] / "scripts/b54_engine_d1_0009_0013_foreign_keys.py"
+fk_spec = importlib.util.spec_from_file_location("engine5359_fk", FKFILE)
+fk = importlib.util.module_from_spec(fk_spec)
+fk_spec.loader.exec_module(fk)
+
+def test_fk_inventory_finds_inbound_and_escapes_table_names():
+    db=sqlite3.connect(":memory:")
+    db.execute("CREATE TABLE padiem_engine_agent_runs_v1 (run_id TEXT PRIMARY KEY)")
+    db.execute("CREATE TABLE child (run_id TEXT REFERENCES padiem_engine_agent_runs_v1(run_id) ON DELETE CASCADE)")
+    db.execute('CREATE TABLE "odd\'name" (x INTEGER)')
+    queries=[]
+    def query(sql):
+        queries.append(sql)
+        cursor=db.execute(sql)
+        return {"success":True,"result":[{"success":True,"results":[dict(zip([d[0] for d in cursor.description],row)) for row in cursor]}]}
+    result=fk.inventory(query)
+    assert result["inbound_foreign_keys"] == [{"table":"child","on_delete":"CASCADE","on_update":"NO ACTION"}]
+    assert all(sql==fk.TABLES_QUERY or sql.startswith("PRAGMA foreign_key_list('") for sql in queries)
+    # A malicious-looking name remains one quoted identifier and cannot execute a second statement.
+    injected="x'); DROP TABLE child; --"
+    assert db.execute(fk.pragma_for(injected)).fetchall()==[]
+    assert db.execute("SELECT count(*) FROM child").fetchone()[0]==0
+
+def test_fk_inventory_fails_closed_on_error_or_changed_tables():
+    def bad(_): return {"success":False}
+    with pytest.raises(ValueError): fk.inventory(bad)
+    calls=[]
+    def changed(sql):
+        calls.append(sql)
+        names=[{"name":"t"}] if len(calls)==1 else [{"name":"t"},{"name":"new"}]
+        results=[] if sql.startswith("PRAGMA") else names
+        return {"success":True,"result":[{"success":True,"results":results}]}
+    with pytest.raises(ValueError): fk.inventory(changed)
+
+def test_generated_live_sql_is_read_only_under_sqlite_authorizer():
+    db=make("0013")
+    db.execute("CREATE TABLE child (run_id TEXT REFERENCES padiem_engine_agent_runs_v1(run_id))")
+    states, grouped = m.classify(payload(db))
+    actions=[]
+    allowed={sqlite3.SQLITE_SELECT,sqlite3.SQLITE_READ,sqlite3.SQLITE_FUNCTION,sqlite3.SQLITE_PRAGMA}
+    def authorizer(action, a, b, c, d):
+        actions.append((action,a,b))
+        if action not in allowed: return sqlite3.SQLITE_DENY
+        if action==sqlite3.SQLITE_PRAGMA and (a!="foreign_key_list" or b is None): return sqlite3.SQLITE_DENY
+        return sqlite3.SQLITE_OK
+    db.set_authorizer(authorizer)
+    db.execute(m.schema_sql()).fetchall()
+    db.execute(m.count_sql(states, grouped)).fetchall()
+    db.execute(fk.TABLES_QUERY).fetchall()
+    for table in (*m.TABLES.values(),"child"):
+        db.execute(fk.pragma_for(table)).fetchall()
+    assert all(action in allowed for action,_,_ in actions)
+    with pytest.raises(sqlite3.DatabaseError): db.execute("DELETE FROM child")
+    with pytest.raises(sqlite3.DatabaseError): db.execute("PRAGMA foreign_keys=OFF")
+
+
+def test_reviewed_live_workflow_and_query_generators_are_pinned():
+    # Any edit requires a fresh read-only audit and explicit digest update.
+    # This catches shell additions, new SQL calls and mutable PRAGMA even if a
+    # text-only "no DROP" search could be bypassed.
+    import hashlib
+    reviewed={
+        P.parents[1]/"workflows/b54-engine-d1-0009-0013-readonly.yml":"a235e3eac281055143114cfd420d3e154f2c6db97dbbcb8ddaea376d3c90fadc",
+        P:"3e50ee9431ab286063d0e1abaa08fa73203f2f9315ede820ebd7f18f5582abac",
+        FKFILE:"779890930989231e8213616c8b6e736de80ecc24f3a15fa9d11df52e87d772ab",
+    }
+    for path, expected in reviewed.items():
+        text=path.read_text(encoding="utf8")
+        assert hashlib.sha256(text.encode("utf8")).hexdigest()==expected, f"re-audit read-only surface: {path.name}"

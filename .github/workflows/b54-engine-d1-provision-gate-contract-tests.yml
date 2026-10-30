@@ -13,6 +13,7 @@ on:
       - ".github/tests/test_b54_engine_d1_provision_gate.py"
       - ".github/workflows/b54-engine-d1-0009-0013-readonly.yml"
       - ".github/scripts/b54_engine_d1_0009_0013_schema.py"
+      - ".github/scripts/b54_engine_d1_0009_0013_foreign_keys.py"
       - ".github/tests/test_b54_engine_d1_0009_0013_gate.py"
       - "apps/padiem-ai-engine/migrations/**"
   workflow_dispatch:
