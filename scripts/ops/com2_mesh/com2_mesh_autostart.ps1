@@ -194,6 +194,27 @@ function Get-MeshHttpObservation {
     return $obs
 }
 
+function Get-RemoteHttpObservation {
+    param([string]$ConfigPath)
+    $obs = [ordered]@{ queried = $false; code = 0; error = '' }
+    try {
+        $recovery = Join-Path $PSScriptRoot 'com2_mesh_recovery.ps1'
+        if (-not (Test-Path -LiteralPath $recovery)) { throw 'recovery engine not found' }
+        . $recovery -FunctionsOnly
+        $recoveryCfg = Get-Config -Path $ConfigPath
+        $result = Invoke-RemoteProbe -Cfg $recoveryCfg
+        if (-not $result.ok) { throw 'COM2 remote probe unavailable' }
+        if ([string]$result.http -notmatch '^\d{3}$' -or [string]$result.http -eq '000') {
+            throw 'COM2 remote HTTP response unavailable'
+        }
+        $obs.queried = $true
+        $obs.code = [int]$result.http
+    } catch {
+        $obs.error = $_.Exception.Message
+    }
+    return $obs
+}
+
 function Get-AutostartObservation {
     param($Cfg)
     $boot = Get-BootObservation
@@ -203,7 +224,7 @@ function Get-AutostartObservation {
         boot_time = $boot.boot_time
         boot_error = $boot.error
         mesh_agent = Get-MeshAgentObservation -ServiceName ([string]$Cfg.mesh_agent_service)
-        mesh_http = Get-MeshHttpObservation -Url ([string]$Cfg.mesh_url) -TimeoutSeconds ([int]$Cfg.autostart_http_timeout_seconds)
+        mesh_http = Get-RemoteHttpObservation -ConfigPath $Config
     }
 }
 
