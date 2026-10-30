@@ -240,7 +240,10 @@ jobs:
       # trigger on that package's whole source tree. This contract is the
       # mechanical proof; the incident it encodes is documented in the test.
       - name: Test the reverse-dependency trigger contract
-        run: python -m unittest discover -s .github/tests -p test_ci_reverse_dependency_paths.py -q
+        # -I + direct file run: the repo checkout is not an importable
+        # package, and isolated mode keeps the runner environment minimal.
+        working-directory: ${{ github.workspace }}
+        run: python -I .github/tests/test_ci_reverse_dependency_paths.py
 
       # unittest discovery collects TestCase cases only, so a pytest-style
       # module in this package contributed zero cases and its assertions ran

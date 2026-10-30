@@ -51,4 +51,8 @@ jobs:
       # source tree. Runs after the app suite; uses the plain interpreter so
       # it does not depend on the uv project environment.
       - name: Test the reverse-dependency trigger contract
-        run: python -m unittest discover -s .github/tests -p test_ci_reverse_dependency_paths.py -q
+        # The job default working-directory is the file-lane app; run the
+        # contract from the repo root with -I so the bare runner needs no
+        # importable package (the repo checkout is not a Python package).
+        working-directory: ${{ github.workspace }}
+        run: python -I .github/tests/test_ci_reverse_dependency_paths.py
