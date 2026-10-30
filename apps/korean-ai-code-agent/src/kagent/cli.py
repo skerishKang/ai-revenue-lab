@@ -124,7 +124,7 @@ def parser() -> argparse.ArgumentParser:
         description="한국어 개인 개발자를 위한 permission-gated coding-agent CLI vertical slice",
     )
     p.add_argument("repository", nargs="?", default=".", help="작업 저장소 경로")
-    p.add_argument("--route", default="business14/auto", help="Business 14 route 또는 manual model marker")
+    p.add_argument("--route", default="", help="Business 14 route 또는 manual model marker")
     sub = p.add_subparsers(dest="mode")
     for name in ("plan", "run"):
         cmd = sub.add_parser(name)

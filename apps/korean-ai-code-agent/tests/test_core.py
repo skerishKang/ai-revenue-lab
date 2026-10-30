@@ -17,10 +17,16 @@ class AgentSessionTests(unittest.TestCase):
         (root / "README.md").write_text("# fixture\n", encoding="utf-8")
         return temp, root
 
+    def test_missing_model_route_is_a_configuration_error(self):
+        temp, root = self.make_repo()
+        self.addCleanup(temp.cleanup)
+        with self.assertRaisesRegex(AgentBoundaryError, "Model route is not configured"):
+            AgentSession.open(root, "테스트 작업")
+
     def test_plan_only_contract_has_no_mutation_permission(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "저장 버튼 오류를 분석해줘")
+        session = AgentSession.open(root, "저장 버튼 오류를 분석해줘", route="test/model")
         session.inspect()
         self.assertFalse(session.permissions.write)
         self.assertFalse(session.permissions.command)
@@ -32,18 +38,18 @@ class AgentSessionTests(unittest.TestCase):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
         with self.assertRaises(AgentBoundaryError):
-            AgentSession.open(root, "fix the save button")
+            AgentSession.open(root, "fix the save button", route="test/model")
 
     def test_korean_task_contract_accepts_mixed_code_terms(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "README save flow를 수정해줘")
+        session = AgentSession.open(root, "README save flow를 수정해줘", route="test/model")
         self.assertIn("수정", session.task)
 
     def test_outside_root_is_rejected(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "범위를 확인해줘")
+        session = AgentSession.open(root, "범위를 확인해줘", route="test/model")
         with self.assertRaises(AgentBoundaryError):
             session.contained("../outside.txt")
 
@@ -61,7 +67,7 @@ class AgentSessionTests(unittest.TestCase):
         except (OSError, NotImplementedError):
             self.skipTest("symlink creation is unavailable on this platform")
 
-        session = AgentSession.open(root, "심볼릭 링크 경계를 확인해줘")
+        session = AgentSession.open(root, "심볼릭 링크 경계를 확인해줘", route="test/model")
         with self.assertRaises(AgentBoundaryError):
             session.contained("escape.txt")
         self.assertNotIn("escape.txt", session.inspect(limit=50))
@@ -69,7 +75,7 @@ class AgentSessionTests(unittest.TestCase):
     def test_write_denied_leaves_file_unchanged(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "README를 검토해줘")
+        session = AgentSession.open(root, "README를 검토해줘", route="test/model")
         session.inspect()
         before = (root / "README.md").read_text(encoding="utf-8")
         session.prepare_demo_patch("README.md")
@@ -82,7 +88,7 @@ class AgentSessionTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         other = root / "other.txt"
         other.write_text("keep\n", encoding="utf-8")
-        session = AgentSession.open(root, "README 변경 미리보기")
+        session = AgentSession.open(root, "README 변경 미리보기", route="test/model")
         session.prepare_demo_patch("README.md")
         session.permissions.write = True
         changed = session.apply()
@@ -94,7 +100,7 @@ class AgentSessionTests(unittest.TestCase):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
         target = root / "README.md"
-        session = AgentSession.open(root, "동시 변경을 보호해줘")
+        session = AgentSession.open(root, "동시 변경을 보호해줘", route="test/model")
         session.prepare_demo_patch("README.md")
         target.write_text("# someone else changed it\n", encoding="utf-8")
         session.permissions.write = True
@@ -107,7 +113,7 @@ class AgentSessionTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         target = root / "README.md"
         before = target.read_text(encoding="utf-8")
-        session = AgentSession.open(root, "README 변경을 거부해줘")
+        session = AgentSession.open(root, "README 변경을 거부해줘", route="test/model")
         session.prepare_demo_patch("README.md")
         session.reject()
         self.assertIsNone(session.proposed_path)
@@ -117,10 +123,10 @@ class AgentSessionTests(unittest.TestCase):
     def test_business14_mock_response_is_deterministic_and_network_free(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        first = AgentSession.open(root, "로그인 오류를 분석해줘").business14_mock_response()
-        second = AgentSession.open(root, "로그인 오류를 분석해줘").business14_mock_response()
+        first = AgentSession.open(root, "로그인 오류를 분석해줘", route="test/model").business14_mock_response()
+        second = AgentSession.open(root, "로그인 오류를 분석해줘", route="test/model").business14_mock_response()
         self.assertEqual(first, second)
-        self.assertEqual(first["route"], "business14/auto")
+        self.assertEqual(first["route"], "test/model")
         self.assertEqual(first["provider_mode"], "mock")
         self.assertFalse(first["network_called"])
         self.assertEqual(first["status"], "resolved_not_called")
@@ -129,7 +135,7 @@ class AgentSessionTests(unittest.TestCase):
     def test_git_status_probe_is_read_only_command(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "Git 상태를 확인해줘")
+        session = AgentSession.open(root, "Git 상태를 확인해줘", route="test/model")
         completed = subprocess.CompletedProcess(
             args=[], returncode=0, stdout=" M README.md\n", stderr=""
         )
@@ -151,7 +157,7 @@ class AgentSessionTests(unittest.TestCase):
     def test_workspace_inspection_limit_fails_closed(self):
         temp, root = self.make_repo()
         self.addCleanup(temp.cleanup)
-        session = AgentSession.open(root, "파일 범위를 확인해줘")
+        session = AgentSession.open(root, "파일 범위를 확인해줘", route="test/model")
         with self.assertRaises(AgentBoundaryError):
             session.inspect(limit=0)
         with self.assertRaises(AgentBoundaryError):
@@ -162,7 +168,7 @@ class AgentSessionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-            session = AgentSession.open(root, "Git 상태를 확인해줘")
+            session = AgentSession.open(root, "Git 상태를 확인해줘", route="test/model")
             clean = session.git_worktree_status()
             self.assertTrue(clean["is_git_repository"])
             self.assertTrue(clean["clean"])

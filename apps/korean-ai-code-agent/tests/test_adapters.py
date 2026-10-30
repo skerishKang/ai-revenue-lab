@@ -12,10 +12,10 @@ from kagent.core import AgentSession
 class AdapterBoundaryTests(unittest.TestCase):
     def test_business14_preview_stays_backward_compatible_and_network_free(self):
         adapter = DeterministicBusiness14Preview()
-        first = adapter.preview(task="로그인 오류를 분석해줘", route="business14/auto")
-        second = adapter.preview(task="로그인 오류를 분석해줘", route="business14/auto")
+        first = adapter.preview(task="로그인 오류를 분석해줘", route="example/explicit-model")
+        second = adapter.preview(task="로그인 오류를 분석해줘", route="example/explicit-model")
         self.assertEqual(first, second)
-        self.assertEqual(first["route"], "business14/auto")
+        self.assertEqual(first["route"], "example/explicit-model")
         self.assertFalse(first["network_called"])
         self.assertEqual(first["status"], "resolved_not_called")
         self.assertNotIn("credential", first)
