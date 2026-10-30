@@ -89,27 +89,40 @@ def _decode_payload(payload: Any) -> bytes:
     return decoded
 
 
-def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
-    if exc.code == "ooxml_encrypted":
-        return BinaryDocumentValidationError(
+def guidance_for_reason_code(code: str, media_type: Any) -> str | None:
+    """The per-code user guidance for one Core reason code, or None.
+
+    The single wording authority for document refusals: the direct parse path
+    (``_translate_binary_error``) and the file-lane resolve path both pick
+    their answer here, so one code can never grow two different wordings.
+    """
+
+    if code == "ooxml_encrypted":
+        return (
             _OOXML_ENCRYPTED_MESSAGES.get(media_type)
             or "암호화된 문서는 현재 첨부할 수 없습니다."
         )
-    if exc.code in _OOXML_CODES:
+    if code in _OOXML_CODES:
         if media_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            return BinaryDocumentValidationError("XLSX 압축 구조를 안전하게 읽지 못했습니다.")
+            return "XLSX 압축 구조를 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            return BinaryDocumentValidationError("DOCX 파일을 안전하게 읽지 못했습니다.")
+            return "DOCX 파일을 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-            return BinaryDocumentValidationError("PPTX 파일을 안전하게 읽지 못했습니다.")
-    message = _BINARY_ERROR_MESSAGES.get(exc.code)
-    if message is None and exc.code in {
+            return "PPTX 파일을 안전하게 읽지 못했습니다."
+    message = _BINARY_ERROR_MESSAGES.get(code)
+    if message is None and code in {
         "invalid_text",
         "binary_text_rejected",
         "excessive_control_characters",
     }:
         message = "문서에서 추출한 텍스트를 사용할 수 없습니다."
-    return BinaryDocumentValidationError(message or "지원하지 않는 문서 형식입니다.")
+    return message
+
+
+def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
+    return BinaryDocumentValidationError(
+        guidance_for_reason_code(exc.code, media_type) or "지원하지 않는 문서 형식입니다."
+    )
 
 
 def _validated_item_payload(item: Any) -> tuple[Any, Any, bytes]:
