@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 from starlette.requests import Request
 
+from store_seam import attach_dispatch_seam
 from app.history import (
     D1HistoryStore,
     PRODUCT_SCOPE_CHAT,
