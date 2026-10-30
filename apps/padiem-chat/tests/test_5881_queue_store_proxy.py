@@ -24,22 +24,26 @@ MARKER = "C:/Users/customer/private-file.txt"
 
 
 class _Response:
+    """Exactly the response surface consumed from Workers: no json/aread."""
     def __init__(self, status_code, payload):
         self.status_code = status_code
-        self._payload = payload
+        self._raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
-    def json(self):
-        return self._payload
+    async def aiter_bytes(self):
+        # Split inside multibyte UTF-8 as a real fetch may do.
+        for index in range(0, len(self._raw), 2):
+            yield self._raw[index:index + 2]
 
 
 class _Call:
-    """The transport the proxy module is tested through: it records, it answers."""
+    """Workers-shaped recording client: stream(), never post()."""
 
     def __init__(self, handler):
         self.handler = handler
         self.sent: list[dict[str, Any]] = []
+        self.closed = False
 
-    def __call__(self, *args, **kwargs):  # httpx.AsyncClient(...)
+    def __call__(self, *args, **kwargs):
         return self
 
     async def __aenter__(self):
@@ -48,9 +52,16 @@ class _Call:
     async def __aexit__(self, *exc):
         return False
 
-    async def post(self, url, json=None, headers=None):
-        self.sent.append({"url": url, "json": json, "headers": dict(headers or {})})
-        return self.handler(dict(self.sent[-1]))
+    def stream(self, method, url, json=None, headers=None):
+        self.sent.append({"method": method, "url": url, "json": json, "headers": dict(headers or {})})
+        outer = self
+        class Context:
+            async def __aenter__(self):
+                return outer.handler(dict(outer.sent[-1]))
+            async def __aexit__(self, *exc):
+                outer.closed = True
+                return False
+        return Context()
 
 
 def _client(handler):
@@ -97,12 +108,6 @@ def test_no_client_is_built_without_the_switch_or_without_material():
 
 def test_the_call_sends_the_declared_name_and_proves_the_service_secret():
     seen: dict[str, Any] = {}
-
-    def handler(request):
-        seen["path"] = request.url.path
-        seen["secret"] = request.headers.get(proxy.QUEUE_SERVICE_SECRET_HEADER)
-        seen["body"] = json.loads(request.content)
-        return httpx.Response(200, json={"ok": True, "result": []})
 
     client, recorder = _client(lambda sent: _Response(200, {"ok": True, "result": []}))
     assert asyncio.run(client.call("list_links", user_id="usr_1")) == []
@@ -202,3 +207,96 @@ def test_the_two_allowlists_are_one_list():
                       "store_oracle_mesh_original_bytes", "read_oracle_mesh_original",
                       "append_local_task_result", "get_claw_run"):
         assert forbidden not in proxy.QUEUE_DISPATCH_METHODS, forbidden
+
+
+@pytest.mark.parametrize('result', [None, [], {'name': '한글🙂', 'count': 2}])
+def test_workers_shaped_response_parses_without_httpx_only_helpers(result):
+    response = _Response(200, {'ok': True, 'result': result})
+    assert not hasattr(response, 'json') and not hasattr(response, 'aread')
+    client, recorder = _client(lambda sent: response)
+    assert not hasattr(recorder, 'post')
+    assert asyncio.run(client.call('list_links')) == result
+    assert recorder.sent[0]['method'] == 'POST' and recorder.closed
+
+
+def test_actual_httpx_streaming_response_is_supported():
+    import httpx
+    seen = []
+    async def handler(request):
+        seen.append(request.method)
+        assert json.loads(request.content)['method'] == 'list_links'
+        return httpx.Response(200, json={'ok': True, 'result': {'name': '한글🙂'}})
+    transport = httpx.MockTransport(handler)
+    client = proxy.QueueStoreClient(origin=ORIGIN, service_secret=SECRET,
+        client_factory=lambda **options: httpx.AsyncClient(transport=transport, **options))
+    assert asyncio.run(client.call('list_links')) == {'name': '한글🙂'}
+    assert seen == ['POST']
+
+
+def test_actual_workers_compat_client_and_response_interface(monkeypatch):
+    from test_httpx_compat_workers_timeout import _load_workers_shim
+    shim = _load_workers_shim(None)
+    assert not hasattr(shim.AsyncClient, 'post') and not hasattr(shim.Response, 'json')
+    monkeypatch.setattr(proxy, 'httpx', shim)
+    closed, seen = [], []
+    class Stream(shim.AsyncByteStream):
+        async def __aiter__(self):
+            raw = json.dumps({'ok': True, 'result': '한글🙂'}, ensure_ascii=False).encode()
+            for byte in raw:
+                yield bytes([byte])
+        async def aclose(self):
+            closed.append(True)
+    class Transport(shim.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            seen.append(request.method)
+            return shim.Response(200, stream=Stream())
+    client = proxy.QueueStoreClient(origin=ORIGIN, service_secret=SECRET,
+        client_factory=lambda **options: shim.AsyncClient(transport=Transport(), **options))
+    assert asyncio.run(client.call('list_links')) == '한글🙂'
+    assert seen == ['POST'] and closed == [True]
+
+
+@pytest.mark.parametrize('failure,stage,status,reason', [
+    ('transport', 'request', 0, 'transport_error'),
+    ('http', 'status', 403, 'http_status'),
+    ('body', 'body_read', 200, 'transport_error'),
+    ('json', 'json_decode', 200, 'invalid_json'),
+    ('envelope', 'envelope', 200, 'invalid_envelope'),
+])
+def test_diagnostics_distinguish_failure_stage_without_values(caplog, failure, stage, status, reason):
+    import logging
+    class Response(_Response):
+        async def aiter_bytes(self):
+            if failure == 'body':
+                raise proxy.httpx.ReadError(MARKER + SECRET)
+            async for chunk in super().aiter_bytes():
+                yield chunk
+    response = Response(403 if failure == 'http' else 200,
+                        {'ok': False, 'error': MARKER} if failure == 'envelope' else {'ok': True, 'result': MARKER})
+    if failure == 'json':
+        response._raw = (MARKER + SECRET).encode()
+    def handler(sent):
+        if failure == 'transport':
+            raise proxy.httpx.ConnectError(MARKER + SECRET)
+        return response
+    client, recorder = _client(handler)
+    with caplog.at_level(logging.INFO, logger=proxy.__name__), pytest.raises(proxy.QueueUnavailable) as caught:
+        asyncio.run(client.call('list_links', user_id=MARKER))
+    lines = [record.getMessage() for record in caplog.records if record.name == proxy.__name__]
+    assert len(lines) == 1
+    assert f'method=list_links stage={stage} status={status} outcome=error reason={reason} elapsed_ms=' in lines[0]
+    for forbidden in (MARKER, SECRET, ORIGIN, proxy.QUEUE_SERVICE_SECRET_HEADER):
+        assert forbidden not in lines[0] and forbidden not in str(caught.value)
+    if failure != 'transport':
+        assert recorder.closed
+
+
+def test_success_log_does_not_echo_an_unknown_method_or_result(caplog):
+    import logging
+    client, _ = _client(lambda sent: _Response(200, {'ok': True, 'result': MARKER}))
+    with caplog.at_level(logging.INFO, logger=proxy.__name__):
+        assert asyncio.run(client.call('customer_private_method', user_id=MARKER)) == MARKER
+    line = caplog.records[-1].getMessage()
+    assert 'method=other stage=complete status=200 outcome=ok reason=ok elapsed_ms=' in line
+    for forbidden in ('customer_private_method', MARKER, SECRET, ORIGIN):
+        assert forbidden not in line

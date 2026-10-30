@@ -16,9 +16,13 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import json
+import logging
+import time
 from typing import Any, Callable
 
 from . import httpx_compat as httpx
+
+logger = logging.getLogger(__name__)
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
@@ -141,25 +145,59 @@ class QueueStoreClient:
             "follow_redirects": False,
         }
         factory = self._client_factory or httpx.AsyncClient
+        started = time.perf_counter()
+        stage, status = "request", 0
+        # Only declared operation names are observable. Never log arguments,
+        # origins, headers, body bytes or exception messages/tracebacks.
+        safe_method = method if method in (
+            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
+        ) else "other"
+
+        def record(outcome, reason):
+            log = logger.info if outcome == "ok" else logger.warning
+            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s",
+                safe_method, stage, status, outcome, reason,
+                int((time.perf_counter() - started) * 1000))
+
         try:
             async with factory(**client_options) as client:
-                response = await client.post(
-                    self._origin + INTERNAL_STORE_PATH, json=payload,
+                # Workers compat exposes stream(), not post(); its Response
+                # exposes aiter_bytes(), not json()/aread()/content. Real httpx
+                # supports this same streaming interface and closes on exit.
+                async with client.stream(
+                    "POST", self._origin + INTERNAL_STORE_PATH, json=payload,
                     headers={QUEUE_SERVICE_SECRET_HEADER: self._secret,
                              "Accept": "application/json",
                              "Content-Type": "application/json",
                              "Cache-Control": "no-store",
                              "User-Agent": QUEUE_USER_AGENT},
-                )
-                if response.status_code != 200:
-                    raise QueueUnavailable("the queue refused the call")
-                body = response.json()
+                ) as response:
+                    stage, status = "status", response.status_code
+                    if status != 200:
+                        record("error", "http_status")
+                        raise QueueUnavailable("the queue refused the call")
+                    stage = "body_read"
+                    raw = b"".join([chunk async for chunk in response.aiter_bytes()])
+                    stage = "json_decode"
+                    body = json.loads(raw)
         except QueueUnavailable:
             raise
         except (httpx.HTTPError, ValueError, TypeError) as exc:
-            raise QueueUnavailable("the queue could not be reached") from exc
+            reason = ("transport_error" if isinstance(exc, httpx.HTTPError)
+                      else "invalid_json" if stage == "json_decode" else "invalid_response")
+            record("error", reason)
+            raise QueueUnavailable("the queue could not be reached") from None
+        except Exception:
+            # Preserve unexpected exceptions for existing callers while making
+            # a missing runtime method distinguishable from an HTTP refusal.
+            record("error", "unexpected_error")
+            raise
+        stage = "envelope"
         if not isinstance(body, dict) or body.get("ok") is not True or "result" not in body:
+            record("error", "invalid_envelope")
             raise QueueUnavailable("the queue answer was not usable")
+        stage = "complete"
+        record("ok", "ok")
         return body["result"]
 
 

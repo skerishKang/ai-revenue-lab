@@ -379,6 +379,36 @@ def _timezone_database_state() -> str:
 
 
 
+async def _queue_store_state() -> dict:
+    """Actual Pyodide compat client + real JS Response, synthetic fetch only."""
+    from js import Response as JsResponse
+    from app import httpx_compat as compat
+    from app.queue_store_proxy import QueueStoreClient
+
+    state = {"workers_compat": compat._IN_WORKERS,
+             "no_httpx_only_methods": not hasattr(compat.AsyncClient, "post") and not hasattr(compat.Response, "json"),
+             "mock_fetch_once": False, "parsed_result": False, "unexpected_exception": False}
+    calls = []
+    original = compat._js_global
+    async def fixture_fetch(url, init):
+        # No network capability is delegated: the real fetch is never called.
+        calls.append(str(url) == "https://queue.invalid/internal/store" and str(init.method) == "POST")
+        return JsResponse.new(json.dumps({"ok": True, "result": {"label": "큐🙂", "rows": []}}, ensure_ascii=False))
+    def globals_for_probe(name):
+        return fixture_fetch if name == "fetch" else original(name)
+    compat._js_global = globals_for_probe
+    try:
+        client = QueueStoreClient(origin="https://queue.invalid", service_secret="synthetic-queue-probe-not-a-credential")
+        result = await client.call("list_links", user_id="synthetic-user")
+        state["parsed_result"] = result == {"label": "큐🙂", "rows": []}
+        state["mock_fetch_once"] = calls == [True]
+    except Exception:
+        state["unexpected_exception"] = True
+    finally:
+        compat._js_global = original
+    return state
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         url = urlparse(str(request.url))
@@ -440,6 +470,9 @@ class Default(WorkerEntrypoint):
             except Exception as exc:
                 body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
             return Response(body, status=200, headers={"Content-Type": "application/json"})
+        if case == "queue_store":
+            return Response(json.dumps(await _queue_store_state()), status=200,
+                            headers={"Content-Type": "application/json"})
         handler = PROBES.get(case)
         if handler is None:
             return Response("invalid probe case", status=400)
