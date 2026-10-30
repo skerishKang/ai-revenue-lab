@@ -22,8 +22,10 @@ from typing import Any, Callable
 
 from .history import VerifiedDispatch, _tagged
 from . import httpx_compat as httpx
+from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispatch_id
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
@@ -153,6 +155,13 @@ class QueueStoreClient:
         factory = self._client_factory or httpx.AsyncClient
         started = time.perf_counter()
         stage, status = "request", 0
+        trace_run = run_hash(arguments.get("run_id"))
+        trace_dispatch = dispatch_id(arguments.get("dispatch_id"))
+        trace_headers = {}
+        if trace_run:
+            trace_headers[RUN_HASH_HEADER] = trace_run
+        if trace_dispatch:
+            trace_headers[DISPATCH_ID_HEADER] = trace_dispatch
         # Only declared operation names are observable. Never log arguments,
         # origins, headers, body bytes or exception messages/tracebacks.
         safe_method = method if method in (
@@ -161,9 +170,9 @@ class QueueStoreClient:
 
         def record(outcome, reason, exception="none"):
             log = logger.info if outcome == "ok" else logger.warning
-            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s",
+            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s run_hash=%s dispatch_id=%s",
                 safe_method, stage, status, outcome, reason,
-                int((time.perf_counter() - started) * 1000), exception)
+                int((time.perf_counter() - started) * 1000), exception, trace_run or "none", trace_dispatch or "none")
 
         try:
             async with factory(**client_options) as client:
@@ -176,7 +185,7 @@ class QueueStoreClient:
                              "Accept": "application/json",
                              "Content-Type": "application/json",
                              "Cache-Control": "no-store",
-                             "User-Agent": QUEUE_USER_AGENT},
+                             "User-Agent": QUEUE_USER_AGENT, **trace_headers},
                 ) as response:
                     stage, status = "status", response.status_code
                     if status != 200:
@@ -208,6 +217,9 @@ class QueueStoreClient:
             record("error", "invalid_envelope")
             raise QueueUnavailable("the queue answer was not usable")
         stage = "complete"
+        result = body["result"]
+        if isinstance(result, dict):
+            trace_dispatch = dispatch_id(result.get("dispatch_id")) or trace_dispatch
         record("ok", "ok")
         return body["result"]
 
