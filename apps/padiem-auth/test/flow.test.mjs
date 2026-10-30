@@ -189,3 +189,28 @@ test('existing other-product account can safely add b62 without identity drift',
   assert.equal(first.account_id, second.account_id);
   assert.equal(f.calls(), 2);
 });
+
+test('b62 existing account rejects a different canonical identity', async () => {
+  const store = storage();
+  let t = Promise.resolve();
+  const state = {storage: store, blockConcurrencyWhile(fn) {const next = t.then(fn); t = next.catch(() => {}); return next;}};
+  const authority = {async resolve_or_create_product_link(v) {return {ok:true, link:{state:'active', product_id:v.product_id, product_user_id:v.product_user_id, canonical_subject_id:'sub_wrong'}};}};
+  const registry = new AuthStateObject(state, {IDENTITY_AUTHORITY:authority});
+  registry.putAccount({fingerprint:'test', accountId:'sub_original'});
+  await assert.rejects(() => registry.resolveAccount({fingerprint:'test', productId:'b62', userId:'usr_test', subject:'google-sub'}));
+  assert.equal(registry.accountByFingerprint('test').account_id, 'sub_original');
+});
+
+test('code profile schedules durable expiry and alarm deletes ciphertext', async () => {
+  const store = storage();
+  let scheduled;
+  store.setAlarm = async at => { scheduled = at; };
+  const state = {storage:store, blockConcurrencyWhile(fn) { return fn(); }};
+  const object = new AuthStateObject(state, {});
+  const expires = Math.floor(Date.now() / 1000) - 1;
+  await object.createCode({digest:'d', client:'b62', redirect:'r', challenge:'c', subject:'sub_a', accountId:'sub_a', expires, encryptedProfile:'ciphertext'});
+  assert.equal(scheduled, expires * 1000);
+  assert.equal(store.sql.exec('SELECT * FROM code_profiles').toArray().length, 1);
+  await object.alarm();
+  assert.equal(store.sql.exec('SELECT * FROM code_profiles').toArray().length, 0);
+});
