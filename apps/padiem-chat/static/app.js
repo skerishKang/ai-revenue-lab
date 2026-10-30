@@ -2542,7 +2542,8 @@
       try {
         data = await fetchAuthStatusOnce();
         // The server reports a display-only hint; cookies remain HttpOnly.
-        if (data.shared_login_enabled === true && !data.authenticated && data.shared_session_present === true) {
+        if (data.shared_login_enabled === true && data.ready === true && !data.authenticated &&
+            (data.session_state === "guest" || data.session_state === "expired") && data.shared_session_present === true) {
           const renewed = await fetch("/auth/shared/refresh", { method: "POST", headers: { "Accept": "application/json" }, cache: "no-store" });
           if (!renewed.ok) throw new Error("shared session unavailable");
           data = await fetchAuthStatusOnce();
