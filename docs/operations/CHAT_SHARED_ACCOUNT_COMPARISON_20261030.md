@@ -13,7 +13,7 @@
 2. #6267의 검증 라이브러리를 Chat Worker 빌드에 포함하고, JWKS를 Python Worker의 fetch 호환 경계로 비동기 수신하도록 연결한다. 현재 공통 Python 검증기는 기본 urllib 소켓 경로여서 Worker에서 실사용을 확인하지 못했다. 일반 Python HTTPX의 소켓 경로도 Worker에서 사용할 수 없어 Chat의 `httpx_compat`를 사용한다.
 3. 두 Secrets Store 항목을 Chat Worker 설정에 바인딩하고 요청 시 비동기 `.get()`으로 가져오는 구성, 기본 OFF 스위치와 인증 흐름 생성 코드를 연결한다. private key·state key는 로그·응답·브라우저 저장소·최상위 스냅숏에 넣지 않는다. 다른 레인의 배포와 충돌하지 않게 CTO가 정한 배포 시점까지 적용하지 않는다.
 4. 대표의 현재 Chat 세션이 플랫폼 super-admin인지 기존 역할 확인 경로로 검사한다. 실제 권한은 미확인이다. 권한이 없거나 확인 불가면 UNKNOWN이며 임의로 권한을 부여하지 않는다.
-5. 격리된 Python Worker 환경에서 서명·공개키 갱신·코드 교환·identity binding·권한 및 기본 OFF, 쿠키/state/PKCE를 검증한다. 현재는 CPython 합성 시험과 기존 Worker 계약 CI만 통과했으며, 활성화된 대조 흐름의 실제 Pyodide E2E는 미검증이다.
+5. 격리된 Python Worker 환경에서 서명·공개키 갱신·코드 교환·identity binding·권한 및 기본 OFF, 쿠키/state/PKCE를 검증한다. CPython 합성 시험과 Worker fetch 호환 계층을 가짜 JS fetch로 구동한 시험은 통과했다. 실제 Pyodide에서 활성화된 대조 흐름의 E2E는 미검증이며 현재 PR의 Worker 계약 CI는 별도 결과를 확인한다.
 6. CTO가 Chat 게이트 배포 시점을 정하면 정확한 SHA로 배포하고, 대표의 기존 Chat 세션과 공통 로그인으로 시험한다. 일치 결과만 Chat 전환 준비의 통과로 간주한다. 불일치 또는 UNKNOWN에서는 전환을 멈추고 데이터를 합치지 않는다.
 
 ## 시험 종료 후 정리 목록
