@@ -1366,6 +1366,9 @@ async def claw_pending_result(request: Request) -> JSONResponse:
             row = await history.get_claw_run(uid, run_id)
             status = row.get("status")
         result = {"run_id": run_id, "conversation_id": cid, "status": status}
+        if (status == "failed" and row.get("action") == "pc_files_query"
+                and row.get("result_summary") == "pc_read_failed"):
+            result["reason"] = "pc_read_failed"
         notice_reader = getattr(history, "get_pc_run_scope_notice", None)
         if callable(notice_reader):
             try:

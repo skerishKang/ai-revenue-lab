@@ -2813,7 +2813,7 @@
       }
       if (result.status !== "completed" || typeof result.answer !== "string") {
         window.PadiemChatLifecycle?.setTaskHint?.(article, null);
-        showPcRuntimeStatus(article, "run_failed");
+        showPcRuntimeStatus(article, result.reason === "pc_read_failed" ? "pc_read_failed" : "run_failed");
         PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.FAILED);
         return;
       }
