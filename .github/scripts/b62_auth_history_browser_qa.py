@@ -389,7 +389,6 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "Agnes",
         "Poolside",
         "OpenRouter",
-        "b14/auto",
         "selected_provider",
         "selected_model",
     )

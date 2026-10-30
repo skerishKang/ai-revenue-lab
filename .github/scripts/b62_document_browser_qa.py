@@ -320,7 +320,6 @@ async def _run_view(
         "Agnes",
         "Poolside",
         "OpenRouter",
-        "b14/auto",
         "selected_provider",
         "selected_model",
     )
