@@ -167,7 +167,7 @@ def compile_definition(definition: BoundedAgentDefinition):
         max_tokens=800,
         max_steps_cap=8,
         context_policy={},
-        model_policy={"model": "b14/auto"},
+        model_policy={"model": "fixture/explicit-model"},
         output_contract={"type": "text"},
         tool_bindings=(
             ToolRuntimeBinding(

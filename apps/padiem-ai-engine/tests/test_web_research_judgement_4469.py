@@ -113,9 +113,8 @@ def test_judgement_uses_the_request_validated_explicit_model():
     (None, 400, "invalid_request"),
     ({"model": ""}, 400, "invalid_request"),
     ({"model": "   "}, 400, "invalid_request"),
-    ({"model": "b14/auto"}, 422, "auto_routing_deferred"),
 ])
-def test_missing_or_auto_model_is_rejected_without_a_model_call(policy, status, code):
+def test_missing_model_is_rejected_without_a_model_call(policy, status, code):
     engine, runtime = service(verdict(False, None, "stable_knowledge"))
     payload = request()
     if policy is None:

@@ -41,15 +41,15 @@ def test_execution_context_accepts_a_long_running_timeout():
 
 
 def test_fingerprint_is_deterministic_across_mapping_order():
-    left = {"messages": [{"role": "user", "content": "hello"}], "model": "b14/auto"}
-    right = {"model": "b14/auto", "messages": [{"content": "hello", "role": "user"}]}
+    left = {"messages": [{"role": "user", "content": "hello"}], "model": "fixture/explicit-model"}
+    right = {"model": "fixture/explicit-model", "messages": [{"content": "hello", "role": "user"}]}
 
     assert request_fingerprint(left) == request_fingerprint(right)
 
 
 def test_fingerprint_changes_when_execution_request_changes():
-    base = {"model": "b14/auto", "messages": [{"role": "user", "content": "hello"}]}
-    changed = {"model": "b14/auto", "messages": [{"role": "user", "content": "goodbye"}]}
+    base = {"model": "fixture/explicit-model", "messages": [{"role": "user", "content": "hello"}]}
+    changed = {"model": "fixture/explicit-model", "messages": [{"role": "user", "content": "goodbye"}]}
 
     assert request_fingerprint(base) != request_fingerprint(changed)
 

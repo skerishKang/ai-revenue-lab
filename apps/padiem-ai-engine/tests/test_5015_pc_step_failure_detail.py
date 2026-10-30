@@ -276,7 +276,7 @@ def _compiled():
             max_tokens=800,
             max_steps_cap=3,
             context_policy={},
-            model_policy={"model": "b14/auto"},
+            model_policy={"model": "testowner/example-model.v1"},
             output_contract={"type": "text"},
             tool_bindings=(
                 ToolRuntimeBinding(

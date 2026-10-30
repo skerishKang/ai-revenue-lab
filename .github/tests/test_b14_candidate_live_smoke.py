@@ -169,11 +169,6 @@ def test_bai_qwen_is_excluded() -> None:
     )
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="auto_route_not_permitted"):
-        smoke.resolve_candidate(smoke.AUTO_MODEL_ID)
-    assert smoke.AUTO_ROUTE_USED is False
-    assert smoke.AUTO_MODEL_ID not in {s.model_id for s in smoke.CANDIDATE_REGISTRY.values()}
 
 
 def test_unknown_candidate_fails_closed() -> None:
@@ -186,7 +181,6 @@ def test_every_candidate_carries_exact_identity_and_binding_name() -> None:
         assert spec.candidate_id == cid
         assert spec.provider_id and spec.provider_name
         assert spec.model_id and spec.upstream_model
-        assert spec.model_id != smoke.AUTO_MODEL_ID
         assert spec.credential_binding == spec.expected_binding
         assert spec.credential_binding.isupper()
 
@@ -242,7 +236,6 @@ def test_chat_body_pins_exact_manual_model_never_auto(candidate_id: str) -> None
     spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
     body = smoke.canonical_chat_body(spec_obj)
     assert body["model"] == spec_obj.model_id
-    assert body["model"] != smoke.AUTO_MODEL_ID
 
 
 def test_expected_binding_name_is_emitted_without_any_secret_value() -> None:

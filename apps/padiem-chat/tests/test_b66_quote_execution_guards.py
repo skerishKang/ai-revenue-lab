@@ -102,7 +102,7 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     )
     kwargs = dict(messages=MESSAGES, model=MODEL, additional_system_context=None)
     if failure == "model":
-        kwargs["model"] = "b14/auto"
+        kwargs["model"] = "bad model id"
     elif failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":

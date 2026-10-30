@@ -156,18 +156,17 @@ def test_comments_and_sse_metadata_are_ignored():
 @pytest.mark.parametrize(
     "req",
     [
-        request(model="b14/auto"),
+        request(model="fixture/explicit-model"),
     ],
 )
-def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
-    """B7: the retired auto id is refused; B5 removed the fallback knob, so
-    there is no routing option left that can disqualify a stream request."""
+def test_b14_refusal_survives_streaming(req: B14ChatRequest):
+    """Core forwards the request and preserves the B14 422 refusal."""
     calls = 0
 
     async def handler(http_request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
-        return httpx.Response(500)
+        return httpx.Response(422)
 
     client = B14StreamingClient(
         B14ExecutionConfig(BASE_URL),
@@ -175,8 +174,8 @@ def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
     )
     with pytest.raises(B14ExecutionError) as exc:
         collect(client, req)
-    assert exc.value.code == "streaming_request_unsupported"
-    assert calls == 0
+    assert exc.value.code == "upstream_request_error"
+    assert calls == 1
 
 
 @pytest.mark.parametrize(

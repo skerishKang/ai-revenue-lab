@@ -58,7 +58,7 @@ def request_fixture() -> B14ChatRequest:
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},
         ),
-        model="b14/auto",
+        model="fixture/explicit-model",
         max_tokens=700,
         routing=B14RoutingOptions(
             required_capabilities=("free",),
@@ -181,11 +181,11 @@ def test_request_requires_an_explicit_model() -> None:
 def test_explicit_request_does_not_add_stream_or_tools() -> None:
     request = B14ChatRequest(
         messages=({"role": "user", "content": " hello "},),
-        model="b14/auto",
+        model="fixture/explicit-model",
     )
     payload = request.to_payload()
     assert payload == {
-        "model": "b14/auto",
+        "model": "fixture/explicit-model",
         "messages": [{"role": "user", "content": "hello"}],
     }
     assert "temperature" not in payload
@@ -257,7 +257,7 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
     assert seen["url"] == "https://b14.example" + B14_CHAT_COMPLETIONS_PATH
     assert seen["method"] == "POST"
     assert seen["body"] == {
-        "model": "b14/auto",
+        "model": "fixture/explicit-model",
         "messages": [
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},

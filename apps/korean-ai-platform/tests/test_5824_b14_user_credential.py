@@ -405,17 +405,11 @@ async def test_the_auto_stream_lane_is_gone_for_a_credential_holder(
         auto_preview = client.post(
             AUTO_PREVIEW, json={**_reference(), "stream": True, "model": REQUESTED_MODEL}
         )
-        auto_model = client.post(
-            CHAT_COMPLETIONS, json={**_reference(), "model": "b14/auto"}
-        )
     await drain()
 
     assert auto_preview.status_code == 404
-    assert auto_model.status_code == 422
-    assert "choices" not in auto_model.json()
     assert calls == []
-    for response in (auto_preview, auto_model):
-        assert SENTINEL not in response.text
+    assert SENTINEL not in auto_preview.text
     assert calls == []
 
 

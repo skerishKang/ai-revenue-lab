@@ -1,0 +1,70 @@
+"""Fail if the retired model selector reappears outside approved refusals."""
+from pathlib import Path
+import ast
+import subprocess
+
+ROOT = Path(__file__).resolve().parents[3]
+NEEDLES = (
+    'b14' + '/auto', 'business14' + '/auto', 'RouteMode' + '.AUTO',
+    'AUTO_' + 'B14_MODEL_ID', 'B14_' + 'AUTO_MODEL_ID',
+    'auto_' + 'stream_gateway', 'ensure_generic_' + 'auto_enabled',
+    'B14_ENABLE_' + 'FUTURE_AUTO',
+)
+GATEWAY = 'apps/korean-ai-platform/app/pilot/gateway.py'
+REFUSAL_TEST = 'apps/korean-ai-platform/tests/test_5824_b14_user_credential.py'
+REFUSAL_FUNCTION = 'test_b14_auto_is_not_served_by_a_request_key'
+GATEWAY_ALLOWED = frozenset({
+    'if model == "b14' + '/auto":',
+    '# The retired b14' + '/auto id is rejected as a string (B1/B7 pattern):',
+    'raise _InvalidBody("b14' + '/auto is retired; select a Business 14 catalog model.")',
+})
+
+def test_retired_route_is_not_reintroduced():
+    tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
+    bad = []
+    for rel in tracked:
+        if not rel.startswith(('apps/', 'packages/', 'scripts/', 'static/', '.github/scripts/')):
+            continue
+        parts = Path(rel).parts
+        if rel.endswith('.md') or any(part in {'docs', 'tests', 'test', 'browser_tests', '__tests__'} for part in parts):
+            continue
+        if Path(rel).name.startswith('test_') or '.spec.' in Path(rel).name:
+            continue
+        if not rel.endswith(('.py', '.js', '.jsx', '.ts', '.tsx', '.json', '.toml', '.yml', '.yaml', '.sh', '.ps1', '.html', '.env', '.example', '.ini', '.cfg')):
+            continue
+        path = ROOT / rel
+        try:
+            lines = path.read_text(encoding='utf-8').splitlines()
+        except (OSError, UnicodeError) as exc:
+            bad.append(f'{rel}:unreadable:{type(exc).__name__}')
+            continue
+        approved_lines = set()
+        if rel == REFUSAL_TEST:
+            tree = ast.parse('\n'.join(lines), filename=rel)
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == REFUSAL_FUNCTION:
+                    approved_lines.update(range(node.lineno, node.end_lineno + 1))
+        for number, line in enumerate(lines, 1):
+            if not any(token in line for token in NEEDLES):
+                continue
+            if rel == GATEWAY and line.strip() in GATEWAY_ALLOWED:
+                continue
+            if number in approved_lines:
+                continue
+            bad.append(f'{rel}:{number}')
+    assert not bad, 'Retired route references need classification/removal:\n' + '\n'.join(bad)
+
+
+def test_internal_identity_fields_do_not_appear_in_b14_wire_implementations():
+    # These fields remain valid for Agent-to-Engine identity and replay, but
+    # the Core B14 request builders may not serialize or reference them.
+    for relative in (
+        "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+        "packages/padiem-ai-core/padiem_ai_core/b14_streaming.py",
+    ):
+        tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"), filename=relative)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and node.value in ("task_type", "optimize_for"):
+                raise AssertionError(f"retired field in B14 wire: {relative}:{node.lineno}")
+            if isinstance(node, ast.Attribute) and node.attr in ("task_type", "optimize_for"):
+                raise AssertionError(f"retired field in B14 wire: {relative}:{node.lineno}")

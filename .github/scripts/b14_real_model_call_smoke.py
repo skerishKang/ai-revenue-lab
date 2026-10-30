@@ -5,9 +5,8 @@ The deploy gate already proves the promoted version is the single version servin
 byte for byte. What it did not prove was that the promoted version can finish one
 request end to end, which is the check a person used to do by hand afterwards.
 
-The grade routing decides the model: this script sends ``b14/auto`` with one
-declared product tier and names no model of its own, so it exercises exactly the
-route the product serves. It carries no credential - B14 spends its own provider
+The request uses the current Free tier's explicitly declared model from the
+shared product-tier contract, so it exercises the model the product serves. It carries no credential - B14 spends its own provider
 keys - and it never prints provider text, response bytes or any secret.
 
 Verdict contract (CTO 2026-10-27):
@@ -25,11 +24,18 @@ import sys
 import urllib.error
 import urllib.request
 from typing import Any, Callable
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"))
+from padiem_control_plane.product_tier_routes import ProductTierLabel, active_route_for
 
 SERVED_ORIGIN = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 USER_AGENT = "b14-gate/1.0"
-REQUESTED_ROUTE = "b14/auto"
+_free_route = active_route_for(ProductTierLabel.FREE)
+if _free_route is None:
+    raise RuntimeError("Free tier model is not configured")
+REQUESTED_ROUTE = _free_route.model_id
 PRODUCT_TIER = "free"
 PROMPT = "Synthetic release check: reply with one word."
 MAX_TOKENS = 48
@@ -42,7 +48,7 @@ Transport = Callable[[str, bytes, float], tuple[int, bytes]]
 
 
 def request_body(*, max_tokens: int = MAX_TOKENS) -> bytes:
-    """The one bounded completion request. No model is selected here."""
+    """The one bounded completion request using the declared Free tier model."""
     return json.dumps(
         {
             "model": REQUESTED_ROUTE,

@@ -48,7 +48,7 @@ B62 Padiem Chat (apps/padiem-chat)
 원칙 (출처: `packages/padiem-ai-core/README.md` 명시 소유 경계):
 
 - **B14**가 provider access, Router Core, provider adapter, model execution을 소유한다.
-- **B62**는 제품/reference client. 구체 provider/model을 주장하지 않는다 (`b14/auto` 위임, fail-closed; `model_policy.py` 참조).
+- **B62**는 제품/reference client. 승인된 명시 모델을 사용하며 모델이 없으면 fail-closed한다 (`model_policy.py` 참조).
 - **Padiem AI Core**는 공유 계약/런타임만 제공한다. provider 선택·크레덴셜·retry·fallback은 B14 권한이다.
 - **B64**는 Padiem AI Core와 독립된 제품으로, Core 계약을 소비할 뿐 Padiem AI Core의 하류 계층이 아니다.
 

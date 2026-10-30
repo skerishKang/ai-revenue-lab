@@ -139,7 +139,7 @@ def test_d1_unavailable_or_source_missing_deny():
     {"workspace_id": "another-workspace"},
     {"product_id": "central"},
     {"tier": "owner"},
-    {"exact_model_id": "b14/auto"},
+    {"exact_model_id": "bad model id"},
     {"authority_ref": ""},
 ])
 def test_invalid_or_untrusted_context_cannot_be_constructed(bad):

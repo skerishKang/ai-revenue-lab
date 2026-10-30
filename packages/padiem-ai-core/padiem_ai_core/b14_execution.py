@@ -435,9 +435,9 @@ def _normalize_model_parameters(
 @dataclass(frozen=True, slots=True)
 class B14ChatRequest:
     messages: tuple[Mapping[str, Any], ...]
-    # #2101: `model` is required. The old `b14/auto` default let an omitted
-    # route silently widen into Router auto execution. Explicit generic auto
-    # requests remain valid by passing model="b14/auto".
+    # #2101: `model` is required. The old automatic default let an omitted
+    # route silently widen into Router auto execution, and no automatic route
+    # exists at all now.
     model: str
     # Unspecified sampling must reach the exact provider as omission.
     temperature: float | None = None

@@ -26,7 +26,7 @@ class CliTests(unittest.TestCase):
             (root / "a.py").write_text("print('x')\n", encoding="utf-8")
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
-                code = main([str(root), "plan", "이 코드를 분석해줘"])
+                code = main(["--route", "test/model", str(root), "plan", "이 코드를 분석해줘"])
             self.assertEqual(code, 0)
             rendered = out.getvalue()
             self.assertIn("PLAN MODE", rendered)
@@ -42,7 +42,7 @@ class CliTests(unittest.TestCase):
             out = io.StringIO()
             with mock.patch("builtins.input", side_effect=["n", "n"]):
                 with contextlib.redirect_stdout(out):
-                    code = main([str(root), "run", "저장 버튼 오류를 분석해줘"])
+                    code = main(["--route", "test/model", str(root), "run", "저장 버튼 오류를 분석해줘"])
             self.assertEqual(code, 0)
             rendered = out.getvalue()
             self.assertIn("[B14 MOCK ADAPTER]", rendered)

@@ -111,7 +111,7 @@ jobs:
           grep -Fq 'SECRET_VALUE_READ=0' "${script}"
           grep -Fq 'ROUTE_ACTIVATION=0' "${script}"
           grep -Fq 'PRODUCTION_MUTATION=0' "${script}"
-          grep -Fq 'b14/auto' "${script}"
+          grep -Fq 'if selector not in EVALUATION_CANDIDATE_IDS:' "${script}"
           grep -Fq 'expected_b14_version:' "${wf}"
           grep -Fq 'resolve_served_version_id' "${wf}"
           grep -Fq 'CANONICAL_SERVED_VERSION_REUSED=YES' "${wf}"

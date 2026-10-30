@@ -135,9 +135,6 @@ def test_allowlist_is_exactly_the_one_exlab_id() -> None:
     assert EXLAB_ID == f"experiential/{resolved.upstream_model}"
 
 
-def test_auto_route_is_not_permitted() -> None:
-    with pytest.raises(ValueError, match="auto_route_not_permitted"):
-        oneshot.resolve_exlab("b14/auto")
 
 
 def test_out_of_scope_models_are_rejected() -> None:
@@ -169,7 +166,6 @@ def test_contract_constants_pin_one_call_no_retry_no_fallback() -> None:
     assert oneshot.MAX_PROVIDER_CALLS == 1
     assert oneshot.RETRY == 0
     assert oneshot.FALLBACK == 0
-    assert oneshot.AUTO_MODEL_ID == "b14/auto"
     assert oneshot.DEFAULT_LIVE_EXECUTION == "BLOCKED"
     assert oneshot.PRIVATE_PAYLOAD_OUTPUT == 0
     assert oneshot.SECRET_VALUE_OUTPUT == 0

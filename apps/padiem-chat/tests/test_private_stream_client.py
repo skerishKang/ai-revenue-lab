@@ -125,7 +125,7 @@ def test_private_stream_requires_explicit_manual_model_before_network():
 
     async def scenario():
         with pytest.raises(ValueError, match="explicit manual model"):
-            async for _ in client.stream_text_preview(MESSAGES, model="b14/auto"):
+            async for _ in client.stream_text_preview(MESSAGES, model=""):
                 pass
 
     asyncio.run(scenario())

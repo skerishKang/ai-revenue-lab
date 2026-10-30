@@ -70,7 +70,6 @@ RETRY = 0
 FALLBACK = 0
 
 # The AUTO lane must never back a Gemini live acceptance.
-AUTO_MODEL_ID = "b14/auto"
 
 # Output discipline markers pinned by the workflow source contract.
 DEFAULT_LIVE_EXECUTION = "BLOCKED"
@@ -147,8 +146,6 @@ def resolve_gemini(model_id: str) -> GeminiSpec:
     ``ValueError``. There is no implicit default model.
     """
 
-    if model_id == AUTO_MODEL_ID:
-        raise ValueError("auto_route_not_permitted")
     if model_id in GEMINI_EXCLUDED_MODEL_IDS:
         raise ValueError("model_out_of_scope")
     spec = GEMINI_REGISTRY.get(model_id)

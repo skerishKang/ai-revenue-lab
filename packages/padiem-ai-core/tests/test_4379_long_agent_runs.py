@@ -104,7 +104,7 @@ def _compiled(definition, *, max_steps_cap=4, max_tokens=800):
         max_tokens=max_tokens,
         max_steps_cap=max_steps_cap,
         context_policy={},
-        model_policy={"model": "b14/auto"},
+        model_policy={"model": "fixture/explicit-model"},
         output_contract={"type": "text"},
         tool_bindings=(
             ToolRuntimeBinding(

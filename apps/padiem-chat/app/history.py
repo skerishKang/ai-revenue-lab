@@ -741,15 +741,170 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+class VerifiedDispatch(dict):
+    """A dispatch row that an owner-scoped read produced, tagged with who it was read for.
+
+    It stays a dict, so every reader of these rows keeps working and the value survives the
+    queue's JSON boundary. The tag is the point: the original stores refuse a plain dict, so
+    a result submission can prove its pin from the row already in hand instead of re-reading
+    `oracle_mesh_dispatch` from D1 — which, with the queue live, no longer holds the row, and
+    that re-read is what answered the 19:09 submission 403.
+    """
+
+    __slots__ = ()
+
+    @property
+    def verified_for(self) -> str:
+        return str(self.get(_VERIFIED_FOR) or "")
+
+
+_VERIFIED_FOR = "verified_for_user"
+
+
+def _tagged(row: Any) -> "VerifiedDispatch":
+    """Mark a row an owner-scoped read produced with the owner it names.
+
+    Only the store wraps, so a dict that arrives from anywhere else is not a handle and
+    falls back to the authoritative lookup.
+    """
+
+    marked = VerifiedDispatch(row)
+    marked[_VERIFIED_FOR] = str(row.get("user_id") or "")
+    return marked
+
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
-    def __init__(self, db: Any, *, full_context_bucket: Any = None):
+    def __init__(self, db: Any, *, full_context_bucket: Any = None,
+                 run_ownership: Any = None):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
         # Existing private workspace R2 binding, never an incoming browser key.
         self.full_context_bucket = full_context_bucket
+        # Where "does this run belong to this user" is answered. Absent, it is answered
+        # from `claw_run_history` — the D1 that owns conversation rows. The 컴2 queue
+        # deliberately does not own that table, so it supplies its own answer; without
+        # this seam every dispatch creation on the queue died on `no such table` and the
+        # PC lane stopped working the moment the switch went live (2026-10-30 14:11).
+        self.run_ownership = run_ownership
+        # Which store answers dispatch-row reads. It is this store until the queue is
+        # wired in as the authority (com2), because that is where `oracle_mesh_dispatch`
+        # lives then. Without the seam the conversation read-back re-read a table that is
+        # no longer in D1 and answered `run_result_unavailable` (503) to the browser.
+        self.dispatch_authority: Any = None
+
+    def set_dispatch_authority(self, authority: Any) -> None:
+        if authority is None or authority is self:
+            return
+        self.dispatch_authority = authority
+
+    async def _dispatch(self, name: str, **arguments: Any) -> Any:
+        source = self.dispatch_authority if self.dispatch_authority is not None else self
+        return await getattr(source, name)(**arguments)
+
+    @staticmethod
+    def _verified(row: Any, user_id: str) -> "VerifiedDispatch | None":
+        if not isinstance(row, dict):
+            return None
+        owner = row.get("user_id")
+        if owner is not None and owner != user_id:
+            return None
+        marked = VerifiedDispatch(row)
+        marked[_VERIFIED_FOR] = user_id
+        return marked
+
+    async def get_oracle_mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str):
+        """The owner-scoped pin: who dispatched it and what result was already accepted."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_correlation(self, *, user_id: str, run_id: str):
+        """The terminal receipt of one run, read wherever dispatch rows live."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(run_id, str) or not run_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, command_id, revision_ref, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_command(self, *, user_id: str, run_id: str, command_id: str):
+        """Whether one command was dispatched by this owner inside this run."""
+
+        row = await self._first(
+            "SELECT user_id, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND command_id=? LIMIT 1",
+            user_id, run_id, command_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_open_state(self, *, user_id: str, run_id: str) -> dict:
+        """Which of this run's dispatches still lack a terminal result, and which failed."""
+
+        pending = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state NOT IN ('done', 'failed') LIMIT 1",
+            user_id, run_id,
+        )
+        failed = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='failed' LIMIT 1",
+            user_id, run_id,
+        )
+        return {
+            "pending_dispatch_id": (pending or {}).get("dispatch_id"),
+            "failed_dispatch_id": (failed or {}).get("dispatch_id"),
+        }
+
+    async def _mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str,
+                                 expected_sha256: str, expected_bytes: int,
+                                 verified: Any = None):
+        """The owner + pin check the original stores share, without a D1 re-read.
+
+        A handle is honoured only when it is the tagged dict an owner-scoped read produced
+        for this same user; a plain dict — however well shaped — falls back to the
+        authoritative lookup, so a caller cannot talk its way past the check by inventing a
+        row. Forgery of the pin and another owner's dispatch stay refused either way.
+        """
+
+        row: Any = verified if isinstance(verified, VerifiedDispatch) else None
+        if row is not None and (row.verified_for != user_id
+                                or row.get("user_id") not in (None, user_id)):
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row is None:
+            row = await self._dispatch("get_oracle_mesh_dispatch_pin",
+                                        user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        return row
+
+    async def _run_is_owned(self, run_id: str, user_id: str) -> bool:
+        if self.run_ownership is not None:
+            owned = self.run_ownership(run_id, user_id)
+            if hasattr(owned, "__await__"):
+                owned = await owned
+            return bool(owned)
+        row = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        return row is not None
 
     @staticmethod
     def _context_key(conversation_id: str, message_id: str) -> str:
@@ -1869,8 +2024,9 @@ class D1HistoryStore:
         result = await self._run(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
             "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
-            "WHERE run_id=? AND user_id=? AND status<>'completed'",
-            status, _now_iso(), summary, summary, run_id, user_id,
+            "WHERE run_id=? AND user_id=? AND status<>'completed' "
+            "AND (? <> 'running' OR action <> 'pc_files_query' OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
+            status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
 
@@ -1951,6 +2107,27 @@ class D1HistoryStore:
             run_id, user_id,
         )
 
+    async def get_claw_run_for_artifact_document(
+        self, user_id: str, document_id: str
+    ) -> dict[str, Any] | None:
+        """#2952 follow-up — the owner row that minted one generated document.
+
+        ``claw_document_metadata`` carries no owner column, so the only existing
+        canonical authority binding a document to a product user is the run row
+        that recorded ``artifact_document_id``. A read that finds nothing here has
+        no verified owner and must fail closed.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(document_id, str) or not document_id:
+            raise HistoryError("document_id is required")
+        return await self._first(
+            "SELECT run_id, artifact_document_id, artifact_filename, artifact_media_type "
+            "FROM claw_run_history WHERE artifact_document_id=? AND user_id=?",
+            document_id, user_id,
+        )
+
     async def get_claw_run_result_message(
         self, user_id: str, run_id: str, conversation_id: str,
     ) -> str | None:
@@ -1959,11 +2136,8 @@ class D1HistoryStore:
         # Prefer the actual Oracle receipt. Claw may also have a preliminary
         # local correlation under the same run; it is not the completed Mesh
         # command/revision that minted the persisted assistant message.
-        correlation = await self._first(
-            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND state='done'",
-            user_id, run_id,
-        )
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
         if not isinstance(correlation, dict):
             correlation = await self.get_local_task_correlation(user_id, run_id)
         if not isinstance(correlation, dict):
@@ -2030,11 +2204,8 @@ class D1HistoryStore:
             raise HistoryError("user_id is required")
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
-        correlation = await self._first(
-            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND state='done'",
-            user_id, run_id,
-        )
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
         if not isinstance(correlation, dict):
             # #5015: the legacy local-runner correlation table comes from a
             # source migration that a deployment may never have applied. The
@@ -2183,11 +2354,9 @@ class D1HistoryStore:
         # The command scope must name a command this owner dispatched inside
         # this run: a result can never be attached to a command of another run
         # or of another owner.
-        dispatched = await self._first(
-            "SELECT dispatch_id FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND command_id=? LIMIT 1",
-            user_id, run_id, command_id,
-        )
+        dispatched = await self._dispatch(
+            "get_oracle_mesh_run_command", user_id=user_id, run_id=run_id,
+            command_id=command_id)
         if dispatched is None:
             raise HistoryError("claw run command is not dispatched for this run")
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
@@ -2228,7 +2397,9 @@ class D1HistoryStore:
             # completed keeps that terminal: a late command result never
             # reopens it.
             self.db.prepare(
-                "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? "
+                "UPDATE claw_run_history SET status=CASE WHEN status='failed' THEN status ELSE ? END, updated_at=?, "
+                "result_summary=CASE WHEN status='failed' AND result_summary='pc_read_failed' "
+                "THEN result_summary ELSE ? END "
                 "WHERE id=? AND status != 'completed' "
                 "AND EXISTS (SELECT 1 FROM messages WHERE id=? AND conversation_id=?)"
             ).bind(aggregate_status, now, aggregate_summary, str(owned.get("id")),
@@ -2294,27 +2465,20 @@ class D1HistoryStore:
                 # A command of this run already failed: the work can never
                 # read as an overall success.
                 raise HistoryError("claw run carries a failed command")
-            pending = await self._first(
-                "SELECT dispatch_id, state FROM oracle_mesh_dispatch "
-                "WHERE user_id=? AND run_id=? AND state NOT IN ('done', 'failed') LIMIT 1",
-                user_id, run_id,
-            )
-            if pending is not None:
+            open_state = await self._dispatch(
+                "get_oracle_mesh_run_open_state", user_id=user_id, run_id=run_id)
+            if open_state.get("pending_dispatch_id"):
                 raise HistoryError("claw run has commands without a terminal result")
-            failed = await self._first(
-                "SELECT dispatch_id FROM oracle_mesh_dispatch "
-                "WHERE user_id=? AND run_id=? AND state='failed' LIMIT 1",
-                user_id, run_id,
-            )
-            if failed is not None:
+            if open_state.get("failed_dispatch_id"):
                 raise HistoryError("claw run carries a failed command")
         now = _now_iso()
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
         statements = [self.db.prepare(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
-            "result_summary=CASE WHEN result_summary IS NULL THEN ? ELSE result_summary END "
+            "result_summary=CASE WHEN ? = 'pc_read_failed' AND ? = 'failed' THEN ? "
+            "WHEN result_summary IS NULL THEN ? ELSE result_summary END "
             "WHERE id=? AND status != 'completed'"
-        ).bind(status, now, bounded_summary, str(owned.get("id")))]
+        ).bind(status, now, bounded_summary, status, bounded_summary, bounded_summary, str(owned.get("id")))]
         if message_id is not None and content is not None:
             body = _bounded_text(content, "local_task_result")
             if len(body) > MAX_HISTORY_MESSAGE_CHARS:
@@ -2687,11 +2851,10 @@ class D1HistoryStore:
             # file call's own replay protection.
             correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
-        owned = await self._first(
-            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
-            run_id, user_id,
-        )
-        if owned is None:
+        # The owner is established by the layer that holds the run rows: on D1 that is
+        # `claw_run_history`; on the 컴2 queue it is the Worker, whose route already fetched
+        # this run for this user and answered 404 before forwarding (see `run_ownership`).
+        if not await self._run_is_owned(run_id, user_id):
             raise HistoryForbidden("claw run is not owned by current user")
         existing = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
@@ -3114,7 +3277,7 @@ class D1HistoryStore:
             )
             if _changed_rows(written) != 1:
                 return None
-            return {**dict(row), "state": "received", "claim": "retry"}
+            return _tagged({**dict(row), "state": "received", "claim": "retry"})
         if state != "pending":
             return None
         written = await self._run(
@@ -3135,7 +3298,7 @@ class D1HistoryStore:
         )
         if accepted is None or accepted.get("state") != "received":
             return None
-        return {**dict(accepted), "claim": "first"}
+        return _tagged({**dict(accepted), "claim": "first"})
 
     async def record_oracle_mesh_first_result(
         self, *, dispatch_id: str, content_sha256: str, content_bytes: int,
@@ -3229,6 +3392,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_original(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#4139 — keep one over-budget command output in the private R2
         original store under a server-derived key.
@@ -3247,15 +3411,10 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
@@ -3272,6 +3431,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_command_result(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#5015 — keep one small verified command output for Engine re-feed.
 
@@ -3289,15 +3449,10 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
@@ -3334,15 +3489,10 @@ class D1HistoryStore:
             raise HistoryError("unsupported mesh original media type")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = bytes(raw)
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
@@ -3372,12 +3522,9 @@ class D1HistoryStore:
         """
         if not isinstance(user_id, str) or not user_id:
             return None
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
-        )
-        if row is None or row.get("user_id") != user_id:
+        row = await self._dispatch(
+            "get_oracle_mesh_dispatch_pin", user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
             return None
         pinned_sha = row.get("result_sha256")
         pinned_bytes = row.get("result_bytes")
@@ -3430,7 +3577,7 @@ class D1HistoryStore:
         )
         if row is None:
             return None
-        return dict(row)
+        return _tagged(row)
 
     async def record_claw_approval_handoff(
         self,

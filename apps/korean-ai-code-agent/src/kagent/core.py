@@ -33,14 +33,14 @@ class AgentSession:
 
     root: Path
     task: str
-    route: str = "business14/auto"
+    route: str = ""
     permissions: PermissionState = field(default_factory=PermissionState)
     read_files: list[str] = field(default_factory=list)
     _workspace: RepositoryWorkspace | None = field(default=None, repr=False)
     _pending_patch: PendingPatch | None = field(default=None, repr=False)
 
     @classmethod
-    def open(cls, root: str | Path, task: str, route: str = "business14/auto") -> "AgentSession":
+    def open(cls, root: str | Path, task: str, route: str = "") -> "AgentSession":
         try:
             workspace = RepositoryWorkspace.open(root)
         except WorkspaceBoundaryError as exc:
@@ -50,6 +50,8 @@ class AgentSession:
             raise AgentBoundaryError("한국어 작업 설명이 필요합니다.")
         if not _KOREAN_TASK_RE.search(normalized_task):
             raise AgentBoundaryError("Phase 1에서는 한국어 작업 설명을 한 글자 이상 포함해야 합니다.")
+        if not isinstance(route, str) or not route.strip():
+            raise AgentBoundaryError("Model route is not configured; supply an explicit --route.")
         return cls(
             root=workspace.root,
             task=normalized_task,

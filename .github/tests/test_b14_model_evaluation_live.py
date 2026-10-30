@@ -72,8 +72,6 @@ def test_single_candidate_is_exactly_six_posts() -> None:
 
 def test_unknown_and_auto_selectors_fail_closed() -> None:
     with pytest.raises(ValueError, match="candidate_selector_not_allowlisted"):
-        module.select_candidates("b14/auto")
-    with pytest.raises(ValueError, match="candidate_selector_not_allowlisted"):
         module.select_candidates("poolside")
 
 

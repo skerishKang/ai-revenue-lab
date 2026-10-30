@@ -13,8 +13,7 @@ request can leave the process:
   both validate the outbound model payload and raise ``FinalDispatchDenied``
   before B14 transport delegation, so rejected provider POST count stays 0;
 - the exact authorized model id is pinned: a payload that targets any other
-  model (a fallback, ``b14/auto``, or a catalog swap) is rejected before
-  delegation.
+  model (a fallback or a catalog swap) is rejected before delegation.
 
 Denials are codes, never silent repairs: no fallback model is chosen, no tier
 is widened, no missing authority is defaulted. This module is intentionally not

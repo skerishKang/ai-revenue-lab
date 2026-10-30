@@ -221,7 +221,6 @@ def run_desktop(p: Any) -> dict:
 
     # ── 9. Auto model selection ──
     def s9():
-        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
         page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
         page.wait_for_timeout(200)
         assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
@@ -337,7 +336,6 @@ def run_desktop(p: Any) -> dict:
     # ── 22. Fallback explicitly ON ──
     def s22():
         _expand_advanced(page)
-        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
         assert page.locator("#start_external_fallback").count() == 0
     _step("22. deferred auto and generic fallback cannot be selected", s22, results)
 

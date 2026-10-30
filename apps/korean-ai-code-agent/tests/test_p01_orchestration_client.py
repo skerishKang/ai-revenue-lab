@@ -766,7 +766,7 @@ class P01SingleDispatchRetryBudgetTests(unittest.TestCase):
                 )
 
     def test_invalid_explicit_or_automatic_choices_are_rejected(self) -> None:
-        for model_id in ("b14/auto", "padiem-profile/plus-hold", "../bad"):
+        for model_id in ("padiem-profile/plus-hold", "../bad"):
             with self.subTest(model_id=model_id):
                 self._refused({"model": model_id, "max_retries": 0})
         # A non-tier route must never bypass authority pinning by omitting the

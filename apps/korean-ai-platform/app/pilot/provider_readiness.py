@@ -44,10 +44,10 @@ def _credential_ready(spec: PlatformProviderSpec) -> bool:
 def _enabled_models_for_provider(provider_id: str) -> list[str]:
     """Return all exact manual-route platform models for a Provider.
 
-    Use the exact-ID registry rather than only the legacy OpenRouter public/auto
+    Use the exact-ID registry rather than only the legacy OpenRouter public
     list. This lets explicit-only Provider models (such as initial Poolside
-    rollout models) appear in readiness without making them eligible for
-    ``b14/auto`` or the legacy public catalog surface.
+    rollout models) appear in readiness without making them part of any
+    automatic selection surface.
     """
 
     return sorted(

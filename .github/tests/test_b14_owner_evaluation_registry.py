@@ -128,7 +128,7 @@ def test_no_duplicate_batch_or_implicit_auto():
     one = next(iter(load_current_models()))
     with pytest.raises(ValueError,match="evaluation_duplicate_candidates"):
         authorize_exact_models((one, one))
-    for name in ("b14/auto","all-five","poolside","google/gemini-3.1-flash-lite-preview"):
+    for name in ("all-five","poolside","google/gemini-3.1-flash-lite-preview"):
         with pytest.raises(ValueError):
             authorize_exact_models((name,))
 
@@ -140,7 +140,7 @@ def test_no_duplicate_batch_or_implicit_auto():
 def test_legacy_surviving_selectors_must_pass_central_registry(selector,model):
     assert authorize_historical_selector(selector)==(model,)
 
-@pytest.mark.parametrize("selector",["motif","luna","all-five","poolside","b14/auto","stepfun"])
+@pytest.mark.parametrize("selector",["motif","luna","all-five","poolside","stepfun"])
 def test_legacy_retired_or_unregistered_selector_is_blocked(selector):
     with pytest.raises(ValueError):
         authorize_historical_selector(selector)

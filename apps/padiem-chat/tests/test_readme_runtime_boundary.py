@@ -54,4 +54,3 @@ def test_readme_records_core_multimodal_boundary_and_auto_name_truth():
     assert "MultimodalExecutionRuntime" in source
     assert "B14MultimodalChatRequest" not in source
     assert "Despite the historical method name" in source
-    assert "does not invoke B14's `b14/auto`" in source

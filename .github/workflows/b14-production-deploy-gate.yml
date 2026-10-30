@@ -340,8 +340,8 @@ jobs:
           retention-days: 90
 
       # #5895 ④: the promoted version has to finish one real request, not only
-      # answer /health and match the registry. The declared grade routing picks the
-      # model, so this step names none and carries no credential of its own. A
+      # answer /health and match the registry. The declared Free tier supplies the
+      # explicit model; the step carries no credential of its own. A
       # provider-side limit is a marked pass; anything else reddens the gate. It is
       # placed after the evidence publish and has no rollback wired to it, because a
       # failed post-deploy proof must be seen, not silently undone.

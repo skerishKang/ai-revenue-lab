@@ -224,9 +224,8 @@ def _normalize_model_policy(
             "unsupported model_policy fields: " + ", ".join(sorted(unknown))
         )
 
-    # #2101: omitted model must fail closed. There is no implicit `b14/auto`
-    # default in any product-facing contract; a generic Router auto request is
-    # only ever made by passing the explicit model route.
+    # #2101: omitted model must fail closed. There is no implicit default in
+    # any product-facing contract, and no automatic route exists at all.
     model = policy.get("model")
     if not isinstance(model, str) or not model.strip():
         raise ValueError(

@@ -85,7 +85,7 @@ jobs:
           grep -Fq 'MAX_PROVIDER_CALLS = 1' "${script}"
           grep -Fq 'RETRY = 0' "${script}"
           grep -Fq 'FALLBACK = 0' "${script}"
-          grep -Fq 'AUTO_MODEL_ID = "b14/auto"' "${script}"
+          grep -Fq 'if model_id != EXLAB_MODEL_ID:' "${script}"
           grep -Fq 'DEFAULT_LIVE_EXECUTION = "BLOCKED"' "${script}"
           grep -Fq 'PRIVATE_PAYLOAD_OUTPUT = 0' "${script}"
           grep -Fq 'SECRET_VALUE_OUTPUT = 0' "${script}"

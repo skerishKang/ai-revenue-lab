@@ -878,7 +878,6 @@ def _select_customer_quote_model(page, selected_model_id: str) -> None:
     if (
         not isinstance(selected_model_id, str)
         or not _B66_EXACT_MODEL_RE.fullmatch(selected_model_id)
-        or selected_model_id == "b14/auto"
         or selected_model_id.startswith("padiem-profile/")
     ):
         _fail("explicit_quote_model_required")

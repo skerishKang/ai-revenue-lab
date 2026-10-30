@@ -60,13 +60,12 @@ _EXPLICIT_B14_MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
 def validate_explicit_b14_model_id(value: object) -> str:
     """Validate syntax only; the existing B14 catalog owns model availability.
 
-    Explicit choice is per execution, never b14/auto or a product HOLD sentinel.
-    Unknown model IDs fail closed in B14 rather than falling back to another route.
+    Explicit choice is per execution, never a product HOLD sentinel. Unknown
+    model IDs fail closed in B14 rather than falling back to another route.
     """
     if (
         not isinstance(value, str)
         or not _EXPLICIT_B14_MODEL_ID_RE.fullmatch(value)
-        or value == "b14/auto"
         or value.startswith("padiem-profile/")
     ):
         raise P01AdapterError(
