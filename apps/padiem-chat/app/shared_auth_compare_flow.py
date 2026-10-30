@@ -60,6 +60,51 @@ async def exchange_with_httpx(url, data):
             return value
 
 
+class WorkerJwksVerifier:
+    """Use the common verifier with a Workers-fetch JWKS source and local cache."""
+    audience = 'b62'
+    jwks_url = AUTH + '/.well-known/jwks.json'
+
+    def __init__(self, verifier_class, *, clock=time.time, cache_seconds=300):
+        if not callable(verifier_class) or cache_seconds <= 0:
+            raise ValueError('invalid_verifier_configuration')
+        self.verifier_class, self.clock, self.cache_seconds = verifier_class, clock, cache_seconds
+        self.keys, self.until = None, 0
+
+    async def _fetch(self):
+        from . import httpx_compat as httpx
+        from .auth import MAX_AUTH_RESPONSE_BYTES
+        async with httpx.AsyncClient(follow_redirects=False) as client:
+            async with client.stream('GET', self.jwks_url) as response:
+                if response.status_code != 200:
+                    raise ValueError('jwks_unavailable')
+                data = bytearray()
+                async for chunk in response.aiter_bytes():
+                    data.extend(chunk)
+                    if len(data) > MAX_AUTH_RESPONSE_BYTES:
+                        raise ValueError('jwks_too_large')
+                value = json.loads(data)
+                if not isinstance(value, dict) or not isinstance(value.get('keys'), list):
+                    raise ValueError('invalid_jwks')
+                self.keys, self.until = value, self.clock() + self.cache_seconds
+                return value
+
+    async def verify(self, token):
+        parts = token.split('.') if isinstance(token, str) else []
+        if len(parts) != 3:
+            raise ValueError('invalid_token')
+        header = json.loads(_un64(parts[0]))
+        kid = header.get('kid') if isinstance(header, dict) else None
+        if not isinstance(kid, str) or not kid:
+            raise ValueError('invalid_token')
+        had_cache = self.keys is not None and self.clock() < self.until
+        keys = self.keys if had_cache else await self._fetch()
+        if had_cache and not any(isinstance(k, dict) and k.get('kid') == kid for k in keys['keys']):
+            keys = await self._fetch()
+        verifier = self.verifier_class(audience=self.audience, fetcher=lambda: keys, clock=self.clock)
+        return verifier.verify(token)
+
+
 class ComparisonFlow:
     def __init__(self, *, state_key, client_id, client_jwk, kid, operator_guard,
                  legacy_user, comparator, exchange, clock=time.time):
