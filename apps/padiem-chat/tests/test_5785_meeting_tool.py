@@ -118,3 +118,15 @@ def test_the_group_touches_only_the_existing_endpoints(meeting: dict) -> None:
 
 def test_meeting_generation_does_not_reference_the_sns_preview(meeting: dict) -> None:
     assert meeting["pageErrors"] == []
+
+
+def test_the_form_is_built_with_the_save_status_above_its_buttons(meeting: dict) -> None:
+    """Same #6257 order fault as the SNS builder, on the meeting side: the
+    status line was inserted against an actions row that was not a child yet,
+    so the panel never got its form. See ``test_5785_sns_tool.py`` for the
+    full read-back rationale.
+    """
+    build = meeting["formBuild"]
+    assert build["built"] is True, build
+    assert build["loaded"] == "1", build
+    assert build["statusAboveActions"] is True, build

@@ -57,8 +57,14 @@ class N {
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
   insertBefore(child, ref) {
+    // A real document raises NotFoundError when the reference node is not a
+    // child. Tolerating that here is what let util-menu.js:1507/#1787 pass this
+    // harness while the SNS and meeting panels failed in production.
+    if (ref != null && this.children.indexOf(ref) < 0) {
+      throw new Error("NotFoundError: The node before which the new node is to be inserted is not a child of this node.");
+    }
+    if (ref == null) return this.appendChild(child);
     const i = this.children.indexOf(ref);
-    if (i < 0) return this.appendChild(child);
     this.children.splice(i, 0, child);
     child.parentNode = this;
     return child;
@@ -427,6 +433,26 @@ function find(session, id) {
   if (!found) throw new Error("element missing: #" + id);
   return found;
 }
+
+// The lazy builders mount the save-status line above the action row. That order
+// is exactly what broke in production, so the built shape is read back here
+// instead of being inferred from a submit that never gets that far.
+function formShape(session, panelId, formId, stateId) {
+  const panel = session.byId[panelId];
+  const form = panel._descendants().find((n) => n.id === formId) || null;
+  if (!form) {
+    return { built: false, placeholderLeft: panel.children.length, loaded: panel.dataset.loaded || null };
+  }
+  const stateAt = form.children.findIndex((n) => n.id === stateId);
+  const actionsAt = form.children.findIndex((n) => n.classList.contains("util-form-actions"));
+  return {
+    built: true,
+    loaded: panel.dataset.loaded || null,
+    statusLineIndex: stateAt,
+    actionsIndex: actionsAt,
+    statusAboveActions: stateAt >= 0 && actionsAt >= 0 && stateAt < actionsAt,
+  };
+}
 const labels = (nodes) => nodes.map((n) => text(n).trim());
 
 async function openTool(session, key) {
@@ -723,6 +749,7 @@ const SCENARIOS = {
     const igPrompt = chatPayloads[chatPayloads.length - 1].messages[0].content;
 
     return {
+      formBuild: formShape(session, "utilSnsPanel", "utilSnsForm", "utilSnsSaveState"),
       blogPrompt,
       fbPrompt,
       igPrompt,
@@ -1371,6 +1398,7 @@ const SCENARIOS = {
     storedFiles.filter((f) => f.name.endsWith(".txt") && f.name.indexOf("활동집 - ") !== 0).forEach((f) => { savedRecordBodies[f.name] = f.content; });
 
     return {
+      formBuild: formShape(session, "utilMeetingPanel", "utilMeetingForm", "utilMeetingSaveState"),
       prompt,
       generated,
       edited,
