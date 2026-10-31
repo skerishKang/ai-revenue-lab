@@ -113,7 +113,8 @@ jobs:
           edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
 
           assert identity["name"] == "padiem-control-plane-identity"
-          assert identity["workers_dev"] is False and identity["preview_urls"] is False
+          assert identity["workers_dev"] is True and identity["preview_urls"] is False
+          assert identity["env"]["staging"]["workers_dev"] is True and identity["env"]["staging"]["preview_urls"] is False
           assert identity["observability"]["enabled"] is False
           assert "route" not in identity and "routes" not in identity
           assert identity["secrets"]["required"] == [
@@ -377,7 +378,7 @@ jobs:
             deployments="${RUNNER_TEMP}/${worker}-deployments.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${deployments}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${subdomain}" >/dev/null
             python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}" >/dev/null
             echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
           }
@@ -656,7 +657,7 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            jq -e --arg worker "${worker}" --arg identity "${IDENTITY_WORKER}" '.success == true and .result.enabled == ($worker == $identity) and .result.previews_enabled == false' "${sub}" >/dev/null
             python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${dep}" >/dev/null
           done
 
