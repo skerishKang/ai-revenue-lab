@@ -11,7 +11,7 @@ trial.WORKERS = {"A": "padiem-cutover-trial-a", "B": "padiem-cutover-trial-b"}
 
 def plain_http_sample(host):
     try:
-        status, headers, raw = trial.request("https://" + host + "/__cutover_trial")
+        status, headers, raw = trial.request("https://" + host + "/__cutover_trial", headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36"})
         identity = {b"trial-a": "A", b"trial-b": "B"}.get(raw)
         lower = {key.lower(): value for key, value in headers.items()}
         return {"status": status, "identity": identity,
