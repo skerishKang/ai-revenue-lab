@@ -69,6 +69,13 @@ const webp = ok("quote.webp", "image/webp", 1024);
 assert.equal(webp.category, "image");
 
 fail("quote.hwp", "application/x-hwp", 100, "legacy_hwp_unsupported");
+assert.ok(Intake.errorMessage(Intake.classifyFile({name: "quote.hwp", type: "", size: 100}))
+  .includes("한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요"));
+const Auto = require("../quote-skill-auto.js");
+assert.ok(Auto.FILE_ERRORS.legacy_hwp_unsupported
+  .includes("한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요"));
+
+
 fail("quote.exe", "application/octet-stream", 100, "unsupported_file_type");
 fail("quote.pdf", "image/png", 100, "media_extension_mismatch");
 fail("quote.png", "image/jpeg", 100, "media_extension_mismatch");

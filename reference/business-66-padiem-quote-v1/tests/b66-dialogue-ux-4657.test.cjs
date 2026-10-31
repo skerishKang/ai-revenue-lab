@@ -624,7 +624,29 @@ async function testAnInFlightCgiResultCannotRepopulateANewChat() {
   console.log("B66_LATE_CGI_RESULT_NEW_CHAT=PASS");
 }
 
+function testPrelaunchNotices() {
+  const notice = "한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요";
+  const input = { name: "구형.hwp", type: "application/x-hwp", size: 100 };
+  const classified = FileIntake.classifyFile(input);
+  assert.equal(classified.error, "legacy_hwp_unsupported");
+  assert.ok(FileIntake.errorMessage(classified).includes(notice));
+
+  const env = buildEnv();
+  const chooser = env.get("easyFileInput");
+  chooser.files = [input];
+  (chooser.listeners.change || [])[0]();
+  const rendered = env.lastContent();
+  assert.ok(rendered && rendered.textContent.includes(notice),
+    "the actual file selection handler displays the HWP guidance");
+  assert.ok(htmlSource.includes('PDF 생성에 PyMuPDF(AGPL-3.0) 사용'));
+  assert.ok(htmlSource.includes('https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer'));
+  assert.ok(htmlSource.includes('apps/b66-pdf-renderer/THIRD_PARTY_LICENSES.md'));
+  assert.match(htmlSource, /accept="[^"]*\.hwp,\.hwpx/);
+  console.log("B66_PRELAUNCH_NOTICES=PASS");
+}
+
 (async () => {
+  testPrelaunchNotices();
   testStaticSurface();
   await testBrandStartsANewChatWithoutDeleting();
   await testPreviousDialogueRailListsSearchesAndOpens();

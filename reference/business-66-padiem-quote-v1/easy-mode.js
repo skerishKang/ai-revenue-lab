@@ -2617,7 +2617,7 @@ if (guidedRevising) { returnToGuidedSummary(); break; }
     selectedFile = null;
     addMessage(
       "assistant",
-      "견적서 파일을 선택해 주세요. PDF·DOCX·PPTX·XLSX·HWPX는 2 MB 이하, JPG·PNG·WebP 이미지는 4 MB 이하를 지원합니다. 기존 HWP(.hwp)는 아직 지원하지 않습니다."
+      "견적서 파일을 선택해 주세요. PDF·DOCX·PPTX·XLSX·HWPX는 2 MB 이하, JPG·PNG·WebP 이미지는 4 MB 이하를 지원합니다. 구형 HWP(.hwp)는 편집·변환할 수 없습니다. 한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요."
     );
     setChips([
       { label: "파일 선택", action: openFileChooser },
