@@ -22,19 +22,50 @@ def _enabled(raw: str | None) -> bool:
     return str(raw or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _entry_mode(env) -> str:
+    """Which reviewed CPython entry is asking for this tick.
+
+    The Worker's scheduled lane has two CPython hosts: the loopback dev run
+    (``PADIEM_LOCAL_DEV=1``) and the COM2 parallel host
+    (``PADIEM_CHAT_CPYTHON_HOST=1``). Requiring the dev flag alone made the COM2
+    timer entry structurally unreachable, because the host run must not carry
+    that flag. The two are mutually exclusive for the same reason
+    ``app.local_cpython.build_app`` refuses the pair: the host run has a real
+    https origin and must never get the loopback allowance.
+    """
+
+    local_flag = str(env.get("PADIEM_LOCAL_DEV", "")).strip().lower() in {"1", "true"}
+    host_flag = str(env.get("PADIEM_CHAT_CPYTHON_HOST", "")).strip().lower() in {"1", "true"}
+    if local_flag and host_flag:
+        raise ConfigError(
+            "PADIEM_LOCAL_DEV and PADIEM_CHAT_CPYTHON_HOST are mutually exclusive"
+        )
+    if host_flag:
+        return "host"
+    if local_flag:
+        return "local"
+    raise ConfigError(
+        "app.local_cron runs only behind PADIEM_LOCAL_DEV=1 or "
+        "PADIEM_CHAT_CPYTHON_HOST=1"
+    )
+
+
 def run_once(environ: dict[str, str] | None = None) -> str:
     """Evaluate one tick and return the stable status line.
 
     Order mirrors worker.py's own gates: the explicit scheduler flag first, then
-    the bindings the tick actually needs. A missing binding is a truthful
-    ``NOT_CONFIGURED`` state, not a crash and not a pretend success.
+    the CPython entry this process is running as, then the bindings the tick
+    actually needs. A missing binding is a truthful ``NOT_CONFIGURED`` state,
+    not a crash and not a pretend success.
     """
 
     env = os.environ if environ is None else environ
     if not _enabled(env.get("PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED")):
         return STATUS_PREFIX + "SKIPPED reason=automation_scheduler_disabled"
-    if str(env.get("PADIEM_LOCAL_DEV", "")).strip().lower() not in {"1", "true"}:
-        raise ConfigError("app.local_cron runs only behind PADIEM_LOCAL_DEV=1")
+    _entry_mode(env)
+    # Configuration validation stays where it already lives. ``from_env`` reads
+    # the process environment, while ``environ`` is this module's test seam, so
+    # cross-checking the two would compare two different sources of truth.
     Settings.from_env()
     if not env.get("PADIEM_CHAT_LOCAL_IDENTITY_RPC_ORIGIN") or not env.get(
         "PADIEM_CHAT_LOCAL_IDENTITY_RPC_SECRET"
