@@ -36,6 +36,7 @@ def make_config(database_id, public_origin, queue_origin):
         # and secret. Never silently fall back to an operational queue.
         "vars": {"PADIEM_CHAT_PUBLIC_BASE_URL": public_origin, "PC_QUEUE_BACKEND": "d1", "PC_QUEUE_ORIGIN": queue_origin,
                  "PADIEM_CHAT_SHARED_LOGIN_ENABLED": "true", "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED": "false",
+                 "PADIEM_CHAT_SHARED_AUTH_CLIENT_ID": "b62-staging",
                  "PADIEM_CHAT_RUNTIME_MODE": "mock", "PADIEM_CHAT_LIVE_ENABLED": "false"},
         "observability": {"enabled": True, "head_sampling_rate": 1},
     }

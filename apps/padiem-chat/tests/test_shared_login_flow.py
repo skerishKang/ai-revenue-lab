@@ -170,3 +170,28 @@ async def test_verified_profile_is_provisioned_before_cookie_and_stays_server_si
     assert result.status_code == 302 and issued == [uid]
     assert 'private@example.invalid' not in str(result.headers)
     assert b'private@example.invalid' not in result.body
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("configured", [False, True])
+async def test_worker_configuration_preserves_default_and_uses_staging_origin(configured):
+    env = {
+        'PADIEM_CHAT_SHARED_LOGIN_ENABLED': 'true',
+        'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK': json.dumps(
+            {'kty': 'EC', 'crv': 'P-256', 'x': 'x', 'y': 'y', 'd': 'd'}),
+        'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY': _b64(b'x' * 32),
+        'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID': 'synthetic-kid',
+    }
+    origin = 'https://staging.example.test' if configured else 'https://chat.padiem.net'
+    expected_client = 'b62-staging' if configured else 'b62'
+    if configured:
+        env.update(PADIEM_CHAT_SHARED_AUTH_CLIENT_ID=expected_client, PADIEM_CHAT_PUBLIC_BASE_URL=origin)
+    flow = await create_worker_shared_login_flow(env, object())
+    assert flow is not None
+    assert flow.auth._verifier.audience == expected_client
+    start = await flow.start_login(request())
+    query = parse_qs(urlparse(start.headers['location']).query)
+    assert query['client_id'] == [expected_client]
+    assert query['redirect_uri'] == [origin + '/auth/shared/callback']
+    assert flow.callback == origin + '/auth/shared/callback'
+    assert (await flow.refresh(request(origin='https://wrong.example.test'))).status_code == 403
