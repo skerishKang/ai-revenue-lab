@@ -13,6 +13,7 @@ on:
       - '.github/scripts/connector_bundle_fingerprint.py'
       - '.github/tests/test_connector_bundle_fingerprint.py'
       - '.github/tests/test_3989_control_plane_ci_overlap.py'
+      - '.github/tests/test_engine_admission_staging_config_261031.py'
   workflow_dispatch:
 
 permissions:
@@ -97,6 +98,11 @@ jobs:
       - name: Verify source-only Connector bundle fingerprint tests
         shell: bash
         run: python -m unittest discover -s .github/tests -p test_connector_bundle_fingerprint.py -q
+
+      # The staging-instance config assertion reads the Worker config by name,
+      # which the foundation package gate forbids inside the package itself.
+      - name: Verify the engine-admission staging instance config
+        run: python -m pytest -q .github/tests/test_engine_admission_staging_config_261031.py
 
       - name: Overlap full Control Plane tests and six isolated Worker package dry-runs
         shell: bash
