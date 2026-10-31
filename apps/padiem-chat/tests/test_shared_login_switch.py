@@ -92,3 +92,43 @@ def test_login_callback_refresh_and_logout_roundtrip():
         assert client.post('/auth/shared/logout', headers={'origin': 'https://chat.padiem.net'}).status_code == 200
         assert client.get('/identity-test').json()['user'] is None
     assert revoked == ['refresh-two']
+
+
+def test_shared_flow_is_ready_without_legacy_auth_and_resolves_verified_profile():
+    class Profile:
+        def public_dict(self):
+            return {'id': 'usr_shared'}
+
+    class Store:
+        async def get_user(self, uid):
+            return Profile() if uid == 'usr_shared' else None
+
+    settings = Settings.from_values(runtime_mode='mock', auth_mode='off')
+    app = create_app(settings=settings, shared_login_flow=Flow(), history_store=Store())
+    with TestClient(app) as client:
+        assert client.get('/health').json()['auth_configured'] is True
+        status = client.get('/api/auth/status', cookies={ACCESS_COOKIE: 'synthetic-token'}).json()
+        assert status['ready'] is True
+        assert status['authenticated'] is True
+        assert status['user']['id'] == 'usr_shared'
+        assert status['methods'] == {'google': False, 'password': False}
+
+    app = create_app(settings=settings, history_store=Store())
+    with TestClient(app) as client:
+        assert client.get('/health').json()['auth_configured'] is False
+        assert client.get('/api/auth/status').json()['ready'] is False
+
+
+def test_shared_auth_failure_logs_only_fixed_marker(caplog):
+    from app.shared_auth_adapter import SharedAuthUnavailable
+
+    class BrokenFlow(Flow):
+        async def user_id(self, request, token):
+            raise SharedAuthUnavailable('sensitive diagnostic should not be logged')
+
+    app, _ = make_app(BrokenFlow())
+    with TestClient(app) as client:
+        assert client.get('/identity-test', cookies={ACCESS_COOKIE: 'synthetic-token'}).json()['user'] is None
+    assert 'shared_session_verification_or_identity_lookup_failed' in caplog.text
+    assert 'synthetic-token' not in caplog.text
+    assert 'sensitive diagnostic' not in caplog.text
