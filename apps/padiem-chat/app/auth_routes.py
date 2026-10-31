@@ -2,20 +2,29 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
+import html as html_module
 import json
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 
 from padiem_control_plane.b54_identity_bridge import B54BridgedIdentitySession
 
 from .android_auth_routes import (
+    _page,
     android_handoff_confirm_page,
     android_handoff_terminal_page,
     bind_android_handoff_user,
     load_android_handoff_for_callback,
 )
 from .android_auth_store import HANDOFF_STATUS_AWAITING_CONFIRMATION
+from .lovetree_auth_routes import (
+    bind_after_verified_login,
+    bind_lovetree_handoff,
+    load_lovetree_handoff_for_callback,
+    not_ready as lovetree_handoff_not_ready,
+    return_to_lovetree,
+)
 from .auth import (
     AuthError,
     OAUTH_STATE_COOKIE,
@@ -28,6 +37,7 @@ from .auth import (
     oauth_state_cookie_kwargs,
     session_cookie_kwargs,
     verify_oauth_state,
+    verified_oauth_return_target,
 )
 from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
 from .b66_signup_notifications import deliver_after_signup
@@ -67,7 +77,7 @@ from .session_revocation_guard import session_verdict
 
 def auth_ready(request: Request) -> bool:
     settings: Settings = request.app.state.settings
-    return settings.auth_mode != "off" and request.app.state.history_store is not None
+    return (settings.auth_mode != "off" or getattr(request.app.state, "shared_login_flow", None) is not None) and request.app.state.history_store is not None
 
 
 def google_auth_ready(request: Request) -> bool:
@@ -106,10 +116,44 @@ def current_user_id(request: Request) -> str | None:
     """
 
     verdict = session_verdict(request)
-    if verdict is not None and not verdict.authenticated:
-        return None
     settings: Settings = request.app.state.settings
-    return decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+    if verdict is None or verdict.authenticated:
+        legacy_user = decode_session_token(settings, request.cookies.get(SESSION_COOKIE))
+        if legacy_user:
+            return legacy_user
+    # Set only by SharedSessionMiddleware after ES256 verification and mapping.
+    shared_user = getattr(getattr(request, 'state', None), 'padiem_shared_user_id', None)
+    return shared_user if isinstance(shared_user, str) and shared_user else None
+
+
+def _wants_html(request: Request) -> bool:
+    """A browser navigation carries text/html in Accept; this app's own fetches
+    always ask for JSON. One login failure speaks both languages: the navigation
+    gets the Korean screen, the fetch keeps its JSON contract (#6114)."""
+    accept = request.headers.get("accept", "")
+    return "text/html" in accept.lower()
+
+
+_GOOGLE_LOGIN_RETRY_HREF = "/auth/google/start"
+
+
+def google_login_error_page(message: str, status: int) -> HTMLResponse:
+    """The browser-navigated login failure screen. One Korean line the owner can
+    act on and one button that starts the login over with a fresh signed state —
+    never the raw JSON envelope, never a code the owner cannot act on."""
+    body = (
+        "<h1>로그인을 마치지 못했어요</h1>"
+        f"<p class=\"error\" role=\"alert\">{html_module.escape(message)}</p>"
+        f"<a class=\"action\" href=\"{_GOOGLE_LOGIN_RETRY_HREF}\">다시 로그인</a>"
+        "<p class=\"note\">버튼이 로그인을 다시 시작합니다. 문제가 반복되면 잠시 후 다시 시도해 주세요.</p>"
+    )
+    return _page("Padiem 로그인", body, status)
+
+
+def _auth_failure(request: Request, status: int, code: str, message: str) -> Response:
+    if _wants_html(request):
+        return google_login_error_page(message, status)
+    return _auth_error(status, code, message)
 
 
 def _unavailable() -> JSONResponse:
@@ -244,6 +288,10 @@ async def auth_status(request: Request) -> JSONResponse:
         "history_ready": ready and store is not None,
         "user": user,
     }
+    if getattr(request.app.state, 'shared_login_flow', None) is not None:
+        payload['shared_login_enabled'] = True
+        # Presentation hint only; authentication never trusts this value.
+        payload['shared_session_present'] = request.cookies.get('__Host-padiem-shared-marker') == '1'
     # Owner decision 2026-10-24 (#5474): a guest may use Free on the Chat lane,
     # bounded by the usage gate; paid tiers, Claw, Custom and projects still
     # need a session. This flag is the server-authoritative condition the
@@ -278,16 +326,25 @@ def _bridge_origin(request: Request) -> str | None:
 
 
 async def google_start(request: Request) -> Response:
+    shared_flow = getattr(request.app.state, 'shared_login_flow', None)
+    # Preserve existing handoffs and explicit return targets during migration.
+    if shared_flow is not None and not request.query_params:
+        return await shared_flow.start_login(request)
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     bridge_origin = _bridge_origin(request)
     try:
-        state, signed = create_oauth_state(settings)
+        # An app that signs in inside its own page asks to come back here. The
+        # value is accepted only when it is exactly one of the declared app
+        # entries, and it travels in the signed state, not in the provider URL.
+        state, signed = create_oauth_state(
+            settings, return_to=request.query_params.get("return_to")
+        )
         location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     response = RedirectResponse(location, status_code=302)
     response.set_cookie(OAUTH_STATE_COOKIE, signed, **oauth_state_cookie_kwargs())
     return response
@@ -425,43 +482,41 @@ async def establish_b54_canonical_session_after_google_login(
 
 async def google_callback(request: Request) -> Response:
     if not google_auth_ready(request):
-        return _unavailable()
+        return _auth_failure(request, 503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     settings: Settings = request.app.state.settings
     query_state = request.query_params.get("state")
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE)
     handoff_record = None
+    pending = None
     if not verify_oauth_state(settings, query_state, cookie_state):
         # Android 1.0.0 completes Google in the device's external browser. That
         # browser has no WebView state cookie, so a handoff state is verified by
         # its own signature instead. It only identifies the pending handoff; it
         # never authenticates a user or issues a session.
         if not isinstance(query_state, str) or not query_state:
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
+            return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
         handoff_record, handoff_response = await load_android_handoff_for_callback(
             request, query_state
         )
         if handoff_response is not None:
             return handoff_response
         if handoff_record is None:
-            # Not a signed handoff state either: keep the pre-existing
-            # invalid-OAuth-state rejection and never exchange the code.
-            return JSONResponse(
-                {"error": {"code": "invalid_oauth_state", "message": "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요."}},
-                status_code=400,
-            )
-        if handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
+            # LoveTree sends its own browser here the same way: the login request is
+            # named by a Chat-signed state, and that state only picks a pending row.
+            pending, pending_response = await load_lovetree_handoff_for_callback(request, query_state)
+            if pending_response is not None:
+                return pending_response
+            if pending is None:
+                # Not a signed handoff state either: keep the pre-existing
+                # invalid-OAuth-state rejection and never exchange the code.
+                return _auth_failure(request, 400, "invalid_oauth_state", "로그인 요청을 확인할 수 없습니다. 다시 로그인해 주세요.")
+        if handoff_record is not None and handoff_record.status == HANDOFF_STATUS_AWAITING_CONFIRMATION:
             # The Google code was already exchanged on the first callback. A
             # reload must not consume it again; render the same code form.
             return android_handoff_confirm_page(query_state)
     code = request.query_params.get("code")
     if not isinstance(code, str) or not code.strip() or len(code) > 4096:
-        return JSONResponse(
-            {"error": {"code": "invalid_oauth_callback", "message": "Google 로그인 결과를 확인할 수 없습니다."}},
-            status_code=400,
-        )
+        return _auth_failure(request, 400, "invalid_oauth_callback", "Google 로그인 결과를 확인할 수 없습니다.")
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
     bridge_origin = _bridge_origin(request)
@@ -489,16 +544,13 @@ async def google_callback(request: Request) -> Response:
                 now=authenticated_epoch,
                 canonical_session_id=canonical_session_id,
             )
-            if handoff_record is None
+            if handoff_record is None and pending is None
             else None
         )
     except AuthError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        return _auth_failure(request, exc.status_code, exc.code, exc.user_message)
     except Exception:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
-        )
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
 
     # #3240: the B62 Google login above is already complete and unchanged. The
     # canonical B54 session is additive and best-effort — a B54 failure returns
@@ -517,12 +569,25 @@ async def google_callback(request: Request) -> Response:
             return android_handoff_terminal_page("failed")
         return android_handoff_confirm_page(query_state)
 
-    if not isinstance(session, str) or not session:
-        return JSONResponse(
-            {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
-            status_code=503,
+    if pending is not None:
+        # LoveTree's browser also gets no PADIEM session. What it gets is one ticket,
+        # and the only identity written is the one this callback just verified.
+        bound = await bind_lovetree_handoff(
+            request,
+            pending,
+            user_id=profile.id,
+            auth_provider="google",
+            provider_subject=identity["subject"],
         )
-    response = RedirectResponse("/", status_code=302)
+        if not bound:
+            return lovetree_handoff_not_ready()
+        return await return_to_lovetree(request, pending)
+
+    if not isinstance(session, str) or not session:
+        return _auth_failure(request, 503, "auth_storage_error", "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요.")
+    response = RedirectResponse(
+        verified_oauth_return_target(settings, cookie_state), status_code=302
+    )
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
@@ -665,11 +730,16 @@ def _display_name_fallback(login_identifier: str) -> str:
     return login_identifier.partition("@")[0] or login_identifier
 
 
-def _session_response(settings: Settings, profile, *, canonical_session_id: str | None = None) -> JSONResponse:
+def _session_response(
+    settings: Settings, profile, *, canonical_session_id: str | None = None, extra: dict | None = None
+) -> JSONResponse:
     session = create_session_token(
         settings, profile.id, canonical_session_id=canonical_session_id
     )
-    response = JSONResponse({"ok": True, "user": profile.public_dict()})
+    payload = {"ok": True, "user": profile.public_dict()}
+    if extra:
+        payload.update(extra)
+    response = JSONResponse(payload)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     return response
 
@@ -861,8 +931,20 @@ async def password_login(request: Request) -> JSONResponse:
     # B54-scoped consumer resolves it. #2963 Step 3 is that consumer and remains a
     # separately authorized gate, so nothing here projects it to the browser.
     await establish_b54_canonical_session_after_login(request, credential)
+    # LoveTree handoff, password leg. Reached only past the verified credential above, so a
+    # wrong password, a lock, or an unknown identifier can never bind or return a ticket.
+    handoff_return = await bind_after_verified_login(
+        request,
+        data.get("handoff"),
+        user_id=credential.user.id,
+        auth_provider="password",
+        provider_subject=credential.username,
+    )
     return _session_response(
-        settings, credential.user, canonical_session_id=canonical_session_id
+        settings,
+        credential.user,
+        canonical_session_id=canonical_session_id,
+        extra={"handoff_return": handoff_return} if handoff_return else None,
     )
 
 
@@ -1181,3 +1263,4 @@ async def logout(request: Request) -> JSONResponse:
     response = JSONResponse({"ok": True})
     response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
     return response
+

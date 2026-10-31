@@ -27,6 +27,37 @@ PROBES = {
 }
 
 
+async def _shared_auth_es256_state():
+    """Test real Workers WebCrypto with public synthetic shared vectors only."""
+    from js import JSON as JSJSON, Object, crypto
+    from pyodide.ffi import to_js
+    from app.shared_auth_compare_flow import WorkerJwksVerifier
+    from app.shared_auth_compare_webcrypto import WorkerES256
+    from worker_runtime_shared_auth_fixture import VECTOR
+
+    verifier = WorkerJwksVerifier(clock=lambda:VECTOR['now'])
+    verifier.audience = VECTOR['audience']
+    verifier.keys, verifier.until = VECTOR['jwks'], VECTOR['now'] + 300
+    verified = await verifier.verify(VECTOR['tokens']['valid'])
+    if verified.get('accountId') != 'sub_existing':
+        return False
+    for name in ('wrong_audience', 'wrong_issuer', 'expired', 'forged'):
+        try:
+            await verifier.verify(VECTOR['tokens'][name])
+        except Exception:
+            continue
+        return False
+    convert = lambda value: to_js(value, dict_converter=Object.fromEntries, create_pyproxies=False)
+    pair = await crypto.subtle.generateKey(
+        convert({'name':'ECDSA','namedCurve':'P-256'}), True, convert(['sign','verify'])
+    )
+    private = json.loads(str(JSJSON.stringify(await crypto.subtle.exportKey('jwk', pair.privateKey))))
+    public = json.loads(str(JSJSON.stringify(await crypto.subtle.exportKey('jwk', pair.publicKey))))
+    port = WorkerES256()
+    signature = await port.sign(private, b'synthetic-message')
+    return await port.verify(public, signature, b'synthetic-message') and not await port.verify(public, signature, b'tampered')
+
+
 # #4139: temporary Workerd ONLY; never import this synthetic gateway from the
 # production padiem-chat/worker.py. A 101 here proves the real Cloudflare
 # Python ASGI/WS upgrade transport, NOT canonical Identity/Broker or TLS.
@@ -379,6 +410,36 @@ def _timezone_database_state() -> str:
 
 
 
+async def _queue_store_state() -> dict:
+    """Actual Pyodide compat client + real JS Response, synthetic fetch only."""
+    from js import Response as JsResponse
+    from app import httpx_compat as compat
+    from app.queue_store_proxy import QueueStoreClient
+
+    state = {"workers_compat": compat._IN_WORKERS,
+             "no_httpx_only_methods": not hasattr(compat.AsyncClient, "post") and not hasattr(compat.Response, "json"),
+             "mock_fetch_once": False, "parsed_result": False, "unexpected_exception": False}
+    calls = []
+    original = compat._js_global
+    async def fixture_fetch(url, init):
+        # No network capability is delegated: the real fetch is never called.
+        calls.append(str(url) == "https://queue.invalid/internal/store" and str(init.method) == "POST")
+        return JsResponse.new(json.dumps({"ok": True, "result": {"label": "큐🙂", "rows": []}}, ensure_ascii=False))
+    def globals_for_probe(name):
+        return fixture_fetch if name == "fetch" else original(name)
+    compat._js_global = globals_for_probe
+    try:
+        client = QueueStoreClient(origin="https://queue.invalid", service_secret="synthetic-queue-probe-not-a-credential")
+        result = await client.call("list_links", user_id="synthetic-user")
+        state["parsed_result"] = result == {"label": "큐🙂", "rows": []}
+        state["mock_fetch_once"] = calls == [True]
+    except Exception:
+        state["unexpected_exception"] = True
+    finally:
+        compat._js_global = original
+    return state
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         url = urlparse(str(request.url))
@@ -422,6 +483,13 @@ class Default(WorkerEntrypoint):
         if set(params) != {"case"} or len(params["case"]) != 1:
             return Response("invalid probe case", status=400)
         case = params["case"][0]
+        if case == "shared_auth_es256":
+            try:
+                ok = await _shared_auth_es256_state()
+            except Exception:
+                ok = False
+            return Response(json.dumps({"state": "ok" if ok else "failed"}), status=200,
+                            headers={"Content-Type": "application/json"})
         # #5479/#5664: the real password KDF contract — the stored credential
         # format is PBKDF2-HMAC-SHA512 at PBKDF2_ITERATIONS (220,000), and the
         # 3.14 snapshot's WebCrypto bridge refuses iterations above 100,000.
@@ -440,6 +508,9 @@ class Default(WorkerEntrypoint):
             except Exception as exc:
                 body = json.dumps({"state": "probe-error", "error": str(exc)[:300]})
             return Response(body, status=200, headers={"Content-Type": "application/json"})
+        if case == "queue_store":
+            return Response(json.dumps(await _queue_store_state()), status=200,
+                            headers={"Content-Type": "application/json"})
         handler = PROBES.get(case)
         if handler is None:
             return Response("invalid probe case", status=400)

@@ -157,10 +157,11 @@ def test_comments_and_sse_metadata_are_ignored():
     "req",
     [
         request(model="b14/auto"),
-        request(routing=B14RoutingOptions(allow_external_fallback=True)),
     ],
 )
 def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
+    """B7: the retired auto id is refused; B5 removed the fallback knob, so
+    there is no routing option left that can disqualify a stream request."""
     calls = 0
 
     async def handler(http_request: httpx.Request) -> httpx.Response:
@@ -358,6 +359,23 @@ def test_fragmented_single_oversize_sse_frame_fails_closed():
     with pytest.raises(B14ExecutionError) as err:
         collect(client, request())
     assert err.value.code == "upstream_response_too_large"
+
+
+def test_default_stream_frame_above_one_mib_reaches_the_final_record():
+    content = "x" * (1024 * 1024 + 1)
+    frame = sse(chunk_payload(content=content))
+
+    async def handler(req):
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([frame[:500_000], frame[500_000:], b"data: [DONE]\n\n"]),
+        )
+
+    events = collect(B14StreamingClient(
+        B14ExecutionConfig(BASE_URL), transport=httpx.MockTransport(handler)
+    ), request())
+    assert "".join(e.delta_content or "" for e in events) == content
+    assert events[-1].done is True
 
 def test_timeout_and_transport_errors_are_normalized():
     async def timeout_handler(req: httpx.Request) -> httpx.Response:
@@ -569,6 +587,37 @@ def test_b14_google_tool_call_fixture_parses_complete_arguments_and_done(ending)
     assert stream.closed
 
 
+def test_a_streamed_call_signature_is_preserved_for_the_follow_up():
+    client, stream, _ = tool_stream_client(
+        named_sse("tool_call", {
+            "id": "call_1", "name": "pc_files", "arguments": '{"plan":"files_list"}',
+            "index": 0, "signature": "sig_native_abc123",
+        })
+        + named_sse("done", {"finish_reason": "tool_calls"})
+    )
+
+    events = collect(client, tool_request())
+
+    assert events[0].tool_call.signature == "sig_native_abc123"
+    assert events[0].tool_call.to_public_dict()["signature"] == "sig_native_abc123"
+    assert stream.closed
+
+
+def test_a_malformed_streamed_signature_is_refused():
+    for signature in (123, "", "x" * 65_537):
+        client, stream, _ = tool_stream_client(
+            named_sse("tool_call", {
+                "id": "call_1", "name": "pc_files", "arguments": "{}",
+                "index": 0, "signature": signature,
+            })
+        )
+
+        with pytest.raises(B14ExecutionError) as exc:
+            collect(client, tool_request())
+        assert exc.value.code == "malformed_upstream"
+        assert stream.closed
+
+
 @pytest.mark.parametrize("finish_reason", ["stop", "length", "tool_calls"])
 def test_tool_stream_done_preserves_finish_reason_and_last_text_route(finish_reason):
     client, stream, _ = tool_stream_client(
@@ -699,3 +748,53 @@ def test_streamed_tool_call_public_arguments_remain_json_serializable():
     public = json.loads(json.dumps(event.to_public_dict()))
     assert public["tool_call"]["arguments"] == arguments
     assert public["tool_call"]["index"] == 1
+
+
+def _client_for(raw: bytes):
+    return B14StreamingClient(
+        B14ExecutionConfig(BASE_URL),
+        transport=httpx.MockTransport(lambda req: httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([raw]),
+        )),
+    )
+
+
+def test_a_signed_text_chunk_reaches_the_consumer_with_its_token():
+    """#4727: the turn's own answer text can carry a continuation token too."""
+    signed = chunk_payload(content="확인")
+    signed["signature"] = "sig_turn_xyz"
+    raw = (
+        sse(signed)
+        + sse(chunk_payload(content="하겠습니다"))
+        + sse(chunk_payload(finish_reason="stop"))
+        + b"data: [DONE]\n\n"
+    )
+
+    events = collect(_client_for(raw), request())
+
+    assert events[0].signature == "sig_turn_xyz"
+    assert events[0].to_public_dict()["signature"] == "sig_turn_xyz"
+    # An unsigned chunk keeps the exact event and projection it always had.
+    assert events[1].signature is None
+    assert "signature" not in events[1].to_public_dict()
+    # The turn's merge rule is the last token it actually saw, not the last frame.
+    assert [e.signature for e in events if e.signature is not None] == ["sig_turn_xyz"]
+
+
+def test_a_malformed_text_token_is_refused():
+    for signature in (123, "", "x" * 65_537):
+        payload = chunk_payload(content="확인")
+        payload["signature"] = signature
+
+        with pytest.raises(B14ExecutionError) as exc:
+            collect(_client_for(sse(payload)), request())
+
+        assert exc.value.code == "malformed_upstream"
+
+
+def test_a_completion_event_cannot_carry_a_token():
+    from padiem_ai_core.b14_streaming import B14StreamEvent
+
+    with pytest.raises(ValueError):
+        B14StreamEvent(done=True, finish_reason="stop", signature="sig_turn_xyz")

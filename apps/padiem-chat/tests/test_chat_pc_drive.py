@@ -520,6 +520,88 @@ _CHAT_SECRET = "s" * 32
 _CHAT_CHANNEL_SECRET = "deployment-channel-secret-value-chat"
 
 
+def test_chat_drive_dispatch_uses_connector_session_with_history_only_run(monkeypatch):
+    """Real D1 SQL: pending history alone is sufficient; no automation row.
+
+    The connector authority deliberately accepts only its canonical B54
+    session, unlike the old double which accepted the B62 session too.
+    A swallowed lookup exception is retained in the assertion diagnostic.
+    """
+    import test_5015_multi_tool_result_storage as db
+    import app.chat_pc_drive as lane
+    from app import oracle_mesh_read_return_routes as routes
+    from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+    from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+    from datetime import datetime, timedelta, timezone
+
+    seen = []
+    now = datetime.now(timezone.utc)
+
+    class Identity:
+        async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+            assert product_id == "b62" and canonical_subject_id == _CHAT_SUBJECT
+            return db.OWNER
+
+        async def resolve_current_auth_session(self, *, product_id, product_user_id):
+            assert product_user_id == db.OWNER
+            return AuthSessionSnapshot(
+                session_id="session." + product_id, product_id=product_id,
+                subject=CanonicalSubjectRef(subject_id=_CHAT_SUBJECT, subject_type=SubjectType.USER),
+                issued_at=now - timedelta(minutes=1), expires_at=now + timedelta(hours=1),
+                tenant_id=db.WORKSPACE,
+            )
+
+        async def resolve_connector_owner_scope(self, *, session_id):
+            seen.append(session_id)
+            if session_id != "session.b54-padiem-claw":
+                raise ValueError("connector requires its own product session")
+            return {"account_ref": _CHAT_ACCOUNT, "workspace_ref": _CHAT_WORKSPACE}
+
+    async def workspace(request, uid):
+        assert uid == db.OWNER
+        return db.WORKSPACE
+
+    async def no_promotion(*args, **kwargs):
+        raise AssertionError("an existing history run must not be promoted again")
+
+    connection = db._database()
+    try:
+        db._stage_run(connection, action="pc_files_query", status="pending")
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+        state, _ = _chat_state()
+        state.history_store = db._store(connection)
+        state.control_plane_identity_authority = Identity()
+        monkeypatch.setattr(routes, "_resolve_memory_workspace", workspace)
+        monkeypatch.setattr(lane, "promote_chat_pc_stream_run", no_promotion)
+        status, body = _signed_chat_call(state, routes, {
+            "subject_id": _CHAT_SUBJECT, "run_id": db.RUN, "device_id": None,
+            "command": CHAT_PC_DRIVE_COMMAND, "mode": "dispatch",
+        })
+        assert status == 200, {"response": body, "connector_sessions": seen}
+        row = connection.execute("SELECT run_id,kind,state FROM oracle_mesh_dispatch").fetchone()
+        assert tuple(row) == (db.RUN, "command", "pending")
+        assert seen == ["session.b54-padiem-claw"]
+        # The file tools and the Claw recovery view resolve the very same
+        # history origin, without manufacturing a scheduled automation run.
+        for op, path in (("list", "."), ("read", "notes.txt")):
+            response = asyncio.run(routes.oracle_mesh_engine_chat_files_call(_SignedRequest(state, {
+                "subject_id": _CHAT_SUBJECT, "run_id": db.RUN, "device_id": None,
+                "mode": "dispatch", "op": op, "path": path,
+                "tool_call_ref": db.RUN + ":" + op,
+            }, secret=_CHAT_SECRET)))
+            assert response.status_code == 200, json.loads(response.body)
+        import app.claw_routes as claw_routes
+        monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+        monkeypatch.setattr(claw_routes, "current_user_id", lambda request: db.OWNER)
+        response = asyncio.run(claw_routes.claw_pending_result(db._pending_request(db.RUN, state.history_store)))
+        assert response.status_code == 200, json.loads(response.body)
+        assert connection.execute("SELECT COUNT(*) FROM claw_run_history WHERE run_id=?", (db.RUN,)).fetchone()[0] == 1
+        assert {r[0] for r in connection.execute("SELECT run_id FROM oracle_mesh_dispatch")} == {db.RUN}
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+    finally:
+        connection.close()
+
+
 class _ChatIdentity:
     async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
         assert product_id == "b62"
@@ -527,18 +609,21 @@ class _ChatIdentity:
         return _CHAT_OWNER
 
     async def resolve_current_auth_session(self, *, product_id, product_user_id):
-        assert product_id == "b62"
+        from datetime import datetime, timedelta, timezone
+        from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+        from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+        assert product_id in {"b62", "b54-padiem-claw"}
         assert product_user_id == _CHAT_OWNER
-        return SimpleNamespace(
-            session_id="sess-chat-9",
-            product_id="b62",
-            subject=SimpleNamespace(subject_id=_CHAT_SUBJECT),
+        now = datetime.now(timezone.utc)
+        return AuthSessionSnapshot(
+            session_id="sess-" + product_id, product_id=product_id,
+            subject=CanonicalSubjectRef(subject_id=_CHAT_SUBJECT, subject_type=SubjectType.USER),
+            issued_at=now - timedelta(minutes=1), expires_at=now + timedelta(hours=1),
             tenant_id=_CHAT_WORKSPACE,
-            is_active=lambda *, now: True,
         )
 
     async def resolve_connector_owner_scope(self, *, session_id):
-        assert session_id == "sess-chat-9"
+        assert session_id == "sess-b54-padiem-claw"
         return {"account_ref": _CHAT_ACCOUNT, "workspace_ref": _CHAT_WORKSPACE}
 
 

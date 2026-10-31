@@ -25,7 +25,7 @@ DAUM_WEB_SEARCH_PATH = "/v2/search/web"
 # host or path ever reaches these endpoints.
 TINYFISH_SEARCH_ORIGIN = "https://api.search.tinyfish.ai"
 TINYFISH_FETCH_ORIGIN = "https://api.fetch.tinyfish.ai"
-MAX_PROVIDER_RESPONSE_BYTES = 1_048_576
+MAX_PROVIDER_RESPONSE_BYTES = 10 * 1_048_576
 MAX_QUERY_CHARS = 2_000
 MAX_RESULTS = 5
 MAX_TITLE_CHARS = 300
@@ -35,7 +35,7 @@ MAX_SNIPPET_CHARS = 2_000  # search hit previews; not fetched page model evidenc
 # Do not silently discard fetched evidence at an unrelated 2k UI preview cap.
 MAX_FETCHED_PAGE_CHARS = MAX_PROVIDER_RESPONSE_BYTES
 MAX_URL_CHARS = 2_048
-MAX_TIMEOUT_SECONDS = 30.0
+MAX_TIMEOUT_SECONDS = 60.0
 _BLOCKED_HOST_SUFFIXES = (".localhost", ".local", ".internal", ".lan", ".home")
 _ALLOWED_PROVIDERS = frozenset({"off", "mock", "firecrawl", "daum", "tinyfish"})
 _ALLOWED_FIRECRAWL_PATHS = frozenset({"/v2/search", "/v2/scrape"})
@@ -73,7 +73,7 @@ class WebRuntimeConfig:
     daum_rest_api_key: str | None = field(default=None, repr=False)
     tinyfish_api_key: str | None = field(default=None, repr=False)
     daum_search_sort: str = "accuracy"
-    web_timeout_seconds: float = 15.0
+    web_timeout_seconds: float = 30.0
 
     def __post_init__(self) -> None:
         provider = self.provider.strip().lower() if isinstance(self.provider, str) else ""

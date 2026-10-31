@@ -73,7 +73,16 @@ def test_document_dependencies_are_owned_by_core_optional_extra() -> None:
 
 def test_core_document_contract_has_no_filesystem_url_storage_or_provider_authority() -> None:
     source = CORE_DOCUMENTS.read_text(encoding="utf-8")
-    assert "def extract_binary_document(*, name: Any, media_type: Any, payload: Any)" in source
+    import inspect
+    from padiem_ai_core.document_normalization import (
+        MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES, extract_binary_document,
+    )
+    signature = inspect.signature(extract_binary_document)
+    assert tuple(signature.parameters) == ("name", "media_type", "payload", "ooxml_member_max_bytes")
+    assert all(parameter.kind == inspect.Parameter.KEYWORD_ONLY for parameter in signature.parameters.values())
+    # #5881: CPython may explicitly opt out, while this Worker/default contract
+    # retains exactly its 32MiB member budget and gains no I/O authority.
+    assert signature.parameters["ooxml_member_max_bytes"].default == MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES == 32 * 1024 * 1024
     assert "httpx" not in source
     assert "requests" not in source
     assert "pathlib import Path" not in source

@@ -19,7 +19,7 @@ from kagent.local_agent_meshcentral_private_reader import (
     MeshCentralReadTooLarge,
 )
 from kagent.local_agent_oracle_mesh_executor import (
-    MAX_READ_BYTES_ENVELOPE,
+    MAX_READ_BYTES_ENVELOPE, MAX_READ_BYTES,
     OracleMeshChannelRefused,
     OracleMeshDispatch,
     OracleMeshExecutor,
@@ -324,7 +324,8 @@ def test_other_read_consumers_keep_the_shared_six_mb_default():
     assert outcome.exit_code == 0
     # No per-call bound is sent, so the port's 6 MB envelope applies.
     assert "max_bytes" not in port.calls[0]
-    assert MAX_READ_BYTES_ENVELOPE == 6_000_000
+    assert MAX_READ_BYTES == 6_000_000
+    assert MAX_READ_BYTES_ENVELOPE == 20_000_000
 
 
 def test_poll_parses_and_rejects_an_unbounded_server_value():
@@ -354,3 +355,27 @@ def test_poll_parses_and_rejects_an_unbounded_server_value():
 def test_marker_constants_are_the_engine_prefix():
     assert PC_FILE_TOO_LARGE_MARKER.startswith("PADIEM_PC_FILE_ERROR:")
     assert PC_FILE_READ_FAILED_MARKER.startswith("PADIEM_PC_FILE_ERROR:")
+
+
+def test_twenty_mb_explicit_read_bound_survives_execution_and_restart(tmp_path):
+    raw = b"a" * 20_000_000
+    port = _ReadPort(result=raw)
+    executor = OracleMeshExecutor(
+        chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+        read_port=port, pending_dir=str(tmp_path),
+        transport=lambda *_: (503, {"ok": False}),
+    )
+    dispatch = _dispatch(max_bytes=20_000_000)
+    outcome = executor.execute(dispatch)
+    assert outcome.body == raw
+    assert port.calls[0]["max_bytes"] == 20_000_000
+    assert executor.submit(dispatch, outcome)["retryable"] is True
+    restored = OracleMeshExecutor(
+        chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+        read_port=port, pending_dir=str(tmp_path),
+    )
+    assert restored.load_pending() is True
+    assert restored._pending[0].max_bytes == 20_000_000
+    assert restored._pending[1].body == raw
+    too_large = _executor(_ReadPort(result=raw + b"a")).execute(dispatch)
+    assert too_large.body == PC_FILE_TOO_LARGE_MARKER.encode()

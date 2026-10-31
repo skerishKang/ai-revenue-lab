@@ -36,7 +36,7 @@ from .byok_endpoint import (
 )
 from .request_contract import CustomModelSelection
 
-MAX_CUSTOM_RESPONSE_BYTES = 1_000_000
+MAX_CUSTOM_RESPONSE_BYTES = 10 * 1024 * 1024
 MAX_CUSTOM_MODEL_LIST = 500
 MAX_CUSTOM_ANSWER_CHARS = 200_000
 CUSTOM_SESSION_HEADER = "padiem-chat-custom/1.0"
@@ -49,6 +49,7 @@ class CustomProviderError(Exception):
     status_code: int
     code: str
     user_message: str
+    upstream_status: int | None = None
 
     def __str__(self) -> str:
         return self.user_message
@@ -97,6 +98,7 @@ def _raise_for_status(status: int) -> None:
             502,
             "custom_provider_auth_failed",
             "PADIEM Custom 공급사가 API 키를 거부했습니다. 키를 확인해 주세요.",
+            upstream_status=status,
         )
     if status == 429:
         raise CustomProviderError(
@@ -115,6 +117,7 @@ def _raise_for_status(status: int) -> None:
             502,
             "custom_provider_rejected",
             "PADIEM Custom 공급사가 요청을 처리하지 못했습니다.",
+            upstream_status=status,
         )
 
 
@@ -835,3 +838,106 @@ async def complete_owner_custom(
         messages=messages,
         system_context=system_context,
     )
+
+
+# Prefixes are hints only. A provider response must verify the candidate before
+# registration; a caller-supplied endpoint always retains the existing SSRF guard.
+_BYOK_PREFIXES = (("sk-ant-", "anthropic"), ("AIza", "gemini"),
+    ("sk-or-", "openrouter"), ("sk-proj-", "openai"), ("sk-", "openai"),
+    ("gsk_", "groq"), ("xai-", "xai"), ("pplx-", "perplexity"),
+    ("hf_", "huggingface"))
+_BYOK_PREFERRED = {
+    "openai": ("gpt-4.1-mini", "gpt-4o-mini"),
+    "anthropic": ("claude-haiku-4-5",), "gemini": ("gemini-2.5-flash-lite",),
+    "openrouter": ("openai/gpt-4.1-mini",),
+}
+
+
+def byok_provider_candidate(key: str, base_url: str | None = None) -> str | None:
+    for prefix, provider in _BYOK_PREFIXES:
+        if key.startswith(prefix):
+            return provider
+    return "openai" if base_url else None
+
+
+async def detect_byok(client: CustomProviderClient, *, key: str, base_url=None) -> dict:
+    """No persistence, vendor bodies or credential echoes at this boundary."""
+    from .byok_credentials import CUSTOM_PROVIDERS, validate_custom_model_id
+    from .byok_endpoint import normalize_custom_endpoint
+    provider = byok_provider_candidate(key, base_url)
+    result = {"provider": provider, "endpoint": None, "models": [],
+              "verified": False, "reason": "공급자 선택이 필요합니다. 고급 입력에서 공급자·주소를 지정해 주세요."}
+    if provider is None:
+        return result
+    try:
+        spec = CUSTOM_PROVIDERS[provider]
+        endpoint = normalize_custom_endpoint(base_url, default_endpoint=spec.base_origin)
+        if key in endpoint:
+            raise CustomEndpointError()
+        result["endpoint"] = endpoint
+        try:
+            listed = await _probe_byok(client, spec, key, endpoint)
+        except CustomProviderError as exc:
+            # Only OpenAI's 401 permits one explicit alternative. Never fan out
+            # after 403, network failure, or a caller-specified endpoint.
+            if provider != "openai" or base_url or exc.upstream_status != 401:
+                raise
+            provider = "deepseek"
+            spec = CUSTOM_PROVIDERS[provider]
+            endpoint = spec.base_origin
+            result.update(provider=provider, endpoint=endpoint)
+            listed = await _probe_byok(client, spec, key, endpoint)
+        models = []
+        for model in listed:
+            if not isinstance(model, str) or key in model:
+                continue
+            try:
+                model = validate_custom_model_id(model)
+            except ValueError:
+                continue
+            if model not in models:
+                models.append(model)
+        preferred = _BYOK_PREFERRED.get(provider, spec.models)
+        models.sort(key=lambda m: (preferred.index(m) if m in preferred else len(preferred), m))
+        if not models:
+            result["reason"] = "사용 가능한 모델을 찾지 못했습니다. 고급 입력에서 모델을 지정해 주세요."
+            return result
+        result.update(models=models, verified=True, reason="공급자 연결을 확인했습니다.")
+    except CustomEndpointError:
+        result.update(endpoint=None, reason="공개 HTTPS API 주소를 확인한 뒤 고급 입력을 이용해 주세요.")
+    except CustomProviderError as exc:
+        if exc.upstream_status in (401, 403):
+            result["reason"] = "공급자가 키를 거부했습니다(401·403). 키·권한을 확인하거나 고급 입력을 이용해 주세요."
+        else:
+            result["reason"] = "공급자 연결을 확인하지 못했습니다. 네트워크·한도를 확인하거나 고급 입력을 이용해 주세요."
+    except Exception:
+        result["reason"] = "공급자 연결을 확인하지 못했습니다. 네트워크를 확인하거나 고급 입력을 이용해 주세요."
+    return result
+
+
+async def _probe_byok(client, spec, key, endpoint):
+    # Public catalogs alone cannot establish key validity (OpenRouter/HF).
+    if spec.provider_id in {"openrouter", "huggingface"} and endpoint == spec.base_origin:
+        url = (endpoint + "/key" if spec.provider_id == "openrouter"
+               else "https://huggingface.co/api/whoami-v2")
+        await client._stream_request("GET", url, headers=_headers(spec, key),
+                                     body=None, consume=_read_bounded)
+    if spec.models_path is not None:
+        try:
+            result = await client.list_models(provider_id=spec.provider_id,
+                                              api_key=key, endpoint=endpoint)
+            return result["models"]
+        except CustomProviderError as exc:
+            if exc.upstream_status not in (404, 405) or not spec.models:
+                raise
+    if not spec.models:
+        return []
+    endpoint = await client._safe_endpoint(spec, endpoint)
+    model = spec.upstream_model(spec.models[0])
+    body = _request_body(spec, model, [{"role": "user", "content": "Hi"}], None, False)
+    body["max_tokens"] = 1
+    raw = await client._stream_request("POST", _request_url(spec, endpoint, model, False),
+        headers=_headers(spec, key), body=body, consume=_read_bounded)
+    if not isinstance(_parse_json(raw).get("choices"), list):
+        raise _malformed()
+    return list(spec.models)

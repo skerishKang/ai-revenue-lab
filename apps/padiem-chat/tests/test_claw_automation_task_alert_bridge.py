@@ -50,6 +50,8 @@ from app.claw_automation_projection_bridge import (
     project_scheduled_run_output,
     project_terminal_run_status_alert,
 )
+from app.workspace_storage import WorkspaceStorageError
+
 from app.claw_automation_task_alert_bridge import (
     ScheduledTaskAlertProjectionError,
     project_terminal_scheduled_run_to_task_alert,
@@ -151,25 +153,32 @@ class MemoryTaskAlertStore:
         if drop is not None:
             setattr(self, drop, None)
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None:
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None:
         self.reads += 1
         task = self.tasks.get(task_id)
-        return task if task is not None and task.workspace_id == workspace_id else None
+        if task is None or task.workspace_id != workspace_id:
+            return None
+        return task if task.member_id == member_id else None
 
     async def get_alert(
-        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+        self, alert_id: str, *, workspace_id: str, member_id: str
     ) -> ClawAlert | None:
         self.reads += 1
         alert = self.alerts.get(alert_id)
         if alert is None or alert.workspace_id != workspace_id:
             return None
-        if member_id is not None and not alert.is_visible_to(member_id):
-            return None
-        return alert
+        return alert if alert.is_visible_to(member_id) else None
 
     async def add_task(self, task: ClawFollowupTask) -> ClawFollowupTask:
         self.writes += 1
         self.add_task_calls += 1
+        if task.task_id in self.tasks:
+            # The durable table's PRIMARY KEY refuses a second row for the same
+            # deterministic id, so a stub that silently overwrote it would hide
+            # exactly the collision this seam must fail closed on.
+            raise WorkspaceStorageError("claw task row already exists")
         self.tasks[task.task_id] = task
         return task
 
@@ -502,6 +511,7 @@ async def test_a_user_dismissed_status_alert_is_never_reopened():
         created_at=alert.created_at,
         status=ClawAlertStatus.DISMISSED,
         visible_to_members=alert.visible_to_members,
+        linked_refs=alert.linked_refs,
     )
 
     second = await _project(store, rule=rule, row=row)
@@ -733,10 +743,15 @@ async def test_existing_record_with_foreign_identity_fails_closed():
         linked_ref=seeded.linked_ref,
     )
 
-    with pytest.raises(AutomationProjectionError):
+    # #2952 follow-up: the member-scoped read never surfaces another member's row,
+    # so the refusal comes from the durable PRIMARY KEY on the deterministic id.
+    # Either way nothing is overwritten and no second row appears.
+    with pytest.raises(WorkspaceStorageError):
         await _project(store, rule=rule, row=row)
 
-    assert store.add_task_calls == 0
+    assert store.tasks[seeded.task_id].member_id == "member_other"
+    assert store.tasks[seeded.task_id].status is ClawTaskStatus.OPEN
+    assert len(store.tasks) == 1
 
 
 # ── boundary + source contract ─────────────────────────────────────────────

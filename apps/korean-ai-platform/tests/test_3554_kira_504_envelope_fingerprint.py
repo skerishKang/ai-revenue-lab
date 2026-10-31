@@ -39,8 +39,7 @@ def test_exact_kira_single_attempt_504_has_observed_547_byte_b14_fingerprint(mon
                 "messages": [{"role": "user", "content": "synthetic error fingerprint"}],
                 "max_tokens": 3900, "stream": False,
                 "business14": {
-                    "allow_paid": True, "max_attempts": 1,
-                    "max_retries": 0, "allow_external_fallback": False,
+                    "max_retries": 0,
                 },
             },
         )
@@ -59,6 +58,9 @@ def test_exact_kira_single_attempt_504_has_observed_547_byte_b14_fingerprint(mon
     # returned HTTP504 with a 547-byte response. The exact length match is
     # a forensic clue, not content or root-cause attestation. If the B14
     # error serializer changes, reconcile and document before updating.
-    assert len(result.content) == 547
+    # Reconciled 2026-10-30 (PR-F, B4/B5): the retired scorer-era options no
+    # longer produce ignored_options entries, which shrank the same envelope
+    # from 547 to 518 bytes. The serializer itself is unchanged.
+    assert len(result.content) == 518
     assert "synthetic error fingerprint" not in result.text
     assert "PADIEM_B14_CREDENTIAL_09" not in result.text

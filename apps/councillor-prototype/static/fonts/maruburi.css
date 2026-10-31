@@ -1,0 +1,21 @@
+/*
+ * MaruBuri Bold — self-hosted copy (#5972).
+ *
+ * Copyright (c) 2010, NAVER Corporation (https://www.navercorp.com/),
+ * with Reserved Font Name MaruBuri. Licensed under the SIL Open Font License,
+ * Version 1.1 — full text in LICENSE-MaruBuri.txt beside this file.
+ *
+ * Upstream (official distribution): https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Bold.woff2
+ * File is unmodified; only the weight mapping below is ours (upstream serves
+ * "MaruBuriBold" as its own family, we register it as weight 700 of "MaruBuri").
+ *
+ * Headings only — see --font-serif in styles.css. Body / menu / buttons / cards
+ * use Pretendard (pretendard/pretendard-variable-dynamic-subset.css).
+ */
+@font-face {
+  font-family: "MaruBuri";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./maruburi/MaruBuri-Bold.woff2") format("woff2");
+}

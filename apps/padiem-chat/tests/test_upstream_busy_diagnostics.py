@@ -148,7 +148,7 @@ async def test_api_chat_stream_preserves_error_status_and_avoids_fake_success():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app_429), base_url="http://test") as client:
         response = await client.post(
             "/api/chat/stream",
-            json={"messages": USER_MESSAGES, "mode": "auto"},
+            json={"messages": USER_MESSAGES},
             headers={"cf-connecting-ip": "203.0.113.10"},
         )
         assert response.status_code == 503
@@ -188,6 +188,7 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "deep_research_ready",
             "image_attachment_ready",
             "text_document_attachment_ready",
+            "binary_document_attachment_ready",
             "auth_configured",
             "history_store_bound",
             "projects_code_ready",

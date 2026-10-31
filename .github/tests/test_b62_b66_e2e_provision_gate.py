@@ -153,7 +153,11 @@ def test_insert_is_create_only_one_row_and_matches_store_insert_shape(tmp_path: 
     store = STORE.read_text(encoding="utf-8")
     assert "INSERT INTO b66_saved_quote_skill" in store
     assert "skill_version, skill_json, status, created_at, updated_at" in store
-    assert "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?)" in store
+    # Migration 079 appends `skill_kind` with a server-side default, so this
+    # lane (certified skills only) keeps its 10 binds and every row it writes
+    # still reads back as a skill; the store's own insert also binds the kind.
+    assert "skill_kind) " in store
+    assert "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?)" in store
 
 
 def test_mutation_and_readback_are_exact(tmp_path: Path) -> None:

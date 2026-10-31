@@ -28,7 +28,8 @@ Two distinctions the contract exists to preserve:
 Cost is a catalog price snapshot applied to measured tokens. It is an estimate
 and is named as one; this ledger is not a commercial ledger and performs no
 billing action. Prompts, responses, headers, cookies, IP addresses and provider
-credentials are outside the schema on purpose.
+credentials are outside the schema on purpose. The only thing a row says about
+a credential is which side of that boundary it came from: ``pool`` or ``user``.
 """
 
 from __future__ import annotations
@@ -61,6 +62,19 @@ ORIGIN_UNKNOWN = "unknown"
 OUTCOME_SUCCESS = "success"
 OUTCOME_ERROR = "error"
 OUTCOME_ABORTED = "aborted"
+
+#: The wire families a B14 attempt can name. The set is closed and matched by
+#: the storage CHECK constraint, so a new family needs a migration, not a label:
+#: ``native`` is the provider's own request shape (Google's
+#: ``models/{model}:streamGenerateContent`` tool wire today) as opposed to any
+#: OpenAI-compatible ``chat/completions`` endpoint.
+#: Whose credential the call spent. ``pool`` is a platform-owned Provider key
+#: selected from the roster; ``user`` is a key that arrived with this request
+#: only. The pair is a category, never a reference to the key itself, and it is
+#: what separates platform consumption from a customer spending their own
+#: account (#5824 PR-3a).
+CREDENTIAL_POOL = "pool"
+CREDENTIAL_USER = "user"
 
 _PROTOCOLS = frozenset({"responses", "messages", "chat/completions", "native", "unknown"})
 _PRODUCTS = frozenset({"chat", "claw", "b66", "engine", "api", "unknown"})
@@ -422,6 +436,7 @@ class CallRecord:
     estimated_krw: float | None = None
     cost_basis: str = COST_UNKNOWN
     currency: str = "USD"
+    credential_source: str = CREDENTIAL_POOL
     attempts: tuple[AttemptRecord, ...] = ()
 
     def __post_init__(self) -> None:
@@ -450,6 +465,8 @@ class CallRecord:
             raise CallLedgerError("call token source is not a known state")
         if self.cost_basis not in {COST_CONFIGURED, COST_KNOWN_FREE, COST_UNKNOWN}:
             raise CallLedgerError("call cost basis is not a known state")
+        if self.credential_source not in {CREDENTIAL_POOL, CREDENTIAL_USER}:
+            raise CallLedgerError("call credential source is not a known state")
 
         observed = (self.prompt_tokens, self.completion_tokens, self.total_tokens)
         if self.token_source == TOKEN_MEASURED and all(value is None for value in observed):
@@ -555,6 +572,7 @@ class CallRecord:
             "estimated_krw": self.estimated_krw,
             "cost_basis": self.cost_basis,
             "currency": self.currency,
+            "credential_source": self.credential_source,
         }
 
     def public_dict(self) -> dict[str, Any]:
@@ -671,6 +689,7 @@ class LedgerDraft:
         selected_route_id: str | None = None,
         actual_response_model: str | None = None, route_mode: str | None = None,
         fallback_used: bool = False, fallback_depth: int = 0,
+        credential_source: str = CREDENTIAL_POOL,
     ) -> CallRecord:
         prompt, completion, total, reasoning, token_source = token_evidence(usage)
         estimated_usd, estimated_krw, basis = cost_estimate(
@@ -703,5 +722,6 @@ class LedgerDraft:
             prompt_tokens=prompt, completion_tokens=completion, total_tokens=total,
             reasoning_tokens=reasoning, token_source=token_source,
             estimated_usd=estimated_usd, estimated_krw=estimated_krw, cost_basis=basis,
+            credential_source=credential_source,
             attempts=tuple(self.attempts),
         )

@@ -21,6 +21,39 @@ html[data-theme="padiem-glass"] body .app-shell {
    * the page views are `flex: 0 1 auto` and take this literal, which overflowed
    * the document by 10px at every viewport height. */
   --padiem-six-panel-height: calc(100dvh - 110px);
+  /* ONE first-screen origin: the inset that puts the brand line (the eyebrow) and
+   * the hero at the same row in every product surface. It is derived from the band
+   * between the content column and the composer, NOT from the product's own block
+   * height. The two per-product constants this replaces (747px for Chat, 836px for
+   * Claw, because the Claw hero block measures 565px against Chat's 476px) made a
+   * content difference move the shared origin, so the Claw brand line landed
+   * 29.7px below the Chat one on the same screen. A taller product block now changes
+   * only the space under it. Every consumer reads this one value. */
+  --padiem-first-screen-inset: max(12px, calc((100dvh - 747px) / 3));
+}
+
+/* The first screen is one surface. A page opts into it with the layout variant
+ * the shell publishes from the page contract in app.js (`conversation`), so the
+ * hero container, its layout model and its origin are declared here once and a
+ * new page inherits all three instead of adding a product sheet.
+ *
+ * The container is a grid in every product because the theme sheet leaves it a
+ * block sequence: inside a block the brand line sits on a text line box, inside
+ * a grid it is the first row, and the same content started 7.66px lower in Chat
+ * than in Claw at 900x900 and at 820x1180 (measured, identical blocks). Claw
+ * carried its own `display: grid` copy of this decision; it is here now. */
+.app-shell[data-layout-variant="conversation"] #emptyState:not([hidden]) {
+  display: grid;
+}
+
+/* #5634: the greeting and the entry row take the top third of the band between
+ * the content column and the fixed composer. This is the only desktop origin
+ * rule; every product and page reads the token above through the variant. */
+@media (min-width: 641px) {
+  .app-shell[data-layout-variant="conversation"]
+    .conversation:has(#emptyState:not([hidden])) {
+      padding-top: var(--padiem-first-screen-inset);
+    }
 }
 @media (min-width: 1024px) and (max-width: 1439px) {
   html[data-theme="padiem-glass"] body .app-shell {
@@ -73,13 +106,13 @@ html[data-theme="padiem-glass"] body .app-shell {
   }
 }
   /* Calendar/Connectors/Library/Automation/Meeting use the Chat/Claw eyebrow origin:
-   * the same height-relative inset the hero uses, minus the 6px the page header box
-   * adds above its first line, so the brand line lands on the same row at any
-   * viewport height. The previous fixed inset only matched at one height. */
+   * one token, minus the 6px the page header box adds above its first line, so the
+   * brand line lands on the same row as the hero at desktop viewport heights
+   * previous copy of the inset here matched only one height. */
   html[data-theme="padiem-glass"] body .app-shell :is(
     .calendar-view, .connectors-view, .library-view, .automation-view, .meeting-view, .util-view
   ) {
-    padding: calc(clamp(52px, 7.4vh, 88px) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
+    padding: calc(var(--padiem-first-screen-inset) - 7px) var(--padiem-six-panel-pad-x) 36px !important;
   }
   /* The meeting transcript is the page's whole working surface, the same role the
    * composer has in Chat/Claw, so it takes the composer lane: inset 14px from the
@@ -190,7 +223,10 @@ html[data-theme="padiem-glass"] body .sidebar .history-delete:is(:hover, :focus-
  * coordinates and colors while continuing messages inside this frame. */
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    padding-top: clamp(52px,7.4vh,88px) !important;
+    /* The active conversation keeps the first-screen origin instead of carrying a
+     * second copy of it: landing on Home and opening a new Chat used to start the
+     * same empty screen 85px apart. */
+    padding-top: var(--padiem-first-screen-inset) !important;
     background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
     box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
   }
@@ -305,8 +341,10 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
     opacity: .34 !important;
   }
-  /* The composer keeps its original position even during stop/send swaps. */
-  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
+  /* The composer keeps its original position even during stop/send swaps. One
+     rule for the three surfaces that carry it: the Claw copy below was the same
+     value pasted a second time when Claw joined the Chat frame. */
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"],[data-state="claw"]) .composer-wrap {
     bottom: 16px !important;
   }
   html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
@@ -438,9 +476,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-present
     margin: 0 !important;
     min-height: 0 !important;
     padding: 0 !important;
-  }
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
-    bottom: 16px !important;
   }
 }
 /* The card surface, its height and the ON/OFF switch placement are shared by

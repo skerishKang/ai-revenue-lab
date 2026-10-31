@@ -265,3 +265,82 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
         encoding="utf-8"
     )
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("has_ctx", [True, False], ids=["waitUntil", "local_inline_after_response"])
+async def test_worker_drains_ledger_after_asgi_response_and_resets_request_scope(monkeypatch, has_ctx):
+    import ast
+    import sys
+    from types import ModuleType
+    from urllib.parse import urlparse
+    from app.pilot import deferred_writes as deferred
+    from app.pilot import private_runtime_registry
+
+    order, pending = [], []
+    expected = SimpleNamespace(headers={})
+
+    async def write():
+        order.append("write")
+    async def fetch(app, request, env):
+        deferred.enqueue(write, request_id="b14req_worker")
+        order.append("response_constructed")
+        return expected
+    async def registry(env):
+        return None
+
+    asgi = ModuleType("asgi")
+    asgi.fetch = fetch
+    ffi = ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: value
+    monkeypatch.setitem(sys.modules, "asgi", asgi)
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+    monkeypatch.setattr(private_runtime_registry, "ensure_private_registry", registry)
+    tree = ast.parse(WORKER_SRC.read_text(encoding="utf-8"))
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Default")
+    ns = {
+        "WorkerEntrypoint": object, "Any": object, "urlparse": urlparse,
+        "_ENV_KEYS": (), "_apply_env_once": lambda env: None,
+        "_apply_security_headers": lambda response: response, "app": object(),
+    }
+    exec(compile(ast.Module(body=[cls], type_ignores=[]), str(WORKER_SRC), "exec"), ns)
+    worker = ns["Default"]()
+    worker.env = SimpleNamespace()
+    if has_ctx:
+        worker.ctx = SimpleNamespace(waitUntil=pending.append)
+    result = await worker.fetch(SimpleNamespace(url="https://unit.invalid/health", js_object=object()))
+    assert result is expected
+    if has_ctx:
+        assert order == ["response_constructed"]
+        assert len(pending) == 1
+        await pending[0]
+    assert order == ["response_constructed", "write"]
+    assert deferred._CURRENT.get() is None
+
+
+def test_worker_keeps_info_operations_logs_with_existing_runtime_handler(monkeypatch):
+    import io
+    import logging
+    import runpy
+    import sys
+    import types
+    output = io.StringIO()
+    handler = logging.StreamHandler(output)
+    root = logging.getLogger()
+    monkeypatch.setattr(root, "handlers", [handler])
+    monkeypatch.setattr(root, "level", logging.WARNING)
+    workers = types.ModuleType("workers")
+    workers.Response = object
+    workers.WorkerEntrypoint = object
+    main = types.ModuleType("app.main")
+    main.app = object()
+    monkeypatch.setitem(sys.modules, "workers", workers)
+    monkeypatch.setitem(sys.modules, "app.main", main)
+    runpy.run_path(str(WORKER_SRC))
+    for name in ("b14_ledger", "alpha_success"):
+        logger = logging.getLogger(name)
+        monkeypatch.setattr(logger, "level", logging.NOTSET)
+        logger.info(name + " safe synthetic event")
+        logger.debug("debug must stay hidden")
+    assert root.handlers == [handler]
+    assert output.getvalue().splitlines() == [
+        "b14_ledger safe synthetic event", "alpha_success safe synthetic event"]

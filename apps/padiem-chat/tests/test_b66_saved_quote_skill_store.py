@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from app.b66_saved_quote_skill_store import (
-    MAX_SAVED_QUOTE_SKILLS,
+    DEFAULT_SAVED_QUOTE_SKILL_LIST,
     ApprovedSavedQuoteSkillArtifact,
     D1SavedQuoteSkillStore,
     SavedQuoteSkillStoreError,
@@ -226,6 +226,7 @@ class _Statement:
                 fingerprint,
                 version,
                 skill_json,
+                skill_kind,
                 created_at,
                 updated_at,
             ) = self.values
@@ -239,6 +240,7 @@ class _Statement:
                     "skill_fingerprint": fingerprint,
                     "skill_version": version,
                     "skill_json": skill_json,
+                    "skill_kind": skill_kind,
                     "status": "approved",
                     "created_at": created_at,
                     "updated_at": updated_at,
@@ -251,6 +253,7 @@ class _Statement:
                 skill_name,
                 fingerprint,
                 skill_json,
+                skill_kind,
                 updated_at,
                 row_id,
                 user_id,
@@ -266,6 +269,7 @@ class _Statement:
                         skill_name=skill_name,
                         skill_fingerprint=fingerprint,
                         skill_json=skill_json,
+                        skill_kind=skill_kind,
                         status="approved",
                         updated_at=updated_at,
                     )
@@ -298,7 +302,7 @@ class _Statement:
             rows.sort(key=lambda row: row["updated_at"], reverse=True)
             return {
                 "results": [
-                    {k: v for k, v in row.items() if k not in {"user_id", "skill_json"}}
+                    {k: v for k, v in row.items() if k != "user_id"}
                     for row in rows[:limit]
                 ]
             }
@@ -315,6 +319,21 @@ class _D1:
     def prepare(self, sql):
         self.prepared.append(sql)
         return _Statement(self, sql)
+
+
+@pytest.mark.asyncio
+async def test_the_skill_list_honours_the_requested_page_size() -> None:
+    """#5895-C: 20 was a silent ceiling on how many saved skills could be read."""
+    db = _D1()
+    store = D1SavedQuoteSkillStore(db)
+    for index in range(25):
+        await store.put_approved_skill(
+            user_id="usr_owner",
+            workspace_id="ws_one",
+            artifact=_artifact(skill_id=f"saved-skill-{index:02d}"),
+        )
+    own = await store.list_skills(user_id="usr_owner", workspace_id="ws_one", limit=999)
+    assert len(own) == 25
 
 
 @pytest.mark.asyncio
@@ -336,7 +355,6 @@ async def test_d1_store_is_owner_workspace_scoped_and_nondisclosing() -> None:
     )
     assert len(own) == 1
     assert "skill" not in own[0]
-    assert len(own) <= MAX_SAVED_QUOTE_SKILLS
 
     detail = await store.get_skill(
         user_id="usr_owner",

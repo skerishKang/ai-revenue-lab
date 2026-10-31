@@ -1,8 +1,10 @@
 // #4816: unified voice mode toolbar for Chat(B62) and Claw(B54).
-// #5561: the voice waveform and the send arrow share ONE primary action slot
-// (the send button). An empty composer shows the waveform and opens the
-// M2/M3/M4 picker; a composer with text shows the arrow and sends.
-// The M1 microphone stays a separate, smaller control in the same row.
+// Owner 2026-10-31 (A안): the microphone (M1) and the voice waveform picker
+// (M2/M3/M4) are TWO persistent icons in the composer row. The waveform never
+// borrows the send slot, so typing text cannot make it disappear, and the send
+// slot is always the arrow. #5561's empty-composer waveform CTA is retired by
+// that decision: an icon that moves is harder to find than a fixed one.
+// The M1 microphone stays its own control, created by voice-composer.js.
 // Shares one turn controller with the composer; never starts a provider call.
 (function (win, doc) {
   "use strict";
@@ -49,7 +51,6 @@
   let outstandingKey = "";
   let busySeen = false;
   let menuOpen = false;
-  let composing = false;
 
   function composerStatus() {
     const controller = composerAPI && composerAPI.getController && composerAPI.getController();
@@ -151,52 +152,122 @@
     }
   }
 
-  // The voice picker only exists when the product really has one: a live turn
-  // controller and an account whose voice identity the server accepted.
-  // Otherwise the primary action stays the honest send arrow.
-  function voiceAvailable() {
-    return Boolean(liveAPI && typeof liveAPI.create === "function" && key());
+  // The waveform picker is its own control, mounted beside the microphone.
+  // Both icons exist in every state; only what they can do differs, so nobody
+  // has to hunt for an icon that moved because they started typing.
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const waveform = doc.createElement("button");
+  waveform.id = "voiceWaveformButton";
+  waveform.type = "button";
+  waveform.className = "voice-waveform-button";
+  waveform.setAttribute("aria-haspopup", "menu");
+  waveform.setAttribute("aria-expanded", "false");
+  const glyph = doc.createElementNS(SVG_NS, "svg");
+  glyph.setAttribute("class", "voice-waveform-glyph");
+  glyph.setAttribute("aria-hidden", "true");
+  glyph.setAttribute("viewBox", "0 0 24 24");
+  glyph.setAttribute("fill", "none");
+  glyph.setAttribute("focusable", "false");
+  const glyphPath = doc.createElementNS(SVG_NS, "path");
+  glyphPath.setAttribute("d", "M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4");
+  glyphPath.setAttribute("stroke", "currentColor");
+  glyphPath.setAttribute("stroke-width", "2.2");
+  glyphPath.setAttribute("stroke-linecap", "round");
+  glyphPath.setAttribute("stroke-linejoin", "round");
+  glyph.appendChild(glyphPath);
+  waveform.appendChild(glyph);
+  const waveformLabel = doc.createElement("span");
+  waveformLabel.className = "sr-only";
+  waveformLabel.setAttribute("data-locale-key", "voice-mode");
+  waveformLabel.textContent = pickerTitle();
+  waveform.appendChild(waveformLabel);
+  // An inactive control explains itself when pressed, the same rule the
+  // microphone follows. The explanation is spoken, not only hinted.
+  const waveformNotice = doc.createElement("span");
+  waveformNotice.id = "voiceWaveformNotice";
+  waveformNotice.className = "sr-only";
+  waveformNotice.setAttribute("role", "status");
+  waveformNotice.setAttribute("aria-live", "polite");
+  waveformNotice.setAttribute("aria-atomic", "true");
+  const micControl = doc.getElementById("voiceMicButton");
+  if (micControl && micControl.parentNode === actions) {
+    actions.insertBefore(waveform, micControl.nextSibling);
+  } else {
+    actions.insertBefore(waveform, send);
+  }
+  actions.insertBefore(waveformNotice, waveform.nextSibling);
+
+  // Why the picker cannot take a turn right now. The inputs are the ones the
+  // composer already uses to decide a voice turn is possible: the turn
+  // controller, a known account, and the opaque voice identity the server
+  // accepted. Nothing here invents a permission or a tier.
+  function voiceReason() {
+    if (!liveAPI || typeof liveAPI.create !== "function") return "wiring";
+    const status = composerStatus();
+    if (status.authKnown !== true || status.authenticated !== true) return "signin";
+    if (!key()) return "wiring";
+    return "";
   }
 
-  // The primary action is the voice picker only for a composer that can
-  // actually take a voice turn: no text, no request in flight, no open IME
-  // composition. Whitespace alone is still an empty composer.
-  function isVoicePrimaryAction() {
-    if (!voiceAvailable()) return false;
-    if (input.disabled === true) return false;
-    if (composing) return false;
-    return String(input.value || "").trim() === "";
+  function voiceAvailable() {
+    return voiceReason() === "";
+  }
+
+  function voiceReasonText(reason) {
+    if (reason === "signin") {
+      return localeText("voice-unavailable-signin",
+        ko() ? "로그인 후 음성 입력을 사용할 수 있습니다." : "Sign in to use voice input.");
+    }
+    return localeText("voice-unavailable-wiring",
+      ko() ? "음성 입력은 아직 연결되지 않았습니다." : "Voice input is not connected yet.");
   }
 
   function renderWaveform() {
-    send.setAttribute("data-voice-mode", currentMode);
-    syncPrimaryAction();
+    syncControls();
   }
 
-  // One slot, two faces: the waveform while the composer is empty, the arrow
-  // once there is something to send. The slot itself never moves.
-  function syncPrimaryAction() {
-    const voice = isVoicePrimaryAction();
-    const arrow = send.querySelector(".send-arrow-icon");
-    const waveIcon = send.querySelector(".send-waveform-icon");
-    if (arrow) arrow.hidden = voice;
-    if (waveIcon) waveIcon.hidden = !voice;
-    send.dataset.primaryAction = voice ? "voice" : "send";
-    if (voice) {
-      send.setAttribute("aria-haspopup", "menu");
-      send.setAttribute("aria-expanded", menuOpen ? "true" : "false");
-      send.setAttribute("aria-label", pickerTitle());
-      send.setAttribute("title", pickerTitle());
-      send.setAttribute("data-padiem-tooltip", pickerTitle());
-      send.setAttribute("aria-pressed", currentMode === "live" ? "true" : "false");
-      return;
-    }
+  // The faces are <svg>, and an SVG element has no `hidden` IDL property —
+  // assigning one writes a plain JS expando and never touches the content
+  // attribute the CSS keys on. The attribute is what actually moves a face.
+  function setFaceHidden(face, isHidden) {
+    if (!face) return;
+    if (isHidden) face.setAttribute("hidden", "");
+    else face.removeAttribute("hidden");
+  }
+
+  // The send slot keeps one face for good: typing text must never remove an
+  // icon from the row. The waveform SVG still present inside the send button
+  // in index.html is pinned hidden here, so stale markup cannot resurrect the
+  // old swap.
+  function syncControls() {
+    setFaceHidden(send.querySelector(".send-arrow-icon"), false);
+    setFaceHidden(send.querySelector(".send-waveform-icon"), true);
+    send.dataset.primaryAction = "send";
     send.removeAttribute("aria-haspopup");
     send.setAttribute("aria-expanded", "false");
     send.removeAttribute("aria-pressed");
     send.setAttribute("aria-label", sendLabel());
     send.setAttribute("title", sendTitle());
     send.setAttribute("data-padiem-tooltip", sendTitle());
+
+    const reason = voiceReason();
+    const available = reason === "";
+    const copy = available ? pickerTitle() : voiceReasonText(reason);
+    waveform.setAttribute("data-voice-mode", currentMode);
+    waveform.setAttribute(
+      "data-voice-state",
+      !available ? "unavailable" : currentMode === "live" ? "active" : "ready",
+    );
+    // Same rule as the microphone (voice-composer.js): the control stays
+    // pressable and explains itself, rather than becoming a dead button whose
+    // reason only lives in a hover tooltip a phone never shows.
+    waveform.setAttribute("aria-disabled", "false");
+    waveform.setAttribute("aria-pressed", currentMode === "live" ? "true" : "false");
+    waveform.setAttribute("aria-label", copy);
+    waveform.setAttribute("title", copy);
+    waveform.setAttribute("data-padiem-tooltip", copy);
+    waveform.setAttribute("aria-expanded", menuOpen ? "true" : "false");
+    waveformLabel.textContent = pickerTitle();
   }
 
   function escapeHtml(value) {
@@ -206,7 +277,8 @@
 
   function placeMenu() {
     if (!menu || !menuOpen) return;
-    const rect = send.getBoundingClientRect();
+    // Anchored to the waveform control that owns it, not to the send button.
+    const rect = waveform.getBoundingClientRect();
     const top = rect.bottom + 6;
     const left = Math.max(4, Math.min(rect.left, doc.documentElement.clientWidth - menu.offsetWidth - 8));
     menu.style.left = left + "px";
@@ -217,22 +289,34 @@
     }
   }
 
-  function openMenu() {
+  function focusMenuItem(index) {
+    const items = menu ? Array.prototype.slice.call(menu.querySelectorAll('[data-mode]')) : [];
+    if (!items.length) return;
+    const target = Math.max(0, Math.min(index, items.length - 1));
+    items.forEach(function (item, i) {
+      item.setAttribute("tabindex", i === target ? "0" : "-1");
+    });
+    items[target].focus();
+  }
+
+  function openMenu(focusFirst) {
     if (menuOpen) return;
     ensureController();
     syncIdentity();
     menu.hidden = false;
     menuOpen = true;
-    send.setAttribute("aria-expanded", "true");
+    waveform.setAttribute("aria-expanded", "true");
     placeMenu();
     renderItems();
+    if (focusFirst) focusMenuItem(0);
   }
 
-  function closeMenu() {
+  function closeMenu(returnFocus) {
     if (!menuOpen) return;
     menu.hidden = true;
     menuOpen = false;
-    send.setAttribute("aria-expanded", "false");
+    waveform.setAttribute("aria-expanded", "false");
+    if (returnFocus) waveform.focus();
   }
 
   function renderItems() {
@@ -254,8 +338,8 @@
     });
   }
 
-  function selectMode(m) {
-    closeMenu();
+  function selectMode(m, returnFocus) {
+    closeMenu(returnFocus === true);
     ensureController();
     syncIdentity();
     const c = controller;
@@ -287,23 +371,32 @@
     {mode: "tts"},
     {mode: "call"},
   ];
-  menuItems.forEach(function (item) {
+  menuItems.forEach(function (item, index) {
     const div = doc.createElement("div");
     div.className = "voice-mode-menu-item";
+    div.id = "voiceModeMenuItem-" + item.mode;
     div.setAttribute("role", "menuitemradio");
     div.setAttribute("data-mode", item.mode);
     div.setAttribute("aria-checked", "false");
+    // Roving focus: the items are real focus targets, so a keyboard user lands
+    // on them with the arrow keys and reads them with a screen reader.
+    div.setAttribute("tabindex", index === 0 ? "0" : "-1");
     div.textContent = modeLabel(item.mode);
     menu.appendChild(div);
   });
   doc.body.appendChild(menu);
 
-  // The primary action slot: with an empty composer it opens the voice mode
-  // picker, with text it is the ordinary send button.
-  send.addEventListener("click", function (event) {
-    if (!isVoicePrimaryAction()) return;
+  // The waveform button owns the picker now. The send button is only ever the
+  // send button, so typing text can neither hide an icon nor change what a
+  // press means.
+  waveform.addEventListener("click", function (event) {
     event.preventDefault();
-    if (menuOpen) closeMenu(); else openMenu();
+    const reason = voiceReason();
+    if (reason !== "") {
+      waveformNotice.textContent = voiceReasonText(reason);
+      return;
+    }
+    if (menuOpen) closeMenu(true); else openMenu(true);
   });
 
   menu.addEventListener("click", function (event) {
@@ -314,16 +407,59 @@
     selectMode(item.getAttribute("data-mode"));
   });
 
+  // Keyboard operation for the picker: arrows move, Home/End jump, Enter or
+  // Space picks, Escape closes and returns focus to the button that opened it.
+  menu.addEventListener("keydown", function (event) {
+    const items = Array.prototype.slice.call(menu.querySelectorAll('[data-mode]'));
+    if (!items.length) return;
+    const current = items.indexOf(doc.activeElement);
+    const key = event.key;
+    function focusAt(index) {
+      items.forEach(function (item, i) {
+        item.setAttribute("tabindex", i === index ? "0" : "-1");
+      });
+      items[index].focus();
+    }
+    if (key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMenu(true);
+      return;
+    }
+    if (key === "ArrowDown" || key === "ArrowUp" || key === "Home" || key === "End") {
+      event.preventDefault();
+      let next;
+      if (key === "Home") next = 0;
+      else if (key === "End") next = items.length - 1;
+      else if (key === "ArrowDown") next = current < 0 ? 0 : (current + 1) % items.length;
+      else next = current <= 0 ? items.length - 1 : current - 1;
+      focusAt(next);
+      return;
+    }
+    if ((key === "Enter" || key === " " || key === "Spacebar") && current >= 0) {
+      event.preventDefault();
+      // selectMode closes the picker and puts focus back on the waveform
+      // button, so the keyboard user stays where the interaction started.
+      selectMode(items[current].getAttribute("data-mode"), true);
+    }
+  });
+
   function syncIdentityAndState() {
     syncIdentity();
     renderWaveform(); renderItems();
   }
 
   win.addEventListener("click", function (event) {
-    if (menuOpen && menu && !menu.contains(event.target) && event.target !== send) closeMenu();
+    if (!menuOpen || !menu) return;
+    // A real click on a control lands on an icon inside the button, not on the
+    // button element itself. Comparing identity here closed the picker in the
+    // same gesture that opened it, so the whole surface is the exclusion.
+    if (menu.contains(event.target) ||
+        waveform.contains(event.target) || event.target === waveform) return;
+    closeMenu();
   });
   win.addEventListener("keydown", function (event) {
-    if (menuOpen && event.key === "Escape") closeMenu();
+    if (menuOpen && event.key === "Escape") closeMenu(true);
   });
   // A new microphone run is a new turn authority. Starting one clears the
   // cancelled/revoked window left by the previous end, mute or cancel, while the
@@ -334,12 +470,8 @@
   win.addEventListener("padiem:auth-state", syncIdentityAndState);
   win.addEventListener("padiem:voice-identity", syncIdentityAndState);
   win.addEventListener("padiem:localechange", syncIdentityAndState);
-  // The composer owns the input value; this module only reads it. Every
-  // composer change (typing, IME, paste, a committed voice transcript, a
-  // cleared composer) re-reads the value and moves the slot.
-  input.addEventListener("input", syncPrimaryAction);
-  input.addEventListener("compositionstart", function () { composing = true; syncPrimaryAction(); });
-  input.addEventListener("compositionend", function () { composing = false; syncPrimaryAction(); });
+  // No composer-input listener is needed any more: which icons exist and what
+  // they can do no longer depends on the text in the box (Owner 2026-10-31).
   if (shell && win.MutationObserver) {
     new win.MutationObserver(syncIdentityAndState).observe(shell, {attributes: true, attributeFilter: ["data-state"]});
   }
@@ -402,10 +534,11 @@
     resumeTurn: resumeTurn,
     selectMode: selectMode,
     closeMenu: closeMenu,
-    // #5561: the primary action slot is shared by the voice waveform and the
-    // send arrow, so the composer authority asks this module for the state.
-    isVoicePrimaryAction: isVoicePrimaryAction,
-    syncPrimaryAction: syncPrimaryAction,
+    // Owner 2026-10-31: the waveform is its own control, so there is no
+    // "primary action" question to answer any more. `syncControls` re-reads
+    // the account and voice availability; the composer may call it freely.
+    syncControls: syncControls,
+    isVoiceAvailable: voiceAvailable,
   };
   renderWaveform();
 })(window, document);

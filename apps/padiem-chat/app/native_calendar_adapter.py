@@ -174,8 +174,11 @@ async def execute_native_calendar_plan(
 
     if parsed.op == "read":
         start_date, end_date, timezone_name, limit = _read_args(parsed.args)
+        # #2952: the chat read answers with the asking user's own appointments.
+        # The workspace is the tenant, so it alone must never be the read scope.
         appointments = await store.list_appointments(
             workspace_id,
+            owner_id=uid,
             start_date=date.fromisoformat(start_date),
             end_date=date.fromisoformat(end_date),
             limit=limit,
@@ -224,7 +227,7 @@ async def execute_native_calendar_plan(
     )
 
     appointment_id = desired.appointment_id
-    existing = await store.get_appointment(workspace_id, appointment_id)
+    existing = await store.get_appointment(workspace_id, appointment_id, owner_id=uid)
     if existing is not None:
         if existing.owner_id != uid or not _payloads_match(existing, desired):
             raise NativeCalendarAdapterError("conflict", "native calendar create duplicate payload mismatch", status_code=409)
@@ -238,7 +241,9 @@ async def execute_native_calendar_plan(
     try:
         saved = await store.add_appointment(desired)
     except Exception as exc:
-        existing = await store.get_appointment(workspace_id, appointment_id)
+        existing = await store.get_appointment(
+            workspace_id, appointment_id, owner_id=uid
+        )
         if existing is not None:
             if existing.owner_id != uid or not _payloads_match(existing, desired):
                 raise NativeCalendarAdapterError("conflict", "native calendar create duplicate payload mismatch", status_code=409) from exc

@@ -1,0 +1,52 @@
+# PADIEM B14 on COM2, without Cloudflare Workers.
+#
+# This is a TEMPLATE. It becomes a live unit only when the authorized COM2
+# operator installs and starts it; nothing in this repository installs, enables,
+# starts, or restarts it, and shipping this file is not a deployment.
+#
+# Runtime identity: a static service account, exactly like padiem-p01. The
+# DynamicUser + SupplementaryGroups pair failed on the COM2 host with 216/217
+# (a group lookup for a transient account that does not exist when the unit is
+# installed), so the account is created once by the operator and named here.
+# No credential value appears in ExecStart, in this file, or in any argument
+# list — systemd reads the names from EnvironmentFile and the app reads values
+# from the secret directory.
+
+[Unit]
+Description=PADIEM B14 (korean-ai-platform) on COM2
+Documentation=https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/operations/B14_COM2_RUNBOOK.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=padiem-b14
+Group=padiem-b14
+WorkingDirectory=/opt/padiem/b14/app
+# The two names this unit knows about are B14_UPSTREAM_MODE and B14_UPSTREAM_URL,
+# plus the deployment configuration. Values are never stored in this file.
+EnvironmentFile=-/opt/padiem/b14/env/b14.env
+Environment=B14_HOST=127.0.0.1
+Environment=B14_PORT=8789
+Environment=B14_CALL_LEDGER_PATH=/opt/padiem/b14/ledger/b14-call-ledger.db
+Environment=B14_SECRET_DIR=/opt/padiem/b14/secrets
+# Structure logs go to stdout and are collected by journald. To keep a rotated
+# file as well, install 20-log-to-file.conf.example as a drop-in; the matching
+# rotation policy is logrotate.conf.example. This unit declares no log path the
+# application does not actually use.
+# Loopback only. Reachability outside this host is the Tunnel ingress decision,
+# recorded separately from this unit.
+ExecStart=/opt/padiem/b14/venv/bin/python /opt/padiem/b14/app/asgi.py
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/padiem/b14/ledger /opt/padiem/b14/logs
+LimitNOFILE=8192
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

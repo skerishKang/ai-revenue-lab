@@ -3,8 +3,9 @@
 One row per canonical PC device. The Oracle/COM2 Mesh executor reports the
 device's MeshCentral connection on its existing authenticated poll; the Chat
 server itself derives the canonical device id from the deployment ownership
-map, resolves the device's current Broker credential generation and stamps its
-own receipt time. No request value becomes a device identity, an owner or a
+map and stamps its own receipt time. Broker generation is retained when
+resolved; requirement 6 permits a Mesh-only receipt with source='mesh' and
+NULL generation, without requiring Broker registration. No request value becomes a device identity, an owner or a
 generation.
 
 The row is one ONLINE evidence kind for the canonical local-access authority
@@ -47,14 +48,14 @@ def _generation(value: Any) -> int:
 class MeshDevicePresenceStore(Protocol):
     async def upsert(
         self, *, device_id: str, connected: bool, received_at: datetime,
-        credential_generation: int,
+        credential_generation: int | None, source: str = "broker",
     ) -> bool: ...
 
     async def load(self, device_id: str) -> dict[str, Any] | None: ...
 
 
 class D1MeshDevicePresenceStore:
-    """Cloudflare D1 adapter over ``mesh_device_presence`` (migration 067)."""
+    """Cloudflare D1 adapter over ``mesh_device_presence`` (migrations 067 + 070)."""
 
     def __init__(self, db: Any):
         if db is None:
@@ -75,21 +76,24 @@ class D1MeshDevicePresenceStore:
 
     async def upsert(
         self, *, device_id: str, connected: bool, received_at: datetime,
-        credential_generation: int,
+        credential_generation: int | None, source: str = "broker",
     ) -> bool:
         device = _device(device_id)
         if type(connected) is not bool:
             raise MeshDevicePresenceStoreError("connected must be a boolean")
         stamp = _stamp(received_at)
-        generation = _generation(credential_generation)
+        if source not in ("broker", "mesh"):
+            raise MeshDevicePresenceStoreError("presence source invalid")
+        generation = (None if source == "mesh" and credential_generation is None
+                      else _generation(credential_generation))
         await self._run(
             "INSERT INTO mesh_device_presence "
-            "(device_id, connected, received_at, credential_generation) "
-            "VALUES (?, ?, ?, ?) "
+            "(device_id, connected, received_at, credential_generation, source) "
+            "VALUES (?, ?, ?, ?, ?) "
             "ON CONFLICT(device_id) DO UPDATE SET "
             "connected=excluded.connected, received_at=excluded.received_at, "
-            "credential_generation=excluded.credential_generation",
-            device, 1 if connected else 0, stamp, generation,
+            "credential_generation=excluded.credential_generation, source=excluded.source",
+            device, 1 if connected else 0, stamp, generation, source,
         )
         stored = await self.load(device)
         return (
@@ -97,12 +101,13 @@ class D1MeshDevicePresenceStore:
             and stored["connected"] is connected
             and stored["received_at"] == stamp
             and stored["credential_generation"] == generation
+            and stored["source"] == source
         )
 
     async def load(self, device_id: str) -> dict[str, Any] | None:
         device = _device(device_id)
         row = await self._first(
-            "SELECT device_id, connected, received_at, credential_generation "
+            "SELECT device_id, connected, received_at, credential_generation, source "
             "FROM mesh_device_presence WHERE device_id=?",
             device,
         )
@@ -110,6 +115,7 @@ class D1MeshDevicePresenceStore:
             return None
         connected = row.get("connected")
         generation = row.get("credential_generation")
+        source = row.get("source")
         received_at = row.get("received_at")
         if (
             row.get("device_id") != device
@@ -117,8 +123,9 @@ class D1MeshDevicePresenceStore:
             or type(connected) is not int
             or not isinstance(received_at, str)
             or not received_at
-            or type(generation) is not int
-            or not 1 <= generation <= _MAX_GENERATION
+            or source not in ("broker", "mesh")
+            or not (source == "mesh" and generation is None or
+                    type(generation) is int and 1 <= generation <= _MAX_GENERATION)
         ):
             return None
         return {
@@ -126,6 +133,7 @@ class D1MeshDevicePresenceStore:
             "connected": connected == 1,
             "received_at": received_at,
             "credential_generation": generation,
+            "source": source,
         }
 
 

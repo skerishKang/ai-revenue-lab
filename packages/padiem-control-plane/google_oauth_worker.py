@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -13,6 +14,7 @@ from google_oauth_access_lease import (
     GoogleOAuthAccessLeaseRuntime,
 )
 from google_oauth_persisted_store import CloudflareDurableGoogleOAuthStore
+from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
 from google_oauth_ingress_runtime import (
     CloudflareGoogleOAuthDestinationVerificationPort,
     CloudflareGoogleOAuthTokenExchangePort,
@@ -378,6 +380,12 @@ class GoogleOAuthDurableObject(DurableObject):
 class Default(WorkerEntrypoint):
     """Private Service Binding gateway; no public HTTP route is configured."""
 
+    # #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Only the
+    # read-only connector truth the Chat host calls; everything else stays on
+    # the binding, and without the secret the door is not registered at all.
+    RPC_INGRESS_SECRET_BINDING = "PADIEM_GOOGLE_STATE_RPC_INGRESS_SECRET"
+    RPC_INGRESS_METHODS = frozenset({"workspace_connector_state"})
+
     def _authority_ref(self) -> str:
         value = getattr(self.env, "GOOGLE_OAUTH_AUTHORITY_REF", _AUTHORITY_REF_FALLBACK)
         if not isinstance(value, str) or value != _AUTHORITY_REF_FALLBACK:
@@ -426,11 +434,31 @@ class Default(WorkerEntrypoint):
         return await self._stub().disconnect_b66_drive_full(payload)
 
     async def fetch(self, request):
+        secret = await resolve_ingress_secret(
+            getattr(self.env, self.RPC_INGRESS_SECRET_BINDING, None)
+        )
+        if secret is not None:
+            handled = await handle_internal_rpc(
+                request,
+                secret=secret,
+                allowed_methods=self.RPC_INGRESS_METHODS,
+                dispatcher=self,
+            )
+            if handled is not None:
+                status, payload, headers = handled
+                return Response(
+                    json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+                    status=status,
+                    headers=headers,
+                )
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
 GOOGLE_OAUTH_PRIVATE_STATE_WORKER_SOURCE = True
+INTERNAL_RPC_HTTPS_INGRESS = True
+INTERNAL_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
+INTERNAL_RPC_HTTPS_INGRESS_METHODS = ("workspace_connector_state",)
 SQLITE_BACKED_DURABLE_OBJECT = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PUBLIC_FETCH = False

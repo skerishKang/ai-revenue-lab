@@ -432,7 +432,7 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
     # Old 128KiB pilot cap rejected this input despite B14/Core supporting it.
     runtime = FakeRuntime(value=result())
     service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
-    raw_user_text = ("한글 긴 모델 입력 " * 14000) + "최종"
+    raw_user_text = ("한글 긴 모델 입력 " * 112_000) + "최종"
     payload = valid_payload()
     payload["messages"] = [{"role": "user", "content": raw_user_text}]
     raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -446,13 +446,13 @@ async def test_model_execute_accepts_long_unicode_payload_before_provider_withou
 
 
 def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> None:
-    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
+    assert MAX_REQUEST_BODY_BYTES == 1024 * 1024
     # #4379: the model routes carry no PADIEM request body total.
     assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES is None
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     # Three model-orchestration paths share the existing 6MB model ingress;
-    # all unrelated Engine routes continue using their original 128KiB.
+    # all unrelated Engine routes retain their own 1MiB bounded guard.
     assert "EXECUTE_PATH, ORCHESTRATE_PATH," in worker
     assert "ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH," in worker
     assert "else MAX_REQUEST_BODY_BYTES" in worker

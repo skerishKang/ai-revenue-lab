@@ -101,15 +101,16 @@ def open_guidance(page):
 
 
 def open_directory(page):
-    # The composer's small connection control is the visible entry above the
-    # composer, so the panel is opened through it.
-    page.locator("#composerPcStatus").click()
+    # #5573 step 1 (2026-10-29 redesign): the composer's small connection
+    # control opens the one connect flow now, not this panel. The panel keeps
+    # its own toggle, and the guidance contracts below are unchanged.
+    page.evaluate("document.getElementById('clawDeviceManagerToggle').click()")
     page.locator("#clawDeviceManagerList li").first.wait_for(timeout=5000)
 
 
 def open_directory_without_rows(page):
     """Open the directory when it is expected to answer with no rows at all."""
-    page.locator("#composerPcStatus").click()
+    page.evaluate("document.getElementById('clawDeviceManagerToggle').click()")
     page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for(timeout=5000)
 
 
@@ -240,17 +241,21 @@ def test_escape_closes_and_leaving_claw_hides_guidance(browser, server):
 
 
 def test_korean_copy_never_implies_execution_authority(browser, server):
-    """'Connected' must not read as 'work can run now'."""
+    """'Connected' must not read as 'work can run now'; the real contract is
+    the registered folder scope plus the backup, with one check for sends."""
     page, errors = open_claw(browser, server)
     route_directory(page, {"body": json.dumps(payload([]))})
     open_guidance(page)
     guide = page.locator("#clawDeviceGuidancePanel").inner_text()
     # The removed claim must be gone.
     assert "지금 작업을 진행할 수 있는" not in guide
-    # Connection status and execution authority are stated as separate things.
-    assert "실행 권한이 아닙니다" in guide
-    assert "제품별 권한" in guide
-    assert "별도의 승인" in guide
+    # The false per-task approval claim is gone: work runs inside the
+    # registered folder scope, and only an outward send asks once.
+    assert "별도의 승인" not in guide
+    assert "작업마다" not in guide
+    assert "등록한 폴더 범위" in guide
+    assert "보내기 전에 한 번 확인" in guide
+    assert "자동으로 백업" in guide
     assert "실행 권한을 부여하지 않습니다" in guide
     # The desktop install/registration path is not advertised as available now.
     assert "정식 공개 전" in guide
@@ -267,13 +272,14 @@ def test_english_copy_never_implies_execution_authority(browser, server):
     page.evaluate("() => { document.documentElement.lang = 'en'; }")
     page.wait_for_function(
         "() => document.querySelector('#clawDeviceGuidancePanel')"
-        ".innerText.includes('not execution authority')"
+        ".innerText.includes('grants no execution authority')"
     )
     guide = page.locator("#clawDeviceGuidancePanel").inner_text()
     assert "can run work now" not in guide
-    assert "not execution authority" in guide
-    assert "product-specific permission" in guide
-    assert "separate approval" in guide
+    assert "grants no execution authority" in guide
+    assert "separate approval" not in guide
+    assert "folders you registered" in guide
+    assert "asks once before sending" in guide
     assert "not publicly available yet" in guide
     assert not errors, errors
     page.close()
@@ -293,7 +299,7 @@ def test_language_switch_keeps_zero_network_and_no_authority(browser, server):
     page.evaluate("() => { document.documentElement.lang = 'ko'; }")
     page.wait_for_function(
         "() => document.querySelector('#clawDeviceGuidancePanel')"
-        ".innerText.includes('실행 권한이 아닙니다')"
+        ".innerText.includes('실행 권한을 부여하지 않습니다')"
     )
     # Still exactly the one directory read, no selection, nothing persisted.
     assert requests == ["GET"]

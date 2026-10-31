@@ -125,7 +125,8 @@ async def custom_credential_status(request: Request):
             503,
         )
     return JSONResponse(
-        {"ok": True, "credentials": credentials, "providers": _provider_options()},
+        {"ok": True, "credentials": credentials, "providers": _provider_options(),
+         **({"byok_engine_enabled": True} if getattr(getattr(request.app.state, "settings", None), "byok_via_b14", False) else {})},
         headers=HEADERS,
     )
 
@@ -369,3 +370,51 @@ async def custom_credential_test(request: Request):
         },
         headers=HEADERS,
     )
+
+
+async def _detect_request(request, *, register=False):
+    uid = await _owner(request)
+    if not uid:
+        return _error("authentication_required", "로그인이 필요합니다.", 401)
+    if request.query_params:
+        return _error("custom_credential_request_invalid", "요청 형식이 올바르지 않습니다.", 422)
+    client, store = _client(request), _store(request)
+    if client is None or (register and store is None):
+        return _unavailable()
+    raw = await _read_json_object(request)
+    if isinstance(raw, JSONResponse):
+        return raw
+    allowed = {"key", "base_url", "provider", "model"} if register else {"key", "base_url"}
+    if "key" not in raw or set(raw) - allowed:
+        return _error("custom_credential_request_invalid", "요청 형식이 올바르지 않습니다.", 422)
+    try:
+        key = validate_custom_api_key(raw.get("key"))
+    except ValueError:
+        return _error("custom_key_invalid", "키 형식을 확인하거나 고급 입력을 이용해 주세요.", 422)
+    from .byok_client import detect_byok
+    # Registration re-verifies the result instead of trusting a browser's
+    # verified flag, endpoint, provider or model. No temporary key store.
+    result = await detect_byok(client, key=key, base_url=raw.get("base_url"))
+    if not register:
+        return JSONResponse(result, headers=HEADERS)
+    if not result["verified"]:
+        return JSONResponse({"ok": False, **result}, status_code=422, headers=HEADERS)
+    provider = result["provider"]
+    model = raw.get("model", result["models"][0])
+    if (raw.get("provider", provider) != provider or model not in result["models"]):
+        return _error("byok_detection_changed", "공급자·모델을 다시 확인해 주세요.", 409)
+    try:
+        credential = await store.save(user_id=uid, provider_id=provider,
+                                       api_key=key, endpoint=result["endpoint"])
+    except Exception:
+        return _error("custom_credential_save_failed", "키를 저장하지 못했습니다. 고급 입력을 이용해 주세요.", 503)
+    return JSONResponse({"ok": True, "credential": credential,
+        "selection": {"provider": provider, "model": model}, **result}, headers=HEADERS)
+
+
+async def byok_detect(request):
+    return await _detect_request(request)
+
+
+async def byok_register(request):
+    return await _detect_request(request, register=True)

@@ -39,12 +39,16 @@ from types import SimpleNamespace
 
 from kagent.pc_query_adapter import (
     CHAT_PC_QUERY_AGENT_ID,
+    PC_DELETE_FILE_TOOL_ID,
     PC_DRIVES_TOOL_ID,
     PC_LIST_FILES_TOOL_ID,
+    PC_MOVE_FILE_TOOL_ID,
     PC_READ_FILE_TOOL_ID,
+    PC_WRITE_FILE_TOOL_ID,
     StructuredPCQueryStepDriver,
     build_pc_query_product_contract,
     pc_drives_tool_spec,
+    pc_write_file_tool_spec,
     plan_step_arguments,
 )
 
@@ -355,3 +359,121 @@ def test_the_pc_files_plan_keeps_its_shared_target_without_a_hint(monkeypatch):
     assert request.tool_arguments == {}
     # The recorder replaces the runner, so the tool itself is never called here.
     assert tool.calls == []
+
+
+class SyntheticWriteTool:
+    """The write tool, executed by the real Core ToolRuntime, but without a PC."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict] = []
+
+    async def __call__(self, arguments):
+        self.calls.append(dict(arguments))
+        return {"ok": True, "path": arguments["path"], "backed_up": True}
+
+
+def _write_service(*, agent_id: str, tool: SyntheticWriteTool, path: str, content: str):
+    """The Engine's own authority construction, wired for one write step.
+
+    Nothing here is a stub of the authority: the binding, the registry snapshot
+    and the ``TrustedToolAuthority`` are built from the same product contract the
+    running Engine builds, so what this proves is the real creation path.
+    """
+    contract = build_pc_query_product_contract(app_id=CHAT_APP_ID, agent_id=agent_id)
+    tool_runtime = ToolRuntime()
+    tool_runtime.register(pc_write_file_tool_spec(), tool)
+    binding = EngineToolBinding(
+        app_id=CHAT_APP_ID,
+        tool_runtime=tool_runtime,
+        registry=ToolRegistrySnapshot.from_entries(contract.registry_entries),
+        authorities={
+            agent_id: TrustedToolAuthority(
+                canonical_agent_id=agent_id,
+                definition=contract.definition,
+                compiled=contract.compiled,
+                authorization=contract.authorization,
+            )
+        },
+        authorization_provider=None,
+        resource_policy=ToolResourcePolicy(),
+    )
+
+    async def select_step(*, context, compiled_profile, observations):
+        if not observations:
+            return {
+                "action": "tool",
+                "tool_id": PC_WRITE_FILE_TOOL_ID,
+                "arguments": {"path": path, "content": content},
+            }
+        return {"action": "complete", "answer": "파일이 저장됐습니다"}
+
+    def factory(model_id, model_policy, task_type, optimize_for, *, tool_arguments=None):
+        return StructuredPCQueryStepDriver(
+            select_step=select_step,
+            static_arguments=plan_step_arguments(tool_arguments, "write_file"),
+        )
+
+    return AdmissionBoundOrchestrationEngineService(
+        runtime_factory=lambda _app_id: UnusedModelRuntime(),
+        b14_service_bound=True,
+        admission_adapter=AllowingAdapter(),
+        idempotency_adapter=ReplayAdapter(),
+        tool_binding_resolver=lambda _app_id: binding if _app_id == CHAT_APP_ID else None,
+        pc_query_step_driver_factory=factory,
+    )
+
+
+def _write_plan(agent_id: str) -> dict:
+    return {
+        "agent_id": agent_id,
+        "steps": [
+            {
+                "step_id": "write_file",
+                "objective": "Create or replace one file in the approved folder",
+                "tool_id": PC_WRITE_FILE_TOOL_ID,
+            },
+            {
+                "step_id": "move_file",
+                "objective": "Move one file inside the approved folder",
+                "tool_id": PC_MOVE_FILE_TOOL_ID,
+            },
+            {
+                "step_id": "delete_file",
+                "objective": "Delete one file already copied to the backup folder",
+                "tool_id": PC_DELETE_FILE_TOOL_ID,
+            },
+        ],
+    }
+
+
+def test_a_write_step_reaches_its_handler_through_the_engine_authority(monkeypatch):
+    """#5994: the write lane runs to its handler with no wait in the turn.
+
+    The captured request is not the evidence here — the handler call is. A run
+    that paused for approval could not report 200 either: this service is built
+    without an approval decision verifier, so Core's pause raises
+    `approval_verification_unavailable` as a 503. A green 200 with the bytes
+    delivered is therefore only reachable on the non-pausing path.
+    """
+    tool = SyntheticWriteTool()
+    service = _write_service(
+        agent_id=CHAT_PC_QUERY_AGENT_ID, tool=tool,
+        path="견적/2026-10.txt", content="합계 1,200,000원",
+    )
+    payload = _payload(device_id=None)
+    payload["agent_plan"] = _write_plan(CHAT_PC_QUERY_AGENT_ID)
+
+    response = _run(monkeypatch, service, payload, recorder=False)
+
+    assert response.status_code == 200, response.body
+    assert tool.calls == [{"path": "견적/2026-10.txt", "content": "합계 1,200,000원"}], (
+        "the write step never reached its handler through the Engine authority"
+    )
+    # The turn ran through to its answer. These three fields are the "no wait"
+    # half of the claim stated exactly: no pause was raised, no continuation was
+    # staged, and the state machine reached completed on its own.
+    body = response.body["orchestration"]
+    assert body["approval_pause"] is None, body
+    assert body["continuation_state"] is None, body
+    assert body["state_machine"]["current_state"] == "completed", body
+    assert "파일이 저장됐습니다" in json.dumps(body, ensure_ascii=False), body

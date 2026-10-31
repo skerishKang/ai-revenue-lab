@@ -20,9 +20,12 @@ from enum import Enum
 import re
 
 
-# Structural bounds shared with document normalization. These mirror the
-# canonical normalization ceilings so a whole document body can always be
-# projected as one document-level segment.
+# #5734 stage 2: a document's length — how many characters a segment holds, how
+# many segments a document carries — is capacity, not integrity, so Core no
+# longer refuses either. The symbols stay importable: `MAX_SEGMENT_TEXT_CHARS`
+# still sizes the isolated-parser transport ceiling, and `MAX_DOCUMENT_SEGMENTS`
+# still bounds one encoded wire list. What the checks below keep enforcing is the
+# shape of a segment: non-empty text, a real integer order, a valid locator.
 MAX_SEGMENT_TEXT_CHARS = 40_000
 MAX_DOCUMENT_SEGMENTS = 512
 MAX_DOCUMENT_WARNINGS = 32
@@ -201,7 +204,7 @@ class DocumentLocator:
 
 @dataclass(frozen=True, slots=True, repr=False)
 class DocumentSegment:
-    """One bounded piece of document text with optional locator provenance.
+    """One piece of document text with optional locator provenance.
 
     The body text is excluded from ``repr`` and from the public projection;
     only character count and ordering are safe to surface.
@@ -216,11 +219,6 @@ class DocumentSegment:
             raise DocumentNormalizationError(
                 "invalid_segment_text",
                 "Segment text must be a non-empty string.",
-            )
-        if len(self.text) > MAX_SEGMENT_TEXT_CHARS:
-            raise DocumentNormalizationError(
-                "segment_text_limit",
-                "Segment text exceeds the bounded character limit.",
             )
         if isinstance(self.order, bool) or not isinstance(self.order, int):
             raise DocumentNormalizationError(

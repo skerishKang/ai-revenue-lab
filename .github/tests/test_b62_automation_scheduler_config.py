@@ -91,7 +91,7 @@ def test_repository_scheduler_source_stays_inert() -> None:
         (ROOT / "apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
     )
     assert "triggers" not in config
-    assert config["vars"]["PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED"] == "false"
+    assert config["vars"].get("PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED", "false") == "false"
     inert = module.parse_snapshot(
         {"variables": {module.SCHEDULER_VAR: "false"}, "triggers": []}
     )

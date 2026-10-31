@@ -9,13 +9,37 @@ class ConfigError(ValueError):
     pass
 
 
-def _normalize_base_url(value: str, *, https_only: bool = False, root_only: bool = False) -> str:
+#: Hosts the explicit local-development flag may serve over plain loopback
+#: HTTP (#5573 stage 2). Nothing else ever reaches this set: production
+#: validation stays https-only, and the Worker binding path never sets
+#: `local_dev` (see app/worker_config.py — it calls Settings.from_values
+#: without the flag, so the default False holds on Cloudflare).
+LOCAL_DEV_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def _normalize_base_url(
+    value: str,
+    *,
+    https_only: bool = False,
+    root_only: bool = False,
+    allow_loopback_http: bool = False,
+) -> str:
     raw = value.strip()
     parsed = urlsplit(raw)
     allowed = {"https"} if https_only else {"http", "https"}
     if parsed.scheme not in allowed:
-        scheme_label = "https" if https_only else "http or https"
-        raise ConfigError(f"base URL must use {scheme_label}")
+        # The one exception: a loopback HTTP base the caller explicitly opted
+        # into via PADIEM_LOCAL_DEV=1. Same strictness otherwise — a non-
+        # loopback http:// base is still refused even with the flag set.
+        if (
+            allow_loopback_http
+            and parsed.scheme == "http"
+            and (parsed.hostname or "") in LOCAL_DEV_LOOPBACK_HOSTS
+        ):
+            pass
+        else:
+            scheme_label = "https" if https_only else "http or https"
+            raise ConfigError(f"base URL must use {scheme_label}")
     if not parsed.hostname:
         raise ConfigError("base URL must include a host")
     if parsed.username or parsed.password:
@@ -85,7 +109,13 @@ def _secret_list(value: object, *, name: str, minimum: int = 32) -> tuple[str, .
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
+    # #5784: "binding" (default) reaches the Worker through the Service Binding;
+    # "https" reaches the same contract over the Tunnel host. Nothing else about
+    # the call changes, including the caller proof.
+    b14_upstream_mode: str = "binding"
     b66_quote_base_url: str | None = None
+    file_lane_origin: str | None = None
+    file_lane_ticket_secret: str | None = field(default=None, repr=False)
     timeout_seconds: float = 600.0
     completed_timeout_seconds: float = 600.0
     live_enabled: bool = False
@@ -93,7 +123,7 @@ class Settings:
     firecrawl_api_key: str | None = field(default=None, repr=False)
     daum_rest_api_key: str | None = field(default=None, repr=False)
     tinyfish_api_key: str | None = field(default=None, repr=False)
-    web_timeout_seconds: float = 15.0
+    web_timeout_seconds: float = 30.0
     auth_mode: str = "off"
     public_base_url: str | None = None
     google_client_id: str | None = field(default=None, repr=False)
@@ -101,6 +131,7 @@ class Settings:
     session_secret: str | None = field(default=None, repr=False)
     # #5121: PADIEM Custom credentials use their own encryption secret and key
     # purpose. The previous/legacy rings exist only for staged migration.
+    byok_via_b14: bool = False
     custom_key_secret: str | None = field(default=None, repr=False)
     custom_key_previous_secrets: tuple[str, ...] = field(default=(), repr=False)
     custom_key_legacy_session_secrets: tuple[str, ...] = field(default=(), repr=False)
@@ -115,6 +146,10 @@ class Settings:
     user_burst_limit: int = 8
     user_daily_limit: int = 100
     global_daily_limit: int = 1000
+    # #5573 stage 2: explicit local-run opt-in (PADIEM_LOCAL_DEV=1). Enables
+    # loopback HTTP for the public base URL and the same-origin expectation.
+    # Default False — every production deployment keeps the https-only rules.
+    local_dev: bool = False
 
     @classmethod
     def from_values(
@@ -128,12 +163,13 @@ class Settings:
         firecrawl_api_key: object = None,
         daum_rest_api_key: object = None,
         tinyfish_api_key: object = None,
-        web_timeout_seconds: object = 15.0,
+        web_timeout_seconds: object = 30.0,
         auth_mode: object = "off",
         public_base_url: object = None,
         google_client_id: object = None,
         google_client_secret: object = None,
         session_secret: object = None,
+        byok_via_b14: object = False,
         custom_key_secret: object = None,
         custom_key_previous_secrets: object = None,
         custom_key_legacy_session_secrets: object = None,
@@ -146,13 +182,53 @@ class Settings:
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
         b66_quote_base_url: object = None,
+        file_lane_origin: object = None,
+        file_lane_ticket_secret: object = None,
+        # #5784: appended last so every existing positional caller is untouched.
+        b14_upstream_mode: object = None,
+        b14_upstream_url: object = None,
+        # #5573 stage 2: also appended last — the local-run opt-in.
+        local_dev: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
             raise ConfigError("PADIEM_CHAT_RUNTIME_MODE must be mock or b14")
 
+        # The flag is deliberately narrow: "1"/"true" enable, "0"/"false"/unset
+        # disable, and anything else raises so a typo never silently flips a
+        # production run into the loopback allowance (or a local run off it).
+        raw_local_dev = "" if local_dev is None else str(local_dev).strip().lower()
+        if raw_local_dev in {"", "0", "false"}:
+            local = False
+        elif raw_local_dev in {"1", "true"}:
+            local = True
+        else:
+            raise ConfigError("PADIEM_LOCAL_DEV must be 1 or 0")
+
         raw_base = "" if b14_base_url is None else str(b14_base_url).strip()
         base = _normalize_base_url(raw_base) if raw_base else None
+        # #5784: one deployment variable chooses which B14 this Worker talks to.
+        # Unset means the Service Binding, and the origin stays what it is today.
+        from padiem_ai_core.b14_upstream import (
+            UPSTREAM_MODE_ENV,
+            UPSTREAM_URL_ENV,
+            B14UpstreamConfigError,
+            resolve_b14_upstream,
+        )
+
+        try:
+            upstream = resolve_b14_upstream({
+                UPSTREAM_MODE_ENV: "" if b14_upstream_mode is None else str(b14_upstream_mode),
+                UPSTREAM_URL_ENV: "" if b14_upstream_url is None else str(b14_upstream_url),
+            })
+        except B14UpstreamConfigError as exc:
+            raise ConfigError(exc.code) from None
+        if upstream.uses_https:
+            if base is not None and base != upstream.origin:
+                # An old binding-mode base URL left beside a flipped switch is a
+                # half-applied change; refusing beats picking one of the two.
+                raise ConfigError("PADIEM_CHAT_B14_BASE_URL conflicts with B14_UPSTREAM_URL")
+            base = upstream.origin
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
 
@@ -204,14 +280,20 @@ class Settings:
             web_timeout = float(web_timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= web_timeout <= 30:
-            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 30")
+        if not 1 <= web_timeout <= 60:
+            raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 60")
 
         auth = str(auth_mode or "off").strip().lower()
         if auth not in {"off", "google", "password", "hybrid"}:
             raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid")
         raw_public = "" if public_base_url is None else str(public_base_url).strip()
-        public = _normalize_base_url(raw_public, https_only=True, root_only=True) if raw_public else None
+        public = (
+            _normalize_base_url(
+                raw_public, https_only=True, root_only=True, allow_loopback_http=local
+            )
+            if raw_public
+            else None
+        )
         client_id = str(google_client_id or "").strip() or None
         client_secret = str(google_client_secret or "").strip() or None
         secret = str(session_secret or "").strip() or None
@@ -288,7 +370,10 @@ class Settings:
 
         return cls(
             runtime_mode=mode,
+            file_lane_origin=_normalize_base_url(str(file_lane_origin), https_only=True, root_only=True) if file_lane_origin else None,
+            file_lane_ticket_secret=_optional_secret(file_lane_ticket_secret, name="file_lane_ticket_secret"),
             b14_base_url=base,
+            b14_upstream_mode=upstream.mode,
             b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
             completed_timeout_seconds=completed_timeout,
@@ -303,6 +388,7 @@ class Settings:
             google_client_id=client_id,
             google_client_secret=client_secret,
             session_secret=secret,
+            byok_via_b14=_strict_bool(byok_via_b14, name="BYOK_VIA_B14"),
             custom_key_secret=custom_key,
             custom_key_previous_secrets=previous_custom_keys,
             custom_key_legacy_session_secrets=legacy_custom_keys,
@@ -314,6 +400,7 @@ class Settings:
             user_burst_limit=signed_burst,
             user_daily_limit=signed_daily,
             global_daily_limit=global_daily,
+            local_dev=local,
         )
 
     @classmethod
@@ -332,7 +419,11 @@ class Settings:
         )
         return cls.from_values(
             runtime_mode=runtime_mode,
+            file_lane_origin=os.getenv("PADIEM_CHAT_FILE_LANE_ORIGIN"),
+            file_lane_ticket_secret=os.getenv("PADIEM_CHAT_FILE_LANE_TICKET_SECRET"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
+            b14_upstream_mode=os.getenv("B14_UPSTREAM_MODE"),
+            b14_upstream_url=os.getenv("B14_UPSTREAM_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600"),
             completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "600"),
@@ -341,12 +432,13 @@ class Settings:
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
             tinyfish_api_key=os.getenv("TINYFISH_API_KEY"),
-            web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
+            web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "30"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
             google_client_id=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("PADIEM_CHAT_GOOGLE_CLIENT_SECRET"),
             session_secret=os.getenv("PADIEM_CHAT_SESSION_SECRET"),
+            byok_via_b14=os.getenv("BYOK_VIA_B14", "false"),
             custom_key_secret=os.getenv("PADIEM_CHAT_CUSTOM_KEY_SECRET"),
             custom_key_previous_secrets=os.getenv(
                 "PADIEM_CHAT_CUSTOM_KEY_PREVIOUS_SECRETS"
@@ -362,4 +454,5 @@ class Settings:
             user_burst_limit=os.getenv("PADIEM_CHAT_USER_BURST_LIMIT", "8"),
             user_daily_limit=os.getenv("PADIEM_CHAT_USER_DAILY_LIMIT", "100"),
             global_daily_limit=os.getenv("PADIEM_CHAT_GLOBAL_DAILY_LIMIT", "1000"),
+            local_dev=os.getenv("PADIEM_LOCAL_DEV"),
         )

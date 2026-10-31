@@ -771,11 +771,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 }
 /* Chat uses the same introductory block; only Claw's copy and four
  * destinations differ. Respect JS's hidden state after a real message.
- */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
-  /* Use Chat's grid: flex shrank the eyebrow and shifted the hero right. */
-  display: grid !important;
-}
+ * The block's own layout model is no longer declared here: the shared frame
+ * makes the first screen a grid for every product that opts into the
+ * `conversation` layout variant, so the Claw hero and the Chat hero start on
+ * the same row instead of Claw carrying a second copy of the decision. */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ #clawTaskHub {
   display: none !important;
 }
@@ -1162,5 +1161,19 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     padding-bottom: calc(
       var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px) + 16px
     );
+  }
+}
+
+/* Connector unification: at phone widths the Claw switch is a tappable row
+ * inside the tile, not the 24px corner pill. Same selector as the rule above,
+ * declared later in this file so it wins without any !important. */
+@media (max-width: 720px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+    min-height: 44px !important;
+    height: 44px !important;
+    min-width: 72px;
+    box-sizing: border-box;
+    width: auto;
+    padding: 4px 10px;
   }
 }

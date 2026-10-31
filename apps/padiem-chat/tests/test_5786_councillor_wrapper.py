@@ -120,6 +120,36 @@ def test_theme_switch_stays_on_the_existing_mechanism() -> None:
     )
 
 
+def test_small_text_stays_readable_in_light() -> None:
+    """Measured on the live page 2026-10-25: at 12-13px the theme's own
+    --muted/#gold fell to 4.37 and 2.75:1 against the light canvas -- under
+    WCAG AA. The fix derives stronger values from the same tokens instead of
+    re-declaring them, so Dark keeps working untouched."""
+    css = read(WRAP / "councillor.css")
+    assert "--cine-muted-strong:" in css and "--cine-gold-strong:" in css
+    assert "color-mix(in srgb, var(--muted)" in css
+    assert "color-mix(in srgb, var(--gold)" in css
+    for selector, token in (
+        (".cine-fact dt", "--cine-muted-strong"),
+        (".cine-source", "--cine-muted-strong"),
+        (".cine-note-date", "--cine-muted-strong"),
+        (".councillor-footer-line", "--cine-muted-strong"),
+        (".cine-timeline-date", "--cine-gold-strong"),
+    ):
+        block = re.search(re.escape(selector) + r"\s*\{([^}]*)\}", css)
+        assert block, selector
+        assert f"var({token})" in block.group(1), f"{selector} still uses the raw token"
+
+
+def test_topbar_controls_stay_tappable_and_focussable() -> None:
+    css = read(WRAP / "councillor.css")
+    blocks = re.findall(r"\.councillor-ghost\s*(?::not\([^)]*\))?\s*\{([^}]*)\}", css)
+    assert blocks, "no .councillor-ghost rule found"
+    assert any("min-height: 44px" in body for body in blocks), (
+        "the topbar controls measured 33px tall, under the 44px touch target")
+    assert ":focus-visible" in css, "keyboard focus must survive the theme switch"
+
+
 def test_wrapper_keeps_its_own_layout_baseline() -> None:
     """The page does not load Chat's styles.css, so it must restate the layout
     baseline. Without border-box the hero's padding is added to min-height and
@@ -191,22 +221,18 @@ def test_wrapper_builds_no_second_ai_login_or_store() -> None:
     assert _code_only(adapter_js()).count("fetch(") == 0, "the adapter must stay network-free"
 
 
-def test_admin_surface_is_fail_closed() -> None:
+def test_public_util_navigation_keeps_auth_on_server() -> None:
     js = wrapper_js()
     html = read(WRAP / "councillor.html")
-    # The panels start hidden in the document, so a signed-out visitor never
-    # sees the admin surface even before the status read resolves.
-    assert re.search(r'id="adminTools"[^>]*\shidden', html), "admin tools must ship hidden"
-    assert re.search(r'id="adminGate"[^>]*\shidden', html), "admin gate must ship hidden"
-    start = js[js.index("async function start()"):]
-    # the painted path closes the admin surface before the session read runs,
-    # so the tools can only ever appear after an authenticated response.
-    assert start.rindex('paintAdminSignedOut("guest")') < start.rindex("void readSession()")
-    assert "data.authenticated === true" in js
-    assert 'paintAdminSignedOut("unavailable")' in js, "a failed status read must stay closed"
+    assert re.search(r'id="adminTools"[^>]*\shidden', html)
+    assert 'paintUtilLinks(null)' in js
+    assert 'paintUtilLinks(user.name || user.display_name || user.email || null)' in js
+    assert 'if (refs.adminTools) refs.adminTools.hidden = false' in js
+    assert 'if (refs.adminGate) refs.adminGate.hidden = true' in js
+    assert 'data.authenticated === true' in js
+    assert 'paintAdminSignedOut' not in js
+    assert 'const TOOLS = Object.freeze([' in js
     css = read(WRAP / "councillor.css")
-    # display:grid on the panel beats the UA [hidden] rule; without this line a
-    # signed-out visitor keeps the admin panel in layout (observed in S4).
     assert ".cine-admin-tools[hidden]" in css and ".cine-admin-gate[hidden]" in css
 
 

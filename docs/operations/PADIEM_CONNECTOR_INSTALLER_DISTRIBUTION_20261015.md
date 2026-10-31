@@ -1,5 +1,7 @@
 # PADIEM Connector: Windows installer packaging and download distribution (2026-10-15)
 
+> **2026-10-28 기준 대체** — 현재 PC 연결·설치 방식(Owner 결정 2026-10-28의 기술 요구사항): 웹 채팅의 "이 PC 연결" → MeshCentral 에이전트 설치 파일(mesh.padiem.net:443) 다운로드 → 설치 시 표식으로 자동 연결, 기본 범위 로컬 드라이브 전체. 이 문서의 옛 설치기(R2 배포·서명·다운로드 도메인) 계획은 이력으로 보존한다. 후속: #6008(로드맵), #5998(설정 내장 .exe).
+
 > **Public technical release note, not internal business pricing or an authorization to deploy.**
 > Single technical tracking issue: [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139).
 > Single real Windows release/installation acceptance ledger: [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099).

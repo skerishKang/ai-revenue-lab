@@ -112,12 +112,49 @@ class _LocalReviewedBinaryDocumentParser:
         return extract_binary_document(name=name, media_type=media_type, payload=payload)
 
 
+@runtime_checkable
+class AsyncBinaryDocumentParserPort(Protocol):
+    """Async counterpart of the parser authority for the Worker request path.
+
+    The transport (and any endpoint or credential it closes over) is supplied
+    only by trusted composition. The port accepts the same parameter-only
+    identity and payload surface as the synchronous port.
+    """
+
+    async def parse_binary_document(
+        self,
+        *,
+        name: Any,
+        media_type: Any,
+        payload: Any,
+    ) -> NormalizedDocument: ...
+
+
+class _LocalReviewedAsyncBinaryDocumentParser:
+    """Trusted local/test async authority over the reviewed in-process parser."""
+
+    __slots__ = ()
+
+    async def parse_binary_document(
+        self,
+        *,
+        name: Any,
+        media_type: Any,
+        payload: Any,
+    ) -> NormalizedDocument:
+        return extract_binary_document(name=name, media_type=media_type, payload=payload)
+
+
 _LOCAL_REVIEWED_PARSER: BinaryDocumentParserPort = _LocalReviewedBinaryDocumentParser()
+_LOCAL_REVIEWED_ASYNC_PARSER: AsyncBinaryDocumentParserPort = (
+    _LocalReviewedAsyncBinaryDocumentParser()
+)
 
 #: Server-owned Worker composition slot. ``None`` (the default) means the
 #: production Worker fails closed with ``document_parser_isolation_unavailable``.
 #: Only trusted server composition may write this slot; request paths never do.
 _WORKER_ISOLATED_PARSER_COMPOSITION: BinaryDocumentParserPort | None = None
+_WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION: AsyncBinaryDocumentParserPort | None = None
 
 
 def production_worker_runtime() -> bool:
@@ -128,6 +165,18 @@ def production_worker_runtime() -> bool:
     """
 
     return sys.platform == PRODUCTION_WORKER_PLATFORM
+
+
+def binary_document_parser_ready() -> bool:
+    """True only when this runtime can actually invoke a binary parser now.
+
+    CPython uses the reviewed in-process parser. The production Worker is ready
+    only after trusted composition installs an isolated authority; the default
+    fail-closed state is reported as not ready so product capability copy never
+    promises parsing that this runtime will refuse.
+    """
+
+    return not production_worker_runtime() or _WORKER_ISOLATED_PARSER_COMPOSITION is not None
 
 
 def install_worker_isolated_parser_composition(
@@ -187,23 +236,104 @@ def parse_binary_document_via_authority(
 ) -> NormalizedDocument:
     """Parse one binary document through the shared authority decision.
 
-    The only binary document parse entry point for Worker-side callers. The
-    authority is resolved first, so an unavailable authority fails closed
-    before ``extract_binary_document`` is reached.
+    The only binary document parse entry point for synchronous Worker-side
+    callers. The authority is resolved first, so an unavailable authority fails
+    closed before ``extract_binary_document`` is reached.
     """
 
     authority = resolve_binary_document_parser_authority()
     return authority.parse_binary_document(name=name, media_type=media_type, payload=payload)
 
 
+def binary_document_parser_ready_async() -> bool:
+    """True only when the async request path can invoke a binary parser now.
+
+    CPython uses the reviewed in-process parser. The production Worker is ready
+    only after trusted composition installs an async isolated authority; the
+    default fail-closed state is reported as not ready so product capability
+    copy never promises parsing that the request path will refuse.
+    """
+
+    return (
+        not production_worker_runtime()
+        or _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION is not None
+    )
+
+
+def install_worker_isolated_parser_async_composition(
+    authority: AsyncBinaryDocumentParserPort,
+) -> None:
+    """Install the trusted async Worker-side parser authority composition."""
+
+    if authority is None:
+        raise ValueError("authority is required")
+    if not callable(getattr(authority, "parse_binary_document", None)):
+        raise ValueError(
+            "authority must provide parse_binary_document(name, media_type, payload)"
+        )
+    global _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION
+    _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION = authority
+
+
+def clear_worker_isolated_parser_async_composition() -> None:
+    """Remove any installed async Worker composition and restore fail-closed."""
+
+    global _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION
+    _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION = None
+
+
+def resolve_async_binary_document_parser_authority() -> AsyncBinaryDocumentParserPort:
+    """Return the async parser authority for this runtime, or fail closed.
+
+    Production Worker with a trusted async composition -> that authority.
+    Production Worker without one -> raises ``DocumentParserAuthorityUnavailable``
+    before the Core parser can run. CPython local/test -> the reviewed local
+    parser. A synchronous composition is never used as an async fallback.
+    """
+
+    if production_worker_runtime():
+        composition = _WORKER_ISOLATED_PARSER_ASYNC_COMPOSITION
+        if composition is not None:
+            return composition
+        raise DocumentParserAuthorityUnavailable()
+    return _LOCAL_REVIEWED_ASYNC_PARSER
+
+
+async def parse_binary_document_via_authority_async(
+    *,
+    name: Any,
+    media_type: Any,
+    payload: Any,
+) -> NormalizedDocument:
+    """Parse one binary document through the async authority decision.
+
+    The only binary document parse entry point for asynchronous Worker-side
+    callers (Chat attachments, Claw turns, project-file binary uploads). The
+    authority is resolved first, so an unavailable authority fails closed
+    before ``extract_binary_document`` is reached.
+    """
+
+    authority = resolve_async_binary_document_parser_authority()
+    return await authority.parse_binary_document(
+        name=name, media_type=media_type, payload=payload
+    )
+
+
 __all__ = [
     "DOCUMENT_PARSER_ISOLATION_UNAVAILABLE",
     "PRODUCTION_WORKER_PLATFORM",
+    "AsyncBinaryDocumentParserPort",
     "BinaryDocumentParserPort",
     "DocumentParserAuthorityUnavailable",
+    "binary_document_parser_ready",
+    "binary_document_parser_ready_async",
+    "clear_worker_isolated_parser_async_composition",
     "clear_worker_isolated_parser_composition",
+    "install_worker_isolated_parser_async_composition",
     "install_worker_isolated_parser_composition",
     "parse_binary_document_via_authority",
+    "parse_binary_document_via_authority_async",
     "production_worker_runtime",
+    "resolve_async_binary_document_parser_authority",
     "resolve_binary_document_parser_authority",
 ]

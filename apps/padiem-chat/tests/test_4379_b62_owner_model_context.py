@@ -92,7 +92,6 @@ def settings():
 
 def payload():
     return {
-        "mode": "auto",
         "conversation_id": CONVERSATION_ID,
         "messages": [
             {"role": "user", "content": PREVIEW_USER},

@@ -1,0 +1,151 @@
+name: PADIEM auth deployment gate
+run-name: padiem-auth/${{ inputs.mode }}/${{ inputs.target_sha }}
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/padiem-auth-deploy-gate.yml'
+      - 'apps/padiem-auth/**'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [readonly, deploy]
+      target_sha:
+        type: string
+        required: true
+      confirmation:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: padiem-auth-production-gate
+  cancel-in-progress: false
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/padiem-auth/test/*.test.mjs
+      - run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Test synthetic secrets through stdin in dry-run
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' '{"PADIEM_SYNTHETIC_SECRET":"synthetic-test-only"}' | npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --secrets-file /dev/stdin --outdir "$RUNNER_TEMP/auth-stdin-test" >/dev/null 2>&1
+          echo 'Synthetic stdin dry-run: PASS'
+  gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      MODE: ${{ inputs.mode }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Validate input before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_SHA" == "$GITHUB_SHA" ]]
+          [[ "$MODE" == 'readonly' || "$MODE" == 'deploy' ]]
+          [[ "$CONFIRMATION" == "PADIEM_AUTH_${MODE}_${TARGET_SHA}" ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm exact main and account without printing account ID or token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          python - <<'PY'
+          import json, os, re, urllib.error, urllib.request
+          from pathlib import Path
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          request = urllib.request.Request('https://api.cloudflare.com/client/v4/accounts/' + account, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          with urllib.request.urlopen(request, timeout=15) as response:
+              data = json.load(response)
+          evidence = Path('docs/operations/PADIEM_WEB_SEARCH_PROVIDER_POLICY_3385.md').read_text(encoding='utf-8')
+          known = re.findall(r'Charliekant Account ID `([0-9a-f]{32})`', evidence)
+          if len(known) != 1 or data.get('success') is not True or data.get('result', {}).get('id') != known[0] or account != known[0]:
+              raise SystemExit('Cloudflare account mismatch or unreadable')
+          existing_url = 'https://api.cloudflare.com/client/v4/accounts/' + account + '/workers/scripts/padiem-chat'
+          existing_request = urllib.request.Request(existing_url, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          try:
+              urllib.request.urlopen(existing_request, timeout=15).close()
+          except urllib.error.HTTPError:
+              raise SystemExit('Existing Chat Worker could not be read') from None
+          print('Approved account and existing Chat Worker match: PASS')
+          script_url = 'https://api.cloudflare.com/client/v4/accounts/' + account + '/workers/scripts/padiem-auth'
+          script_request = urllib.request.Request(script_url, headers={'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN']})
+          try:
+              urllib.request.urlopen(script_request, timeout=15).close()
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise SystemExit('Worker absence could not be confirmed')
+              print('Target worker absent: PASS')
+          else:
+              raise SystemExit('Target Worker already exists; refusing initial deployment')
+          PY
+      - name: Install pinned Wrangler for this disposable runner
+        run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Synthetic auth regression and dry-run
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/padiem-auth/test/*.test.mjs
+          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --outdir "$RUNNER_TEMP/padiem-auth-build"
+      - name: Require successful readonly run for this exact SHA
+        if: inputs.mode == 'deploy'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          repo, sha, token = os.environ['GITHUB_REPOSITORY'], os.environ['TARGET_SHA'], os.environ['GH_TOKEN']
+          page = 1
+          found = False
+          while True:
+              query = urllib.parse.urlencode({'event': 'workflow_dispatch', 'per_page': 100, 'page': page})
+              url = f'https://api.github.com/repos/{repo}/actions/workflows/padiem-auth-deploy-gate.yml/runs?{query}'
+              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(req, timeout=15) as response:
+                  runs = json.load(response).get('workflow_runs', [])
+              if not runs:
+                  break
+              if any(run.get('head_sha') == sha and run.get('conclusion') == 'success' and run.get('display_title') == f'padiem-auth/readonly/{sha}' for run in runs):
+                  found = True
+                  break
+              page += 1
+          if not found:
+              raise SystemExit('Successful readonly run for exact SHA is required')
+          print('Prior readonly exact-SHA run: PASS')
+          PY
+      - name: Deploy approved exact main SHA
+        if: inputs.mode == 'deploy'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          node apps/padiem-auth/bootstrap-deploy.mjs

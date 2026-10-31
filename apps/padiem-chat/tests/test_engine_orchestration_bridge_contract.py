@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -302,7 +303,8 @@ def test_worker_and_schema_keep_activation_fail_closed() -> None:
 
     assert "padiem-ai-engine-client @ file://" in pyproject
     assert 'main = "worker.py"' in wrangler
-    assert "ENGINE_SERVICE" not in wrangler
+    config = tomllib.loads(wrangler)
+    assert {item["binding"]: item["service"] for item in config["services"]}["P01_ENGINE_SERVICE"] == "padiem-ai-engine"
     assert "PADIEM_CHAT_ORCHESTRATION_ENABLED" not in wrangler
     assert "PADIEM_CHAT_ENGINE_CALLER_SECRET" not in wrangler
     assert "build_orchestration_bridge" in worker
@@ -515,7 +517,8 @@ async def test_verified_pc_bridge_uses_one_progress_opt_in_stream():
     assert records[-1]["result"].answer == "final"
 
 
-async def _pc_sse(records, *, answer="verified PC result"):
+async def _pc_sse(records, *, answer="verified PC result", pending_fields=None,
+                  final_records=None):
     from app.claw_live_events import chat_pc_orchestration_sse
     from app.orchestration_bridge import B62OrchestrationResult
     events = [_event("run_started", 1), _event("run_completed", 2)]
@@ -525,17 +528,55 @@ async def _pc_sse(records, *, answer="verified PC result"):
         yield {"event": events[0]}
         for record in records:
             yield record
-        yield {"event": events[1]}
-        yield {"result": result}
+        if final_records is None:
+            yield {"event": events[1]}
+            yield {"result": result}
+        else:
+            for record in final_records:
+                yield record
     completions = []
     async def complete(value):
         completions.append(value.answer)
         return {"conversation_id": "chat_1"}
     response = chat_pc_orchestration_sse(
         stream(), pc_run_id="chat_pcq_" + "a" * 32, on_completed=complete,
+        pending_fields=pending_fields,
     )
     chunks = [chunk async for chunk in response.body_iterator]
     return b"".join(chunks).decode(), completions
+
+
+async def test_cut_pc_stream_hands_the_run_to_pending_recovery_instead_of_failing():
+    """#5895: a stream that stops mid-turn must not read as a refusal.
+
+    The Engine kept running and stored the answer; the relay used to send one
+    terminal invalid_engine_stream error frame, which every client renders as a
+    connection failure -- including a tab that loaded the page before any fix to
+    the client shipped. The relay now sends the pending continuation naming the
+    run the server already opened, leaves the run row unmarked so the
+    owner-scoped read-back can still deliver the stored result, and never
+    claims the turn completed.
+    """
+    import json
+    run = "chat_pcq_" + "a" * 32
+    pending = {"run_id": run, "conversation_id": "chat_" + "c" * 32}
+    text, completions = await _pc_sse(
+        [{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}],
+        pending_fields=pending, final_records=[],
+    )
+    assert "event: error" not in text
+    assert "event: done" in text
+    values = [json.loads(line[6:]) for line in text.splitlines() if line.startswith("data: ")]
+    final = values[-1]
+    assert final["done"] is True and final["pc_pending"] is True
+    assert final["run_id"] == run and final["conversation_id"] == pending["conversation_id"]
+    assert completions == []
+    # A run that really ended without any opened run still fails closed.
+    text, _ = await _pc_sse(
+        [{"heartbeat": {"run_id": "run_1", "trace_id": "trace_1", "elapsed_ms": 1000}}],
+        final_records=[],
+    )
+    assert "event: error" in text and "event: done" not in text
 
 
 async def test_engine_pc_progress_heartbeat_and_result_relay_is_closed_and_ordered():
@@ -693,3 +734,109 @@ async def test_iterator_failure_does_not_blame_previous_valid_record():
     assert error["code"] == "invalid_engine_stream"
     assert error["cause"] == {"exception_class": "RuntimeError", "record_kind": "unknown"}
     assert "PRIVATE_DO_NOT_LEAK" not in text and "event: done" not in text
+
+
+@pytest.mark.parametrize("status", ["pending", "running", "completed", None])
+@pytest.mark.parametrize("typed_error", [True, False])
+async def test_terminal_stream_error_settles_only_the_existing_owner_pc_run(status, typed_error):
+    """Real D1 SQL: errors settle pending/running, never completed or text-only turns."""
+    import test_5015_multi_tool_result_storage as db
+    from app.claw_live_events import chat_pc_orchestration_sse
+    connection = db._database()
+    try:
+        store = db._store(connection)
+        if status is not None:
+            db._stage_run(connection, status=status, action="pc_files_query")
+        async def stream():
+            if typed_error:
+                raise B62OrchestrationError("upstream_auth_error", "safe error", status_code=403)
+            yield {"invalid": "PRIVATE_DO_NOT_LEAK"}
+        async def complete(result):
+            raise AssertionError("error cannot complete a run")
+        async def fail():
+            # Mirrors the owner-bound route callback, using the real atomic guard.
+            assert not await store.update_claw_run_status(db.OTHER_OWNER, db.RUN, "failed")
+            await store.update_claw_run_status(db.OWNER, db.RUN, "failed")
+        response = chat_pc_orchestration_sse(stream(), pc_run_id=db.RUN,
+            on_completed=complete, on_failed=fail)
+        text = b"".join([part async for part in response.body_iterator]).decode()
+        assert "event: error" in text and "event: done" not in text
+        assert "PRIVATE_DO_NOT_LEAK" not in text
+        row = await store.get_claw_run(db.OWNER, db.RUN)
+        assert (row["status"] if row else None) == (
+            "failed" if status in ("pending", "running") else status)
+        assert connection.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0] == 0
+    finally:
+        connection.close()
+
+
+async def test_disconnected_pc_stream_does_not_claim_a_terminal_failure():
+    from app.claw_live_events import chat_pc_orchestration_sse
+    failures = []
+    async def stream():
+        raise asyncio.CancelledError()
+        yield
+    async def complete(result):
+        raise AssertionError("no final result")
+    async def fail():
+        failures.append(True)
+    response = chat_pc_orchestration_sse(stream(), pc_run_id="chat_pcq_" + "a" * 32,
+        on_completed=complete, on_failed=fail)
+    with pytest.raises(asyncio.CancelledError):
+        _ = [part async for part in response.body_iterator]
+    assert failures == []
+
+
+def test_byok_stream_reference_is_only_on_wire_and_resume_requires_fresh_owner_key():
+    import json
+    class Client(FakeClient):
+        async def stream_orchestration(self, request, **kwargs):
+            self.stream_request = request
+            yield {'orchestration': _paused_raw()}
+    async def run():
+        ref = 'unit-opaque-user-key-reference'
+        client, store = Client(), FakeStore()
+        bridge = B62EngineOrchestrationBridge(client=client, store=store)
+        kwargs = dict(user_id='usr_owner', messages=[{'role':'user','content':'hi'}],
+            skill=get_task_mode('auto'), model_id='google/unit-model', user_text='hi',
+            conversation_id=None, pc_tools=None, subject_id='usr_owner', session_id='chat_unit',
+            byok_selection={'provider':'gemini','model':'unit-model'}, user_credential_ref=ref)
+        records = [record async for record in bridge.start_stream(**kwargs)]
+        assert client.stream_request['user_credential_ref'] == ref
+        assert client.stream_request['max_retries'] == 0
+        assert ref not in json.dumps(store.saved) and ref not in repr(records)
+        assert store.snapshot.engine_request['agent']['model_policy']['user_credential_required'] is True
+        with pytest.raises(B62OrchestrationError) as error:
+            await bridge.resume(user_id='usr_owner', continuation_ref=store.snapshot.continuation_ref,
+                pause_id=store.snapshot.pause_id, outcome='approved')
+        assert error.value.code == 'byok_credential_required'
+        async def resolve(selection):
+            assert selection == {'provider':'gemini','model':'unit-model'}
+            return 'google/unit-model', 'unit-rotated-opaque-reference'
+        await bridge.resume(user_id='usr_owner', continuation_ref=store.snapshot.continuation_ref,
+            pause_id=store.snapshot.pause_id, outcome='approved', user_credential_resolver=resolve)
+        assert client.resume_request['user_credential_ref'] == 'unit-rotated-opaque-reference'
+        assert 'unit-rotated-opaque-reference' not in json.dumps(store.saved)
+    asyncio.run(run())
+
+
+def test_byok_switch_off_does_not_read_credentials_and_supported_on_uses_owner(monkeypatch):
+    from types import SimpleNamespace
+    import app.byok_bridge as byok
+    from app.config import Settings
+    calls = []
+    async def resolve(state, *, uid, selection):
+        calls.append(uid)
+        return SimpleNamespace(endpoint='https://generativelanguage.googleapis.com/v1beta', api_key='unit-secret-no-real-key')
+    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', resolve)
+    selection = SimpleNamespace(provider='gemini', model='gemini-unit-model')
+    state = SimpleNamespace(settings=Settings())
+    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', selection)) is None
+    assert calls == []
+    state.settings = Settings(byok_via_b14=True)
+    model, ref = asyncio.run(byok.resolve_reference(state, 'usr_owner', selection))
+    assert model == 'google/gemini-unit-model'
+    assert calls == ['usr_owner']
+    assert 'unit-secret-no-real-key' not in repr(ref)
+    assert asyncio.run(byok.resolve_reference(state, 'usr_owner', SimpleNamespace(provider='anthropic',model='claude-unit'))) is None
+    assert calls == ['usr_owner']

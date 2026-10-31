@@ -35,8 +35,12 @@ def test_the_browser_capability_and_gates_carry_no_byte_total() -> None:
     for source in (capabilities, app_js, binary_js):
         assert "1 GiB" not in source
         assert "1024 * 1024 * 1024" not in source
-    # the text document bound is a product data shape, not a caller data total
-    assert "textBytes: 96 * 1024" in capabilities
+    # #5734 stage 2: a text document carries no product-side total either, and
+    # the browser no longer reads one.
+    for retired in ("textBytes", "textChars", "96 * 1024", "40000"):
+        assert retired not in capabilities
+    for retired in ("limits.textBytes", "limits.textChars", "MAX_DOCUMENT_BYTES", "MAX_DOCUMENT_CHARS"):
+        assert retired not in app_js
 
 
 def test_the_real_image_and_document_controls_are_untouched() -> None:
@@ -66,11 +70,16 @@ def test_the_real_image_and_document_controls_are_untouched() -> None:
         "parse_binary_document_via_authority(",
     ):
         assert binary.count(marker) == 1, marker
+    # #5734: the size-shaped refusals are gone, so the markers pin what Core
+    # still refuses on structural grounds — the inflation ratio, unsafe paths,
+    # encryption and DTDs. A byte total may not come back as a hidden cap.
     for marker in (
-        'DocumentNormalizationError("ooxml_entry_size",',
-        'DocumentNormalizationError("ooxml_total_size",',
+        '"ooxml_total_inflation"',
+        '"ooxml_unsafe_path"',
+        '"ooxml_encrypted"',
+        '"ooxml_dtd_rejected"',
     ):
-        assert core.count(marker) == 1, marker
+        assert core.count(marker) >= 1, marker
 
 
 def test_the_composer_still_streams_the_file_behind_a_bounded_metadata_frame() -> None:

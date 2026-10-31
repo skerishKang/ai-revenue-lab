@@ -6,7 +6,7 @@ import json
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
 from .workspace_storage import _safe_identifier
@@ -23,7 +23,9 @@ MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
-MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
+# Page size for the project listing. This is a read shape, not a ceiling:
+# nothing refuses creating a project because the owner already has this many
+# (#5895-D). Kept until the list grows a pagination UI.
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
@@ -32,6 +34,15 @@ MAX_RUN_RESULT_SUMMARY_CHARS = 200
 #: tool lane, and that lane is this one; the marker therefore names the same
 #: lane the dispatch scope names, without a second authority.
 MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query"})
+
+#: #5895 — how long one executor claim is held before the same dispatch may be
+#: handed out again. The Oracle executor holds a poll open for 20 seconds and
+#: re-requests about a second after an empty or dead round, so a claim whose
+#: response never reached it is offered again inside roughly three of those
+#: rounds. This is a delivery timer, not a workload limit: it decides nothing
+#: about how long a PC command may run, and the instant that ends a dispatch
+#: stays the `expires_at` the poll route stamps (#4139).
+ORACLE_MESH_CLAIM_LEASE_SECONDS = 60
 
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
@@ -66,6 +77,17 @@ def _merge_run_result_summaries(stored: object, addition: str) -> str:
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
+ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
+
+
+def _oracle_mesh_original_max_bytes(row: dict[str, Any]) -> int:
+    # The persisted server dispatch owns this distinction, never a store-call
+    # argument or model value. Commands and other reads retain the 6MB guard.
+    if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
+        return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+    return ORACLE_MESH_ORIGINAL_MAX_BYTES
+
+
 #: #4139 dispatch row bounds. Each number is the ceiling of the thing it
 #: describes, not a safety guess:
 #: * a reference keeps the bound this table has always used;
@@ -151,6 +173,7 @@ def _require_product_scope(value: object) -> str:
 PC_SCOPE_NOTICE_LABELS = {
     "files_list": "목록만 조회합니다. 파일 내용은 읽지 않습니다.",
     "files": "요청한 파일의 목록과 내용을 확인합니다.",
+    "files_write": "요청한 파일을 만들거나 바꾸고, 옮기거나 지웁니다. 바뀌기 전 내용은 백업합니다.",
     "query_drives": "드라이브 목록만 조회합니다.",
     "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
 }
@@ -269,15 +292,6 @@ def _normalize_search_query(query: object) -> str:
     return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
 
 
-def _escape_like(query: object) -> str:
-    """Make a user query a literal LIKE substring under ESCAPE '\\'.
-
-    The escape character is escaped first, then the LIKE wildcards.
-    """
-    normalized = _normalize_search_query(query)
-    return normalized.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-
-
 def _search_snippet(hit: object, query: object) -> str:
     """Short excerpt around the first literal match. '' when there is no body hit."""
     if not isinstance(hit, str) or not hit:
@@ -295,8 +309,58 @@ def _search_snippet(hit: object, query: object) -> str:
     return prefix + excerpt + suffix
 
 
+def _iso(moment: datetime) -> str:
+    return moment.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def _lane_seconds(oldest: Any, moment: datetime) -> int | None:
+    """How long the oldest row in a lane bucket has been waiting, in whole seconds.
+
+    ``None`` means the bucket is empty, which is a different fact from "0 seconds"
+    and is reported as ``None`` rather than folded into a number.
+    """
+    if not isinstance(oldest, str) or not oldest:
+        return None
+    try:
+        then = datetime.fromisoformat(oldest.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if then.tzinfo is None:
+        then = then.replace(tzinfo=timezone.utc)
+    return max(0, int((moment - then).total_seconds()))
+
+
+def _lane_count_age(row: Any, moment: datetime) -> dict[str, Any]:
+    """One ``COUNT(*) / MIN(created_at)`` pair, as a count and an age."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read unavailable")
+    count = row.get("n")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    return {"count": count, "oldest_seconds": _lane_seconds(row.get("oldest"), moment)}
+
+
+def _lane_node(row: Any, moment: datetime) -> dict[str, Any]:
+    """One PC's unanswered total, keyed by the node reference the lane stores."""
+    if not isinstance(row, dict):
+        raise HistoryError("oracle mesh lane read is not a row")
+    node_ref = row.get("node_ref")
+    count = row.get("n")
+    if not isinstance(node_ref, str) or not node_ref:
+        raise HistoryError("oracle mesh lane read names no node")
+    if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+        raise HistoryError("oracle mesh lane read is not a count")
+    waiting = row.get("waiting")
+    if isinstance(waiting, bool) or not isinstance(waiting, int) or waiting < 0:
+        raise HistoryError("oracle mesh lane read has no waiting count")
+    return {"node_ref": node_ref[:256], "open": count,
+            "oldest_seconds": _lane_seconds(row.get("oldest"), moment),
+            "waiting": waiting,
+            "waiting_oldest_seconds": _lane_seconds(row.get("waiting_oldest"), moment)}
+
+
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return _iso(datetime.now(timezone.utc))
 
 
 def _user_id(subject: str) -> str:
@@ -461,8 +525,8 @@ def validate_project_fields(name: object, instructions: object = "") -> tuple[st
     if not isinstance(instructions, str):
         raise ValueError("프로젝트 지침 형식이 올바르지 않습니다.")
     cleaned_instructions = instructions.strip()
-    if len(cleaned_instructions) > MAX_PROJECT_INSTRUCTIONS_CHARS:
-        raise ValueError("프로젝트 지침은 1800자 이하로 입력해 주세요.")
+    # #5895-C: no character ceiling on project instructions. The 1800 the
+    # composer used to enforce was a pilot-era input clamp, not a store bound.
     return cleaned_name, cleaned_instructions
 
 
@@ -668,15 +732,170 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+class VerifiedDispatch(dict):
+    """A dispatch row that an owner-scoped read produced, tagged with who it was read for.
+
+    It stays a dict, so every reader of these rows keeps working and the value survives the
+    queue's JSON boundary. The tag is the point: the original stores refuse a plain dict, so
+    a result submission can prove its pin from the row already in hand instead of re-reading
+    `oracle_mesh_dispatch` from D1 — which, with the queue live, no longer holds the row, and
+    that re-read is what answered the 19:09 submission 403.
+    """
+
+    __slots__ = ()
+
+    @property
+    def verified_for(self) -> str:
+        return str(self.get(_VERIFIED_FOR) or "")
+
+
+_VERIFIED_FOR = "verified_for_user"
+
+
+def _tagged(row: Any) -> "VerifiedDispatch":
+    """Mark a row an owner-scoped read produced with the owner it names.
+
+    Only the store wraps, so a dict that arrives from anywhere else is not a handle and
+    falls back to the authoritative lookup.
+    """
+
+    marked = VerifiedDispatch(row)
+    marked[_VERIFIED_FOR] = str(row.get("user_id") or "")
+    return marked
+
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
-    def __init__(self, db: Any, *, full_context_bucket: Any = None):
+    def __init__(self, db: Any, *, full_context_bucket: Any = None,
+                 run_ownership: Any = None):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
         # Existing private workspace R2 binding, never an incoming browser key.
         self.full_context_bucket = full_context_bucket
+        # Where "does this run belong to this user" is answered. Absent, it is answered
+        # from `claw_run_history` — the D1 that owns conversation rows. The 컴2 queue
+        # deliberately does not own that table, so it supplies its own answer; without
+        # this seam every dispatch creation on the queue died on `no such table` and the
+        # PC lane stopped working the moment the switch went live (2026-10-30 14:11).
+        self.run_ownership = run_ownership
+        # Which store answers dispatch-row reads. It is this store until the queue is
+        # wired in as the authority (com2), because that is where `oracle_mesh_dispatch`
+        # lives then. Without the seam the conversation read-back re-read a table that is
+        # no longer in D1 and answered `run_result_unavailable` (503) to the browser.
+        self.dispatch_authority: Any = None
+
+    def set_dispatch_authority(self, authority: Any) -> None:
+        if authority is None or authority is self:
+            return
+        self.dispatch_authority = authority
+
+    async def _dispatch(self, name: str, **arguments: Any) -> Any:
+        source = self.dispatch_authority if self.dispatch_authority is not None else self
+        return await getattr(source, name)(**arguments)
+
+    @staticmethod
+    def _verified(row: Any, user_id: str) -> "VerifiedDispatch | None":
+        if not isinstance(row, dict):
+            return None
+        owner = row.get("user_id")
+        if owner is not None and owner != user_id:
+            return None
+        marked = VerifiedDispatch(row)
+        marked[_VERIFIED_FOR] = user_id
+        return marked
+
+    async def get_oracle_mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str):
+        """The owner-scoped pin: who dispatched it and what result was already accepted."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, result_sha256, result_bytes, kind, root_ref FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=?",
+            dispatch_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_correlation(self, *, user_id: str, run_id: str):
+        """The terminal receipt of one run, read wherever dispatch rows live."""
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(run_id, str) or not run_id:
+            return None
+        row = await self._first(
+            "SELECT user_id, command_id, revision_ref, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='done'",
+            user_id, run_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_command(self, *, user_id: str, run_id: str, command_id: str):
+        """Whether one command was dispatched by this owner inside this run."""
+
+        row = await self._first(
+            "SELECT user_id, dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND command_id=? LIMIT 1",
+            user_id, run_id, command_id,
+        )
+        return self._verified(row, user_id)
+
+    async def get_oracle_mesh_run_open_state(self, *, user_id: str, run_id: str) -> dict:
+        """Which of this run's dispatches still lack a terminal result, and which failed."""
+
+        pending = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state NOT IN ('done', 'failed') LIMIT 1",
+            user_id, run_id,
+        )
+        failed = await self._first(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch "
+            "WHERE user_id=? AND run_id=? AND state='failed' LIMIT 1",
+            user_id, run_id,
+        )
+        return {
+            "pending_dispatch_id": (pending or {}).get("dispatch_id"),
+            "failed_dispatch_id": (failed or {}).get("dispatch_id"),
+        }
+
+    async def _mesh_dispatch_pin(self, *, user_id: str, dispatch_id: str,
+                                 expected_sha256: str, expected_bytes: int,
+                                 verified: Any = None):
+        """The owner + pin check the original stores share, without a D1 re-read.
+
+        A handle is honoured only when it is the tagged dict an owner-scoped read produced
+        for this same user; a plain dict — however well shaped — falls back to the
+        authoritative lookup, so a caller cannot talk its way past the check by inventing a
+        row. Forgery of the pin and another owner's dispatch stay refused either way.
+        """
+
+        row: Any = verified if isinstance(verified, VerifiedDispatch) else None
+        if row is not None and (row.verified_for != user_id
+                                or row.get("user_id") not in (None, user_id)):
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row is None:
+            row = await self._dispatch("get_oracle_mesh_dispatch_pin",
+                                        user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
+            raise HistoryForbidden("mesh dispatch is not owned by current user")
+        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
+            raise HistoryError("mesh original does not match the pinned result")
+        return row
+
+    async def _run_is_owned(self, run_id: str, user_id: str) -> bool:
+        if self.run_ownership is not None:
+            owned = self.run_ownership(run_id, user_id)
+            if hasattr(owned, "__await__"):
+                owned = await owned
+            return bool(owned)
+        row = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        return row is not None
 
     @staticmethod
     def _context_key(conversation_id: str, message_id: str) -> str:
@@ -841,11 +1060,33 @@ class D1HistoryStore:
             statement = statement.bind(*values)
         return _rows_from_result(await statement.run())
 
+    async def upsert_shared_user(self, user_id: str, account_id: str, email: str, name: str, picture: str) -> UserProfile:
+        if not re.fullmatch(r'usr_[0-9a-f]{32}', user_id) or not re.fullmatch(r'sub_[A-Za-z0-9_-]+', account_id):
+            raise HistoryError('invalid shared identity')
+        now = _now_iso()
+        display = (name.strip() or email.split('@', 1)[0])[:160]
+        pic = picture.strip()[:1000]
+        marker = 'shared:' + account_id
+        rows = await self._all(
+            "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
+            "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET email=excluded.email, display_name=excluded.display_name, "
+            "picture_url=excluded.picture_url, updated_at=excluded.updated_at "
+            "WHERE users.provider_subject NOT LIKE 'shared:%' OR users.provider_subject=excluded.provider_subject RETURNING id",
+            user_id, marker, email, display, pic, now, now,
+        )
+        if len(rows) != 1:
+            raise HistoryConflict('shared identity conflict')
+        return UserProfile(user_id, email, display, pic)
+
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile:
         uid = _user_id(subject)
         now = _now_iso()
         display = (name.strip() or email.split("@", 1)[0])[:160]
         pic = picture.strip()[:1000]
+        # The user ID derives from the verified Google subject, so only its
+        # own shared placeholder may be replaced when rolling back login.
+        await self._run("UPDATE users SET provider_subject=? WHERE id=? AND provider_subject LIKE 'shared:%'", subject, uid)
         await self._run(
             "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
             "VALUES (?, 'google', ?, ?, ?, ?, ?, ?) "
@@ -1046,26 +1287,32 @@ class D1HistoryStore:
         """Owner-scoped search over the signed-in user's own conversations.
 
         Matches conversation titles and recent message text. Every value is a
-        bound parameter; LIKE wildcards in the query are escaped so it is always
-        a literal substring. Results and scanned rows are bounded. Stored
-        conversations are never truncated.
+        bound parameter and the query is always a literal substring. Results and
+        scanned rows are bounded. Stored conversations are never truncated.
+
+        Membership is `instr`, not `LIKE`. D1 refuses a LIKE pattern longer than
+        50 bytes as "too complex", and a 17-character Korean query is already 53
+        bytes once wrapped in `%…%` — the store accepts 80 characters. `instr`
+        takes an ordinary bound value, so no query length can reach that
+        ceiling; the run-result read below uses the same route for the same
+        reason. `lower()` on both sides keeps the ASCII case-insensitivity that
+        `LIKE` gave, and there is no wildcard left to escape.
         """
-        needle = _escape_like(query)
+        needle = _normalize_search_query(query)
         if not needle:
             return []
         scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
-        pattern = f"%{needle}%"
         rows = await self._all(
             "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, "
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            " AND m.content LIKE ? ESCAPE '\\' ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
+            " AND instr(lower(m.content), lower(?)) > 0 ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND c.product_scope=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND (instr(lower(c.title), lower(?)) > 0 OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
-            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE scan.content LIKE ? ESCAPE '\\')) "
+            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE instr(lower(scan.content), lower(?)) > 0)) "
             "ORDER BY c.updated_at DESC LIMIT ?",
-            pattern, user_id, scope, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
+            needle, user_id, scope, needle, MAX_CONVERSATION_SEARCH_SCAN_ROWS, needle, bounded,
         )
         return [{
             "id": str(row.get("id", "")),
@@ -1796,8 +2043,9 @@ class D1HistoryStore:
         result = await self._run(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
             "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
-            "WHERE run_id=? AND user_id=? AND status<>'completed'",
-            status, _now_iso(), summary, summary, run_id, user_id,
+            "WHERE run_id=? AND user_id=? AND status<>'completed' "
+            "AND (? <> 'running' OR action <> 'pc_files_query' OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
+            status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
 
@@ -1878,6 +2126,27 @@ class D1HistoryStore:
             run_id, user_id,
         )
 
+    async def get_claw_run_for_artifact_document(
+        self, user_id: str, document_id: str
+    ) -> dict[str, Any] | None:
+        """#2952 follow-up — the owner row that minted one generated document.
+
+        ``claw_document_metadata`` carries no owner column, so the only existing
+        canonical authority binding a document to a product user is the run row
+        that recorded ``artifact_document_id``. A read that finds nothing here has
+        no verified owner and must fail closed.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(document_id, str) or not document_id:
+            raise HistoryError("document_id is required")
+        return await self._first(
+            "SELECT run_id, artifact_document_id, artifact_filename, artifact_media_type "
+            "FROM claw_run_history WHERE artifact_document_id=? AND user_id=?",
+            document_id, user_id,
+        )
+
     async def get_claw_run_result_message(
         self, user_id: str, run_id: str, conversation_id: str,
     ) -> str | None:
@@ -1886,11 +2155,8 @@ class D1HistoryStore:
         # Prefer the actual Oracle receipt. Claw may also have a preliminary
         # local correlation under the same run; it is not the completed Mesh
         # command/revision that minted the persisted assistant message.
-        correlation = await self._first(
-            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND state='done'",
-            user_id, run_id,
-        )
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
         if not isinstance(correlation, dict):
             correlation = await self.get_local_task_correlation(user_id, run_id)
         if not isinstance(correlation, dict):
@@ -1957,11 +2223,8 @@ class D1HistoryStore:
             raise HistoryError("user_id is required")
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
-        correlation = await self._first(
-            "SELECT command_id, revision_ref FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND state='done'",
-            user_id, run_id,
-        )
+        correlation = await self._dispatch(
+            "get_oracle_mesh_run_correlation", user_id=user_id, run_id=run_id)
         if not isinstance(correlation, dict):
             # #5015: the legacy local-runner correlation table comes from a
             # source migration that a deployment may never have applied. The
@@ -2110,11 +2373,9 @@ class D1HistoryStore:
         # The command scope must name a command this owner dispatched inside
         # this run: a result can never be attached to a command of another run
         # or of another owner.
-        dispatched = await self._first(
-            "SELECT dispatch_id FROM oracle_mesh_dispatch "
-            "WHERE user_id=? AND run_id=? AND command_id=? LIMIT 1",
-            user_id, run_id, command_id,
-        )
+        dispatched = await self._dispatch(
+            "get_oracle_mesh_run_command", user_id=user_id, run_id=run_id,
+            command_id=command_id)
         if dispatched is None:
             raise HistoryError("claw run command is not dispatched for this run")
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
@@ -2155,7 +2416,9 @@ class D1HistoryStore:
             # completed keeps that terminal: a late command result never
             # reopens it.
             self.db.prepare(
-                "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? "
+                "UPDATE claw_run_history SET status=CASE WHEN status='failed' THEN status ELSE ? END, updated_at=?, "
+                "result_summary=CASE WHEN status='failed' AND result_summary='pc_read_failed' "
+                "THEN result_summary ELSE ? END "
                 "WHERE id=? AND status != 'completed' "
                 "AND EXISTS (SELECT 1 FROM messages WHERE id=? AND conversation_id=?)"
             ).bind(aggregate_status, now, aggregate_summary, str(owned.get("id")),
@@ -2221,27 +2484,20 @@ class D1HistoryStore:
                 # A command of this run already failed: the work can never
                 # read as an overall success.
                 raise HistoryError("claw run carries a failed command")
-            pending = await self._first(
-                "SELECT dispatch_id, state FROM oracle_mesh_dispatch "
-                "WHERE user_id=? AND run_id=? AND state NOT IN ('done', 'failed') LIMIT 1",
-                user_id, run_id,
-            )
-            if pending is not None:
+            open_state = await self._dispatch(
+                "get_oracle_mesh_run_open_state", user_id=user_id, run_id=run_id)
+            if open_state.get("pending_dispatch_id"):
                 raise HistoryError("claw run has commands without a terminal result")
-            failed = await self._first(
-                "SELECT dispatch_id FROM oracle_mesh_dispatch "
-                "WHERE user_id=? AND run_id=? AND state='failed' LIMIT 1",
-                user_id, run_id,
-            )
-            if failed is not None:
+            if open_state.get("failed_dispatch_id"):
                 raise HistoryError("claw run carries a failed command")
         now = _now_iso()
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
         statements = [self.db.prepare(
             "UPDATE claw_run_history SET status=?, updated_at=?, "
-            "result_summary=CASE WHEN result_summary IS NULL THEN ? ELSE result_summary END "
+            "result_summary=CASE WHEN ? = 'pc_read_failed' AND ? = 'failed' THEN ? "
+            "WHEN result_summary IS NULL THEN ? ELSE result_summary END "
             "WHERE id=? AND status != 'completed'"
-        ).bind(status, now, bounded_summary, str(owned.get("id")))]
+        ).bind(status, now, bounded_summary, status, bounded_summary, bounded_summary, str(owned.get("id")))]
         if message_id is not None and content is not None:
             body = _bounded_text(content, "local_task_result")
             if len(body) > MAX_HISTORY_MESSAGE_CHARS:
@@ -2614,11 +2870,10 @@ class D1HistoryStore:
             # file call's own replay protection.
             correlation_sql = "user_id=? AND run_id=? AND tool_call_ref IS NULL"
             correlation_params = (user_id, run_id)
-        owned = await self._first(
-            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
-            run_id, user_id,
-        )
-        if owned is None:
+        # The owner is established by the layer that holds the run rows: on D1 that is
+        # `claw_run_history`; on the 컴2 queue it is the Worker, whose route already fetched
+        # this run for this user and answered 404 before forwarding (see `run_ownership`).
+        if not await self._run_is_owned(run_id, user_id):
             raise HistoryForbidden("claw run is not owned by current user")
         existing = await self._first(
             "SELECT dispatch_id, kind, command_text, command_id, tool_request_ref, request_id, revision_ref, "
@@ -2659,7 +2914,7 @@ class D1HistoryStore:
                 "request_id=?, revision_ref=?, evidence_ref=?, request_fingerprint=?, "
                 "account_ref=?, workspace_ref=?, device_id=?, binding_ref=?, node_ref=?, "
                 "root_ref=?, path_relative=?, file_path=?, kind=?, command_text=?, "
-                "tool_call_ref=?, nonce_sha256=NULL, state=?, "
+                "tool_call_ref=?, nonce_sha256=NULL, claimed_until=NULL, state=?, "
                 "expires_at=?, created_at=? WHERE "
                 f"{correlation_sql} AND state=? AND expires_at<=?",
                 command_id, tool_request_ref, request_id, revision_ref,
@@ -2735,18 +2990,23 @@ class D1HistoryStore:
     async def oldest_pending_oracle_mesh_dispatch(self) -> dict[str, Any] | None:
         """#4139 — the single oldest claimable Oracle execution, if any.
 
-        Claimable means pending, unexpired and never handed out (no nonce).
-        The caller (the poll route, under the channel secret) atomically claims
-        it before responding; this read alone hands out nothing.
+        Claimable means pending, unexpired and either never handed out or handed
+        out under a lease that has run out (#5895). A lease that ran out is the
+        only evidence that a claim reached nobody: the poll route wrote the nonce
+        and the response died before the executor could read it. The caller (the
+        poll route, under the channel secret) re-claims atomically before
+        responding; this read alone hands out nothing.
         """
+        now = _now_iso()
         row = await self._first(
             "SELECT dispatch_id, user_id, run_id, kind, command_text, command_id, tool_request_ref, "
             "request_id, revision_ref, evidence_ref, request_fingerprint, account_ref, "
             "workspace_ref, device_id, binding_ref, node_ref, root_ref, path_relative, "
             "file_path, nonce_sha256, state, expires_at FROM oracle_mesh_dispatch "
-            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NULL "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?)) "
             "ORDER BY created_at ASC LIMIT 1",
-            "pending", _now_iso(),
+            "pending", now, now,
         )
         return dict(row) if row is not None else None
 
@@ -2756,20 +3016,223 @@ class D1HistoryStore:
         """#4139 — atomically hand one pending dispatch to the executor.
 
         The conditional update is the single-claim gate: exactly one poll wins
-        per dispatch. Returns False when another poll already claimed it, when
-        it expired, or when it left pending meanwhile.
+        one round. #5895 makes the hand-out a lease — the same UPDATE records the
+        instant the claim may be handed out again, under the same condition the
+        yield uses — so a claim whose response never reached the executor is not
+        a permanent loss. Re-claiming rolls the nonce, so a submission still
+        carrying the superseded nonce is refused by the existing nonce comparison
+        instead of attaching a second result. Returns False when another poll won
+        this round, when it expired, or when it left pending meanwhile.
         """
         if not isinstance(dispatch_id, str) or not dispatch_id:
             raise HistoryError("dispatch_id is required")
         if not isinstance(nonce_sha256, str) or not nonce_sha256:
             raise HistoryError("nonce_sha256 is required")
-        now = _now_iso()
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
         written = await self._run(
-            "UPDATE oracle_mesh_dispatch SET nonce_sha256=? "
-            "WHERE dispatch_id=? AND state=? AND expires_at>? AND nonce_sha256 IS NULL",
-            nonce_sha256, dispatch_id, "pending", now,
+            "UPDATE oracle_mesh_dispatch SET nonce_sha256=?, claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            nonce_sha256,
+            _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS)),
+            dispatch_id, "pending", now, now,
         )
         return _changed_rows(written) == 1
+
+    async def renew_oracle_mesh_claim(
+        self, *, dispatch_id: str, nonce_sha256: str,
+    ) -> str | None:
+        """#5997 — extend the lease of a command this executor is still running.
+
+        The condition is the same proof a submission carries: the row is still
+        pending and still names this nonce. A renewal whose claim was lost — the
+        lease ran out and a later poll re-rolled the nonce — changes nothing and is
+        told so, so the executor stops renewing instead of resurrecting a claim the
+        lane has already given to somebody else. A running executor that keeps
+        renewing is never handed out again; one that dies stops renewing, and the
+        existing lease expiry re-delivers the work exactly as before.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        if not isinstance(nonce_sha256, str) or not nonce_sha256:
+            raise HistoryError("nonce_sha256 is required")
+        moment = datetime.now(timezone.utc)
+        until = _iso(moment + timedelta(seconds=ORACLE_MESH_CLAIM_LEASE_SECONDS))
+        written = await self._run(
+            "UPDATE oracle_mesh_dispatch SET claimed_until=? "
+            "WHERE dispatch_id=? AND state=? AND nonce_sha256=?",
+            until, dispatch_id, "pending", nonce_sha256,
+        )
+        return until if _changed_rows(written) == 1 else None
+
+    async def cancel_oracle_mesh_dispatches_for_run(
+        self, *, user_id: str, run_id: str,
+    ) -> int:
+        """#5895 — stop one owner run's PC work, whether it is queued or running.
+
+        ``pending`` with no claim nonce is exactly "no executor has ever seen
+        this": stopping it removes the work from the queue, and the existing poll
+        — which yields only ``pending`` rows — never hands it out again, so the
+        next request the owner makes is claimed straight away instead of sitting
+        behind it.
+
+        A row that already carries a nonce is the case the owner is really asking
+        about: the PC has the command and the wait has no deadline (#5995 took the
+        client ceiling away, and a command the customer's shell never finishes -
+        measured on 2026-10-28 - holds every later operation on that PC behind it).
+        That row is not failed here. Its ``termination`` is set to ``cancelled``
+        and its ``state`` stays ``pending``, so the executor can read the owner's
+        stop through the existing channel, end its own child, and land its result
+        through the nonce gate it already holds. The row stays submittable on
+        purpose: a refused submission would be resent until quarantined, which
+        holds the queue longer than the stop the owner asked for.
+
+        The terminal row says ``cancelled`` in the column that already records how
+        a command ended, so an owner's own stop is never reported back as a PC
+        failure. Both the read and the write are owner-scoped in the WHERE clause,
+        so another account's dispatch is not addressable, and each update is one
+        conditional statement: a claim that won the race is not cancelled as
+        queued work, and a cancel that won is never claimed twice.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        stopped = await self._run(
+            "UPDATE oracle_mesh_dispatch SET state=?, termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NULL",
+            "failed", "cancelled", user_id, run_id, "pending",
+        )
+        running = await self._run(
+            "UPDATE oracle_mesh_dispatch SET termination=? "
+            "WHERE user_id=? AND run_id=? AND state=? AND nonce_sha256 IS NOT NULL",
+            "cancelled", user_id, run_id, "pending",
+        )
+        return _changed_rows(stopped) + _changed_rows(running)
+
+    async def oracle_mesh_dispatch_cancellation(self, *, dispatch_id: str) -> bool:
+        """Whether the owner stopped one already-claimed dispatch, for the executor.
+
+        One bounded read on a single column, addressed only by the dispatch id the
+        executor already holds. It never claims, never writes, and answers ``False``
+        for anything it cannot read: an unreachable store must not look like an
+        owner's stop, because ``False`` leaves the running command alone while
+        ``True`` ends it.
+        """
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise HistoryError("dispatch_id is required")
+        row = await self._first(
+            "SELECT termination FROM oracle_mesh_dispatch "
+            "WHERE dispatch_id=? AND state=?",
+            dispatch_id, "pending",
+        )
+        return isinstance(row, dict) and row.get("termination") == "cancelled"
+
+    async def oracle_mesh_node_live_claims(
+        self, *, node_ref: str, except_dispatch_id: str = "",
+    ) -> int:
+        """How many dispatches are claimed on one PC right now, for the executor.
+
+        #6106 leaves a held console line only when nothing on that PC is working.
+        The connector's own map covers the host that runs it, and this row set is
+        the only view that also covers the failover partner (#5462): during a
+        handover both hosts can hold a claim, and a sweep that ended the partner's
+        running command would break standard rule 1 — the work on a PC is never
+        cut short.
+
+        The claim is read from the same real columns the lease already uses: a row
+        still ``pending``, unexpired, handed out (``nonce_sha256`` set) and not yet
+        yielded (``claimed_until`` in the future). Nothing is inferred from text.
+        ``except_dispatch_id`` removes the asker's own claim, which is live for
+        exactly as long as it is asking, so without it the answer would always be
+        "busy" and no wedged line could ever be cleared.
+
+        It never claims, never writes, and raises on an unreadable row like every
+        other reader here: the route turns that into the safe answer, which is
+        "busy", because the alternative ends a real command on a customer machine.
+        """
+        if not isinstance(node_ref, str) or not node_ref or len(node_ref) > 256:
+            raise HistoryError("node_ref is required")
+        if not isinstance(except_dispatch_id, str):
+            raise HistoryError("except_dispatch_id must be text")
+        now = _now_iso()
+        sql = (
+            "SELECT COUNT(*) AS n FROM oracle_mesh_dispatch "
+            "WHERE node_ref=? AND state=? AND expires_at>? "
+            "AND nonce_sha256 IS NOT NULL AND claimed_until>?"
+        )
+        params: list[Any] = [node_ref, "pending", now, now]
+        if except_dispatch_id:
+            sql += " AND dispatch_id<>?"
+            params.append(except_dispatch_id)
+        row = await self._first(sql, *params)
+        if not isinstance(row, dict):
+            raise HistoryError("oracle mesh claim read unavailable")
+        count = row.get("n")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            raise HistoryError("oracle mesh claim read is not a count")
+        return count
+
+
+    #: #82 monitoring reads this to answer "is anything waiting that nobody is
+    #: claiming" without a log line and without a string match. The node list is
+    #: bounded the same way the presence beat is (#5553 shares the number).
+    LANE_STATUS_NODE_LIMIT = 8
+
+    async def oracle_mesh_lane_status(
+        self, *, node_limit: int = LANE_STATUS_NODE_LIMIT,
+    ) -> dict[str, Any]:
+        """The dispatch lane's own state, as counts and ages.
+
+        Three questions, all of them answerable from the columns the lane already
+        writes: work that no executor has claimed (`state='pending'`, unexpired, no
+        nonce or a lease that has run out — the exact condition the poll yields on),
+        work a claim is held for right now (the lease columns #5997 renews), and,
+        per PC, how long its oldest unanswered dispatch has been waiting.
+
+        Ages are computed here from the stored timestamps rather than in SQL, so the
+        D1 and the local SQLite dialect answer the same way and one number cannot
+        drift between environments.
+        """
+        if (isinstance(node_limit, bool) or not isinstance(node_limit, int)
+                or not 1 <= node_limit <= 64):
+            raise HistoryError("node_limit is out of range")
+        moment = datetime.now(timezone.utc)
+        now = _iso(moment)
+        waiting = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? "
+            "AND (nonce_sha256 IS NULL OR (claimed_until IS NOT NULL AND claimed_until<=?))",
+            "pending", now, now,
+        )
+        claimed = await self._first(
+            "SELECT COUNT(*) AS n, MIN(created_at) AS oldest FROM oracle_mesh_dispatch "
+            "WHERE state=? AND expires_at>? AND nonce_sha256 IS NOT NULL AND claimed_until>?",
+            "pending", now, now,
+        )
+        # Per PC, two different questions, because the owner standard keeps them
+        # apart: `open` is everything still unfinished there (a long command under a
+        # live claim is that, and nothing may call it a stop), while `waiting` is
+        # only the work no claim covers. A silence verdict reads `waiting` alone.
+        nodes = await self._all(
+            "SELECT node_ref, COUNT(*) AS n, MIN(created_at) AS oldest, "
+            "SUM(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN 1 ELSE 0 END) "
+            "AS waiting, "
+            "MIN(CASE WHEN nonce_sha256 IS NULL "
+            "OR (claimed_until IS NOT NULL AND claimed_until<=?) THEN created_at "
+            "ELSE NULL END) AS waiting_oldest "
+            "FROM oracle_mesh_dispatch WHERE state=? AND expires_at>? "
+            "AND node_ref IS NOT NULL AND node_ref<>'' "
+            "GROUP BY node_ref ORDER BY oldest ASC LIMIT ?",
+            now, now, "pending", now, node_limit,
+        )
+        return {
+            "unclaimed": _lane_count_age(waiting, moment),
+            "claimed": _lane_count_age(claimed, moment),
+            "nodes": [_lane_node(row, moment) for row in nodes if isinstance(row, dict)],
+        }
 
     async def consume_oracle_mesh_dispatch(
         self, *, dispatch_id: str, nonce: str
@@ -2811,12 +3274,13 @@ class D1HistoryStore:
         if row is None:
             return None
         expected = row.get("nonce_sha256")
-        if (
-            not isinstance(expected, str) or not expected
-            or not isinstance(row.get("expires_at"), str)
-            or row["expires_at"] <= _now_iso()
-        ):
+        if not isinstance(expected, str) or not expected:
             return None
+        # Owner decision 2026-10-28: the dispatch TTL does not expire a result.
+        # A run whose lease is being extended (#5997 renew) may finish late; the
+        # nonce still proves this is the claimed executor, and the claim/lease
+        # gate above still decides delivery. Only a foreign or stale nonce is
+        # refused here.
         presented = _hashlib.sha256(nonce.encode("utf-8")).hexdigest()
         if not _hmac.compare_digest(presented, expected):
             return None
@@ -2832,7 +3296,7 @@ class D1HistoryStore:
             )
             if _changed_rows(written) != 1:
                 return None
-            return {**dict(row), "state": "received", "claim": "retry"}
+            return _tagged({**dict(row), "state": "received", "claim": "retry"})
         if state != "pending":
             return None
         written = await self._run(
@@ -2853,7 +3317,7 @@ class D1HistoryStore:
         )
         if accepted is None or accepted.get("state") != "received":
             return None
-        return {**dict(accepted), "claim": "first"}
+        return _tagged({**dict(accepted), "claim": "first"})
 
     async def record_oracle_mesh_first_result(
         self, *, dispatch_id: str, content_sha256: str, content_bytes: int,
@@ -2947,6 +3411,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_original(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#4139 — keep one over-budget command output in the private R2
         original store under a server-derived key.
@@ -2965,20 +3430,15 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
         key = await self._put_full_message(
-            conversation_id, message_id, raw, max_bytes=ORACLE_MESH_ORIGINAL_MAX_BYTES,
+            conversation_id, message_id, raw, max_bytes=_oracle_mesh_original_max_bytes(row),
         )
         if key is None:
             # _put_full_message only skips short texts; an over-budget output
@@ -2990,6 +3450,7 @@ class D1HistoryStore:
     async def store_oracle_mesh_command_result(
         self, *, user_id: str, dispatch_id: str, conversation_id: str,
         message_id: str, raw: str, expected_sha256: str, expected_bytes: int,
+        verified: Any = None,
     ) -> str:
         """#5015 — keep one small verified command output for Engine re-feed.
 
@@ -3007,19 +3468,14 @@ class D1HistoryStore:
             raise HistoryError("original text is required")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
-        if len(data) > ORACLE_MESH_ORIGINAL_MAX_BYTES:
+        if len(data) > _oracle_mesh_original_max_bytes(row):
             raise HistoryError("mesh original exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):
@@ -3052,15 +3508,10 @@ class D1HistoryStore:
             raise HistoryError("unsupported mesh original media type")
         if not isinstance(expected_sha256, str) or not expected_sha256:
             raise HistoryError("expected digest is required")
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
+        row = await self._mesh_dispatch_pin(
+            user_id=user_id, dispatch_id=dispatch_id, expected_sha256=expected_sha256,
+            expected_bytes=expected_bytes, verified=verified,
         )
-        if row is None or row.get("user_id") != user_id:
-            raise HistoryForbidden("mesh dispatch is not owned by current user")
-        if row.get("result_sha256") != expected_sha256 or row.get("result_bytes") != expected_bytes:
-            raise HistoryError("mesh original does not match the pinned result")
         data = bytes(raw)
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
@@ -3090,12 +3541,9 @@ class D1HistoryStore:
         """
         if not isinstance(user_id, str) or not user_id:
             return None
-        row = await self._first(
-            "SELECT user_id, result_sha256, result_bytes FROM oracle_mesh_dispatch "
-            "WHERE dispatch_id=?",
-            dispatch_id,
-        )
-        if row is None or row.get("user_id") != user_id:
+        row = await self._dispatch(
+            "get_oracle_mesh_dispatch_pin", user_id=user_id, dispatch_id=dispatch_id)
+        if row is None:
             return None
         pinned_sha = row.get("result_sha256")
         pinned_bytes = row.get("result_bytes")
@@ -3148,7 +3596,7 @@ class D1HistoryStore:
         )
         if row is None:
             return None
-        return dict(row)
+        return _tagged(row)
 
     async def record_claw_approval_handoff(
         self,

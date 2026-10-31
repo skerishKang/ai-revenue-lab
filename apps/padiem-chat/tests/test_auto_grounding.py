@@ -136,7 +136,7 @@ async def test_current_question_auto_searches_once_and_returns_grounded_envelope
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": CURRENT})
 
     assert response.status_code == 200
     body = response.json()
@@ -170,7 +170,7 @@ async def test_stable_concept_does_not_over_search() -> None:
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": STABLE, "mode": "auto", "skill": "explain"})
+        response = await client.post("/api/chat", json={"messages": STABLE, "skill": "plan"})
 
     assert response.status_code == 200
     body = response.json()
@@ -203,7 +203,7 @@ async def test_required_search_with_web_off_continues_with_a_notice() -> None:
         transport=httpx.MockTransport(b14_handler),
     )
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat", json={"messages": CURRENT})
 
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_unavailable"
@@ -240,7 +240,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     provider = RecordingProvider()
     install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat/stream", json={"messages": CURRENT})
 
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
@@ -256,7 +256,8 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert provider.search_calls == [(CURRENT[0]["content"], 5)]
     assert len(seen) == 1
     assert seen[0]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen[0]["business14"]["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in seen[0]["business14"]
     assert "max_attempts" not in seen[0]["business14"]
     assert "웹 근거 사용 규칙" in seen[0]["messages"][0]["content"]
 
@@ -290,7 +291,7 @@ async def test_stream_required_search_with_no_evidence_continues_with_a_notice()
     install_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
+        response = await client.post("/api/chat/stream", json={"messages": CURRENT})
 
     assert response.status_code == 200
     done = [data for event, data in parse_public_sse(response.text) if event == "done"][-1]

@@ -373,19 +373,19 @@ class RecordingTaskAlertStore:
         self.add_task_calls = 0
         self.add_alert_calls = 0
 
-    async def get_task(self, task_id: str, *, workspace_id: str):
+    async def get_task(self, task_id: str, *, workspace_id: str, member_id: str):
         self.reads += 1
         task = self.tasks.get(task_id)
-        return task if task is not None and task.workspace_id == workspace_id else None
+        if task is None or task.workspace_id != workspace_id:
+            return None
+        return task if task.member_id == member_id else None
 
-    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id=None):
+    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str):
         self.reads += 1
         alert = self.alerts.get(alert_id)
         if alert is None or alert.workspace_id != workspace_id:
             return None
-        if member_id is not None and not alert.is_visible_to(member_id):
-            return None
-        return alert
+        return alert if alert.is_visible_to(member_id) else None
 
     async def add_task(self, task: ClawFollowupTask):
         self.writes += 1

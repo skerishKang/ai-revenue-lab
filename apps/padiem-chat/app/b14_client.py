@@ -161,6 +161,9 @@ class ChatToolCall:
     name: str
     arguments: Mapping[str, Any]
     index: int | None = None
+    # #4727: opaque provider continuation token; the product relays it, never
+    # interprets it, and it grants no execution authority.
+    signature: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,6 +187,7 @@ def _project_tool_call(raw: B14StreamToolCall | None) -> ChatToolCall | None:
         name=raw.name,
         arguments=dict(raw.arguments),
         index=raw.index,
+        signature=raw.signature,
     )
 
 
@@ -398,9 +402,9 @@ def _agent_profile(
         model_policy={
             "model": model,
             # Keep unchosen sampling absent: B14 honours provider native defaults.
-            # Arbitrary catalog-wide fallback stays disabled. This does not
-            # block the owner-pinned tier grade backup in the B14 gateway.
-            "allow_external_fallback": False,
+            # B14 offers no external fallback knob at all now: a manual route
+            # never substitutes another catalog model, and the owner-pinned
+            # tier grade backup in the B14 gateway does not depend on one.
             # No local attempt pin; upstream routing applies its own policy.
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),

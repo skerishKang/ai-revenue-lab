@@ -418,6 +418,7 @@ class B62EngineOrchestrationBridge:
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_tools: Mapping[str, Any] | None = None,
+        byok_selection: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -462,6 +463,10 @@ class B62EngineOrchestrationBridge:
             "require_evidence": False,
             "require_verification": False,
         }
+        if byok_selection is not None:
+            request["agent"]["model_policy"].update(
+                user_credential_required=True, byok_selection=dict(byok_selection))
+            request["max_retries"] = 0
         if agent_plan is not None:
             request["agent_plan"] = dict(agent_plan)
             # #5573 Owner decision: PC tool turns have no execution deadline.
@@ -488,7 +493,7 @@ class B62EngineOrchestrationBridge:
                     or set(pc_tools) != {"device_id", "allowed_scopes"}
                     or not is_pc_device_id(pc_tools.get("device_id"))
                     or not isinstance(scopes, list) or not scopes
-                    or any(v not in ("query_drives", "files_list", "files") for v in scopes)
+                    or any(v not in ("query_drives", "files_list", "files", "files_write") for v in scopes)
                     or len(set(scopes)) != len(scopes)
                     or not request.get("subject_id") or not request.get("session_id")):
                 raise B62OrchestrationError("invalid_engine_request", "PC 도구 요청을 확인할 수 없습니다.", status_code=500)
@@ -566,7 +571,8 @@ class B62EngineOrchestrationBridge:
     async def start_stream(
         self, *, user_id: str, messages: Sequence[Mapping[str, str]], skill: Any,
         model_id: str, user_text: str, conversation_id: str | None,
-        pc_tools: Mapping[str, Any], subject_id: str, session_id: str,
+        pc_tools: Mapping[str, Any] | None, subject_id: str | None, session_id: str,
+        user_credential_ref: str | None = None, byok_selection: Mapping[str, str] | None = None,
         additional_system_context: str | None = None, product_identity: str | None = None,
     ):
         request = self.build_engine_request(
@@ -574,8 +580,10 @@ class B62EngineOrchestrationBridge:
             conversation_id=conversation_id, pc_tools=pc_tools,
             subject_id=subject_id, session_id=session_id,
             additional_system_context=additional_system_context, product_identity=product_identity,
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
-        iterator = self._client.stream_orchestration(request, pc_progress=True)
+        wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}
+        iterator = self._client.stream_orchestration(wire, pc_progress=pc_tools is not None)
         try:
             async for record in iterator:
                 if "orchestration" not in record:
@@ -603,6 +611,7 @@ class B62EngineOrchestrationBridge:
         continuation_ref: str,
         pause_id: str,
         outcome: str,
+        user_credential_resolver: Any = None,
     ) -> B62OrchestrationResult:
         snapshot = await self._store.load_active(user_id=user_id, continuation_ref=continuation_ref)
         if snapshot.pause_id != pause_id:
@@ -639,6 +648,14 @@ class B62EngineOrchestrationBridge:
             "evidence_ref": evidence_ref,
             "decided_at": decided_at,
         }
+        selection = resume_request.get("agent", {}).get("model_policy", {}).get("byok_selection")
+        if selection is not None:
+            if not callable(user_credential_resolver):
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409)
+            resolved = await user_credential_resolver(selection)
+            if resolved is None:
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409)
+            resume_request["user_credential_ref"] = resolved[1]
         try:
             raw = await self._client.resume_orchestration(resume_request)
         except PadiemAiEngineClientError as exc:

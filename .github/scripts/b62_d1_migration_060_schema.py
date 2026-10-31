@@ -10,7 +10,10 @@ index and foreign key survive::
     claw_conversation_artifact_index  (026)  size_bytes > 0
     b66_template_source               (027)  byte_length >= 1
 
-This helper is the contract of ``.github/workflows/b62-d1-migration-060-gate.yml``:
+This helper holds the 060 source contract. Its per-migration gate
+``.github/workflows/b62-d1-migration-060-gate.yml`` was retired by #5895 ②, so
+the helper is kept as the reviewed record of 008/026/027/060 and is no longer
+dispatched:
 
 * it pins the approved source of 008/027/060 by SHA-256 and reuses the
   owner-approved 026 source of ``b54_claw_artifact_schema_026.py``, so there is

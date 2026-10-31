@@ -31,6 +31,7 @@ MIGRATIONS = (
     Path(__file__).resolve().parents[1] / "migrations" / "048_oracle_mesh_command.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "049_oracle_mesh_command_result_meta.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "063_oracle_mesh_dispatch_tool_call_scope.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "074_oracle_mesh_dispatch_claim_lease.sql",
 )
 
 OWNER = "usr_owner_4139"
@@ -62,6 +63,10 @@ class _Statement:
     async def run(self) -> dict[str, Any]:
         conn = sqlite3.connect(self._path)
         try:
+            # The same row shape `first()` gives and the same shape a real D1
+            # `results` array carries: without it, any multi-column SELECT read
+            # through this shim died converting a plain tuple of values as a dict.
+            conn.row_factory = sqlite3.Row
             cursor = conn.execute(self._sql, self._values)
             rows = [dict(row) for row in cursor.fetchall()]
             conn.commit()
@@ -324,3 +329,43 @@ def test_original_envelope_bound_is_the_wire_envelope(tmp_path):
             conversation_id=CONVERSATION, message_id=MID, raw=too_big,
             expected_sha256="0" * 64, expected_bytes=len(too_big.encode("utf-8")),
         ))
+
+
+@pytest.mark.parametrize("method", ["store_oracle_mesh_original", "store_oracle_mesh_command_result"])
+@pytest.mark.parametrize("kind,root", [
+    ("read", "pc_files_read"), ("read", "other_read"), ("command", "pc_files_read"),
+])
+def test_twenty_mb_original_storage_is_bound_to_the_verified_pc_read_row(tmp_path, method, kind, root):
+    store, bucket = fixture(tmp_path)
+    asyncio.run(store.record_claw_run(
+        user_id=OWNER, run_id=RUN, channel="web", action="txt_read",
+        title="Claw: probe", status="pending", conversation_id=CONVERSATION,
+    ))
+    row = asyncio.run(store.create_oracle_mesh_dispatch(**_dispatch_kwargs(
+        kind=kind, root_ref=root, command_text="hostname.exe" if kind == "command" else None,
+        path_relative="large.txt", file_path="C:/verified/large.txt",
+    )))
+    raw = "a" * (20_000_000 - 8) + "END_FILE"
+    body = raw.encode()
+    digest = _pin(store, row["dispatch_id"], body)
+    fields = dict(user_id=OWNER, dispatch_id=row["dispatch_id"],
+                  conversation_id=CONVERSATION, message_id=MID, raw=raw,
+                  expected_sha256=digest, expected_bytes=len(body))
+    with pytest.raises(HistoryForbidden):
+        asyncio.run(getattr(store, method)(**{**fields, "user_id": FOREIGN}))
+    if kind != "read" or root != "pc_files_read":
+        with pytest.raises(HistoryError, match="bounded storage envelope"):
+            asyncio.run(getattr(store, method)(**fields))
+        assert not bucket.objects
+        return
+    asyncio.run(getattr(store, method)(**fields))
+    returned, pinned = asyncio.run(store.read_oracle_mesh_original(
+        user_id=OWNER, dispatch_id=row["dispatch_id"],
+        conversation_id=CONVERSATION, message_id=MID,
+    ))
+    assert returned == body
+    assert pinned == digest
+    assert asyncio.run(store.read_oracle_mesh_original(
+        user_id=FOREIGN, dispatch_id=row["dispatch_id"],
+        conversation_id=CONVERSATION, message_id=MID,
+    )) is None

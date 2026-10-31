@@ -21,7 +21,6 @@ from padiem_ai_core.orchestration_events import OrchestrationEvent
 from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
-MAX_RELAY_EVENTS = 128
 _ALLOWED_FIELDS = (
     "event_id", "run_id", "trace_id", "app_id",
     "kind", "sequence", "timestamp_iso",
@@ -99,7 +98,6 @@ def live_claw_sse(
 
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
-        seen = 0
         last_sequence = 0
         stream_identity: tuple[str, str, str] | None = None
         seen_event_ids: set[str] = set()
@@ -107,10 +105,7 @@ def live_claw_sse(
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
 
         async def report(event: OrchestrationEvent) -> None:
-            nonlocal seen, last_sequence, stream_identity, verified_terminal
-            seen += 1
-            if seen > MAX_RELAY_EVENTS:
-                raise ValueError("P01 stream event budget exceeded")
+            nonlocal last_sequence, stream_identity, verified_terminal
             projected = _event_projection(event)
             sequence = projected["sequence"]
             if (
@@ -350,10 +345,28 @@ def _engine_stream_cause(exc: Exception, record_kind: str) -> dict[str, str]:
 
 
 def chat_pc_orchestration_sse(
-    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None,
+    stream, *, pc_run_id: str, on_completed, on_scope=None, done_fields=None, on_failed=None,
+    pending_fields=None,
 ) -> StreamingResponse:
-    """Relay one verified Engine stream; heartbeats are presentation only."""
+    """Relay one verified Engine stream; heartbeats are presentation only.
+
+    ``pending_fields`` names the run the caller already opened (its id and the
+    conversation it belongs to). When the Engine stream stops without a verified
+    result while that run is still executing, the relay hands the browser the
+    same pending continuation a normal ``done`` frame uses instead of a terminal
+    error: the run may still be stored, and an error frame reads as a refusal on
+    every client, including the ones already open before a fix ships.
+    """
     from .orchestration_bridge import B62OrchestrationError, _safe_events
+    async def settle_failure():
+        if on_failed is not None:
+            try:
+                await on_failed()
+            except Exception:
+                # Preserve the original terminal error; never expose storage details.
+                import logging
+                logging.getLogger(__name__).warning("chat_pc_run_settle_unavailable")
+
     async def events():
         text_seen = False
         pc_seen = False
@@ -442,11 +455,23 @@ def chat_pc_orchestration_sse(
             if not settled:
                 raise ValueError("Engine stream ended without a result")
         except B62OrchestrationError as exc:
+            if pending_fields is not None and exc.code == "invalid_engine_stream":
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
+            await settle_failure()
             error = {"code": exc.code, "message": exc.user_message}
             if exc.code == "invalid_engine_stream":
                 error["cause"] = _engine_stream_cause(exc, record_kind)
             yield _frame("error", {"error": error})
         except Exception as exc:
+            # #5895: any unclassified stop of a started Engine stream — a
+            # transport cut included — leaves the run running on the server. The
+            # pending frame keeps the screen on "still processing" and lets the
+            # existing owner-scoped read-back deliver the stored answer.
+            if pending_fields is not None:
+                yield _frame("done", {"done": True, "pc_pending": True, **dict(pending_fields)})
+                return
+            await settle_failure()
             yield _frame("error", {"error": {
                 "cause": _engine_stream_cause(exc, record_kind),
                 "code": "invalid_engine_stream", "message": "AI 작업 스트림을 확인할 수 없습니다.",
@@ -455,5 +480,39 @@ def chat_pc_orchestration_sse(
             close = getattr(stream, "aclose", None)
             if callable(close):
                 await close()
-    return StreamingResponse(events(), media_type="text/event-stream",
+    async def traced_events():
+        import asyncio
+        import logging
+        from .pc_correlation import run_hash
+        trace_run = run_hash(pc_run_id) or "none"
+        log = logging.getLogger("padiem_chat.pc_correlation")
+        log.setLevel(logging.INFO)
+        reason = "closed"
+        source = events()
+        log.info("pc_chat stage=stream_started run_hash=%s", trace_run)
+        try:
+            async for frame in source:
+                if frame.startswith(b"event: error"):
+                    reason = "error_record"
+                elif frame.startswith(b"event: done"):
+                    reason = "pending" if b'"pc_pending":true' in frame else "completed"
+                elif frame.startswith(b"event: orchestration_pause"):
+                    reason = "paused"
+                yield frame
+        except asyncio.CancelledError:
+            reason = "cancelled"
+            raise
+        except GeneratorExit:
+            reason = "closed"
+            raise
+        except Exception:
+            reason = "exception"
+            raise
+        finally:
+            try:
+                await source.aclose()
+            finally:
+                log.info("pc_chat stage=stream_ended run_hash=%s reason=%s", trace_run, reason)
+
+    return StreamingResponse(traced_events(), media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})

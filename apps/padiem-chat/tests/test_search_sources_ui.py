@@ -86,7 +86,7 @@ global.window = { location: { href: "https://chat.example.test/" } };
 const init = {
   method: "POST",
   headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-  body: JSON.stringify({ messages: [{ role: "user", content: "질문" }], mode: "auto", skill: "auto" }),
+  body: JSON.stringify({ messages: [{ role: "user", content: "질문" }], skill: "auto" }),
 };
 const adapted = adaptToolRequest("/api/chat/stream", init, "web_search");
 const direct = adaptToolRequest("/api/chat", init, "deep_research");

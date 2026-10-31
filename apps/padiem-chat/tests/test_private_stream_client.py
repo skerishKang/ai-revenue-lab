@@ -102,7 +102,8 @@ def test_private_stream_uses_core_contract_and_manual_free_only_payload():
         assert events[-1].done is True
         assert seen["stream"] is True
         assert seen["model"] == MODEL
-        assert seen["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["business14"]
         assert "max_attempts" not in seen["business14"]
         assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["messages"][0]["role"] == "system"
@@ -301,8 +302,13 @@ def test_worker_wires_completed_and_streaming_transports_with_separate_public_st
     worker = WORKER_PATH.read_text(encoding="utf-8")
     app_factory = APP_FACTORY_PATH.read_text(encoding="utf-8")
 
-    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
-    assert "CloudflareB14StreamingServiceTransport(b14_binding, b14_proof_secret)" in worker
+    wired = " ".join(worker.split())
+    assert (
+        "service_transport, stream_transport = _compose_b14_transports( "
+        "settings=settings, binding=b14_binding, proof_secret=b14_proof_secret, )"
+    ) in wired
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
     assert "stream_transport=stream_transport" in worker
     assert 'Route("/api/chat", api_chat, methods=["POST"])' in app_factory
     assert 'Route("/api/chat/stream", api_chat_stream, methods=["POST"])' in app_factory

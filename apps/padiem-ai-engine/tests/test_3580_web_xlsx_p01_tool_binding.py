@@ -100,81 +100,40 @@ def test_web_confirmation_requires_real_trusted_host_registration():
 
 
 @pytest.mark.asyncio
-async def test_actual_toolruntime_pause_and_engine_verified_resume():
+async def test_a_connected_owner_reaches_the_handler_without_a_pause():
+    """Owner decision 2026-10-28: pre-delegated — no confirmation pause."""
     binding, called = make_binding()
     auth = binding.resolve_authority(AGENT_ID)
     invocation = ToolInvocation(tool_id=RUNTIME_TOOL, arguments=arguments())
-    with pytest.raises(ToolRuntimeError) as blocked:
-        await binding.tool_runtime.execute(
-            invocation, auth.compiled.runtime_profile, auth.authorization,
-        )
-    assert blocked.value.code == "tool_user_confirmation_required"
-    assert called == []
+    await binding.tool_runtime.execute(
+        invocation, auth.compiled.runtime_profile, auth.authorization,
+    )
+    assert called == [SOURCE.selection_ref]
     service, ledger = engine(binding)
-    initial = input_payload(binding)
-    response = await service.orchestrate_payload(initial)
+    response = await service.orchestrate_payload(input_payload(binding))
     assert response.status_code == 200, response.body
     result = response.body["orchestration"]
-    assert result["execution"]["metadata"]["status"] == "paused"
-    assert called == []
-    ref = result["continuation_ref"]
-    record = ledger.resolve(app_id=APP_ID, continuation_ref=ref)
-    assert record.pause.invocation_sha256 == tool_invocation_digest(invocation)
-    assert record.pause.approval_scope == (SCOPE,)
-    submission = {
-        "decision_id": "decision_web_confirm_a",
-        "pause_id": record.pause.pause_id, "outcome": "approved",
-        "authority_ref": "first_party_owner",
-        "evidence_ref": "first_party_session",
-        "decided_at": min(datetime.now(timezone.utc),
-                          record.pause.expires_at).isoformat(),
-    }
-    resume = {k: v for k, v in initial.items()
-              if k not in {"require_evidence", "require_verification"}}
-    resume.update({"continuation_ref": ref, "decision": submission})
-    accepted = await service.resume_payload(resume)
-    assert accepted.status_code == 200, accepted.body
-    assert accepted.body["orchestration"]["execution"]["metadata"]["status"] == "completed"
-    assert called == [SOURCE.selection_ref]
-    rejected_replay = await service.resume_payload(resume)
-    assert rejected_replay.status_code != 200
-    assert called == [SOURCE.selection_ref]
+    assert result["execution"]["metadata"]["status"] == "completed"
+    assert "continuation_ref" not in result
+    assert called[-1] == SOURCE.selection_ref
 
 
 @pytest.mark.asyncio
-async def test_denied_engine_decision_does_not_reach_handler():
+async def test_orchestration_completes_without_a_confirmation_pause():
     binding, called = make_binding()
     service, ledger = engine(binding)
-    initial = input_payload(binding)
-    paused = await service.orchestrate_payload(initial)
-    ref = paused.body["orchestration"]["continuation_ref"]
-    record = ledger.resolve(app_id=APP_ID, continuation_ref=ref)
-    resume = {k: v for k, v in initial.items()
-              if k not in {"require_evidence", "require_verification"}}
-    resume.update({
-        "continuation_ref": ref,
-        "decision": {
-            "decision_id": "decision_web_denied",
-            "pause_id": record.pause.pause_id,
-            "outcome": "denied",
-            "authority_ref": "first_party_owner",
-            "evidence_ref": "first_party_session",
-            "decided_at": datetime.now(timezone.utc).isoformat(),
-        },
-    })
-    denied = await service.resume_payload(resume)
-    assert denied.status_code != 200
-    assert called == []
+    response = await service.orchestrate_payload(input_payload(binding))
+    assert response.status_code == 200, response.body
+    assert response.body["orchestration"]["execution"]["metadata"]["status"] == "completed"
+    assert called == [SOURCE.selection_ref]
+
 
 @pytest.mark.asyncio
 async def test_confirmed_selection_still_denies_wrong_sha_and_foreign_owner():
     from padiem_ai_core import ToolAuthorizationContext
     binding, calls = make_binding()
     authority = binding.resolve_authority(AGENT_ID)
-    approved_context = ToolAuthorizationContext(
-        app_id=APP_ID, agent_id=authority.compiled.runtime_profile.id,
-        granted_auth_scopes=(SCOPE,), user_confirmed_tools=(RUNTIME_TOOL,),
-    )
+    approved_context = authority.authorization
     for field, invalid in (
         ("owner_id", "owner_web_foreign"),
         ("workspace_id", "owner:web_foreign"),
@@ -198,10 +157,7 @@ async def test_core_refuses_unsafe_extra_fields_and_missing_original_confirmatio
     from padiem_ai_core import ToolAuthorizationContext
     binding, _ = make_binding()
     authority = binding.resolve_authority(AGENT_ID)
-    approved_context = ToolAuthorizationContext(
-        app_id=APP_ID, agent_id=authority.compiled.runtime_profile.id,
-        granted_auth_scopes=(SCOPE,), user_confirmed_tools=(RUNTIME_TOOL,),
-    )
+    approved_context = authority.authorization
     for replacement in (
         {"read_content": True}, {"drive_write": True},
         {"local_pc_access": True}, {"original_immutable": False},

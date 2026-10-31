@@ -27,7 +27,7 @@ from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Router
+from starlette.routing import Route, Router
 
 from app.pilot.call_ledger import CallLedgerError, LEDGER_ID_PREFIX
 from app.pilot.call_ledger_store import (
@@ -42,9 +42,6 @@ from app.pilot.service_proof import service_proof_denial
 LIST_PATH = "/v1/admin/model-calls"
 DETAIL_PATH = "/v1/admin/model-calls/{log_id}"
 AGGREGATE_PATH = "/v1/admin/model-calls/aggregate"
-
-router = Router()
-
 
 def _error(code: str, message: str, *, status: int = 422) -> JSONResponse:
     return JSONResponse(
@@ -142,7 +139,6 @@ def _resolve_store(request: Request):
     return injected if injected is not None else store_from_env()
 
 
-@router.route(LIST_PATH, methods=["GET"])
 async def list_model_calls(request: Request):
     denial = await _denial(request)
     if denial is not None:
@@ -178,7 +174,6 @@ async def _list(store, filters, since, until, limit):
     return rows, total
 
 
-@router.route(AGGREGATE_PATH, methods=["GET"])
 async def aggregate_model_calls(request: Request):
     denial = await _denial(request)
     if denial is not None:
@@ -210,7 +205,6 @@ async def aggregate_model_calls(request: Request):
     )
 
 
-@router.route(DETAIL_PATH, methods=["GET"])
 async def get_model_call(request: Request):
     denial = await _denial(request)
     if denial is not None:
@@ -231,3 +225,12 @@ async def get_model_call(request: Request):
         {"call": row, "storage_state": _state(store)},
         headers={"Cache-Control": "no-store"},
     )
+
+
+router = Router(
+    routes=[
+        Route(LIST_PATH, list_model_calls, methods=["GET"]),
+        Route(AGGREGATE_PATH, aggregate_model_calls, methods=["GET"]),
+        Route(DETAIL_PATH, get_model_call, methods=["GET"]),
+    ]
+)

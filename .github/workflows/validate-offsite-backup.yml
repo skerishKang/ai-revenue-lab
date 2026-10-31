@@ -1,0 +1,32 @@
+name: Validate COM2 offsite backup
+on:
+  pull_request:
+    paths:
+      - 'deploy/host-com2/offsite-backup/**'
+      - 'scripts/ops/com2_backup.py'
+      # The offsite tool resolves the D1 generation through this authority and reads
+      # what the publisher writes, so a change to either must re-run these tests
+      # instead of rotting until the next nightly run fails on COM2.
+      - 'scripts/ops/com2_backup_schedule.py'
+      - 'scripts/ops/refresh_d1.py'
+      - 'docs/operations/COM2_OFFSITE_BACKUP_RUNBOOK.md'
+      - '.github/workflows/validate-offsite-backup.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offsite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned crypto (hashes from the repo lock)
+        run: python -m pip --isolated install --index-url https://pypi.org/simple --disable-pip-version-check --require-hashes -r deploy/host-com2/offsite-backup/requirements.txt
+      - name: Rehearsal (upload, verify, restore, tamper refusal, retention)
+        run: python -m unittest deploy/host-com2/offsite-backup/tests/test_offsite.py -q
+      - name: Packaging (installer, units, env names, pins)
+        run: python -m unittest deploy/host-com2/offsite-backup/tests/test_packaging.py -q

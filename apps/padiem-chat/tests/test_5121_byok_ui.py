@@ -91,7 +91,7 @@ def test_connection_test_is_real_and_only_shown_for_server_supported_providers()
         '"/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider)'
         in CAPABILITIES
     )
-    assert 'method: "POST"' not in CAPABILITIES
+    assert '"/api/byok/register" : "/api/byok/detect"' in CAPABILITIES
     assert 'method: "PATCH"' not in CAPABILITIES
     assert "customTestState = \"testing\";" in CAPABILITIES
     assert "setCustomMessage(copy.testOk, \"ok\");" in CAPABILITIES
@@ -193,7 +193,7 @@ def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities(
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
     assert (
-        'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };'
+        'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };'
         in APP
     )
     assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in APP
@@ -217,8 +217,9 @@ def test_custom_failures_reopen_the_existing_model_card() -> None:
     assert "handleCustomRequestFailure(error);" in APP
 
 
-def test_custom_lane_never_routes_through_b14_orchestration() -> None:
-    assert "payload && payload.custom ? null : await tryOrchestration(payload, signal)" in TRANSPORT
+def test_custom_lane_keeps_direct_path_without_server_owned_byok_opt_in() -> None:
+    assert "payload && payload.custom && !byokViaB14" in TRANSPORT
+    assert "window.PadiemCustomSelection?.viaEngine?.() === true" in TRANSPORT
 
 
 _HARNESS = r"""
@@ -245,7 +246,7 @@ function responseFor(behavior) {
 async function runCase(testCase) {
   const calls = [];
   const sandbox = {
-    window: {},
+    window: { PadiemCustomSelection: { viaEngine: () => testCase.byokViaB14 === true } },
     console,
     Intl,
     Response,
@@ -298,12 +299,28 @@ def _run_transport_cases() -> dict:
         pytest.skip("node is not available for the browser transport harness")
     base = {
         "messages": [{"role": "user", "content": "테스트 질문"}],
-        "mode": "auto",
         "skill": "auto",
         "timezone": "Asia/Seoul",
         "calendar_turn_id": "turn-5121",
     }
     cases = [
+        {
+            "name": "byok_auth_error", "byokViaB14": True,
+            "payload": {**base, "custom": {"provider": CUSTOM_PROVIDER, "model": CUSTOM_MODEL}},
+            "responses": {
+                "/api/orchestration/status": {"json": {"orchestration_ready": True, "authenticated": True}},
+                "/api/orchestration": {"status": 403, "json": {"error": {"code":"byok_auth_failed", "message":"키를 확인해 주세요."}}},
+                "/api/chat/stream": {"sse": True},
+            },
+        },
+        {
+            "name": "byok_engine_enabled", "byokViaB14": True,
+            "payload": {**base, "custom": {"provider": CUSTOM_PROVIDER, "model": CUSTOM_MODEL}},
+            "responses": {
+                "/api/orchestration/status": {"json": {"orchestration_ready": True, "authenticated": True}},
+                "/api/orchestration": {"sse": True},
+            },
+        },
         {
             "name": "custom",
             "payload": {
@@ -385,3 +402,31 @@ def test_custom_error_code_reaches_the_existing_error_ui() -> None:
     assert failure["error"]["code"] == "custom_credential_required"
     assert "API 키" in failure["error"]["message"]
     assert [call["url"] for call in failure["calls"]] == ["/api/chat/stream"]
+
+
+def test_byok_auto_registration_keeps_manual_advanced_and_never_renders_key():
+    section = _custom_section()
+    assert 'autoKeyInput.type = "password"' in section
+    assert 'customAdvanced = document.createElement("details")' in section
+    assert 'customAdvanced.open = true' not in section
+    assert 'autoKeyInput.addEventListener("input", invalidate)' in section
+    auto = CAPABILITIES.split('async function autoByok', 1)[1].split('async function saveCustomKey', 1)[0]
+    assert 'autoCard.textContent' in auto and 'innerHTML' not in auto
+    assert 'autoKeyInput.value = ""' in auto
+    assert 'customSelection = { provider: customProviderId, model: customModelValue }' in auto
+    assert 'localStorage' not in auto and 'sessionStorage' not in auto
+
+
+def test_byok_enabled_browser_uses_orchestration_once_and_never_direct_fallback():
+    case = _run_transport_cases()["byok_engine_enabled"]
+    assert case["ok"] is True
+    assert [row["url"] for row in case["calls"]] == ["/api/orchestration/status", "/api/orchestration"]
+    body = json.loads(case["calls"][1]["body"])
+    assert body["custom"] == {"provider": CUSTOM_PROVIDER, "model": CUSTOM_MODEL}
+    assert "user_credential_ref" not in body
+
+
+def test_byok_engine_error_is_terminal_without_direct_or_provider_fallback():
+    case = _run_transport_cases()["byok_auth_error"]
+    assert case["ok"] is False and case["error"]["code"] == "byok_auth_failed"
+    assert [row["url"] for row in case["calls"]] == ["/api/orchestration/status", "/api/orchestration"]

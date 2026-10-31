@@ -65,7 +65,7 @@ async def test_service_binding_transport_wins_and_preserves_explicit_agnes_paylo
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == DEFAULT_B14_MODEL_ID
     assert payload["business14"]["required_capabilities"] == ["chat"]
-    assert payload["business14"]["allow_external_fallback"] is False
+    assert "allow_external_fallback" not in payload["business14"]
     assert "max_attempts" not in payload["business14"]
     assert "provider" not in payload
     assert "authorization" not in {key.lower() for key in payload}
@@ -136,7 +136,20 @@ def test_service_binding_target_is_fixed_in_repository_config():
             "binding": "VOICE_STT_SERVICE",
             "service": "padiem-voice-stt",
         },
+        {
+            "binding": "B66_PDF_RENDERER_SERVICE",
+            "service": "padiem-b66-pdf-renderer",
+        },
+        {
+            "binding": "GOOGLE_OAUTH_STATE_SERVICE",
+            "service": "padiem-google-oauth-state",
+        },
+        {
+            "binding": "P01_ENGINE_SERVICE",
+            "service": "padiem-ai-engine",
+        },
     ]
+    assert "DOCUMENT_PARSER_SERVICE" not in {item["binding"] for item in config["services"]}
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
 
@@ -191,8 +204,16 @@ def test_worker_wires_service_binding_and_browser_cannot_choose_target():
     main = (root / "app/main.py").read_text(encoding="utf-8")
 
     assert "binding_value(self.env, B14_SERVICE_BINDING_NAME)" in worker
-    assert "CloudflareB14ServiceTransport(b14_binding, b14_proof_secret)" in worker
+    # #5784 PR-2: the Worker now hands the two binding transports to one composer
+    # instead of building them inline, so what is pinned here is that the exact
+    # binding transport types still reach that composer.
+    assert "service_transport, stream_transport = _compose_b14_transports(" in worker
+    assert "service_binding_factory=CloudflareB14ServiceTransport," in worker
+    assert "stream_binding_factory=CloudflareB14StreamingServiceTransport," in worker
+    # #5899 guard pin, ported: the fail-closed flag is composed only from
+    # server-side settings, so neither the browser nor a request value can widen it.
     assert 'require_service_binding=settings.runtime_mode == "b14"' in worker
+    assert "require_service_binding=request" not in worker
     assert 'B14_SERVICE' not in main
     assert '"B14_SERVICE"' not in main
 

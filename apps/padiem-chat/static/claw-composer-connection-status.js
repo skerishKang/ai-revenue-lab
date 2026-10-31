@@ -18,6 +18,14 @@
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SNAPSHOT_EVENT = "padiem:claw-device-directory";
 
+  function vocabStatus(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.status === "function" ? (v.status(key) || fallback) : fallback;
+  }
+  function vocabName(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.name === "function" ? (v.name(key) || fallback) : fallback;
+  }
   const COPY = Object.freeze({
     ko: {
       connect: "컴퓨터 연결",
@@ -183,10 +191,10 @@
 
     function labelFor(next) {
       const t = locale();
-      if (next === "connected") return t.connected;
-      if (next === "connecting") return t.connecting;
-      if (next === "disconnected") return t.disconnected;
-      if (next === "unavailable") return t.check;
+      if (next === "connected") return vocabStatus("connected", t.connected);
+      if (next === "connecting") return vocabStatus("checking", t.connecting);
+      if (next === "disconnected") return vocabStatus("disconnected", t.disconnected);
+      if (next === "unavailable") return vocabStatus("failed", t.check);
       if (next === "preparing") return t.preparing;
       return t.connect;
     }
@@ -253,13 +261,6 @@
       const open = !panel.hidden;
       button.setAttribute("aria-controls", PANEL_ID);
       button.setAttribute("aria-expanded", open ? "true" : "false");
-      // #5634: the first-screen computer card is the second visible entry into
-      // this same panel, so it carries the same expanded state.
-      const card = document.getElementById("pcConnectStarter");
-      if (card) {
-        card.setAttribute("aria-controls", PANEL_ID);
-        card.setAttribute("aria-expanded", open ? "true" : "false");
-      }
       const active = document.activeElement;
       if (open) {
         if (!active || active === button || active === document.body) {
@@ -318,12 +319,26 @@
       }
     }
 
-    button.addEventListener("click", openExistingPanel);
+    // #5573 step 1 (2026-10-29 redesign): this control no longer opens the
+    // device directory panel. A connected account gets the small PC-list
+    // popover; otherwise the ONE connect flow takes over (modal, download,
+    // self-closing wait). The panel path stays as the fallback for a page
+    // where the connect-flow module did not load.
+    button.addEventListener("click", () => {
+      const flow = window.PadiemPcConnectFlow;
+      if (!flow || typeof flow.open !== "function") {
+        openExistingPanel();
+        return;
+      }
+      if (state === "connected" && typeof flow.togglePopover === "function") {
+        flow.togglePopover(button);
+        return;
+      }
+      void flow.open();
+    });
 
-    // #5634: the first first-screen card reuses this control's exact panel path,
-    // so the computer connection entry has one implementation in both places.
-    const starterCard = document.getElementById("pcConnectStarter");
-    if (starterCard) starterCard.addEventListener("click", openExistingPanel);
+    // The starter card's own wiring moved to pc-connect-flow.js, which owns the
+    // one connect flow the card now opens.
 
     // The shared snapshot is the only input. This module never reads the
     // directory endpoint itself, so it can never become a second reader or a
@@ -340,6 +355,16 @@
       paint(detail.state);
       watchPanel();
       syncPanelState();
+    });
+    // #5573 step 1: the pairing list (/api/pc/pairings) is the PC-list truth
+    // the 2026-10-29 redesign asks for. When the connect-flow module has
+    // actually read it (read === "ok"), that state wins here; any other read
+    // keeps the directory-driven state above, so a static or unconfigured
+    // deployment never flips this control on its own.
+    window.addEventListener("padiem:pc-pairing-state", (event) => {
+      const detail = event && event.detail ? event.detail : null;
+      if (!detail || detail.read !== "ok" || typeof detail.state !== "string") return;
+      paint(detail.state);
     });
     new MutationObserver(() => paint(state)).observe(document.documentElement, {
       attributes: true,

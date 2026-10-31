@@ -1,10 +1,35 @@
 # #5786 councillor blog wrapper — browser evidence
 
-Captured 2026-10-25 in Chromium (Playwright). `before-*` came from the live
-site at the #5803 build; `after-*` / numbered files come from a locally served
-build of this branch (`PADIEM_CHAT_RUNTIME_MODE=mock`, `uvicorn --port 8099`).
+Captured 2026-10-25 in Chromium (Playwright). Files prefixed `00-before`,
+`p3-before` came from the **live site**; `p3-after` and the numbered files come
+from a locally served build of the branch
+(`PADIEM_CHAT_RUNTIME_MODE=mock`, `uvicorn --port 8099`).
 
-## Desktop face crop (the reason for this pass)
+## Pass 3 — readability, tap targets and spacing (`p3-*`)
+
+Measured on the live page, not eyeballed. `contrast_before_light.json` and
+`contrast_after_light.json` carry every number.
+
+| text | size | before | after | WCAG AA |
+| --- | --- | --- | --- | --- |
+| fact label / source / footer line | 12px | 4.37–4.64 | 6.1–6.5 | pass |
+| activity date (gold) | 13px | **2.75** | 5.33 | was failing |
+| hero name (over video, sampled from pixels) | 116px | — | 11.0 | pass |
+| hero lead | 20px | — | 14.5 | pass |
+| primary CTA label on accent | 15px | — | 5.3 | pass |
+
+| control | before | after |
+| --- | --- | --- |
+| topbar theme / motion / login | 33px tall | **44px** at 390/820/1440/1920 |
+| CTA / channel chip | 52 / 48px | unchanged |
+| section left edge | 130px | 130px at every width (verified, not changed) |
+
+`p3-before-activity-1440.png` vs `p3-after-activity-1440.png` is the stable
+comparison — the same scroll position with no video in frame. The `p3-*-1920`
+pair also differs by the playing video frame, so use the activity crops for the
+readability judgement.
+
+## Desktop face crop (pass 2, `00-before` / numbered)
 
 | file | box | aspect | source height cropped |
 | --- | --- | --- | --- |

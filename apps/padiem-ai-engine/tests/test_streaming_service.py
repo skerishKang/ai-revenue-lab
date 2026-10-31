@@ -41,7 +41,6 @@ def valid_payload(model: str = _INERT_MODEL_ID) -> dict:
             "required_capabilities": ["free"],
             "model_policy": {
                 "model": model,
-                "allow_external_fallback": False,
             },
         },
         "messages": [{"role": "user", "content": "안녕"}],
@@ -498,13 +497,13 @@ async def test_actual_core_streaming_runtime_owns_the_manual_selection() -> None
 
 
 @pytest.mark.asyncio
-async def test_the_core_auto_branch_stays_a_core_contract_the_engine_route_never_reaches() -> None:
-    """#5002: the Core keeps its own manual-vs-auto branch; the Engine refuses it.
+async def test_the_core_stream_runtime_has_a_single_lane_without_the_auto_branch() -> None:
+    """B7: the Core manual-vs-auto branch is gone.
 
-    The suspended Router auto route is a Core contract for its own callers, so
-    the coverage moves to the Core runtime. The Engine product route must never
-    reach that branch, which is proven by the Engine-level denial test.
-    """
+    Every streamed route — including the retired auto id — dispatches through
+    the one manual surface; the B14 gateway refuses that id before any routing
+    (pinned platform-side), so no auto lane remains to reach. The old
+    Engine-level denial test covered the surface that no longer exists."""
     b14 = FakeB14StreamingClient()
     runtime = StreamingExecutionRuntime(app_id="lovebud", b14_stream_client=b14)
     request = ExecutionRequest(
@@ -524,6 +523,7 @@ async def test_the_core_auto_branch_stays_a_core_contract_the_engine_route_never
 
     events = [event async for event in runtime.stream(request)]
 
-    assert len(b14.auto_calls) == 1
-    assert len(b14.manual_calls) == 0
+    # B7: the single lane takes the retired id too; the auto branch is gone.
+    assert len(b14.manual_calls) == 1
+    assert len(b14.auto_calls) == 0
     assert events[-1].done is True

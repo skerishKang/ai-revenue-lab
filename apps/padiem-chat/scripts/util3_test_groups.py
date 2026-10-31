@@ -50,6 +50,10 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "tests/test_5785_util_shared_contract.py",
         "tests/test_5608_util_sidebar_submenu.py",
         "tests/test_5608_body_glass_unification.py",
+        "tests/test_5655_intent_boundary.py",
+        # #5908: the quick-run toolbox cards are a util entry-surface contract
+        # (same switch, same Claw entries), so they ride with the shared group.
+        "tests/test_5908_quick_tool_grid.py",
     ),
 }
 

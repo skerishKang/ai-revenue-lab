@@ -301,10 +301,10 @@ def test_the_worker_composition_root_wires_the_local_access_seam() -> None:
     # #5553: the canonical source AND the directory consumer each receive the
     # persisted Mesh presence store from the SAME D1 binding.
     assert worker_source.count("presence_store=mesh_presence_store,") == 2
-    assert "_worker_app.state.mesh_device_presence_store = mesh_presence_store" in worker_source
-    assert "_worker_app.state.mesh_presence_generation_resolver = (" in worker_source
+    assert "worker_app.state.mesh_device_presence_store = mesh_presence_store" in worker_source
+    assert "worker_app.state.mesh_presence_generation_resolver = (" in worker_source
     assert "if claw_local_access_source is not None:" in worker_source
-    assert "_worker_app.state.claw_local_access_source = claw_local_access_source" in worker_source
+    assert "worker_app.state.claw_local_access_source = claw_local_access_source" in worker_source
     # Worker-native composition: trusted bindings only, never a process env.
     composition_source = (
         APP_ROOT / "app" / "claw_local_access_composition.py"

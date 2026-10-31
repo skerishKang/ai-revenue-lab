@@ -124,7 +124,7 @@ _BASE64_RE = re.compile(r"^[A-Za-z0-9+/]+={0,2}$")
 _MIME_RE = re.compile(r"^audio/[A-Za-z0-9.+-]{1,60}$")
 _ID_CHARS = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _MAX_UTTERANCE_ID_CHARS = 96
-_MAX_RESPONSE_BYTES = 131072
+_MAX_RESPONSE_BYTES = 1024 * 1024
 
 
 def _error(code: str, status: int) -> JSONResponse:

@@ -16,7 +16,9 @@ def test_b66_pc_view_reuses_canonical_claw_projection_without_execution():
     assert "window.PadiemClawLocalHandoff?.deriveDeviceDirectory" in js
     assert html.index('./claw-local-handoff.js') < html.index('./b66-quote-runtime.js')
     assert 'credentials: "same-origin"' in js
-    assert 'MAX_PC_DIRECTORY_BYTES = 32768' in js
+    # #5895-D: no client byte gate refuses the owner's own same-origin reads.
+    assert 'MAX_PC_DIRECTORY_BYTES' not in js
+    assert 'const payload = JSON.parse(raw)' in js
     loader = js.split("async function loadPcDirectory() {", 1)[1].split(
         "function closeDialog()", 1
     )[0]
@@ -45,7 +47,10 @@ def test_no_eager_request_and_logout_discards_stale_pc_results():
     assert "current === pcQuerySequence && !section.hidden" in js
     assert "resetPcDirectory();" in js
     assert '["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]' in js
-    assert 'if (auth && auth.authenticated === true) refresh();' in js
+    # #6100: the same capability event sets signedIn (the logged-out hint)
+    # and refreshes only for a signed-in browser.
+    assert "signedIn = !!(auth && auth.authenticated === true);" in js
+    assert "if (signedIn) refresh();" in js
     assert "resetPcDirectory();\n      runtime = null;" in js
     assert 'pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다.' in js
     assert "Padiem Connect installation and same-account sign-in are not ready yet" in js

@@ -90,11 +90,17 @@ class AutomationTaskAlertProjectionResult:
 
 
 class ClawTaskAlertProjectionStore(Protocol):
-    """The existing task/alert store surface this bridge consumes."""
+    """The existing task/alert store surface this bridge consumes.
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None: ...
+    #2952 follow-up: both single-record reads name the member they serve, so a
+    dedup lookup can never observe another member's row.
+    """
+
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None: ...
     async def get_alert(
-        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+        self, alert_id: str, *, workspace_id: str, member_id: str
     ) -> ClawAlert | None: ...
     async def add_task(self, task: ClawFollowupTask) -> ClawFollowupTask: ...
     async def add_alert(self, alert: ClawAlert) -> ClawAlert: ...
@@ -250,7 +256,9 @@ async def _project_task(
     store: ClawTaskAlertProjectionStore,
 ) -> AutomationTaskAlertProjectionResult:
     task_id = _deterministic_id(owner.workspace_id, run.run_id, "task")
-    existing = await store.get_task(task_id, workspace_id=owner.workspace_id)
+    existing = await store.get_task(
+        task_id, workspace_id=owner.workspace_id, member_id=owner.member_id
+    )
     if existing is not None:
         _require_task_identity(
             existing,
@@ -383,6 +391,7 @@ async def project_terminal_run_status_alert(
             severity=severity,
             title=title,
             visible_to_members=visible_to_members,
+            linked_refs=(run.run_id, rule.rule_id),
         )
         return AutomationTaskAlertProjectionResult("alert", alert_id, False)
 
@@ -396,6 +405,7 @@ async def project_terminal_run_status_alert(
             created_at=run.completed_at or run.started_at,
             status=ClawAlertStatus.ACTIVE,
             visible_to_members=visible_to_members,
+            linked_refs=(run.run_id, rule.rule_id),
         )
     )
     return AutomationTaskAlertProjectionResult("alert", alert_id, True)

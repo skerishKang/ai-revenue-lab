@@ -7,7 +7,7 @@ Proves statically that the gate:
   4. refuses when the ledger database is absent — it never creates one, and it
      never emits the database identifier or any secret value;
   5. applies through wrangler's migrations mechanism from the B14 app directory;
-  6. verifies the applied shape by readback: 42/27 columns and the 7 indexes the
+  6. verifies the applied shape by readback: 43/27 columns and the 7 indexes the
      migration itself declares, schema names only, never row content;
   7. never deploys the worker and never edits wrangler.toml.
 """
@@ -25,6 +25,7 @@ APP_DIR = ROOT / "apps" / "korean-ai-platform"
 WRANGLER = APP_DIR / "wrangler.toml"
 MIGRATIONS = APP_DIR / "migrations"
 LEDGER_MIGRATION = MIGRATIONS / "0001_b14_model_call_ledger.sql"
+CREDENTIAL_MIGRATION = MIGRATIONS / "0002_credential_source.sql"
 DATABASE_NAME = "padiem-b14-call-ledger"
 BINDING = "B14_CALL_LEDGER_D1"
 
@@ -145,12 +146,37 @@ def test_migrations_apply_uses_the_wrangler_migrations_mechanism_once() -> None:
     assert "--file=" not in text
 
 
-def test_migration_directory_holds_exactly_the_ledger_migration() -> None:
+def test_migration_directory_holds_exactly_the_ledger_migrations() -> None:
     files = sorted(path.name for path in MIGRATIONS.glob("*.sql"))
-    assert files == ["0001_b14_model_call_ledger.sql"], (
+    assert files == [
+        "0001_b14_model_call_ledger.sql",
+        "0002_credential_source.sql",
+    ], (
         f"a new migration changes what `migrations apply` mutates; update the "
         f"gate and this pin together: {files}"
     )
+
+
+def test_credential_source_migration_is_one_guarded_alter() -> None:
+    """0002 is the first file that mutates, so its shape is pinned here.
+
+    It may add exactly one column, it may not touch the rows or the table 0001
+    created, and the CHECK is what keeps the label a two-state category rather
+    than free text a caller could write.
+    """
+    sql = CREDENTIAL_MIGRATION.read_text(encoding="utf-8")
+    statements = [
+        line.strip() for line in re.findall(
+            r"(?m)^(?!--)\s*(ALTER|CREATE|DROP|UPDATE|DELETE|INSERT|PRAGMA)\b", sql
+        )
+    ]
+    assert statements == ["ALTER"], statements
+    assert "b14_model_call_attempt" not in sql
+    assert re.search(
+        r"ALTER TABLE b14_model_call ADD COLUMN credential_source TEXT NOT NULL"
+        r" DEFAULT 'pool'\s*CHECK \(credential_source IN \('pool','user'\)\)",
+        sql,
+    ), sql
 
 
 def test_ledger_migration_is_idempotent_ddl_only() -> None:
@@ -178,13 +204,13 @@ def test_gate_index_readback_matches_the_migration_declares_them() -> None:
 
 def test_schema_readback_asserts_the_expected_column_shape() -> None:
     text = _workflow_text()
-    assert "assert len(call) == 42" in text
+    assert "assert len(call) == 43" in text
     assert "assert len(attempt) == 27" in text
     assert "assert len(declared) == 7" in text
     assert "not name.startswith('sqlite_autoindex')" in text
     # The apply-readback step and the final evidence step must both carry the
     # numbers: a stale marker in either place would misreport what was verified.
-    assert text.count("B14_LEDGER_COLUMNS=42,27") == 2
+    assert text.count("B14_LEDGER_COLUMNS=43,27") == 2
     assert text.count("B14_LEDGER_INDEXES=7") == 2
     assert "B14_LEDGER_COLUMN_ASSERT=PASS" in text
     assert "B14_LEDGER_INDEX_ASSERT=PASS" in text
@@ -217,15 +243,16 @@ def test_final_evidence_markers_present() -> None:
     for marker in (
         "B14_LEDGER_D1_PROVISION=PASS",
         "D1_PROVISION_TARGET=padiem-b14-call-ledger",
-        "D1_MIGRATIONS=0001",
+        "D1_MIGRATIONS=0001,0002",
         "D1_MIGRATION_0001=APPLIED_OR_REPLAY_SAFE",
+        "D1_MIGRATION_0002=APPLIED_ONCE_BY_MIGRATIONS_TABLE",
         "D1_DATABASE_CREATED=0",
         "WORKER_DEPLOYED=0",
         "WRANGLER_TOML_MODIFIED=0",
     ):
         assert marker in text, marker
     # Markers that must survive in exactly the two places they belong.
-    assert text.count("D1_MIGRATIONS=0001") == 2
+    assert text.count("D1_MIGRATIONS=0001,0002") == 2
 
 
 def test_workflow_never_deploys_worker_or_edits_config() -> None:

@@ -94,7 +94,7 @@ def _install(monkeypatch, lane: _Lane, *, pc_entry: bool = False) -> _Bridge:
     bridge = _Bridge()
     monkeypatch.setattr(chat_pc_drive, "execute_chat_pc_drive_lane", lane)
 
-    async def _available(request, *, uid, requested_device_id=None):
+    async def _available(request, *, uid, requested_device_id=None, user_text=None):
         if not pc_entry or (requested_device_id is not None and requested_device_id != DEVICE_ID):
             return None
         return {"pc_tools": {"device_id": DEVICE_ID, "allowed_scopes": ["files_list"]},
@@ -198,3 +198,41 @@ def test_the_surface_has_no_second_pc_executor_or_target_store():
     assert "agent_plan" not in source
     assert "tool_arguments" not in source
     assert "_CHAT_PC_MARKERS" not in source
+
+
+@pytest.mark.parametrize('pc_entry', [False, True])
+def test_byok_opt_in_uses_same_engine_turn_with_verified_pc_context(monkeypatch, pc_entry):
+    import app.byok_bridge as byok
+    from app.byok_credentials import CUSTOM_PROVIDERS
+    lane = _Lane()
+    bridge = _install(monkeypatch, lane, pc_entry=pc_entry)
+    async def credential(state, *, uid, selection):
+        assert uid == 'owner'
+        return SimpleNamespace(endpoint=CUSTOM_PROVIDERS['gemini'].base_origin, api_key='unit-byok-not-real-secret')
+    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', credential)
+    request = _request({'messages':[{'role':'user','content':PC_TEXT}],
+        'custom':{'provider':'gemini','model':'gemini-unit-model'}, 'device_id':DEVICE_ID}, bridge)
+    request.app.state.settings.byok_via_b14 = True
+    response = _call(request)
+    assert response.status_code == 200
+    assert b'unit-byok-not-real-secret' not in response.body
+    assert len(bridge.calls) == 1 and lane.calls == []
+    sent = bridge.calls[0]
+    assert sent['model_id'] == 'google/gemini-unit-model'
+    assert json.loads(sent['user_credential_ref'])['provider'] == 'google'
+    assert (sent['pc_tools'] is not None) == pc_entry
+    if pc_entry:
+        assert sent['pc_tools'] == {'device_id':DEVICE_ID,'allowed_scopes':['files_list']}
+
+
+def test_byok_default_off_refuses_orchestration_before_key_resolution(monkeypatch):
+    import app.byok_bridge as byok
+    bridge = _install(monkeypatch, _Lane(), pc_entry=True)
+    async def forbidden(*args, **kwargs):
+        raise AssertionError('off must not resolve a credential')
+    monkeypatch.setattr(byok, 'resolve_owner_custom_credential', forbidden)
+    response = _call(_request({'messages':[{'role':'user','content':PLAIN_TEXT}],
+        'custom':{'provider':'gemini','model':'gemini-unit-model'}}, bridge))
+    assert response.status_code == 409
+    assert json.loads(response.body)['error']['code'] == 'orchestration_not_applicable'
+    assert bridge.calls == []

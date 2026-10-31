@@ -96,14 +96,12 @@ def test_request_contract_accepts_only_the_canonical_pc_run_handle():
     valid = "chat_pcq_" + "e" * 32
     _validate_payload({
         "messages": [{"role": "user", "content": "내 PC 파일을 읽어줘"}],
-        "mode": "auto",
         "pc_run_id": valid,
     })
     for invalid in ("chat_pcq_not-hex", "chat_" + "e" * 32, "chat_pcq_" + "e" * 31):
         try:
             _validate_payload({
                 "messages": [{"role": "user", "content": "내 PC 파일을 읽어줘"}],
-                "mode": "auto",
                 "pc_run_id": invalid,
             })
         except BrowserRequestError:

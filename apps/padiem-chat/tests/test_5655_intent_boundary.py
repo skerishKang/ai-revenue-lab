@@ -7,6 +7,7 @@ calendar create/read requests keep working.
 """
 from __future__ import annotations
 
+import asyncio
 import sys
 
 import pytest
@@ -131,6 +132,118 @@ def test_chat_route_calendar_create_still_works():
         r = c.post(
             "/api/chat",
             json={"messages": [{"role": "user", "content": "내일 오전 9시 회의 일정 등록해줘"}], "timezone": "Asia/Seoul"},
+            headers={"Origin": "https://chat.example.test"},
+        )
+        assert r.status_code == 200, r.text
+        assert "일정이 등록" in r.text
+
+
+# ── #5655 residual: the shipped meeting template carries the noun "일정" in its
+# own instruction line, so any pasted meeting text with a read/create verb
+# re-enters the native-calendar branch. More keyword tuning cannot close that,
+# because the user text is not ours to control. The utility declares which tool
+# it is, and the declared request never reaches the calendar branch at all.
+
+def _shipped_meeting_prompt(user_text: str) -> str:
+    """Mirror of static/util-menu.js buildMeeting() gen() (lines 828-829)."""
+    return (
+        "회의 내용을 정리해 주세요.\n"
+        f"회의 내용:\n{user_text}\n\n"
+        "다음 항목으로 정리해 주세요:\n"
+        "1. 회의 요약 (3-5문장)\n"
+        "2. 주요 논의사항 (bullet)\n"
+        "3. 결정사항 (bullet)\n"
+        "4. 후속 업무 (담당자/일정이 원문에 있으면 포함)\n"
+        "5. 미해결 사항"
+    )
+
+
+@pytest.mark.parametrize(
+    "user_text",
+    ["안건 세 개 확인했습니다.", "예산안 추가 논의.", "다음 회차 등록 요청"],
+)
+def test_template_calendar_vocabulary_still_hijacks_an_undeclared_request(user_text):
+    """What the fix must protect against: no timezone, incidental calendar words."""
+    parsed = nci.parse_native_calendar_intent(
+        _shipped_meeting_prompt(user_text), timezone_name=None
+    )
+    assert parsed["op"] == "clarify", parsed
+
+
+def test_meeting_text_without_a_calendar_verb_was_never_hijacked():
+    parsed = nci.parse_native_calendar_intent(
+        _shipped_meeting_prompt("차기 일정 조율 필요."), timezone_name=None
+    )
+    assert parsed["op"] == "none", parsed
+
+
+@pytest.mark.parametrize("util", ["speech", "sns", "meeting"])
+@pytest.mark.parametrize(
+    "user_text",
+    ["안건 세 개 확인했습니다.", "예산안 추가 논의.", "운영위원회 일정 확인 후 추가 안건 등록"],
+)
+def test_declared_util_request_never_takes_the_calendar_branch(util, user_text):
+    with _client() as c:
+        r = c.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": _shipped_meeting_prompt(user_text)}],
+                "tier": "free",
+                "util": util,
+            },
+            headers={"Origin": "https://chat.example.test"},
+        )
+        assert r.status_code == 200, r.text
+        for calendar_answer in (
+            "시간대(예: Asia/Seoul)",
+            "일정 날짜를 더 구체적으로",
+            "시작 시간을 알려주세요",
+            "조회할 일정 범위",
+        ):
+            assert calendar_answer not in r.text, (util, user_text, calendar_answer)
+        assert "Completed response" in r.text
+        # A declared utility request must not read or write calendar state either.
+        from test_4745_native_calendar_chat_claw_routes import _appointments
+
+        assert not asyncio.run(_appointments(c.app))
+
+
+@pytest.mark.parametrize("util", ["calendar", "pdfmd", "admin", "", "MEETING", 123, None])
+def test_invalid_util_scope_is_refused_before_any_model_call(util):
+    with _client() as c:
+        r = c.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": _shipped_meeting_prompt("안건 확인.")}],
+                "util": util,
+            },
+            headers={"Origin": "https://chat.example.test"},
+        )
+        assert r.status_code == 422, r.text
+        assert "유틸 업무 식별자" in r.text
+
+
+def test_util_scope_is_a_routing_label_only():
+    """The label cannot widen the request: an unknown field is still refused."""
+    from app.request_contract import BrowserRequestError, _validate_payload_parts
+
+    payload = {"messages": [{"role": "user", "content": "정리해 주세요"}], "util": "meeting"}
+    _validate_payload_parts(payload)
+    with pytest.raises(BrowserRequestError, match="지원하지 않는 요청 항목"):
+        _validate_payload_parts({**payload, "role": "system"})
+    with pytest.raises(BrowserRequestError, match="유틸 업무 식별자"):
+        _validate_payload_parts({**payload, "util": "calendar"})
+
+
+def test_absent_util_scope_keeps_today_plain_chat_behaviour():
+    """No util field, no behavioural change: the calendar branch stays reachable."""
+    with _client() as c:
+        r = c.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": "내일 오전 9시 회의 일정 등록해줘"}],
+                "timezone": "Asia/Seoul",
+            },
             headers={"Origin": "https://chat.example.test"},
         )
         assert r.status_code == 200, r.text

@@ -14,6 +14,7 @@ import json
 from typing import Any
 
 from app.pilot.errors import MalformedUpstreamResponse
+from .malformed_diagnostics import malformed, text_content
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,9 +22,15 @@ class StreamUsage:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
+    # A provider that bills reasoning separately reports it beside the answer.
+    # It is stored as the provider reported it, never folded into completion by
+    # arithmetic, so a later reader can tell a measured value from a derived one.
+    reasoning_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        for name in (
+            "prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens",
+        ):
             value = getattr(self, name)
             if value is not None and (
                 isinstance(value, bool) or not isinstance(value, int) or value < 0
@@ -33,12 +40,18 @@ class StreamUsage:
 
 @dataclass(frozen=True, slots=True)
 class StreamToolCall:
-    """One complete function call, never an executable partial argument chunk."""
+    """One complete function call, never an executable partial argument chunk.
+
+    ``signature`` is the provider's opaque continuation token for this call
+    (a Gemini thought signature today). It is relayed verbatim and must be
+    returned on a native follow-up; nothing here interprets it.
+    """
 
     id: str
     name: str
     arguments: str
     index: int
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         if isinstance(self.index, bool) or not isinstance(self.index, int) or self.index < 0:
@@ -47,6 +60,15 @@ class StreamToolCall:
             raise ValueError("tool call fields must be non-empty strings")
         if not isinstance(json.loads(self.arguments), dict):
             raise ValueError("tool call arguments must encode an object")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("tool call signature must be a bounded string")
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,12 +80,26 @@ class StreamEvent:
     usage: StreamUsage | None = None
     done: bool = False
     tool_call: StreamToolCall | None = None
+    # The provider's opaque continuation token for THIS event's own text part.
+    # A call carries its token on the call itself; a signed answer text carries
+    # it here, so a native follow-up can return each token with the part it
+    # belonged to. Nothing in B14 interprets it.
+    signature: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("response_id", "model", "delta_content", "finish_reason"):
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
+        if self.signature is not None:
+            from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+            if (
+                not isinstance(self.signature, str)
+                or not self.signature.strip()
+                or len(self.signature) > MAX_TOOL_SIGNATURE_CHARS
+            ):
+                raise ValueError("event signature must be a bounded string")
         if self.usage is not None and not isinstance(self.usage, StreamUsage):
             raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):
@@ -74,6 +110,7 @@ class StreamEvent:
             self.delta_content is not None
             or self.usage is not None
             or self.tool_call is not None
+            or self.signature is not None
         ):
             raise ValueError("done event must not contain delta, tool call, or usage")
 
@@ -95,27 +132,40 @@ def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
         rest = rest[index + len(separator) :]
 
 
-def _usage_from_payload(raw: Any) -> StreamUsage | None:
+def _usage_from_payload(raw: Any, *, provider="unknown", model="unknown", path="usage", payload=None) -> StreamUsage | None:
+    def fail(reason):
+        return malformed(reason, payload if payload is not None else {"usage": raw}, provider=provider, model=model, path=path)
+
     if raw is None:
         return None
     if not isinstance(raw, dict):
-        raise MalformedUpstreamResponse()
+        raise fail("usage_not_object")
     values: dict[str, int | None] = {}
     for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
         value = raw.get(name)
         if value is not None and (
             isinstance(value, bool) or not isinstance(value, int) or value < 0
         ):
-            raise MalformedUpstreamResponse()
+            raise fail("usage_value")
         values[name] = value
-    return StreamUsage(**values)
+    details = raw.get("completion_tokens_details")
+    reasoning = details.get("reasoning_tokens") if isinstance(details, dict) else None
+    if reasoning is not None and (
+        isinstance(reasoning, bool) or not isinstance(reasoning, int) or reasoning < 0
+    ):
+        raise fail("usage_value")
+    return StreamUsage(**values, reasoning_tokens=reasoning)
 
 
-def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
+def _parse_sse_frame(frame: bytes, *, provider="unknown", model_id="unknown") -> StreamEvent | None:
+    payload = None
+    def fail(reason):
+        return malformed(reason, payload, provider=provider, model=model_id, path="stream")
+
     try:
         text = frame.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise MalformedUpstreamResponse() from exc
+        raise fail("utf8_decode") from None
 
     data_lines: list[str] = []
     for line in text.splitlines():
@@ -137,45 +187,48 @@ def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     if data == "[DONE]":
         return StreamEvent(done=True)
     if not data:
-        raise MalformedUpstreamResponse()
+        raise fail("empty_data")
 
     try:
         payload = json.loads(data)
     except (json.JSONDecodeError, ValueError) as exc:
-        raise MalformedUpstreamResponse() from exc
+        raise fail("json_decode") from None
     if not isinstance(payload, dict):
-        raise MalformedUpstreamResponse()
+        raise fail("payload_not_object")
 
     response_id = payload.get("id")
     model = payload.get("model")
     if response_id is not None and not isinstance(response_id, str):
-        raise MalformedUpstreamResponse()
+        raise fail("response_id_not_str")
     if model is not None and not isinstance(model, str):
-        raise MalformedUpstreamResponse()
+        raise fail("model_not_str")
 
-    usage = _usage_from_payload(payload.get("usage"))
+    usage = _usage_from_payload(payload.get("usage"), provider=provider, model=model_id, path="stream", payload=payload)
     choices = payload.get("choices")
     if not isinstance(choices, list):
-        raise MalformedUpstreamResponse()
+        raise fail("choices_not_list")
 
     delta_content: str | None = None
     finish_reason: str | None = None
     if choices:
         choice = choices[0]
         if not isinstance(choice, dict):
-            raise MalformedUpstreamResponse()
-        delta = choice.get("delta")
+            raise fail("choice_not_object")
+        delta = choice.get("delta", choice.get("message"))
+        if delta is None and choice.get("finish_reason") is not None:
+            delta = {}
         if not isinstance(delta, dict):
-            raise MalformedUpstreamResponse()
+            raise fail("delta_not_object")
         content = delta.get("content")
-        if content is not None and not isinstance(content, str):
-            raise MalformedUpstreamResponse()
-        delta_content = content
+        try:
+            delta_content = text_content(content)
+        except MalformedUpstreamResponse as exc:
+            raise fail(exc.reason) from None
         finish_reason = choice.get("finish_reason")
         if finish_reason is not None and not isinstance(finish_reason, str):
-            raise MalformedUpstreamResponse()
+            raise fail("finish_reason_not_str")
     elif usage is None:
-        raise MalformedUpstreamResponse()
+        return None  # Empty no-usage chunks are keepalives, not failed answers.
 
     return StreamEvent(
         response_id=response_id,

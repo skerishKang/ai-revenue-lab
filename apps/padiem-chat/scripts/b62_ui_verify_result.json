@@ -4,7 +4,6 @@
   "actions_same_row": true,
   "search_visible": true,
   "search_disabled": true,
-  "search_hold_title": "대화 검색 준비 중",
   "no_general_conversation_text": true,
   "no_mode_hint_attr": true,
   "collapse_hides_sidebar": true,

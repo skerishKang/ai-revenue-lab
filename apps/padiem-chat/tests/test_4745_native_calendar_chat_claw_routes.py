@@ -59,6 +59,7 @@ async def _appointments(app):
     store = app.state.calendar_store
     return await store.list_appointments(
         "workspace-" + owner,
+        owner_id=owner,
         start_date=date(2026, 1, 1),
         end_date=date(2026, 12, 31),
         limit=100,

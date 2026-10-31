@@ -1,0 +1,41 @@
+name: Validate COM2 File Lane
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-file-lane/**'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_normalization.py'
+      - 'packages/padiem-ai-core/padiem_ai_core/pdf_markdown.py'
+      - 'packages/padiem-ai-core/padiem_ai_core/document_semantics.py'
+      - '.github/workflows/validate-padiem-file-lane.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: file-lane-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: apps/padiem-file-lane
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.13.5'
+      - name: Install exact dependencies
+        run: uv sync --frozen --group dev --extra windows
+      - name: Offline upload, parser, ownership and startup contracts
+        run: uv run --frozen pytest -q
+      - name: Compile service
+        run: uv run --frozen python -m compileall -q src

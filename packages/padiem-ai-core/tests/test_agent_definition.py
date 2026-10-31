@@ -141,7 +141,7 @@ def test_agent_has_no_self_authorization_or_credential_fields() -> None:
 
 
 def test_default_agent_run_budget_matches_long_form_context():
-    assert AgentExecutionBudget().max_wall_seconds == 900
+    assert AgentExecutionBudget().max_wall_seconds == 1800
     # #4379: the inactivity window has no PADIEM maximum either.
     assert AgentExecutionBudget(max_wall_seconds=86_400).max_wall_seconds == 86_400
     with pytest.raises(AgentDefinitionError):

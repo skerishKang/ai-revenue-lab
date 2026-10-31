@@ -106,9 +106,9 @@ preview의 date/flags/observability는 공통 블록의 선언을 참고 표시�
 | --- | --- | --- | --- |
 | padiem-chat D1 | `PADIEM_CHAT_DB` | [.github/workflows/b62-production-code-deploy-gate.yml](../../.github/workflows/b62-production-code-deploy-gate.yml) | D1 type/name을 게이트가 검증하고 live settings로 생성 config에 보존; 정적 mock config에 없음. |
 | padiem-chat R2 | `PADIEM_WORKSPACE_FILES` | [.github/workflows/b62-workspace-r2-binding-gate.yml](../../.github/workflows/b62-workspace-r2-binding-gate.yml) | 기존 바인딩 보존 검증; 실제 바인딩 상태는 미조회. |
-| padiem-chat service | `P01_ENGINE_SERVICE → padiem-ai-engine` | [.github/workflows/b62-p01-engine-service-binding-gate.yml](../../.github/workflows/b62-p01-engine-service-binding-gate.yml) | 활성화/롤백 gate 계약; 적용 완료 증빙 아님. |
-| padiem-chat service | `GOOGLE_OAUTH_STATE_SERVICE → padiem-google-oauth-state` | [.github/workflows/b62-google-oauth-state-binding-gate.yml](../../.github/workflows/b62-google-oauth-state-binding-gate.yml) | 정적 service 목록에 없는 activation 계약. |
-| padiem-chat service | `B66_PDF_RENDERER_SERVICE → padiem-b66-pdf-renderer` | [.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml](../../.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml) | 정적 service 목록에 없는 activation 계약. |
+| padiem-chat service | `P01_ENGINE_SERVICE → padiem-ai-engine` | [apps/padiem-chat/wrangler.toml](../../apps/padiem-chat/wrangler.toml) | 활성화/롤백 gate 계약; 적용 완료 증빙 아님. 게이트는 #5910으로 폐기; 선언 근거로 대체. |
+| padiem-chat service | `GOOGLE_OAUTH_STATE_SERVICE → padiem-google-oauth-state` | [apps/padiem-chat/wrangler.toml](../../apps/padiem-chat/wrangler.toml) | 정적 service 목록에 없는 activation 계약. 게이트는 #5910으로 폐기; 선언 근거로 대체. |
+| padiem-chat service | `B66_PDF_RENDERER_SERVICE → padiem-b66-pdf-renderer` | [apps/padiem-chat/wrangler.toml](../../apps/padiem-chat/wrangler.toml) | 정적 service 목록에 없는 activation 계약. 게이트는 #5910으로 폐기; 선언 근거로 대체. |
 | padiem-chat custom domain | `chat.padiem.net` | [.github/workflows/b62-production-code-deploy-gate.yml](../../.github/workflows/b62-production-code-deploy-gate.yml) | 게이트가 Worker 연결 domain을 검증; 정적 routes는 미선언. |
 | Google OAuth edge custom domain | `oauth.padiem.net` | [.github/workflows/b54-google-oauth-production-gate.yml](../../.github/workflows/b54-google-oauth-production-gate.yml) | custom domain activation/rollback 계약; query 없음. |
 | Broker edge custom domain | `local-agent.padiem.net` | [.github/workflows/b54-local-agent-public-ingress-activation.yml](../../.github/workflows/b54-local-agent-public-ingress-activation.yml) | public ingress activation/rollback 계약. |
@@ -149,12 +149,9 @@ contact-verification·COM2 backup·Engine ingress·source canary·B64에는 전�
 
 ### 3.2 바인딩·도메인·런타임 설정 및 관련 계획 게이트
 
-| 파일명 (모두 .github/workflows) | 대상 Worker | 모드 / 실행 범위 |
+| 파일명 | 대상 Worker | 모드 / 실행 범위 |
 | --- | --- | --- |
-| [.github/workflows/b62-p01-engine-service-binding-gate.yml](../../.github/workflows/b62-p01-engine-service-binding-gate.yml) | padiem-chat → padiem-ai-engine | `repository_preflight`, `cloudflare_readonly`, `activate_p01_engine_binding`, `rollback_p01_engine_binding` |
-| [.github/workflows/b62-control-plane-identity-binding-gate.yml](../../.github/workflows/b62-control-plane-identity-binding-gate.yml) | padiem-chat → padiem-control-plane-identity | `repository_preflight`, `cloudflare_readonly`, `activate_identity_binding`, `rollback_identity_binding` |
-| [.github/workflows/b62-google-oauth-state-binding-gate.yml](../../.github/workflows/b62-google-oauth-state-binding-gate.yml) | padiem-chat → padiem-google-oauth-state | `repository_preflight`, `cloudflare_readonly`, `activate_google_oauth_state_binding`, `rollback_google_oauth_state_binding` |
-| [.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml](../../.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml) | padiem-chat → padiem-b66-pdf-renderer | `repository_preflight`, `cloudflare_readonly`, `activate_b66_pdf_renderer_binding`, `rollback_b66_pdf_renderer_binding` |
+| [apps/padiem-chat/wrangler.toml](../../apps/padiem-chat/wrangler.toml) | padiem-chat | #5898의 저장소 선언이 정본. 단일 바인딩 부착/탈착 게이트 4종(P01_ENGINE_SERVICE, IDENTITY_AUTHORITY_SERVICE, GOOGLE_OAUTH_STATE_SERVICE, B66_PDF_RENDERER_SERVICE)은 #5910으로 폐기. |
 | [.github/workflows/b62-workspace-r2-binding-gate.yml](../../.github/workflows/b62-workspace-r2-binding-gate.yml) | padiem-chat | exact-main contract/preflight; 기존 PADIEM_WORKSPACE_FILES 바인딩 보존 검증; 코드배포 아님 |
 | [.github/workflows/b62-claw-live-config-activation-gate.yml](../../.github/workflows/b62-claw-live-config-activation-gate.yml) | padiem-chat | `repository_preflight`, `cloudflare_readonly`, `activate_config`, `activate_p01_sse`, `activate_oracle_mesh_mode`, `activate_chat_orchestration`, `replace_p01_engine_credential`, `rollback_config` |
 | [.github/workflows/b62-google-auth-activation-gate.yml](../../.github/workflows/b62-google-auth-activation-gate.yml) | padiem-chat | `repository_preflight`, `cloudflare_readonly`, `activation_plan_readonly` |
@@ -254,7 +251,7 @@ contact-verification·COM2 backup·Engine ingress·source canary·B64에는 전�
 | `b64-ai-reward-router` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-b66-pdf-renderer` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-com2-backup` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
-| `ai-revenue-korean-ai-platform` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
+| `ai-revenue-korean-ai-platform` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. 진행: #5897(Workers 없이 실행)·#5900(상류 스위치)·#5901(컴2 배포 묶음) — 코드·문서 등록까지이며 설치·기동·배포는 미수행. |
 | `living-fiction-cloudflare-m0` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `living-fiction-cloudflare-container-m0` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
 | `padiem-ai-engine-ingress` | **컴2로 이전** | 인증 이외의 UI·실행·AI 호출·기기 통신·렌더링·파일·검증 런타임. |
@@ -416,7 +413,6 @@ identity Worker에 업무 권한/기기 상태 기능이 함께 있어도 Worker
 | [.github/workflows/b62-b66-d1-migration-028-gate.yml](../../.github/workflows/b62-b66-d1-migration-028-gate.yml) | §3.3 데이터/schema |
 | [.github/workflows/b62-b66-d1-migration-045-gate.yml](../../.github/workflows/b62-b66-d1-migration-045-gate.yml) | §3.3 데이터/schema |
 | [.github/workflows/b62-b66-e2e-skill-provision-gate.yml](../../.github/workflows/b62-b66-e2e-skill-provision-gate.yml) | §3.3 데이터/schema |
-| [.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml](../../.github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-b66-production-browser-canary-contract.yml](../../.github/workflows/b62-b66-production-browser-canary-contract.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-b66-quote-url-activation-gate.yml](../../.github/workflows/b62-b66-quote-url-activation-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-binding-state-guard.yml](../../.github/workflows/b62-binding-state-guard.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
@@ -441,7 +437,6 @@ identity Worker에 업무 권한/기기 상태 기능이 함께 있어도 Worker
 | [.github/workflows/b62-claw-mesh-d1-migration-067-gate.yml](../../.github/workflows/b62-claw-mesh-d1-migration-067-gate.yml) | §3.3 데이터/schema |
 | [.github/workflows/b62-claw-production-smoke-gate.yml](../../.github/workflows/b62-claw-production-smoke-gate.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-cloudflare-worker-deploy.yml](../../.github/workflows/b62-cloudflare-worker-deploy.yml) | §3.1 코드 배포/승격/롤백 |
-| [.github/workflows/b62-control-plane-identity-binding-gate.yml](../../.github/workflows/b62-control-plane-identity-binding-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-current-main-production-deploy-trigger.yml](../../.github/workflows/b62-current-main-production-deploy-trigger.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-d1-migration-013-gate.yml](../../.github/workflows/b62-d1-migration-013-gate.yml) | §3.3 데이터/schema |
 | [.github/workflows/b62-d1-migration-060-gate.yml](../../.github/workflows/b62-d1-migration-060-gate.yml) | §3.3 데이터/schema |
@@ -451,7 +446,6 @@ identity Worker에 업무 권한/기기 상태 기능이 함께 있어도 Worker
 | [.github/workflows/b62-glass-animation-timing-certification.yml](../../.github/workflows/b62-glass-animation-timing-certification.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-google-auth-activation-gate.yml](../../.github/workflows/b62-google-auth-activation-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-google-auth-production-activation-gate.yml](../../.github/workflows/b62-google-auth-production-activation-gate.yml) | §3.2 설정/연결/계획 |
-| [.github/workflows/b62-google-oauth-state-binding-gate.yml](../../.github/workflows/b62-google-oauth-state-binding-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-identity-shadow-d1-migration-007-activation.yml](../../.github/workflows/b62-identity-shadow-d1-migration-007-activation.yml) | §3.3 데이터/schema |
 | [.github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml](../../.github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-live-content-marker-gate.yml](../../.github/workflows/b62-live-content-marker-gate.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
@@ -459,7 +453,6 @@ identity Worker에 업무 권한/기기 상태 기능이 함께 있어도 Worker
 | [.github/workflows/b62-live-long-context-canary.yml](../../.github/workflows/b62-live-long-context-canary.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-mobile-touch-hosted-fallback.yml](../../.github/workflows/b62-mobile-touch-hosted-fallback.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-neutral-mock-copy.yml](../../.github/workflows/b62-neutral-mock-copy.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
-| [.github/workflows/b62-p01-engine-service-binding-gate.yml](../../.github/workflows/b62-p01-engine-service-binding-gate.yml) | §3.2 설정/연결/계획 |
 | [.github/workflows/b62-p01-sse-immutable-forensic.yml](../../.github/workflows/b62-p01-sse-immutable-forensic.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |
 | [.github/workflows/b62-padiem-chat-ci.yml](../../.github/workflows/b62-padiem-chat-ci.yml) | §3.5 dry-run |
 | [.github/workflows/b62-padiem-chat-react-ci.yml](../../.github/workflows/b62-padiem-chat-react-ci.yml) | 참고 CI/관측/canary/계약; 운영 코드배포 목록 밖 |

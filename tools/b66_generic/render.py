@@ -277,8 +277,23 @@ _FONT_CACHE: dict[str, fitz.Font] = {}
 
 
 def _font_for(template: dict, family: str | None) -> tuple[fitz.Font, str]:
+    """The font a replacement text slot draws with.
+
+    The compiled template carries the source font files, so a certification
+    host without them cannot render a mutation faithfully. That is a refusal,
+    not a silent substitute: substitution changes glyph widths and would move
+    right-aligned numbers outside their own slot, which is exactly what the
+    isolation check is meant to catch. The Linux candidates live in
+    ``compile_generic.SYSTEM_FONTS``; install ``fonts-nanum`` there.
+    """
     fonts = template["resources"]["fonts"]
     info = fonts.get(family or "") or fonts.get("MalgunGothic")
+    if not info:
+        raise B66RenderError(
+            "REJECT_NO_FONT",
+            "compiled template has no font file; install the source font family "
+            "(Linux: fonts-nanum) before rendering a mutation",
+        )
     path = str(TEMPLATE_DIR / info["file"])
     if path not in _FONT_CACHE:
         _FONT_CACHE[path] = fitz.Font(fontfile=path)

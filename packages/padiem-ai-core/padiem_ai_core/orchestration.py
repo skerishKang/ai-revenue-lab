@@ -1255,7 +1255,7 @@ class OrchestrationRunner:
 
                 mark_execution_dispatch_started()
                 # Single-shot model lane: this keeps the caller-declared
-                # ExecutionContext budget (default 900s, max 3600s) unchanged.
+                # ExecutionContext budget unchanged; the Engine wire default is None.
                 # The model transport owns its own 600s per-event read idle
                 # watchdog; no new short cap is introduced here (#4194).
                 result = await asyncio.wait_for(

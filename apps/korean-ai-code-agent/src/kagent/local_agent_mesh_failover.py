@@ -515,9 +515,19 @@ class MeshCentralDevicePresence:
             rows.append(row)
         return rows
 
+    def listing(self) -> list[dict[str, Any]]:
+        """The local server's whole device table, from ONE run of the official client.
+
+        Every reader below used to start its own enumeration, so a caller that wanted
+        both "is this device connected" and "what is its name" paid twice per device.
+        Nothing is cached here: a caller that wants the same answer twice in one round
+        asks for it once.
+        """
+        return self._parse_listdevices(self._run_listdevices())
+
     def connected_device_ids(self) -> frozenset[str]:
         """Node ids the local MeshCentral currently has connected."""
-        rows = self._parse_listdevices(self._run_listdevices())
+        rows = self.listing()
         connected = set()
         for row in rows:
             node_id = row.get("id")
@@ -526,6 +536,45 @@ class MeshCentralDevicePresence:
             if int(row.get("conn", 0) or 0) == 1:
                 connected.add(node_id)
         return frozenset(connected)
+
+    def pairing_candidates(self) -> list[dict[str, Any]]:
+        """Connected devices whose name carries a pairing tag, from ONE parse.
+
+        #5573 PR-4c: this is how a PC that cannot name its own node identity
+        reaches its owner. The enumeration already happens; only names holding
+        exactly one `pd-` tag token are returned, and each candidate carries the
+        id the Mesh lane can address plus the name that proves the pairing.
+        """
+        rows = self.listing()
+        found: list[dict[str, Any]] = []
+        for row in rows:
+            node_id = row.get("id")
+            name = row.get("name")
+            if not isinstance(node_id, str) or not node_id:
+                continue
+            if not isinstance(name, str) or not name.strip():
+                continue
+            if int(row.get("conn", 0) or 0) != 1:
+                # A candidate that is not connected cannot be claimed yet, and a
+                # stale row would waste the beat's budget.
+                continue
+            found.append({"device_id": node_id, "connected": True, "agent_name": name.strip()[:256]})
+        return found
+
+    def name_of(self, device_id: str) -> str | None:
+        """The name the local server reports for one device, or ``None``.
+
+        #5573: the pairing tag an installer stamps into the agent name is how a
+        PC that cannot name its own node identity still gets claimed. The name
+        is observation only — it is handed to the server and never kept here.
+        """
+        if not isinstance(device_id, str) or not device_id.strip():
+            raise ContractError("the device id is required")
+        for row in self.listing():
+            if row.get("id") == device_id:
+                name = row.get("name")
+                return name if isinstance(name, str) and name.strip() else None
+        return None
 
     def is_connected(self, device_id: str) -> bool:
         """Whether the named device is connected to the local server."""

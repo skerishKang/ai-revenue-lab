@@ -171,6 +171,16 @@ async def _exercise(page: Page, *, name: str, custom_methods: list[str]) -> dict
     custom_form = custom_section.locator(".mode-custom-credential")
     if not await custom_form.is_visible():
         raise AssertionError(f"PADIEM Custom key form hidden at {name}")
+    # #5824: key-only registration is primary; manual provider/model inputs
+    # remain fully functional inside the initially closed advanced section.
+    advanced = custom_form.locator("#modeCustomAdvanced")
+    if await advanced.evaluate("el => el.open"):
+        raise AssertionError(f"BYOK advanced entry must start collapsed at {name}")
+    if not await custom_form.locator("#modeAutoByokKey").is_visible():
+        raise AssertionError(f"BYOK paste-key input hidden at {name}")
+    await advanced.locator("summary").click()
+    if not await advanced.evaluate("el => el.open"):
+        raise AssertionError(f"BYOK advanced entry did not open at {name}")
     provider_select = custom_form.locator("#modeCustomProvider")
     if await provider_select.count() != 1 or await provider_select.locator("option").count() != 1:
         raise AssertionError(f"PADIEM Custom provider select mismatch at {name}")

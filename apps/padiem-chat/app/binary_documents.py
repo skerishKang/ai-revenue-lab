@@ -6,17 +6,13 @@ from typing import Any
 
 from padiem_ai_core.document_normalization import (
     BINARY_DOCUMENT_MEDIA,
-    MAX_PDF_PAGES,
-    MAX_XLSX_COLUMNS,
-    MAX_XLSX_NONEMPTY_CELLS,
-    MAX_XLSX_ROWS,
-    MAX_XLSX_SHEETS,
     DocumentNormalizationError,
     validate_document_identity,
 )
 from padiem_ai_core.document_parser_boundary import (
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE,
     parse_binary_document_via_authority,
+    parse_binary_document_via_authority_async,
 )
 
 from .documents import DocumentAttachment
@@ -33,11 +29,10 @@ _BINARY_ERROR_MESSAGES = {
     "media_extension_mismatch": "문서 확장자와 파일 형식이 일치하지 않습니다.",
     "invalid_binary_payload": "문서 데이터가 올바르지 않습니다.",
     "empty_document": "빈 문서는 첨부할 수 없습니다.",
-    "extracted_text_too_long": "문서에서 추출한 텍스트가 40,000자를 초과합니다.",
     "pdf_magic_mismatch": "PDF 형식과 실제 파일 내용이 일치하지 않습니다.",
     "pdf_encrypted": "암호화된 PDF는 현재 첨부할 수 없습니다.",
+    "ooxml_link_entry": "문서 압축 안에 안전하지 않은 경로 항목이 있어 열지 않았습니다.",
     "pdf_no_pages": "PDF에서 읽을 페이지를 찾지 못했습니다.",
-    "pdf_page_limit": "PDF는 80페이지 이하만 첨부할 수 있습니다.",
     "pdf_empty_text": "이 PDF에서는 텍스트를 읽지 못했습니다. 스캔 문서 OCR은 아직 지원하지 않습니다.",
     "pdf_invalid": "PDF를 안전하게 읽지 못했습니다.",
     "docx_missing_part": "DOCX 파일을 안전하게 읽지 못했습니다.",
@@ -46,23 +41,35 @@ _BINARY_ERROR_MESSAGES = {
     "pptx_empty": "PPTX에서 읽을 텍스트를 찾지 못했습니다.",
     "xlsx_invalid": "XLSX 파일을 안전하게 읽지 못했습니다.",
     "xlsx_no_sheets": "XLSX에서 워크시트를 찾지 못했습니다.",
-    "xlsx_sheet_limit": "XLSX는 워크시트 20개 이하만 첨부할 수 있습니다.",
-    "xlsx_dimension_limit": "XLSX는 시트당 500행 × 50열 범위까지만 읽을 수 있습니다.",
-    "xlsx_cell_limit": "XLSX의 값이 너무 많습니다.",
     "xlsx_empty": "XLSX에서 읽을 값을 찾지 못했습니다.",
     "document_dependency_unavailable": "문서 처리 기능을 사용할 수 없습니다.",
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE: "현재 실행 환경에서는 격리된 문서 파서를 사용할 수 없어 문서를 처리할 수 없습니다.",
+    "isolated_parser_transport_failed": "문서 파서 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_request_unbounded": "문서 파서 요청이 허용 크기를 초과했습니다.",
+    "isolated_parser_response_invalid": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_response_unbounded": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_internal_error": "문서 파서가 문서를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
 }
 _OOXML_CODES = {
     "ooxml_archive_size",
-    "ooxml_entry_count",
     "ooxml_unsafe_path",
-    "ooxml_encrypted",
     "ooxml_entry_size",
-    "ooxml_total_size",
     "ooxml_dtd_rejected",
     "ooxml_malformed",
     "ooxml_invalid_xml",
+}
+# An encrypted document is not a damaged one. "안전하게 읽지 못했습니다" sends the
+# owner to look for a corrupt file when the real answer is a password they set.
+_OOXML_ENCRYPTED_MESSAGES = {
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
+        "암호화된 DOCX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": (
+        "암호화된 PPTX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
+        "암호화된 XLSX는 현재 첨부할 수 없습니다."
+    ),
 }
 
 
@@ -82,26 +89,43 @@ def _decode_payload(payload: Any) -> bytes:
     return decoded
 
 
-def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
-    if exc.code in _OOXML_CODES:
+def guidance_for_reason_code(code: str, media_type: Any) -> str | None:
+    """The per-code user guidance for one Core reason code, or None.
+
+    The single wording authority for document refusals: the direct parse path
+    (``_translate_binary_error``) and the file-lane resolve path both pick
+    their answer here, so one code can never grow two different wordings.
+    """
+
+    if code == "ooxml_encrypted":
+        return (
+            _OOXML_ENCRYPTED_MESSAGES.get(media_type)
+            or "암호화된 문서는 현재 첨부할 수 없습니다."
+        )
+    if code in _OOXML_CODES:
         if media_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            return BinaryDocumentValidationError("XLSX 압축 구조를 안전하게 읽지 못했습니다.")
+            return "XLSX 압축 구조를 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            return BinaryDocumentValidationError("DOCX 파일을 안전하게 읽지 못했습니다.")
+            return "DOCX 파일을 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-            return BinaryDocumentValidationError("PPTX 파일을 안전하게 읽지 못했습니다.")
-    message = _BINARY_ERROR_MESSAGES.get(exc.code)
-    if message is None and exc.code in {
+            return "PPTX 파일을 안전하게 읽지 못했습니다."
+    message = _BINARY_ERROR_MESSAGES.get(code)
+    if message is None and code in {
         "invalid_text",
-        "text_too_long",
         "binary_text_rejected",
         "excessive_control_characters",
     }:
         message = "문서에서 추출한 텍스트를 사용할 수 없습니다."
-    return BinaryDocumentValidationError(message or "지원하지 않는 문서 형식입니다.")
+    return message
 
 
-def parse_binary_document_item(item: Any) -> DocumentAttachment:
+def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
+    return BinaryDocumentValidationError(
+        guidance_for_reason_code(exc.code, media_type) or "지원하지 않는 문서 형식입니다."
+    )
+
+
+def _validated_item_payload(item: Any) -> tuple[Any, Any, bytes]:
     if not isinstance(item, dict) or set(item) not in ({"type", "name", "media_type", "base64"}, {"type", "name", "media_type", "raw_bytes"}):
         raise BinaryDocumentValidationError("지원하지 않는 바이너리 문서 첨부 항목이 있습니다.")
     if item.get("type") != "document":
@@ -115,17 +139,42 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
     except DocumentNormalizationError as exc:
         raise _translate_binary_error(exc, item.get("media_type")) from exc
     payload = _decode_payload(item.get("raw_bytes") if "raw_bytes" in item else item.get("base64"))
-    try:
-        document = parse_binary_document_via_authority(
-            name=item.get("name"),
-            media_type=item.get("media_type"),
-            payload=payload,
-        )
-    except DocumentNormalizationError as exc:
-        raise _translate_binary_error(exc, item.get("media_type")) from exc
+    return item.get("name"), item.get("media_type"), payload
+
+
+def _attachment_from_document(document: Any) -> DocumentAttachment:
     return DocumentAttachment(
         name=document.name,
         media_type=document.media_type,
         text=document.text,
         byte_size=document.byte_size,
+        segments=tuple(document.segments),
     )
+
+
+def parse_binary_document_item(item: Any) -> DocumentAttachment:
+    name, media_type, payload = _validated_item_payload(item)
+    try:
+        document = parse_binary_document_via_authority(
+            name=name,
+            media_type=media_type,
+            payload=payload,
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_binary_error(exc, media_type) from exc
+    return _attachment_from_document(document)
+
+
+async def parse_binary_document_item_async(item: Any) -> DocumentAttachment:
+    """Worker request path: parse through the async isolated authority."""
+
+    name, media_type, payload = _validated_item_payload(item)
+    try:
+        document = await parse_binary_document_via_authority_async(
+            name=name,
+            media_type=media_type,
+            payload=payload,
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_binary_error(exc, media_type) from exc
+    return _attachment_from_document(document)

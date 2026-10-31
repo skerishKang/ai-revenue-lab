@@ -33,114 +33,29 @@ def live():
 
 
 class CandidatePlanTest(unittest.TestCase):
-    def test_only_new_broker_service_is_added_preserving_other_bindings(self):
-        original = live()
-        original_bytes = json.dumps(original, sort_keys=True)
-        proof = planner.candidate_preservation(original)
-        self.assertEqual(proof["status"], "ADDITIVE_CANDIDATE_STRUCTURAL_PASS")
-        self.assertEqual(proof["target_worker"], "padiem-local-agent-broker-state")
-        self.assertEqual(proof["additional_service_bindings_count"], 1)
-        self.assertEqual(proof["preserved_existing_bindings_count"], 9)
-        self.assertFalse(proof["deploy_authorized"])
-        self.assertFalse(proof["public_gateway_authorized"])
-        self.assertTrue(proof["secret_survival_requires_deployment_readback"])
-        self.assertEqual(json.dumps(original, sort_keys=True), original_bytes)
-
-    def test_identical_existing_broker_is_reused_not_duplicated(self):
-        """Retry residue: the approved binding is reused verbatim, vars kept."""
+    def test_repository_plan_uses_source_targets_without_mutating_live(self):
         payload = live()
-        payload["result"]["bindings"].append(
-            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "service": "padiem-local-agent-broker-state"})
+        original = json.dumps(payload, sort_keys=True)
         proof = planner.candidate_preservation(payload)
-        self.assertEqual(proof["status"], "ADDITIVE_CANDIDATE_STRUCTURAL_PASS")
-        self.assertTrue(proof["broker_binding_reused"])
-        self.assertEqual(proof["additional_service_bindings_count"], 0)
-        # Full rolled-back residue: broker plus all eight approved settings.
-        full = live()
-        full["result"]["bindings"].append(
-            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "service": "padiem-local-agent-broker-state",
-             "environment": "production"})
-        for name, text in (
-            ("PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE",
-             "owner-controlled-production-4139"),
-            ("PADIEM_CONNECTOR_PRODUCTION_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED", "enabled"),
-            ("PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED", "enabled"),
-        ):
-            full["result"]["bindings"].append(
-                {"type": "plain_text", "name": name, "text": text})
-        proof = planner.candidate_preservation(full)
-        self.assertEqual(proof["status"], "ADDITIVE_CANDIDATE_STRUCTURAL_PASS")
-        self.assertTrue(proof["broker_binding_reused"])
+        self.assertEqual(proof["status"], "REPOSITORY_BINDING_PLAN_STRUCTURAL_PASS")
+        self.assertEqual(json.dumps(payload, sort_keys=True), original)
+        self.assertFalse(proof["deploy_authorized"])
+        self.assertFalse(proof["existing_secret_values_read"])
+        self.assertTrue(any(x["name"] == "CF_VERSION_METADATA" for x in proof["binding_diff"]["added"]))
 
-    def test_wrong_or_colliding_broker_name_still_prevents_candidate(self):
-        for conflict in (
-            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "service": "attacker-worker"},
-            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "service": "padiem-local-agent-broker-state", "environment": "staging"},
-            {"type": "plain_text", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "text": "bad"},
-            {"type": "secret_text", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"},
-        ):
-            payload = live()
-            payload["result"]["bindings"].append(conflict)
-            with self.assertRaises(ProductionConfigError):
-                planner.candidate_preservation(payload)
+    def test_the_structural_plan_is_silent_and_the_step_names_the_baseline_once(self):
+        """The triple B62_BINDING_DIFF_COUNTS spam was a structural plan wearing
+        the production name; the plan prints nothing and the step says the
+        repo-vs-baseline comparison exactly once under its own name."""
 
-    def test_missing_or_drifted_identity_is_not_auto_repaired(self):
-        original = live()
-        original["result"]["bindings"] = [
-            v for v in original["result"]["bindings"]
-            if v["name"] != "IDENTITY_AUTHORITY_SERVICE"
-        ]
-        with self.assertRaises(ProductionConfigError):
-            planner.candidate_preservation(original)
-        changed = live()
-        changed["result"]["bindings"][2]["service"] = "some-other-identity"
-        with self.assertRaises(ProductionConfigError):
-            planner.candidate_preservation(changed)
-
-    def test_unsupported_or_duplicate_live_binding_fails_closed(self):
-        original = live()
-        original["result"]["bindings"].append({"name": "MYSTERY", "type": "ai_unknown"})
-        with self.assertRaises(ProductionConfigError):
-            planner.candidate_preservation(original)
-        original = live()
-        original["result"]["bindings"].append({"name": "B14_SERVICE", "type": "service",
-                                                  "service": "duplicate"})
-        with self.assertRaises(ProductionConfigError):
-            planner.candidate_preservation(original)
-
-    def test_mock_disabled_base_url_mismatch_all_refused(self):
-        for name, value in (
-            ("PADIEM_CHAT_RUNTIME_MODE", "mock"),
-            ("PADIEM_CHAT_LIVE_ENABLED", "false"),
-            ("PADIEM_CHAT_PUBLIC_BASE_URL", "https://foreign.example"),
-        ):
-            payload = live()
-            for entry in payload["result"]["bindings"]:
-                if entry["name"] == name:
-                    entry["text"] = value
-            with self.assertRaises(ProductionConfigError):
-                planner.candidate_preservation(payload)
-
-    def test_existing_secret_binding_is_only_counted_never_logged(self):
-        payload = live()
-        payload["result"]["bindings"].append({
-            "type": "secret_text", "name": "PRIVATE_SECRET", "text": "NEVER_SHOW_ME"
-        })
-        projection = planner.candidate_preservation(payload)
-        self.assertEqual(projection["preserved_existing_binding_types_count"]["secret_names"], 2)
-        self.assertNotIn("NEVER_SHOW_ME", json.dumps(projection))
-        self.assertFalse(projection["existing_secret_values_read"])
-
+        output = io.StringIO()
+        with redirect_stdout(output):
+            planner.candidate_preservation(live())
+        self.assertEqual(output.getvalue(), "")
+        source = (SCRIPTS / "b62_connector_broker_additive_preflight.py").read_text(encoding="utf-8")
+        self.assertIn("emit=False", source)
+        workflow = (SCRIPTS.parent / "workflows" / "b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+        self.assertEqual(workflow.count("B62_REPO_VS_BASELINE_DIFF_COUNTS"), 1)
 
     def test_source_rpc_contract_pins_state_worker_not_edge(self):
         planner.verify_broker_source_rpc_contract()

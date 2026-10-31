@@ -87,7 +87,7 @@ def web_xlsx_confirmation_spec() -> ToolSpec:
         id=RUNTIME_TOOL, title="Confirm web XLSX original selection",
         description="Explicit user confirmation before server-side read",
         owner="core", side_effect=ToolSideEffect.NONE,
-        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
         auth_scope=(SCOPE,),
         input_schema={"type": "object", "additionalProperties": False,
                       "properties": props, "required": list(props)},
@@ -95,7 +95,7 @@ def web_xlsx_confirmation_spec() -> ToolSpec:
             "p01_intent_confirmed", "source_sha256", "read_executed",
             "workcopy_created", "drive_write",
         ]},
-        timeout_seconds=5.0, user_visible=False,
+        timeout_seconds=None, user_visible=False,
     )
 
 def build_web_xlsx_p01_tool_binding(
@@ -129,8 +129,11 @@ def build_web_xlsx_p01_tool_binding(
         )
 
     async def confirm_only(arguments: dict) -> dict:
-        # Defense in depth: source state must still match AFTER approval.
-        if not await verify_exact_source(arguments, post_approval=True):
+        # Owner decision 2026-10-28: the confirmation is pre-delegated, so the
+        # handler runs at start with no approval pause behind it. It still
+        # re-verifies the exact source against the live selection — the
+        # post-approval status it used to require does not exist on this lane.
+        if not await verify_exact_source(arguments, post_approval=False):
             raise ValueError("verified source scope changed")
         return {
             "p01_intent_confirmed": True,
@@ -168,6 +171,10 @@ def build_web_xlsx_p01_tool_binding(
     auth = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(SCOPE,),
+        # Owner decision 2026-10-28: PC menu work runs pre-delegated. This
+        # binding exists only when the owner's PC lane is connected, and the
+        # per-invocation preflight re-authorizes against the live selection.
+        externally_authorized_tools=frozenset({RUNTIME_TOOL}),
     )
     return EngineToolBinding(
         app_id=APP_ID, tool_runtime=runtime, registry=registry,

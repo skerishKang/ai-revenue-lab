@@ -1,0 +1,28 @@
+name = "padiem-chat-front"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+# No workers.dev and no preview URLs: the only way in is the custom domain the
+# cutover moves here (see docs/operations/CHAT_COM2_FRONT_RUNBOOK.md).
+workers_dev = false
+preview_urls = false
+
+# Nothing is deployed by this file. The `chat.padiem.net` Custom Domain still
+# points at the Python Worker (`padiem-chat`) until the approved cutover: the
+# swap is ONE change and the revert is the reverse ONE change.
+# routes = [{ pattern = "chat.padiem.net", custom_domain = true }]
+
+[vars]
+FRONT_ORIGIN = "https://chat-com2.padiem.net"
+# "static" → 503 maintenance page; "service" → padiem-chat Python Worker.
+FALLBACK_MODE = "static"
+# "off" while the Python Worker is still canonical for writes; "writes" after
+# the data cutover — writes then never fall back to the Python Worker.
+COM2_CANONICAL = "off"
+HEALTH_TTL_MS = "10000"
+UPSTREAM_TIMEOUT_MS = "8000"
+
+# Read-path fallback target. Declared here so the binding exists in both modes;
+# static mode simply never calls it.
+[[services]]
+binding = "CHAT_WORKER"
+service = "padiem-chat"

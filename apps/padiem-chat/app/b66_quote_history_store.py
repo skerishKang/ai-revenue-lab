@@ -35,7 +35,7 @@ MAX_USER_ID_CHARS = 80
 # #4379: a stored quote snapshot carries no PADIEM byte or item total.
 # These symbols are retained for import compatibility and are no longer
 # enforced.
-MAX_SNAPSHOT_JSON_BYTES = 128 * 1024
+MAX_SNAPSHOT_JSON_BYTES = 1024 * 1024
 MAX_SENDER_JSON_BYTES = 16 * 1024
 MAX_ITEMS = 200
 

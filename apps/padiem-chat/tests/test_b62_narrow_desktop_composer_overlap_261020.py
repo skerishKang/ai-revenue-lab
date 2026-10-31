@@ -49,6 +49,11 @@ BRAND_CSS = STATIC / "padiem-glass-brand-polish.css"
 WINDOWS = ((1024, 800), (1366, 768))
 
 
+def strip_css_comments(css: str) -> str:
+    """Drop the notes so a comment about a property is not read as one."""
+    return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(STATIC), **kwargs)
@@ -108,23 +113,35 @@ def test_no_lane_declares_a_second_reserved_bottom_space():
     """One reservation per lane: a second copy drops the keyboard inset."""
     polish = POLISH_CSS.read_text(encoding="utf-8")
     brand = BRAND_CSS.read_text(encoding="utf-8")
-    # The shared Chat/home rule owns the reserved space for both states.
-    assert '.app-shell:is([data-state="home"], [data-state="chat"]) .conversation' in polish
+    # The shared Chat/Claw/home rule owns the reserved space for every
+    # conversation surface. It stays keyed on the shell state rather than the
+    # first-screen layout variant: the reservation is needed while a thread is
+    # open and on the Claw working views too, where the hero is not shown.
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in polish
     assert "var(--padiem-composer-clearance, 230px)" in polish
     assert "var(--padiem-visual-keyboard-inset, 0px)" in polish
-    # The brand sheet may not restate the Chat reservation.
-    brand_chat = re.search(
-        r'\.app-shell\[data-state="chat"\] \.conversation \{[^}]*\}', brand, re.S
-    )
-    assert brand_chat is not None
-    assert "padding-bottom" not in brand_chat.group(0), brand_chat.group(0)
+    # The brand sheet owns the horizontal composition of the conversation and
+    # nothing of its vertical band: it may not restate the reserved bottom
+    # space nor the first-screen origin, in any of its `.conversation` rules.
+    brand_declarations = re.findall(r"([^{}]+)\{([^{}]*)\}", strip_css_comments(brand))
+    vertical = [
+        selector.strip()[-60:]
+        for selector, body in brand_declarations
+        if ".conversation" in selector
+        and re.search(r"(?:^|;)\s*padding-(?:top|bottom)\s*:", body)
+    ]
+    assert vertical == [], vertical
 
 
 def test_the_phone_landing_keeps_the_compact_first_screen():
-    """The phone compaction belonged to the chat state only.
+    """The phone compaction belongs to the conversation layout, not to Chat.
 
-    The first screen runs in the home state, so the landing was rendered with
-    the desktop card sizes and its last card row ended under the input.
+    The first screen runs in the home state, so the compaction has to cover
+    it as well: the landing was rendered with the desktop card sizes and its
+    last card row ended under the input. It used to be scoped to the two Chat
+    states, which left the Claw landing on the theme sheet's 30px start with
+    no block padding and a 25px card gap — the same brand line began 14px and
+    then 6px lower on one phone for no product reason (measured at 390x844).
     """
     polish = POLISH_CSS.read_text(encoding="utf-8")
     phone = re.search(
@@ -132,7 +149,8 @@ def test_the_phone_landing_keeps_the_compact_first_screen():
     )
     assert phone is not None
     body = phone.group("body")
-    assert ':is([data-state="home"], [data-state="chat"])' in body
+    assert '[data-layout-variant="conversation"]' in body
+    assert 'data-state="home"' not in body
     assert "grid-template-columns: repeat(2, minmax(0, 1fr))" in body
 
 

@@ -28,6 +28,8 @@ owns.
 
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import asyncio
 import inspect
 import json
@@ -73,7 +75,7 @@ from .binary_attachment_frame import decode_binary_attachment_frame
 from .claw_attachment_context import (
     CLAW_IMAGE_ATTACHMENT_UNSUPPORTED,
     AttachmentValidationError,
-    parse_claw_turn_attachments,
+    parse_claw_turn_attachments_async,
 )
 from .request_contract import BrowserRequestError, parse_custom_selection
 from .claw_first_turn_authority import (
@@ -1333,8 +1335,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # refusals happen before quota, first-turn claim, Engine dispatch and any
     # provider call.
     try:
-        document_context, image_attachments = parse_claw_turn_attachments(
-            data.get("attachments")
+        document_context, image_attachments = await parse_claw_turn_attachments_async(
+            data.get("attachments"), file_resolver=file_resolver(request)
         )
     except AttachmentValidationError as exc:
         return _error(422, "invalid_attachment", str(exc))
@@ -1667,116 +1669,127 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     catalog_task, catalog_unavailable = _start_selectable_model_read(
         request, selected_model_id, central_route_model_id,
     )
-    pc_owner = current_user_id(request) if auth_ready(request) else None
-    if isinstance(pc_owner, str) and pc_owner:
-        from .claw_memory_routes import _resolve_memory_workspace
-        from .pc_work_context import (
-            SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
-            render_pc_work_context, resolve_pc_work_context,
-            read_saved_device_selection,
-        )
-
-        try:
-            pc_workspace = await _resolve_memory_workspace(request, pc_owner)
-        except Exception:
-            pc_workspace = None
-        pc_target_requested = initial_pc_drive_query or pc_files_requested
-        explicit_pc_device_id = (
-            desktop_device_id if initial_pc_drive_query
-            else (pc_files_device_id if pc_files_requested else None)
-        )
-        selected_pc_device_id = explicit_pc_device_id
-        if (
-            pc_target_requested
-            and isinstance(pc_workspace, str) and pc_workspace
-        ):
-            # The saved value is the account's default target. A failed read
-            # is NOT "no selection": never fall back to another PC.
-            saved_selection = await read_saved_device_selection(
-                request, owner_id=pc_owner, workspace_id=pc_workspace,
+    # #5479: every exit from this span - a PC-target refusal, an exception,
+    # or a client that left - either already awaited the roster read or must
+    # not leave it running. The finally below is the guarantee.
+    try:
+        pc_owner = current_user_id(request) if auth_ready(request) else None
+        if isinstance(pc_owner, str) and pc_owner:
+            from .claw_memory_routes import _resolve_memory_workspace
+            from .pc_work_context import (
+                SAVED_SELECTION_SELECTED, SAVED_SELECTION_UNAVAILABLE,
+                render_pc_work_context, resolve_pc_work_context,
+                read_saved_device_selection,
             )
-            if explicit_pc_device_id is not None:
-                if (
-                    saved_selection.status == SAVED_SELECTION_SELECTED
-                    and saved_selection.device_id != explicit_pc_device_id
-                ):
-                    # A stale tab must not execute on a target that differs
-                    # from the current server preference.
-                    return _error(
-                        409, "pc_selection_stale",
-                        "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요.",
-                    )
-            elif saved_selection.status == SAVED_SELECTION_SELECTED:
-                selected_pc_device_id = saved_selection.device_id
-            elif saved_selection.status == SAVED_SELECTION_UNAVAILABLE:
-                return _error(
-                    503, "pc_selection_unavailable",
-                    "저장된 PC 작업 대상을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-                )
-        pc_context = await resolve_pc_work_context(
-            request, owner_id=pc_owner,
-            workspace_id=pc_workspace,
-            session_id=canonical_session_id,
-            selected_device_id=selected_pc_device_id,
-        )
-        if pc_target_requested and selected_pc_device_id is not None:
-            selected_row = next(
-                (device for device in pc_context.devices
-                 if device.device_id == selected_pc_device_id),
-                None,
-            )
-            if selected_row is not None and selected_row.state == "REVOKED":
-                return _error(
-                    409, "pc_selection_revoked",
-                    "선택한 PC의 연결이 해제되었습니다. 작업 대상을 다시 선택해 주세요.",
-                )
-            if not pc_context.selected_confirmed:
-                # An explicit or saved target that did not resolve to the
-                # verified Mesh execution target never falls back to another PC.
-                if not pc_context.execution.ready:
-                    return _error(
-                        409, "pc_target_unavailable",
-                        "선택한 PC의 서버 실행 대상을 확인할 수 없습니다. 작업 대상을 다시 확인해 주세요.",
-                    )
-                return _error(
-                    403, "pc_target_mismatch",
-                    "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
-                )
-            # Carry the SAME effective target into the Engine plan for each
-            # PC lane that this turn selected.
-            if initial_pc_drive_query:
-                desktop_device_id = selected_pc_device_id
-            if pc_files_requested:
-                pc_files_device_id = selected_pc_device_id
-        pc_work_text = render_pc_work_context(pc_context)
-    _claw_stage(CLAW_STAGE_PC_CONTEXT, pc_context_started)
 
-    # #3790: in the production Worker Claw uses the central model
-    # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
-    # before quota/P01. Test-only deployments without this optional view still
-    # rely on B14's final exact-ID execution authority.
-    #
-    # #5614: the read was started before the PC work context and is only
-    # EVALUATED here, so this refusal still comes after the PC target checks.
-    if catalog_unavailable:
-        return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-    if catalog_task is not None:
-        try:
-            available = await catalog_task
-            if not isinstance(available, list):
-                raise ValueError("invalid model roster")
-            eligible_ids = {row["model_id"] for row in available}
-        except (Exception,):
+            try:
+                pc_workspace = await _resolve_memory_workspace(request, pc_owner)
+            except Exception:
+                pc_workspace = None
+            pc_target_requested = initial_pc_drive_query or pc_files_requested
+            explicit_pc_device_id = (
+                desktop_device_id if initial_pc_drive_query
+                else (pc_files_device_id if pc_files_requested else None)
+            )
+            selected_pc_device_id = explicit_pc_device_id
+            if (
+                pc_target_requested
+                and isinstance(pc_workspace, str) and pc_workspace
+            ):
+                # The saved value is the account's default target. A failed read
+                # is NOT "no selection": never fall back to another PC.
+                saved_selection = await read_saved_device_selection(
+                    request, owner_id=pc_owner, workspace_id=pc_workspace,
+                )
+                if explicit_pc_device_id is not None:
+                    if (
+                        saved_selection.status == SAVED_SELECTION_SELECTED
+                        and saved_selection.device_id != explicit_pc_device_id
+                    ):
+                        # A stale tab must not execute on a target that differs
+                        # from the current server preference.
+                        return _error(
+                            409, "pc_selection_stale",
+                            "저장된 작업 대상과 화면 선택이 다릅니다. 내 컴퓨터에서 대상을 다시 선택해 주세요.",
+                        )
+                elif saved_selection.status == SAVED_SELECTION_SELECTED:
+                    selected_pc_device_id = saved_selection.device_id
+                elif saved_selection.status == SAVED_SELECTION_UNAVAILABLE:
+                    return _error(
+                        503, "pc_selection_unavailable",
+                        "저장된 PC 작업 대상을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+                    )
+            pc_context = await resolve_pc_work_context(
+                request, owner_id=pc_owner,
+                workspace_id=pc_workspace,
+                session_id=canonical_session_id,
+                selected_device_id=selected_pc_device_id,
+            )
+            if pc_target_requested and selected_pc_device_id is not None:
+                selected_row = next(
+                    (device for device in pc_context.devices
+                     if device.device_id == selected_pc_device_id),
+                    None,
+                )
+                if selected_row is not None and selected_row.state == "REVOKED":
+                    return _error(
+                        409, "pc_selection_revoked",
+                        "선택한 PC의 연결이 해제되었습니다. 작업 대상을 다시 선택해 주세요.",
+                    )
+                if not pc_context.selected_confirmed:
+                    # An explicit or saved target that did not resolve to the
+                    # verified Mesh execution target never falls back to another PC.
+                    if not pc_context.execution.ready:
+                        return _error(
+                            409, "pc_target_unavailable",
+                            "선택한 PC의 서버 실행 대상을 확인할 수 없습니다. 작업 대상을 다시 확인해 주세요.",
+                        )
+                    return _error(
+                        403, "pc_target_mismatch",
+                        "선택한 PC가 서버 실행 대상과 일치하지 않습니다. 작업 대상을 다시 선택해 주세요.",
+                    )
+                # Carry the SAME effective target into the Engine plan for each
+                # PC lane that this turn selected.
+                if initial_pc_drive_query:
+                    desktop_device_id = selected_pc_device_id
+                if pc_files_requested:
+                    pc_files_device_id = selected_pc_device_id
+            pc_work_text = render_pc_work_context(pc_context)
+        _claw_stage(CLAW_STAGE_PC_CONTEXT, pc_context_started)
+
+        # #3790: in the production Worker Claw uses the central model
+        # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
+        # before quota/P01. Test-only deployments without this optional view still
+        # rely on B14's final exact-ID execution authority.
+        #
+        # #5614: the read was started before the PC work context and is only
+        # EVALUATED here, so this refusal still comes after the PC target checks.
+        if catalog_unavailable:
             return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
-        target_model = selected_model_id or central_route_model_id
-        if target_model not in eligible_ids:
-            # Only a server-resolved central route may advance to its
-            # explicitly configured fallback. A member choice never does.
-            if (selected_model_id is None
-                    and claw_route.fallback_model_id in eligible_ids):
-                central_route_model_id = claw_route.fallback_model_id
-            else:
-                return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+        if catalog_task is not None:
+            try:
+                available = await catalog_task
+                if not isinstance(available, list):
+                    raise ValueError("invalid model roster")
+                eligible_ids = {row["model_id"] for row in available}
+            except (Exception,):
+                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+            target_model = selected_model_id or central_route_model_id
+            if target_model not in eligible_ids:
+                # Only a server-resolved central route may advance to its
+                # explicitly configured fallback. A member choice never does.
+                if (selected_model_id is None
+                        and claw_route.fallback_model_id in eligible_ids):
+                    central_route_model_id = claw_route.fallback_model_id
+                else:
+                    return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+
+    finally:
+        # A task the evaluation awaited is done, where this is a no-op; one
+        # the turn never reached is cancelled here, and the drain callback
+        # keeps even its outcome retrieved.
+        if catalog_task is not None and not catalog_task.done():
+            catalog_task.cancel()
 
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()

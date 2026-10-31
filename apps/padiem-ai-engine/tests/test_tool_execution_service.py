@@ -361,6 +361,32 @@ async def test_authorized_execution_completes_via_core(fx: Fixture):
     assert fx.total(RUNTIME_SEARCH) == 1
 
 
+async def test_deadline_free_tool_reaches_core_without_a_hidden_engine_timeout(monkeypatch):
+    from dataclasses import replace
+
+    class NoDeadlineFixture(Fixture):
+        def _make_specs(self):
+            specs = super()._make_specs()
+            specs[RUNTIME_SEARCH] = replace(specs[RUNTIME_SEARCH], timeout_seconds=None)
+            return specs
+
+    fx = NoDeadlineFixture()
+    original = asyncio.wait_for
+    observed = []
+
+    async def observe(awaitable, timeout):
+        observed.append(timeout)
+        return await original(awaitable, timeout=timeout)
+
+    monkeypatch.setattr(asyncio, "wait_for", observe)
+    response = await fx.service.execute_payload(execute_payload())
+    assert response.status_code == 200
+    assert response.body["tool"]["status"] == "completed"
+    assert fx.total(RUNTIME_SEARCH) == 1
+    assert len(observed) >= 2  # Engine wrapper and the real Core handler.
+    assert all(timeout is None for timeout in observed)
+
+
 async def test_private_arguments_never_echo(fx: Fixture):
     response = await fx.service.execute_payload(execute_payload())
     assert SECRET_QUERY not in json.dumps(response.body)

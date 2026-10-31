@@ -46,11 +46,17 @@ def test_resource_policy_can_only_narrow_tool_spec_ceiling() -> None:
     assert resources.narrowed is True
 
 
-def test_resource_policy_rejects_widening_outside_runtime_bounds() -> None:
-    with pytest.raises(ToolResourcePolicyError) as exc_info:
-        ToolResourcePolicy(max_timeout_seconds=301.0)
-
-    assert exc_info.value.code == "invalid_tool_resource_policy"
+def test_resource_policy_has_no_upper_timeout_widening_bound() -> None:
+    # #5895: the old bounded-ToolSpec upper bound (300) is gone, so a policy may
+    # widen a tool's timeout to any positive number, including a long one, and
+    # None means no bound at all. Only a non-positive value is refused.
+    for value in (301.0, 600.0, 86_400.0):
+        assert ToolResourcePolicy(max_timeout_seconds=value).max_timeout_seconds == value
+    assert ToolResourcePolicy(max_timeout_seconds=None).max_timeout_seconds is None
+    for bad in (0, -1, True):
+        with pytest.raises(ToolResourcePolicyError) as exc_info:
+            ToolResourcePolicy(max_timeout_seconds=bad)
+        assert exc_info.value.code == "invalid_tool_resource_policy"
 
 
 def test_resource_policy_public_projection_has_no_authority_or_credentials() -> None:

@@ -593,7 +593,7 @@ test("N17. no credential plaintext in returned response (fallback accept + fail 
 });
 
 test("N18. oversized Engine 401-auth body stays fail-closed (502) with no fallback", async () => {
-  const oversized = "u".repeat(8 * 1024 * 1024 + 8);
+  const oversized = "u".repeat(32 * 1024 * 1024 + 8);
   const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
     new Response(oversized, { status: 401 }),
     new Response(JSON.stringify({ ok: true }), { status: 200 }),
@@ -731,7 +731,7 @@ test("R2. chunked/unknown-length request over the former limit is read, not refu
 });
 
 test("R3. Engine response exactly MAX_RESPONSE_BYTES -> forwarded intact", async () => {
-  const payload = new Uint8Array(8 * 1024 * 1024);
+  const payload = new Uint8Array(32 * 1024 * 1024);
   for (let i = 0; i < payload.length; i += 1) payload[i] = i % 251;
   const { env } = fakeEnv({
     response: new Response(payload, { status: 200 }),
@@ -740,14 +740,14 @@ test("R3. Engine response exactly MAX_RESPONSE_BYTES -> forwarded intact", async
 
   assert.equal(response.status, 200);
   const delivered = new Uint8Array(await response.arrayBuffer());
-  assert.equal(delivered.byteLength, 8 * 1024 * 1024);
+  assert.equal(delivered.byteLength, 32 * 1024 * 1024);
   assert.deepEqual(delivered, payload);
 });
 
 test("R4. Engine response MAX_RESPONSE_BYTES + 1 across chunks -> immediate cancel, later chunks unread, 502 vocab", async () => {
   const counters = { pulls: 0, cancelled: false };
-  const part = new Uint8Array(4 * 1024 * 1024 + 1);
-  const stream = chunkStream([part, part, part], counters); // exceeds 8 MiB on the second chunk
+  const part = new Uint8Array(16 * 1024 * 1024 + 1);
+  const stream = chunkStream([part, part, part], counters); // exceeds 32 MiB on the second chunk
   const { calls, env } = fakeEnv({
     response: new Response(stream, { status: 200 }),
   });

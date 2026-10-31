@@ -514,6 +514,19 @@ def assert_connector_broker_added_only(before: object, after: object) -> None:
         raise BindingStateError("expected canonical Connector Broker binding addition")
 
 
+def assert_document_parser_added_only(before: object, after: object) -> None:
+    expected = ("service", "DOCUMENT_PARSER_SERVICE", "padiem-document-parser", None, None)
+    old = set(canonical_state(before))
+    new = set(canonical_state(after))
+    for entry in old:
+        if entry[1] == expected[1] and entry != expected:
+            raise BindingStateError("Parser existing binding drift")
+    if old - new or new - old not in (set(), {expected}):
+        raise BindingStateError("Parser additive binding changed unrelated authority")
+    if expected not in new:
+        raise BindingStateError("Parser binding not served")
+
+
 def assert_claw_public_search_added_only(before: object, after: object) -> None:
     """Exactly the owner-approved public search ON flag; no other binding drift.
 
@@ -655,6 +668,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-resend-alert", action="store_true",
                         help="#5441: only the one canonical transactional-mail Secrets Store reference")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
+    parser.add_argument("--expected-add-document-parser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
     parser.add_argument("--expected-add-claw-public-search", action="store_true")
     parser.add_argument("--check-connector-baseline", action="store_true",
@@ -679,6 +693,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_resend_alert,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
+            args.expected_add_document_parser,
             args.expected_add_claw_public_search,
             args.check_connector_baseline,
             args.expected_add_b66_membership_secret,
@@ -730,6 +745,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
             assert_hark_browser_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_document_parser:
+            assert_document_parser_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_connector_broker:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Connector Broker mode refuses unrelated authorization flags")

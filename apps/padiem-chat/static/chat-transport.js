@@ -5,11 +5,45 @@
   const orchestrationRequests = new WeakMap();
   const calendarTurnIdsByRequest = new WeakMap();
 
-  function errorFor(data, fallback) {
-    const message = data && data.error && typeof data.error.message === "string" ? data.error.message : fallback;
+  function errorFor(data, fallback, status) {
+    const message = data?.error?.code === "stale_chat_client" ? '화면이 오래되었습니다. 새로고침이 필요합니다.' : data && data.error && typeof data.error.message === "string" && data.error.message.trim() ? data.error.message : fallback;
     const error = new Error(message);
     if (data && data.error && typeof data.error.code === "string") error.code = data.error.code;
+    if (status === 422 || (data && data.ok === false && data.error)) error.terminalRecord = true;
     return error;
+  }
+
+  // #5895: these two codes are produced when an Engine stream stops without a
+  // verified result — the run itself keeps going and its answer is stored. A
+  // refusal (authorization, tier, cancellation, execution failure) never uses
+  // them, so only these may hand the turn to the pending-result recovery.
+  const STREAM_LOSS_CODES = new Set(["invalid_engine_stream", "invalid_engine_stream_event"]);
+
+  function isStreamLoss(data) {
+    return STREAM_LOSS_CODES.has(data?.error?.code);
+  }
+
+  function streamErrorMessage(data) {
+    const code = data?.error?.code;
+    if (code === "upstream_timeout") return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
+    return typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)
+      ? `요청을 처리하지 못했습니다 (${code}). 다시 시도해 주세요.`
+      : "요청을 처리하지 못했습니다. 다시 시도해 주세요.";
+  }
+
+  function normalizeStreamFrame(frame) {
+    if (!frame) return frame;
+    try {
+      const data = JSON.parse(frame.data);
+      if (data?.ok === false && data.error) return { ...frame, event: "error" };
+    } catch (_) { /* The consumer owns malformed record reporting. */ }
+    return frame;
+  }
+
+  function isStreamResponse(response) {
+    const type = (response?.headers?.get("content-type") || "").toLowerCase();
+    return type.startsWith("text/event-stream") || type.startsWith("application/x-ndjson")
+      || type.startsWith("application/ndjson");
   }
 
   function parseSseFrame(frame) {
@@ -26,17 +60,35 @@
       if (field === "data") dataLines.push(value);
     });
     if (!dataLines.length) return null;
-    return { event, data: dataLines.join("\n") };
+    return normalizeStreamFrame({ event, data: dataLines.join("\n") });
   }
 
   async function readSseEvents(response, onEvent) {
     if (!response.body || typeof response.body.getReader !== "function") throw new Error("스트리밍 응답을 읽을 수 없습니다.");
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
+    const ndjson = /application\/(?:x-)?ndjson/i.test(response.headers?.get("content-type") || "");
     let buffer = "";
     let reachedEof = false;
     let stoppedEarly = false;
     try {
+      async function consume(frame) {
+        if (frame && frame.event === "orchestration_pause" && orchestrationRequests.has(response)) {
+          const data = JSON.parse(frame.data);
+          notifyOrchestrationPause(data.orchestration, orchestrationRequests.get(response));
+          const paused = new Error("approval paused");
+          paused.name = "AbortError";
+          throw paused;
+        }
+        return frame && await onEvent(frame);
+      }
+      function parseRecord(text) {
+        if (!ndjson) return parseSseFrame(text);
+        if (!text.trim()) return null;
+        const data = JSON.parse(text);
+        const event = data.event || (data.done === true ? "done" : typeof data.delta === "string" ? "delta" : "message");
+        return normalizeStreamFrame({ event, data: text });
+      }
       while (true) {
         const item = await reader.read();
         if (item.done) {
@@ -45,25 +97,22 @@
         }
         buffer += decoder.decode(item.value, { stream: true });
         while (true) {
-          const boundary = buffer.match(/\r?\n\r?\n/);
+          const boundary = buffer.match(ndjson ? /\r?\n/ : /\r?\n\r?\n/);
           if (!boundary || boundary.index === undefined) break;
           const frameText = buffer.slice(0, boundary.index);
           buffer = buffer.slice(boundary.index + boundary[0].length);
-          const frame = parseSseFrame(frameText);
-          if (frame && frame.event === "orchestration_pause" && orchestrationRequests.has(response)) {
-            const data = JSON.parse(frame.data);
-            notifyOrchestrationPause(data.orchestration, orchestrationRequests.get(response));
-            const paused = new Error("approval paused");
-            paused.name = "AbortError";
-            throw paused;
-          }
-          if (frame && await onEvent(frame)) {
+          const frame = parseRecord(frameText);
+          if (await consume(frame)) {
             stoppedEarly = true;
             return;
           }
         }
       }
       buffer += decoder.decode();
+      if (ndjson && buffer.trim()) {
+        await consume(parseRecord(buffer));
+        buffer = "";
+      }
       if (buffer.trim()) throw new Error("AI 스트리밍 응답이 완전히 끝나지 않았습니다.");
     } finally {
       if (!reachedEof || stoppedEarly) {
@@ -151,7 +200,7 @@
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || typeof data.answer !== "string") {
-      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
     }
     return data;
   }
@@ -180,13 +229,13 @@
       body: JSON.stringify(payload),
       signal,
     });
-    if (response.ok && (response.headers.get("content-type") || "").startsWith("text/event-stream")) {
+    if (response.ok && isStreamResponse(response)) {
       orchestrationRequests.set(response, payload);
       return response;
     }
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data) {
-      throw errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+    if (!response.ok || !data || data.ok === false) {
+      throw errorFor(data, streamErrorMessage(data), response.status);
     }
     return data;
   }
@@ -235,8 +284,11 @@
     });
   }
 
-  async function tryOrchestration(payload, signal) {
-    if (!await orchestrationReady(signal)) return null;
+  async function tryOrchestration(payload, signal, required = false) {
+    if (!await orchestrationReady(signal)) {
+      if (required) throw errorFor({error: {code: "orchestration_unavailable", message: "AI 작업 연결을 현재 사용할 수 없습니다."}});
+      return null;
+    }
     let data;
     try {
       data = await postOrchestration("/api/orchestration", payload, signal);
@@ -244,7 +296,7 @@
       if (error && error.code === "orchestration_not_applicable") return null;
       throw error;
     }
-    if (data && data.headers && (data.headers.get("content-type") || "").startsWith("text/event-stream")) {
+    if (isStreamResponse(data)) {
       return data;
     }
     if (data.orchestration && data.orchestration.approval_pause) {
@@ -314,9 +366,10 @@
 
   async function requestStreaming(payload, signal) {
     const wire = withDeviceSelection(payload);
-    // PADIEM Custom is a direct provider lane. It must never be routed
-    // through B14 orchestration, which stays on the PADIEM-provided path.
-    const orchestrated = payload && payload.custom ? null : await tryOrchestration(payload, signal);
+    // The server-owned opt-in defaults off; the legacy custom path stays exact.
+    const byokViaB14 = payload && payload.custom && window.PadiemCustomSelection?.viaEngine?.() === true;
+    const orchestrated = payload && payload.custom && !byokViaB14
+      ? null : await tryOrchestration(byokViaB14 ? wire : payload, signal, byokViaB14);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {
@@ -328,7 +381,7 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
     }
     return response;
   }
@@ -337,6 +390,8 @@
     createCalendarTurnId,
     createChatPcRunId,
     errorFor,
+    streamErrorMessage,
+    isStreamLoss,
     parseSseFrame,
     readSseEvents,
     requestCompleted,

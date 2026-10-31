@@ -24,8 +24,8 @@ Separation of duties (#2099 ACT-0 decision):
     Retired model IDs here mirror B14's RETIRED_KILO_FREE_MODEL_IDS and Chat's
     RETIRED_B14_MODEL_IDS; STEP-1 pins all three in agreement via parity
     tests. Chat and Claw now consume these declarations through the shared
-    tier resolver. apps/korean-ai-platform/app/pilot/tier_registry_v1.py
-    is a separate legacy governance projection, not the live route.
+    tier resolver. This module is the single product-tier route authority;
+    no second tier registry is maintained anywhere else.
 
 Credential fields carry binding NAMES only (platform secret identifiers),
 never secret values. This module performs no I/O or provider dispatch;
@@ -50,23 +50,19 @@ class ProductTierRoutesError(ValueError):
 
 FREE_PRIMARY_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
 FREE_FALLBACK_B14_MODEL_ID = "google/gemma-4-26b-a4b-it"
-# #5009: Plus/Pro/Max default. Registered and enabled in B14
-# (b14_models.json) and already the verified administrator-only Chat model,
-# so the provider path is proven; the per-grade provider live call is still
-# pending and tracked by each route's evidence.
+# #5009: the existing Muse identities are retained as data-only routes.
+# Owner decision 2026-10-25: the test-phase paid/admin primary is Google.
+TEST_PHASE_PRIMARY_B14_MODEL_ID = "google/gemini-3.5-flash-lite"
 MUSE_B14_MODEL_ID = "opencode-go/muse-spark-1.3-contributor"
 MUSE_B14_UPSTREAM_MODEL = "muse-spark-1.3-contributor"
-# #2505 (owner decision 2026-10-21): an OpenCode Go free model is never an
-# execution candidate, so it leaves every designated per-grade roster. The
-# paid OpenCode Go model stays; only the free family is excluded.
+# Owner decision 2026-10-25: test-phase Google recovery order for the
+# Plus/Pro/Max/admin lanes. Free's existing roster remains unchanged.
 TIER_FALLBACK_B14_MODELS = {
-    "max": ("opencode-go/muse-spark-1.3-contributor",),
-    "pro": ("google/gemma-4-31b-it",),
-    "plus": ("google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
+    "max": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
+    "pro": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
+    "plus": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
     "free": ("google/gemma-4-26b-a4b-it", "google/gemini-3.5-flash-lite", "google/gemma-4-31b-it"),
-    # Owner decision 2026-10-24: the administrator lane runs on opencode-go,
-    # so its fallback roller mirrors the Max grade.
-    "admin": ("opencode-go/muse-spark-1.3-contributor",),
+    "admin": ("google/gemini-3.1-flash-lite", "google/gemma-4-31b-it"),
 }
 
 # Owner decision 2026-10-21 (#2505): OpenCode Go free models are not execution
@@ -88,11 +84,6 @@ def is_free_execution_candidate(model_id: str | None) -> bool:
     return bool(separator) and provider == FREE_CANDIDATE_PROVIDER and tail.endswith("-free")
 
 
-# A declared grade's fallback is a specific owner choice, not b14/auto or
-# permission for an unrelated/paid model. B14 verifies live registration,
-# credentials and eligible 429/5xx/timeout before any failover.
-OWNER_PINNED_TIER_FALLBACK_ON_RECOVERABLE_ERROR = True
-
 class ProductTierLabel(str, Enum):
     FREE = "Padiem Free"
     PLUS = "Padiem Plus"
@@ -105,13 +96,18 @@ class ProductRouteStatus(str, Enum):
     HOLD_AS_DATA_ONLY = "hold_as_data_only"
     RETIRED_AS_DATA_ONLY = "retired_as_data_only"
 
+# One shared primary-route switch for a separately approved Muse return.
+# HOLD -> EXECUTABLE here reactivates Muse for all four lanes and holds Google.
+MUSE_ROUTE_STATUS = ProductRouteStatus.HOLD_AS_DATA_ONLY
+_TEST_PHASE_GOOGLE_ROUTE_STATUS = ProductRouteStatus.EXECUTABLE
+
 class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Historical HOLD sentinels are identity markers, not active B14 model IDs.
-# Current executable routes below select Google for Free and Muse for the
-# paid tiers; historical HOLD choices remain only in the Git history.
+# Current executable routes select Google during the test phase; Muse routes
+# remain explicit HOLD data rather than being removed from the declaration.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
@@ -250,34 +246,40 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     *(
         ProductTierDefinition(
             label=label,
-            routes=(ProductTierRoute(
-                route_id=f"{label.value.split()[-1].lower()}.muse-spark.v1",
-                status=ProductRouteStatus.EXECUTABLE,
-                model_family="muse-spark",
-                provider_id="opencode-go",
-                model_id=MUSE_B14_MODEL_ID,
-                upstream_model=MUSE_B14_UPSTREAM_MODEL,
-                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B14_CREDENTIAL_11",
-                evidence="Owner Plus/Pro/Max Muse primary decision #5009.",
-            ),),
+            routes=(
+                ProductTierRoute(
+                    route_id=f"{tier}.gemini-3.5-flash-lite.v1",
+                    status=_TEST_PHASE_GOOGLE_ROUTE_STATUS,
+                    model_family="gemini-3.5-flash-lite",
+                    provider_id="google",
+                    model_id=TEST_PHASE_PRIMARY_B14_MODEL_ID,
+                    upstream_model="gemini-3.5-flash-lite",
+                    credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                    credential_binding="PADIEM_B14_CREDENTIAL_05",
+                    hold_reason="Held when the separately approved Muse primary is restored.",
+                    evidence="Owner test-phase Google primary decision 2026-10-25.",
+                ),
+                ProductTierRoute(
+                    route_id=("admin.muse-spark-1.3-contributor.v1"
+                              if label is ProductTierLabel.ADMIN else f"{tier}.muse-spark.v1"),
+                    status=MUSE_ROUTE_STATUS,
+                    model_family="muse-spark",
+                    provider_id="opencode-go",
+                    model_id=MUSE_B14_MODEL_ID,
+                    upstream_model=MUSE_B14_UPSTREAM_MODEL,
+                    credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                    credential_binding="PADIEM_B14_CREDENTIAL_11",
+                    hold_reason="Owner decision 2026-10-25: retain Muse as data during the Google test phase.",
+                    evidence="Owner Plus/Pro/Max Muse primary #5009; admin decision 2026-10-24.",
+                ),
+            ),
         )
-        for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
-    ),
-    # Owner decision 2026-10-24: administrator lane runs on opencode-go.
-    ProductTierDefinition(
-        label=ProductTierLabel.ADMIN,
-        routes=(ProductTierRoute(
-            route_id="admin.muse-spark-1.3-contributor.v1",
-            status=ProductRouteStatus.EXECUTABLE,
-            model_family="muse-spark",
-            provider_id="opencode-go",
-            model_id=MUSE_B14_MODEL_ID,
-            upstream_model=MUSE_B14_UPSTREAM_MODEL,
-            credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-            credential_binding="PADIEM_B14_CREDENTIAL_11",
-            evidence="Owner decision 2026-10-24: administrator lane runs on opencode-go.",
-        ),),
+        for label, tier in (
+            (ProductTierLabel.PLUS, "plus"),
+            (ProductTierLabel.PRO, "pro"),
+            (ProductTierLabel.MAX, "max"),
+            (ProductTierLabel.ADMIN, "admin"),
+        )
     ),
 )
 validate_product_tier_routes(PRODUCT_TIER_ROUTES)

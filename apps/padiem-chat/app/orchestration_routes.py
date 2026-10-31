@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import json
+import logging
 import re
 from typing import Any
 
@@ -19,14 +22,19 @@ from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
 from .member_grade_access import selected_admin_denial, selected_grade_denial
 from .model_policy import (
+    ResolvedModelPolicy,
     ModelPolicyError,
     resolve_model_policy,
     resolve_request_model_policy,
 )
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .public_chat import public_chat_result
-from .request_contract import BrowserRequestError, _validate_payload
+from .request_contract import BrowserRequestError, _validate_payload_async
+from .pc_correlation import run_hash
 from .usage_gate import UsageGate
+
+_PC_TRACE_LOG = logging.getLogger("padiem_chat.pc_correlation")
+_PC_TRACE_LOG.setLevel(logging.INFO)
 
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
@@ -174,8 +182,29 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
-        messages, skill, tool_request, attachments, conversation_id, project_id, custom = _validate_payload(raw)
-        if tool_request is not None or attachments or project_id is not None or custom is not None:
+        # Assign the same canonical run before logging even for older clients
+        # that do not supply one; the PC branch below reuses it for the Engine.
+        trace_run_id = raw.get("pc_run_id") if isinstance(raw, dict) else None
+        if isinstance(raw, dict) and trace_run_id is None:
+            from .chat_pc_drive import _new_lane_run_id
+            trace_run_id = _new_lane_run_id()
+        trace_run = run_hash(trace_run_id)
+        _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s", trace_run or "none")
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s", trace_run or "none")
+        user_credential_ref = None
+        if custom is not None:
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            try:
+                resolved = await resolve_reference(request.app.state, uid, custom)
+            except (CustomProviderError, CustomProviderSelectionError) as exc:
+                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422))
+            if resolved is None:
+                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409)
+            byok_model, user_credential_ref = resolved
+        if tool_request is not None or attachments or project_id is not None:
             return _error(
                 "orchestration_not_applicable",
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
@@ -183,9 +212,12 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
         # #5015: an explicit browser tier is a preference, not authority.
         # Reuse the same server-side grade/administrator gates and resolver the
-        # Chat stream route applies. A legacy request without a tier keeps the
-        # existing alias/default resolution.
-        if "tier" in raw:
+        # Chat stream route applies. A request without a tier resolves the
+        # default product tier; slash-prefixed text stays ordinary prompt text.
+        if custom is not None:
+            policy = ResolvedModelPolicy(model_id=byok_model, messages=messages)
+            product_identity = PADIEM_IDENTITY_INSTRUCTION
+        elif "tier" in raw:
             if raw.get("tier") == "admin":
                 admin_denial = await selected_admin_denial(request, uid)
                 if admin_denial is not None:
@@ -205,7 +237,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             policy = resolve_model_policy(messages)
             product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
-        return _error("invalid_request", str(exc), 422)
+        return _error(exc.code, str(exc), 422)
     except ModelPolicyError as exc:
         return _error(exc.code, exc.message, 422)
     except B62OrchestrationError as exc:
@@ -240,6 +272,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     from .chat_pc_drive import resolve_chat_pc_stream_context
     pc_context = await resolve_chat_pc_stream_context(
         request, uid=uid, requested_device_id=raw.get("device_id"),
+        user_text=user_text,
     )
     # #4469: in production the PADIEM Chat composer is answered by THIS lane
     # (the browser tries the orchestration route first), so the shared public
@@ -279,8 +312,11 @@ async def api_orchestration(request: Request) -> JSONResponse:
             grounding_context = prepared.context
             grounded_evidence = public_grounding_evidence(prepared.evidence)
 
-    if pc_context is not None:
-        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, _new_lane_run_id, pc_scope_notice_for_run
+    if pc_context is not None or user_credential_ref is not None:
+        if pc_context is None:
+            # A text-only BYOK turn stages message history, never a PC run.
+            pc_context = {"workspace_id": "personal", "subject_id": None, "pc_tools": None}
+        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, pc_scope_notice_for_run
         from .claw_live_events import chat_pc_orchestration_sse
         begin = getattr(store, "begin_chat_stream_turn", None)
         finish = getattr(store, "finish_chat_stream_turn", None)
@@ -298,7 +334,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             except Exception:
                 return _error("history_context_incomplete", "대화 맥락을 현재 복원할 수 없습니다.", 503)
         try:
-            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or _new_lane_run_id()
+            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or trace_run_id
             saved_id = await begin(
                 user_id=uid, run_id=pc_run_id, workspace_id=pc_context["workspace_id"],
                 user_text=user_text, conversation_id=conversation_id,
@@ -317,9 +353,17 @@ async def api_orchestration(request: Request) -> JSONResponse:
             pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
             session_id=pc_run_id, additional_system_context=grounding_context,
             product_identity=product_identity,
+            **({"user_credential_ref": user_credential_ref,
+                "byok_selection": {"provider": custom.provider, "model": custom.model}}
+               if user_credential_ref is not None else {}),
         )
         async def scope_notice():
             return await pc_scope_notice_for_run(request, run_id=pc_run_id)
+        async def fail_stream():
+            # A terminal Engine/contract error is evidence of failure; a browser
+            # disconnect is not. The existing owner-scoped guard preserves a
+            # verified completion and creates no row for an ordinary text turn.
+            await store.update_claw_run_status(uid, pc_run_id, "failed")
         async def complete_stream(result):
             fields = {"conversation_id": saved_id}
             try:
@@ -338,7 +382,8 @@ async def api_orchestration(request: Request) -> JSONResponse:
                 evidence=grounded_evidence, tool={"id": "web_search", "title": "웹 검색"})
         return chat_pc_orchestration_sse(
             stream, pc_run_id=pc_run_id, on_completed=complete_stream,
-            on_scope=scope_notice, done_fields=completion_fields,
+            on_scope=scope_notice, done_fields=completion_fields, on_failed=fail_stream,
+            pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
         )
 
     try:
@@ -398,11 +443,21 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
     try:
         raw = await _json_body(request)
         continuation_ref, pause_id, outcome = parse_approval_intent(raw)
+        async def user_credential_resolver(selection):
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            from .request_contract import parse_custom_selection
+            try:
+                return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
+            except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
         result = await bridge.resume(
             user_id=uid,
             continuation_ref=continuation_ref,
             pause_id=pause_id,
             outcome=outcome,
+            user_credential_resolver=user_credential_resolver,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)

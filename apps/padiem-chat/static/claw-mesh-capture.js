@@ -130,7 +130,6 @@
 
   var api = { init: init, scan: scan };
   if (typeof window !== "undefined") {
-    window.PadiemClawMeshCapture = api;
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", function () { init(document); });
     } else {

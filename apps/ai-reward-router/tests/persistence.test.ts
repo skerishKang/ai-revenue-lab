@@ -30,13 +30,13 @@ test('persists W1 source, policy, and gate semantics without granting permission
   const persistedPolicies = CURRENT_SOURCE_POLICY_REVIEWS.map(persistPolicyReview);
   const persistedGates = CURRENT_SOURCE_COLLECTION_GATES.map(persistCollectionGate);
 
-  assert.equal(persistedSources.length, 22);
-  assert.equal(new Set(persistedSources.map((item) => item.sourceId)).size, 22);
-  assert.equal(persistedPolicies.length, 22);
-  assert.equal(new Set(persistedPolicies.map((item) => item.sourceId)).size, 22);
+  assert.equal(persistedSources.length, 23);
+  assert.equal(new Set(persistedSources.map((item) => item.sourceId)).size, 23);
+  assert.equal(persistedPolicies.length, 23);
+  assert.equal(new Set(persistedPolicies.map((item) => item.sourceId)).size, 23);
   assert.equal(persistedPolicies.filter((item) => item.decision === 'PASS').length, 0);
-  assert.equal(persistedPolicies.filter((item) => item.decision === 'PENDING').length, 22);
-  assert.equal(persistedGates.length, 176);
+  assert.equal(persistedPolicies.filter((item) => item.decision === 'PENDING').length, 23);
+  assert.equal(persistedGates.length, 184);
 
   for (const original of CURRENT_SOURCE_REGISTRY) {
     const persisted = persistedSources.find((item) => item.sourceId === original.sourceId);
@@ -151,3 +151,4 @@ test('W2 SQL migration is bounded to trust, inventory, evidence, and review pers
   assert.match(sql, /qualification_probability\s+NUMERIC\s+NULL/i);
   assert.match(sql, /CHECK \(qualification_probability IS NULL OR \(qualification_probability >= 0 AND qualification_probability <= 1\)\)/i);
 });
+

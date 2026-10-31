@@ -61,7 +61,8 @@ def test_a_pasted_style_sample_is_fenced_as_a_sample_not_an_instruction(
 
 def test_the_generation_call_uses_the_existing_chat_contract(speech: dict) -> None:
     payload = speech["chatPayload"]
-    assert payload["mode"] == "auto"
+    # `mode` was the chat-mode remnant; the shared contract now refuses it.
+    assert "mode" not in payload
     assert [m["role"] for m in payload["messages"]] == ["user"]
     assert payload["messages"][0]["content"] == speech["prompt"]
 
@@ -88,6 +89,25 @@ def test_the_saved_draft_is_listed_and_reopens_byte_for_byte(speech: dict) -> No
     assert speech["reopened"] == speech["edited"]
 
 
+def test_a_stored_speech_can_be_picked_as_the_style_reference(speech: dict) -> None:
+    # #5731: each saved row carries a 참고로 선택 action that fills the style
+    # sample textarea with the stored body — no copy-paste needed — and the
+    # next generation fences that body as the sample, exactly like a pasted
+    # one.
+    assert speech["refSelected"], "the reference action must fill the style field"
+    assert speech["refSelectedMatchesSaved"] is True, speech["refSelected"]
+    assert speech["refPromptCarriesSample"] is True
+
+
+def test_reentering_the_tool_lists_the_previously_stored_speeches(
+    speech: dict,
+) -> None:
+    # #5731: the saved list must exist on tool re-entry too, not only right
+    # after a save — the stored history is the point of the feature.
+    assert speech["reentryListCount"], "re-entry must load the stored speech list"
+    assert EVENT in speech["reentryListLabels"][0]
+
+
 def test_the_group_touches_only_the_existing_endpoints(speech: dict) -> None:
     allowed = {
         "GET /api/projects",
@@ -95,6 +115,8 @@ def test_the_group_touches_only_the_existing_endpoints(speech: dict) -> None:
         "GET /api/projects/p1/files",
         "POST /api/projects/p1/files",
         "POST /api/chat",
+        # #5895: whether a PC is linked, read through the existing pairing list.
+        "GET /api/pc/pairings",
     }
     # Reopening reads the one stored draft through the existing detail route.
     allowed.add("GET /api/projects/p1/files/f1")

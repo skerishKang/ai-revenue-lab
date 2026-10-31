@@ -29,9 +29,9 @@ Closed output vocabulary (version UUIDs are non-secret operational ids):
     MARKER_MEMORYVIEW_TOBYTES=PRESENT|ABSENT
     MARKER_BYTES_VALUE=PRESENT|ABSENT
     PR2124_LIVE_MARKERS=PASS|INCONCLUSIVE
-    MARKER_COMPLETED_TIMEOUT_DEFAULT_50=PRESENT|ABSENT
-    MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50=PRESENT|ABSENT
-    MARKER_SHARED_TIMEOUT_DEFAULT_20=PRESENT|ABSENT
+    MARKER_COMPLETED_TIMEOUT_DEFAULT_600=PRESENT|ABSENT
+    MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_600=PRESENT|ABSENT
+    MARKER_SHARED_TIMEOUT_DEFAULT_600=PRESENT|ABSENT
     MARKER_COMPLETION_CONFIG_WIRING=PRESENT|ABSENT
     MARKER_COMPLETION_TRANSPORT_WIRING=PRESENT|ABSENT
     MARKER_STREAMING_CLIENT_PRESENT=PRESENT|ABSENT
@@ -110,20 +110,27 @@ MARKERS: dict[str, bytes] = {
 
 MARKER_KEYS = tuple(MARKERS)
 
-# Exact #2544 completed-timeout production-source markers. Together they prove
-# the separated 50s completed / 20s shared-stream contract and the completed-
-# path wiring are present in the served script, while the streaming path still
-# uses the ordinary default config. Matched as raw bytes in memory only; never
-# echoed back.
+# Exact #2544 completed-timeout production-source markers, re-derived for the code
+# as it stands. Together they prove the served script still separates the completed
+# answer path from the shared stream path and wires both to their own settings, and
+# that the streaming path keeps taking the ordinary default config. #4194
+# (`2884a5205 fix(models): long-running model timeout parity across products`) moved
+# both defaults from 50s/20s to the 600s ZCode idle budget — it updated #2544's own
+# test (`apps/padiem-chat/tests/test_b62_2544_completed_timeout.py`) in the same
+# commit, so the numbers are the intent, not an accident; the markers had to follow.
+# Each needle is one contiguous byte run with no line break: the dataclass-default
+# text of the shared field is a substring of the completed field's, so the shared
+# default is proven by its env-fallback line instead. Matched as raw bytes in memory
+# only; never echoed back.
 COMPLETED_TIMEOUT_MARKERS: dict[str, bytes] = {
-    "MARKER_COMPLETED_TIMEOUT_DEFAULT_50": b"completed_timeout_seconds: float = 50.0",
-    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50": (
-        b'binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50"'
+    "MARKER_COMPLETED_TIMEOUT_DEFAULT_600": b"completed_timeout_seconds: float = 600.0",
+    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_600": (
+        b'binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "600"'
     ),
-    "MARKER_SHARED_TIMEOUT_DEFAULT_20": b"timeout_seconds: float = 20.0",
-    "MARKER_COMPLETION_CONFIG_WIRING": (
-        b"return self._config(self.settings.completed_timeout_seconds)"
+    "MARKER_SHARED_TIMEOUT_DEFAULT_600": (
+        b'timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600")'
     ),
+    "MARKER_COMPLETION_CONFIG_WIRING": b"def _completion_config(",
     "MARKER_COMPLETION_TRANSPORT_WIRING": (
         b"timeout_seconds=self.settings.completed_timeout_seconds"
     ),
@@ -345,9 +352,9 @@ OUTPUT_ORDER = (
     "MARKER_MEMORYVIEW_TOBYTES",
     "MARKER_BYTES_VALUE",
     "PR2124_LIVE_MARKERS",
-    "MARKER_COMPLETED_TIMEOUT_DEFAULT_50",
-    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50",
-    "MARKER_SHARED_TIMEOUT_DEFAULT_20",
+    "MARKER_COMPLETED_TIMEOUT_DEFAULT_600",
+    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_600",
+    "MARKER_SHARED_TIMEOUT_DEFAULT_600",
     "MARKER_COMPLETION_CONFIG_WIRING",
     "MARKER_COMPLETION_TRANSPORT_WIRING",
     "MARKER_STREAMING_CLIENT_PRESENT",

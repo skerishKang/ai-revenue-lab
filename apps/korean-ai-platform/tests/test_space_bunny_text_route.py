@@ -34,7 +34,6 @@ from app.pilot.kilo_provider import (
     KILO_SPACE_BUNNY_UPSTREAM_MODEL,
     RETIRED_KILO_FREE_MODEL_IDS,
 )
-from app.pilot.routing_policy import B14_AUTO_CHAIN
 from app.pilot.router_core import resolve_manual_route
 
 B66_BROWSER_DIR = (
@@ -70,11 +69,12 @@ def test_space_bunny_identity_survives_only_as_historical_metadata() -> None:
     assert KILO_SPACE_BUNNY_CREDENTIAL_BINDING == "PADIEM_KILO_API_KEY"
 
 
-def test_space_bunny_is_absent_from_routes_catalog_and_chain() -> None:
+def test_space_bunny_is_absent_from_routes_and_catalog() -> None:
     route_ids = {route.model_id for route in KILO_FREE_ROUTES}
     assert KILO_SPACE_BUNNY_MODEL_ID not in route_ids
     assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
-    assert KILO_SPACE_BUNNY_MODEL_ID not in B14_AUTO_CHAIN
+    # B7: the fixed chain is retired entirely, so there is no auto lane for a
+    # retired id to rejoin.
     assert KILO_SPACE_BUNNY_MODEL_ID not in {m.model_id for m in CATALOG_MODELS}
 
 
@@ -96,10 +96,13 @@ def test_space_bunny_manual_resolution_fails_closed() -> None:
     assert info.value.upstream_called is False
 
 
-def test_space_bunny_absent_from_auto_chain_and_fallback() -> None:
-    from app.pilot.routing_policy import chain_models
-    assert KILO_SPACE_BUNNY_MODEL_ID not in B14_AUTO_CHAIN
-    assert all(route.model_id != KILO_SPACE_BUNNY_MODEL_ID for route in chain_models())
+def test_space_bunny_cannot_return_via_an_auto_chain() -> None:
+    # B7: the fixed chain is retired entirely, so the retired lane cannot
+    # rejoin an executable auto route.
+    import importlib
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("app.pilot.routing_policy")
 
 def test_platform_adapter_has_no_space_bunny_auth_special_case() -> None:
     import inspect

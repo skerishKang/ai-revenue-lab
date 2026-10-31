@@ -205,11 +205,35 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
             headers={"Cache-Control": "no-store"},
         )
 
+    async def no_paired_pc(route: Route) -> None:
+        # #5573/#5917: the PC card reads /api/pc/pairings when an account opens
+        # the sidebar, and #5573 also reads below that path for a link's roots.
+        # Left unmocked, such a request only ends when the card's own
+        # AbortController fires, and this harness counts the abort as a browser
+        # failure. #5895 answers the whole pairing surface in every fixture, so
+        # no case depends on the local server behind it: an account with no
+        # paired PC has no link to read, so a sub-path is truthfully 404.
+        path = route.request.url.split("?", 1)[0].rstrip("/")
+        if path.endswith("/pairings"):
+            await _fulfill_json(route, {"links": []})
+            return
+        await _fulfill_json(route, {"error": {"code": "not_found"}}, status=404)
+
+    async def no_runs(route: Route) -> None:
+        # #5895: opening a saved conversation also reads the owner's run history
+        # once, to continue a PC turn that is still running server-side. Left
+        # unmocked it becomes a real request to the local server on every
+        # conversation open, competing for the same connections the PC card
+        # reads. An account with no runs has nothing to continue.
+        await _fulfill_json(route, {"ok": True, "runs": []})
+
     await page.route("**/api/auth/status", auth_status)
+    await page.route("**/api/pc/pairings**", no_paired_pc)
     await page.route("**/api/auth/logout", logout)
     await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)
     await page.route("**/api/conversations/*", conversation_detail)
+    await page.route("**/api/claw/runs**", no_runs)
     await page.route("**/api/chat/stream", stream)
 
 

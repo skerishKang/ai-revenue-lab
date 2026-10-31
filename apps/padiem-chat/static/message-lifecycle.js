@@ -16,6 +16,49 @@
   // and a real status (a Claw P01 stage, a failure) is never removed.
   const RUNTIME_LABEL_STATE = Object.freeze({ PREPARING: "preparing", STATUS: "status" });
 
+  // #5573 no-deadline 설계 §7: a long turn has to look alive instead of quiet.
+  // The clock only reports how long the request has been in flight; it never
+  // decides when a turn ends, and there is no client-side deadline behind it.
+  const TURN_LONG_WAIT_MILLISECONDS = 120_000;
+  const turnStartedAt = new WeakMap();
+  const turnClockTimers = new WeakMap();
+
+  function elapsedClockText(milliseconds) {
+    const total = Math.max(0, Math.floor(milliseconds / 1000));
+    const pad = (value) => String(value).padStart(2, "0");
+    return `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
+  }
+
+  function syncTurnClock(article) {
+    if (!article || typeof article.querySelector !== "function") return;
+    const card = statusCardElement(article);
+    const elapsed = card ? card.querySelector("[data-turn-elapsed]") : null;
+    if (!elapsed) return;
+    const started = turnStartedAt.get(article);
+    const waited = started ? Date.now() - started : 0;
+    elapsed.textContent = elapsedClockText(waited);
+    const longWait = card.querySelector("[data-turn-long-wait]");
+    if (longWait) longWait.hidden = waited < TURN_LONG_WAIT_MILLISECONDS;
+  }
+
+  function startTurnClock(article) {
+    if (!article || turnStartedAt.has(article)) return;
+    turnStartedAt.set(article, Date.now());
+    // A host without timers still gets a correct clock: the card recomputes it
+    // on every render. The interval only makes it tick between renders.
+    if (typeof setInterval === "function") {
+      turnClockTimers.set(article, setInterval(() => syncTurnClock(article), 1000));
+    }
+  }
+
+  function stopTurnClock(article) {
+    if (!article) return;
+    const timer = turnClockTimers.get(article);
+    if (timer !== undefined && typeof clearInterval === "function") clearInterval(timer);
+    turnClockTimers.delete(article);
+    turnStartedAt.delete(article);
+  }
+
   function runtimeLabelMarker(article) {
     return article && article.querySelector ? article.querySelector("[data-runtime-label]") : null;
   }
@@ -264,6 +307,10 @@
   window.PadiemChatLifecycle = Object.freeze({
     states,
     runtimeLabelStates: RUNTIME_LABEL_STATE,
+    longWaitMilliseconds: TURN_LONG_WAIT_MILLISECONDS,
+    elapsedClockText,
+    startTurnClock,
+    stopTurnClock,
     isCompleted(article) {
       return Boolean(article && article.dataset.lifecycle === states.COMPLETED);
     },
@@ -271,6 +318,7 @@
       if (!article || !Object.values(states).includes(state)) return;
       const pcLiveLabel = pcProgressByArticle.has(article) ? taskStatusFor(article, null)?.label : null;
       if (terminalCatalog[state]) pcProgressByArticle.delete(article);
+      if (terminalCatalog[state]) stopTurnClock(article);
       article.dataset.lifecycle = state;
       // The card takes over the live status; the badge takes the terminal
       // outcome back when the turn ends. A turn that is no longer running keeps
@@ -634,6 +682,15 @@
     // #5453: the sweep only rides a stage that is really still running.
     if (view.live) status.classList.add("padiem-activity-sweep");
     header.append(heading, status);
+    if (view.live && !pcProgressByArticle.has(article)) {
+      // A PC turn already carries the Engine's own elapsed clock in its stage
+      // label, so this one only covers turns whose lane reports no progress.
+      const elapsed = document.createElement("span");
+      elapsed.className = "capability-elapsed";
+      elapsed.dataset.turnElapsed = "true";
+      elapsed.setAttribute("aria-hidden", "true");
+      header.appendChild(elapsed);
+    }
 
     if (view.preview) {
       const badge = document.createElement("span");
@@ -668,6 +725,21 @@
       stageList.appendChild(row);
     }
     disclosure.appendChild(stageList);
+
+    if (view.live) {
+      // One sentence, no countdown and no promise about when it ends: past two
+      // minutes the reader needs to know the turn was not forgotten.
+      const longWait = document.createElement("p");
+      longWait.className = "capability-long-wait";
+      longWait.dataset.turnLongWait = "true";
+      longWait.setAttribute("role", "status");
+      longWait.hidden = true;
+      longWait.textContent = text(
+        "오래 걸리고 있어요 — 계속 진행 중입니다",
+        "This is taking a while — still working",
+      );
+      disclosure.appendChild(longWait);
+    }
 
     if (view.evidenceAvailable) {
       const evidence = document.createElement("div");
@@ -704,6 +776,7 @@
     // badge does not show a second copy of it. The badge keeps the terminal
     // outcome, which the card does not repeat.
     syncBadgeVisibility(article);
+    syncTurnClock(article);
     return section;
   }
 

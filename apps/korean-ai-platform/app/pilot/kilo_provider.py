@@ -68,7 +68,7 @@ KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
 # registered in the catalog; #2097 removed the minimax/hy3 pair from
-# KILO_FREE_ROUTES and from the fixed_chain_v1 fallback.
+# KILO_FREE_ROUTES. The fixed auto fallback they once joined is retired (B7).
 KILO_HY3_MODEL_ID = "kilo/tencent-hy3-free"
 KILO_HY3_UPSTREAM_MODEL = "tencent/hy3:free"
 KILO_MINIMAX_M3_MODEL_ID = "kilo/minimax-minimax-m3-free"

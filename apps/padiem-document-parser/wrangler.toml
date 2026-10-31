@@ -1,0 +1,18 @@
+name = "padiem-document-parser"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers", "disable_python_external_sdk"]
+# Private Worker: reachable only over the deployment-owned
+# DOCUMENT_PARSER_SERVICE Service Binding. It has no public route, no browser
+# client and no storage/identity authority of its own.
+workers_dev = false
+base_dir = ".worker-src"
+
+# pypdf/openpyxl extraction of a large PDF or workbook is synchronous CPU work.
+# Keep the larger budget scoped to this private parser Worker; the Chat Worker
+# keeps its existing CPU posture.
+[limits]
+cpu_ms = 300000
+
+[build]
+command = "uv run python scripts/build_worker_dependencies.py"

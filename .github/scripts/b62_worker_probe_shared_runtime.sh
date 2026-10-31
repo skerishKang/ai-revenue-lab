@@ -178,13 +178,21 @@ case "$KDFBENCH_BODY" in
 esac
 
 
+# Same nonproduction Workerd: shared ES256 vectors and a synthetic
+# WebCrypto sign/verify roundtrip; no production keys or resources are used.
+SHARED_AUTH_BODY="$(curl -fsS --max-time 15 'http://127.0.0.1:8795/probe?case=shared_auth_es256')"
+case "$SHARED_AUTH_BODY" in
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_SHARED_AUTH_ES256=PASS' ;;
+  *) echo 'B62_WORKER_SHARED_AUTH_ES256=FAIL' >&2; exit 1 ;;
+esac
+
 failed=0
 count=0
 # P01 synthetic monkeypatch belongs last, after transport/R2 assertions.
-for case in timeout web_transport r2_read p01_binding; do
+for case in timeout web_transport r2_read queue_store p01_binding; do
   count=$((count + 1))
   result="$LOGDIR/$case-result.json"
-  case "$case" in timeout) index=0;; web_transport) index=1;; p01_binding) index=2;; r2_read) index=3;; esac
+  case "$case" in timeout) index=0;; web_transport) index=1;; p01_binding) index=2;; r2_read) index=3;; queue_store) index=4;; esac
   echo "B62_WORKER_CASE_${case}_START_MS=$(date +%s%3N)"
   code=""
   if code="$(curl -sS --max-time 15 -o "$result" -w '%{http_code}' "http://127.0.0.1:8795/probe?case=$case")"; then
@@ -222,7 +230,7 @@ else
   echo 'PADIEM_CONNECTOR_ASGI_WSS_WORKER_PROBE=FAIL' >&2
 fi
 echo "B62_WORKER_PROBE_COUNT=$count"
-if [[ "$failed" -ne 0 || "$count" -ne 4 ]]; then
+if [[ "$failed" -ne 0 || "$count" -ne 5 ]]; then
   echo 'B62_WORKER_PROBES=FAIL' >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1

@@ -29,12 +29,14 @@ from app.config import Settings
 from app.main import create_app
 from app.orchestration_bridge import B62EngineOrchestrationBridge
 from app.orchestration_routes import install_orchestration_routes
+from app.pc_device_pairing_store import _NAME_SEPARATOR
 
 ORIGIN = "https://chat.example.test"
 OWNER = "usr_" + "4" * 32
 SESSION_SECRET = "issue-5573-http-boundary-session-secret-000000000000"
 DEVICE = "node/meshdomain1/owner-pc"
 OTHER_DEVICE = "node/meshdomain1/other-owner-pc"
+SECOND = "node/meshdomain1/n0t1$K_lipvoice"
 PC_TEXT = (
     "내 PC의 MeshCentralTrial 폴더에서 파일 목록을 보고, "
     "meshcentral-padiem-trial.txt 파일 내용을 읽어줘"
@@ -341,6 +343,77 @@ async def test_a_browser_target_and_handle_are_never_a_plan(monkeypatch):
     assert store.staged == []
 
 
+def _two_linked_pcs(monkeypatch):
+    """The account's pairing directory: two linked PCs, each answering to two names.
+
+    The labels are in the form the label API stores (machine name, separator,
+    owner alias), and the second node id carries the ``$`` MeshCentral really
+    composes, so this boundary is proven against production-shaped values.
+    """
+    links = [
+        {"mesh_node_id": DEVICE, "label": "Padiem-Command-Center" + _NAME_SEPARATOR + "컴1"},
+        {"mesh_node_id": SECOND, "label": "K_lipvoice" + _NAME_SEPARATOR + "컴2"},
+    ]
+
+    async def _targets(request, owner_id):
+        return links
+
+    async def _resolve(request, **kwargs):
+        chosen = kwargs.get("selected_device_id") or DEVICE
+        return pc_work_context.PcWorkContext(
+            broker_status="ready",
+            devices=(
+                pc_work_context.PcWorkDevice(DEVICE, None, "CONNECTED", True),
+                pc_work_context.PcWorkDevice(
+                    SECOND, "K_lipvoice" + _NAME_SEPARATOR + "컴2", "OFFLINE", False,
+                ),
+            ),
+            execution=pc_work_context.PcExecutionTarget(
+                status="ready", device_id=chosen, pinned=False,
+            ),
+            mapping="confirmed",
+            selected_device_id=chosen,
+            saved_selection_status=pc_work_context.SAVED_SELECTION_SELECTED,
+        )
+
+    monkeypatch.setattr(pc_work_context, "linked_pc_targets", _targets)
+    monkeypatch.setattr(pc_work_context, "resolve_pc_work_context", _resolve)
+    return links
+
+
+@pytest.mark.parametrize("text", [
+    "컴2의 C 드라이브 최상위 목록",
+    "k_lipvoice의 C 드라이브 최상위 목록",
+])
+async def test_the_pc_named_in_the_turn_runs_on_the_stream_lane(monkeypatch, text):
+    """#5573: the browser's stale target loses to this turn's words.
+
+    The screen still points at 컴1 while the sentence asks for 컴2, so the
+    address that arrives from the composer must neither choose the machine nor,
+    by disagreeing with the name, withhold the PC tools altogether.
+    """
+    app, bridge, store = _wire(monkeypatch)
+    _two_linked_pcs(monkeypatch)
+    response = await _post(app, text, device_id=DEVICE, pc_run_id=PC_RUN)
+
+    assert response.status_code == 200, response.text
+    assert len(bridge.requests) == 1
+    assert bridge.requests[0]["pc_tools"]["device_id"] == SECOND
+    assert bridge.requests[0]["pc_tools"]["allowed_scopes"] == [
+        "query_drives", "files_list", "files",
+    ]
+
+
+async def test_a_turn_naming_no_pc_keeps_the_saved_target_on_the_stream_lane(monkeypatch):
+    """The name is an override, not a second way to lose the ordinary selection."""
+    app, bridge, store = _wire(monkeypatch)
+    _two_linked_pcs(monkeypatch)
+    response = await _post(app, LIST_ONLY, device_id=DEVICE, pc_run_id=PC_RUN)
+
+    assert response.status_code == 200, response.text
+    assert bridge.requests[0]["pc_tools"]["device_id"] == DEVICE
+
+
 def test_the_surface_keeps_no_pc_execution_path_of_its_own():
     from pathlib import Path
 
@@ -533,3 +606,26 @@ async def test_stream_user_turn_store_failure_preserves_only_the_existing_redact
     assert error["cause"].startswith("RuntimeError: database locked")
     assert "synthetic-private-token" not in response.text
     assert bridge.requests == [] and store.staged == []
+
+
+async def test_orchestration_terminal_error_marks_its_owner_pc_run_failed(monkeypatch):
+    from app.orchestration_bridge import B62OrchestrationError
+    app, bridge, store = _wire(monkeypatch)
+    settled = []
+    async def update(user_id, run_id, status):
+        settled.append((user_id, run_id, status))
+        return True
+    async def failed_stream(**fields):
+        raise B62OrchestrationError("upstream_auth_error", "safe error", status_code=403)
+        yield
+    store.update_claw_run_status = update
+    bridge.start_stream = failed_stream
+    async with _client(app) as client:
+        response = await client.post("/api/orchestration", json={
+            "messages": [{"role": "user", "content": PLAIN_TEXT}],
+            "tier": "free", "pc_run_id": PC_RUN,
+        })
+    assert response.status_code == 200
+    assert "event: error" in response.text
+    assert settled == [(OWNER, PC_RUN, "failed")]
+    assert not store.answers

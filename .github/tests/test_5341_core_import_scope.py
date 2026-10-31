@@ -74,6 +74,10 @@ class CoreImportScopeProof(unittest.TestCase):
             "execution_runtime",
             "orchestration",
             "web_runtime",
+            # #5817: Chat composes the isolated parser over the async authority,
+            # and that client shares the bounded wire with the sync client, so
+            # the parser wire modules are Chat product code from here on.
+            "isolated_parser_client",
         ):
             with self.subTest(shared=shared):
                 self.assertIn(shared, names)
@@ -82,9 +86,7 @@ class CoreImportScopeProof(unittest.TestCase):
     def test_independent_core_modules_are_outside_the_b62_closure(self):
         closure, _edges, names = scope._product_closure(ROOT, "b62")
         for independent in (
-            "isolated_parser_client",
             "pdf_authoring",
-            "template_cloner_skill",
             "workspace_storage",
         ):
             with self.subTest(independent=independent):
@@ -96,11 +98,17 @@ class CoreImportScopeProof(unittest.TestCase):
         for independent in (
             "isolated_parser_client",
             "pdf_authoring",
-            "template_cloner_skill",
+            "workspace_storage",
         ):
             with self.subTest(independent=independent):
                 self.assertIn(independent, names)
                 self.assertNotIn(independent, closure)
+
+    def test_removed_template_cloner_skill_is_not_a_core_module(self):
+        for product in ("b62", "engine"):
+            with self.subTest(product=product):
+                _closure, _edges, names = scope._product_closure(ROOT, product)
+                self.assertNotIn("template_cloner_skill", names)
 
     def test_engine_shared_core_modules_stay_inside_the_engine_closure(self):
         closure, _edges, _names = scope._product_closure(ROOT, "engine")
@@ -116,14 +124,14 @@ class CoreImportScopeProof(unittest.TestCase):
     def test_focused_plan_covers_the_changed_core_module(self):
         plan = scope.core_focused_plan(
             ROOT,
-            [file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py")],
+            [file("packages/padiem-ai-core/padiem_ai_core/pdf_authoring.py")],
             "b62",
         )
         self.assertIsNotNone(plan)
         assert plan is not None
         self.assertTrue(plan["independent"])
-        self.assertIn("isolated_parser_client", plan["modules"])
-        self.assertIn("test_isolated_parser_client.py", plan["tests"])
+        self.assertIn("pdf_authoring", plan["modules"])
+        self.assertIn("test_pdf_authoring_2827.py", plan["tests"])
 
     def test_focused_plan_of_a_shared_core_module_is_refused(self):
         self.assertIsNone(
@@ -318,7 +326,7 @@ class ClassifierFailClosed(unittest.TestCase):
     def test_exact_compare_proves_the_focused_core_scope(self):
         data = {
             "status": "ahead",
-            "files": [file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py")],
+            "files": [file("packages/padiem-ai-core/padiem_ai_core/pdf_authoring.py")],
         }
         with patch.object(
             classifier.urllib.request,

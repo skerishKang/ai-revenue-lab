@@ -116,3 +116,37 @@ def test_successful_readonly_get_is_not_exported():
         assert len(make_events(state,503))==1
     finally:
         reset_trace(token)
+
+
+async def test_waituntil_telemetry_timeout_is_contained_and_logs_only_debug(monkeypatch, caplog):
+    import logging
+    import sys
+    import types
+    import app.stack_telemetry as telemetry
+    pending, cancelled, budgets = [], [], []
+    async def blocked_send(events, env):
+        try:
+            await asyncio.Event().wait()
+        finally:
+            cancelled.append(True)
+    real_wait_for = asyncio.wait_for
+    async def fast_wait_for(awaitable, timeout):
+        budgets.append(timeout)
+        return await real_wait_for(awaitable, timeout=0.001)
+    monkeypatch.setattr(telemetry, "_send_once", blocked_send)
+    monkeypatch.setattr(telemetry.asyncio, "wait_for", fast_wait_for)
+    ffi = types.ModuleType("pyodide.ffi")
+    ffi.create_proxy = lambda value: value
+    monkeypatch.setitem(sys.modules, "pyodide.ffi", ffi)
+    state, token = start_trace(SimpleNamespace(method="POST", headers={}),
+                               "korean-ai-platform", "/api/pilot/*")
+    with caplog.at_level(logging.DEBUG, logger=telemetry.__name__):
+        telemetry.finish_trace(state, token, SimpleNamespace(status=200),
+            SimpleNamespace(waitUntil=pending.append), SimpleNamespace())
+        assert active_request_id() is None
+        assert len(pending) == 1
+        assert await pending[0] is None
+    assert budgets == [1.0] and cancelled == [True]
+    records = [r for r in caplog.records if r.name == telemetry.__name__]
+    assert [(r.levelno, r.getMessage(), r.exc_info) for r in records] == [
+        (logging.DEBUG, "stack_telemetry_send_timeout", None)]

@@ -97,9 +97,6 @@ from app.orchestration_wire import (  # noqa: E402
     _SAFE_ID_RE,
     _IDENTIFIER_RE,
     _AGENT_ID_RE,
-    _MAX_ORCHESTRATION_RETRIES,
-    _MAX_AGENT_STEP_RETRIES,
-    _MAX_CANCEL_REASON_LEN,
     _EXEC_FIELDS,
     _ORCHESTRATION_OPTIONS,
     _ORCHESTRATION_RESUME_OPTIONS,
@@ -282,6 +279,7 @@ class PreparedOrchestrationStream:
     app_id: str
     request_fingerprint_value: str | None = None
     pc_progress: bool = False
+    pc_turn: bool = False
 
 
 PC_STREAM_HEARTBEAT_SECONDS = 10.0
@@ -389,6 +387,11 @@ _PC_QUERY_PLAN_SHAPES = (
     (("query_drives", "claw.pc.query_drives"),),
     (("list_files", "claw.pc.list_files"),),
     (("list_files", "claw.pc.list_files"), ("read_file", "claw.pc.read_file")),
+    # #4434: the write lane is its own plan. A request that may write is not also
+    # a permission to read, and a listing request is not a permission to write.
+    (("write_file", "claw.pc.write_file"),
+     ("move_file", "claw.pc.move_file"),
+     ("delete_file", "claw.pc.delete_file")),
 )
 
 
@@ -443,7 +446,9 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
     if not isinstance(payload, Mapping) or "declared_plan" not in payload:
         return None
     declared = payload["declared_plan"]
-    if not isinstance(declared, str) or declared not in {"files_list", "files", "query_drives"}:
+    if not isinstance(declared, str) or declared not in {
+        "files_list", "files", "files_write", "query_drives",
+    }:
         raise ServiceContractError(
             "invalid_plan", "declared_plan must name a supported PC request scope.", status_code=422,
         )
@@ -587,6 +592,9 @@ class OrchestrationEngineService:
 
     def _runtime_for_payload(self, app_id, payload):
         runtime = self._runtime_factory(app_id)
+        if payload.get("agent", {}).get("model_policy", {}).get("user_credential_required") is True:
+            from app.byok_passthrough import UserCredentialRuntime
+            runtime = UserCredentialRuntime(runtime)
         if "pc_tools" not in payload:
             return runtime
         from app.pc_tools_turn import PcToolsTurnRuntime
@@ -680,6 +688,14 @@ class OrchestrationEngineService:
             # One shared target binds the whole model-selected list/read loop.
             # It is metadata, not a third executable plan step.
             step_ids = {"files"}
+        elif shape == (
+            ("write_file", "claw.pc.write_file"),
+            ("move_file", "claw.pc.move_file"),
+            ("delete_file", "claw.pc.delete_file"),
+        ):
+            # The same single target binds the write/move/delete loop: one PC,
+            # one account, and no step may name a device of its own.
+            step_ids = {"files_write"}
         for step_id, entry in parsed.items():
             if (
                 step_id not in step_ids
@@ -784,6 +800,9 @@ class OrchestrationEngineService:
             (("list_files", "claw.pc.list_files"),): "files_list",
             (("list_files", "claw.pc.list_files"),
              ("read_file", "claw.pc.read_file")): "files",
+            (("write_file", "claw.pc.write_file"),
+             ("move_file", "claw.pc.move_file"),
+             ("delete_file", "claw.pc.delete_file")): "files_write",
         }.get(shape)
         if ceiling is not None:
             # The admitted plan fixes the ceiling even when the owner has no
@@ -793,8 +812,9 @@ class OrchestrationEngineService:
                 (tool_arguments or {}).get(ceiling, {}),
             )}
         driver_options = {"initial_decision": initial_decision} if initial_decision is not None else {}
+        from app.byok_passthrough import core_model_policy
         driver = self._pc_query_step_driver_factory(
-                model_id, exec_req.agent.model_policy,
+                model_id, core_model_policy(exec_req.agent.model_policy),
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
                 tool_arguments=tool_arguments, **driver_options,
         )
@@ -1128,6 +1148,11 @@ class OrchestrationEngineService:
         The keyword is private Python composition only; it is never parsed
         from the Engine HTTP JSON payload or accepted as a model argument.
         """
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
@@ -1193,7 +1218,8 @@ class OrchestrationEngineService:
                     app_id, getattr(orch_req, "subject_id", None),
                 ),
             )
-            result = await runner.run(orch_req)
+            with credential_scope(user_credential_ref):
+                result = await runner.run(orch_req)
         except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
             response = self._orchestration_run_error_response(exc)
             if response is not None:
@@ -1219,6 +1245,11 @@ class OrchestrationEngineService:
 
     async def resume_payload(self, payload: Any) -> ServiceResponse:
         """Resume only a server-issued continuation with a verified decision."""
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         if not self._b14_service_bound:
             return _service_error(
                 "b14_service_unavailable",
@@ -1395,13 +1426,17 @@ class OrchestrationEngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
+            if exec_req.agent.model_policy.get("user_credential_required") is True:
+                from app.byok_passthrough import UserCredentialRuntime
+                runtime = UserCredentialRuntime(runtime)
             runner = OrchestrationRunner(
                 runtime=runtime, idempotency=self._idempotency_adapter,
                 agent_result_ledger=self._tool_result_ledger(
                     app_id, getattr(resume_req, "subject_id", None),
                 ),
             )
-            result = await runner.resume(resume_req)
+            with credential_scope(user_credential_ref):
+                result = await runner.resume(resume_req)
         except OrchestrationError as exc:
             if exc.code == "approval_denied":
                 try:
@@ -1715,6 +1750,11 @@ class OrchestrationEngineService:
         except (UnicodeDecodeError, json.JSONDecodeError):
             return _service_error("invalid_json", "Request body must contain valid UTF-8 JSON.", status_code=400)
 
+        from app.byok_passthrough import split_credential, credential_scope
+        try:
+            payload, user_credential_ref = split_credential(payload)
+        except ValueError:
+            return _service_error("byok_credential_required", "User credential reference is required.", status_code=422)
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
@@ -1781,9 +1821,8 @@ class OrchestrationEngineService:
             declared_identity_token = set_canonical_idempotency_fingerprint(declared_fingerprint)
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
-        pc_stream = pc_progress is True and (
-            _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
-        )
+        pc_turn = _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
+        pc_stream = pc_progress is True and pc_turn
         from app.pc_tools_turn import _PC_TURN_STREAM_SINK
         turn_sink_token = _PC_TURN_STREAM_SINK.set(queue.put_nowait if pc_stream else None)
         progress_token = _PC_PROGRESS_SINK.set(
@@ -1791,7 +1830,8 @@ class OrchestrationEngineService:
             if pc_stream else None
         )
         try:
-            task = asyncio.create_task(runner.run(orch_req))
+            with credential_scope(user_credential_ref):
+                task = asyncio.create_task(runner.run(orch_req))
         finally:
             _PC_TURN_STREAM_SINK.reset(turn_sink_token)
             _PC_PROGRESS_SINK.reset(progress_token)
@@ -1815,6 +1855,7 @@ class OrchestrationEngineService:
                 app_id=app_id,
                 request_fingerprint_value=request_fingerprint_value,
                 pc_progress=pc_stream,
+                pc_turn=pc_turn,
             )
         if task in done:
             if first_event_task not in done:
@@ -1836,6 +1877,7 @@ class OrchestrationEngineService:
                     app_id=app_id,
                     request_fingerprint_value=request_fingerprint_value,
                     pc_progress=pc_stream,
+                    pc_turn=pc_turn,
                 )
             try:
                 await task
@@ -1863,6 +1905,7 @@ class OrchestrationEngineService:
             app_id=app_id,
             request_fingerprint_value=request_fingerprint_value,
             pc_progress=pc_stream,
+            pc_turn=pc_turn,
         )
 
     async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
@@ -1876,15 +1919,46 @@ class OrchestrationEngineService:
 
         if not isinstance(prepared, PreparedOrchestrationStream):
             raise ValueError("prepared must be PreparedOrchestrationStream")
+        pc_turn = prepared.pc_turn or prepared.pc_progress
+
+        def failure_line(exc: BaseException, stage: str) -> str:
+            # Error conversion/encoding is itself fallible. Keep one literal,
+            # serializable fallback outside those operations; never send raw
+            # exception messages or tool/model arguments to the client.
+            fallback = _service_error(
+                "engine_internal_error", "Orchestration streaming failed.", status_code=500,
+                metadata={"stage": stage} if pc_turn else None,
+            )
+            try:
+                if isinstance(exc, ServiceContractError):
+                    response = _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+                elif isinstance(exc, asyncio.CancelledError):
+                    response = _service_error("pc_turn_cancelled", "PC turn was cancelled.", status_code=500)
+                else:
+                    response = self._orchestration_run_error_response(exc) or fallback
+                body = dict(response.body)
+                if pc_turn:
+                    error = dict(body["error"])
+                    error["metadata"] = {**(error.get("metadata") or {}), "stage": stage}
+                    body["error"] = error
+                return _encode_line(body)
+            except Exception:
+                return _stream_error_line(fallback)
+
         started = asyncio.get_running_loop().time()
+        stage = "pc_stream_event"
         try:
             yield _stream_event_line(prepared.first_event)
             while not prepared.task.done():
                 event_task = asyncio.ensure_future(prepared.queue.get())
+                # #5895: liveness is not an opt-in. Any Engine turn can wait
+                # longer than a proxy is willing to hold a silent response, so
+                # every stream reuses the existing heartbeat window instead of
+                # only the PC opt-in one. No new timeout value is introduced.
                 done, _pending = await asyncio.wait(
                     {event_task, prepared.task},
                     return_when=asyncio.FIRST_COMPLETED,
-                    timeout=PC_STREAM_HEARTBEAT_SECONDS if prepared.pc_progress else None,
+                    timeout=PC_STREAM_HEARTBEAT_SECONDS,
                 )
                 if not done:
                     event_task.cancel()
@@ -1907,26 +1981,26 @@ class OrchestrationEngineService:
                     event_task.cancel()
             while not prepared.queue.empty():
                 yield _stream_event_line(prepared.queue.get_nowait())
+            stage = "pc_stream_run"
             result = prepared.task.result()
+            stage = "pc_stream_result"
             orchestration_body = await self._orchestration_body(
                 result,
                 app_id=prepared.app_id,
                 request_fingerprint_value=prepared.request_fingerprint_value,
             )
             yield _stream_result_line(orchestration_body)
-        except asyncio.CancelledError:
-            raise
-        except ServiceContractError as exc:
-            yield _stream_error_line(_service_error(exc.code, exc.safe_message, status_code=exc.status_code))
-        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
-            response = self._orchestration_run_error_response(exc)
-            if response is None:
-                response = _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
-            yield _stream_error_line(response)
-        except Exception:
-            yield _stream_error_line(
-                _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
-            )
+        except asyncio.CancelledError as exc:
+            # A cancelled producer must settle the still-connected PC stream.
+            # Cancellation of the consumer/disconnect still propagates and the
+            # finally block cleans up the producer; never write to a closed peer.
+            consumer = asyncio.current_task()
+            if pc_turn and prepared.task.cancelled() and not consumer.cancelling():
+                yield failure_line(exc, stage)
+            else:
+                raise
+        except Exception as exc:
+            yield failure_line(exc, stage)
         finally:
             pending_event = locals().get("event_task")
             if pending_event is not None and not pending_event.done():

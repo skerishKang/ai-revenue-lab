@@ -41,13 +41,6 @@ KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 # A synthetic test-only identity preserves those assertions without bypassing
 # the product's live owner-exclusion check or touching catalog source.
 @pytest.fixture(autouse=True)
-def _enable_archived_auto_route_tests(monkeypatch):
-    """Explicit opt-in: archived generic B14 auto tests, never production defaults."""
-    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
-
-
-
-@pytest.fixture(autouse=True)
 def _legacy_live_transport_synthetic_model(request, monkeypatch):
     cls=getattr(request.node.cls, "__name__", "")
     name=request.node.name.split("[")[0]
@@ -57,10 +50,10 @@ def _legacy_live_transport_synthetic_model(request, monkeypatch):
         or (cls=="TestFallbackFailClosed" and name=="test_client_errors_raise_and_no_fallback")
         or (cls=="TestManualRouteDefaultFallback" and name in {
             "test_manual_model_no_business14_chat_one_attempt",
-            "test_manual_model_explicit_true_429_fallback",
+            "test_manual_model_429_stays_single_attempt",
             "test_manual_model_explicit_true_401_no_fallback",
             "test_manual_model_explicit_true_404_no_fallback",
-            "test_manual_model_explicit_true_malformed_no_fallback",
+            "test_manual_model_explicit_true_malformed_without_roster_stops",
             "test_manual_model_explicit_true_unknown_error_no_fallback",
         })
     )
@@ -285,7 +278,8 @@ class TestManualRoute:
         assert d.selected_upstream_model == get_catalog_by_id("agnes-ai/agnes-3.0-flash").upstream_model
         assert d.selected_provider == get_catalog_by_id("agnes-ai/agnes-3.0-flash").provider
         assert "manual_selection" in d.reason_codes
-        assert "external_fallback_disabled" in d.reason_codes
+        # B5: no external-fallback knob exists, so no knob-derived reason code.
+        assert "external_fallback_disabled" not in d.reason_codes
         # Owner-approved Agnes route: dummy secret is provided by _reset_config.
         assert d.credential_available is True
 
@@ -303,14 +297,15 @@ class TestManualRoute:
         d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
-        # #4317: with no eligible fallback the primary is the only
-        # candidate, so the walk is a single attempt without a count.
-        assert "external_fallback_disabled" in d.reason_codes
+        # B5: there is no external-fallback knob at all; a manual route only
+        # ever walks the owner-selected tier roster.
+        assert "external_fallback_disabled" not in d.reason_codes
+        assert d.reason_codes == ["manual_selection"]
 
-    def test_manual_route_explicit_fallback_enabled(self, two_model_catalog):
-        d = resolve_manual_route("agnes-ai/agnes-3.0-flash", allow_external_fallback=True)
-        assert d.fallback_allowed is True
-        assert len(d.eligible_fallback) > 0
+    def test_manual_route_never_offers_catalog_alternatives(self, two_model_catalog):
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
+        assert d.fallback_allowed is False
+        assert d.eligible_fallback == []
 
     def test_manual_route_id_is_candidate_specific(self):
         d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
@@ -323,13 +318,8 @@ class TestManualRoute:
 
 class TestAutoRoute:
 
-
-
-
-
-
-    def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
-        """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
+    def test_auto_route_id_is_rejected(self, client, monkeypatch):
+        """B7: b14/auto is retired; the string is refused before any routing."""
         monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
@@ -337,30 +327,28 @@ class TestAutoRoute:
             json={
                 "model": "b14/auto",
                 "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"required_capabilities": ["not-a-real-capability"]},
+                "business14": {"required_capabilities": ["chat"]},
             },
         )
-        assert resp.status_code == 200
-        biz14 = resp.json()["business14"]
-        assert biz14["routing_policy"] == "fixed_chain_v1"
-        assert biz14["selected_model"] == "agnes-ai/agnes-3.0-flash"
-        assert any(
-            rc.startswith("ignored_options:") and "required_capabilities" in rc
-            for rc in biz14["reason_codes"]
-        )
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
 
-    def test_resolve_endpoint_no_upstream(self, client):
+    def test_resolve_endpoint_rejects_retired_auto_id(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"optimize_for": "korean"},
-            },
+            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
+
+    def test_resolve_endpoint_still_resolves_catalog_models(self, client):
+        resp = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert data["route_mode"] == "auto"
+        assert data["route_mode"] == "manual"
         assert data["selected_model"] == "agnes-ai/agnes-3.0-flash"
         assert data["evidence_status"] == "resolved_not_called"
         assert data["selected_route_id"].startswith("platform:")
@@ -424,55 +412,19 @@ class TestFallbackLogic:
 
 
 class TestFallbackExecution:
-    def test_429_fallback_uses_second_candidate(self, client, monkeypatch):
-        """Auto route: first chain position 429 → fallback to second (D14 fixed chain)."""
-        from app.pilot.errors import UpstreamRateLimited
-        _set_live()
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
-        original = plat.call_platform_chat_completions
-        calls = []
-
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
-            calls.append({"model_id": model_id, "platform_provider_id": platform_provider_id})
-            if len(calls) == 1:
-                raise UpstreamRateLimited()
-            return {
-                "id": "cmpl-fb", "object": "chat.completion",
-                "model": upstream_model,
-                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
-                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
-                "_live": True,
-                "_requested_upstream_model": upstream_model,
-                "_actual_response_model": upstream_model,
-            }
-
-        plat.call_platform_chat_completions = fake
-        try:
-            resp = client.post(
-                "/api/pilot/v1/chat/completions",
-                json={
-                    "model": "b14/auto",
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"max_attempts": 3},
-                },
-            )
-        finally:
-            plat.call_platform_chat_completions = original
-
-        assert resp.status_code == 200
-        data = resp.json()
-        assert data["business14"]["fallback_used"] is True
-        assert data["business14"]["attempt_count"] == 2
-        # Chain head is Agnes; the fallback answer comes from Poolside, each
-        # attempt using its own candidate's provider binding.
-        assert calls[0] == {
-            "model_id": "agnes-ai/agnes-3.0-flash",
-            "platform_provider_id": "agnes-ai",
-        }
-        assert data["business14"]["selected_model"] == "poolside/laguna-s-2.1"
-        assert calls[1]["platform_provider_id"] == "poolside"
-        assert data["business14"]["routing_policy"] == "fixed_chain_v1"
+    def test_retired_auto_chain_cannot_walk_anymore(self, client):
+        """B7: the fixed chain is gone; the retired id is refused outright."""
+        from app.pilot.errors import UpstreamRateLimited  # noqa: F401  (contract kept by tier-roster suites)
+        resp = client.post(
+            "/api/pilot/v1/chat/completions",
+            json={
+                "model": "b14/auto",
+                "messages": [{"role": "user", "content": "hi"}],
+                "business14": {"max_attempts": 3},
+            },
+        )
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
 
 
 class TestLiveFailClosed:
@@ -517,7 +469,7 @@ class TestLiveFailClosed:
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 503
         assert captured == {}
@@ -530,7 +482,7 @@ class TestLiveFailClosed:
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 503
         assert captured == {}
@@ -551,22 +503,16 @@ class TestMockMode:
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
         assert data["choices"][0]["message"]["content"]
 
-    def test_mock_mode_auto_model(self, client, monkeypatch):
+    def test_mock_mode_rejects_retired_auto_model(self, client, monkeypatch):
+        """B7: mock mode answers the retired id with the same 422 refusal."""
         monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code == 200
-        data = resp.json()
-        assert data["business14"]["provider_mode"] == "mock"
-        assert data["business14"]["route_mode"] == "auto"
-        assert "selected_model" in data["business14"]
-        # D14 (#2044): mock auto resolves the Agnes-headed fixed chain and
-        # reports the routing policy.
-        assert data["business14"]["routing_policy"] == "fixed_chain_v1"
-        assert data["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
 
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
@@ -575,7 +521,7 @@ class TestMockMode:
         # Mock mode should NOT use live transport — verify no auth error
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -843,17 +789,19 @@ class TestMetadataCompleteness:
     def test_mock_chat_metadata_complete(self, client):
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
         assert self._REQUIRED_FIELDS.issubset(set(biz14))
+        # B7: the retired auto-lane policy descriptor is no longer reported.
+        assert "routing_policy" not in biz14
         assert biz14["provider_mode"] == "mock"
 
     def test_resolve_metadata_complete(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -1011,7 +959,8 @@ class TestKoreanUIJourney:
     def test_workspace_page_catalog_options(self, client):
         resp=client.get("/workspace")
         assert resp.status_code == 200
-        assert "b14/auto" in resp.text
+        # B7: the retired auto id is not offered anywhere in the workspace.
+        assert "b14/auto" not in resp.text
         assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in resp.text
 
     def test_start_js_loaded(self, client):
@@ -1103,7 +1052,7 @@ class TestNoExternalNetwork:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
             plat.call_platform_chat_completions = original
@@ -1156,7 +1105,7 @@ class TestResponseLimits:
         timeout = rcfg.build_http_timeout()
         # Same single source as the live B14 completed and SSE adapters.
         assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-            600.0, 600.0, 20.0, 10.0
+            600.0, 600.0, 120.0, 60.0
         )
 
 
@@ -1267,7 +1216,7 @@ class TestFallbackFailClosed:
                 transport=httpx.MockTransport(handler),
             )
         assert exc_info.value.code == expected_code
-        assert is_error_fallback_allowed(exc_info.value.code) is False
+        assert is_error_fallback_allowed(exc_info.value.code, reason=getattr(exc_info.value, "reason", None)) is False
 
     def test_unknown_exception_no_fallback_in_gateway(self, client):
         _set_live()
@@ -1283,9 +1232,8 @@ class TestFallbackFailClosed:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "b14/auto",
+                    "model": "agnes-ai/agnes-3.0-flash",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"optimize_for": "cost", "max_attempts": 3},
                 },
             )
         finally:
@@ -1300,67 +1248,15 @@ class TestFallbackFailClosed:
 
 
 class TestFallbackActualEvidence:
-    def test_auto_chain_total_attempt_budget_is_not_multiplied_by_same_route_retries(
-        self, client, monkeypatch
-    ):
+    def test_retired_auto_chain_is_refused_before_any_dispatch(self, client):
+        """B7: the auto chain (and its two-model walk) is gone; the id is refused."""
         _set_live()
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
-        from app.pilot.errors import UpstreamServerError
-
-        calls = []
         original = plat.call_platform_chat_completions
+        calls = []
 
         async def fake(*, model_id, upstream_model, provider, platform_provider_id,
                        messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
-            raise UpstreamServerError()
-
-        plat.call_platform_chat_completions = fake
-        try:
-            resp = client.post(
-                "/api/pilot/v1/chat/completions",
-                json={
-                    "model": "b14/auto",
-                    "messages": [{"role": "user", "content": "hi"}],
-                },
-            )
-        finally:
-            plat.call_platform_chat_completions = original
-
-        assert resp.status_code == 502
-        assert calls == [
-            "agnes-ai/agnes-3.0-flash",
-            "poolside/laguna-s-2.1",
-        ]
-        assert resp.json()["error"]["attempt_count"] == 2
-
-    def test_fallback_metadata_describes_actual_success_candidate(self, client, monkeypatch):
-        _set_live()
-        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
-        from app.pilot.errors import UpstreamRateLimited
-        original = plat.call_platform_chat_completions
-        calls = []
-
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
-            calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
-            if len(calls) == 1:
-                raise UpstreamRateLimited()
-            return {
-                "id": "cmpl-fb-actual",
-                "object": "chat.completion",
-                "model": upstream_model,
-                "choices": [{
-                    "index": 0,
-                    "message": {"role": "assistant", "content": "OK"},
-                    "finish_reason": "stop",
-                }],
-                "usage": {"prompt_tokens": 1000, "completion_tokens": 1000, "total_tokens": 2000},
-                "_live": True,
-                "_requested_upstream_model": upstream_model,
-                "_actual_response_model": upstream_model,
-            }
 
         plat.call_platform_chat_completions = fake
         try:
@@ -1375,106 +1271,92 @@ class TestFallbackActualEvidence:
         finally:
             plat.call_platform_chat_completions = original
 
-        assert resp.status_code == 200
-        assert len(calls) == 2
-        data = resp.json()
-        biz14 = data["business14"]
-        actual = calls[1]
-        assert biz14["fallback_used"] is True
-        assert biz14["attempt_count"] == 2
-        assert biz14["selected_model"] == actual["model_id"]
-        assert biz14["selected_provider"] == actual["provider"]
-        assert biz14["selected_upstream_model"] == actual["upstream_model"]
-        assert biz14["actual_response_model"] == actual["upstream_model"]
-        assert data["model"] == actual["upstream_model"]
-        assert biz14["selected_route_id"] == f"platform:{actual['model_id']}"
-        assert biz14["attempt_evidence"][0]["outcome"] == "error"
-        assert biz14["attempt_evidence"][0]["error_code"] == "upstream_rate_limited"
-        assert biz14["attempt_evidence"][1]["outcome"] == "success"
-
-        cm = get_catalog_by_id(actual["model_id"])
-        expected_usd = cm.estimate_cost_usd(1000, 1000)
-        if cm.price_is_known:
-            assert biz14["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
-            assert biz14["cost_basis"] in {"configured_snapshot", "known_free"}
-        else:
-            assert biz14["estimated_usd"] is None
-            assert biz14["cost_basis"] == "unknown"
+        assert resp.status_code == 422
+        assert resp.json()["error"]["code"] == "invalid_body"
+        assert calls == []
 
 
 class TestOptionEnforcement:
 
-    def test_allow_external_fallback_false_gateway_no_retry(self, client):
-        _set_live()
-        pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
-        from app.pilot.errors import UpstreamRateLimited
-        original = plat.call_platform_chat_completions
-        calls = []
+    def test_allow_external_fallback_field_is_ignored_with_deprecation_log(
+        self, client, caplog
+    ):
+        """B5 grace: the retired knob is accepted, logged, and dropped.
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
-            calls.append(model_id)
-            raise UpstreamRateLimited()
+        The deployed callers still send it, so this release must not refuse it;
+        the value never reaches routing, and the next release refuses it again.
+        """
+        import logging
 
-        plat.call_platform_chat_completions = fake
-        try:
+        with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+            for value in (False, True):
+                resp = client.post(
+                    "/api/pilot/v1/chat/completions",
+                    json={
+                        "model": "agnes-ai/agnes-3.0-flash",
+                        "messages": [{"role": "user", "content": "hi"}],
+                        "business14": {"allow_external_fallback": value},
+                    },
+                )
+                assert resp.status_code == 200
+                biz14 = resp.json()["business14"]
+                assert "allow_external_fallback" not in biz14
+        assert any(
+            "b14_deprecated_business14_fields_ignored" in record.message
+            and "allow_external_fallback" in record.getMessage()
+            for record in caplog.records
+        )
+
+    def test_scorer_era_options_are_ignored_with_deprecation_log(
+        self, client, caplog
+    ):
+        """B4 grace: scorer-era options are accepted, logged, and dropped."""
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+            for option in (
+                {"task_type": "coding"},
+                {"optimize_for": "cost"},
+                {"provider_order": [SECONDARY_PROVIDER]},
+                {"allow_paid": True},
+                {"max_attempts": 3},
+            ):
+                resp = client.post(
+                    "/api/pilot/router/resolve",
+                    json={
+                        "model": "agnes-ai/agnes-3.0-flash",
+                        "messages": [{"role": "user", "content": "hi"}],
+                        "business14": option,
+                    },
+                )
+                assert resp.status_code == 200, option
+                # The dropped value never reaches routing: the decision carries
+                # no ignored_options recording for it.
+                assert not any(
+                    rc.startswith("ignored_options:")
+                    for rc in resp.json()["reason_codes"]
+                ), option
+        assert any(
+            "b14_deprecated_business14_fields_ignored" in record.message
+            for record in caplog.records
+        )
+
+    def test_deprecated_options_ignore_even_invalid_values(self, client):
+        """Grace drops the retired names whatever the value; only genuinely
+        unknown fields are refused."""
+        for option in (
+            {"provider_order": "Anthropic"},
+            {"task_type": "not-a-task"},
+        ):
             resp = client.post(
-                "/api/pilot/v1/chat/completions",
+                "/api/pilot/router/resolve",
                 json={
-                    "model": "b14/auto",
+                    "model": "agnes-ai/agnes-3.0-flash",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"optimize_for": "cost", "allow_external_fallback": False},
+                    "business14": option,
                 },
             )
-        finally:
-            plat.call_platform_chat_completions = original
-
-        assert resp.status_code == 429
-        assert resp.json()["error"]["code"] == "upstream_rate_limited"
-        assert len(calls) == 1
-
-
-    def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
-        """D14 (#2044): provider_order is accepted but does not change b14/auto."""
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
-        monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"optimize_for": "cost", "provider_order": [SECONDARY_PROVIDER]},
-            },
-        )
-        assert resp.status_code == 200
-        body = resp.json()
-        assert body["selected_model"] == "agnes-ai/agnes-3.0-flash"
-        assert any(
-            rc.startswith("ignored_options:") and "provider_order" in rc
-            for rc in body["reason_codes"]
-        )
-
-    def test_provider_order_invalid_type_422(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"provider_order": "Anthropic"},
-            },
-        )
-        assert resp.status_code == 422
-
-
-    def test_task_type_invalid_422(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "b14/auto",
-                "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"task_type": "not-a-task"},
-            },
-        )
-        assert resp.status_code == 422
+            assert resp.status_code == 200, option
 
     def test_unknown_business14_field_422(self, client):
         resp = client.post(
@@ -1523,11 +1405,15 @@ class TestProviderOwnedLimits:
 
 class TestStreamedResponseLimit:
     @pytest.mark.asyncio
-    async def test_long_framed_stream_exceeds_old_total_budget_without_rejection(self):
-        """Healthy provider SSE may exceed 1 MiB across many small frames."""
+    async def test_long_framed_stream_exceeds_the_frame_bound_without_rejection(self):
+        """Healthy provider SSE may run past one frame's bound across many frames.
+
+        The fixture is sized against the current guard, so it stays a stream that
+        is bigger than the bound without being a runaway body.
+        """
         rcfg.provider_mode = "live"
         event = b"data: " + json.dumps({
-            "choices": [{"delta": {"content": "x" * 11500}, "finish_reason": None}]
+            "choices": [{"delta": {"content": "x" * 115_000}, "finish_reason": None}]
         }).encode() + b"\n\n"
         payload = event * 100 + b"data: [DONE]\n\n"
         assert len(payload) > plat.MAX_RESPONSE_BYTES
@@ -1555,7 +1441,9 @@ class TestStreamedResponseLimit:
         rcfg.api_key = ""
         from app.pilot.errors import UpstreamResponseTooLarge
 
-        chunk = b"x" * (512 * 1024)
+        # Half the guard per chunk, so the third one is what crosses it, whatever
+        # number the guard carries today (#5734 stage 2 moved it to 10MiB).
+        chunk = b"x" * (plat.MAX_RESPONSE_BYTES // 2 + 1)
         chunks = [chunk, chunk, chunk, b'{"never": "fully read"}']
 
         class CountingStream(httpx.AsyncByteStream):
@@ -1657,10 +1545,10 @@ class TestOwnerEnvWorkflow:
 
 
 class TestManualRouteDefaultFallback:
-    """Manual model ID: allow_external_fallback defaults to False.
+    """Manual model ID: there is no fallback knob anymore (B5).
 
-    Only when the user explicitly passes allow_external_fallback=true
-    are fallback candidates and multi-attempt logic engaged.
+    The retired allow_external_fallback option is rejected as an unknown
+    business14 field; a manual route walks only the owner-pinned tier roster.
     """
 
     def test_manual_model_no_business14_resolve(self, client):
@@ -1695,7 +1583,8 @@ class TestManualRouteDefaultFallback:
         assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_explicit_false_resolve(self, client):
-        """manual model, allow_external_fallback=false → no fallback, one attempt."""
+        """manual model, allow_external_fallback=false → accepted-and-dropped
+        during the B5 grace release; the resolve still offers no candidates."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1705,13 +1594,13 @@ class TestManualRouteDefaultFallback:
             },
         )
         assert resp.status_code == 200
-        data = resp.json()
-        assert data["fallback_allowed"] is False
-        assert data["eligible_fallback"] == []
-        assert data["attempt_candidates"] == 1
+        assert resp.json()["fallback_allowed"] is False
+        assert resp.json()["eligible_fallback"] == []
+        assert resp.json()["attempt_candidates"] == 1
 
     def test_manual_model_explicit_true_resolve(self, client, two_model_catalog):
-        """manual model, allow_external_fallback=true → fallback candidates populated."""
+        """manual model, allow_external_fallback=true → the value is dropped, so
+        no catalog substitution appears even in the grace release (B5)."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1721,11 +1610,9 @@ class TestManualRouteDefaultFallback:
             },
         )
         assert resp.status_code == 200
-        data = resp.json()
-        assert data["fallback_allowed"] is True
-        assert len(data["eligible_fallback"]) > 0
-        assert data["attempt_candidates"] > 1
-        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
+        assert resp.json()["fallback_allowed"] is False
+        assert resp.json()["eligible_fallback"] == []
+        assert resp.json()["attempt_candidates"] == 1
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):
         """manual model, no business14 → only 1 upstream call, no fallback."""
@@ -1761,8 +1648,8 @@ class TestManualRouteDefaultFallback:
         assert biz14["fallback_used"] is False
         assert len(calls) == 1
 
-    def test_manual_model_explicit_true_429_fallback(self, client, two_model_catalog):
-        """manual model, allow_external_fallback=true → 429 allows fallback to second candidate."""
+    def test_manual_model_429_stays_single_attempt(self, client, two_model_catalog):
+        """A manual route without the owner roster never advances on 429 (B5)."""
         _set_live()
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import UpstreamRateLimited
@@ -1771,16 +1658,7 @@ class TestManualRouteDefaultFallback:
 
         async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
-            if len(calls) == 1:
-                raise UpstreamRateLimited()
-            return {
-                "id": "cmpl-fb", "object": "chat.completion",
-                "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
-                "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
-                "_live": True,
-                "_requested_upstream_model": upstream_model,
-                "_actual_response_model": upstream_model,
-            }
+            raise UpstreamRateLimited()
 
         plat.call_platform_chat_completions = fake
         try:
@@ -1789,19 +1667,16 @@ class TestManualRouteDefaultFallback:
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
             plat.call_platform_chat_completions = original
 
-        assert resp.status_code == 200
-        biz14 = resp.json()["business14"]
-        assert biz14["fallback_allowed"] is True
-        assert biz14["fallback_used"] is True
-        assert biz14["attempt_count"] >= 2
-        assert len(calls) >= 2
-        assert calls[1] != calls[0]
+        assert resp.status_code == 429
+        assert resp.json()["error"]["code"] == "upstream_rate_limited"
+        assert resp.json()["error"]["fallback_used"] is False
+        assert resp.json()["error"]["attempt_count"] == 1
+        assert len(calls) == 1
 
     def test_manual_model_explicit_true_401_no_fallback(self, client):
         """manual model, allow_external_fallback=true → 401 NO fallback (fail closed)."""
@@ -1822,7 +1697,6 @@ class TestManualRouteDefaultFallback:
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
@@ -1852,7 +1726,6 @@ class TestManualRouteDefaultFallback:
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
@@ -1863,8 +1736,8 @@ class TestManualRouteDefaultFallback:
         assert resp.json()["error"]["fallback_used"] is False
         assert len(calls) == 1
 
-    def test_manual_model_explicit_true_malformed_no_fallback(self, client):
-        """manual model, allow_external_fallback=true → malformed NO fallback."""
+    def test_manual_model_explicit_true_malformed_without_roster_stops(self, client):
+        """Malformed is recoverable, but no eligible roster still means one attempt."""
         _set_live()
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import MalformedUpstreamResponse
@@ -1882,7 +1755,6 @@ class TestManualRouteDefaultFallback:
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
@@ -1911,7 +1783,6 @@ class TestManualRouteDefaultFallback:
                 json={
                     "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
@@ -1932,10 +1803,10 @@ class TestActualRouteId:
     """selected_route_id must be the actual candidate's route ID, never a random ID."""
 
     def test_resolve_route_id_is_platform_prefixed(self, client):
-        """Resolve endpoint must return platform:<model_id> route IDs (D14 #2044)."""
+        """Resolve endpoint must return platform:<model_id> route IDs."""
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -1971,7 +1842,7 @@ class TestActualRouteId:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
             plat.call_platform_chat_completions = original
@@ -1982,11 +1853,18 @@ class TestActualRouteId:
         assert not biz14["fallback_used"]
 
     def test_fallback_success_route_id_differs_from_primary(self, client, monkeypatch):
-        """Fallback success: selected_route_id = actual fallback success candidate route_id."""
+        """Fallback success: selected_route_id = actual fallback success candidate route_id.
+
+        The surviving multi-candidate walk is the owner-pinned free-tier roster.
+        """
+        from app.pilot.tier_fallback import TIER_DEFAULT_B14_MODEL, TIER_FALLBACK_B14_MODELS
+        from app.pilot import router_core
         _set_live()
-        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
-        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "sk-chain-unit-poolside-0123456789")
-        pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
+        rcfg.provider_mode = "live"
+        monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "sk-free-google-0123456789abcdef")
+        monkeypatch.setattr(router_core, "_credential_status_for",
+                            lambda cm: (True, "present", "platform_secret", cm.platform_provider_id))
+        monkeypatch.setattr(router_core, "_platform_secret_present", lambda cm: True)
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
         calls = []
@@ -2009,9 +1887,9 @@ class TestActualRouteId:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "b14/auto",
+                    "model": TIER_DEFAULT_B14_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"max_attempts": 3},
+                    "business14": {"product_tier": "free"},
                 },
             )
         finally:
@@ -2051,7 +1929,7 @@ class TestActualRouteId:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
             plat.call_platform_chat_completions = original

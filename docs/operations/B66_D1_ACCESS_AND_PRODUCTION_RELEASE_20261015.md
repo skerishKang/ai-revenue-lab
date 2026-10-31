@@ -26,13 +26,14 @@ COM1 `Padiem-Command-Center`에서 기본 설치된 `wrangler d1 execute ... --r
 ```bash
 REPO=skerishKang/ai-revenue-lab
 SHA="$(gh api repos/$REPO/git/ref/heads/main --jq .object.sha)"
-gh workflow run b62-b66-d1-041-042-044-release.yml --repo "$REPO" --ref main \
+# #5895 ② 이후: 번호별 게이트 대신 범용 D1 마이그레이션 게이트 하나.
+gh workflow run b62-d1-migrate-gate.yml --repo "$REPO" --ref main \
   -f mode=readonly -f target_sha="$SHA"
 # 새로 생성된 run id를 gh run list/view 또는 GitHub Actions에서 확인.
-# 041·042·044가 모두 EXACT이면 D1 apply 생략.
+# `B62_D1_PLAN_APPLY=0`이면 적용할 마이그레이션이 없는 것이므로 D1 apply를 생략한다.
 ```
 
-실제 스키마가 없다는 **읽기 전용 증거**가 나왔을 때에만, 해당 워크플로의 소스·현재 운영 DB ID·Time Travel 복구 조건을 확인한 후 보호된 `apply`를 사용한다. 배포 전 승인된 변경이라도 **다른 D1·다른 고객 데이터베이스로 우회하지 않는다**.
+실제 스키마가 없다는 **읽기 전용 증거**가 나왔을 때에만, 해당 워크플로의 소스·현재 운영 DB ID·Time Travel 복구 조건을 확인한 후 보호된 `apply`를 사용한다. 배포 전 승인된 변경이라도 **다른 D1·다른 고객 데이터베이스로 우회하지 않는다**. 범용 게이트의 `apply`는 확인 문구 `APPLY_B62_D1_MIGRATIONS_FROM_EXACT_MAIN`을 요구하고, 읽기 전용 단계에서 본 계획과 다르면 적용 전에 멈춘다.
 
 ```bash
 # D1이 정확히 준비된 후에만 기존 Chat Worker 보호 배포

@@ -26,8 +26,10 @@ from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     read_hwpx_package_members,
     MAX_DOCUMENT_CHARS,
+    MAX_TEXT_DOCUMENT_BYTES,
     MAX_OOXML_ENTRIES,
     MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
+    MAX_OOXML_TOTAL_INFLATION_RATIO,
     MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES,
     MAX_PDF_PAGES,
     BINARY_DOCUMENT_MEDIA,
@@ -39,6 +41,8 @@ from padiem_ai_core.document_normalization import (
     extract_pptx_text,
     inspect_pdf,
     read_xlsx_table,
+    MAX_XLSX_COLUMNS,
+    MAX_XLSX_ROWS,
     normalize_pdf_inspection,
     normalize_text_document,
     parse_hwpx_sections,
@@ -46,6 +50,7 @@ from padiem_ai_core.document_normalization import (
     validate_ooxml_archive,
 )
 import padiem_ai_core.document_normalization as document_normalization
+from padiem_ai_core.document_semantics import LocatorKind
 from padiem_ai_core.hwpx_package_serializer import (
     HwpxPackageSection,
     deserialize_hwpx_package,
@@ -257,7 +262,7 @@ def test_text_identity_fails_closed(name: str, media_type: str, code: str) -> No
     assert exc.value.code == code
 
 
-def test_text_rejects_nul_controls_and_character_overflow_without_echo() -> None:
+def test_text_rejects_nul_and_control_characters_without_echo() -> None:
     secret = "PRIVATE-DOCUMENT-SECRET"
     with pytest.raises(DocumentNormalizationError) as nul:
         normalize_text_document(name="x.txt", media_type="text/plain", text=secret + "\x00")
@@ -268,9 +273,42 @@ def test_text_rejects_nul_controls_and_character_overflow_without_echo() -> None
         normalize_text_document(name="x.txt", media_type="text/plain", text="safe\x01\x02\x03\x04")
     assert controls.value.code == "excessive_control_characters"
 
-    with pytest.raises(DocumentNormalizationError) as large:
-        normalize_text_document(name="x.txt", media_type="text/plain", text="x" * (MAX_DOCUMENT_CHARS + 1))
-    assert large.value.code == "text_too_long"
+
+def test_a_long_text_document_is_read_not_refused() -> None:
+    """#5734 stage 2: length is not a safety property.
+
+    The 40,000-character and 96 KiB refusals were product-side copies of limits
+    nobody imposed. What a text document still has to prove is its type, its
+    encoding, the absence of NUL and a sane share of control characters.
+    """
+    long_body = "\n".join(f"line {index:06d} of the long document" for index in range(60_000))
+    assert len(long_body) > 4 * MAX_DOCUMENT_CHARS
+    document = normalize_text_document(name="long.txt", media_type="text/plain", text=long_body)
+    assert document.text_chars == len(long_body)
+    assert document.byte_size > MAX_TEXT_DOCUMENT_BYTES
+    assert document.segment_count == 1
+    assert document.segments[0].text == long_body
+
+
+def test_a_document_with_more_pages_than_the_old_segment_clamp_keeps_them_all() -> None:
+    """512 located segments used to be dropped, then refused; neither happens.
+
+    The reader once discarded every page locator above the bounded count and the
+    document object refused a count over it. A 600-page PDF now carries 600
+    page-located segments.
+    """
+    payload = _multi_page_text_pdf(*[f"row {index:04d} of the ledger" for index in range(600)])
+    document = extract_binary_document(name="many.pdf", media_type=PDF_MIME, payload=payload)
+    assert document.segment_count == 600
+    assert {segment.locator.kind for segment in document.segments} == {LocatorKind.PAGE}
+    assert document.segments[-1].locator.value == "600"
+
+
+def test_a_dense_document_is_read_past_the_old_per_page_and_total_bounds() -> None:
+    payload = _multi_page_text_pdf(*[f"page {index:02d} " + ("detail " * 3_000) for index in range(20)])
+    document = extract_binary_document(name="dense.pdf", media_type=PDF_MIME, payload=payload)
+    assert document.text_chars > 10 * MAX_DOCUMENT_CHARS
+    assert document.segment_count == 20
 
 
 def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -> None:
@@ -283,7 +321,7 @@ def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -
 
     import inspect
 
-    assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload")
+    assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload", "ooxml_member_max_bytes")
 
 
 def test_pdf_inspection_normalizes_to_exact_page_segments() -> None:
@@ -658,25 +696,68 @@ def test_ooxml_backslash_member_guard_is_actually_executed() -> None:
         assert path_error.value.code == "ooxml_unsafe_path"
 
 
-def test_ooxml_entry_count_and_uncompressed_bounds_fail_closed() -> None:
-    entries = {f"safe/{index}.xml": b"x" for index in range(MAX_OOXML_ENTRIES + 1)}
-    with pytest.raises(DocumentNormalizationError) as count:
-        validate_ooxml_archive(_zip_bytes(entries))
-    assert count.value.code == "ooxml_entry_count"
+def test_a_normal_large_or_many_member_archive_is_no_longer_refused_for_size() -> None:
+    """#5573: entry count and the archive-wide total are capacity, not integrity.
 
-    oversized = _zip_bytes({"oversized.bin": b"x" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)})
-    with pytest.raises(DocumentNormalizationError) as entry:
-        validate_ooxml_archive(oversized)
-    assert entry.value.code == "ooxml_entry_size"
+    A workbook with many parts, and a part far bigger than the old 1MiB bound,
+    are ordinary documents. The shape that must still be refused is a
+    decompression bomb: content that claims to expand enormously relative to
+    the bytes actually handed over.
+    """
 
-    chunk = b"x" * MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-    total_entries = {
-        f"safe/{index}.bin": chunk
-        for index in range((MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES // MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES) + 1)
-    }
-    with pytest.raises(DocumentNormalizationError) as total:
-        validate_ooxml_archive(_zip_bytes(total_entries))
-    assert total.value.code == "ooxml_total_size"
+    many = {f"safe/{index}.xml": b"<a/>" for index in range(MAX_OOXML_ENTRIES * 4)}
+    validate_ooxml_archive(_zip_bytes(many))
+
+    # 8MiB of repeating text is an ordinary big part: past the old 1MiB bound,
+    # inside the memory ceiling, and at a ratio the guard does not mind.
+    big = _zip_bytes({"big.bin": b"abcdefgh" * (1024 * 1024)})
+    validate_ooxml_archive(big)
+
+    # 4MiB of one repeated byte stores to a few kilobytes: that is the
+    # amplification the guard exists for, and nothing about it is a size limit.
+    bomb = _zip_bytes({"bomb.bin": bytes(4 * 1024 * 1024)})
+    with pytest.raises(DocumentNormalizationError) as inflated:
+        validate_ooxml_archive(bomb)
+    assert inflated.value.code == "ooxml_total_inflation"
+
+
+def test_a_high_ratio_member_under_the_buffer_bound_is_read() -> None:
+    """A ratio near, but under, the guard is a big part — not a refusal.
+
+    The rule separates two questions: how far the bytes amplify (the ratio) and
+    how much one part may make the process hold (32MiB, because a Pyodide Worker
+    isolate owns 128MB). This archive answers the first with ~685x and the second
+    with 8MiB, so both limits are satisfied and nothing is refused.
+    """
+
+    payload = _zip_bytes({"probe.bin": b"abcdefgh" * (1024 * 1024)})
+    with ZipFile(BytesIO(payload)) as archive:
+        declared = archive.getinfo("probe.bin").file_size
+    assert declared == 8 * 1024 * 1024
+    assert declared < MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    assert declared <= len(payload) * MAX_OOXML_TOTAL_INFLATION_RATIO
+    validate_ooxml_archive(payload)
+
+
+def test_one_member_may_not_ask_for_more_than_the_process_can_hold() -> None:
+    """#5876: the per-member inflate ceiling is enforced again, as a memory bound.
+
+    The gate pre-reads every `.xml`/`.rels` member while it walks, so a part that
+    declares more than 32MiB of inflated bytes is refused before the ratio ever
+    speaks — a document may be long, but one part may not demand more RAM than the
+    Worker owns. One byte under the bound is an ordinary document.
+    """
+
+    bound = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    over = (b"abcdefgh" * (bound // 8)) + b"a"
+    assert len(over) == bound + 1
+    with pytest.raises(DocumentNormalizationError) as refused:
+        validate_ooxml_archive(_zip_bytes({"word/document.xml": over}))
+    assert refused.value.code == "ooxml_entry_size"
+
+    at = b"abcdefgh" * (bound // 8)
+    assert len(at) == bound
+    validate_ooxml_archive(_zip_bytes({"word/document.xml": at}))
 
 
 def test_xlsx_extracts_values_and_archive_dtd_is_rejected_before_openpyxl() -> None:
@@ -737,6 +818,61 @@ def test_xlsx_table_row_bound_truncates_instead_of_reading_the_whole_sheet() -> 
     assert table.rows == (("A-1", "베어링", "10"),)
     assert table.truncated is True
     assert table.total_rows_seen == 1
+
+
+def test_a_workbook_beyond_the_old_row_column_and_cell_bounds_reads_fully() -> None:
+    """#5734 stage 2: the table reader has no capacity ceiling any more.
+
+    The old shape of this call was a refusal — 500 rows, 50 columns, 5,000
+    non-empty cells were PADIEM numbers, and a normal procurement sheet passes
+    all three. A caller that asks for a bigger bound now gets it, and a sheet
+    larger than the old bounds is read instead of rejected.
+    """
+
+    _require_xlsx_extra()
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Items"
+    header = ["코드"] + [f"열{index}" for index in range(55)]
+    sheet.append(header)
+    for row in range(1, 621):
+        sheet.append([f"A-{row}"] + [f"값{row}-{index}" for index in range(55)])
+    output = BytesIO()
+    workbook.save(output)
+    workbook.close()
+    payload = output.getvalue()
+
+    capped = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=MAX_XLSX_ROWS, max_columns=MAX_XLSX_COLUMNS,
+    )
+    assert len(capped.rows) == MAX_XLSX_ROWS
+    assert capped.truncated is True
+
+    whole = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=700, max_columns=60,
+    )
+    assert whole.truncated is False
+    assert len(whole.rows) == 620
+    assert whole.total_rows_seen == 620
+    assert len(whole.rows[0]) == 56
+    assert whole.rows[-1][0] == "A-620"
+
+
+def test_a_bound_beyond_the_old_ceiling_is_accepted_as_written() -> None:
+    """Asking for 20,000 rows used to be refused as out of range."""
+
+    payload = _xlsx_table_bytes()
+
+    table = read_xlsx_table(
+        name="items.xlsx", media_type=XLSX_MIME, payload=payload,
+        max_rows=20_000, max_columns=4096,
+    )
+    assert table.rows
+    with pytest.raises(DocumentNormalizationError) as zero:
+        read_xlsx_table(name="items.xlsx", media_type=XLSX_MIME, payload=payload, max_rows=0)
+    assert zero.value.code == "invalid_row_bound"
 
 
 def test_xlsx_table_rejects_a_non_xlsx_media_identity_and_a_missing_sheet() -> None:

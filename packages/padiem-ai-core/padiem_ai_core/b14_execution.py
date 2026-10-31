@@ -11,11 +11,14 @@ import httpx
 
 from .contracts import UsageMetadata
 from .tool_channel import (
+    TOOL_COMPLETED_STATUS,
     ToolCall,
     ToolChannelError,
     ToolDefinition,
+    normalize_execution_event,
     normalize_tool_choice,
     normalize_tool_definitions,
+    normalize_turn_signature,
     parse_tool_calls,
 )
 
@@ -24,11 +27,13 @@ B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 # The old global 4096 max_tokens limit was a B14 pilot compatibility setting,
 # not any provider's capability. It must not constrain all AI products (#4379).
 # Keep this exported symbol for old callers; None means no global product cap.
-# A feature may opt into its own explicit budget via b14_output_limits.
+# A feature may opt into its own explicit budget.
 PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
-MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
-MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
+# Owner rules 2026-10-26: completed JSON is materialized in Worker memory.
+# Define its 32MiB ceiling before the 10MiB default (never default > ceiling).
+MAX_CONFIGURED_B14_RESPONSE_BYTES = 32 * 1_048_576
+MAX_B14_RESPONSE_BYTES = 10 * 1_048_576
 # Provider-native inference messages have no legacy pilot count/character ceiling.
 # API gateway/provider capabilities and HTTP transport memory guards remain separate.
 # Retain legacy symbols for import compatibility; None is no product-native cap.
@@ -36,8 +41,6 @@ MAX_B14_MESSAGES: int | None = None
 MAX_B14_MESSAGE_CHARS: int | None = None
 MAX_B14_MODEL_CHARS = 200
 
-_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
-_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _MESSAGE_ROLES = frozenset({"system", "user", "assistant", "tool"})
 
 # #5536: an absent assistant content key and an explicit null are different
@@ -139,7 +142,7 @@ def _normalize_messages(
             # #5536: an assistant turn may carry the tool calls the model
             # requested. Content stays optional there, because a tool call is a
             # complete answer of its own.
-            extra = fields - {"role", "content", "tool_calls"}
+            extra = fields - {"role", "content", "tool_calls", "signature"}
             if extra:
                 raise ValueError(
                     f"messages[{index}] has unexpected fields: {', '.join(sorted(extra))}"
@@ -149,9 +152,23 @@ def _normalize_messages(
                 not isinstance(content, str) or not content.strip()
             ):
                 raise ValueError(f"messages[{index}].content must be a non-empty string")
+            signature = message.get("signature")
+            if signature is not None:
+                # #4727: the token belongs to the answer text of this turn, so a
+                # turn with no answer text cannot carry one.
+                if content is None:
+                    raise ValueError(
+                        f"messages[{index}] signature needs the answer text it belongs to"
+                    )
+                try:
+                    signature = normalize_turn_signature(signature)
+                except ToolChannelError as exc:
+                    raise ValueError(f"messages[{index}]: {exc}") from exc
             normalized: dict[str, Any] = {"role": "assistant"}
             if content is not None:
                 normalized["content"] = content.strip()
+            if signature is not None:
+                normalized["signature"] = signature
             if "tool_calls" in message:
                 calls = parse_tool_calls(message.get("tool_calls"))
                 if not calls:
@@ -169,7 +186,7 @@ def _normalize_messages(
             continue
 
         # role == "tool": the result of one earlier tool call.
-        extra = fields - {"role", "content", "tool_call_id", "name"}
+        extra = fields - {"role", "content", "tool_call_id", "name", "execution"}
         if extra:
             raise ValueError(
                 f"messages[{index}] has unexpected fields: {', '.join(sorted(extra))}"
@@ -179,8 +196,20 @@ def _normalize_messages(
             raise ValueError(
                 f"messages[{index}].tool_call_id must be a non-empty string"
             )
+        # #4727: the executor's own outcome travels with its result, so a
+        # refusal, a failure and a cancellation are not replayed as a completion.
+        execution = message.get("execution")
+        if execution is not None:
+            try:
+                execution = dict(normalize_execution_event(execution))
+            except ToolChannelError as exc:
+                raise ValueError(f"messages[{index}]: {exc}") from exc
         content = message.get("content")
-        if not isinstance(content, str) or not content.strip():
+        if not isinstance(content, str):
+            raise ValueError(f"messages[{index}].content must be a string")
+        if not content.strip() and (
+            execution is None or execution["status"] == TOOL_COMPLETED_STATUS
+        ):
             raise ValueError(f"messages[{index}].content must be a non-empty string")
         tool_message: dict[str, Any] = {
             "role": "tool",
@@ -190,6 +219,8 @@ def _normalize_messages(
         name = message.get("name")
         if isinstance(name, str) and name.strip():
             tool_message["name"] = name.strip()
+        if execution is not None:
+            tool_message["execution"] = execution
         out.append(MappingProxyType(tool_message))
     return tuple(out)
 
@@ -292,11 +323,7 @@ class B14ExecutionConfig:
 
 @dataclass(frozen=True, slots=True)
 class B14RoutingOptions:
-    task_type: str | None = None
     required_capabilities: tuple[str, ...] | None = None
-    optimize_for: str | None = None
-    allow_external_fallback: bool | None = None
-    provider_order: tuple[str, ...] | None = None
     # There is no upstream call budget here. The number of candidates one
     # dispatch may try is the number of candidates the declared product grade
     # allows, and B14 owns that list: it advances to the next candidate only
@@ -314,37 +341,11 @@ class B14RoutingOptions:
     def __post_init__(self) -> None:
         if self.product_tier is not None and self.product_tier not in ("free", "plus", "pro", "max"):
             raise ValueError("product_tier must be free, plus, pro or max")
-        if self.task_type is not None:
-            if not isinstance(self.task_type, str):
-                raise ValueError("task_type must be a string or None")
-            task_type = self.task_type.strip().lower()
-            if task_type not in _TASK_TYPES:
-                raise ValueError("unsupported task_type")
-            object.__setattr__(self, "task_type", task_type)
 
         object.__setattr__(
             self,
             "required_capabilities",
             _normalize_string_tuple("required_capabilities", self.required_capabilities),
-        )
-
-        if self.optimize_for is not None:
-            if not isinstance(self.optimize_for, str):
-                raise ValueError("optimize_for must be a string or None")
-            optimize_for = self.optimize_for.strip().lower()
-            if optimize_for not in _OPTIMIZE_FOR:
-                raise ValueError("unsupported optimize_for")
-            object.__setattr__(self, "optimize_for", optimize_for)
-
-        if self.allow_external_fallback is not None and not isinstance(
-            self.allow_external_fallback, bool
-        ):
-            raise ValueError("allow_external_fallback must be a boolean or None")
-
-        object.__setattr__(
-            self,
-            "provider_order",
-            _normalize_string_tuple("provider_order", self.provider_order),
         )
 
         if self.max_retries is not None and (
@@ -356,16 +357,8 @@ class B14RoutingOptions:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {}
-        if self.task_type is not None:
-            out["task_type"] = self.task_type
         if self.required_capabilities is not None:
             out["required_capabilities"] = list(self.required_capabilities)
-        if self.optimize_for is not None:
-            out["optimize_for"] = self.optimize_for
-        if self.allow_external_fallback is not None:
-            out["allow_external_fallback"] = self.allow_external_fallback
-        if self.provider_order is not None:
-            out["provider_order"] = list(self.provider_order)
         if self.max_retries is not None:
             out["max_retries"] = self.max_retries
         if self.product_tier is not None:
