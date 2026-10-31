@@ -1561,7 +1561,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars \
             --config wrangler.production.generated.toml \
             --dry-run --outdir "${RUNNER_TEMP}/b62-production-dry-run" 2>&1 | \
             python ../../.github/scripts/b62_redact_deploy_output.py --config wrangler.production.generated.toml

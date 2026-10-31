@@ -245,7 +245,7 @@ jobs:
           printf 'CONTROL_PLANE_IDENTITY_LOOKUP_KEY=%s\nGOOGLE_CONNECT_TICKET_KEY=%s\n' "${IDENTITY_LOOKUP_KEY}" "${CONNECT_TICKET_KEY}" > "${secret_file}"
           chmod 600 "${secret_file}"
           cp "${IDENTITY_CONFIG}" "${temp_config}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${GITHUB_SHA}" --message "B54 Google identity authority ${GITHUB_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --secrets-file "${secret_file}" --strict --tag "git-${GITHUB_SHA}" --message "B54 Google identity authority ${GITHUB_SHA}"
           rm -f "${temp_config}"
           echo "IDENTITY_WORKER_DEPLOY=SUCCESS"
 
@@ -278,7 +278,7 @@ jobs:
           source['vars']['GOOGLE_OAUTH_REDIRECT_URI'] = 'https://oauth.padiem.net/v1/google/callback'
           Path('wrangler.jsonc').write_text(json.dumps(source, indent=2) + '\n', encoding='utf-8')
           PY
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${GITHUB_SHA}" --message "B54 Google OAuth state ${GITHUB_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --secrets-file "${secret_file}" --strict --tag "git-${GITHUB_SHA}" --message "B54 Google OAuth state ${GITHUB_SHA}"
           rm -f "${temp_config}"
           echo "OAUTH_STATE_WORKER_DEPLOY=SUCCESS"
 
@@ -304,7 +304,7 @@ jobs:
           source['vars'] = {'GOOGLE_OAUTH_ALLOWED_ORIGIN': os.environ['OAUTH_ALLOWED_ORIGIN']}
           Path('wrangler.jsonc').write_text(json.dumps(source, indent=2) + '\n', encoding='utf-8')
           PY
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict --tag "git-${GITHUB_SHA}" --message "B54 Google OAuth edge ${GITHUB_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --strict --tag "git-${GITHUB_SHA}" --message "B54 Google OAuth edge ${GITHUB_SHA}"
           rm -f "${temp_config}"
           echo "OAUTH_EDGE_WORKER_DEPLOY=SUCCESS"
 
