@@ -303,6 +303,11 @@ async def _exercise(scenario):
             async with original_client(transport=httpx.ASGITransport(app=chat), base_url="https://chat.example.invalid") as client:
                 response = await client.post("/api/orchestration", headers=headers, json={"messages": [{"role": "user", "content": "안녕"}]})
             body = response.json()
+            # Close the engine's cached SQLite connections before the temporary
+            # directory is removed (Windows cannot unlink an open database).
+            for binding in runtime._DATABASES.values():
+                binding.connection.close()
+            runtime._DATABASES.clear()
             return {**records, "status": response.status_code, "answer": body.get("answer"), "code": body.get("error", {}).get("code")}
 
 
