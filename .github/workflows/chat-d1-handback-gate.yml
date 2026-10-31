@@ -1,0 +1,204 @@
+name: Chat D1 Handback Gate
+
+# Rollback path option (가) of #6197: when the Chat cutover has to be undone
+# after COM2 accepted writes, D1 receives exactly those writes — measured
+# against the baseline snapshot taken at the cutover freeze.
+#
+# This workflow never starts on its own. plan/verify are read-only; apply is a
+# Production write that requires the "production" environment, an exact main
+# SHA, and a confirmation phrase that names the mode and that SHA.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: plan (read-only delta), verify (read-only re-check), apply (write D1)
+        required: true
+        type: choice
+        options:
+          - plan
+          - verify
+          - apply
+      target_sha:
+        description: Exact 40-character current main SHA
+        required: true
+        type: string
+      confirmation:
+        description: <MODE>_CHAT_D1_HANDBACK_<target_sha>
+        required: true
+        type: string
+      baseline_artifact:
+        description: Artifact holding baseline.sqlite3 (the D1 snapshot taken at the cutover freeze)
+        required: true
+        type: string
+      handback_artifact:
+        description: Artifact holding handback.sqlite3 (current COM2 Chat copy)
+        required: true
+        type: string
+      source_run_id:
+        description: Run id that produced both artifacts
+        required: true
+        type: string
+      plan_artifact:
+        description: For verify/apply — artifact holding the approved plan.json
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: chat-d1-handback-gate
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # apply is the only mode that writes; it must run behind the Production gate.
+    environment: ${{ inputs.mode == 'apply' && 'production' || 'staging' }}
+    env:
+      MODE: ${{ inputs.mode }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      BASELINE_ARTIFACT: ${{ inputs.baseline_artifact }}
+      HANDBACK_ARTIFACT: ${{ inputs.handback_artifact }}
+      PLAN_ARTIFACT: ${{ inputs.plan_artifact }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      DB_ID: 702bb62b-36f5-41a0-973f-c4f663ee01e6
+    steps:
+      - name: Validate dispatch before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$CONFIRMATION" = "${MODE^^}_CHAT_D1_HANDBACK_${TARGET_SHA}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = 9be14bb7b8974e65d0afba647ab16932
+          test -n "$CLOUDFLARE_API_TOKEN"
+          case "$MODE" in
+            plan|verify|apply) ;;
+            *) echo "CHAT_HANDBACK_MODE=UNKNOWN"; exit 2 ;;
+          esac
+          if [ "$MODE" != "plan" ]; then test -n "$PLAN_ARTIFACT"; fi
+
+      - name: Checkout the exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Verify main still points at the target SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_SHA"
+
+      - name: Download the baseline snapshot and the COM2 handback copy
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "chat-d1-handback-input-*"
+          path: ${{ runner.temp }}/handback-input
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          merge-multiple: true
+
+      - name: Download the approved plan
+        if: ${{ inputs.mode != 'plan' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.plan_artifact }}
+          path: ${{ runner.temp }}/handback-plan
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve the two SQLite inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASELINE="$(find "$RUNNER_TEMP/handback-input" -name baseline.sqlite3 -print -quit)"
+          HANDBACK="$(find "$RUNNER_TEMP/handback-input" -name handback.sqlite3 -print -quit)"
+          test -s "$BASELINE"
+          test -s "$HANDBACK"
+          echo "CHAT_HANDBACK_INPUT=BASELINE_PRESENT HANDBACK_PRESENT"
+          echo "BASELINE=$BASELINE" >> "$GITHUB_ENV"
+          echo "HANDBACK=$HANDBACK" >> "$GITHUB_ENV"
+
+      - name: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/chat_d1_handback_gate.py plan \
+            --baseline "$BASELINE" --handback "$HANDBACK" \
+            --out "$RUNNER_TEMP/plan.json"
+
+      - name: verify
+        if: ${{ inputs.mode == 'verify' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/chat_d1_handback_gate.py verify \
+            --baseline "$BASELINE" --handback "$HANDBACK" \
+            --plan "$RUNNER_TEMP/handback-plan/plan.json"
+
+      - name: apply
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/chat_d1_handback_gate.py apply \
+            --baseline "$BASELINE" --handback "$HANDBACK" \
+            --plan "$RUNNER_TEMP/handback-plan/plan.json" \
+            --out "$RUNNER_TEMP/handback.sql"
+          test -s "$RUNNER_TEMP/handback.sql"
+
+      - name: Apply the handback SQL to D1 in one transaction
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute "$DB_ID" --remote --file "$RUNNER_TEMP/handback.sql" \
+            --config apps/padiem-chat/wrangler.toml
+          echo "CHAT_HANDBACK_APPLY=APPLIED"
+
+      - name: Verify D1 now equals the handback snapshot
+        if: ${{ inputs.mode == 'apply' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 export "$DB_ID" --remote \
+            --output "$RUNNER_TEMP/d1-after.sql" --config apps/padiem-chat/wrangler.toml
+          test -s "$RUNNER_TEMP/d1-after.sql"
+          python3 - "$RUNNER_TEMP/d1-after.sql" "$RUNNER_TEMP/d1-after.sqlite3" <<'PY'
+          import sqlite3, sys
+          sql_path, db_path = sys.argv[1], sys.argv[2]
+          connection = sqlite3.connect(db_path)
+          with open(sql_path, encoding="utf-8") as handle:
+              connection.executescript(handle.read())
+          connection.commit()
+          connection.close()
+          PY
+          python3 .github/scripts/chat_d1_handback_gate.py plan \
+            --baseline "$RUNNER_TEMP/d1-after.sqlite3" --handback "$HANDBACK" \
+            --out "$RUNNER_TEMP/after.json"
+          python3 - "$RUNNER_TEMP/after.json" <<'PY'
+          import json, sys
+          statements = json.load(open(sys.argv[1], encoding="utf-8"))["statement_count"]
+          print(f"CHAT_HANDBACK_D1_MATCH={'YES' if statements == 0 else 'NO'} remaining={statements}")
+          raise SystemExit(0 if statements == 0 else 3)
+          PY
+
+      - name: Store the plan (and the applied SQL) for the audit trail
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-d1-handback-${{ inputs.mode }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/plan.json
+            ${{ runner.temp }}/handback.sql
+          retention-days: 30
+          if-no-files-found: warn

@@ -20,6 +20,8 @@ on:
       - "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py"
       - ".github/scripts/connector_bundle_fingerprint.py"
       - ".github/tests/test_connector_bundle_fingerprint.py"
+      - ".github/scripts/identity_rollback_contract.py"
+      - ".github/tests/test_identity_rollback_contract.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -31,9 +33,18 @@ on:
           - repository_preflight
           - cloudflare_readonly
           - redeploy_identity_worker
+          - rollback_identity_worker
       target_sha:
         description: "Exact current main SHA"
         required: true
+        type: string
+      current_version:
+        description: "Current identity Worker version for rollback"
+        required: false
+        type: string
+      rollback_version:
+        description: "Exact target identity Worker version"
+        required: false
         type: string
       confirmation:
         description: "Exact Production mutation confirmation phrase"
@@ -193,6 +204,9 @@ jobs:
           print('PRIVATE_INGRESS_CONTRACT=PASS')
           print('PRODUCTION_MUTATION=0')
           PY
+
+      - name: Verify rollback synthetic contract
+        run: python -m unittest discover -s .github/tests -p test_identity_rollback_contract.py -q
 
       - name: Verify Connector build fingerprint negative-only contract
         shell: bash
@@ -610,3 +624,57 @@ jobs:
           echo "OAUTH_EDGE_ROLLBACK_EFFECT=0"
           echo "B62_ROLLBACK_EFFECT=0"
           echo "ROLLBACK_TARGET=IDENTITY_WORKER_ONLY"
+
+  rollback-identity-worker:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_identity_worker' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CURRENT_VERSION: ${{ inputs.current_version }}
+      ROLLBACK_VERSION: ${{ inputs.rollback_version }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      OBSERVED_VERSION: ${{ needs.cloudflare-readonly.outputs.previous_identity_version }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact authorization and snapshot target
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == refs/heads/main && "$GITHUB_SHA" == "$TARGET_SHA" && "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          [[ "$CURRENT_VERSION" == "$OBSERVED_VERSION" ]]
+          PYTHONPATH=.github/scripts python -c 'import os; from identity_rollback_contract import validate_confirmation; validate_confirmation("rollback_identity_worker",os.environ["TARGET_SHA"],os.environ["CURRENT_VERSION"],os.environ["ROLLBACK_VERSION"],os.environ["CONFIRMATION"])'
+          npm install --no-save --no-audit --no-fund wrangler@4.130.0 >/dev/null
+          npx --no-install wrangler versions view "$ROLLBACK_VERSION" --name "$IDENTITY_WORKER" --json > "$RUNNER_TEMP/identity-rollback-target.json"
+          PYTHONPATH=.github/scripts python -c 'import json,os; from identity_rollback_contract import binding_identity; v=json.load(open(os.environ["RUNNER_TEMP"]+"/identity-rollback-target.json")); assert v.get("id")==os.environ["ROLLBACK_VERSION"]; binding_identity(v["resources"]["bindings"])'
+      - name: Roll back identity Worker and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+          [[ "$CURRENT_VERSION" == "$OBSERVED_VERSION" ]]
+          npx --no-install wrangler deployments list --name "$IDENTITY_WORKER" --json > "$RUNNER_TEMP/identity-rollback-current.json"
+          python -c 'import json,os; d=json.load(open(os.environ["RUNNER_TEMP"]+"/identity-rollback-current.json")); v=d[0]["versions"]; assert len(v)==1 and v[0]["percentage"]==100 and v[0]["version_id"]==os.environ["CURRENT_VERSION"]'
+          npx --no-install wrangler rollback "$ROLLBACK_VERSION" --name "$IDENTITY_WORKER" --message 'approved exact-version rollback' > "$RUNNER_TEMP/identity-rollback-command.log" 2>&1
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}"
+          curl -fsS "${auth[@]}" "${endpoint}/settings" -o "$RUNNER_TEMP/identity-rollback-settings.json"
+          curl -fsS "${auth[@]}" "${endpoint}/deployments" -o "$RUNNER_TEMP/identity-rollback-deployments.json"
+          if ! jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY_LOOKUP_KEY") and any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "$RUNNER_TEMP/identity-rollback-settings.json" >/dev/null; then
+            echo 'IDENTITY_ROLLBACK_POSTCHECK=FAIL'; exit 1
+          fi
+          if ! PYTHONPATH=.github/scripts python -c 'import json,os; from identity_rollback_contract import validate_post; p=os.environ["RUNNER_TEMP"]; read=lambda x:json.load(open(p+x)); target=read("/identity-rollback-target.json"); after=read("/identity-rollback-settings.json"); dep=read("/identity-rollback-deployments.json"); assert after.get("success") is True and dep.get("success") is True; validate_post(dep["result"]["deployments"],os.environ["ROLLBACK_VERSION"],target["resources"]["bindings"],after["result"]["bindings"])'; then
+            echo 'IDENTITY_ROLLBACK_POSTCHECK=FAIL'; exit 1
+          fi
+          echo 'IDENTITY_ROLLBACK_POSTCHECK=PASS'
