@@ -79,6 +79,13 @@ def setup(monkeypatch, mode="switch", execute=False):
             return {}
         return [domain(trial.WORKERS[state["owner"]])]
     monkeypatch.setattr(instance.api, "cf", cf)
+    def fake_put(before):
+        instance.api.cf("/workers/domains", method="PUT", payload={
+            "hostname": trial.HOST, "service": trial.WORKERS[target], "zone_id": before["zone_id"],
+            "enabled": True, "previews_enabled": False,
+        })
+        instance.result["api_response"] = {"http_status": 200, "body": {"success": True, "result": {}}}
+    monkeypatch.setattr(instance, "put_domain", fake_put)
     monkeypatch.setattr(instance.api, "account", lambda: None)
     monkeypatch.setattr(instance.api, "exact_main", lambda: None)
     monkeypatch.setattr(trial, "http_sample", lambda host: http(source))
@@ -280,3 +287,73 @@ def test_existing_output_refuses_before_execution(monkeypatch, tmp_path):
     monkeypatch.setattr(trial.Trial, "execute", lambda self: pytest.fail("must not execute"))
     assert trial.main(["switch", "--target-sha", SHA, "--out", str(destination)]) == 2
     assert destination.read_text() == "preserve"
+
+
+def test_put_captures_http_status_and_complete_error_envelope(monkeypatch):
+    account = "c" * 32
+    token = "synthetic-private-token"
+    instance = trial.Trial(arguments(execute=True), {
+        "CHAT_CUTOVER_TRIAL_ZONE_ID": ZONE,
+        "CLOUDFLARE_ACCOUNT_ID": account, "CLOUDFLARE_API_TOKEN": token,
+    })
+    envelope = {"success": False, "errors": [{"code": 100, "message": "domain already attached"}],
+                "messages": [{"code": 7, "message": "detail"}], "result": None}
+    calls = []
+    def request(url, **kw):
+        calls.append((url, kw))
+        return 409, {"ignored": "headers"}, json.dumps(envelope).encode()
+    monkeypatch.setattr(trial, "request", request)
+    with pytest.raises(trial.Refused, match="cloudflare_put_not_successful"):
+        instance.put_domain(domain())
+    assert instance.result["api_response"] == {"http_status": 409, "body": envelope}
+    assert len(calls) == 1 and calls[0][1]["method"] == "PUT"
+    assert token not in json.dumps(instance.result["api_response"])
+
+def test_override_uses_wranger_endpoint_and_never_dns_override(monkeypatch):
+    account = "c" * 32
+    args = arguments(execute=True, override_existing_origin=True)
+    instance = trial.Trial(args, {
+        "CHAT_CUTOVER_TRIAL_ZONE_ID": ZONE,
+        "CLOUDFLARE_ACCOUNT_ID": account, "CLOUDFLARE_API_TOKEN": "synthetic",
+    })
+    calls = []
+    def request(url, **kw):
+        calls.append((url, kw))
+        return 200, {}, b'{"success":true,"errors":[],"messages":[],"result":{}}'
+    monkeypatch.setattr(trial, "request", request)
+    instance.put_domain(domain())
+    assert len(calls) == 1
+    url, kw = calls[0]
+    assert url.endswith("/workers/scripts/" + trial.WORKERS["B"] + "/domains/records")
+    payload = json.loads(kw["data"])
+    assert payload["override_existing_origin"] is True
+    assert payload["override_existing_dns_record"] is False
+    assert payload["origins"] == [{"hostname": trial.HOST, "zone_id": ZONE,
+                                   "enabled": True, "previews_enabled": False}]
+
+def test_override_rejects_other_target_domain_before_put(monkeypatch):
+    instance, calls = setup(monkeypatch, execute=True)
+    instance.args.override_existing_origin = True
+    original = instance.api.cf
+    def cf(path, **kw):
+        if path == "/workers/domains":
+            return [domain(trial.WORKERS["B"], hostname="different-test.padiem.net")]
+        return original(path, **kw)
+    monkeypatch.setattr(instance.api, "cf", cf)
+    with pytest.raises(trial.Refused, match="trial_target_has_other_domains"):
+        instance.execute()
+    assert instance.result["put_attempts"] == 0
+    assert not any(kw.get("method") == "PUT" for _, kw in calls)
+
+def test_put_response_scrubs_credential_echo(monkeypatch):
+    token = "synthetic-sensitive-token"
+    instance = trial.Trial(arguments(execute=True), {
+        "CHAT_CUTOVER_TRIAL_ZONE_ID": ZONE,
+        "CLOUDFLARE_ACCOUNT_ID": "c" * 32, "CLOUDFLARE_API_TOKEN": token,
+    })
+    monkeypatch.setattr(trial, "request", lambda *a, **kw: (
+        403, {}, json.dumps({"success": False, "errors": [{"code": 1, "message": token}],
+                             "messages": [], "result": None}).encode()))
+    with pytest.raises(trial.Refused):
+        instance.put_domain(domain())
+    assert token not in json.dumps(instance.result["api_response"])

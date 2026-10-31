@@ -89,7 +89,7 @@ python .github/scripts/chat_domain_move_trial.py rollback \
 - `dns_first_observed_change_seconds=null`은 조회한 resolver에서 주소 변화가 없었다는 뜻이다. Custom Domain Worker 교체는 같은 Cloudflare 주소를 유지할 수 있다. 이 값은 authoritative DNS TTL·전체 지역 전파 지연이 아니다. TTL/지역 비교가 필요하면 실행 레인이 별도 DNS 자료를 양식에 첨부한다.
 - TLS 표본은 leaf의 `certificate_not_before_utc`·`certificate_not_after_utc`와 `observed_utc`도 기록한다. `tls_first_observed_newer_not_before_seconds`는 baseline보다 늦은 notBefore를 처음 본 시간이다. notBefore는 인증서의 유효 시작일이며 CA 발급 이벤트 시각을 뜻하지 않는다. UTC 관측 시각과 `put_started_utc`·`put_ended_utc`를 이용해 아래 외부 기록과 대조한다.
 - `tls_first_observed_certificate_change_seconds=null`은 같은 leaf fingerprint를 관측했다는 뜻이다. fingerprint가 바뀌어도 다른 edge 인증서일 수 있어 재발급을 증명하지 못한다. 스크립트는 항상 `certificate_reissuance=NOT_ESTABLISHED_BY_FINGERPRINT_SAMPLING`을 남긴다.
-- 한 실행 위치·한 resolver·짧은 관찰 창의 결과를 전체 Cloudflare edge의 무중단 보장으로 확대하지 않는다. 실패 후에도 샘플·타이밍·소유 정보는 유지하며 응답 원문, 토큰, Authorization, 계정/zone ID는 기록하지 않는다.
+- 한 실행 위치·한 resolver·짧은 관찰 창의 결과를 전체 Cloudflare edge의 무중단 보장으로 확대하지 않는다. 실패 후에도 샘플·타이밍·소유 정보는 유지하며 HTTP 관측 응답 원문과 토큰·Authorization 헤더는 기록하지 않는다. PUT API 응답은 §7에 따라 저장소 밖 증거에 기록한다.
 
 ### 5.1 승인된 실행 레인의 인증서 시각 대조 절차
 
@@ -103,3 +103,17 @@ python .github/scripts/chat_domain_move_trial.py rollback \
 
 기록 양식: `docs/operations/templates/CHAT_DOMAIN_MOVE_TRIAL_RESULT.json`.
 양식을 복사해 실행자, 승인 근거, 위치, 최초 준비 시간, switch/rollback 결과 파일, 실제 판단을 채운다. `NOT_MEASURED`를 실제 관측값으로 대체하기 전에는 운영 검증 완료로 쓰지 않는다. 실측 JSON은 저장소 밖 승인된 증거 위치에 보관한다. 운영 전환 결정은 CTO가 내리며 이 시험이 자동으로 운영 게이트를 실행하지 않는다.
+
+
+## 7. 재실측: API 응답과 Wrangler 도메인 덮어쓰기
+
+PUT 응답은 HTTP 상태와 Cloudflare 응답 본문 전체를 로컬 증거 JSON의
+`api_response`에 기록한다. 응답에 요청 토큰이 나타나면 토큰만 가린다.
+헤더는 저장하지 않는다. 응답 원문과 자원 식별자가 담긴 증거는 저장소에 올리지 않는다.
+
+최초 PUT에 이미 연결됐다는 오류가 관측된 경우에만, 별도 승인된 실행에서
+`--override-existing-origin`을 명시한다. 이 경우 Wrangler와 같은 대상 Worker의
+`/workers/scripts/{worker}/domains/records` PUT을 쓴다. `override_scope=true`,
+`override_existing_origin=true`, `override_existing_dns_record=false`이며,
+대상 Worker에 다른 도메인이 있으면 PUT 전 중단한다. 이 옵션은 detach나
+DNS 레코드 덮어쓰기를 허용하지 않는다. 각 프로세스는 PUT을 최대 한 번만 실행한다.
