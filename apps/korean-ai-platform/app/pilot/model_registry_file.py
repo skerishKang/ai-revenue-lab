@@ -5,13 +5,28 @@ The JSON is parsed at boot; invalid registry aborts startup (no stale fallback).
 """
 from __future__ import annotations
 import json
+import os
 import re
+import tempfile
 from pathlib import Path
 from .platform_secrets import (
     CredentialSource, PlatformProviderSpec, register_platform_provider
 )
 
 REGISTRY_PATH = Path(__file__).with_name("b14_models.json")
+REGISTRY_PATH_ENV = "B14_REGISTRY_PATH"
+
+
+def registry_path() -> Path:
+    """The one registry file this deployment reads.
+
+    A host that keeps its application checkout read-only can relocate the file
+    with B14_REGISTRY_PATH. That is the same authority at a different path, not
+    a second one: nothing is merged with a package default, so a host either
+    reads the file it points at or fails closed at boot.
+    """
+    raw = os.environ.get(REGISTRY_PATH_ENV, "").strip()
+    return Path(raw).expanduser() if raw else REGISTRY_PATH
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _BINDING = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _GROUPS = ("plus", "pro", "max")
@@ -35,12 +50,38 @@ def _strict_keys(row: dict, keys: set, label: str) -> None:
     if not isinstance(row,dict) or set(row) != keys:
         raise ModelRegistryError(label + ": unexpected/missing keys")
 
-def read_registry(path: Path = REGISTRY_PATH) -> dict:
+def read_registry(path: Path | None = None) -> dict:
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads((path or registry_path()).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise ModelRegistryError("invalid B14 JSON registry") from exc
     return validate_registry(data)
+
+def write_registry(data: dict, path: Path | None = None) -> None:
+    """Validate fully, then replace the file in one step.
+
+    The Owner's registration screen writes through here, so a half-edited
+    registry — which would abort the next boot — is not reachable: the new
+    content is validated before anything is written and moved into place with a
+    single rename inside the same directory.
+    """
+    target = path or registry_path()
+    validate_registry(data)
+    text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    handle, temp_path = tempfile.mkstemp(dir=str(target.parent), prefix=target.name + ".")
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temp_path, 0o644)
+        os.replace(temp_path, target)
+    except OSError as exc:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise ModelRegistryError("registry write failed") from exc
 
 def validate_registry(data: dict) -> dict:
     """Validate any trusted source before modifying the active catalog."""
@@ -121,6 +162,22 @@ def group_model_ids() -> dict[str,list[str]]:
 
 def installed_model_ids() -> frozenset[str]:
     return frozenset(m["id"] for m in read_registry()["models"])
+
+def credential_binding_names(path: Path | None = None) -> frozenset[str]:
+    """Every platform credential NAME the registry declares, enabled or not.
+
+    Both entrypoints derive their per-request credential scope from this, so a
+    new Provider is onboarded by this file plus the value on its own host;
+    neither the Worker entrypoint nor the COM2 adapter keeps a second list that
+    an onboarding would also have to edit. Disabled Providers are included so a
+    Provider can be turned on without touching code. Names only — never values.
+    """
+    return frozenset(
+        entry["credential_binding_name"]
+        for entry in read_registry(path)["providers"].values()
+        if entry["credential_source"] == CredentialSource.PLATFORM_SECRET.value
+        and entry["credential_binding_name"]
+    )
 
 def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""

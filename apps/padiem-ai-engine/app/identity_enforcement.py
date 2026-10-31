@@ -17,6 +17,9 @@ Deployment configuration supports the following authorities:
   keeps its original capacity. It can neither shadow, replace, nor widen any
   base caller. If the overlay is configured while the V1 base is absent the
   composition fails closed.
+- PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY_B61: a second optional,
+  independently bounded single-caller overlay. It requires the base and must
+  not duplicate either the base or the first overlay.
 - the legacy one-caller trio (``PADIEM_ENGINE_CALLER_ID``,
   ``PADIEM_ENGINE_CALLER_SECRET``, ``PADIEM_ENGINE_ALLOWED_APPS``):
   authoritative only while the V1 registry variable is genuinely absent,
@@ -55,6 +58,7 @@ CALLER_ALLOWED_APPS_ENV = "PADIEM_ENGINE_ALLOWED_APPS"
 CALLER_REGISTRY_V1_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 CALLER_REGISTRY_V1_VERSION = 1
 CALLER_REGISTRY_V1_OVERLAY_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
+CALLER_REGISTRY_V1_OVERLAY_B61_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY_B61"
 
 # Bounded retirement policy for the legacy shared Claw caller (#2525).
 #
@@ -235,7 +239,7 @@ def parse_caller_registry_v1_overlay(raw: str) -> TrustedEngineCaller:
     )
 
 
-def _build_registry_authority_from_env(
+def _build_original_registry_authority_from_env(
     env: Any,
 ) -> tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]:
     """Build the base registry plus an independently bounded overlay caller.
@@ -318,6 +322,43 @@ def _build_registry_authority_from_env(
     return EngineCallerRegistry(callers=(caller,)), None
 
 
+def _second_overlay_from_env(
+    env: Any, registry: EngineCallerRegistry | None, overlay: TrustedEngineCaller | None
+) -> TrustedEngineCaller | None:
+    """Validate the independent second overlay without modifying either authority."""
+    raw = getattr(env, CALLER_REGISTRY_V1_OVERLAY_B61_ENV, None)
+    if raw is None:
+        return None
+    if getattr(env, CALLER_REGISTRY_V1_ENV, None) is None or registry is None:
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry overlay requires the V1 base registry",
+        )
+    if not isinstance(raw, str) or not raw.strip():
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry overlay must be a non-blank JSON string",
+        )
+    caller = parse_caller_registry_v1_overlay(raw)
+    if any(item.caller_id == caller.caller_id for item in registry.callers) or (
+        overlay is not None and overlay.caller_id == caller.caller_id
+    ):
+        raise ServiceIdentityError(
+            "duplicate_service_caller",
+            "caller registry overlays must not duplicate another caller ID",
+        )
+    return caller
+
+
+def _build_registry_authority_from_env(
+    env: Any,
+) -> tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]:
+    # Preserve the existing interface used by diagnostics, including validation.
+    registry, overlay = _build_original_registry_authority_from_env(env)
+    _second_overlay_from_env(env, registry, overlay)
+    return registry, overlay
+
+
 def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
     """Build the canonical base/legacy registry from deployment configuration.
 
@@ -356,6 +397,16 @@ def authenticate_request(
             "service_authentication_failed",
             "Engine caller authentication failed",
         )
+
+    second_overlay_caller = _second_overlay_from_env(env, registry, overlay_caller)
+    if second_overlay_caller is not None and caller_id == second_overlay_caller.caller_id:
+        authenticate_engine_caller(
+            registry=EngineCallerRegistry(callers=(second_overlay_caller,)),
+            caller_id=caller_id,
+            credential=credential,
+            requested_app_id=requested_app_id,
+        )
+        return
 
     if overlay_caller is not None and caller_id == overlay_caller.caller_id:
         authenticate_engine_caller(

@@ -54,7 +54,13 @@ def open_claw(browser, server, width=1280):
     page = browser.new_page(viewport={"width": width, "height": 850})
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    # Device-directory cases model an authenticated session explicitly.
+    page.route("**/api/auth/status", lambda route: route.fulfill(json={
+        "ready": True, "authenticated": True, "session_state": "signed_in",
+        "user": {"name": "Synthetic User"}, "history_ready": True,
+    }))
     page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_function("() => window.PadiemAuthGate?.authenticated() === true")
     page.locator("#clawDeviceGuidanceToggle").wait_for(state="attached")
     assert page.locator("#clawDeviceGuidance").is_hidden()
     # Simulate the Claw presentation state without invoking authenticated

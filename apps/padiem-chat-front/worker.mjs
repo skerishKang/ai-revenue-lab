@@ -20,6 +20,8 @@
  * the browser instead of being followed inside the Worker.
  */
 
+import { signedRequestHeaders } from "./edge-proof.mjs";
+
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -57,7 +59,7 @@ function originEnv(env) {
   return origin;
 }
 
-export function createFront({ fetchImpl = (...args) => fetch(...args), now = () => Date.now() } = {}) {
+export function createFront({ fetchImpl = (...args) => fetch(...args), now = () => Date.now(), sign = signedRequestHeaders } = {}) {
   // origin -> timestamp of the last upstream failure (short, request-scoped use)
   const unhealthySince = new Map();
 
@@ -75,7 +77,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const headers = new Headers(request.headers);
+      const headers = await sign(request, env.PADIEM_COM2_EDGE_SECRET);
       headers.delete("host");
       headers.set("x-forwarded-host", new URL(request.url).host);
       headers.set("x-forwarded-proto", "https");
@@ -114,8 +116,13 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
   }
 
   return async function handle(request, env) {
-    const origin = originEnv(env);
     const url = new URL(request.url);
+    const staticPath = request.method === "GET" || request.method === "HEAD";
+    if (staticPath && env.ASSETS && (url.pathname === "/" || /^\/[^/]+\.(?:js|css|png|jpg|jpeg|svg|ico|webp|woff2?)$/i.test(url.pathname) || url.pathname.startsWith("/static/"))) {
+      const asset = await env.ASSETS.fetch(request);
+      if (asset.status !== 404) return asset;
+    }
+    const origin = originEnv(env);
     const target = new URL(url.pathname + url.search, origin);
     const isWrite = !READ_METHODS.has(request.method);
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";

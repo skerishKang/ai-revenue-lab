@@ -236,3 +236,45 @@ def test_a_refused_login_prints_status_and_code_name_but_never_a_value(monkeypat
     assert "REAL_CHAT=FAIL lane=engine code=qa_login_refused" in out
     assert secret_value not in out
     assert "synthetic-qa" not in out
+
+
+@pytest.mark.parametrize("failed_stage", ("login", "session", "orchestration"))
+def test_non_json_response_reports_stage_and_still_fails(monkeypatch, capsys, failed_stage):
+    """The real bounded parser must fail closed at every possible request."""
+    import json
+
+    class Reply:
+        status = 200
+
+        def __init__(self, body):
+            self.body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def read(self, size):
+            return self.body[:size]
+
+    class Opener:
+        def open(self, request, timeout):
+            path = request.full_url.split(".net", 1)[1]
+            stage, payload = {
+                smoke.LOGIN: ("login", {"ok": True}),
+                smoke.STATUS: ("session", {"authenticated": True}),
+                smoke.ORCHESTRATION: ("orchestration", {"answer": "synthetic answer"}),
+            }[path]
+            body = b"<html>synthetic non-json response</html>" if stage == failed_stage else json.dumps(payload).encode()
+            return Reply(body)
+
+    monkeypatch.setattr(smoke, "build_opener", lambda *_: Opener())
+    monkeypatch.setenv(smoke.QA_USERNAME_ENV, "synthetic-user")
+    monkeypatch.setenv(smoke.QA_PASSWORD_ENV, "synthetic-password")
+    assert smoke.run("engine") == 1
+    captured = capsys.readouterr()
+    assert f"REAL_CHAT_FAILURE_STAGE={failed_stage}" in captured.out
+    assert "REAL_CHAT=FAIL lane=engine code=unexpected_http_json_shape" in captured.out
+    assert "synthetic non-json response" not in captured.out
+    assert "synthetic-password" not in captured.out

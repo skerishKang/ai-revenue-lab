@@ -1,0 +1,346 @@
+#!/usr/bin/env bash
+# Standard COM2 deployment after the 2026-10-31 cutover: merging to main no
+# longer reaches the host by itself.
+#
+#   bash deploy_from_main.sh <main-sha>             plan only (the default)
+#   bash deploy_from_main.sh <main-sha> --apply     move, reinstall, restart, health
+#
+# The production checkout is an operator setting, never a shared folder. The
+# script refuses a SHA that is not origin/main, a checkout that is the staging
+# checkout, a dirty tracked tree, a Chat database it cannot read, and a new
+# migration — which it never applies by itself.
+#
+# It never edits .env or any secret, never touches Cloudflare, the tunnel or the
+# Windows 18731 release, and never enables a unit.
+#
+# Configuration (environment; every path is the operator's, none is guessed):
+#   PADIEM_COM2_OPS_CHECKOUT     production checkout (required)
+#   PADIEM_COM2_STAGING_CHECKOUT staging checkout to stay apart (default below)
+#   PADIEM_COM2_STATE_DIR        previous-version worktrees (default below)
+#   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
+#   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
+#   PADIEM_COM2_B14_APP          B14 app checkout
+#   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
+#   PADIEM_COM2_PYTHON           python3
+#   PADIEM_COM2_GIT              git
+#   COM2_CHAT_HEALTH_URL / COM2_P01_HEALTH_URL / COM2_B14_HEALTH_URL
+set -euo pipefail
+umask 077
+
+ops_checkout=${PADIEM_COM2_OPS_CHECKOUT:-}
+staging_checkout=${PADIEM_COM2_STAGING_CHECKOUT:-/mnt/d/work/ai-revenue-lab-staging-chat}
+state_dir=${PADIEM_COM2_STATE_DIR:-/var/lib/padiem-com2-deploy}
+chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
+p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
+b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
+systemctl_bin=${PADIEM_COM2_SYSTEMCTL:-systemctl}
+python_bin=${PADIEM_COM2_PYTHON:-python3}
+git_bin=${PADIEM_COM2_GIT:-git}
+chat_health_url=${PADIEM_COM2_CHAT_HEALTH_URL:-http://127.0.0.1:8798/health}
+p01_health_url=${PADIEM_COM2_P01_HEALTH_URL:-http://127.0.0.1:8811/internal/v1/health}
+b14_health_url=${PADIEM_COM2_B14_HEALTH_URL:-http://127.0.0.1:8789/health}
+apply=0
+requested=''
+resolved=''
+old=''
+
+CHAT_UNIT=padiem-chat-com2.service
+P01_UNIT=padiem-p01.service
+B14_UNIT=padiem-b14.service
+
+fail() { printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=%s\n' "$1" >&2; exit "${2:-2}"; }
+say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
+
+usage() {
+  cat >&2 <<'USAGE'
+usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run]
+       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH]
+USAGE
+}
+
+parse_args() {
+  while (($#)); do
+    case "$1" in
+      --apply) apply=1; shift ;;
+      --dry-run) apply=0; shift ;;
+      --ops-checkout) ops_checkout=${2:?path required}; shift 2 ;;
+      --state-dir) state_dir=${2:?path required}; shift 2 ;;
+      --chat-db) chat_db=${2:?path required}; shift 2 ;;
+      -h|--help) usage; exit 0 ;;
+      -*) fail INVALID_ARGUMENT ;;
+      *)
+        [[ -z $requested ]] || fail INVALID_ARGUMENT
+        requested=$1; shift
+        ;;
+    esac
+  done
+  [[ -n $requested ]] || { usage; exit 2; }
+}
+
+# The script moves the checkout it lives in, and bash keeps reading this file as
+# it runs. Execute an immutable copy from the state directory instead.
+main() {
+  parse_args "$@"
+  if [[ -n ${PADIEM_COM2_DEPLOY_REEXEC_COPY:-} ]]; then
+    # This process is the immutable copy; remove it when the run ends.
+    trap 'rm -f -- "$PADIEM_COM2_DEPLOY_REEXEC_COPY"' EXIT
+  fi
+  if [[ -z ${PADIEM_COM2_DEPLOY_REEXEC:-} ]]; then
+    export PADIEM_COM2_DEPLOY_REEXEC=1
+    mkdir -p -- "$state_dir" || fail STATE_DIR_UNWRITABLE
+    copy="$state_dir/deploy_from_main.$$.sh"
+    cp -- "${BASH_SOURCE[0]}" "$copy" || fail STATE_DIR_UNWRITABLE
+    export PADIEM_COM2_DEPLOY_REEXEC_COPY="$copy"
+    exec bash "$copy" "$@"
+  fi
+  [[ -n $ops_checkout ]] || fail OPS_CHECKOUT_REQUIRED
+  ops_checkout=$(readlink -f -- "$ops_checkout") || fail OPS_CHECKOUT_INVALID
+  [[ -d $ops_checkout ]] || fail OPS_CHECKOUT_MISSING
+  [[ -e $ops_checkout/.git ]] || fail OPS_CHECKOUT_NOT_A_REPO
+  if [[ -e $staging_checkout ]] \
+    && [[ $(readlink -f -- "$staging_checkout") == "$ops_checkout" ]]; then
+    fail OPS_CHECKOUT_IS_STAGING
+  fi
+  if (( apply )); then
+    [[ $(uname -s) == Linux ]] || fail LINUX_REQUIRED
+    [[ ${EUID} -eq 0 ]] || fail ROOT_REQUIRED
+    command -v -- "$systemctl_bin" >/dev/null 2>&1 || fail SYSTEMD_MISSING
+  fi
+  run_deploy "$requested"
+}
+
+# Which services a changed path belongs to. `packages/` is shared, and Chat is
+# the only COM2 service that imports it.
+service_for_path() {
+  case "$1" in
+    apps/padiem-chat/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
+    apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
+    apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
+  esac
+}
+
+# Migrations that exist in the target tree but are not in this host's ledger.
+# The Chat host applies pending migrations on start, so this check runs before
+# any code moves; an unreadable database is not a reason to assume none.
+pending_migrations() {
+  "$python_bin" - "$ops_checkout" "$resolved" "$chat_db" "$git_bin" <<'PY'
+import os
+import sqlite3
+import subprocess
+import sys
+
+checkout, sha, db, git = sys.argv[1:5]
+tree = subprocess.run(
+    [git, "-C", checkout, "ls-tree", "--name-only", sha, "apps/padiem-chat/migrations/"],
+    capture_output=True, text=True, check=True,
+).stdout.split()
+names = sorted(os.path.basename(path) for path in tree if path.endswith(".sql"))
+try:
+    con = sqlite3.connect("file:%s?mode=ro" % db, uri=True)
+except sqlite3.Error:
+    sys.exit(4)
+try:
+    applied = {row[0] for row in con.execute("SELECT name FROM padiem_local_migration_ledger")}
+except sqlite3.Error:
+    # No ledger yet: nothing is proven applied, so every migration is pending.
+    applied = set()
+finally:
+    con.close()
+for name in names:
+    if name not in applied:
+        print(name)
+PY
+}
+
+unit_active() { "$systemctl_bin" is-active --quiet "$1"; }
+
+with_service_stopped() {
+  local unit=$1
+  if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
+}
+
+deploy_chat() {
+  local before_active=0
+  if unit_active "$CHAT_UNIT"; then before_active=1; fi
+  with_service_stopped "$CHAT_UNIT" || return 1
+  bash "$ops_checkout/deploy/host-com2/chat/install.sh" \
+    --apply --source-root "$ops_checkout" || return 1
+  if (( before_active )); then
+    "$systemctl_bin" start "$CHAT_UNIT" || return 1
+    "$python_bin" "$ops_checkout/deploy/host-com2/chat/health.py" --url "$chat_health_url"
+  else
+    say 'CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE'
+  fi
+}
+
+deploy_p01() {
+  local before_active=0
+  if unit_active "$P01_UNIT"; then before_active=1; fi
+  with_service_stopped "$P01_UNIT" || return 1
+  bash "$ops_checkout/deploy/host-com2/p01/install.sh" \
+    --apply --source-root "$ops_checkout" || return 1
+  if (( before_active )); then
+    "$systemctl_bin" start "$P01_UNIT" || return 1
+    "$python_bin" "$ops_checkout/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+  else
+    say 'P01_START=SKIPPED_NOT_ACTIVE_BEFORE'
+  fi
+}
+
+deploy_b14() {
+  local before_active=0
+  if unit_active "$B14_UNIT"; then before_active=1; fi
+  with_service_stopped "$B14_UNIT" || return 1
+  bash "$ops_checkout/deploy/host-com2/b14/install.sh" --reload || return 1
+  if (( before_active )); then
+    "$systemctl_bin" start "$B14_UNIT" || return 1
+    "$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+  else
+    say 'B14_START=SKIPPED_NOT_ACTIVE_BEFORE'
+  fi
+}
+
+# Chat's live links point into a checkout, so its rollback is the previous
+# checkout itself.
+rollback_chat() {
+  local previous="$state_dir/previous/$old"
+  [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
+  with_service_stopped "$CHAT_UNIT" || return 1
+  bash "$previous/deploy/host-com2/chat/install.sh" \
+    --apply --source-root "$previous" || return 1
+  "$systemctl_bin" start "$CHAT_UNIT" || return 1
+  "$python_bin" "$previous/deploy/host-com2/chat/health.py" --url "$chat_health_url"
+}
+
+# P01's own installer snapshots the replaced app (#6442); rollback re-points the
+# release link at that snapshot, exactly as deploy/host-com2/p01/README.md says.
+rollback_p01() {
+  local snapshot
+  snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
+  [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
+  with_service_stopped "$P01_UNIT" || return 1
+  ln -sfnT "$snapshot" "$p01_root/app" || return 1
+  "$systemctl_bin" start "$P01_UNIT" || return 1
+  "$python_bin" "$ops_checkout/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+}
+
+# B14 code is an operator-staged checkout. When it is a link this script can
+# restore it; when it is a copy the operator owns the rollback, and the script
+# says so instead of guessing.
+rollback_b14() {
+  local previous="$state_dir/previous/$old/apps/korean-ai-platform"
+  if [[ -L $b14_app ]]; then
+    with_service_stopped "$B14_UNIT" || return 1
+    ln -sfnT "$previous" "$b14_app" || return 1
+    "$systemctl_bin" start "$B14_UNIT" || return 1
+    "$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    return
+  fi
+  printf 'COM2_DEPLOY_B14_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous" >&2
+  return 1
+}
+
+run_deploy() {
+  local sha=$1 origin changed='' services='' pending='' line status=0
+  declare -A wanted=([chat]=0 [p01]=0 [b14]=0) result=([chat]=SKIP [p01]=SKIP [b14]=SKIP)
+
+  "$git_bin" -C "$ops_checkout" fetch --quiet origin main || fail GIT_FETCH_FAILED
+  origin=$("$git_bin" -C "$ops_checkout" rev-parse origin/main) || fail GIT_FETCH_FAILED
+  resolved=$("$git_bin" -C "$ops_checkout" rev-parse --verify --quiet "$sha^{commit}") \
+    || fail SHA_UNKNOWN
+  [[ $resolved == "$origin" ]] || fail SHA_NOT_ORIGIN_MAIN
+  old=$("$git_bin" -C "$ops_checkout" rev-parse HEAD) || fail GIT_FAILED
+
+  say "MODE=$(if ((apply)); then echo APPLY; else echo DRY_RUN; fi)"
+  say "SHA=$resolved"
+  say "PREVIOUS=$old"
+
+  if [[ $old == "$resolved" ]]; then
+    say 'NOOP=YES'
+    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP'
+    return 0
+  fi
+
+  changed=$("$git_bin" -C "$ops_checkout" diff --name-only "$old" "$resolved") \
+    || fail GIT_DIFF_FAILED
+  while IFS= read -r line; do
+    [[ -n $line ]] || continue
+    say "CHANGED=$line"
+    case "$(service_for_path "$line")" in
+      chat) wanted[chat]=1 ;;
+      p01) wanted[p01]=1 ;;
+      b14) wanted[b14]=1 ;;
+    esac
+  done <<<"$changed"
+  for line in chat p01 b14; do
+    if (( wanted[$line] )); then services+="${services:+,}$line"; fi
+  done
+  say "SERVICES=${services:-none}"
+
+  status=0
+  pending=$(pending_migrations) || status=$?
+  if (( status != 0 )); then
+    if (( status == 4 )); then
+      if (( apply )); then fail CHAT_DB_UNREADABLE; fi
+    elif (( apply )); then
+      fail MIGRATION_CHECK_FAILED
+    fi
+    pending='__UNKNOWN__'
+  fi
+  if [[ $pending == '__UNKNOWN__' ]]; then
+    say 'PENDING_MIGRATIONS=UNKNOWN'
+  elif [[ -n $pending ]]; then
+    say "PENDING_MIGRATIONS=$(printf '%s' "$pending" | paste -sd, -)"
+    printf 'COM2_DEPLOY_MIGRATION_FIRST=YES\n' >&2
+    printf '마이그레이션 먼저: %s\n' "$(printf '%s' "$pending" | paste -sd' ' -)" >&2
+    printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=MIGRATION_FIRST\n' >&2
+    exit 3
+  else
+    say 'PENDING_MIGRATIONS=none'
+  fi
+
+  if ! (( apply )); then
+    for line in chat p01 b14; do
+      if (( wanted[$line] )); then result[$line]=WOULD_DEPLOY; fi
+    done
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]}"
+    return 0
+  fi
+
+  if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
+    fail CHECKOUT_DIRTY
+  fi
+
+  mkdir -p -- "$state_dir/previous" || fail STATE_DIR_UNWRITABLE
+  if [[ ! -d $state_dir/previous/$old ]]; then
+    "$git_bin" -C "$ops_checkout" worktree add --detach --quiet \
+      "$state_dir/previous/$old" "$old" || fail PREVIOUS_CHECKOUT_FAILED
+  fi
+  say "PREVIOUS_CHECKOUT=$state_dir/previous/$old"
+
+  "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved" \
+    || fail CHECKOUT_MOVE_FAILED
+  say "CHECKOUT=$ops_checkout"
+
+  local failed=0
+  for line in chat p01 b14; do
+    if (( ! wanted[$line] )); then continue; fi
+    if "deploy_$line"; then
+      result[$line]=PASS
+    elif "rollback_$line"; then
+      result[$line]=ROLLBACK
+      failed=1
+    else
+      result[$line]=ROLLBACK_FAILED
+      failed=1
+    fi
+  done
+
+  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]}"
+  if (( failed )); then exit 1; fi
+  return 0
+}
+
+if [[ "${BASH_SOURCE[0]:-}" == "$0" ]]; then
+  main "$@"
+fi

@@ -353,7 +353,10 @@ def test_runtime_without_a_policy_parameter_sends_no_reasoning_field() -> None:
 # 5. Streaming and non-streaming carry the identical native field.
 # --------------------------------------------------------------------------
 
-def test_stream_and_non_stream_bodies_agree_on_the_native_field() -> None:
+def test_stream_and_non_stream_bodies_agree_on_the_native_field(monkeypatch) -> None:
+    from datetime import datetime, timezone
+    monkeypatch.setattr("padiem_ai_core.execution_runtime.server_wall_clock",
+                        lambda: datetime(2026, 10, 31, 8, 0, tzinfo=timezone.utc))
     nonstream_seen: dict = {}
     stream_seen: dict = {}
     profile = agent(
@@ -390,8 +393,11 @@ def test_stream_and_non_stream_bodies_agree_on_the_native_field() -> None:
     }
 
 
-def test_sensenova_explicit_numeric_fields_have_stream_and_nonstream_parity() -> None:
+def test_sensenova_explicit_numeric_fields_have_stream_and_nonstream_parity(monkeypatch) -> None:
     """Core wire test only; B14 still validates the exact serving model."""
+    from datetime import datetime, timezone
+    monkeypatch.setattr("padiem_ai_core.execution_runtime.server_wall_clock",
+                        lambda: datetime(2026, 10, 31, 8, 0, tzinfo=timezone.utc))
     model_id = "sensenova/sensenova-6.8-flash-lite"
     nonstream_seen: dict = {}
     stream_seen: dict = {}

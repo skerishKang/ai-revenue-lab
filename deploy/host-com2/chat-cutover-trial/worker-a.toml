@@ -1,0 +1,8 @@
+name = "padiem-chat-cutover-trial-a"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+# No routes: initial test-domain attachment is a separate approved operation.
+[vars]
+TRIAL_WORKER = "A"

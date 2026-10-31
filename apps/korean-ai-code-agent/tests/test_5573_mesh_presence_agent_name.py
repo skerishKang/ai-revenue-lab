@@ -29,7 +29,8 @@ id, name, icon, conn, pwr
 
 
 class _StubPort:
-    def read_bytes(self, **kwargs):
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+        del node_ref, file_path, timeout_seconds, max_bytes
         raise AssertionError("not used")
 
 

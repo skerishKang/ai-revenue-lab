@@ -122,14 +122,19 @@ async def test_actual_socket_proof_handshake_and_disconnect(tmp_path):
 async def test_loopback_identity_rpc_is_scoped_and_signed():
     import httpx
     from app.com2_connector_websocket import LoopbackRpcBinding, _IDENTITY_METHODS
-    from app.local_service_bridge import service_proof_headers
 
     def handler(request):
         assert str(request.url) == "http://127.0.0.1:8802/internal/rpc/authorize_connector_enrollment_redeem"
-        expected = service_proof_headers(SECRET, method="POST", path=request.url.path,
-                                         body=request.content,
-                                         at=int(request.headers["x-padiem-service-at"]))
-        assert request.headers["x-padiem-service-proof"] == expected["x-padiem-service-proof"]
+        # Recomputed here, not by the sender's own helper: the id is part of
+        # the signed canonical string, so an unsigned id would not verify.
+        signed = b"\n".join((
+            b"v2", b"POST", request.url.path.encode("utf-8"),
+            request.headers["x-padiem-service-at"].encode("ascii"),
+            request.headers["x-padiem-service-id"].encode("utf-8"),
+            request.content,
+        ))
+        expected = "v2=" + hmac.new(SECRET.encode(), signed, hashlib.sha256).hexdigest()
+        assert request.headers["x-padiem-service-proof"] == expected
         return httpx.Response(200, json={"ok": True})
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
@@ -139,6 +144,31 @@ async def test_loopback_identity_rpc_is_scoped_and_signed():
             binding.revoke_all_auth_sessions
     with pytest.raises(ValueError):
         LoopbackRpcBinding(port=443, secret=SECRET, methods=_IDENTITY_METHODS)
+
+
+async def test_the_broker_loopback_keeps_v1_until_its_ingress_has_a_replay_guard():
+    import httpx
+    from app.com2_connector_websocket import LoopbackRpcBinding, _BROKER_METHODS
+
+    def handler(request):
+        # The broker ingress has no replay memory, so a v2 request would be a
+        # 503 rpc_replay_guard_unavailable instead of a served call.
+        assert "x-padiem-service-id" not in request.headers
+        signed = b"\n".join((
+            b"v1", b"POST", request.url.path.encode("utf-8"),
+            request.headers["x-padiem-service-at"].encode("ascii"),
+            request.content,
+        ))
+        expected = "v1=" + hmac.new(SECRET.encode(), signed, hashlib.sha256).hexdigest()
+        assert request.headers["x-padiem-service-proof"] == expected
+        return httpx.Response(200, json={"ok": True})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        binding = LoopbackRpcBinding(
+            port=8799, secret=SECRET, methods=_BROKER_METHODS, client=client,
+            sign_request_id=False,
+        )
+        assert await binding.get_enrollment_binding({"challenge_id": CHALLENGE}) == {"ok": True}
 
 
 class SuccessfulIdentity(Identity):

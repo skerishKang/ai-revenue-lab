@@ -673,8 +673,8 @@ async def test_real_engine_error_and_malformed_fixture_cross_client_bridge_and_s
     class Transport:
         async def request(self, **kwargs):
             raise AssertionError("must not fall back to JSON")
-        async def stream_request(self, **kwargs):
-            calls.append(kwargs)
+        async def stream_request(self, *, method, url, headers, body):
+            calls.append({"method": method, "url": url, "headers": headers, "body": body})
             async def chunks():
                 try:
                     data = (json.dumps(wire_record) + "\n").encode()

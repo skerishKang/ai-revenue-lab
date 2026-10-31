@@ -22,7 +22,8 @@ def _fetch():
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self, *args, **kwargs):
             return None
-    with urllib.request.build_opener(NoRedirect).open(JWKS_URL, timeout=5) as response:
+    request = urllib.request.Request(JWKS_URL, headers={"User-Agent": "padiem-boot-recovery/1.0"})
+    with urllib.request.build_opener(NoRedirect).open(request, timeout=5) as response:
         return json.load(response)
 
 
