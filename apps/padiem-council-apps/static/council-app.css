@@ -1835,3 +1835,84 @@ html.council-in-workspace .council-card.active .council-card-select::after { con
   .council-card { outline: var(--pa-hair) solid var(--work-ink); }
   .council-theme-panel, .council-card.active { border-width: 2px; }
 }
+
+/* Workspace surfaces are deliberately quieter than the photographic landing page. */
+html.council-in-workspace {
+  --workspace-bg: var(--sidebar, var(--tone-8));
+  --workspace-surface: var(--card-bg, var(--tone-8));
+  --workspace-field: var(--card-bg, var(--tone-8));
+  --workspace-text: var(--tone-1);
+  --workspace-muted: var(--tone-3);
+  --workspace-border: var(--input-border-strong, var(--tone-5));
+  --workspace-accent: var(--tone-2);
+  --workspace-accent-soft: var(--tone-8);
+  --workspace-on-accent: var(--card-bg, var(--tone-8));
+  --workspace-radius: 12px;
+  --workspace-max: 1180px;
+  --council-bg: var(--workspace-field);
+  --council-surface: var(--workspace-surface);
+  --council-text: var(--workspace-text);
+  --council-muted: var(--workspace-muted);
+  --council-border: var(--workspace-border);
+  --council-accent: var(--workspace-accent);
+  --council-accent-soft: var(--workspace-accent-soft);
+  --council-accent-ink: var(--workspace-on-accent);
+}
+html.council-in-workspace[data-style="dark"] {
+  --workspace-bg: var(--tone-1);
+  --workspace-surface: var(--tone-2);
+  --workspace-field: var(--tone-1);
+  --workspace-text: var(--tone-8);
+  --workspace-muted: var(--tone-6);
+  --workspace-border: var(--tone-4);
+  --workspace-accent: var(--accent);
+  --workspace-accent-soft: var(--tone-3);
+  --workspace-on-accent: var(--tone-1);
+}
+html.council-in-workspace body.council-body { background: var(--workspace-bg); color: var(--workspace-text); }
+html.council-in-workspace .council-topbar { background: var(--workspace-surface); border-color: var(--workspace-border); color: var(--workspace-text); }
+html.council-in-workspace .council-workspace-bar { width: min(100%, var(--workspace-max)); border-color: var(--workspace-border); padding-block: 10px; }
+html.council-in-workspace .council-back { color: var(--workspace-text); border-color: var(--workspace-border); }
+html.council-in-workspace .council-workspace-title { color: var(--workspace-muted); letter-spacing: 0; font-size: 13px; }
+html.council-in-workspace .council-works { width: min(100%, var(--workspace-max)); margin-inline: auto; }
+html.council-in-workspace .council-card.active {
+  background: var(--workspace-surface); color: var(--workspace-text);
+  border: 1px solid var(--workspace-border); border-radius: var(--workspace-radius);
+  box-shadow: none;
+}
+html.council-in-workspace .council-card.active > h2 { color: var(--workspace-text); font-size: 22px; }
+html.council-in-workspace .council-card.active > p { color: var(--workspace-muted); }
+html.council-in-workspace .council-card.active .council-card-icon svg { stroke: var(--workspace-text); }
+html.council-in-workspace .council-card.active .council-card-select {
+  background: var(--workspace-surface); color: var(--workspace-text); border: 1px solid var(--workspace-border);
+}
+html.council-in-workspace .council-card-body { max-width: 100%; }
+html.council-in-workspace .council-form { max-width: 720px; gap: 16px; }
+html.council-in-workspace .council-fieldset { border-color: var(--workspace-border); border-radius: var(--workspace-radius); }
+html.council-in-workspace .council-form label { color: var(--workspace-muted); font-size: 14px; letter-spacing: 0; }
+html.council-in-workspace .council-form :is(input, textarea, select) { border-radius: 8px; }
+html.council-in-workspace .council-result { margin-top: 0; }
+html.council-in-workspace .council-saved-list:empty { display: none; }
+html.council-in-workspace .council-footer { width: min(100%, var(--workspace-max)); color: var(--workspace-muted); }
+@media (min-width: 900px) {
+  html.council-in-workspace .council-card-body:has(.council-saved-list:empty):not(:has(.council-result:not([hidden]))) { display: block; }
+  html.council-in-workspace .council-card-body:has(.council-result:not([hidden])),
+  html.council-in-workspace .council-card-body:has(.council-saved-list:not(:empty)),
+  html.council-in-workspace .council-card-body:has(.council-archive:not(:empty)) {
+    grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); gap: 24px;
+  }
+}
+@media (max-width: 767px) {
+  html.council-in-workspace .council-workspace-bar { gap: 12px; }
+  html.council-in-workspace .council-back { width: auto; flex: 0 0 auto; }
+  html.council-in-workspace .council-workspace-title { min-width: 0; overflow-wrap: anywhere; }
+  html.council-in-workspace .council-result { margin-top: 16px; }
+}
+
+@media (max-width: 767px) {
+  .council-theme-panel { position: fixed; top: 72px; left: 16px; right: 16px; width: auto; max-height: calc(100dvh - 88px); overflow-y: auto; }
+}
+
+html.council-in-workspace .council-card.active { outline: none; }
+html.council-in-workspace[data-style="dark"] { --workspace-muted: var(--text); }
+html.council-in-workspace .council-skip:focus { color: var(--council-text); }
