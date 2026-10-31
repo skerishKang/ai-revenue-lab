@@ -53,7 +53,14 @@ class SharedLoginFlow(ComparisonFlow):
     convert a shared access token to an unbounded legacy session.
     """
 
-    def __init__(self, *, issue_session, resolve_account, revoke_session=None, provision_profile=None, **kwargs):
+    def __init__(self, *, issue_session, resolve_account, revoke_session=None, provision_profile=None, public_base_url=None, **kwargs):
+        from urllib.parse import urlsplit
+        base = (public_base_url or 'https://chat.padiem.net').rstrip('/')
+        url = urlsplit(base)
+        if url.scheme != 'https' or not url.hostname or url.username or url.password or url.path or url.query or url.fragment:
+            raise ValueError('invalid_shared_login_origin')
+        self.public_base_url = base
+        self.callback = base + '/auth/shared/callback'
         super().__init__(**kwargs)
         if not callable(issue_session) or not callable(resolve_account):
             raise ValueError('invalid_session_integration')
@@ -66,7 +73,7 @@ class SharedLoginFlow(ComparisonFlow):
         state, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         data = _encoded({'state': state, 'verifier': verifier, 'exp': int(self.clock()) + 600})
         cookie = data + '.' + _b64(self._mac(b'shared-login', data.encode('ascii')))
-        query = urlencode({'client_id': self.client_id, 'redirect_uri': CALLBACK, 'state': state,
+        query = urlencode({'client_id': self.client_id, 'redirect_uri': self.callback, 'state': state,
                            'code_challenge': _b64(hashlib.sha256(verifier.encode('ascii')).digest()),
                            'code_challenge_method': 'S256'})
         response = RedirectResponse(AUTH + '/login?' + query, status_code=302,
@@ -95,7 +102,7 @@ class SharedLoginFlow(ComparisonFlow):
                 'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
                 'client_assertion': await self._assertion(int(self.clock())),
                 'grant_type': 'authorization_code', 'code': codes[0],
-                'redirect_uri': CALLBACK, 'code_verifier': state['verifier'],
+                'redirect_uri': self.callback, 'code_verifier': state['verifier'],
             }))
             access, refresh = tokens.get('access_token'), tokens.get('refresh_token')
             if not isinstance(access, str) or not access or not isinstance(refresh, str) or not refresh:
@@ -118,7 +125,7 @@ class SharedLoginFlow(ComparisonFlow):
         """The authority owns rotation and the 30-second concurrent-use grace."""
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
         try:
-            if request.headers.get('origin') != 'https://chat.padiem.net':
+            if request.headers.get('origin') != self.public_base_url:
                 return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
             old = request.cookies.get(REFRESH_COOKIE)
             if not old:
@@ -141,7 +148,7 @@ class SharedLoginFlow(ComparisonFlow):
 
     async def logout(self, request):
         headers = {'cache-control': 'no-store'}
-        if request.headers.get('origin') != 'https://chat.padiem.net':
+        if request.headers.get('origin') != self.public_base_url:
             return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
         old = request.cookies.get(REFRESH_COOKIE)
         if old:
@@ -189,7 +196,9 @@ async def create_worker_shared_login_flow(env, authority):
         kid = binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID')
         if not private or not state or not kid:
             raise ValueError('configuration_unavailable')
-        verifier = WorkerJwksVerifier()
+        client_id = str(binding_value(env, 'PADIEM_CHAT_SHARED_AUTH_CLIENT_ID') or 'b62').strip()
+        public_base_url = binding_value(env, 'PADIEM_CHAT_PUBLIC_BASE_URL')
+        verifier = WorkerJwksVerifier(audience=client_id)
         auth = SharedChatAuth(verifier=verifier, authority=authority, legacy=current_user_id)
 
         async def provision(request, user, access, tokens):
@@ -204,7 +213,7 @@ async def create_worker_shared_login_flow(env, authority):
         async def issue(request, user, access, refresh):
             return issue_shared_cookies(RedirectResponse('/', status_code=302), access, refresh)
 
-        flow = SharedLoginFlow(state_key=_un64(state), client_id='b62', client_jwk=json.loads(private),
+        flow = SharedLoginFlow(state_key=_un64(state), client_id=client_id, public_base_url=public_base_url, client_jwk=json.loads(private),
             kid=str(kid), operator_guard=lambda request: False, legacy_user=current_user_id,
             comparator=lambda *args: None, exchange=exchange_with_httpx, resolve_account=auth.user_id,
             issue_session=issue, revoke_session=revoke_with_httpx, provision_profile=provision)
