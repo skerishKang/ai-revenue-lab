@@ -55,33 +55,23 @@ class MemoryServiceIdReplayStore:
 class SqliteServiceIdReplayStore:
     """The Durable Object's own SQLite, using the storage API the DO already has.
 
-    ``claim`` is two statements, which is atomic enough here because a Durable
-    Object runs one request at a time; the primary key makes the insert itself
-    idempotent as well.
+    A unique primary key and INSERT OR IGNORE atomically claim each ID.
     """
 
     def __init__(self, storage: Any, *, clock: Callable[[], int] | None = None) -> None:
         self._storage = storage
         self._clock = clock or (lambda: int(time.time()))
-        storage.sql.exec(_SCHEMA)
-        storage.sql.exec(_PRUNE, int(self._clock()))
 
     async def claim(self, service_id: str, *, expires_at: int) -> bool:
+        # Existing DO instances can predate this table; prepare it on first use.
+        self._storage.sql.exec(_SCHEMA)
         current = int(self._clock())
-        existing = _rows(
-            self._storage.sql.exec(
-                "SELECT service_id FROM service_request_ids WHERE service_id=?",
-                service_id,
-            )
+        self._storage.sql.exec(_PRUNE, current)
+        cursor = self._storage.sql.exec(
+            "INSERT OR IGNORE INTO service_request_ids (service_id, expires_at) VALUES (?, ?)",
+            service_id, max(int(expires_at), current + 1),
         )
-        if existing:
-            return False
-        self._storage.sql.exec(
-            "INSERT OR REPLACE INTO service_request_ids (service_id, expires_at) VALUES (?, ?)",
-            service_id,
-            max(int(expires_at), current + 1),
-        )
-        return True
+        return cursor.rowsWritten == 1
 
 
 class DurableObjectServiceIdReplayGuard:
