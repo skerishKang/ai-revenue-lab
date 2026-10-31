@@ -127,7 +127,9 @@ def test_real_canonical_artifact_reference_after_one_verified_write():
     assert record.durable_location.location_kind == "r2_bucket"
     assert record.durable_location.location_ref == metadata.object_key
     assert "location_ref" not in record.public_projection()["durable_location"]
-    assert docs.calls == [{"tenant_id": WORKSPACE, "document_id": REVISED}]
+    assert docs.calls == [{
+        "tenant_id": WORKSPACE, "document_id": REVISED, "user_id": OWNER,
+    }]
     assert asyncio.run(publish(history=history, documents=docs)) is False
     assert len(history.registered) == 1
 

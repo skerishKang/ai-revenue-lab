@@ -724,9 +724,10 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
     ]) == 0
     result = json.loads(plan.read_text(encoding="utf-8"))
     # inventory에는 표가 하나 더 있다: 076_lovetree_login_handoff.sql(단일 사용 로그인 handoff).
-    # 078_project_files_doc_kind.sql(#5731)과 079_b66_saved_quote_skill_kind.sql
-    # (#3180 ③)은 표가 아니라 열 추가라 seed에 한 줄씩 더 붙는다.
-    assert len(result["seed"]) == 68
+    # 078_project_files_doc_kind.sql(#5731), 079_b66_saved_quote_skill_kind.sql
+    # (#3180 ③), 080_claw_document_metadata_user_id.sql(#6323)은 표가 아니라 열
+    # 추가라 seed에 한 줄씩 더 붙는다.
+    assert len(result["seed"]) == 69
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -796,13 +797,14 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         seed_names = seed_line.split("=", 1)[1].split(",")
         # The seed covers the WINDOW, not the whole inventory: migrations numbered
         # past --up-to (077_project_files_text_byte_bound.sql,
-        # 078_project_files_doc_kind.sql and 079_b66_saved_quote_skill_kind.sql
-        # today) are outside it.
+        # 078_project_files_doc_kind.sql, 079_b66_saved_quote_skill_kind.sql and
+        # 080_claw_document_metadata_user_id.sql today) are outside it.
         window = json.loads(plan.read_text(encoding="utf-8"))["window"]
         assert "077_project_files_text_byte_bound.sql" not in window
         assert "078_project_files_doc_kind.sql" not in window
         assert "079_b66_saved_quote_skill_kind.sql" not in window
-        assert len(window) == len(inventory) - 3
+        assert "080_claw_document_metadata_user_id.sql" not in window
+        assert len(window) == len(inventory) - 4
         assert len(seed_names) == len(window) - 2
         assert "075_report_clean.sql" not in seed_names and "076_report_update.sql" not in seed_names
         assert "CREATE TABLE" not in out and "UPDATE b62" not in out
@@ -921,7 +923,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 68
+    assert len(plan["seed"]) == 69
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -929,7 +931,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 68
+    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 69
 
     window_dir = tmp_path / "window"
     assert gate.main([
