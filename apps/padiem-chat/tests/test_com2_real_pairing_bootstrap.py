@@ -122,7 +122,19 @@ async def test_real_pairing_bootstrap_direct_and_relay(monkeypatch, tmp_path):
     gateway = EdgeProofMiddleware(create_com2_gateway(verifier=verifier, identity_binding=Identity(), broker_binding=binding), verifier=verifier)
     bs = cs = None
     try:
-        bs = serve(app, 8799)
+        # Keep the OS-assigned socket reserved from bind through server exit.
+        bs = serve(app)
+        broker_port = bs[0].getsockname()[1]
+        # Production relay deliberately pins its broker origin to 8799. Redirect
+        # only that test transport to the real ephemeral broker socket.
+        from app import com2_pc_offer_relay as relay
+        real_connect = relay._NoRedirect
+
+        def connect_to_test_broker(uri, **kwargs):
+            assert uri == "ws://127.0.0.1:8799" + BROKER_PATH
+            return real_connect(f"ws://127.0.0.1:{broker_port}" + BROKER_PATH, **kwargs)
+
+        monkeypatch.setattr(relay, "_NoRedirect", connect_to_test_broker)
         cs = serve(gateway)
         for _ in range(300):
             if bs[1].started and cs[1].started: break
@@ -132,7 +144,7 @@ async def test_real_pairing_bootstrap_direct_and_relay(monkeypatch, tmp_path):
         with pytest.raises(InvalidStatusCode):
             async with connect(relay_url): pass
         results = []
-        for url, headers in ((f'ws://127.0.0.1:8799{BROKER_PATH}', broker_headers('a' * 32)),
+        for url, headers in ((f'ws://127.0.0.1:{broker_port}{BROKER_PATH}', broker_headers('a' * 32)),
                              (relay_url, edge_headers('b' * 32))):
             device = 'device.direct' if url.endswith(BROKER_PATH) else 'device.relay'
             issued = await owner.issue_enrollment_challenge({'account_ref':'account.test', 'workspace_ref':'workspace.test', 'consent_ref':'consent.test', 'owner_ref':'subject.test', 'device_id': device})
@@ -146,7 +158,7 @@ async def test_real_pairing_bootstrap_direct_and_relay(monkeypatch, tmp_path):
                               + bytes.fromhex(challenge['nonce_hex']) + b'\n' + public)
                 await ws.send(json.dumps({'type': 'pc_offer_prove', 'signature_b64': base64.b64encode(key.sign(transcript)).decode()}))
                 ready = json.loads(await asyncio.wait_for(ws.recv(), 5))
-                async with httpx.AsyncClient(base_url='http://127.0.0.1:8799') as client:
+                async with httpx.AsyncClient(base_url=f'http://127.0.0.1:{broker_port}') as client:
                     async def rpc(method, payload):
                         path = '/internal/rpc/' + method
                         body = json.dumps(payload, separators=(',', ':')).encode()
