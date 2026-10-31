@@ -117,7 +117,7 @@ class Env:
             "generations_dir": str(self.generations_dir),
             "snapshot_a": str(self.snapshot_a),
             "snapshot_b": str(self.snapshot_b),
-            "mirror_inventory": str(self.inventory),
+            "mirror_inventories": (str(self.inventory),),
             "migrations_dir": str(self.migrations),
             "queue_origin": "http://127.0.0.1:8830",
             "plan_out": str(self.plan_out),
@@ -399,6 +399,46 @@ def test_object_gap_fails_last_stage_and_reports_rollback(
     assert "REHEARSAL_ROLLBACK=VERIFY result=PASS" in printed
 
 
+def test_two_bucket_inventories_reach_the_object_check(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    env = Env(tmp_path)
+    workspace = tmp_path / "workspace-inventory.json"
+    workspace.write_text(json.dumps({"keys": ["objects/u0.png"]}), encoding="utf-8")
+
+    assert rehearsal.main(env.argv("--dry-run", "--mirror-inventory", str(workspace))) == 0
+    printed = capsys.readouterr().out
+
+    command = next(
+        line
+        for line in printed.splitlines()
+        if line.startswith("REHEARSAL_COMMAND stage=object_reference")
+    )
+    assert command.count("--inventory") == 2
+    assert str(env.inventory) in command
+    assert str(workspace) in command
+
+
+def test_one_missing_inventory_stops_the_run(tmp_path: Path) -> None:
+    env = Env(tmp_path)
+    config = env.config(
+        mirror_inventories=(str(env.inventory), str(tmp_path / "absent.json"))
+    )
+    with pytest.raises(rehearsal.RehearsalError) as refusal:
+        rehearsal.guard_target(config)
+    assert str(refusal.value) == "artifact_missing:mirror_inventory"
+
+
+def test_an_inventory_in_a_production_path_is_refused(tmp_path: Path) -> None:
+    env = Env(tmp_path)
+    config = env.config(
+        mirror_inventories=(str(env.inventory), "D:/PADIEM-Servers/b62-chat-api/r2.json")
+    )
+    with pytest.raises(rehearsal.RehearsalError) as refusal:
+        rehearsal.guard_target(config)
+    assert str(refusal.value) == "production_target"
+
+
 def test_sentinel_is_the_only_write_in_the_window(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -474,3 +514,51 @@ def test_the_option_travels_to_the_reflect_command_only(
     assert with_flag[0].endswith("--apply-pending")
     assert "--migrations-dir" in with_flag[0] and "--force" in with_flag[0]
     assert not env.staging_db.exists()
+
+
+def test_apply_pending_uses_the_reflect_match_instead_of_a_post_apply_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A pending migration that changes rows is not a window DRIFT."""
+
+    env = Env(tmp_path, generation_ledger=("001_auth_history.sql",))
+    (env.migrations / "002_projects.sql").write_text(
+        "UPDATE users SET name = 'migrated' WHERE id = 'u0';\n", encoding="utf-8"
+    )
+
+    report = _run(env, apply_pending=True)
+    printed = capsys.readouterr().out
+
+    assert report.passed is True
+    parity_stage = [stage for stage in report.stages if stage.stage == "parity"][0]
+    assert parity_stage.skipped is True
+    assert "REHEARSAL_STAGE=parity RESULT=SKIPPED" in printed
+    assert "REHEARSAL_PARITY=EVIDENCE=reflect_pre_apply" in printed
+    assert "STAGING_DB_PENDING_APPLIED count=1" in printed
+    assert "CHAT_COPY_PARITY=MATCH" in printed
+
+    applied = sqlite3.connect(env.staging_db)
+    try:
+        assert applied.execute("SELECT name FROM users WHERE id = 'u0'").fetchone()[0] == "migrated"
+    finally:
+        applied.close()
+
+
+def test_apply_pending_needs_the_pre_apply_match_in_the_reflect_output(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def short_reflect(argv, timeout):
+        if "chat_staging_db_from_generation.py" in argv[1]:
+            # Health and pending counts, but the pre-apply parity verdict is gone.
+            return 0, "STAGING_DB_FROM_GENERATION=READY\nSTAGING_DB_PENDING_APPLIED count=1"
+        return 0, "CHAT_COPY_PARITY=MATCH"
+
+    monkeypatch.setattr(rehearsal, "_run_child", short_reflect)
+    env = Env(tmp_path)
+
+    report = _run(env, apply_pending=True)
+    printed = capsys.readouterr().out
+
+    assert report.failed_stage == "reflect"
+    assert "verdict_token_missing" in report.stages[-1].detail
+    assert "REHEARSAL_STAGE=parity" not in printed

@@ -77,7 +77,7 @@ from .session_revocation_guard import session_verdict
 
 def auth_ready(request: Request) -> bool:
     settings: Settings = request.app.state.settings
-    return settings.auth_mode != "off" and request.app.state.history_store is not None
+    return (settings.auth_mode != "off" or getattr(request.app.state, "shared_login_flow", None) is not None) and request.app.state.history_store is not None
 
 
 def google_auth_ready(request: Request) -> bool:
