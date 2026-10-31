@@ -24,7 +24,13 @@ MIGRATIONS = ("001_auth_history.sql", "002_projects.sql")
 STAGING_BASE = "https://chat-com2-staging.padiem.net"
 
 
-def _db(path: Path, *, rows: int = 3, omit_key: bool = False) -> Path:
+def _db(
+    path: Path,
+    *,
+    rows: int = 3,
+    omit_key: bool = False,
+    ledger: tuple[str, ...] = MIGRATIONS,
+) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(path)
     connection.executescript(
@@ -44,7 +50,7 @@ def _db(path: Path, *, rows: int = 3, omit_key: bool = False) -> Path:
         [(f"c{index}", f"u{index}", f"title-{index}") for index in range(rows)],
     )
     connection.execute("INSERT INTO oracle_mesh_dispatch VALUES ('d1','queued')")
-    for index, name in enumerate(MIGRATIONS, start=1):
+    for index, name in enumerate(ledger, start=1):
         connection.execute(
             "INSERT INTO d1_migrations (id, name, applied_at) VALUES (?,?,?)",
             (index, name, "2026-10-30T00:00:00Z"),
@@ -65,6 +71,7 @@ class Env:
         *,
         snapshot_b_missing_key: bool = False,
         generation_rows: int = 3,
+        generation_ledger: tuple[str, ...] = MIGRATIONS,
         mirror_gap: bool = False,
     ) -> None:
         self.root = tmp_path
@@ -73,7 +80,9 @@ class Env:
             tmp_path / "window-end.sqlite3", omit_key=snapshot_b_missing_key
         )
         self.generation = _db(
-            tmp_path / "generations" / GENERATION / "chat.sqlite3", rows=generation_rows
+            tmp_path / "generations" / GENERATION / "chat.sqlite3",
+            rows=generation_rows,
+            ledger=generation_ledger,
         )
         self.migrations = tmp_path / "migrations"
         self.migrations.mkdir(parents=True, exist_ok=True)
@@ -156,8 +165,16 @@ def _probe_unfrozen(url: str, timeout: float) -> tuple[int, str]:
     return 200, "ok"
 
 
-def _run(env: Env, *, dry_run: bool = False, probe=_probe_ok) -> rehearsal.RehearsalReport:
-    runner = rehearsal.Rehearsal(env.config(), dry_run=dry_run, probe=probe)
+def _run(
+    env: Env,
+    *,
+    dry_run: bool = False,
+    probe=_probe_ok,
+    apply_pending: bool = False,
+) -> rehearsal.RehearsalReport:
+    runner = rehearsal.Rehearsal(
+        env.config(apply_pending=apply_pending), dry_run=dry_run, probe=probe
+    )
     return runner.run()
 
 
@@ -396,3 +413,64 @@ def test_sentinel_is_the_only_write_in_the_window(
 
     # The dry run lists the frozen paths from the classification table.
     assert len(rehearsal.DEFAULT_FROZEN_PATHS) == 4
+
+
+def test_a_lagging_generation_stops_at_reflect_without_the_option(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Production D1 applying 078 of 079 leaves the copy behind the repository."""
+
+    env = Env(tmp_path, generation_ledger=("001_auth_history.sql",))
+    report = _run(env)
+    printed = capsys.readouterr().out
+
+    assert report.failed_stage == "reflect"
+    assert _stages(report)[-1] == "reflect"
+    assert "STAGING_DB_REFUSED reason=staging_ledger_incomplete" in printed
+    assert not env.staging_db.exists()
+    assert env.sentinel.is_file()
+
+
+def test_apply_pending_finishes_the_rehearsal_on_a_lagging_generation(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    env = Env(tmp_path, generation_ledger=("001_auth_history.sql",))
+    report = _run(env, apply_pending=True)
+    printed = capsys.readouterr().out
+
+    assert report.passed is True
+    assert _stages(report) == list(rehearsal.STAGE_ORDER)
+    assert "STAGING_DB_PENDING_APPLIED count=1 requested=YES names=002_projects.sql" in printed
+    assert "STAGING_DB_FROM_GENERATION=READY" in printed
+    assert "CHAT_COPY_PARITY=MATCH" in printed
+
+    applied = sqlite3.connect(env.staging_db)
+    try:
+        names = [
+            row[0]
+            for row in applied.execute("SELECT name FROM d1_migrations ORDER BY id")
+        ]
+    finally:
+        applied.close()
+    assert names == list(MIGRATIONS)
+
+
+def test_the_option_travels_to_the_reflect_command_only(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    env = Env(tmp_path)
+    assert rehearsal.main(env.argv("--dry-run")) == 0
+    without = [
+        line for line in capsys.readouterr().out.splitlines() if "stage=reflect" in line
+    ]
+    assert len(without) == 1
+    assert "--apply-pending" not in without[0]
+
+    assert rehearsal.main(env.argv("--dry-run", "--apply-pending")) == 0
+    with_flag = [
+        line for line in capsys.readouterr().out.splitlines() if "stage=reflect" in line
+    ]
+    assert len(with_flag) == 1
+    assert with_flag[0].endswith("--apply-pending")
+    assert "--migrations-dir" in with_flag[0] and "--force" in with_flag[0]
+    assert not env.staging_db.exists()
