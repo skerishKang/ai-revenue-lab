@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
-import { signedWebSocketHeaders } from "../edge-proof.mjs";
+import { signedRequestHeaders } from "../edge-proof.mjs";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 const path = "/api/claw/connector/gateway/session";
@@ -15,14 +15,16 @@ function request(url = "https://chat.padiem.net" + path) {
 }
 
 test("signer replaces all attacker headers with deterministic verifier-compatible proof", async () => {
-  const headers = await signedWebSocketHeaders(request(), secret, options);
+  const headers = await signedRequestHeaders(request(), secret, options);
   assert.equal(headers.get("x-padiem-edge-id"), id);
   assert.equal(headers.get("x-padiem-edge-at"), "1700000000");
   assert.equal(headers.get("x-padiem-edge-tls"), "TLSv1.3");
   assert.equal(headers.get("x-padiem-edge-proof"), "v1=ae41f2e13728a2ac4013ac7864e2621f96cf202f13a5fee3ceb79001d36ced0a");
 });
 
-test("unsupported paths and queries fail closed", async () => {
-  await assert.rejects(signedWebSocketHeaders(request("https://chat.padiem.net/health"), secret, options));
-  await assert.rejects(signedWebSocketHeaders(request("https://chat.padiem.net" + path + "?a=b"), secret, options));
+test("missing TLS or key fails closed", async () => {
+  const bad = request();
+  bad.cf = {};
+  await assert.rejects(signedRequestHeaders(bad, secret, options));
+  await assert.rejects(signedRequestHeaders(request(), "short", options));
 });
