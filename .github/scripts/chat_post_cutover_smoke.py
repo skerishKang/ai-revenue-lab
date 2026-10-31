@@ -1,11 +1,12 @@
-"""Read-only browser smoke for a Chat cutover.
+"""Browser and authenticated AI-answer smoke for a Chat cutover.
 
 Examples:
   python .github/scripts/chat_post_cutover_smoke.py --base-url https://example.invalid --json-out result.json
   python .github/scripts/chat_post_cutover_smoke.py --cookie-file /private/session-cookie.txt
 The optional file contains a Cookie header (name=value; name2=value2).
 No cookies, response bodies, account data, or console messages are printed.
-Authenticated writes are restricted to an explicitly opted-in loopback mock.
+Browser conversation writes remain restricted to an opted-in loopback mock.
+The separate AI check signs in with the existing QA account and sends one turn.
 """
 from __future__ import annotations
 
@@ -16,6 +17,9 @@ import time
 from http.cookies import SimpleCookie
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from post_deploy_ai_answer_check import check as check_ai_answer
 
 from playwright.sync_api import sync_playwright
 
@@ -43,7 +47,7 @@ def parse_cookie(value, base):
     return [{"name": name, "value": morsel.value, "url": base} for name, morsel in jar.items()]
 
 
-def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, timeout_ms=15000, compare_origin=None):
+def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, timeout_ms=15000, compare_origin=None, ai_check="warn"):
     base = origin(base)
     result = {"base_url": base, "stages": {}}
     stages = result["stages"]
@@ -166,8 +170,11 @@ def smoke(base, cookie="", allow_mock_write=False, browser_executable=None, time
                 signed.close()
         ctx.close()
         browser.close()
-    result["status"] = ("FAIL" if any(s["status"] == "FAIL" for s in stages.values())
-                        else "INCOMPLETE" if any(s["status"] == "UNVERIFIED" for s in stages.values())
+    verdict, code = check_ai_answer(base)
+    set_stage("ai", verdict, **({"error_code": code} if verdict == "FAIL" else {}))
+    considered = [stage for name, stage in stages.items() if name != "ai" or ai_check == "required"]
+    result["status"] = ("FAIL" if any(s["status"] == "FAIL" for s in considered)
+                        else "INCOMPLETE" if any(s["status"] == "UNVERIFIED" for s in considered)
                         else "PASS")
     return result
 
@@ -181,13 +188,17 @@ def main():
     p.add_argument("--browser-executable")
     p.add_argument("--timeout-ms", type=int, default=15000)
     p.add_argument("--allow-mock-write", action="store_true", help="allow test writes only to loopback runtime=mock")
+    p.add_argument("--ai-check", choices=("warn", "required"), default="warn")
     args = p.parse_args()
     try:
         cookie = Path(args.cookie_file).read_text(encoding="utf-8").strip() if args.cookie_file else ""
-        report = smoke(args.base_url, cookie, args.allow_mock_write, args.browser_executable, args.timeout_ms, args.compare_origin)
+        report = smoke(args.base_url, cookie, args.allow_mock_write, args.browser_executable, args.timeout_ms, args.compare_origin, args.ai_check)
     except Exception as exc:
         report = {"status": "FAIL", "error": type(exc).__name__, "stages": {}}
     print("SMOKE " + report["status"] + " " + " ".join(f"{key}={value['status']}" for key, value in report["stages"].items()))
+    ai = report["stages"].get("ai")
+    if ai:
+        print("SUMMARY=ai:" + ai["status"] + (" error_code=" + ai["error_code"] if ai["status"] == "FAIL" else ""))
     rendered = json.dumps(report, ensure_ascii=False, sort_keys=True)
     print(rendered)
     if args.json_out:

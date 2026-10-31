@@ -23,6 +23,8 @@
 #   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
+#   B66_CGI_ALPHA_USERNAME / B66_CGI_ALPHA_PASSWORD  existing QA account
+#   PADIEM_COM2_AI_CHECK_BASE_URL  target Chat origin (default https://chat.padiem.net)
 #   COM2_CHAT_HEALTH_URL / COM2_P01_HEALTH_URL / COM2_B14_HEALTH_URL
 set -euo pipefail
 umask 077
@@ -40,6 +42,8 @@ chat_health_url=${PADIEM_COM2_CHAT_HEALTH_URL:-http://127.0.0.1:8798/health}
 p01_health_url=${PADIEM_COM2_P01_HEALTH_URL:-http://127.0.0.1:8811/internal/v1/health}
 b14_health_url=${PADIEM_COM2_B14_HEALTH_URL:-http://127.0.0.1:8789/health}
 apply=0
+ai_check=warn
+ai_base_url=${PADIEM_COM2_AI_CHECK_BASE_URL:-https://chat.padiem.net}
 requested=''
 resolved=''
 old=''
@@ -54,7 +58,7 @@ say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
 usage() {
   cat >&2 <<'USAGE'
 usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run]
-       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH]
+       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH] [--ai-check=required|warn]
 USAGE
 }
 
@@ -63,6 +67,8 @@ parse_args() {
     case "$1" in
       --apply) apply=1; shift ;;
       --dry-run) apply=0; shift ;;
+      --ai-check=warn) ai_check=warn; shift ;;
+      --ai-check=required) ai_check=required; shift ;;
       --ops-checkout) ops_checkout=${2:?path required}; shift 2 ;;
       --state-dir) state_dir=${2:?path required}; shift 2 ;;
       --chat-db) chat_db=${2:?path required}; shift 2 ;;
@@ -322,9 +328,15 @@ run_deploy() {
     || fail CHECKOUT_MOVE_FAILED
   say "CHECKOUT=$ops_checkout"
 
-  local failed=0
+  local failed=0 ai_status=SKIP ai_code=none ai_output
+  declare -A was_active=([chat]=0 [p01]=0 [b14]=0)
   for line in chat p01 b14; do
     if (( ! wanted[$line] )); then continue; fi
+    case "$line" in
+      chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
+      p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
+      b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
+    esac
     if "deploy_$line"; then
       result[$line]=PASS
     elif "rollback_$line"; then
@@ -336,7 +348,33 @@ run_deploy() {
     fi
   done
 
-  say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]}"
+  if (( ! failed )); then
+    ai_status=FAIL
+    ai_code=ai_check_unavailable
+    if ai_output=$("$python_bin" "$ops_checkout/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null); then
+      if [[ $ai_output == 'ai:PASS' ]]; then ai_status=PASS; ai_code=none; fi
+    elif [[ $ai_output =~ ^ai:FAIL\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
+      ai_code=${BASH_REMATCH[1]}
+    fi
+    if [[ $ai_status == FAIL && $ai_check == required ]]; then
+      failed=1
+      for line in b14 p01 chat; do
+        [[ ${result[$line]} == PASS ]] || continue
+        if (( ! was_active[$line] )); then
+          result[$line]=ROLLBACK_REQUIRED
+        elif "rollback_$line"; then
+          result[$line]=ROLLBACK
+        else
+          result[$line]=ROLLBACK_FAILED
+        fi
+      done
+    fi
+  fi
+  if [[ $ai_status == FAIL ]]; then
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:FAIL error_code=$ai_code"
+  else
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:$ai_status"
+  fi
   if (( failed )); then exit 1; fi
   return 0
 }
