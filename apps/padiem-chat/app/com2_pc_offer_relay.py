@@ -38,6 +38,7 @@ async def relay_pc_offer(websocket, broker_binding):
     )):
         await websocket.close(code=1008)
         return
+    close_code = 1011
     try:
         secret = object.__getattribute__(broker_binding, "_secret")
         async with _upstream(secret) as upstream:
@@ -62,6 +63,8 @@ async def relay_pc_offer(websocket, broker_binding):
                 for task in pending:
                     task.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)
+                upstream_code = getattr(upstream, "close_code", None)
+                close_code = upstream_code if upstream_code in (1000, 1001, 1008, 1011) else 1011
             finally:
                 for task in tasks:
                     if not task.done():
@@ -72,6 +75,6 @@ async def relay_pc_offer(websocket, broker_binding):
     finally:
         if websocket.application_state != WebSocketState.DISCONNECTED:
             try:
-                await websocket.close(code=1000)
+                await websocket.close(code=close_code)
             except RuntimeError:
                 pass
