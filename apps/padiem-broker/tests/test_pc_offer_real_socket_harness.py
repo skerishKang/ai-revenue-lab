@@ -90,7 +90,7 @@ async def test_existing_actor_real_socket_and_sqlite(tmp_path):
             if server.started: break
             await asyncio.sleep(0.01)
         assert server.started
-        key = Ed25519PrivateKey.generate()
+        key = Ed25519PrivateKey.from_private_bytes(bytes.fromhex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"))
         public = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
         async with connect(f"ws://127.0.0.1:{port}{PATH}") as ws:
             await ws.send(json.dumps({"type": "pc_offer_begin", "device_id": DEVICE,
