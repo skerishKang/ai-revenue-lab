@@ -19,6 +19,7 @@
 #   PADIEM_COM2_STATE_DIR        private execution state (default below)
 #   PADIEM_COM2_PREVIOUS_DIR     root-owned, service-readable rollback worktrees
 #   PADIEM_COM2_CHAT_HEALTH_ATTEMPTS / PADIEM_COM2_CHAT_HEALTH_INTERVAL
+#   PADIEM_COM2_CHAT_HEALTH_TIMEOUT
 #   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
 #   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
 #   PADIEM_COM2_B14_APP          B14 app checkout
@@ -37,6 +38,7 @@ state_dir=${PADIEM_COM2_STATE_DIR:-/var/lib/padiem-com2-deploy}
 previous_dir=${PADIEM_COM2_PREVIOUS_DIR:-/opt/padiem/com2-deploy/previous}
 chat_health_attempts=${PADIEM_COM2_CHAT_HEALTH_ATTEMPTS:-31}
 chat_health_interval=${PADIEM_COM2_CHAT_HEALTH_INTERVAL:-2}
+chat_health_timeout=${PADIEM_COM2_CHAT_HEALTH_TIMEOUT:-60}
 chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
 p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
@@ -173,13 +175,22 @@ with_service_stopped() {
 # Retry the real probe while the listener and app are starting. Every attempt
 # must still pass the full health contract; STATUS=0 is not a success.
 wait_chat_health() {
-  local source=$1 attempt
-  [[ $chat_health_attempts =~ ^[1-9][0-9]*$ && $chat_health_interval =~ ^[0-9]+$ ]] || return 1
+  local source=$1 attempt deadline remaining pause
+  [[ $chat_health_attempts =~ ^[1-9][0-9]*$ && $chat_health_interval =~ ^[0-9]+$ && $chat_health_timeout =~ ^[1-9][0-9]*$ ]] || return 1
+  deadline=$((SECONDS + chat_health_timeout))
   for ((attempt=1; attempt<=chat_health_attempts; attempt++)); do
-    if "$python_bin" "$source/deploy/host-com2/chat/health.py" --url "$chat_health_url"; then
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || return 1
+    if timeout "${remaining}s" "$python_bin" "$source/deploy/host-com2/chat/health.py" --url "$chat_health_url"; then
       return 0
     fi
-    if (( attempt < chat_health_attempts )); then sleep "$chat_health_interval"; fi
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || return 1
+    if (( attempt < chat_health_attempts )); then
+      pause=$chat_health_interval
+      if (( pause > remaining )); then pause=$remaining; fi
+      sleep "$pause"
+    fi
   done
   return 1
 }
