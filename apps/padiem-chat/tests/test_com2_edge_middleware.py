@@ -84,6 +84,7 @@ def test_health_is_the_only_unsigned_exception_and_uses_public_fields(tmp_path):
                    if key not in {"status", "app", "runtime"})
         assert SECRET not in response.text
         assert client.get("/health/").status_code == 403
+        assert client.get("/health/x").status_code == 403
         assert client.post("/health").status_code == 403
         assert client.get("/api/auth/status").status_code == 403
 
