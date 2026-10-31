@@ -293,9 +293,9 @@ def build_app():
         broker = LoopbackRpcBinding(
             port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
             methods=_BROKER_METHODS,
-            # The broker ingress has no replay memory yet, so it would answer
-            # every v2 request 503. It keeps the v1 proof until it has a guard.
-            sign_request_id=False,
+            # The broker ingress consumes the signed id (#6424), so this lane
+            # signs one exactly like the identity lane does.
+            sign_request_id=True,
         )
         gateway = create_com2_gateway(verifier=verifier, identity_binding=identity, broker_binding=broker)
 
