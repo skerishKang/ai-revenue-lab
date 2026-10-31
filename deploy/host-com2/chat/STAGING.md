@@ -119,6 +119,34 @@ This is the known gap between plan ①-1 (package) and the ① completion criter
 (login through a padiem-auth staging client). It is recorded here rather than
 hidden behind a passing config check.
 
+## Staging database from the daily sync generation
+
+An empty `chat.sqlite3` verifies the wiring but not the data. The 04:20 sync
+(#5508) already publishes one immutable generation per day, so the staging
+database is built from `snapshots/current_generation.json` →
+`snapshots/generations/<generation>/chat.sqlite3` on the COM2 host
+(`D:\PADIEM-Servers\infrastructure\storage-migration\snapshots`):
+
+```bash
+python3 .github/scripts/chat_staging_db_from_generation.py \
+  --pointer "D:/PADIEM-Servers/infrastructure/storage-migration/snapshots/current_generation.json" \
+  --generations-dir "D:/PADIEM-Servers/infrastructure/storage-migration/snapshots/generations" \
+  --out /mnt/d/padiem/chat-staging/chat.sqlite3
+```
+
+The tool prints counts and a parity verdict only, opens the generation
+read-only, and refuses when `chat_copy_parity` against that generation is not
+`MATCH`. Two extra refusals matter here: the generation's `d1_migrations`
+ledger must match `apps/padiem-chat/migrations` (001–079), and the output must
+not already exist unless `--force` is passed.
+
+Queue-authority and broker tables are copied **empty**: the staging queue on
+8830 owns pairing/presence/dispatch, and Stage 2-C owns `local_agent_*`, so
+production pairing codes, presence rows and command material never land in the
+staging root. The local migration ledger is seeded from the export, so the
+service starts on the copied schema instead of replaying 001–079 over
+populated tables.
+
 ## Rollback
 
 Stop the unit with `stop-staging.sh`. Do not disable or delete the queue unit.
