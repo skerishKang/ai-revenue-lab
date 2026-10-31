@@ -1,202 +1,67 @@
-"""Tests for the D14 owner-designated fixed fallback chain (b14/auto, #2044).
+"""The b14/auto fixed chain is retired (B7): no chain module, no auto route mode.
 
-No scorer is consulted: selection is the first chain position whose platform
-secret is present. All tests are network-free and manage the platform secret
-environment explicitly so ambient developer keys cannot change the outcome.
+The former owner-designated chain (agnes → poolside) and its ``fixed_chain_v1``
+policy surface are gone. The retired ``b14/auto`` id resolves to no route, and
+no external-fallback knob exists on the manual router or the secret preparer.
 """
 
 from __future__ import annotations
 
-import dataclasses
+import inspect
+from pathlib import Path
 
 import pytest
 
-from app.pilot import routing_policy as rp
-from app.pilot.b14_runtime_config import runtime_config as rcfg
-from app.pilot.errors import NoSafeRoute, RoutingError
-from app.pilot.agnes_provider import AGNES_MODEL_ID
-from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
-from app.pilot.router_core import resolve_route
-
-AGNES_KEY = "sk-chain-unit-agnes-0123456789"
-POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
+from app.pilot.errors import NoSafeRoute
+from app.pilot.router_core import RouteMode, resolve_route, resolve_manual_route
 
 
-@pytest.fixture(autouse=True)
-def _enable_archived_auto_route_tests(monkeypatch):
-    """Archived fixed-chain tests explicitly opt in; live default stays deferred."""
-    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
+def _app_source() -> str:
+    root = Path(__file__).resolve().parents[1]
+    return "\n".join(
+        p.read_text(encoding="utf-8") for p in (root / "app").rglob("*.py")
+    )
 
 
-@pytest.fixture(autouse=True)
-def _deterministic_chain_env(monkeypatch):
-    """Clear chain-affecting env; tests opt in to secrets explicitly."""
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
-    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
-    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
-    saved = {"provider_mode": rcfg.provider_mode}
-    rcfg.provider_mode = "mock"
-    yield
-    rcfg.provider_mode = saved["provider_mode"]
+def test_fixed_chain_module_does_not_exist():
+    root = Path(__file__).resolve().parents[1]
+    assert not (root / "app" / "pilot" / "routing_policy.py").exists()
+    with pytest.raises(ModuleNotFoundError):
+        import app.pilot.routing_policy  # noqa: F401
 
 
-def _set_all_secrets(monkeypatch):
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", AGNES_KEY)
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", POOLSIDE_KEY)
+def test_fixed_chain_surface_is_gone():
+    src = _app_source()
+    assert "fixed_chain_v1" not in src
+    assert "B14_AUTO_CHAIN" not in src
+    assert "resolve_chain_route" not in src
 
 
-def test_chain_order_is_owner_designated(monkeypatch):
-    _set_all_secrets(monkeypatch)
-    assert rp.chain_models()[0].model_id == AGNES_MODEL_ID
-    assert [m.model_id for m in rp.chain_models()] == [
-        AGNES_MODEL_ID,
-        POOLSIDE_MODEL_ID,
-    ]
-    assert rp.ROUTING_POLICY_ID == "fixed_chain_v1"
+def test_auto_route_modes_are_gone():
+    assert not hasattr(RouteMode, "AUTO")
+    assert not hasattr(RouteMode, "AUTO_FALLBACK")
 
 
-def test_full_chain_selects_agnes_first(monkeypatch):
-    _set_all_secrets(monkeypatch)
-    d = rp.resolve_chain_route()
-    assert d.route_mode == "auto"
-    assert d.selected_model == AGNES_MODEL_ID
-    assert d.selected_route_id == f"platform:{AGNES_MODEL_ID}"
-    assert d.reason_codes[:3] == [
-        "routing_policy:fixed_chain_v1",
-        "chain_position:1",
-        f"selected:{AGNES_MODEL_ID}",
-    ]
-    assert d.fallback_allowed is True
-    # #4317: the chain length is the whole budget; there is no attempt
-    # count to narrow it.
-    assert len(d.eligible_fallback) + 1 == 2
-    assert [f["model_id"] for f in d.eligible_fallback] == [
-        POOLSIDE_MODEL_ID,
-       ]
-    assert all(f["reason"] == "fixed_chain_fallback" for f in d.eligible_fallback)
-    assert all(f["route_id"] == f"platform:{f['model_id']}" for f in d.eligible_fallback)
-    assert [f["platform_provider_id"] for f in d.eligible_fallback] == ["poolside"]
-    assert d.excluded_candidates == []
-    assert d.credential_available is True
-    assert d.credential_status == "key_available"
-    assert d.platform_provider_id == "agnes-ai"
-    assert d.evidence_status == "resolved_not_called"
-
-
-def test_missing_agnes_secret_selects_poolside_and_excludes(monkeypatch):
-    rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", POOLSIDE_KEY)
-    d = rp.resolve_chain_route()
-    assert d.selected_model == POOLSIDE_MODEL_ID
-    assert d.selected_route_id == f"platform:{POOLSIDE_MODEL_ID}"
-    excluded = {e["model_id"]: e["reason"] for e in d.excluded_candidates}
-    assert excluded[AGNES_MODEL_ID] == "provider_secret_missing"
-    assert [f["model_id"] for f in d.eligible_fallback] == []
-
-
-def test_no_secrets_raises_no_safe_route():
-    rcfg.provider_mode = "live"
+def test_retired_auto_id_resolves_to_no_route():
     with pytest.raises(NoSafeRoute) as exc_info:
-        rp.resolve_chain_route()
-    assert exc_info.value.reason_code == "no_chain_candidate_available"
+        resolve_route("b14/auto")
+    assert exc_info.value.reason_code == "model_not_in_catalog"
     assert exc_info.value.upstream_called is False
 
 
-def test_mock_mode_resolves_fixed_chain_without_provider_secrets():
-    d = rp.resolve_chain_route()
-    assert d.selected_model == AGNES_MODEL_ID
-    assert len(d.eligible_fallback) + 1 == 2
-    assert d.eligible_fallback[0]["model_id"] == POOLSIDE_MODEL_ID
-    assert d.credential_available is False
-    assert d.evidence_status == "resolved_not_called"
+def test_no_external_fallback_knob_exists():
+    assert "allow_external_fallback" not in inspect.signature(resolve_manual_route).parameters
+    # B5 grace: the retired name is tolerated on the wire only to be logged and
+    # dropped — the validator never returns it, so routing can never see it.
+    from app.pilot.gateway import _validate_b14_options
 
+    for value in (True, False):
+        assert "allow_external_fallback" not in _validate_b14_options(
+            {"allow_external_fallback": value}
+        )
+    from app.pilot import platform_secrets
 
-def test_allow_external_fallback_false_is_single_attempt(monkeypatch):
-    _set_all_secrets(monkeypatch)
-    d = rp.resolve_chain_route(allow_external_fallback=False)
-    assert d.fallback_allowed is False
-    # #4317: with no eligible fallback the candidate list holds only the
-    # primary, so the walk is a single attempt without any attempt count.
-    assert d.eligible_fallback == []
-    assert "external_fallback_disabled" in d.reason_codes
-
-
-def test_the_chain_length_is_the_whole_budget(monkeypatch):
-    """#4317: an attempt count no longer narrows the chain walk.
-
-    The chain has two positions and both are candidates. Nothing can shorten
-    that list, so there is no numeric ceiling to keep in step with it.
-    """
-    _set_all_secrets(monkeypatch)
-    d = rp.resolve_chain_route()
-    assert [f["model_id"] for f in d.eligible_fallback] == [POOLSIDE_MODEL_ID]
-    assert len(d.eligible_fallback) + 1 == len(rp.B14_AUTO_CHAIN)
-    # The option is accepted for wire compatibility and changes nothing.
-    assert not hasattr(d, "max_attempts")
-
-
-def test_scorer_options_are_accepted_but_ignored(monkeypatch):
-    _set_all_secrets(monkeypatch)
-    plain = resolve_route("b14/auto", {})
-    ignored = resolve_route(
-        "b14/auto",
-        {
-            "task_type": "coding",
-            "required_capabilities": ["chat", "coding"],
-            "optimize_for": "cost",
-            "provider_order": ["Someone Else"],
-            "allow_paid": True,
-        },
+    assert (
+        "allow_external_fallback"
+        not in inspect.signature(platform_secrets.ensure_route_secrets).parameters
     )
-    assert ignored.selected_model == plain.selected_model == AGNES_MODEL_ID
-    assert any(
-        rc == "ignored_options:allow_paid,optimize_for,provider_order,required_capabilities,task_type"
-        for rc in ignored.reason_codes
-    )
-
-
-def test_unregistered_chain_model_fails_closed(monkeypatch):
-    import app.pilot.catalog as cat
-
-    _set_all_secrets(monkeypatch)
-    reduced = {k: v for k, v in cat.CATALOG_BY_ID.items() if k != AGNES_MODEL_ID}
-    monkeypatch.setattr(cat, "CATALOG_BY_ID", reduced)
-    with pytest.raises(RoutingError) as exc_info:
-        rp.resolve_chain_route()
-    assert exc_info.value.code == "routing_policy_invalid"
-
-
-def test_disabled_chain_model_fails_closed(monkeypatch):
-    import app.pilot.catalog as cat
-
-    _set_all_secrets(monkeypatch)
-    cm = cat.CATALOG_BY_ID[AGNES_MODEL_ID]
-    disabled = dataclasses.replace(cm, enabled=False)
-    monkeypatch.setitem(cat.CATALOG_BY_ID, AGNES_MODEL_ID, disabled)
-    with pytest.raises(RoutingError) as exc_info:
-        rp.resolve_chain_route()
-    assert exc_info.value.code == "routing_policy_invalid"
-
-
-def test_zero_usable_candidates_raises_no_safe_route(monkeypatch):
-    rcfg.provider_mode = "live"
-    monkeypatch.setattr(rp, "_platform_secret_present", lambda m: False)
-    with pytest.raises(NoSafeRoute) as exc_info:
-        rp.resolve_chain_route()
-    assert exc_info.value.reason_code == "no_chain_candidate_available"
-    assert exc_info.value.upstream_called is False
-
-
-def test_resolve_endpoint_reports_fixed_chain(client, monkeypatch):
-    _set_all_secrets(monkeypatch)
-    resp = client.post(
-        "/api/pilot/router/resolve",
-        json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
-    )
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["route_mode"] == "auto"
-    assert body["selected_model"] == AGNES_MODEL_ID
-    assert body["selected_route_id"] == f"platform:{AGNES_MODEL_ID}"
-    assert "routing_policy:fixed_chain_v1" in body["reason_codes"]
-    assert body["attempt_candidates"] == 2

@@ -41,8 +41,6 @@ MAX_B14_MESSAGES: int | None = None
 MAX_B14_MESSAGE_CHARS: int | None = None
 MAX_B14_MODEL_CHARS = 200
 
-_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
-_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _MESSAGE_ROLES = frozenset({"system", "user", "assistant", "tool"})
 
 # #5536: an absent assistant content key and an explicit null are different
@@ -325,11 +323,7 @@ class B14ExecutionConfig:
 
 @dataclass(frozen=True, slots=True)
 class B14RoutingOptions:
-    task_type: str | None = None
     required_capabilities: tuple[str, ...] | None = None
-    optimize_for: str | None = None
-    allow_external_fallback: bool | None = None
-    provider_order: tuple[str, ...] | None = None
     # There is no upstream call budget here. The number of candidates one
     # dispatch may try is the number of candidates the declared product grade
     # allows, and B14 owns that list: it advances to the next candidate only
@@ -347,37 +341,11 @@ class B14RoutingOptions:
     def __post_init__(self) -> None:
         if self.product_tier is not None and self.product_tier not in ("free", "plus", "pro", "max"):
             raise ValueError("product_tier must be free, plus, pro or max")
-        if self.task_type is not None:
-            if not isinstance(self.task_type, str):
-                raise ValueError("task_type must be a string or None")
-            task_type = self.task_type.strip().lower()
-            if task_type not in _TASK_TYPES:
-                raise ValueError("unsupported task_type")
-            object.__setattr__(self, "task_type", task_type)
 
         object.__setattr__(
             self,
             "required_capabilities",
             _normalize_string_tuple("required_capabilities", self.required_capabilities),
-        )
-
-        if self.optimize_for is not None:
-            if not isinstance(self.optimize_for, str):
-                raise ValueError("optimize_for must be a string or None")
-            optimize_for = self.optimize_for.strip().lower()
-            if optimize_for not in _OPTIMIZE_FOR:
-                raise ValueError("unsupported optimize_for")
-            object.__setattr__(self, "optimize_for", optimize_for)
-
-        if self.allow_external_fallback is not None and not isinstance(
-            self.allow_external_fallback, bool
-        ):
-            raise ValueError("allow_external_fallback must be a boolean or None")
-
-        object.__setattr__(
-            self,
-            "provider_order",
-            _normalize_string_tuple("provider_order", self.provider_order),
         )
 
         if self.max_retries is not None and (
@@ -389,16 +357,8 @@ class B14RoutingOptions:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {}
-        if self.task_type is not None:
-            out["task_type"] = self.task_type
         if self.required_capabilities is not None:
             out["required_capabilities"] = list(self.required_capabilities)
-        if self.optimize_for is not None:
-            out["optimize_for"] = self.optimize_for
-        if self.allow_external_fallback is not None:
-            out["allow_external_fallback"] = self.allow_external_fallback
-        if self.provider_order is not None:
-            out["provider_order"] = list(self.provider_order)
         if self.max_retries is not None:
             out["max_retries"] = self.max_retries
         if self.product_tier is not None:

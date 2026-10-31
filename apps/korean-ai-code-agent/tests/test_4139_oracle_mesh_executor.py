@@ -7,12 +7,15 @@ UTF-8 text. No MeshCentral server and no live credential are involved.
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import io
 import subprocess
+import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from kagent.contracts import ContractError
@@ -21,9 +24,11 @@ from kagent.local_agent_meshcentral_private_reader import (
 )
 from kagent.local_agent_oracle_mesh_executor import (
     BUSY_PATH, CANCEL_PATH, CHANNEL_HEADER, CHANNEL_SOCKET_TIMEOUT_SECONDS,
-    CHANNEL_STALL_SECONDS, LEASE_RENEW_PATH, POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
+    CHANNEL_STALL_SECONDS, DEFAULT_STEP_TIMEOUT_SECONDS, LEASE_RENEW_PATH,
+    POLL_PATH, PRODUCT_USER_AGENT, RESULT_PATH,
     OracleMeshChannelRefused, OracleMeshDispatch, OracleMeshExecutor,
-    MAX_RESULT_REJECTIONS, OracleMeshExecutionOutcome, make_oracle_mesh_executor,
+    MAX_RESULT_REJECTIONS, OracleMeshExecutionOutcome, _step_timeout_seconds,
+    make_oracle_mesh_executor,
 )
 
 SECRET = "deployment-channel-secret-value-261017"
@@ -35,7 +40,7 @@ FILE_PATH = "C:\\ProgramData\\Padiem\\report.txt"
 class _StubPort:
     """Stand-in read port; the channel transport is what is under test here."""
 
-    def read_bytes(self, *, node_ref, file_path, timeout_seconds):  # noqa: D102
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=None):  # noqa: D102
         del node_ref, file_path, timeout_seconds
         return b""
 
@@ -159,7 +164,11 @@ class ChannelSocketDeadlineTests(unittest.TestCase):
             dispatch_id="dsp-1", nonce="n" * 32, node_ref=NODE,
             file_path=FILE_PATH, command_id="cmd-1", run_id="run-1",
         ))
-        self.assertIsNone(port.calls[0]["timeout_seconds"])
+        # A None deadline is never handed to the port: the private read port
+        # validates the argument and refuses before the official client runs,
+        # which is exactly how every read failed from 2026-10-29 to 10-30. An
+        # executor without its own deadline defers to the port's default.
+        self.assertNotIn("timeout_seconds", port.calls[0])
 
         seen: dict = {}
         with patch("urllib.request.build_opener", return_value=self._opener(seen)):
@@ -271,7 +280,9 @@ class FactoryRunnerTests(unittest.TestCase):
         self.assertEqual(process.stdin.value, PASSWORD + "\n")
         self.assertIs(process.kwargs.get("stdin"), subprocess.PIPE)
         self.assertIs(process.kwargs.get("stdout"), subprocess.DEVNULL)
-        self.assertIs(process.kwargs.get("stderr"), subprocess.DEVNULL)
+        # stderr is drained into a bounded tail: a refused download's only
+        # explanation is the child's own line, and DEVNULL erased it.
+        self.assertIs(process.kwargs.get("stderr"), subprocess.PIPE)
         self.assertIs(process.kwargs.get("text"), True)
         self.assertEqual(process.kwargs.get("encoding"), "utf-8")
         # The argv carries the public marker, never the credential.
@@ -742,6 +753,130 @@ class MultiplePresenceEntrypointTests(unittest.TestCase):
     def test_nine_devices_or_empty_segments_are_refused_before_factory(self):
         self.assertIsNone(self._beats(",".join("pc"+str(i) for i in range(9)), refused=True))
         self.assertIsNone(self._beats("pc1,", refused=True))
+
+
+class ReadDeadlineRegressionTests(unittest.TestCase):
+    """2026-10-30: every read failed because None reached the port's validator.
+
+    The executor sent ``timeout_seconds=None``; the private read port refuses a
+    non-integer before the official client is started, and ``_execute_read``
+    turned that refusal into the same fixed marker a real PC failure produces.
+    These pin both halves: the value the real port accepts, and the one-line
+    reason a refusal leaves behind.
+    """
+
+    def _dispatch(self) -> OracleMeshDispatch:
+        return OracleMeshDispatch(
+            dispatch_id="dsp-read-1", nonce="n" * 32, node_ref=NODE,
+            file_path=FILE_PATH, command_id="cmd-1", run_id="run-1",
+        )
+
+    def test_a_read_without_an_executor_deadline_reaches_the_client(self):
+        with tempfile.TemporaryDirectory(prefix="padiem_read_deadline_") as work:
+            seen: dict = {}
+
+            def runner(argv, *, timeout, input):
+                seen["timeout"] = timeout
+                target = argv[argv.index("--target") + 1]
+                with open(target, "wb") as handle:
+                    handle.write(b"[fonts]\r\n")
+                return SimpleNamespace(returncode=0)
+
+            port = MeshCentralCliFileReadPort(
+                command_runner=runner,
+                meshctrl_js=r"C:\meshcentral-test\node_modules\meshcentral\meshctrl.js",
+                login_user="padiemadmin",
+                password_provider=lambda: PASSWORD,
+                url="wss://127.0.0.1:4443",
+                work_dir=work,
+            )
+            executor = OracleMeshExecutor(
+                chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+                read_port=port, timeout_seconds=None,
+            )
+            outcome = executor._execute_read(self._dispatch())
+        self.assertEqual(outcome.exit_code, 0, outcome.body)
+        self.assertEqual(outcome.body, b"[fonts]\r\n")
+        # The port's own default applied instead of a refused None.
+        self.assertIsInstance(seen["timeout"], int)
+
+    def test_a_named_deadline_is_the_base_the_read_multiplies(self):
+        class _Recording:
+            def __init__(self):
+                self.calls: list[dict] = []
+
+            def read_bytes(self, **call):
+                self.calls.append(dict(call))
+                return b"ok"
+
+        port = _Recording()
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=port, timeout_seconds=45,
+        )
+        executor._execute_read(self._dispatch())
+        self.assertEqual(port.calls[0]["timeout_seconds"], 180)
+
+    def test_a_refused_read_names_the_class_and_reason_without_content(self):
+        class _Refusing:
+            def read_bytes(self, **call):
+                raise MeshCentralReadRefused(
+                    "the official meshcentral client refused the private read: "
+                    "Unable to download file: not connected"
+                )
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=_Refusing(), timeout_seconds=None,
+        )
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            outcome = executor._execute_read(self._dispatch())
+        self.assertEqual(outcome.exit_code, 1)
+        self.assertEqual(outcome.body, b"PADIEM_PC_FILE_ERROR:read_failed")
+        line = stderr.getvalue()
+        self.assertIn("phase=read_failed", line)
+        self.assertIn("MeshCentralReadRefused", line)
+        self.assertIn("not connected", line)
+        self.assertNotIn(FILE_PATH, line, "the trace names a reason, not the file")
+        self.assertEqual(len(line.strip().splitlines()), 1, "one line per refusal")
+
+    def test_a_decode_refusal_never_quotes_the_bytes(self):
+        class _Binary:
+            def read_bytes(self, **call):
+                return b"\xff\xfe\x00b\x00a\x00d"
+
+        executor = OracleMeshExecutor(
+            chat_origin="https://chat.padiem.net", channel_secret=SECRET,
+            read_port=_Binary(), timeout_seconds=None,
+        )
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            outcome = executor._execute_read(self._dispatch())
+        self.assertEqual(outcome.body, b"PADIEM_PC_FILE_ERROR:read_failed")
+        self.assertIn("not_utf8", stderr.getvalue())
+
+
+class StepTimeoutSettingTests(unittest.TestCase):
+    """The deployment's base PC-step deadline, and the pre-2026-10-17 default."""
+
+    def test_absent_setting_keeps_the_old_default(self):
+        self.assertEqual(_step_timeout_seconds({}), DEFAULT_STEP_TIMEOUT_SECONDS)
+        self.assertEqual(DEFAULT_STEP_TIMEOUT_SECONDS, 30)
+        self.assertEqual(_step_timeout_seconds({"ORACLE_MESH_READ_TIMEOUT_SECONDS": "  "}), 30)
+
+    def test_the_deployment_may_name_its_own_without_a_new_ceiling(self):
+        self.assertEqual(
+            _step_timeout_seconds({"ORACLE_MESH_READ_TIMEOUT_SECONDS": "90"}), 90,
+        )
+        self.assertEqual(
+            _step_timeout_seconds({"ORACLE_MESH_READ_TIMEOUT_SECONDS": "3600"}), 3600,
+        )
+
+    def test_a_nonsense_value_is_refused_before_the_executor_starts(self):
+        for bad in ("0", "-5", "fast", "3.5"):
+            with self.assertRaises(ContractError):
+                _step_timeout_seconds({"ORACLE_MESH_READ_TIMEOUT_SECONDS": bad})
 
 
 if __name__ == "__main__":

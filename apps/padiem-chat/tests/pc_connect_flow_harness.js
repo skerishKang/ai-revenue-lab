@@ -108,6 +108,8 @@ function makeDom(responses, options = {}) {
     if (reply === undefined) reply = responses[`${method} *`];
     if (reply === undefined) reply = { status: 404, body: {} };
     if (typeof reply === "function") reply = reply(calls.length);
+    // A scripted network failure: the module's own catch arm, not a status code.
+    if (reply && reply.networkError) throw new TypeError("Failed to fetch");
     const payload = typeof reply.text === "string"
       ? reply.text : JSON.stringify(reply.body ?? {});
     const encoded = new TextEncoder().encode(typeof reply.bytes === "string" ? reply.bytes : payload);
@@ -332,6 +334,72 @@ async function main() {
     notReadyModal.allText().includes("아직 준비 중")
     && !notReadyModal.allText().includes("연결됐어요"),
     notReadyModal.allText());
+
+  // -- the card never calls a state it did not read "연결 안 됨" ----------------
+  const cardLine = (dom) => (dom.starter.querySelector("[data-pc-connect-state]")
+    || { allText: () => "<no line>" }).allText();
+
+  const serverDown = makeDom({
+    "GET *": { status: 500, body: { ok: false, error: { code: "internal_error" } } },
+  });
+  await settle();
+  check("a 500 on the pairing list reads as 확인 중…, never as 연결 안 됨",
+    cardLine(serverDown).includes("확인 중") && !cardLine(serverDown).includes("연결 안 됨"),
+    cardLine(serverDown));
+
+  const networkDown = makeDom({ "GET *": { status: 0, networkError: true } });
+  await settle();
+  check("a network failure reads as 확인 중…, never as 연결 안 됨",
+    cardLine(networkDown).includes("확인 중") && !cardLine(networkDown).includes("연결 안 됨"),
+    cardLine(networkDown));
+
+  const preparing = makeDom({
+    "GET *": { status: 503, body: { ok: false, error: { code: "pc_pairing_not_ready" } } },
+  });
+  await settle();
+  check("a not-ready pairing surface is not painted as an absent PC",
+    !cardLine(preparing).includes("연결 안 됨") && cardLine(preparing).includes("확인"),
+    cardLine(preparing));
+
+  const lostAfterGoodRead = makeDom({
+    "GET *": (call) => (call === 1
+      ? { status: 200, body: { ok: true, links: [LINK], codes: [] } }
+      : { status: 500, body: { ok: false, error: { code: "internal_error" } } }),
+  });
+  await settle();
+  check("while the list was readable the same card said 연결됨",
+    cardLine(lostAfterGoodRead).includes("연결됨"), cardLine(lostAfterGoodRead));
+  await lostAfterGoodRead.window.PadiemPcConnectFlow.refresh();
+  await settle();
+  check("after a good read a failure says 확인 실패 · 다시 시도 and drops no claim",
+    cardLine(lostAfterGoodRead).includes("확인 실패")
+    && !cardLine(lostAfterGoodRead).includes("연결 안 됨")
+    && !cardLine(lostAfterGoodRead).includes("연결됨"),
+    cardLine(lostAfterGoodRead));
+
+  // -- the composer chip's connect affordance follows the same rule -----------
+  const chipState = (dom) => {
+    const action = dom.chip.querySelector(".pc-connect-chip-action") || { hidden: null, text: "" };
+    return { hidden: action.hidden, text: action.allText(), display: dom.chip.dataset.pcConnectDisplay };
+  };
+  check("a 500 does not offer 연결하기 on the chip",
+    chipState(serverDown).hidden === true && chipState(serverDown).display === "checking",
+    JSON.stringify(chipState(serverDown)));
+  check("a network failure does not offer 연결하기 on the chip",
+    chipState(networkDown).hidden === true && chipState(networkDown).display === "checking",
+    JSON.stringify(chipState(networkDown)));
+  check("a not-ready pairing surface does not offer 연결하기 on the chip",
+    chipState(preparing).hidden === true, JSON.stringify(chipState(preparing)));
+  check("a chip that lost an earlier good read says failed, not connect",
+    chipState(lostAfterGoodRead).hidden === true
+    && chipState(lostAfterGoodRead).display === "failed",
+    JSON.stringify(chipState(lostAfterGoodRead)));
+  const emptyRead = makeDom({ "GET *": { status: 200, body: { ok: true, links: [], codes: [] } } });
+  await settle();
+  check("the read-empty chip still offers 연결하기 (unchanged path)",
+    chipState(emptyRead).hidden === false && chipState(emptyRead).text.includes("연결하기")
+    && chipState(emptyRead).display === "disconnected",
+    JSON.stringify(chipState(emptyRead)));
 
   // -- the popover: names and states, nothing else -----------------------------
   const listed = makeDom({

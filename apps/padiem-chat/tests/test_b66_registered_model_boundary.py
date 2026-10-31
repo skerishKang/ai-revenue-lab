@@ -385,7 +385,7 @@ def test_exact_selected_route_adapter_only_uses_explicit_b14_method():
     assert fake.calls==["test-owner-catalog/quote-capable"]
 
 
-def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback():
+def test_real_b14_core_quote_payload_is_exact_one_attempt_without_substitution():
     """Exercise the actual B14/Core execution request without provider I/O."""
     import json
     from app.config import Settings
@@ -434,12 +434,15 @@ def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback()
     url, payload = service.calls[0]
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
     assert payload["model"] == model
-    assert payload["business14"]["task_type"] == "document"
+    # B4: the scorer-era task_type no longer travels on the B14 wire.
+    assert "task_type" not in payload["business14"]
     # #5362 removed the default one-step agent execution ceiling, so no
     # attempt ceiling is sent. The one-shot contract is the pinned retry
     # budget below.
     assert "max_attempts" not in payload["business14"]
     assert payload["business14"]["max_retries"] == 0
-    assert payload["business14"]["allow_external_fallback"] is False
-    assert payload["business14"].get("provider_order") is None
+    # B5: the fallback knob is gone from the wire entirely, so the one-shot
+    # no-substitution contract holds without a caller-declared signal.
+    assert "allow_external_fallback" not in payload["business14"]
+    assert "provider_order" not in payload["business14"]
     assert "credential" not in payload

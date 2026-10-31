@@ -175,7 +175,13 @@ def test_provider_registrations_remain_intact() -> None:
         assert "legacy provider registration disabled: edit b14_models.json" in text
 
 
-def test_b14_auto_chain_is_unchanged() -> None:
-    text = ROUTING_POLICY.read_text(encoding="utf-8")
-    assert "space-bunny" not in text.lower()
-    assert "sensenova" not in text.lower()
+def test_b14_auto_chain_is_retired_entirely() -> None:
+    # B7: the fixed chain (fixed_chain_v1) is retired, so the retired
+    # provider ids cannot rejoin an executable auto lane at all.
+    assert not ROUTING_POLICY.exists()
+    pilot_sources = [
+        path.read_text(encoding="utf-8")
+        for path in ROUTING_POLICY.parent.rglob("*.py")
+    ]
+    assert all("fixed_chain_v1" not in text for text in pilot_sources)
+    assert all("B14_AUTO_CHAIN" not in text for text in pilot_sources)

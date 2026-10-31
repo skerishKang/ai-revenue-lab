@@ -143,16 +143,20 @@ def test_public_message_drops_upstream_detail(exc, expected_status):
 
 
 @pytest.mark.parametrize(("exc", "expected_status"), RAISER_CASES)
-def test_both_sse_surfaces_publish_the_same_public_error(exc, expected_status):
-    """The manual and the auto SSE gate answer one condition identically."""
-    from app.pilot import auto_stream_gateway, stream_gateway
+def test_the_sse_surface_publishes_the_shared_public_error(exc, expected_status):
+    """B7: the manual SSE gate is the only stream surface, and it publishes
+    the same shared public error the retired auto surface used to."""
+    import importlib
+
+    from app.pilot import stream_gateway
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("app.pilot.auto_stream_gateway")
 
     request_id = "b14req_shared"
     manual = stream_gateway._error_response(exc, request_id)
-    auto = auto_stream_gateway._error_response(exc, request_id)
 
-    assert manual.status_code == auto.status_code == expected_status
-    assert manual.body == auto.body
+    assert manual.status_code == expected_status
     assert b'"code":"' + exc.code.encode() + b'"' in manual.body
     for marker in UPSTREAM_DETAIL_MARKERS:
         assert marker.encode() not in manual.body, (exc.code, marker)

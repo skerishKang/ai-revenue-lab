@@ -30,7 +30,6 @@ FREE_ROSTER = TIER_FALLBACK_B14_MODELS["free"]
 # product grade, no arbitrary catalog fallback, and no attempt pin.
 COMPLETED_CHAT_OPTIONS = {
     "product_tier": "free",
-    "allow_external_fallback": False,
 }
 
 

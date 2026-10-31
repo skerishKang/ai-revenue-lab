@@ -61,11 +61,7 @@ def request_fixture() -> B14ChatRequest:
         model="b14/auto",
         max_tokens=700,
         routing=B14RoutingOptions(
-            task_type="general",
             required_capabilities=("free",),
-            optimize_for="korean",
-            allow_external_fallback=True,
-            provider_order=(),
         ),
     )
 
@@ -136,35 +132,32 @@ def test_config_public_state_contains_no_credentials_field() -> None:
 
 def test_routing_options_serialize_current_b14_contract_exactly() -> None:
     options = B14RoutingOptions(
-        task_type="GENERAL",
         required_capabilities=["free", "chat"],
-        optimize_for="KOREAN",
-        allow_external_fallback=False,
-        provider_order=["provider-a", "provider-b"],
     )
     assert options.to_dict() == {
-        "task_type": "general",
         "required_capabilities": ["free", "chat"],
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
-        "provider_order": ["provider-a", "provider-b"],
     }
-    # #4317: there is no attempt count in the wire contract any more.
-    assert "max_attempts" not in options.to_dict()
+    # B4/B5: the scorer-era options and the fallback knob are gone from the
+    # wire contract; #4317 removed the attempt count before them.
+    for retired in ("task_type", "optimize_for", "allow_external_fallback",
+                    "provider_order", "max_attempts", "allow_paid"):
+        assert retired not in options.to_dict()
 
 
 @pytest.mark.parametrize(
     ("kwargs", "match"),
     [
-        ({"task_type": "medical"}, "task_type"),
-        ({"optimize_for": "best"}, "optimize_for"),
-        ({"allow_external_fallback": "yes"}, "allow_external_fallback"),
         ({"required_capabilities": ["free", "free"]}, "duplicates"),
-        ({"provider_order": "provider-a"}, "sequence"),
+        ({"task_type": "medical"}, "unexpected keyword argument"),
+        ({"optimize_for": "best"}, "unexpected keyword argument"),
+        ({"allow_external_fallback": "yes"}, "unexpected keyword argument"),
+        ({"provider_order": "provider-a"}, "unexpected keyword argument"),
     ],
 )
 def test_routing_options_fail_closed_before_network(kwargs, match: str) -> None:
-    with pytest.raises(ValueError, match=match):
+    """B4/B5: the scorer-era fields and the fallback knob no longer exist on
+    the Core routing contract at all — constructing one fails closed."""
+    with pytest.raises(TypeError if match == "unexpected keyword argument" else ValueError, match=match):
         B14RoutingOptions(**kwargs)
 
 
@@ -271,11 +264,7 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
         ],
         "max_tokens": 700,
         "business14": {
-            "task_type": "general",
             "required_capabilities": ["free"],
-            "optimize_for": "korean",
-            "allow_external_fallback": True,
-            "provider_order": [],
         },
     }
     assert "authorization" not in seen["headers"]

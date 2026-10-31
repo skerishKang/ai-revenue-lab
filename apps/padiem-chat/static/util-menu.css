@@ -17,8 +17,24 @@
 .util-tab { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px; background: var(--panel, #ffffff); color: var(--text, #17202a); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
 .util-tab:hover { background: var(--accent-soft); border-color: var(--accent); }
 .util-tab.active { background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); border-color: var(--accent, #6557e8); }
+/* #5908: the quick-run toolbox — one glanceable card row above the panels.
+ * Entry surface only: every card button drives the existing activateUtilTab
+ * switch or the existing Claw entry; no new tokens. The card border reads
+ * --input-border-strong so the glass-theme contrast stays at the measured
+ * 6.33:1 (util-capture #6317) instead of --line's 1.03:1 that report flagged
+ * for the .pdfmd-* controls. */
+.util-tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin: 0 0 18px; }
+.util-tool-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12))); border-radius: var(--radius-md, 16px); background: var(--glass-card-surface, var(--panel, #ffffff)); box-sizing: border-box; }
+.util-tool-icon { font-size: 16px; line-height: 1; color: var(--accent, #6557e8); }
+.util-tool-name { font-size: 15px; font-weight: 750; color: var(--text, #17202a); }
+.util-tool-desc { font-size: 12.5px; line-height: 1.45; color: var(--text, #17202a); }
+.util-tool-note { font-size: 11.5px; color: var(--muted, #5b6672); }
+.util-tool-open { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; margin-top: auto; border: none; border-radius: 10px; background: var(--accent, #6557e8); color: var(--accent-contrast, #ffffff); cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; }
+.util-tool-open:hover:not(:disabled) { filter: brightness(.96); }
+.util-tool-paused .util-tool-icon { color: var(--muted, #5b6672); }
 .util-tab:focus-visible,
 .util-generate:focus-visible,
+.util-tool-open:focus-visible,
 .util-form input:focus-visible,
 .util-form textarea:focus-visible,
 .util-form select:focus-visible,
@@ -55,6 +71,7 @@
  * selection accent, so every product's main CTA reads as the same control.
  * Selection states (tabs, chips) keep the light accent. */
 html[data-theme="padiem-glass"] .util-generate,
+html[data-theme="padiem-glass"] .util-tool-open,
 html[data-theme="padiem-glass"] .pdfmd-btn-primary {
   background: #355977;
 }

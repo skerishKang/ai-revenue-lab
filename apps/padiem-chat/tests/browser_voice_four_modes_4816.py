@@ -167,7 +167,9 @@ def test_voice_four_modes():
         clear_input()
 
         # --- M2: "문자로 답변" arms exactly one auto-send per turn ---
-        page.evaluate("""() => document.getElementById('sendButton').click()""")
+        # Owner 2026-10-31 (A안): the picker is its own icon; the send button
+        # is only ever the send button.
+        page.evaluate("""() => document.getElementById('voiceWaveformButton').click()""")
         page.wait_for_timeout(50)
         checks["m2_menu_opened"] = page.evaluate("""() =>
           !document.getElementById('voiceModeMenu').hidden""")
@@ -295,15 +297,22 @@ def test_voice_four_modes():
             && labels[1] === '문자 + 음성 함께'
             && labels[2] === '음성 통화';
         }""")
-        # #5561: the waveform and the arrow share one slot, so the voice label
-        # rides on the send button rather than a separate control.
+        # Owner 2026-10-31 (A안): the waveform owns its own labelled control and
+        # the send slot keeps the arrow. Both facts are asserted, so a future
+        # re-merge of the two cannot pass this check by dropping one of them.
         checks["voice_wave_label"] = page.evaluate("""() => {
+          const wave = document.getElementById('voiceWaveformButton');
           const slot = document.getElementById('sendButton');
-          const wave = slot.querySelector('.send-waveform-icon');
-          return slot.dataset.primaryAction === 'voice'
-            && slot.getAttribute('title') === '음성 모드'
-            && slot.getAttribute('aria-label') === '음성 모드'
-            && !!wave && wave.hidden === false;
+          const arrow = slot ? slot.querySelector('.send-arrow-icon') : null;
+          const innerWave = slot ? slot.querySelector('.send-waveform-icon') : null;
+          const available = wave && ['ready', 'active'].indexOf(wave.getAttribute('data-voice-state')) >= 0;
+          return !!wave
+            && available
+            && wave.getAttribute('title') === '음성 모드'
+            && wave.getAttribute('aria-label') === '음성 모드'
+            && slot.dataset.primaryAction === 'send'
+            && !!arrow && !arrow.hasAttribute('hidden')
+            && !!innerWave && innerWave.hasAttribute('hidden');
         }""")
 
         # --- M4: "음성 통화" shows call panel, end returns to chat ---

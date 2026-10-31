@@ -44,24 +44,44 @@ def test_dispatch_order_and_scope():
     assert "for migration in 0012 0013" in text
     assert 'inspect.py before' in text and 'inspect.py after' in text
 
-def test_all_table_counts_quote_identifiers_and_compare(monkeypatch, tmp_path):
-    import sys
+def test_count_query_is_bounded_to_existing_migration_tables(monkeypatch):
+    import sys, sqlite3
     sys.path.insert(0,str(SCRIPTS))
-    try:
-        mod=load("b54_engine_d1_0012_0013_inspect")
-    finally:
-        sys.path.pop(0)
-    import sqlite3
+    try: mod=load("b54_engine_d1_0012_0013_inspect")
+    finally: sys.path.pop(0)
     db=sqlite3.connect(":memory:")
-    db.execute('CREATE TABLE "odd\'name" (x)')
-    db.execute('INSERT INTO "odd\'name" VALUES (1)')
+    names=list(mod.schema.TABLES.values())
+    for name in names[:3]:
+        db.execute('CREATE TABLE "'+name+'" (x)')
+        db.execute('INSERT INTO "'+name+'" VALUES (1)')
+    db.execute('CREATE TABLE unrelated (x)')
+    states={k:("EXACT" if i<3 else "MISSING") for i,k in enumerate(mod.schema.TABLES)}
+    grouped={name:([("table",name,name,"")] if i<3 else []) for i,name in enumerate(names)}
     queries=[]
-    def query(sql):
+    def q(sql):
         queries.append(sql)
         cur=db.execute(sql)
-        rows=[dict(zip([col[0] for col in cur.description],row)) for row in cur]
+        rows=[dict(zip([c[0] for c in cur.description],r)) for r in cur]
         return {"success":True,"result":[{"success":True,"results":rows}]}
-    monkeypatch.setattr(mod,"query",query)
-    assert mod.table_counts()=={"odd'name":1}
-    assert all(q.startswith("SELECT ") for q in queries)
-    assert db.execute('SELECT count(*) FROM "odd\'name"').fetchone()[0]==1
+    monkeypatch.setattr(mod,"query",q)
+    assert mod.table_counts(states,grouped)=={name:1 for name in names[:3]}
+    assert len(queries)==1 and queries[0]==mod.schema.count_sql(states,grouped)
+    assert "unrelated" not in queries[0] and "_cf_KV" not in queries[0]
+    assert queries[0].count("UNION ALL") == 2
+
+
+def test_http_error_logs_status_and_safe_cloudflare_errors(monkeypatch,capsys):
+    import sys, io, json, urllib.error
+    sys.path.insert(0,str(SCRIPTS))
+    try: mod=load("b54_engine_d1_0012_0013_inspect")
+    finally: sys.path.pop(0)
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID",mod.ACCOUNT)
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN","sensitive-token")
+    body=json.dumps({"errors":[{"code":7500,"message":"not authorized sensitive-token"}]}).encode()
+    def fail(*a,**k):
+        raise urllib.error.HTTPError("https://example.invalid",400,"bad",{},io.BytesIO(body))
+    monkeypatch.setattr(mod.urllib.request,"urlopen",fail)
+    with pytest.raises(urllib.error.HTTPError): mod.query("SELECT 1")
+    output=capsys.readouterr().err
+    assert '"status": 400' in output and '"code": 7500' in output
+    assert "sensitive-token" not in output and "[REDACTED]" in output

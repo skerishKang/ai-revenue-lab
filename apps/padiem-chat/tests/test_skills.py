@@ -59,7 +59,7 @@ async def test_the_browser_request_refuses_each_removed_task_mode(skill_id):
             json={"messages": USER_MESSAGES, "skill": skill_id},
         )
     assert response.status_code == 422
-    assert response.json()["error"]["message"] == "지원하지 않는 작업 모드입니다."
+    assert response.json()["error"] == {"code": "stale_chat_client", "message": '\ud654\uba74\uc774 \uc624\ub798\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \uc0c8\ub85c\uace0\uce68\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.'}
 
 
 def test_get_skill_defaults_to_auto_and_rejects_unknown():
@@ -95,10 +95,9 @@ async def test_skill_maps_routing_hints_without_response_shaping():
     body = seen["body"]
     assert body["model"] == DEFAULT_B14_MODEL_ID
     assert "max_tokens" not in body
-    assert body["business14"]["task_type"] == "general"
-    assert body["business14"]["optimize_for"] == "korean"
-    assert body["business14"]["allow_external_fallback"] is False
-    assert "max_attempts" not in body["business14"]
+    # B4/B5: the scorer-era fields and the fallback knob no longer travel.
+    for retired in ("task_type", "optimize_for", "allow_external_fallback", "max_attempts"):
+        assert retired not in body["business14"]
     assert body["business14"]["required_capabilities"] == ["chat"]
     system_messages = [item for item in body["messages"] if item["role"] == "system"]
     assert len(system_messages) == 1
