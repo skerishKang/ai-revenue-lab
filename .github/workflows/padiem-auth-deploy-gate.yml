@@ -112,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test apps/padiem-auth/test/*.test.mjs
-          npx --no-install wrangler deploy --config apps/padiem-auth/wrangler.toml --dry-run --outdir "$RUNNER_TEMP/padiem-auth-build"
+          npx --no-install wrangler deploy --keep-vars --config apps/padiem-auth/wrangler.toml --dry-run --outdir "$RUNNER_TEMP/padiem-auth-build"
       - name: Require successful readonly run for this exact SHA
         if: inputs.mode == 'deploy'
         env:

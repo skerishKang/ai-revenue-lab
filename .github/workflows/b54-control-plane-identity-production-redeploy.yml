@@ -473,7 +473,7 @@ jobs:
               raise SystemExit('identity worker name drift')
           Path('wrangler.jsonc').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
           PY
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B1D identity resolve_connector_workspace ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B1D identity resolve_connector_workspace ${TARGET_SHA}"
           rm -f "${temp_config}"
           echo "IDENTITY_WORKER_REDEPLOY=1"
           echo "SECRET_VALUES_OUTPUT=0"

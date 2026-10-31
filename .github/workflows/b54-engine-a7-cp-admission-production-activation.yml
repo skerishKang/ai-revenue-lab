@@ -319,7 +319,7 @@ jobs:
           temp_config="wrangler.jsonc"
           trap 'rm -f "${temp_config}"' EXIT
           cp "${CP_ADMISSION_CONFIG}" "${temp_config}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy             --strict             --tag "git-${TARGET_SHA}"             --message "A7 CP Engine admission first activation ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --keep-vars             --strict             --tag "git-${TARGET_SHA}"             --message "A7 CP Engine admission first activation ${TARGET_SHA}"
           rm -f "${temp_config}"
           echo "CP_ENGINE_ADMISSION_DEPLOY=SUCCESS"
           echo "PRODUCTION_MUTATION=1"
