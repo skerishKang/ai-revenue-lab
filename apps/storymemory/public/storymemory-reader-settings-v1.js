@@ -101,7 +101,11 @@
     var head=document.createElement('div');head.className='srsg-head';
     var hb=document.createElement('b');hb.textContent='읽기 설정';
     var hx=document.createElement('button');hx.type='button';hx.className='srsg-x';hx.setAttribute('aria-label','설정 닫기');hx.textContent='×';
-    hx.onclick=function(){document.body.classList.remove('smr-open');};
+    function closeSettings(restoreFocus){
+      document.body.classList.remove('smr-open');
+      if(restoreFocus){var trigger=document.getElementById('smalOverflowBtn');if(trigger)trigger.focus();}
+    }
+    hx.onclick=function(){closeSettings(true);};
     head.appendChild(hb);head.appendChild(hx);panel.appendChild(head);
     panel.appendChild(segRow('글꼴','font'));
     panel.appendChild(segRow('글자 크기','fontSize'));
@@ -112,7 +116,15 @@
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
     reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{localStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
-    gear.onclick=function(e){e.stopPropagation();document.body.classList.toggle('smr-open');};
+    gear.onclick=function(e){
+      e.stopPropagation();
+      var opening=!document.body.classList.contains('smr-open');
+      document.body.classList.toggle('smr-open',opening);
+      if(opening)hx.focus();
+    };
+    panel.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSettings(true);}
+    });
     panel.addEventListener('click',function(e){e.stopPropagation();});
     document.addEventListener('click',function(){document.body.classList.remove('smr-open');});
     /* B61 #1936 D: bottom-right consolidation — single overflow toggle replaces the
