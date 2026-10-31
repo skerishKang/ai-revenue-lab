@@ -14,7 +14,7 @@ from com2_identity_rpc_ingress import COM2_IDENTITY_RPC_METHODS, create_app
 from internal_rpc_ingress import proof_for
 from test_identity_authority_durable import FakeStorage
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[2]
 SECRET = "synthetic-test-secret-" + "x" * 32
 KEY = base64.urlsafe_b64encode(b"I" * 32).decode().rstrip("=")
 
