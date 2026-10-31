@@ -1,0 +1,7 @@
+[Unit]
+Description=PADIEM COM2 broker loopback health check
+
+[Service]
+Type=oneshot
+User=padiem-broker
+ExecStart=/opt/padiem/broker/venv/bin/python /opt/padiem/broker/health.py --url http://127.0.0.1:8799/health

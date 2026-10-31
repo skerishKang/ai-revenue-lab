@@ -554,7 +554,8 @@ def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> N
     # workspace is not shared between jobs, so the job must check out the exact
     # dispatch source read-only before invoking it.
     assert "actions/checkout@v4" in readonly
-    assert "ref: ${{ inputs.target_sha }}" in readonly
+    # The checkout ref is the guard's normalized value, never the raw dispatch input.
+    assert "ref: ${{ needs.source-contract.outputs.target_sha }}" in readonly
     assert "persist-credentials: false" in readonly
     assert (
         readonly.index("actions/checkout@v4")

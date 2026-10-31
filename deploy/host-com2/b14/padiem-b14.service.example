@@ -4,10 +4,13 @@
 # operator installs and starts it; nothing in this repository installs, enables,
 # starts, or restarts it, and shipping this file is not a deployment.
 #
-# Runtime identity: DynamicUser, so no login account is created and no host
-# process inherits the service's write access. No credential value appears in
-# ExecStart, in this file, or in any argument list — systemd reads the names
-# from EnvironmentFile and the app reads values from the secret directory.
+# Runtime identity: a static service account, exactly like padiem-p01. The
+# DynamicUser + SupplementaryGroups pair failed on the COM2 host with 216/217
+# (a group lookup for a transient account that does not exist when the unit is
+# installed), so the account is created once by the operator and named here.
+# No credential value appears in ExecStart, in this file, or in any argument
+# list — systemd reads the names from EnvironmentFile and the app reads values
+# from the secret directory.
 
 [Unit]
 Description=PADIEM B14 (korean-ai-platform) on COM2
@@ -17,8 +20,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-DynamicUser=yes
-SupplementaryGroups=padiem-b14
+User=padiem-b14
+Group=padiem-b14
 WorkingDirectory=/opt/padiem/b14/app
 # The two names this unit knows about are B14_UPSTREAM_MODE and B14_UPSTREAM_URL,
 # plus the deployment configuration. Values are never stored in this file.

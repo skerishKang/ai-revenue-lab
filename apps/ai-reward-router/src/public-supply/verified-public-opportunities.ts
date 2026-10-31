@@ -6,17 +6,24 @@ import {
 /**
  * Manually curated, publicly verified opportunities (B64 public supply lane).
  *
- * Every record was re-checked against the official source URL on 2026-10-25.
- * These records pay PADIEM nothing (monetizationRole NONE): they link users to
+ * Each record's `verifiedAt` advances only when that record's own official
+ * source was read again, because the 7-day display window is what keeps a
+ * consumer-facing claim honest. The 2026-10-27 pass read every source and
+ * recorded the confirming wording (evidence in issue #987).
+ * These records earn B64 nothing (monetizationRole NONE): they link users to
  * official provider pages. They are NOT provider-approved B2B supply and must
  * never be promoted into LIVE_AUTHORIZED provider lanes.
  *
  * COM2 owns the refresh loop (status changes, dedupe, re-verification). Until a
  * confirmed auto-collection permission exists for a vendor, updates stay on
  * this manual curation path and verifiedAt moves only with a documented check.
+ *
+ * Refresh note: the TELUS Digital careers listing answers a plain HTTP GET with
+ * a Cloudflare JS challenge (403), so re-checking that record takes a real
+ * browser — it reported "Showing 1-1 of 1 results" for South Korea on 2026-10-27.
  */
 
-const VERIFIED_AT = '2026-10-25T00:50:00.000Z';
+const REVERIFIED_AT = '2026-10-27T04:00:00.000Z';
 
 const record = (
   input: Omit<PublicOpportunity, 'userValueScore' | 'monetizationRole' | 'tierNote' | 'ctaLabel'> &
@@ -60,7 +67,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '만 18세 이상, 계정 검증 완료, 현재 거주 국가가 공식 참여 국가 목록에 포함 (한국 포함)',
       applyUrl: 'https://www.prolific.com/',
       sourceUrl: 'https://participant-help.prolific.com/en/articles/445007-who-can-participate-in-studies-on-prolific',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'IMMEDIATE' as const,
       tierNote: '설문은 기간에 따라 공개됩니다 · 현재 가용 설문 수 미확인',
@@ -88,7 +95,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '한국어 유창 (읽기·쓰기·평가), 미스터리 서지 인센티브 +7.5% 가능, 대부분 주 5-10시간',
       applyUrl: 'https://app.outlier.ai/login?job_post_id=4722459005',
       sourceUrl: 'https://outlier.ai/languages/ko-kr',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'SCREENING_REQUIRED' as const,
     }),
@@ -114,7 +121,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '해당 지역 거주 5년 이상, 주 10시간, 검색 의도·사실관계 평가 기준 숙지',
       applyUrl: 'https://www.oneforma.com/jobs/',
       sourceUrl: 'https://www.oneforma.com/jobs/',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'SCREENING_REQUIRED' as const,
     }),
@@ -140,7 +147,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '원어-번어 단락 품질 비교·수용성 판단, 원어 숙련도 필요, 일 2시간 규모',
       applyUrl: 'https://www.oneforma.com/jobs/',
       sourceUrl: 'https://www.oneforma.com/jobs/',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'SCREENING_REQUIRED' as const,
     }),
@@ -166,7 +173,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '한국어 스페셜리스트 직군 (최근 69명 채용 표기), 추론·조심성·전문성 평가',
       applyUrl: 'https://dataannotation.tech/',
       sourceUrl: 'https://dataannotation.tech/',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'SCREENING_REQUIRED' as const,
     }),
@@ -192,7 +199,7 @@ export const VERIFIED_PUBLIC_OPPORTUNITIES: readonly PublicOpportunity[] = Objec
       qualifications: '공고별 자격 요건 (채용 포털에서 확인), 한국 지역 대상 원격',
       applyUrl: 'https://jobs.telusdigital.com/search/jobs/in/country/korea-republic-of',
       sourceUrl: 'https://jobs.telusdigital.com/search/jobs/in/country/korea-republic-of',
-      verifiedAt: VERIFIED_AT,
+      verifiedAt: REVERIFIED_AT,
       status: 'OPEN' as const,
       todayTier: 'SCREENING_REQUIRED' as const,
     }),

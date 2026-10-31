@@ -111,16 +111,19 @@ test('toggle hrefs are HTML-escaped and stay same-origin', async () => {
   assert.match(html, /href="\/browse\?q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&amp;theme=toggle"/);
 });
 
+// The pin below is the #6077 font-era policy: style-src and font-src gained
+// 'self' for the self-hosted Pretendard slices. Theme handling still adds nothing
+// of its own, which is what the two identical assertions below prove.
 test('the theme feature leaves the CSP and security headers untouched', async () => {
   const res = await handler(new Request('https://b64.example/'));
   assert.equal(
     res.headers.get('content-security-policy'),
-    "default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+    "default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   );
   const toggle = await handler(new Request('https://b64.example/?theme=toggle'));
   assert.equal(
     toggle.headers.get('content-security-policy'),
-    "default-src 'none'; style-src 'unsafe-inline'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+    "default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
   );
   assert.equal(toggle.headers.get('x-frame-options'), 'DENY');
   const html = await (await handler(new Request('https://b64.example/'))).text();
@@ -146,7 +149,7 @@ test('existing dark design values are preserved for the dark override', async ()
   const res = await handler(new Request('https://b64.example/', { headers: { cookie: `${THEME_COOKIE_NAME}=dark` } }));
   const html = await res.text();
   assert.match(html, /--bg: #06080d;/, 'the original dark background stays');
-  assert.match(html, /--accent: #88c9ff;/, 'the original dark PADIEM accent stays');
+  assert.match(html, /--accent: #88c9ff;/, 'the original dark accent palette is preserved');
   assert.match(html, /--gold: #efc984;/, 'the original dark gold stays');
   assert.match(html, /--on-accent: #06080d;/, 'dark buttons keep dark-on-accent text');
 });

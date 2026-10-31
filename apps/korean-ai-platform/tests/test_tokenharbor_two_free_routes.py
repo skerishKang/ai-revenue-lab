@@ -92,7 +92,7 @@ def test_worker_and_wrangler_use_approved_existing_store_metadata_only():
 
 @pytest.mark.parametrize("mid, upstream", ALLOWED.items())
 def test_manual_model_catalog_visibility_and_exact_identity(mid, upstream, live_key):
-    decision = resolve_manual_route(mid, allow_external_fallback=False)
+    decision = resolve_manual_route(mid)
     assert decision.selected_model == mid
     assert decision.selected_upstream_model == upstream
     assert decision.platform_provider_id == PROVIDER
@@ -191,7 +191,7 @@ def test_retired_haiku_cannot_be_dispatched_from_final_adapter(live_key):
         called.append(req)
         raise AssertionError("Haiku must not reach upstream")
     with pytest.raises(NoSafeRoute):
-        resolve_manual_route("tokenharbor/claude-haiku-5.5:free", allow_external_fallback=False)
+        resolve_manual_route("tokenharbor/claude-haiku-5.5:free")
     with pytest.raises(PilotNotConfigured, match="owner-approved free"):
         asyncio.run(call_platform_chat_completions(
             model_id="tokenharbor/claude-haiku-5.5:free",
@@ -207,7 +207,7 @@ def test_retired_haiku_cannot_be_dispatched_from_final_adapter(live_key):
 def test_unapproved_public_model_has_no_manual_route(live_key):
     for mid in ("tokenharbor/mimo-v2.6-flash:free", "tokenharbor/claude-haiku-5.5", "tokenharbor/claude-haiku-5.5:free"):
         with pytest.raises(NoSafeRoute):
-            resolve_manual_route(mid, allow_external_fallback=False)
+            resolve_manual_route(mid)
 
 
 def test_missing_secret_denied_before_network(monkeypatch):
@@ -244,10 +244,12 @@ def test_free_quota_429_is_failure_not_paid_model_retry(live_key):
 
 
 @pytest.mark.parametrize("mid", ALLOWED)
-def test_free_route_rejects_external_fallback_to_other_paid_provider(mid, live_key):
-    with pytest.raises(NoSafeRoute) as exc:
-        resolve_manual_route(mid, allow_external_fallback=True)
-    assert exc.value.reason_code == "tokenharbor_free_only_fallback_disabled"
+def test_free_route_never_offers_external_fallback_to_other_paid_provider(mid, live_key):
+    # B5: the external-fallback knob is gone entirely; a tokenharbor free
+    # route has no recovery candidates, so no paid provider can be walked to.
+    decision = resolve_manual_route(mid)
+    assert decision.eligible_fallback == []
+    assert decision.fallback_allowed is False
 
 @pytest.mark.parametrize("upstream_http_status", [401, 403])
 @pytest.mark.parametrize("credential_shape", ["expected", "unexpected"])

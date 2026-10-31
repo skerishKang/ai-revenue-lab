@@ -240,7 +240,7 @@ def test_clock_question_never_searches_and_answers_normally(question: str) -> No
     provider = RecordingProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(question), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(question)}
     )
     assert response.status_code == 200, response.text
     body = response.json()
@@ -256,7 +256,7 @@ def test_reported_follow_up_question_is_not_a_search_request() -> None:
     provider = RecordingProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(DATE_QUESTION), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(DATE_QUESTION)}
     )
     assert response.status_code == 200, response.text
     assert response.json()["answer"]
@@ -269,7 +269,7 @@ def test_clock_question_with_an_empty_search_provider_still_answers() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages("오늘 며칠이야?"), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages("오늘 며칠이야?")}
     )
     assert response.status_code == 200, response.text
     assert response.json()["answer"]
@@ -303,7 +303,7 @@ def test_automatic_search_without_usable_evidence_continues_normally() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(BARE_FRESHNESS), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(BARE_FRESHNESS)}
     )
     assert response.status_code == 200, response.text
     body = response.json()
@@ -351,7 +351,7 @@ def test_weather_question_answers_with_an_ungrounded_notice() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(WEATHER), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(WEATHER)}
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
@@ -365,7 +365,7 @@ def test_explicit_web_search_answers_with_an_ungrounded_notice() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(EXPLICIT), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(EXPLICIT)}
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
@@ -379,7 +379,7 @@ def test_search_provider_outage_continues_with_its_own_metadata() -> None:
     provider = BrokenProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages(BARE_FRESHNESS), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(BARE_FRESHNESS)}
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_unavailable"
@@ -397,7 +397,7 @@ def test_model_error_is_not_reported_as_a_search_error() -> None:
     provider = RecordingProvider()
     app, config, seen = build_app(provider, handler=failing_model)
     response = post(
-        app, config, "/api/chat", {"messages": messages(CASUAL), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages(CASUAL)}
     )
     assert response.status_code >= 500
     assert response.json()["error"]["code"] != "no_evidence"
@@ -408,7 +408,7 @@ def test_current_office_holder_fallback_discloses_missing_evidence() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages("현재 대통령"), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages("현재 대통령")}
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
@@ -423,7 +423,7 @@ def test_external_event_schedule_fallback_discloses_missing_evidence() -> None:
     app, config, seen = build_app(provider)
     response = post(
         app, config, "/api/chat",
-        {"messages": messages("몇 시에 경기가 시작해?"), "mode": "auto"},
+        {"messages": messages("몇 시에 경기가 시작해?")},
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
@@ -438,7 +438,7 @@ def test_a_mention_of_an_event_keeps_the_ordinary_answer_path() -> None:
     app, config, seen = build_app(provider)
     response = post(
         app, config, "/api/chat",
-        {"messages": messages("영화 시나리오 작성해줘"), "mode": "auto"},
+        {"messages": messages("영화 시나리오 작성해줘")},
     )
     assert response.status_code == 200, response.text
     assert response.json()["answer"]
@@ -452,7 +452,7 @@ def test_current_weather_fallback_discloses_missing_evidence() -> None:
     provider = EmptyProvider()
     app, config, seen = build_app(provider)
     response = post(
-        app, config, "/api/chat", {"messages": messages("지금 비 와?"), "mode": "auto"}
+        app, config, "/api/chat", {"messages": messages("지금 비 와?")}
     )
     assert response.status_code == 200
     assert response.json()["metadata"]["web_grounding_error"] == "web_grounding_no_evidence"
@@ -472,7 +472,6 @@ def test_fallback_keeps_the_conversation_and_the_model_grade() -> None:
         app, config, "/api/chat",
         {
             "messages": messages(BARE_FRESHNESS),
-            "mode": "auto",
         },
     )
     assert response.status_code == 200, response.text
@@ -508,7 +507,7 @@ def test_web_failure_keeps_the_same_model_turn_with_notice(status, code, explici
 
     provider = FailedProvider()
     app, config, seen = build_app(provider, handler=model)
-    payload = {"messages": messages(WEATHER), "mode": "auto"}
+    payload = {"messages": messages(WEATHER)}
     if explicit:
         if path.endswith("/stream"):
             payload["web_search"] = True
@@ -537,7 +536,7 @@ def test_model_auth_error_after_successful_search_is_not_a_web_error():
     async def model(request):
         return httpx.Response(403, json={"error": {"code": "upstream_auth_error", "message": "private"}})
     app, config, seen = build_app(RecordingProvider(), handler=model)
-    response = post(app, config, "/api/chat", {"messages": messages(WEATHER), "mode": "auto"})
+    response = post(app, config, "/api/chat", {"messages": messages(WEATHER)})
     # The existing Chat model adapter maps provider authentication to 502.
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "provider_auth_error"

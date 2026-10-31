@@ -502,13 +502,13 @@ async def test_health_reports_async_parser_readiness_without_lying() -> None:
         assert response.status_code == 200
         return response.json()["binary_document_attachment_ready"]
 
-    assert await _readiness() is True  # CPython local/test authority
+    assert await _readiness() is False  # no file lane configured
     with _worker_runtime():
         assert binary_document_parser_ready_async() is False
         assert await _readiness() is False  # production Worker without binding
         compose_worker_isolated_parser_authority_async(transport=_transport(_ParserBinding()))
         try:
-            assert await _readiness() is True
+            assert await _readiness() is False  # isolated Worker is not the file lane
         finally:
             clear_worker_isolated_parser_async_composition()
         assert await _readiness() is False
@@ -516,7 +516,7 @@ async def test_health_reports_async_parser_readiness_without_lying() -> None:
 
 def test_health_handler_reads_the_async_readiness_signal() -> None:
     source = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
-    assert '"binary_document_attachment_ready": binary_document_parser_ready_async()' in source
+    assert '"binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys())' in source
 
 
 # --- F: startup composition order and deployment wiring -----------------------
@@ -525,7 +525,7 @@ def test_health_handler_reads_the_async_readiness_signal() -> None:
 def test_worker_composes_the_async_authority_before_create_app() -> None:
     source = (ROOT / "worker.py").read_text(encoding="utf-8")
     compose_at = source.index("compose_worker_isolated_parser_authority_async(")
-    create_at = source.index("_worker_app = create_app(")
+    create_at = source.index("worker_app = create_app(")
     assert compose_at < create_at
     assert "CloudflareDocumentParserServiceTransport(" in source
     assert "reset_worker_isolated_parser_async_composition()" in source

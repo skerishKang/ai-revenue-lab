@@ -31,7 +31,7 @@ async def test_anonymous_free_needs_no_paid_upgrade_and_stays_bounded() -> None:
     store = MemoryHistoryStore()
     profile = await add_test_user(store)
     app = create_app(settings, history_store=store)
-    payload = {"messages": [{"role": "user", "content": "current date"}], "mode": "auto", "tier": "free"}
+    payload = {"messages": [{"role": "user", "content": "current date"}], "tier": "free"}
     # Offline mock preview is deliberately anonymous and must not be blocked
     # by the production Free membership gate (no provider or key is present).
     async with httpx.AsyncClient(
@@ -129,7 +129,6 @@ async def test_signed_in_free_dispatches_exact_model_through_existing_b14_client
             json={
                 "messages": [{"role": "user", "content": "Please answer simply"}],
                 "tier": "free",
-                "mode": "auto",
             },
         )
     assert response.status_code == 200, response.text

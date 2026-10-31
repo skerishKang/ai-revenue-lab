@@ -110,8 +110,6 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     body = _validate_body(canonical_raw)
 
     model_id = body["model"]
-    if model_id == "b14/auto":
-        raise StreamNotSupported()
     if get_catalog_by_id(model_id) is None:
         raise UnsupportedModel(model_id)
 
@@ -135,9 +133,6 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
         raise StreamNotSupported()
 
     b14_opts = body.get("business14", {})
-    if b14_opts.get("allow_external_fallback") is True:
-        raise StreamNotSupported()
-
     decision = rcore.resolve_route(model_id, b14_opts)
     # Only the existing owner-selected tier roster may be traversed. Arbitrary
     # catalog fallback remains disabled; traversal is finite and bounded by

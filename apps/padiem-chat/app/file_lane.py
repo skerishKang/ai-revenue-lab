@@ -17,13 +17,54 @@ from starlette.responses import JSONResponse
 from .attachments import AttachmentValidationError
 from .auth_routes import auth_ready, current_user_id
 from .b14_service_proof import service_proof_headers
+from .binary_documents import guidance_for_reason_code
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .documents import DocumentAttachment, _safe_name, _validate_text
 from .config import _normalize_base_url
 
 FILE_ID = re.compile(r"file_[a-f0-9]{32}\Z")
-KINDS = {"txt": "text/plain", "md": "text/markdown", "csv": "text/csv", "pdf": "application/pdf"}
+KINDS = {
+    "txt": "text/plain", "md": "text/markdown", "csv": "text/csv", "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
+BINARY_KINDS = frozenset({"pdf", "docx", "pptx", "xlsx"})
 TICKET_LIFETIME_SECONDS = 600
+
+# The constant reason codes the lane may answer a text read with (#6338): the
+# Core document_normalization refusal catalog the lane's own allowlist draws
+# from. Only a code crosses here — a lane error body's other content, like any
+# parser exception text, never reaches the owner.
+REASON_CODES = frozenset({
+    "ooxml_archive_size", "ooxml_encrypted", "ooxml_unsafe_path", "ooxml_link_entry",
+    "ooxml_dtd_rejected", "ooxml_entry_size", "ooxml_total_inflation", "ooxml_malformed",
+    "ooxml_invalid_xml",
+    "docx_missing_part", "docx_empty", "pptx_missing_slides", "pptx_empty",
+    "xlsx_invalid", "xlsx_no_sheets", "xlsx_empty",
+    "pdf_magic_mismatch", "pdf_encrypted", "pdf_invalid", "pdf_no_pages",
+    "pdf_empty_text", "pdf_page_text_invalid", "pdf_page_geometry_unavailable",
+    "empty_document", "binary_text_rejected", "excessive_control_characters", "invalid_text",
+    "document_dependency_unavailable",
+})
+_UNREADABLE_TEXT = "첨부 문서의 텍스트를 읽지 못했습니다."
+
+
+async def _lane_refusal_message(response, media_type: str) -> str:
+    """Per-code guidance from the lane's ``{"ok": false, "error": {"code": ...}}``.
+
+    The body is parsed defensively and only its constant reason code is used:
+    anything unmapped, malformed, or unreadable keeps the generic wording.
+    """
+
+    try:
+        body = json.loads(await response.aread())
+        code = body["error"]["code"] if isinstance(body, dict) else None
+    except Exception:
+        code = None
+    if isinstance(code, str) and code in REASON_CODES:
+        return guidance_for_reason_code(code, media_type) or _UNREADABLE_TEXT
+    return _UNREADABLE_TEXT
 
 
 def ticket_headers(secret, user_id, maximum):
@@ -93,7 +134,8 @@ class FileLaneClient:
                 name = _safe_name(meta.get("name"))
                 async with client.stream("GET", url + "/text", headers=headers) as response:
                     if response.status_code != 200:
-                        raise AttachmentValidationError("첨부 문서의 텍스트를 읽지 못했습니다.")
+                        raise AttachmentValidationError(
+                            await _lane_refusal_message(response, KINDS[meta["kind"]]))
                     # COM2 owns parsing. No original PDF/ZIP/image is fetched or
                     # decoded in the Worker; this is the model's text context.
                     text = "".join([part async for part in response.aiter_text()])

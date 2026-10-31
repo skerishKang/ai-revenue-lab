@@ -96,7 +96,8 @@ def test_model_status_button_cannot_hijack_existing_tier_picker():
     assert 'id="ownerModelPreviewOpen"' not in html
     assert html.count('class="model-pill composer-tier-trigger"') == 1
     assert 'const modePill = document.querySelector(".model-pill")' in mode
-    assert '[".model-pill span:last-child", "mode"]' in locale
+    assert '[".model-pill span:last-child", "mode"]' not in locale
+    assert '[".model-pill", "aria-label", "tier"]' in locale
     assert "model-pill:not(#ownerModelPreviewOpen)" not in locale
 
 

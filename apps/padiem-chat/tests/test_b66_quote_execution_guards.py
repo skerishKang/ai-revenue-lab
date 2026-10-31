@@ -217,7 +217,8 @@ def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout(
     # attempt ceiling is sent. The one-shot contract is the pinned retry
     # budget above.
     assert "max_attempts" not in payload["business14"]
-    assert payload["business14"]["allow_external_fallback"] is False
+    # B5: the retired fallback knob no longer travels on the wire.
+    assert "allow_external_fallback" not in payload["business14"]
 
     repo = Path(__file__).resolve().parents[3]
     script = '''

@@ -17,7 +17,6 @@ from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionRuntime,
     ExecutionRuntimeError,
-    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
 )
 
 
@@ -131,10 +130,8 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
     executor = FakeExecutor()
     profile = agent(
         model_policy={
-            "model": "b14/auto",
+            "model": "sensenova/sensenova-6.8-flash-lite",
             "temperature": 0.4,
-            "allow_external_fallback": True,
-            "provider_order": ["OpenRouter"],
             }
     )
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
@@ -142,15 +139,13 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
     run(runtime.run(request(profile)))
     payload = executor.calls[0].to_payload()
 
-    assert payload["model"] == "b14/auto"
+    assert payload["model"] == "sensenova/sensenova-6.8-flash-lite"
     assert payload["temperature"] == 0.4
     assert payload["max_tokens"] == 700
+    # B4/B5: the scorer-era fields and the fallback knob no longer exist on
+    # the Core-to-B14 wire; only the real routing inputs travel.
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["free"],
-        "optimize_for": "korean",
-        "allow_external_fallback": True,
-        "provider_order": ["OpenRouter"],
     }
 
 

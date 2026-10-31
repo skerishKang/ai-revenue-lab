@@ -43,6 +43,13 @@ class N {
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   removeChild(child) { const i = this.children.indexOf(child); if (i >= 0) this.children.splice(i, 1); }
+  insertBefore(child, ref) {
+    const i = this.children.indexOf(ref);
+    if (i < 0) return this.appendChild(child);
+    this.children.splice(i, 0, child);
+    child.parentNode = this;
+    return child;
+  }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
   removeEventListener() {}
@@ -142,8 +149,25 @@ class FakeFileReader {
 const chatRequests = [];
 const storedFiles = [];
 const requestsLog = [];
+// The real store never reuses an id after a DELETE; the fake must not either,
+// or a delete+recreate (exactly what the roster rewrite does) collides two
+// different files under one id.
+let fakeFileSeq = 0;
+function nextBinaryId() { return "file_" + String(1000 + ++fakeFileSeq).padStart(32, "0").slice(-32); }
+function nextTextId() { return "f" + (++fakeFileSeq); }
 function json(data) { return { ok: true, status: 200, json: async () => data }; }
-const CURRENT = { alerts: [] };
+const CURRENT = { alerts: [], links: [], exchangeOpens: [], exchangeSelect: null, nativePicks: 0, pcFileStatus: 0, pcFileBytes: null };
+
+class FakeFile {
+  constructor(parts, name, opts) {
+    this._parts = parts || [];
+    this.name = String(name || "");
+    this.type = (opts && opts.type) || "";
+    const sizes = this._parts.map((p) => Number(p && p.size)).filter(Number.isFinite);
+    this.size = (opts && Number.isFinite(Number(opts.size))) ? Number(opts.size)
+      : sizes.length === this._parts.length ? sizes.reduce((a, b) => a + b, 0) : 0;
+  }
+}
 
 async function fetch(url, opts) {
   opts = opts || {};
@@ -158,9 +182,21 @@ async function fetch(url, opts) {
   if (method === "POST" && path === "/api/projects/p1/files" && opts.headers && String(opts.headers["Content-Type"] || "").indexOf("octet-stream") >= 0) {
     const fname = decodeURIComponent(opts.headers["X-Padiem-Filename"] || "");
     const ftype = opts.headers["X-Padiem-Media-Type"] || "";
-    const id = "file_" + String(1000 + storedFiles.length).padStart(32, "0").slice(-32);
+    const id = nextBinaryId();
     storedFiles.push({ id, name: fname, media_type: ftype, binary: true });
     return json({ file: { id, name: fname, media_type: ftype, content_chars: 0 } });
+  }
+  if (method === "GET" && path === "/api/pc/pairings") {
+    if (CURRENT.links === null) return { ok: false, status: 503, json: async () => ({ error: { code: "pc_pairing_unavailable" } }) };
+    return json({ links: CURRENT.links });
+  }
+  if (method === "GET" && path === "/api/pc/file") {
+    // /api/pc/file answers the PC file's real bytes; the fake serves a real
+    // JPEG signature, because the client now reads the media type from them.
+    if (CURRENT.pcFileStatus) return { ok: false, status: CURRENT.pcFileStatus, json: async () => ({}) };
+    const bytes = CURRENT.pcFileBytes
+      || new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01]);
+    return { ok: true, status: 200, blob: async () => ({ size: bytes.length, arrayBuffer: async () => bytes }) };
   }
   const originalMatch = /^\/api\/projects\/p1\/files\/(file_\d+)\/original$/.exec(path);
   if (method === "GET" && originalMatch) {
@@ -195,7 +231,7 @@ async function fetch(url, opts) {
     if (ext === "json" && body.media_type !== "application/json") {
       return { ok: false, status: 422, json: async () => ({ error: { code: "invalid_document", message: "문서 확장자와 파일 형식이 일치하지 않습니다." } }) };
     }
-    const file = { id: "f" + (storedFiles.length + 1), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
+    const file = { id: nextTextId(), name: body.name, media_type: body.media_type, content: String(body.text || ""), content_chars: (body.text || "").length };
     storedFiles.push(file);
     return json({ file });
   }
@@ -273,13 +309,24 @@ function spawnSession(tag) {
       createElement: (tag) => new N(tag),
       addEventListener() {},
     },
-    window: {},
+    window: {
+      PadiemPcFileExchange: {
+        open: (settings) => {
+          CURRENT.exchangeOpens.push(settings || {});
+          CURRENT.exchangeSelect = (settings && settings.onSelect) || null;
+          return { close() {} };
+        },
+        close() {},
+      },
+    },
     navigator: {},
+    atob: (text) => Buffer.from(String(text), "base64").toString("binary"),
     fetch: fetch,
     alert: (message) => alerts.push(String(message)),
     console: console,
     setTimeout: () => 0,
     Blob: function Blob() {},
+    File: FakeFile,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
     FileReader: FakeFileReader,
@@ -402,8 +449,28 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (roster.photos[0].name !== "a.png" || roster.photos[1].name !== "c.png") fail("ROSTER_ORDER_WRONG", { roster: roster.photos });
   if (roster.photos[0].position !== "0") fail("ROSTER_POSITION_NOT_KEPT", { roster: roster.photos });
 
-  // 11) session B: re-entry restores the composition at build time — no
-  // interaction — in the roster's order with its positions.
+  // 11) the user writes the draft and presses 저장: the draft text and its
+  // platform ride the SAME roster record, and the roster is rewritten in
+  // place (never a second roster file).
+  const draftText = "저장한 초안입니다.\n\n둘째 문단입니다.";
+  root._descendants().find((n) => n.id === "utilSnsOutput").value = draftText;
+  const saveBtnA = root._descendants().find((n) => n.id === "utilSnsSave");
+  if (!saveBtnA) fail("SAVE_BUTTON_MISSING");
+  await saveBtnA.dispatch("click");
+  await sleep(60);
+  const rosterCount = storedFiles.filter((f) => f.name === "SNS 사진 구성.json").length;
+  if (rosterCount !== 1) fail("ROSTER_DUPLICATED", { count: rosterCount });
+  let savedRoster = null;
+  try { savedRoster = JSON.parse(storedFiles.find((f) => f.name === "SNS 사진 구성.json").content); } catch (_) { fail("ROSTER_NOT_JSON_AFTER_SAVE"); }
+  if (!savedRoster.draft || savedRoster.draft.text !== draftText) fail("ROSTER_DRAFT_NOT_SAVED", { draft: savedRoster.draft || null });
+  if (savedRoster.draft.platform !== "blog") fail("ROSTER_DRAFT_PLATFORM_WRONG", { platform: savedRoster.draft.platform });
+  if (!Array.isArray(savedRoster.photos) || savedRoster.photos.length !== 2) fail("ROSTER_PHOTOS_LOST_ON_SAVE", { photos: savedRoster.photos });
+  const draftTxtFiles = storedFiles.filter((f) => f.name === "블로그 게시글.txt");
+  if (draftTxtFiles.length !== 1 || draftTxtFiles[0].content !== draftText) fail("DRAFT_FILE_NOT_SAVED");
+
+  // 12) session B: re-entry restores the composition at build time — no
+  // interaction — in the roster's order with its positions, and the saved
+  // draft text comes back with it.
   const B = spawnSession("B");
   await B.navBtn.dispatch("click");
   const snsTabB = B.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
@@ -417,16 +484,113 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   if (!restoredSelect || restoredSelect.value !== "0") fail("RESTORE_POSITION_WRONG");
   const restoredCount = B.root._descendants().find((n) => n.id === "utilSnsPhotoCount");
   if (!restoredCount || restoredCount.textContent !== "2장") fail("RESTORE_COUNT_LABEL_WRONG");
+  const restoredOutput = B.root._descendants().find((n) => n.id === "utilSnsOutput");
+  if (!restoredOutput || restoredOutput.value !== draftText) fail("RESTORE_DRAFT_WRONG", { text: restoredOutput ? restoredOutput.value : null });
+  const restoredResult = B.root._descendants().find((n) => n.id === "utilSnsResult");
+  if (!restoredResult || restoredResult.hidden) fail("RESTORE_RESULT_HIDDEN");
+  const restoredTitle = B.root._descendants().find((n) => n.id === "utilSnsTitle");
+  if (!restoredTitle || restoredTitle.textContent !== "블로그 게시글") fail("RESTORE_TITLE_WRONG", { title: restoredTitle ? restoredTitle.textContent : null });
+
+  // 13) a draft saved under another platform re-opens on that platform.
+  // Session B switches to facebook, saves, then session C must restore the
+  // facebook draft through the platform tab, not the blog default.
+  const fbTabB = B.root._descendants().find((n) => n.id === "utilSnsForm").querySelectorAll(".util-sns-tab").find((t) => t.dataset.platform === "facebook");
+  if (!fbTabB) fail("FB_TAB_MISSING_IN_B");
+  await fbTabB.dispatch("click");
+  const fbDraftText = "페이스북용으로 다시 저장한 초안입니다.";
+  restoredOutput.value = fbDraftText;
+  await B.root._descendants().find((n) => n.id === "utilSnsSave").dispatch("click");
+  await sleep(60);
+  const C = spawnSession("C");
+  await C.navBtn.dispatch("click");
+  const snsTabC = C.utilView.querySelectorAll(".util-tab").find((t) => t.dataset.util === "sns");
+  await snsTabC.dispatch("click");
+  await sleep(50);
+  const cOutput = C.root._descendants().find((n) => n.id === "utilSnsOutput");
+  if (!cOutput || cOutput.value !== fbDraftText) fail("RESTORE_C_DRAFT_WRONG", { text: cOutput ? cOutput.value : null });
+  const cTitle = C.root._descendants().find((n) => n.id === "utilSnsTitle");
+  if (!cTitle || cTitle.textContent !== "페이스북 게시글") fail("RESTORE_C_PLATFORM_WRONG", { title: cTitle ? cTitle.textContent : null });
+
+  // 14) #5728: with a linked PC, 사진 추가 opens the shared 가져오기 dialog
+  // and the picked PC file joins the composition through the same pipeline.
+  CURRENT.links = [{ state: "active" }];
+  input.addEventListener("click", () => { CURRENT.nativePicks += 1; });
+  await addBtn.dispatch("click");
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_NOT_OPENED", { opens: CURRENT.exchangeOpens.length });
+  if (CURRENT.exchangeOpens[0].mode !== "import" || typeof CURRENT.exchangeOpens[0].onSelect !== "function") fail("SHARED_DIALOG_MODE_OR_CALLBACK_WRONG");
+  if (CURRENT.nativePicks !== 0) fail("NATIVE_PICKER_USED_WITH_LINKED_PC");
+  await CURRENT.exchangeSelect({ fileId: "d1", name: "pc사진.jpg" });
+  await sleep(30);
+  items = root.findAll(".util-photo-item");
+  if (items.length !== 3 || names()[2] !== "pc사진.jpg") fail("PC_PHOTO_NOT_ADDED", { names: names() });
+
+  // 15) no linked PC (a phone included), and a pairing store that cannot
+  // answer: 사진 추가 keeps the local picker instead of a dead-end dialog.
+  CURRENT.links = [];
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_WITHOUT_PC");
+  if (CURRENT.nativePicks !== 1) fail("NATIVE_PICKER_FALLBACK_MISSING");
+  CURRENT.links = null;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 1) fail("SHARED_DIALOG_OPENED_ON_UNKNOWN_PAIRINGS");
+  if (CURRENT.nativePicks !== 2) fail("NATIVE_PICKER_MISSING_ON_UNKNOWN_PAIRINGS");
+
+  // 16) The 가져오기 dialog lists every file in a folder, so the extension
+  // proves nothing. A PC file whose bytes are not PNG/JPG/WEBP is refused by
+  // the bytes themselves: no upload, one sentence naming the formats, and no
+  // [다시 시도] row — a retry against a permanent refusal would only loop.
+  CURRENT.links = [{ state: "active" }];
+  CURRENT.pcFileBytes = new TextEncoder().encode("그냥 텍스트 파일입니다");
+  const photosBefore = root.findAll(".util-photo-item").length;
+  const binariesBefore = storedFiles.filter((f) => f.binary).length;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  if (CURRENT.exchangeOpens.length !== 2) fail("SHARED_DIALOG_NOT_REOPENED", { opens: CURRENT.exchangeOpens.length });
+  await CURRENT.exchangeSelect({ fileId: "d2", name: "메모.txt" });
+  await sleep(30);
+  if (root.findAll(".util-photo-item").length !== photosBefore) fail("NON_IMAGE_PC_FILE_ADDED", { names: names() });
+  if (storedFiles.filter((f) => f.binary).length !== binariesBefore) fail("NON_IMAGE_PC_FILE_UPLOADED");
+  const refusedStatus = root._descendants().find((n) => n.id === "utilSnsPhotoStatus");
+  if (!refusedStatus || refusedStatus.hidden || refusedStatus.textContent.indexOf("PNG·JPG·WEBP") < 0) {
+    fail("NON_IMAGE_PC_FILE_NOT_EXPLAINED", { text: refusedStatus ? refusedStatus.textContent : null });
+  }
+  if (refusedStatus.textContent.indexOf("메모.txt") < 0) fail("NON_IMAGE_PC_FILE_NOT_NAMED", { text: refusedStatus.textContent });
+  const refusedRetry = root._descendants().find((n) => n.id === "utilSnsPhotoRetry");
+  if (!refusedRetry || !refusedRetry.hidden) fail("RETRY_OFFERED_FOR_PERMANENT_REFUSAL");
+
+  // 17) The PC read itself failing says which side stopped it — an HTTP status
+  // in the menu's own Korean copy, and the offline sentence for a dead network
+  // — with nothing added and nothing to retry.
+  CURRENT.pcFileBytes = null;
+  CURRENT.pcFileStatus = 503;
+  await addBtn.dispatch("click");
+  await sleep(10);
+  await CURRENT.exchangeSelect({ fileId: "d3", name: "큰사진.jpg" });
+  await sleep(30);
+  if (root.findAll(".util-photo-item").length !== photosBefore) fail("FAILED_PC_READ_ADDED_PHOTO");
+  if (refusedStatus.textContent.indexOf("사진을 가져오지 못했어요") < 0
+      || refusedStatus.textContent.indexOf("과부하") < 0) {
+    fail("FAILED_PC_READ_COPY_WRONG", { text: refusedStatus.textContent });
+  }
+  if (!refusedRetry.hidden) fail("RETRY_OFFERED_FOR_FAILED_PC_READ");
+  CURRENT.pcFileStatus = 0;
+  CURRENT.links = [];
 
   console.log(JSON.stringify({
     ok: true,
     photos: root.findAll(".util-photo-item").length,
     restored: restoredNames,
     restoredPosition: restoredSelect ? restoredSelect.value : null,
+    restoredDraft: restoredOutput ? restoredOutput.value : null,
+    restoredPlatform: cTitle ? cTitle.textContent : null,
     rosterOrder: roster.photos.map((p) => p.name + ":" + p.position),
     promptHead: prompt.slice(0, 60),
     blogSeq: seq.slice(0, 6),
     storedBinary: storedFiles.filter((f) => f.binary).length,
+    pcPhoto: names()[2] || null,
+    pcRefusalCopy: refusedStatus ? refusedStatus.textContent : null,
     alertsA: A.alerts, alertsB: B.alerts,
   }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, fail: "HARNESS_EXCEPTION", extra: String(e && e.stack || e) })); process.exit(1); });

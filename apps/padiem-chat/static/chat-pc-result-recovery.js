@@ -107,12 +107,17 @@
       var runId = details.runId;
       var conversationId = details.conversationId;
       var signal = details.signal;
+      // #5895: no default give-up. A PC turn that takes minutes is the same
+      // turn, and the server keeps its answer; stopping the read-back after a
+      // fixed number of attempts only turned a running task into a dead screen.
+      // An explicit caller-supplied bound is still honoured.
       var maxAttempts = Number.isInteger(details.maxAttempts) && details.maxAttempts > 0
-        ? details.maxAttempts : 45;
+        ? details.maxAttempts : null;
       var intervalMs = Number.isInteger(details.intervalMs) && details.intervalMs >= 0
         ? details.intervalMs : 2000;
+      var onPending = typeof details.onPending === "function" ? details.onPending : null;
       var last = {kind: "pending"};
-      for (var attempt = 0; attempt < maxAttempts; attempt += 1) {
+      for (var attempt = 0; maxAttempts === null || attempt < maxAttempts; attempt += 1) {
         if (signal && signal.aborted) {
           var aborted = new Error("aborted");
           aborted.name = "AbortError";
@@ -120,7 +125,10 @@
         }
         last = await read(runId, conversationId, signal);
         if (last.kind !== "pending") return last;
-        if (attempt + 1 < maxAttempts) await sleep(intervalMs, signal);
+        // The caller keeps its own wording truthful between reads; this cannot
+        // end the turn and cannot start another one.
+        if (onPending) onPending(last);
+        if (maxAttempts === null || attempt + 1 < maxAttempts) await sleep(intervalMs, signal);
       }
       return {kind: "pending", conversationId: last.conversationId || conversationId || null};
     }

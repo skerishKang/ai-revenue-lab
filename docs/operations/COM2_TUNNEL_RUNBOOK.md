@@ -40,3 +40,17 @@ On failed activation, stop/disable **only** `cloudflared-padiem.service`. Restor
 - [Run parameters: TUNNEL_TOKEN and token mode](https://developers.cloudflare.com/tunnel/reference/run-parameters/)
 - [Locally managed configuration and ingress validation](https://developers.cloudflare.com/tunnel/features/locally-managed-tunnels/configuration-file/)
 - [COM2 host facts](COM2_HOST_FACTS_20261026.md)
+
+## MeshCentral 설정 변경 기록 (2026-10-28)
+
+"이 PC 연결" 설치 흐름(mesh.padiem.net:443 에이전트)을 위한 COM2 MeshCentral server 설정 변경. 각 키는 원본 설정 파일을 타임스탬프 접미사 백업 사본으로 보존한 뒤 변경했고, 토큰·비밀 값은 이 문서에 적지 않는다.
+
+| Key | Value (구조만) | 비고 |
+|---|---|---|
+| cert | `mesh.padiem.net` | 공개 모드(사설 터널 전용에서 공개 인증서 모드로) |
+| ignoreagenthashcheck | enabled | 에이전트 해시 체크 해제 — 설치 파일 표식 연결 방식 |
+| agentping | 60 | 에이전트 응답 주기(초) |
+| aliasport | 443 | 에이전트 별칭 포트 |
+| agentaliasdns / agentaliasport | mesh.padiem.net / 443 | 에이전트가 접속할 별칭 DNS·포트 |
+
+현재 설치 흐름의 정본 문서: `PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md` 상단 대체 블록, 추적은 #6008.

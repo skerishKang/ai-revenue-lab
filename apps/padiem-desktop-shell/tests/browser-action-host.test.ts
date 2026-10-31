@@ -189,7 +189,7 @@ function harnessFactory(
     observation,
     binding,
     leaseAuthority,
-    ...(options.now === undefined ? {} : { now: options.now }),
+    now: clock,
   });
   return {
     host,

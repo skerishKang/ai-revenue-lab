@@ -196,26 +196,31 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         return task
 
     async def set_task_status(
-        self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, at: datetime | None = None
+        self, task_id: str, status: ClawTaskStatus, *, workspace_id: str, member_id: str,
+        at: datetime | None = None
     ) -> ClawFollowupTask:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("task_id", task_id)
+        _safe_identifier("member_id", member_id)
         if not isinstance(status, ClawTaskStatus):
             try:
                 status = ClawTaskStatus(status)
             except (TypeError, ValueError) as exc:
                 raise ClawMemoryError(f"invalid task status: {status}") from exc
         now = at or _utcnow()
-        current = await self._get_task_locked(task_id, workspace_id=workspace_id)
+        current = await self._get_task_locked(
+            task_id, workspace_id=workspace_id, member_id=member_id
+        )
         if current is None:
             raise ClawMemoryError("task not found in workspace")
         await self._run(
             f"UPDATE {_TASK_ALERT_TABLE} SET status=?, updated_at=? "
-            f"WHERE id=? AND workspace_id=? AND kind='task'",
+            f"WHERE id=? AND workspace_id=? AND member_id=? AND kind='task'",
             status.value,
             now.isoformat(),
             task_id,
             workspace_id,
+            member_id,
         )
         return current.with_status(status, at=now)
 
@@ -253,91 +258,130 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         return alert
 
     async def set_alert_status(
-        self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, at: datetime | None = None
+        self, alert_id: str, status: ClawAlertStatus, *, workspace_id: str, member_id: str,
+        at: datetime | None = None
     ) -> ClawAlert:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("alert_id", alert_id)
+        _safe_identifier("member_id", member_id)
         if not isinstance(status, ClawAlertStatus):
             try:
                 status = ClawAlertStatus(status)
             except (TypeError, ValueError) as exc:
                 raise ClawMemoryError(f"invalid alert status: {status}") from exc
         now = at or _utcnow()
-        current = await self._get_alert_locked(alert_id, workspace_id=workspace_id)
+        current = await self._get_alert_locked(
+            alert_id, workspace_id=workspace_id, member_id=member_id
+        )
         if current is None:
             raise ClawMemoryError("alert not found in workspace")
         await self._run(
             f"UPDATE {_TASK_ALERT_TABLE} SET status=?, updated_at=? "
-            f"WHERE id=? AND workspace_id=? AND kind='alert'",
+            f"WHERE id=? AND workspace_id=? AND kind='alert' "
+            f"AND (visible_to_all=1 OR member_id=?)",
             status.value,
             now.isoformat(),
             alert_id,
             workspace_id,
+            member_id,
         )
         return current.with_status(status, at=now)
 
-    async def _get_task_locked(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None:
+    async def _get_task_locked(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None:
+        """#2952 follow-up: the owner predicate is in the read, not left to the caller."""
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("task_id", task_id)
+        _safe_identifier("member_id", member_id)
         row = await self._first(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
             f"linked_ref, severity, kind_value, visible_to_all FROM {_TASK_ALERT_TABLE} "
-            f"WHERE id=? AND workspace_id=? AND kind='task'",
+            f"WHERE id=? AND workspace_id=? AND member_id=? AND kind='task'",
             task_id,
             workspace_id,
+            member_id,
         )
         return self._task_row_to_record(row) if row else None
 
-    async def _get_alert_locked(self, alert_id: str, *, workspace_id: str) -> ClawAlert | None:
+    async def _get_alert_locked(
+        self, alert_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawAlert | None:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("alert_id", alert_id)
+        _safe_identifier("member_id", member_id)
         row = await self._first(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
             f"linked_ref, severity, kind_value, visible_to_all FROM {_TASK_ALERT_TABLE} "
-            f"WHERE id=? AND workspace_id=? AND kind='alert'",
+            f"WHERE id=? AND workspace_id=? AND kind='alert' "
+            f"AND (visible_to_all=1 OR member_id=?)",
             alert_id,
             workspace_id,
+            member_id,
         )
         if row is None:
             return None
         return self._alert_row_to_record(row)
 
-    async def get_task(self, task_id: str, *, workspace_id: str) -> ClawFollowupTask | None:
-        """Bounded, non-disclosing task lookup. Returns None (never raises with
-        cross-workspace details) when the task is absent or owned elsewhere."""
+    async def get_task(
+        self, task_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawFollowupTask | None:
+        """Bounded, non-disclosing task lookup for one verified member.
+
+        ``member_id`` is required: a read with no owner cannot be expressed, and a
+        tenant-mate asking for another member's row resolves to the same ``None``
+        as a missing row, so nothing about the foreign row is disclosed.
+        """
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("task_id", task_id)
+        _safe_identifier("member_id", member_id)
         try:
-            return await self._get_task_locked(task_id, workspace_id=workspace_id)
+            return await self._get_task_locked(
+                task_id, workspace_id=workspace_id, member_id=member_id
+            )
         except WorkspaceStorageError:
             return None
 
-    async def get_alert(self, alert_id: str, *, workspace_id: str, member_id: str | None = None) -> ClawAlert | None:
-        """Bounded, non-disclosing alert lookup. Member-scoped when a member is
-        supplied; foreign/invisible alerts resolve to None."""
+    async def get_alert(
+        self, alert_id: str, *, workspace_id: str, member_id: str
+    ) -> ClawAlert | None:
+        """Bounded, non-disclosing alert lookup for one verified member.
+
+        ``visible_to_all`` rows stay company-shared, which is why the predicate is
+        ``visible_to_all=1 OR member_id=?`` instead of the owner column alone.
+        """
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("alert_id", alert_id)
+        _safe_identifier("member_id", member_id)
         try:
-            record = await self._get_alert_locked(alert_id, workspace_id=workspace_id)
+            return await self._get_alert_locked(
+                alert_id, workspace_id=workspace_id, member_id=member_id
+            )
         except WorkspaceStorageError:
             return None
-        if record is None:
-            return None
-        if member_id is not None and not record.is_visible_to(member_id):
-            return None
-        return record
 
     async def list_tasks(
-        self, workspace_id: str, *, limit: int = _MAX_INBOX_LIST
+        self, workspace_id: str, *, member_id: str, limit: int = _MAX_INBOX_LIST
     ) -> tuple[ClawFollowupTask, ...]:
+        """#2952 follow-up: a task read is scoped by its owner in the SQL itself.
+
+        ``member_id`` is required rather than optional because the row already
+        carries its owner and the tenant-wide scan was bounded: with the scope
+        applied after the ``LIMIT``, one member's volume pushed another
+        member's own rows out of their inbox and calendar. Filtering inside the
+        query makes that structurally impossible and a read with no verified
+        owner cannot even be expressed.
+        """
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("member_id", member_id)
         bounded = max(1, min(limit, _MAX_INBOX_LIST))
         rows = await self._all(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
             f"linked_ref, severity, kind_value, visible_to_all FROM {_TASK_ALERT_TABLE} "
-            f"WHERE workspace_id=? AND kind='task' "
+            f"WHERE workspace_id=? AND member_id=? AND kind='task' "
             f"ORDER BY created_at DESC LIMIT {int(bounded)}",
             workspace_id,
+            member_id,
         )
         return tuple(self._task_row_to_record(r) for r in rows)
 
@@ -345,10 +389,11 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         self,
         workspace_id: str,
         *,
-        member_id: str | None = None,
+        member_id: str,
         limit: int = _MAX_INBOX_LIST,
     ) -> tuple[ClawAlert, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("member_id", member_id)
         bounded = max(1, min(limit, _MAX_INBOX_LIST))
         rows = await self._all(
             f"SELECT id, workspace_id, status, title, created_at, member_id, due_date, source_id, "
@@ -357,13 +402,13 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
             f"ORDER BY created_at DESC LIMIT {int(bounded)}",
             workspace_id,
         )
-        records = [self._alert_row_to_record(r) for r in rows]
-        if member_id is not None:
-            records = [r for r in records if r.is_visible_to(member_id)]
+        # ``visible_to_all`` rows are company-shared by design, so the member
+        # predicate stays in ``is_visible_to`` instead of the WHERE clause.
+        records = [r for r in (self._alert_row_to_record(row) for row in rows) if r.is_visible_to(member_id)]
         return tuple(records[:bounded])
 
     async def projection(
-        self, workspace_id: str, *, member_id: str | None = None,
+        self, workspace_id: str, *, member_id: str,
         include_raw: bool = True,
     ) -> dict[str, Any]:
         """The workspace-scoped Task/Alert projection of this Claw memory store.
@@ -375,7 +420,7 @@ class D1ClawTaskAlertStore(ClawMemoryStore):
         the switch only keeps this adapter callable through the contract.
         """
         _safe_identifier("workspace_id", workspace_id)
-        tasks = await self.list_tasks(workspace_id)
+        tasks = await self.list_tasks(workspace_id, member_id=member_id)
         alerts = await self.list_alerts(workspace_id, member_id=member_id)
         return {
             "contract_version": CONTRACT_VERSION,

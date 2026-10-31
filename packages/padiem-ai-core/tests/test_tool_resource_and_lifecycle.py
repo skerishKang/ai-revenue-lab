@@ -81,7 +81,10 @@ def test_invalid_server_policy_fails_closed() -> None:
     with pytest.raises(ToolResourcePolicyError):
         ToolResourcePolicy(max_output_bytes=0)
     with pytest.raises(ToolResourcePolicyError):
-        ToolResourcePolicy(max_timeout_seconds=301)
+        ToolResourcePolicy(max_timeout_seconds=0)
+    # #5895: there is no upper bound on the timeout anymore — a long-running
+    # tool is a caller choice, so 301 is accepted, not refused.
+    assert ToolResourcePolicy(max_timeout_seconds=301).max_timeout_seconds == 301
 
 
 def test_effective_resource_projection_has_no_credentials_or_handlers() -> None:

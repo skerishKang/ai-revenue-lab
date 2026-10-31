@@ -1,0 +1,25 @@
+[Unit]
+Description=PADIEM COM2 broker staging (loopback 8799)
+After=network.target
+RequiresMountsFor=/mnt/d/padiem/broker-staging
+ConditionPathIsMountPoint=/mnt/d
+ConditionPathExists=/opt/padiem/broker-staging/.env
+
+[Service]
+User=padiem-broker-staging
+Group=padiem-broker-staging
+WorkingDirectory=/opt/padiem/broker-staging
+EnvironmentFile=/opt/padiem/broker-staging/.env
+Environment=PYTHONPATH=/opt/padiem/broker-staging:/opt/padiem/broker-staging/src
+ExecCondition=/opt/padiem/broker-staging/venv/bin/python /opt/padiem/broker-staging/check_config.py
+ExecStart=/opt/padiem/broker-staging/venv/bin/python -m uvicorn --factory service:build_app --host 127.0.0.1 --port 8799 --no-server-header
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/mnt/d/padiem/broker-staging
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

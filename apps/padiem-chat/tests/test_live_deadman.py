@@ -123,7 +123,7 @@ def test_worker_and_wrangler_wire_the_deadman_switch_before_bootstrap():
     assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
     assert worker.index(resolve_line) < worker.index(apply_line)
     assert worker.index(apply_line) < worker.index("web_transport = CloudflareExternalHttpTransport()")
-    assert worker.index("web_transport = CloudflareExternalHttpTransport()") < worker.index("_worker_app = create_app(")
+    assert worker.index("web_transport = CloudflareExternalHttpTransport()") < worker.index("worker_app = create_app(")
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
 
 

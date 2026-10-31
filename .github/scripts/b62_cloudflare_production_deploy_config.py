@@ -265,7 +265,7 @@ def _vars_plan(live, repo, set_var, allow_binding_removal):
     return values
 
 
-def production_plan(live, repo, *, allow_binding_removal=False, set_var=None):
+def production_plan(live, repo, *, allow_binding_removal=False, set_var=None, emit=True):
     expected = inventory(repo)
     values = _vars_plan(live, repo, set_var, allow_binding_removal)
     for name in values:
@@ -279,7 +279,11 @@ def production_plan(live, repo, *, allow_binding_removal=False, set_var=None):
     for name in sorted(set(live["vars"]) & set(values)):
         if live["vars"][name] != values[name] and name not in changed_names:
             diff["changed"].append({"name": name, "type": "plain_text", "previous_type": "plain_text"})
-    emit_diff(diff)
+    # B62_BINDING_DIFF_COUNTS means production only. A structural caller that
+    # compares declarations against a reviewed baseline must not print it, and
+    # the deploy gate prints that comparison once by itself.
+    if emit:
+        emit_diff(diff)
     enforce_removal(diff, allow_binding_removal)
     return expected, values
 

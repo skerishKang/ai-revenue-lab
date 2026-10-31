@@ -10,7 +10,7 @@ import json
 import re
 from pathlib import Path
 
-from app.model_policy import AUTO_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 
 TESTS = Path(__file__).resolve().parent
 MANIFEST = json.loads(
@@ -104,5 +104,8 @@ def test_mock_modules_are_never_reported_as_live_e2e():
 
 
 def test_disabled_auto_stays_out_of_the_executable_set():
-    assert AUTO_B14_MODEL_ID == "b14/auto"
-    assert AUTO_B14_MODEL_ID not in EXECUTABLE_B14_MODEL_IDS
+    from app import model_policy as model_policy_module
+
+    # B1: the retired automatic-selection id is no longer a catalog name at all.
+    assert not hasattr(model_policy_module, "AUTO_B14_MODEL_ID")
+    assert "b14/auto" not in EXECUTABLE_B14_MODEL_IDS

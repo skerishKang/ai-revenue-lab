@@ -119,6 +119,10 @@ def test_binding_report_matches_expected_state():
             # #5898 moved these Chat-owned Secrets Store references into the repository
             # declaration; names only, same store, and no STT provider key.
             "PADIEM_CHAT_DAUM_REST_API_KEY",
+            "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+            # #6267: Chat-owned shared-auth comparison bindings.
+            "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK",
+            "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY",
             "PADIEM_EXLAB_API_KEY",
             "PADIEM_GITHUB_APP_CLIENT_SECRET",
             "PADIEM_GRAFANA_OTLP_TOKEN",

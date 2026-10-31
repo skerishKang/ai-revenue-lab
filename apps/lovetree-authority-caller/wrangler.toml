@@ -1,0 +1,12 @@
+name = "lovetree-authority-caller"
+main = "worker.mjs"
+compatibility_date = "2026-08-27"
+workers_dev = true
+
+# COM2 → 중계 서버 간 인증은 wrangler secret으로만 넣는다(값을 이 파일에 적지 않는다).
+#   npx wrangler secret put LOVETREE_CALLER_SECRET --name lovetree-authority-caller
+# 읽기 전용 service binding 하나만 갖는다. D1/KV/R2 바인딩 0개, Control Plane의
+# 공개 HTTP 표면은 그대로다(PRODUCTION_ROUTE_CONFIGURED=False 유지).
+[[services]]
+binding = "IDENTITY_AUTHORITY"
+service = "padiem-control-plane-identity"

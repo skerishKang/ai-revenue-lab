@@ -55,9 +55,13 @@ def test_profile_reuses_existing_login_settings_contract():
 
 def test_locale_hints_and_account_actions_are_translatable():
     ko, en = LOCALE.split("en: {", 1)
-    for key in ("nav-claw-hint", "search-conversation-hold", "account-profile-toggle", "account-profile-settings"):
+    for key in ("nav-claw-hint", "account-profile-toggle", "account-profile-settings"):
         assert f'"{key}"' in ko
         assert f'"{key}"' in en
+    # The search button keeps the neutral "search" label; the fake
+    # "coming soon" hold promise is gone from both locale tables.
+    for table in (ko, en):
+        assert '"search-conversation-hold"' not in table
     assert "업무·파일" in ko
     assert "Work & files" in en
     assert 'window.addEventListener("padiem:localechange"' in APP

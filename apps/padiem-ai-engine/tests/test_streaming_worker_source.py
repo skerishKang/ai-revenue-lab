@@ -53,7 +53,8 @@ def test_worker_reuses_core_streaming_runtime_and_fixed_binding() -> None:
     assert 'BINDING_ORIGIN = "https://b14.internal"' in core_upstream
     assert "B14_CHAT_COMPLETIONS_PATH" in transport
     assert "B14_STREAM_PREVIEW_PATH" in transport
-    assert "B14_AUTO_STREAM_PREVIEW_PATH" in transport
+    # B7: the retired auto preview path is no longer an allowed client surface.
+    assert "B14_AUTO_STREAM_PREVIEW_PATH" not in transport
     assert "workers.dev" not in transport
 
 

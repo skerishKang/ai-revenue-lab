@@ -20,7 +20,11 @@ html[data-theme="padiem-glass"] {
   --sidebar-text: #f7f9fb;
   --text: #17202a;
   --muted: #53606c;
+  /* #6100: the 38% white --line stays the card hairline (the connection
+     screen owns it); inputs take their own border token, 3:1+ against
+     the fill this theme actually composites. */
   --line: rgba(255, 255, 255, .38);
+  --input-border-strong: #56616b;
   --accent: #79bce7;
   --accent-contrast: #17202a;
   --accent-soft: rgba(121, 188, 231, .16);
@@ -50,6 +54,18 @@ html[data-theme="padiem-glass"] {
   --focus-ring: rgba(121, 188, 231, .42);
   --topbar-bg: rgba(47, 56, 65, .36);
   --glass: rgba(244, 247, 249, .42);
+}
+
+/* #6100: the quote dialog hovers the raw page with its own blur, so the
+   runtime's 5% white input fill lets the blurred page set the border's
+   contrast floor (measured 2.77:1 with the strong border alone). The
+   quote dialog's inputs take the theme's card opacity instead, which
+   keeps their fill predictable over any backdrop. */
+html[data-theme="padiem-glass"] .b66-quote-field select,
+html[data-theme="padiem-glass"] .b66-quote-field textarea,
+html[data-theme="padiem-glass"] .b66-quote-connect-field select,
+html[data-theme="padiem-glass"] .b66-quote-connect-field input {
+  background: rgba(255, 255, 255, 0.86);
 }
 
 html[data-theme="padiem-glass"] body {

@@ -122,9 +122,11 @@ describe("React clone Claw execution lane", () => {
     expect(clawCall?.[1]?.method).toBe("POST");
     const body = JSON.parse(String(clawCall?.[1]?.body)) as Record<string, unknown>;
     expect(body).toMatchObject({
-      mode: "auto",
       messages: [{ role: "user", content: "내 컴퓨터에서 파일을 정리해줘" }],
     });
+    // The chat `mode` key was the remnant of the abolished B14 auto selection; the
+    // clone must stop putting it on the wire.
+    expect(body.mode).toBeUndefined();
   });
 
   it("shows the server-reported computer list", async () => {

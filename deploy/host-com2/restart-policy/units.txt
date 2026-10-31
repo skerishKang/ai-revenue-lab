@@ -1,0 +1,15 @@
+# Long-running COM2 units that must come back after any exit (#4953 A).
+# Drop-ins cannot resurrect a oneshot or a timer; timers already recur on their
+# own schedule, so only services are listed. External unit names (cloudflared,
+# meshcentral) are checked before a drop-in is written; a renamed unit shows up
+# as SKIPPED_MISSING instead of silently doing nothing.
+padiem-mesh-queue.service
+padiem-file-lane.service
+padiem-oracle-mesh-executor.service
+padiem-connector-watch.service
+padiem-chat-com2.service
+padiem-broker.service
+cloudflared.service
+cloudflared-padiem.service
+meshcentral.service
+padiem-meshcentral.service

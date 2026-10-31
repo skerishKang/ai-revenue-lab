@@ -102,9 +102,7 @@
   }
 
   function renderButtonChrome() {
-    const label = available
-      ? copy("대화 검색", "Search conversations")
-      : copy("대화 검색 준비 중", "Conversation search coming soon");
+    const label = copy("대화 검색", "Search conversations");
     window.PadiemSharedTooltip?.label?.(sidebarSearchButton, label);
     sidebarSearchButton.setAttribute("aria-label", label);
   }
@@ -280,9 +278,4 @@
 
   renderStaticCopy();
   applyAuthState(readCapabilityAuth());
-
-  window.PadiemConversationSearch = Object.freeze({
-    isAvailable: () => available,
-    isOpen: () => searchOpen,
-  });
 })();

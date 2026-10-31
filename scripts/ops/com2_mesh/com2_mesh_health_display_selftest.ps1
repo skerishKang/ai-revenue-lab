@@ -9,21 +9,20 @@
 
   It verifies:
 
-  - the display class contract: a normal running supervisor is shown as ok
-    only together with identity=confirmed, and an inconsistent record never
-    renders as ok;
-  - Add-AutostartDisplayFields copies the supervisor and last-attempt fields
-    without touching the verdict fields, maps an old-schema record to
-    not_reported and a missing record to probe_not_run;
-  - end to end from com2_mesh_autostart.ps1: a refusal-code record with a
-    confirmed supervisor keeps auto_start_state=failed and the failed check
-    visible while the new fields show suspected_refused_while_running with
-    the original result code and run time preserved;
+  - Add-AutostartDisplayFields renders the per-check verdict detail of a
+    com2_mesh_autostart.ps1 record without touching the verdict fields, maps
+    an old-schema record to not_reported and a missing record to probe_not_run;
+  - end to end from com2_mesh_autostart.ps1: a failed auto-start record keeps
+    auto_start_state=failed and the failed check visible while the detail row
+    lists every check verdict in the recorded order;
   - com2_mesh_health_patch.ps1: dry run leaves the file unchanged, a hash
     mismatch or a missing anchor is refused, and an applied patch produces a
     parsing script whose status and HTML keep the existing failure rows and
-    add the new display rows. Without the display module next to the script
+    add the new display row. Without the display module next to the script
     the patched file behaves exactly as before.
+
+  The supervisor and last-start-attempt display was removed with #5643 together
+  with the record fields it rendered; the selftest asserts its absence.
 
 .PARAMETER DisplayPath
   Path to com2_mesh_health_display.ps1.
@@ -104,95 +103,54 @@ foreach ($p in @($DisplayPath, $PatchPath, $ProbePath)) {
 $work = Join-Path $env:TEMP ("com2-health-display-selftest-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
 New-Item -ItemType Directory -Path $work -Force | Out-Null
 
-# --- display class contract -----------------------------------------------
-
-Write-Output '-- display class contract'
-Assert-Equal -Expected 'ok' -Actual (Get-AutostartDisplayClass -State 'running_connected' -Identity 'confirmed') -Label 'running connected and confirmed is ok'
-Assert-Equal -Expected 'bad' -Actual (Get-AutostartDisplayClass -State 'running_connected' -Identity 'unconfirmed') -Label 'running without confirmed identity is bad'
-Assert-Equal -Expected 'bad' -Actual (Get-AutostartDisplayClass -State 'running_connected' -Identity 'mismatch') -Label 'running with mismatched identity is bad'
-Assert-Equal -Expected '' -Actual (Get-AutostartDisplayClass -State 'running_disconnected' -Identity 'confirmed') -Label 'running disconnected is neutral'
-Assert-Equal -Expected 'bad' -Actual (Get-AutostartDisplayClass -State 'not_running' -Identity 'confirmed') -Label 'not running is bad'
-Assert-Equal -Expected '' -Actual (Get-AutostartDisplayClass -State 'unknown' -Identity 'confirmed') -Label 'unknown is neutral'
-Assert-Equal -Expected '' -Actual (Get-AutostartDisplayClass -State 'not_reported' -Identity 'not_reported') -Label 'not reported is neutral'
-
 # --- field copy contract ----------------------------------------------------
 
 Write-Output '-- field copy contract'
 $fullRecord = [pscustomobject]@{
     auto_start_state = 'failed'
-    failed_checks = @('tunnel_task_last_result_ok')
-    supervisor = [pscustomobject]@{
-        state = 'running_connected'; identity = 'confirmed'
-        child_pid = 20796; child_process = 'ssh'; parent_pid = 43668
-    }
-    last_start_attempt = [pscustomobject]@{
-        run = '2026-10-23 02:56:56'; result = 2147946720; result_hex = '0x800710E0'
-        outcome = 'suspected_refused_while_running'; confidence = 'suspected'
-        detail = 'LastTaskResult=2147946720 (0x800710E0)'
-    }
+    failed_checks = @('mesh_agent_running_since_boot')
+    checks = @(
+        [pscustomobject]@{ name = 'boot_time_observed'; ok = $true }
+        [pscustomobject]@{ name = 'mesh_agent_service_automatic'; ok = $true }
+        [pscustomobject]@{ name = 'mesh_agent_running'; ok = $true }
+        [pscustomobject]@{ name = 'mesh_agent_running_since_boot'; ok = $false }
+        [pscustomobject]@{ name = 'mesh_http_200'; ok = $true }
+    )
 }
 $fullStatus = [ordered]@{
     auto_start_state = 'failed'
-    auto_start_failed_checks = 'tunnel_task_last_result_ok'
+    auto_start_failed_checks = 'mesh_agent_running_since_boot'
 }
 Add-AutostartDisplayFields -Status $fullStatus -Autostart $fullRecord
 Assert-Equal -Expected 'failed' -Actual $fullStatus.auto_start_state -Label 'module keeps the verdict state'
-Assert-Equal -Expected 'tunnel_task_last_result_ok' -Actual $fullStatus.auto_start_failed_checks -Label 'module keeps the failed checks'
-Assert-Equal -Expected 'running_connected' -Actual $fullStatus.auto_start_supervisor_state -Label 'supervisor state copied'
-Assert-Equal -Expected 'confirmed' -Actual $fullStatus.auto_start_supervisor_identity -Label 'supervisor identity copied'
-Assert-Equal -Expected 'child_pid=20796; child=ssh; parent_pid=43668' -Actual $fullStatus.auto_start_supervisor_child -Label 'supervisor child copied'
-Assert-Equal -Expected '2026-10-23 02:56:56' -Actual $fullStatus.auto_start_last_attempt_run -Label 'attempt run preserved'
-Assert-Equal -Expected '2147946720' -Actual $fullStatus.auto_start_last_attempt_result -Label 'attempt result preserved'
-Assert-Equal -Expected '0x800710E0' -Actual $fullStatus.auto_start_last_attempt_result_hex -Label 'attempt hex preserved'
-Assert-Equal -Expected 'suspected_refused_while_running' -Actual $fullStatus.auto_start_last_attempt_outcome -Label 'attempt outcome copied'
-Assert-Equal -Expected 'suspected' -Actual $fullStatus.auto_start_last_attempt_confidence -Label 'attempt confidence copied'
+Assert-Equal -Expected 'mesh_agent_running_since_boot' -Actual $fullStatus.auto_start_failed_checks -Label 'module keeps the failed checks'
+Assert-Equal -Expected ('boot_time_observed=true; mesh_agent_service_automatic=true; mesh_agent_running=true; ' +
+    'mesh_agent_running_since_boot=false; mesh_http_200=true') -Actual $fullStatus.auto_start_checks_detail `
+    -Label 'per-check detail is rendered in the recorded order'
 
 $fullRows = New-AutostartDisplayRows -Status $fullStatus
-Assert-True -Value ($fullRows -match "<td class='ok'>running_connected / confirmed</td>") -Label 'confirmed running row is ok'
-Assert-True -Value ($fullRows -match 'suspected_refused_while_running / suspected') -Label 'suspected outcome row shows the confidence'
-Assert-True -Value ($fullRows -notmatch "<td class='ok'>suspected_refused_while_running") -Label 'suspected outcome is never ok'
-Assert-True -Value ($fullRows -match '2026-10-23 02:56:56 / 2147946720 0x800710E0') -Label 'attempt row preserves code and time'
+Assert-True -Value ($fullRows -match 'Auto-start checks \(per-check verdict\)') -Label 'detail row is present'
+Assert-True -Value ($fullRows -match 'mesh_agent_running_since_boot=false') -Label 'failed check appears in the detail row'
+Assert-True -Value ($fullRows -notmatch 'Supervisor / identity') -Label 'supervisor row is retired'
+Assert-True -Value ($fullRows -notmatch 'Last start attempt') -Label 'attempt row is retired'
 
 $oldStatus = [ordered]@{ auto_start_state = 'failed' }
 Add-AutostartDisplayFields -Status $oldStatus -Autostart ([pscustomobject]@{ auto_start_state = 'failed' })
-Assert-Equal -Expected 'not_reported' -Actual $oldStatus.auto_start_supervisor_state -Label 'old schema supervisor is not_reported'
-Assert-Equal -Expected 'not_reported' -Actual $oldStatus.auto_start_supervisor_identity -Label 'old schema identity is not_reported'
-Assert-Equal -Expected 'not_reported' -Actual $oldStatus.auto_start_last_attempt_outcome -Label 'old schema outcome is not_reported'
-Assert-Equal -Expected 'unknown' -Actual $oldStatus.auto_start_last_attempt_confidence -Label 'old schema confidence is unknown'
+Assert-Equal -Expected 'not_reported' -Actual $oldStatus.auto_start_checks_detail -Label 'old schema detail is not_reported'
 $oldRows = New-AutostartDisplayRows -Status $oldStatus
-Assert-True -Value ($oldRows -notmatch 'running_connected') -Label 'old schema never renders as running'
+Assert-True -Value ($oldRows -match 'not_reported') -Label 'old schema renders as not_reported'
 Assert-True -Value ($oldRows -notmatch "<td class='ok'>") -Label 'old schema has no ok row'
 
 $nullStatus = [ordered]@{ auto_start_state = 'unverified' }
 Add-AutostartDisplayFields -Status $nullStatus -Autostart $null
-Assert-Equal -Expected 'probe_not_run' -Actual $nullStatus.auto_start_supervisor_state -Label 'missing record is probe_not_run'
-Assert-Equal -Expected 'probe_not_run' -Actual $nullStatus.auto_start_last_attempt_outcome -Label 'missing record outcome is probe_not_run'
-Assert-Equal -Expected 'unknown' -Actual $nullStatus.auto_start_last_attempt_confidence -Label 'missing record confidence is unknown'
-
-$failedStatus = [ordered]@{ auto_start_state = 'failed' }
-$failedRecord = [pscustomobject]@{
-    supervisor = [pscustomobject]@{
-        state = 'unknown'; identity = 'unconfirmed'
-        child_pid = 20796; child_process = 'ssh'; parent_pid = 0
-    }
-    last_start_attempt = [pscustomobject]@{
-        run = '2026-10-23 02:56:56'; result = 2147946720; result_hex = '0x800710E0'
-        outcome = 'failed'; confidence = 'observed'; detail = 'refused without a confirmed supervisor'
-    }
-}
-Add-AutostartDisplayFields -Status $failedStatus -Autostart $failedRecord
-$failedRows = New-AutostartDisplayRows -Status $failedStatus
-Assert-True -Value ($failedRows -match "<td class='bad'>failed / observed</td>") -Label 'failed outcome row is bad'
-Assert-True -Value ($failedRows -notmatch "<td class='ok'>") -Label 'unconfirmed identity has no ok row'
+Assert-Equal -Expected 'probe_not_run' -Actual $nullStatus.auto_start_checks_detail -Label 'missing record is probe_not_run'
 
 # --- probe end to end -------------------------------------------------------
 
 Write-Output '-- probe end to end'
 $cfgObject = [ordered]@{
-    tunnel_task = 'PADIEM-Mesh-Tunnel'
-    tunnel_local_host = '127.0.0.1'
-    tunnel_local_port = 4443
-    mesh_url = 'https://127.0.0.1:4443/'
+    com2_host = '192.0.2.10'
+    mesh_url = 'https://192.0.2.10:4443/'
 }
 $cfgPath = Join-Path $work 'config.json'
 Write-TextFile -Path $cfgPath -Text ($cfgObject | ConvertTo-Json -Depth 5)
@@ -206,40 +164,17 @@ $observation = [ordered]@{
     mesh_agent = [ordered]@{
         queried = $true; exists = $true; name = 'Mesh Agent'
         status = 'Running'; start_mode = 'Auto'; pid = 5180
-        process_name = 'MeshAgent'; process_started = '2026-10-23 00:46:34'; error = ''
-    }
-    tunnel_task = [ordered]@{
-        queried = $true; exists = $true; name = 'PADIEM-Mesh-Tunnel'
-        enabled = $true; state = 'Running'
-        last_run = '2026-10-23 02:56:56'; last_result = 2147946720
-        next_run = '2026-10-23 03:01:01'; info_error = ''
-        triggers = @(
-            [ordered]@{ kind = 'boot'; enabled = $true; repetition_interval_seconds = $null; repetition_duration_seconds = $null },
-            [ordered]@{ kind = 'time'; enabled = $true; repetition_interval_seconds = 300; repetition_duration_seconds = $null }
-        )
-        error = ''
-    }
-    listener = [ordered]@{
-        queried = $true; listening = $true; local_address = '127.0.0.1'
-        pid = 20796; process_name = 'ssh'; process_started = '2026-10-23 02:35:56'; error = ''
-        parent_pid = 43668; parent_process_name = 'powershell'
-        parent_command_line_observed = $true; parent_runs_supervisor = $true
-        parent_error = ''
+        process_name = 'MeshAgent'; process_started = '2026-10-23 00:20:00'; error = ''
     }
     mesh_http = [ordered]@{ queried = $true; code = 200; error = '' }
 }
 $probeNow = [datetime]'2026-10-23 03:00:00'
 $probeRecord = Test-AutostartEvidence -Observation $observation -Cfg $cfg -Now $probeNow
-Assert-Equal -Expected 'failed' -Actual $probeRecord.auto_start_state -Label 'probe keeps the refusal failure'
+Assert-Equal -Expected 'failed' -Actual $probeRecord.auto_start_state -Label 'probe keeps the failed verdict'
 Assert-Equal -Expected 1 -Actual @($probeRecord.failed_checks).Count -Label 'probe has exactly one failed check'
-Assert-Equal -Expected 'tunnel_task_last_result_ok' -Actual (@($probeRecord.failed_checks) -join ',') -Label 'probe failed check name'
-Assert-Equal -Expected 'running_connected' -Actual $probeRecord.supervisor.state -Label 'probe supervisor state'
-Assert-Equal -Expected 'confirmed' -Actual $probeRecord.supervisor.identity -Label 'probe supervisor identity'
-Assert-Equal -Expected 'suspected_refused_while_running' -Actual $probeRecord.last_start_attempt.outcome -Label 'probe attempt outcome'
-Assert-Equal -Expected 'suspected' -Actual $probeRecord.last_start_attempt.confidence -Label 'probe attempt confidence'
-Assert-Equal -Expected 2147946720 -Actual $probeRecord.last_start_attempt.result -Label 'probe attempt result'
-Assert-Equal -Expected '0x800710E0' -Actual $probeRecord.last_start_attempt.result_hex -Label 'probe attempt hex'
-Assert-Equal -Expected '2026-10-23 02:56:56' -Actual $probeRecord.last_start_attempt.run -Label 'probe attempt run time'
+Assert-Equal -Expected 'mesh_agent_running_since_boot' -Actual (@($probeRecord.failed_checks) -join ',') -Label 'probe failed check name'
+Assert-True -Value ($null -eq $probeRecord.supervisor) -Label 'probe record has no supervisor block'
+Assert-True -Value ($null -eq $probeRecord.last_start_attempt) -Label 'probe record has no last_start_attempt block'
 
 # The health monitor consumes the probe through its JSON output.
 $recordJsonPath = Join-Path $work 'record.json'
@@ -251,17 +186,13 @@ $e2eStatus = [ordered]@{
 }
 Add-AutostartDisplayFields -Status $e2eStatus -Autostart $roundTripped
 Assert-Equal -Expected 'failed' -Actual $e2eStatus.auto_start_state -Label 'json round trip keeps the failed state'
-Assert-Equal -Expected 'tunnel_task_last_result_ok' -Actual $e2eStatus.auto_start_failed_checks -Label 'json round trip keeps the failed check'
-Assert-Equal -Expected 'running_connected' -Actual $e2eStatus.auto_start_supervisor_state -Label 'json round trip supervisor state'
-Assert-Equal -Expected 'confirmed' -Actual $e2eStatus.auto_start_supervisor_identity -Label 'json round trip supervisor identity'
-Assert-Equal -Expected 'suspected_refused_while_running' -Actual $e2eStatus.auto_start_last_attempt_outcome -Label 'json round trip attempt outcome'
-Assert-Equal -Expected 'suspected' -Actual $e2eStatus.auto_start_last_attempt_confidence -Label 'json round trip attempt confidence'
-Assert-Equal -Expected '2147946720' -Actual $e2eStatus.auto_start_last_attempt_result -Label 'json round trip attempt result'
-Assert-Equal -Expected '0x800710E0' -Actual $e2eStatus.auto_start_last_attempt_result_hex -Label 'json round trip attempt hex'
-Assert-Equal -Expected '2026-10-23 02:56:56' -Actual $e2eStatus.auto_start_last_attempt_run -Label 'json round trip attempt run time'
+Assert-Equal -Expected 'mesh_agent_running_since_boot' -Actual $e2eStatus.auto_start_failed_checks -Label 'json round trip keeps the failed check'
+Assert-True -Value ($e2eStatus.auto_start_checks_detail -match 'mesh_agent_running_since_boot=false') `
+    -Label 'json round trip keeps the failed check in the detail row'
+Assert-True -Value ($e2eStatus.auto_start_checks_detail -match 'mesh_http_200=true') `
+    -Label 'json round trip keeps the passing checks in the detail row'
 $e2eRows = New-AutostartDisplayRows -Status $e2eStatus
-Assert-True -Value ($e2eRows -match "<td class='ok'>running_connected / confirmed</td>") -Label 'json round trip row is ok'
-Assert-True -Value ($e2eRows -match 'suspected_refused_while_running / suspected') -Label 'json round trip suspected row'
+Assert-True -Value ($e2eRows -match 'mesh_agent_running_since_boot=false') -Label 'json round trip detail row shows the failure'
 
 # --- patch applier -----------------------------------------------------------
 
@@ -373,21 +304,14 @@ Assert-True -Value (Test-Path -LiteralPath $statusJsonPath) -Label 'patched fixt
 Assert-True -Value (Test-Path -LiteralPath $htmlOutPath) -Label 'patched fixture wrote html'
 $patchedStatus = Get-Content -LiteralPath $statusJsonPath -Raw | ConvertFrom-Json
 Assert-Equal -Expected 'failed' -Actual $patchedStatus.auto_start_state -Label 'patched status keeps the failed state'
-Assert-Equal -Expected 'tunnel_task_last_result_ok' -Actual $patchedStatus.auto_start_failed_checks -Label 'patched status keeps the failed checks'
+Assert-Equal -Expected 'mesh_agent_running_since_boot' -Actual $patchedStatus.auto_start_failed_checks -Label 'patched status keeps the failed checks'
 Assert-Equal -Expected 'kept' -Actual $patchedStatus.other_field -Label 'patched status keeps unrelated fields'
-Assert-Equal -Expected 'running_connected' -Actual $patchedStatus.auto_start_supervisor_state -Label 'patched status supervisor state'
-Assert-Equal -Expected 'confirmed' -Actual $patchedStatus.auto_start_supervisor_identity -Label 'patched status supervisor identity'
-Assert-Equal -Expected 'suspected_refused_while_running' -Actual $patchedStatus.auto_start_last_attempt_outcome -Label 'patched status attempt outcome'
-Assert-Equal -Expected 'suspected' -Actual $patchedStatus.auto_start_last_attempt_confidence -Label 'patched status attempt confidence'
-Assert-Equal -Expected '2147946720' -Actual $patchedStatus.auto_start_last_attempt_result -Label 'patched status attempt result'
-Assert-Equal -Expected '0x800710E0' -Actual $patchedStatus.auto_start_last_attempt_result_hex -Label 'patched status attempt hex'
-Assert-Equal -Expected '2026-10-23 02:56:56' -Actual $patchedStatus.auto_start_last_attempt_run -Label 'patched status attempt run time'
+Assert-True -Value ([string]$patchedStatus.auto_start_checks_detail -match 'mesh_agent_running_since_boot=false') `
+    -Label 'patched status carries the per-check detail'
 $patchedHtml = Get-Content -LiteralPath $htmlOutPath -Raw
 Assert-True -Value ($patchedHtml -match 'Auto-start failed checks') -Label 'patched html keeps the failed checks row'
-Assert-True -Value ($patchedHtml -match "<td class='bad'>tunnel_task_last_result_ok</td>") -Label 'patched html shows the failure as bad'
-Assert-True -Value ($patchedHtml -match "<td class='ok'>running_connected / confirmed</td>") -Label 'patched html shows the confirmed supervisor'
-Assert-True -Value ($patchedHtml -match 'suspected_refused_while_running / suspected') -Label 'patched html shows the suspected outcome'
-Assert-True -Value ($patchedHtml -match '2026-10-23 02:56:56 / 2147946720 0x800710E0') -Label 'patched html preserves code and time'
+Assert-True -Value ($patchedHtml -match "<td class='bad'>mesh_agent_running_since_boot</td>") -Label 'patched html shows the failure as bad'
+Assert-True -Value ($patchedHtml -match 'mesh_agent_running_since_boot=false') -Label 'patched html shows the per-check detail row'
 
 Remove-Item -LiteralPath (Join-Path $fixtureDir 'com2_mesh_health_display.ps1') -Force
 Remove-Item -LiteralPath $statusJsonPath -Force
@@ -396,9 +320,9 @@ $nullRunOut = Invoke-ChildScript -Arguments @('-File', $fixtureScript)
 Assert-Equal -Expected 0 -Actual $nullRunOut.Exit -Label 'patched fixture runs without the module'
 $moduleLessStatus = Get-Content -LiteralPath $statusJsonPath -Raw | ConvertFrom-Json
 Assert-Equal -Expected 'failed' -Actual $moduleLessStatus.auto_start_state -Label 'module-less status keeps the failed state'
-Assert-True -Value ($null -eq $moduleLessStatus.auto_start_supervisor_state) -Label 'module-less status has no supervisor field'
+Assert-True -Value ($null -eq $moduleLessStatus.auto_start_checks_detail) -Label 'module-less status has no detail field'
 $moduleLessHtml = Get-Content -LiteralPath $htmlOutPath -Raw
-Assert-True -Value ($moduleLessHtml -notmatch 'Supervisor / identity') -Label 'module-less html has no new rows'
+Assert-True -Value ($moduleLessHtml -notmatch 'per-check verdict') -Label 'module-less html has no new row'
 Assert-True -Value ($moduleLessHtml -match 'Auto-start failed checks') -Label 'module-less html keeps the old rows'
 
 # --- summary --------------------------------------------------------------

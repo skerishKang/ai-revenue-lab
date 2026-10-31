@@ -70,6 +70,18 @@ from .request_telemetry import emit_stage_event
 ORACLE_MESH_READ_REQUEST_PATH = "/api/claw/connector/mesh-reads/request"
 ORACLE_MESH_READ_POLL_PATH = "/api/claw/connector/mesh-reads/poll"
 ORACLE_MESH_READ_RESULT_PATH = "/api/claw/connector/mesh-reads/result"
+#: Executor read of one owner's stop. The dispatch id the executor already holds
+#: is the only value it sends, nothing is claimed or written here, and the answer
+#: is one boolean: has the owner asked for this running command to end?
+ORACLE_MESH_READ_CANCEL_PATH = "/api/claw/connector/mesh-reads/cancel"
+#: Executor read of one PC's live claims. The node reference the executor is about
+#: to sweep, plus its own dispatch id so its own claim is not counted, in; one
+#: boolean out. Nothing is claimed or written here either.
+ORACLE_MESH_READ_BUSY_PATH = "/api/claw/connector/mesh-reads/busy"
+#: #82 monitoring read: the lane's own counts and ages, plus how recently each named
+#: device last reported its presence beat. Read-only, same channel proof as poll, and
+#: it claims nothing — a monitor may ask every few minutes forever.
+ORACLE_MESH_READ_LANE_STATUS_PATH = "/api/claw/connector/mesh-reads/lane-status"
 #: Owner-scoped read of one stored over-budget command original. The dispatch
 #: id is the only browser-supplied value; the object key, the conversation and
 #: the message id are all re-derived server-side, so no browser-chosen object
@@ -80,6 +92,29 @@ ORACLE_MESH_READ_ORIGINAL_PATH = "/api/claw/connector/mesh-results/{dispatch_id}
 #: file_path}. Absent or invalid keeps the source unconfigured; the routes
 #: stay unmounted.
 ORACLE_MESH_OWNERSHIP_MAP_ENV = "ORACLE_MESH_OWNERSHIP_MAP"
+#: #5573 follow-up: retire the legacy map lane. "off" means a TXT request that would have
+#: been answered from the deployment map is refused with a guidance error (never a 403),
+#: and the channel source composes **without** the map at all - so a deployment that has
+#: no ownership map (or no V2 to build) still runs poll/renew/cancel/busy. Any other value
+#: or absence keeps today's behaviour, which is also the rollback.
+ORACLE_MESH_LEGACY_MAP_LANE_ENV = "ORACLE_MESH_LEGACY_MAP_LANE"
+#: One inert row, valid by the source's own rules and authorizing nobody: classify() says
+#: "none" for every request and command_target() finds no grant, which is exactly the
+#: retired lane's meaning. It exists because the channel source cannot be built without
+#: rows, and it is never written anywhere.
+RETIRED_OWNERSHIP_MAP = (
+    {"account_ref": "__retired__", "node_ref": "__retired__",
+     "root_ref": "__retired__", "path_relative": "__retired__.txt",
+     "file_path": "__retired__.txt", "command_exec": False},
+)
+
+
+def legacy_map_lane_enabled(env: Any) -> bool:
+    """``ORACLE_MESH_LEGACY_MAP_LANE=off`` retires the lane; anything else keeps it."""
+
+    from .worker_config import binding_value
+
+    return str(binding_value(env, ORACLE_MESH_LEGACY_MAP_LANE_ENV) or "").strip().lower() != "off"
 #: Which execution lane a TXT request takes:
 #:   "off"    — Mesh execution disabled; the request stays on the native lane.
 #:   "mesh"   — the request runs on the management host through the Mesh
@@ -93,6 +128,13 @@ _EXECUTION_MODES = (EXECUTION_MODE_OFF, EXECUTION_MODE_MESH, EXECUTION_MODE_NATI
 #: Deployment channel secret for the Oracle executor (Worker env on Chat,
 #: operator-held file on Oracle). Compared constant-time, never logged.
 ORACLE_MESH_CHANNEL_SECRET_ENV = "ORACLE_MESH_CHANNEL_SECRET"
+#: #82: a READ-ONLY secret for the connector watch. It opens the lane-status read and
+#: nothing else. poll, renew, cancel, busy and result keep the channel secret, because
+#: that value can claim a dispatch and submit a result on a customer PC — a workflow
+#: holding it could take work away from the executor or plant a result for work that
+#: never ran. The two secrets must differ: two names for one value is a comment, not
+#: a boundary.
+CONNECTOR_WATCH_READ_SECRET_ENV = "CONNECTOR_WATCH_READ_SECRET"
 #: Header carrying the channel secret on poll/submit.
 ORACLE_MESH_CHANNEL_HEADER = "X-Oracle-Mesh-Secret"
 #: How long one dispatch stays claimable/submittable.
@@ -101,7 +143,11 @@ _DISPATCH_TTL = timedelta(seconds=600)
 #: The result JSON buffers PC file content; use the Owner's 32MiB memory
 #: exception so a 20MB read is not rejected at the old 6MB channel envelope.
 #: Other request bodies and verified non-PC-read contents keep 6MB.
-_MAX_RESULT_BODY_BYTES = 32 * 1024 * 1024
+#: Owner decision 2026-10-28: no PADIEM request-body ceiling. The
+#: platform's own request limit (~100MB on Workers) is the bound; a
+#: rejected oversized result is reported as 'result too large for this
+#: path' by the caller that receives the platform refusal.
+_MAX_RESULT_BODY_BYTES: int | None = None
 _MAX_BODY_BYTES = 6_000_000
 #: One stored conversation message. Reuses the existing product bound
 #: (``history.MAX_HISTORY_MESSAGE_CHARS``); a larger output is split across
@@ -134,7 +180,8 @@ _PRESENCE_ENTRY_OPTIONAL_KEYS = frozenset({"agent_name"})
 _MAX_PRESENCE_ENTRIES = 8
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
-_MAX_FILE_TEXT_BYTES = 6_000_000
+#: No PADIEM text ceiling on a verified result (Owner decision 2026-10-28).
+_MAX_FILE_TEXT_BYTES: int | None = None
 _EXECUTOR = "oracle_management_host"
 #: #4139 terminal lane. A command dispatch has no file, so the 047 file
 #: columns carry these fixed, self-describing sentinels instead of a bogus
@@ -207,7 +254,8 @@ class OracleMeshReturnSource:
     configured = True
 
     def __init__(
-        self, mapping: Any, channel_secret: Any, mode: Any = EXECUTION_MODE_OFF
+        self, mapping: Any, channel_secret: Any, mode: Any = EXECUTION_MODE_OFF,
+        watch_secret: Any = None,
     ) -> None:
         if not isinstance(mapping, (list, tuple)) or not mapping:
             raise TypeError("oracle mesh ownership mapping is required")
@@ -265,8 +313,22 @@ class OracleMeshReturnSource:
             or any(ord(ch) < 33 or ord(ch) > 126 for ch in channel_secret)
         ):
             raise TypeError("oracle mesh channel secret invalid")
+        if watch_secret is not None:
+            if (
+                not isinstance(watch_secret, str)
+                or not 16 <= len(watch_secret) <= 256
+                or any(ord(ch) < 33 or ord(ch) > 126 for ch in watch_secret)
+            ):
+                raise TypeError("connector watch read secret invalid")
+            if watch_secret == channel_secret:
+                raise TypeError(
+                    "connector watch read secret must differ from the channel secret"
+                )
         self._rows = rows
         self._secret = channel_secret.encode("utf-8")
+        self._watch_secret = (
+            watch_secret.encode("utf-8") if watch_secret is not None else None
+        )
         self._mode = mode if mode in _EXECUTION_MODES else EXECUTION_MODE_OFF
 
     @property
@@ -394,6 +456,53 @@ class OracleMeshReturnSource:
             "account_ref": next(iter(accounts)),
         }
 
+    def adopted_roots_for_device(self, *, device_id: Any) -> list[str]:
+        """The folders this deployment's map already pins for one device.
+
+        Administrator adoption (#5573 PR-4e) copies them onto the new link so an
+        adopted PC can be used at once. An unknown device yields no roots, which
+        the route reads as "not in the map" - it never invents a folder, and it
+        never hands out another account's pin to somebody the map does not list.
+        """
+        if not is_pc_device_id(device_id):
+            return []
+        roots: list[str] = []
+        for row in self._rows:
+            if row.get("device_id") != device_id and row.get("node_ref") != device_id:
+                continue
+            root = _pc_files_approved_root(row.get("file_path"))
+            if root is not None and root not in roots:
+                roots.append(root)
+        return roots
+
+    def names_device(self, *, device_id: Any) -> bool:
+        return bool(self.adopted_roots_for_device(device_id=device_id)) or any(
+            row.get("device_id") == device_id or row.get("node_ref") == device_id
+            for row in self._rows
+        )
+
+    def mesh_node_ref_for_device(self, *, device_id: Any) -> str | None:
+        """The Mesh reference this deployment addresses one device identity by.
+
+        A pairing link names its PC; it does not necessarily say what the Mesh
+        client has to run against. A PC's own claim records the node the agent
+        reported for itself, while an administrator adopts the identity the
+        ownership map pins the device by, and those two are different strings.
+        The row that names this device supplies the reference the lane already
+        used before any link existed - never a second device's, and never a
+        guess when the map names more than one.
+        """
+        if not is_pc_device_id(device_id):
+            return None
+        nodes = {
+            row.get("node_ref") for row in self._rows
+            if row.get("device_id") == device_id or row.get("node_ref") == device_id
+        }
+        if len(nodes) != 1:
+            return None
+        node_ref = next(iter(nodes))
+        return node_ref if is_pc_device_id(node_ref) else None
+
     def check_channel_secret(self, presented: Any) -> bool:
         """Constant-time proof check for the Oracle executor channel."""
         if not isinstance(presented, str) or not presented:
@@ -403,6 +512,30 @@ class OracleMeshReturnSource:
         except (UnicodeEncodeError, ValueError):
             return False
         return hmac.compare_digest(candidate, self._secret)
+
+    def check_watch_secret(self, presented: Any) -> bool:
+        """Constant-time check for the read-only watch secret, when one is set."""
+        if self._watch_secret is None:
+            return False
+        if not isinstance(presented, str) or not presented:
+            return False
+        try:
+            candidate = presented.encode("utf-8")
+        except (UnicodeEncodeError, ValueError):
+            return False
+        return hmac.compare_digest(candidate, self._watch_secret)
+
+    def check_read_secret(self, presented: Any) -> bool:
+        """Either secret, for the read-only legs only.
+
+        Both comparisons run on every call, so the work done does not depend on which
+        secret was presented. No mutating leg calls this: an operator holding the
+        watch secret can read the lane's counters and cannot claim, renew, cancel or
+        submit anything.
+        """
+        channel_ok = self.check_channel_secret(presented)
+        watch_ok = self.check_watch_secret(presented)
+        return bool(channel_ok | watch_ok)
 
 
 async def _resolve_oracle_store_text(raw: Any) -> Any:
@@ -419,11 +552,12 @@ async def _resolve_oracle_store_text(raw: Any) -> Any:
 
 
 def build_oracle_mesh_return_source(
-    mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF
+    mapping: Any, channel_secret: Any = None, mode: Any = EXECUTION_MODE_OFF,
+    watch_secret: Any = None,
 ) -> OracleMeshReturnSource | None:
     """Worker-root composition only; missing/invalid material is unconfigured."""
     try:
-        return OracleMeshReturnSource(mapping, channel_secret, mode)
+        return OracleMeshReturnSource(mapping, channel_secret, mode, watch_secret)
     except Exception:
         return None
 
@@ -432,6 +566,27 @@ def _mesh_source_unconfigured(reason: str) -> None:
     """Record one fixed startup reason, never a secret, mapping or account."""
     logging.getLogger(__name__).warning("oracle_mesh_source_unconfigured=%s", reason)
     return None
+
+
+async def _resolve_optional_secret(raw: Any) -> Any:
+    """Resolve an optional secret binding; absent is None, never an error.
+
+    The watch secret is optional by design: a deployment that has not created one
+    keeps the channel-secret-only behaviour for the read-only leg, and the watch
+    workflow then reports UNKNOWN instead of authenticating with the channel secret.
+    """
+    if raw is None or isinstance(raw, str):
+        return raw
+    getter = getattr(raw, "get", None)
+    if not callable(getter):
+        return None
+    try:
+        resolved = getter()
+        if hasattr(resolved, "__await__"):
+            resolved = await resolved
+    except Exception:
+        return None
+    return resolved if isinstance(resolved, str) else None
 
 
 async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturnSource | None:
@@ -446,14 +601,19 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
         raw_map = await _resolve_oracle_store_text(binding_value(env, ORACLE_MESH_OWNERSHIP_MAP_ENV))
         raw_secret = binding_value(env, ORACLE_MESH_CHANNEL_SECRET_ENV)
         raw_mode = binding_value(env, ORACLE_MESH_EXECUTION_MODE_ENV)
+        raw_watch = binding_value(env, CONNECTOR_WATCH_READ_SECRET_ENV)
     except Exception:
         return _mesh_source_unconfigured("binding_read_failed")
-    if not isinstance(raw_map, str) or not raw_map.strip():
-        return _mesh_source_unconfigured("ownership_map_unavailable")
-    try:
-        mapping = json.loads(raw_map)
-    except (ValueError, TypeError):
-        return _mesh_source_unconfigured("ownership_map_malformed")
+    if legacy_map_lane_enabled(env):
+        if not isinstance(raw_map, str) or not raw_map.strip():
+            return _mesh_source_unconfigured("ownership_map_unavailable")
+        try:
+            mapping = json.loads(raw_map)
+        except (ValueError, TypeError):
+            return _mesh_source_unconfigured("ownership_map_malformed")
+    else:
+        # The retired lane authorizes nobody, so the map is neither read nor required.
+        mapping = list(RETIRED_OWNERSHIP_MAP)
     if not isinstance(raw_secret, str):
         getter = getattr(raw_secret, "get", None)
         if not callable(getter):
@@ -466,7 +626,8 @@ async def build_oracle_mesh_return_source_from_env(env: Any) -> OracleMeshReturn
             return _mesh_source_unconfigured("channel_secret_fetch_failed")
         raw_secret = resolved
     mode = raw_mode.strip().lower() if isinstance(raw_mode, str) else EXECUTION_MODE_OFF
-    source = build_oracle_mesh_return_source(mapping, raw_secret, mode)
+    watch_secret = await _resolve_optional_secret(raw_watch)
+    source = build_oracle_mesh_return_source(mapping, raw_secret, mode, watch_secret)
     if source is None:
         return _mesh_source_unconfigured("source_validation_failed")
     return source
@@ -485,6 +646,15 @@ async def resolve_oracle_mesh_execution(
     Consent, consent withdrawal and the OFF switch are still enforced here —
     only the *native binding* requirement is dropped, never the checks.
     """
+
+    if not getattr(request.app.state, "oracle_mesh_legacy_map_lane", True):
+        # Retired on purpose: this request names a file for the deployment map, which
+        # is no longer an authority. Tell the owner where the working path is instead
+        # of a 403 that says "not yours" about a file that is theirs.
+        return None, _error(
+            409, "oracle_mesh_map_lane_retired",
+            "이 방식은 더 이상 쓰지 않아요 — 내 컴퓨터 연결에서 폴더를 고르세요.",
+        )
     source = getattr(request.app.state, "oracle_mesh_return_source", None)
     if getattr(source, "configured", False) is not True:
         return None, None
@@ -572,8 +742,11 @@ def _response(payload: dict[str, Any], status: int = 200) -> JSONResponse:
     return JSONResponse(dict(payload), status_code=status, headers=_NO_STORE)
 
 
-def _error(status: int, code: str) -> JSONResponse:
-    return _response({"ok": False, "error": {"code": code}}, status)
+def _error(status: int, code: str, message: str | None = None) -> JSONResponse:
+    error: dict[str, Any] = {"code": code}
+    if message is not None:
+        error["message"] = message
+    return _response({"ok": False, "error": error}, status)
 
 
 def _read_json(raw: bytes, keys: frozenset, limit: int = _MAX_BODY_BYTES,
@@ -625,10 +798,11 @@ async def _read_body(
         return None
     try:
         declared = request.headers.get("content-length")
-        if declared is not None and (not declared.isdecimal() or int(declared) > limit):
+        if limit is not None and declared is not None and (
+                not declared.isdecimal() or int(declared) > limit):
             return None
         raw = await request.body()
-        if len(raw) > limit:
+        if limit is not None and len(raw) > limit:
             return None
     except Exception:
         return None
@@ -657,19 +831,23 @@ async def _read_result_body(
         return None if wire is None else (wire, None)
     try:
         declared = request.headers.get("content-length")
-        if declared is not None and (
-            not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
+        if (
+            _MAX_RESULT_BODY_BYTES is not None and declared is not None and (
+                not declared.isdecimal() or int(declared) > _MAX_RESULT_BODY_BYTES
+            )
         ):
             return None
         raw = await request.body()
     except Exception:
         return None
-    if len(raw) < 6 or len(raw) > _MAX_RESULT_BODY_BYTES:
+    if len(raw) < 6 or (
+        _MAX_RESULT_BODY_BYTES is not None and len(raw) > _MAX_RESULT_BODY_BYTES
+    ):
         return None
     header_size = int.from_bytes(raw[:4], "big")
     # A frame without its own body is not a capture; the note-only shape
-    # stays JSON. The header itself is bounded by the same envelope.
-    if not 0 < header_size <= _MAX_RESULT_BODY_BYTES or 4 + header_size >= len(raw):
+    # stays JSON. The declared header size can never exceed the body it sits in.
+    if not 0 < header_size or 4 + header_size >= len(raw):
         return None
     header = _read_json(
         raw[4:4 + header_size], _RESULT_KEYS, limit=_MAX_RESULT_BODY_BYTES,
@@ -692,6 +870,18 @@ def _channel_proof(request: Request, source: OracleMeshReturnSource) -> bool:
     if not isinstance(presented, str) or len(presented) > 512:
         return False
     return source.check_channel_secret(presented)
+
+
+def _watch_read_proof(request: Request, source: OracleMeshReturnSource) -> bool:
+    """The read-only proof: the watch secret or the channel secret, nothing else.
+
+    Same header, same 512-character refusal and the same constant-time comparison as
+    the channel proof. Used by lane-status only.
+    """
+    presented = request.headers.get(ORACLE_MESH_CHANNEL_HEADER, "")
+    if not isinstance(presented, str) or len(presented) > 512:
+        return False
+    return source.check_read_secret(presented)
 
 
 async def oracle_mesh_read_request(request: Request) -> JSONResponse:
@@ -1518,7 +1708,7 @@ def _deployment_target_for(
     return dict(matches[0]) if len(matches) == 1 else None
 
 
-def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int:
+def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int | None:
     """Server-computed read bound for one dispatch row.
 
     #5015: the Chat PC-files read is a 20 MB call; every other read consumer
@@ -1580,7 +1770,9 @@ async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
         logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_shape")
         return None
     entries = value.get("presence")
-    if not isinstance(entries, list) or not 1 <= len(entries) <= _MAX_PRESENCE_ENTRIES:
+    if not isinstance(entries, list) or len(entries) < 1:
+        # No PADIEM presence count cap (Owner decision 2026-10-28);
+        # only an empty beat is ignored.
         logging.getLogger(__name__).warning("oracle_mesh_presence=ignored_entries")
         return None
     parsed: list[dict[str, Any]] = []
@@ -1723,7 +1915,11 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     import asyncio
     import time
     wait_header = request.headers.get("x-oracle-mesh-wait", "")
-    wait_seconds = 20 if wait_header == "20" else 0
+    # #5479: a long wait held a Worker request open for 20 seconds, re-reading
+    # D1 every couple of seconds, so concurrent polls piled onto one event loop.
+    # The executor already re-requests as soon as an empty answer comes back, so
+    # the ceiling is now five seconds and a legacy "20" is capped to it too.
+    wait_seconds = 5 if wait_header in ("5", "20") else 0
     deadline = time.monotonic() + wait_seconds
     while True:
         try:
@@ -1772,6 +1968,168 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     })
 
 
+async def oracle_mesh_read_cancel_check(request: Request) -> JSONResponse:
+    """Executor read of one owner's stop: is the command I am running cancelled?
+
+    The same deployment channel secret as poll and submit, one dispatch id in and
+    one boolean out. Nothing is claimed and nothing is written, so an executor may
+    ask as often as it likes while a PC works - which is what makes an owner's
+    ``그만`` reach a command that has already left the queue. #5995 removed the
+    client-side deadline, so a command that never answers would otherwise hold that
+    PC - and every operation queued behind it - open indefinitely.
+
+    Anything unreadable answers ``cancelled: false``. A transport or store problem
+    is not an owner's stop, and the one thing this must never do is end a real
+    command on a real PC because a read failed.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return _error(400, "oracle_mesh_invalid_body")
+    if not isinstance(body, dict):
+        return _error(400, "oracle_mesh_invalid_body")
+    dispatch_id = _ref(body.get("dispatch_id"), 128)
+    if dispatch_id is None:
+        return _error(400, "oracle_mesh_invalid_body")
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_dispatch_cancellation", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        cancelled = await reader(dispatch_id=dispatch_id)
+    except Exception:
+        return _response({"ok": True, "cancelled": False})
+    return _response({"ok": True, "cancelled": cancelled is True})
+
+
+async def oracle_mesh_read_busy_check(request: Request) -> JSONResponse:
+    """Executor read of one PC's live claims: is anything working there right now?
+
+    #6106 clears a console line the agent is holding for nothing, and the only
+    thing that proves "for nothing" across two executor hosts is this row set: the
+    failover partner (#5462) can hold a claim on the same PC during a handover, and
+    ending its running command would cut a real job short, which the owner rule
+    forbids. The claim is read from the lease's own columns, never from text.
+
+    The same deployment channel secret as poll, submit and cancel-check, and the
+    same ownership boundary: the caller names only a node reference and the dispatch
+    id it already holds, and it may not address another account's work by anything
+    else. One read, nothing claimed, nothing written.
+
+    Anything this route cannot prove answers ``working: true``. That is the
+    opposite default from cancel-check, for the same reason read the other way: an
+    unreadable answer must never be what ends a command on a customer machine. The
+    cost of the safe reading is one more minute of a wedged line, and the line is
+    retried on the next command anyway.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    if not _channel_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        return _error(400, "oracle_mesh_invalid_body")
+    if not isinstance(body, dict):
+        return _error(400, "oracle_mesh_invalid_body")
+    node_ref = _ref(body.get("node_ref"), 256)
+    if node_ref is None:
+        return _error(400, "oracle_mesh_invalid_body")
+    dispatch_id = body.get("dispatch_id")
+    if dispatch_id is None:
+        dispatch_id = ""
+    elif not isinstance(dispatch_id, str) or len(dispatch_id) > 128:
+        return _error(400, "oracle_mesh_invalid_body")
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_node_live_claims", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        live = await reader(node_ref=node_ref, except_dispatch_id=dispatch_id)
+    except Exception:
+        return _response({"ok": True, "working": True, "live_claims": 1})
+    return _response({"ok": True, "working": live > 0, "live_claims": live})
+
+
+async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
+    """Executor-side read of the lane's own state, for whoever watches the connector.
+
+    #82 standard 4 asks that a stop be known within ten minutes. Nothing answered
+    that on 2026-10-29: the canary was silent and the executor's own counters lived
+    only in its process. This route is the part of that state that is already in the
+    lane's tables — work waiting for a claim, work under a live claim, and per PC how
+    long its oldest unanswered dispatch has been waiting — plus the presence beat the
+    poll already writes, which is the only real evidence of "the executor was alive
+    at this instant".
+
+    Every number comes from the lane's own columns. Nothing is counted by matching
+    text in a log, a transcript or a name, and no caller-supplied string reaches a
+    query as anything but a bound value.
+
+    A store that will not answer is a 503, not a zero: a monitor reading "nothing is
+    waiting" from a failed read would call a stalled lane healthy.
+    """
+    mesh_source = _channel_source(request)
+    if mesh_source is None:
+        return _error(503, "oracle_mesh_unconfigured")
+    # The read-only proof: the watch secret opens this leg and this leg only.
+    if not _watch_read_proof(request, mesh_source):
+        return _error(403, "oracle_mesh_channel_rejected")
+    try:
+        body = json.loads((await request.body()).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        body = {}
+    device_ids: list[str] = []
+    if body:
+        if not isinstance(body, dict):
+            return _error(400, "oracle_mesh_invalid_body")
+        wanted = body.get("device_ids")
+        if wanted is None:
+            wanted = []
+        if not isinstance(wanted, list) or len(wanted) > _MAX_PRESENCE_ENTRIES:
+            return _error(400, "oracle_mesh_invalid_body")
+        for wanted_id in wanted:
+            bounded = _ref(wanted_id, 128)
+            if bounded is None:
+                return _error(400, "oracle_mesh_invalid_body")
+            device_ids.append(bounded)
+    history_store = getattr(request.app.state, "history_store", None)
+    reader = getattr(history_store, "oracle_mesh_lane_status", None)
+    if not callable(reader):
+        return _error(503, "oracle_mesh_unconfigured")
+    try:
+        lane = await reader()
+    except Exception:
+        return _error(503, "oracle_mesh_lane_unavailable")
+    if not isinstance(lane, dict):
+        return _error(503, "oracle_mesh_lane_unavailable")
+    presence_store = getattr(request.app.state, "mesh_device_presence_store", None)
+    beats: list[dict[str, Any]] = []
+    loader = getattr(presence_store, "load", None)
+    if callable(loader):
+        for device_id in device_ids:
+            try:
+                row = await loader(device_id)
+            except Exception:
+                row = None
+            beats.append({
+                "device_id": device_id,
+                "connected": bool(row.get("connected")) if isinstance(row, dict) else None,
+                "received_at": row.get("received_at") if isinstance(row, dict) else None,
+                "seen": isinstance(row, dict),
+            })
+    payload: dict[str, Any] = {"ok": True}
+    payload.update(lane)
+    if beats:
+        payload["beats"] = beats
+    return _response(payload)
+
 def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
     """Revalidate a desktop observation note: short text, no control bytes."""
     note = wire.get("content_utf8")
@@ -1787,7 +2145,7 @@ def _verified_desktop_note(wire: dict[str, Any]) -> str | None:
 
 
 def _verified_desktop_blob(
-    wire: dict[str, Any], max_bytes: int = _MAX_FILE_TEXT_BYTES,
+    wire: dict[str, Any], max_bytes: int | None = _MAX_FILE_TEXT_BYTES,
     raw: bytes | None = None,
 ) -> bytes | bytearray | None:
     """Revalidate a desktop screenshot blob, or ``b""`` when absent.
@@ -1808,7 +2166,7 @@ def _verified_desktop_blob(
         return None
     if isinstance(size, bool) or not isinstance(size, int):
         return None
-    if size <= 0 or size > max_bytes:
+    if size <= 0 or (max_bytes is not None and size > max_bytes):
         return None
     if raw is not None:
         # A binary frame never also carries the base64 copy: exactly one shape.
@@ -1925,7 +2283,7 @@ def _desktop_failed_content(
 
 def _verified_result_text(
     dispatch: dict[str, Any], wire: dict[str, Any],
-    max_bytes: int = _MAX_FILE_TEXT_BYTES,
+    max_bytes: int | None = _MAX_FILE_TEXT_BYTES,
 ) -> str | None:
     """Revalidate a submission against the claimed dispatch; return the text."""
     text = wire["content_utf8"]
@@ -1936,7 +2294,7 @@ def _verified_result_text(
     except UnicodeEncodeError:
         return None
     if (
-        len(raw) > max_bytes
+        (max_bytes is not None and len(raw) > max_bytes)
         or wire["content_bytes"] != len(raw)
         or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in text)
         or not isinstance(wire["content_sha256"], str)
@@ -1991,6 +2349,18 @@ def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]
         # that as "콘솔 응답 없음" would blame a console that was never asked.
         lines.append("종료 상태: 실행되지 않음 (실행 경계에서 거부됨)")
         lines.append("종료 코드: 확인되지 않음")
+    elif termination == "bad_reply":
+        # The console answered and its envelope could not be read. Calling that
+        # "응답 없음" would blame a console that did reply, and printing the raw
+        # bytes would present mangled text as though the PC had printed it.
+        lines.append("종료 상태: PC 응답을 해석하지 못했습니다 (인코딩 오류)")
+        lines.append(
+            "종료 코드: " + (
+                str(wire["exit_code"])
+                if isinstance(wire["exit_code"], int)
+                else "확인되지 않음"
+            )
+        )
     elif termination == "no_exit_code":
         # The console answered and the shell reached the statement this lane
         # appends, but PowerShell only records $LASTEXITCODE for a native program
@@ -2302,6 +2672,9 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         if wire.get("termination") not in (
             "timed_out", "no_reply", "no_exit_code", "not_executed",
             "captured", "acted", "desktop_unavailable", "output_too_large",
+            # An owner's stop ends the client, so nothing was ever observed from
+            # the PC's console. That is carried as null, never invented as 0.
+            "cancelled",
         ):
             return _error(400, "oracle_mesh_invalid_body")
     elif isinstance(wire.get("exit_code"), bool) or not isinstance(wire.get("exit_code"), int):
@@ -2848,12 +3221,19 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
                 message_id=message_id,
                 summary=summary,
                 content=part,
-                status=status,
+                status=("failed" if command_scope is not None and outcome == "failed" else status),
                 # A terminal result is the only caller that opts out of the
                 # shared edge trim; every other message keeps today's behavior.
                 preserve_edges=(dispatch.get("kind") == "command"),
                 command_scope=command_scope,
             ) or appended
+        if command_scope is not None and outcome == "failed":
+            # Seal before acknowledging the queue result: an unavailable Chat
+            # store leaves the dispatch retryable with the same pinned result.
+            await history_store.seal_run_terminal(
+                user_id=dispatch["user_id"], run_id=dispatch["run_id"],
+                summary="pc_read_failed", status="failed",
+            )
     except HistoryForbidden:
         # Ownership refusal is final: retrying cannot change it.
         try:
@@ -3024,8 +3404,16 @@ async def _verify_engine_proof(request: Request) -> tuple[bytes | None, JSONResp
 # ---------------------------------------------------------------------------
 
 PC_FILES_MAX_PATH_CHARS = 2048
-PC_FILES_LIST_DEFAULT_LIMIT = 200
-PC_FILES_LIST_MAX_LIMIT = 500
+#: One page of a folder listing is a transport unit, not a product ceiling: the
+#: route keeps asking for the next page until the PC says there is nothing left, so
+#: a folder of any size is fully reachable. Measured on 컴1's C:/Windows/System32
+#: (4,925 entries) on 2026-10-29 through the real command lane: 200 rows = 20,647
+#: transcript bytes in 1,240 ms; 500 rows = 53,979 bytes in 1,454 ms. 200 keeps one
+#: page ~10x under the 6 MB result-body bound and ~100x under the 2 MiB D1 row
+#: bound, and small enough that the Worker's parse of a page stays a fraction of its
+#: 10 ms CPU budget. The old silent `-First 200` cut had no continuation; this
+#: constant has one.
+PC_FILES_LIST_PAGE_SIZE = 200
 PC_FILES_READ_MAX_BYTES = 20_000_000
 PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: Stable per-call reference suffix the Engine uses for read_file. The poll
@@ -3056,7 +3444,9 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         claim = json.loads(encoded)
     except (ValueError, TypeError):
         return None, _error(422, "pc_scope_claim_invalid")
-    scopes = {"files_list": ["list"], "files": ["list", "read"], "query_drives": ["drives"], "none": []}
+    scopes = {"files_list": ["list"], "files": ["list", "read"],
+              "files_write": ["write", "move", "delete"],
+              "query_drives": ["drives"], "none": []}
     if (
         not isinstance(claim, dict)
         or set(claim) != {"version", "requested", "admitted", "source", "ops", "app_id"}
@@ -3134,6 +3524,22 @@ def _pc_files_roots_of_map_row(file_path: Any) -> list[dict[str, Any]]:
     return [{"root_ref": None, "label": root.rsplit("/", 1)[-1], "path": root}]
 
 
+#: How an owner refers to a drive they did not name: `C`, `C:`, `C드라이브`,
+#: `c drive` all mean the whole C drive, which is the scope a linked PC has by
+#: default (#5573, Owner decision).
+_DRIVE_REFERENCE = re.compile(r"([A-Za-z])(?: ?(?:드라이브|drive))?[:]?", re.IGNORECASE)
+#: How an owner refers to the place they are already standing.
+_ROOT_WORDS = frozenset({
+    "루트", "여기", "최상위", "최 상위", "승인 폴더", "승인폴더", "root", "here",
+})
+
+
+def _drive_reference(text: str) -> str | None:
+    """The drive root a reference names, or ``None`` when it names none."""
+    match = _DRIVE_REFERENCE.fullmatch(text.strip())
+    return None if match is None else match.group(1).upper() + ":"
+
+
 def _pc_files_pick_root(
     roots: Any, value: Any,
 ) -> tuple[str, str] | None:
@@ -3155,17 +3561,34 @@ def _pc_files_pick_root(
         for root in roots
     ):
         return None
-    text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
-    if text is None:
-        return None
-    text = text.strip().replace("\\", "/")
+    if isinstance(value, str) and not value.strip():
+        # An empty path and "." are the same request: the granted root itself.
+        # With several grants the label rule below is what makes the owner name
+        # one of them, so nothing is ever chosen for them.
+        text = "."
+    else:
+        text = _pc_files_text(value, limit=PC_FILES_MAX_PATH_CHARS)
+        if text is None:
+            return None
+        text = text.strip().replace("\\", "/")
+    drive = _drive_reference(text)
+    if drive is not None and any(root["path"].upper() == drive for root in roots):
+        # A drive the account granted means that drive, the whole of it - not a
+        # folder inside another grant. Anything else stays ordinary path text, so
+        # a file actually named `C` is still reachable.
+        return drive, ""
+    if text in _ROOT_WORDS and len(roots) == 1:
+        # "여기·루트·최상위" means the granted place. With one grant that is
+        # unambiguous; with several the owner has to say which one, and the label
+        # rule below is what makes them say it.
+        return roots[0]["path"], ""
     if len(roots) == 1:
         label, separator, remainder = text.partition("/")
         # One folder means the label is redundant, not forbidden: a caller that
         # names it gets the same folder either way.
         if separator and label == roots[0]["label"]:
             text = remainder
-        relative = _pc_files_relative_path(text)
+        relative = _pc_files_relative_path(text or ".")
         return None if relative is None else (roots[0]["path"], relative)
     label, separator, remainder = text.partition("/")
     if not separator:
@@ -3173,7 +3596,7 @@ def _pc_files_pick_root(
     named = [root for root in roots if root["label"] == label]
     if len(named) != 1:
         return None
-    relative = _pc_files_relative_path(remainder)
+    relative = _pc_files_relative_path(remainder or ".")
     return None if relative is None else (named[0]["path"], relative)
 
 
@@ -3182,7 +3605,158 @@ def _pc_files_powershell_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
+#: The closed operation set this lane serves: two readers, three writers.
+_PC_FILES_OPS = ("list", "read", "write", "move", "delete")
+_PC_WRITE_OPS = ("write", "move", "delete")
+#: Hidden per-drive backup folder. The original is copied here before anything
+#: changes, so a rollback never depends on somebody remembering a path.
+PC_BACKUP_FOLDER = ".padiem-backup"
+#: The PC answers one write step with this line: the JSON account, base64 encoded
+#: so no console code page or quoting rule can change what it says.
+PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
+
+
+def _pc_backup_dir(root: str, day: str) -> str:
+    """The hidden backup folder on the drive one granted root sits on."""
+    drive = (str(root).strip().rstrip(":\\/") or "C")[:1].upper()
+    return drive + ":\\" + PC_BACKUP_FOLDER + "\\" + day
+
+
+def _pc_ps_literal(value: str) -> str:
+    """One single-quoted PowerShell literal; the only escape is a doubled quote."""
+    return _pc_files_powershell_literal(value)
+
+
+def _pc_write_command(
+    *, op: str, target: str, backup_dir: str, relative: str,
+    destination: str | None = None, content_b64: str | None = None,
+) -> str:
+    """Build one write, move or delete step for the paired PC.
+
+    Three rules hold across all three operations. The original is copied to the
+    hidden backup folder on the same drive *before* anything changes, and a
+    backup that fails stops the step there, so no change is made that cannot be
+    undone. The step prints exactly one account line saying what happened and
+    where the original landed - including when it refused. And there is no
+    confirmation anywhere in it: the change happens when the account says it did.
+
+    The command is cmdlet and .NET calls only, like the listing command: no
+    native program runs, so the PC reports no exit code and the existing result
+    lane stays truthful.
+
+    It is also exactly ONE line, which is not a style choice. The agent runs a
+    console command as ``powershell -noprofile -nologo -command -`` and feeds the
+    script through that process's standard input: a script carrying a newline
+    never completes there, so its PowerShell stays alive, and because that agent
+    serves one console task at a time every later PC operation - reads included -
+    waits behind it. Measured on the real machines on 2026-10-28: one line
+    answered in under two seconds and wrote the file with its backup; the same
+    statements on two lines never answered at all. Semicolons are what PowerShell
+    needs on one line, so nothing here changed meaning.
+
+    For the same reason the parent folder is taken with
+    ``[IO.Path]::GetDirectoryName`` and not with ``Split-Path -LiteralPath ...
+    -Parent``: on the PC's own Windows PowerShell 5.1 that combination is refused
+    with ``AmbiguousParameterSet``, which would turn every new file into a
+    refusal. Both rules are about what the customer's PC actually accepts, so
+    they are checked here where the script is built.
+    """
+    backup_step = (
+        "New-Item -ItemType Directory -Force -Path $backupDir | Out-Null; "
+        "$backup = Join-Path $backupDir ($stamp + '-' + ("
+        + _pc_ps_literal(relative) + " -replace '[^\\w.-]','_'));"
+        " try { Copy-Item -LiteralPath $source_to_keep -Destination $backup -Force }"
+        " catch { $backup = $null; $reason = 'backup_failed'; throw 'padiem backup failed' }"
+    )
+    target_missing = (
+        "if (-not (Test-Path -LiteralPath $source_to_keep -PathType Leaf)) {"
+        " $reason = 'path_invalid'; throw 'padiem target missing' }"
+    )
+
+    statements = [
+        "$ErrorActionPreference = 'Stop'",
+        "$ok = $false",
+        "$reason = 'failed'",
+        "$bytes = 0",
+        "$op = " + _pc_ps_literal(op),
+        "$target = " + _pc_ps_literal(target),
+        "$backupDir = " + _pc_ps_literal(backup_dir),
+        "$backup = $null",
+        "$stamp = (Get-Date -Format 'yyyyMMddHHmmss') + '-' + "
+        "([Guid]::NewGuid().ToString('N')).Substring(0,8)",
+    ]
+    if content_b64 is not None:
+        statements.append(
+            "$payload = [Convert]::FromBase64String(" + _pc_ps_literal(content_b64) + ")"
+        )
+    if destination is not None:
+        statements.append("$destination = " + _pc_ps_literal(destination))
+
+    if op == "write":
+        body = (
+            "try {"
+            " if (Test-Path -LiteralPath $target -PathType Leaf) {"
+            " $source_to_keep = $target; " + backup_step +
+            " } elseif (-not (Test-Path -LiteralPath "
+            "([IO.Path]::GetDirectoryName($target)))) {"
+            " $reason = 'path_invalid'; throw 'padiem parent missing' };"
+            " $temp = $target + '.padiem-write';"
+            " [IO.File]::WriteAllBytes($temp, $payload);"
+            " Move-Item -LiteralPath $temp -Destination $target -Force;"
+            " $bytes = $payload.Length;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    elif op == "move":
+        body = (
+            "try { $source_to_keep = $target;"
+            + target_missing
+            + "; if (Test-Path -LiteralPath $destination) { $source_to_keep = $destination; "
+            + backup_step +
+            " }; Move-Item -LiteralPath $target -Destination $destination -Force;"
+            " $target = $destination;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+    else:
+        body = (
+            "try { $source_to_keep = $target;"
+            + target_missing
+            + "; " + backup_step +
+            "; Remove-Item -LiteralPath $target -Force;"
+            " $ok = $true; $reason = $null }"
+            " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
+        )
+
+    statements.append(body)
+    statements.extend([
+        "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
+        "backup=$backup; bytes=$bytes}",
+        "$json = ConvertTo-Json -InputObject $account -Compress",
+        "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
+        "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
+    ])
+    return "; ".join(statements)
+
+
+
+#: Characters the provider's own -Filter can carry harmlessly. Anything else (a
+#: wildcard, a quote, a path separator, a semicolon) makes the coarse pre-filter '*'
+#: and lets the exact -like test decide — so a term can never become a pattern or a
+#: second statement, and correctness never depends on which branch ran.
+_FILTER_PREFILTER_SAFE = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-.,()")
+
+
+def _pc_files_filter_prefilter(term: str) -> str:
+    if term and all(ch in _FILTER_PREFILTER_SAFE or ord(ch) > 127 for ch in term):
+        return "*" + term + "*"
+    return "*"
+
+
+def _pc_files_command(*, op: str, root: str, relative: str,
+                      offset: int = 0, page_size: int = PC_FILES_LIST_PAGE_SIZE,
+                      filter_term: str | None = None) -> str:
     """Build the one command this server will execute for a file tool call.
 
     Only ``list`` uses the PowerShell command lane. ``read`` uses the existing
@@ -3190,23 +3764,60 @@ def _pc_files_command(*, op: str, root: str, relative: str, limit: int) -> str:
     timed out through the MeshCentral PowerShell reply, and replacing it with
     another shell command is not the contract.
 
+    A listing is one page of a **fixed order**: folders first, then name. Without a
+    fixed order an offset means nothing — two calls could sort the same folder
+    differently and skip or repeat rows. The reply carries the folder's own total
+    and whether this page was the last, so the caller never has to guess that a
+    short page was the end.
+
     The list command is cmdlet-only on purpose: no native program runs, so the
     PC reports no exit code (``no_exit_code``) and the existing result lane
     stays truthful.
     """
     if op != "list":
-        raise ValueError("only list uses the PowerShell command lane")
+        raise ValueError("only list uses the read-only command builder")
+    if (not isinstance(offset, int) or isinstance(offset, bool) or offset < 0
+            or not isinstance(page_size, int) or isinstance(page_size, bool)
+            or not 1 <= page_size <= 2000):
+        raise ValueError("a paging offset and a page size are required")
+    if filter_term is not None:
+        # The term is a name fragment, never a pattern: it travels as a single-quoted
+        # literal and is escaped with the wildcard escaper before -like sees it. No
+        # length cap is imposed here — the exec boundary already refuses an argument
+        # the OS cannot carry — but a control character or an empty term is refused.
+        if not isinstance(filter_term, str) or not filter_term:
+            raise ValueError("a filter term must be non-empty text")
+        if any(ord(ch) < 32 or ord(ch) == 127 for ch in filter_term):
+            raise ValueError("a filter term may not carry control characters")
     folder = root + ("/" + relative if relative else "")
     folder_literal = _pc_files_powershell_literal(folder)
-    # A plain pipeline: no nested hashtables or calculated properties.
-    # The nested form timed out through the MeshCentral PowerShell reply
-    # while the identical script completed locally, so the wire path gets
-    # the smallest command that still returns name/metadata JSON.
+    # Measured through the same wrapper the executor sends: one page of 200 rows on
+    # 컴1's System32 came back as 20,647 transcript bytes in 1,240 ms, and the
+    # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
+    # the folder at 200; `-Skip`/`-First` over a fixed sort is a page of the whole
+    # list, and total/has_more make the cut visible.
+    if filter_term is None:
+        scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
+                + " -Force -ErrorAction Stop);")
+    else:
+        scan = (
+            "$pat=[System.Management.Automation.WildcardPattern]::Escape("
+            + _pc_files_powershell_literal(filter_term) + ");"
+            "$p=@(Get-ChildItem -LiteralPath " + folder_literal
+            + " -Filter "
+            + _pc_files_powershell_literal(_pc_files_filter_prefilter(filter_term))
+            + " -Force -ErrorAction Stop"
+            " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
+        )
     return (
-        "Get-ChildItem -LiteralPath " + folder_literal
-        + " -Force -ErrorAction Stop | Select-Object -First " + str(limit)
-        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer"
-        + " | ConvertTo-Json -Compress"
+        scan
+        + "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
+        "$n=$s.Count;"
+        "$pg=@($s | Select-Object -Skip " + str(offset) + " -First " + str(page_size)
+        + " | Select-Object Name, Length, LastWriteTimeUtc, PSIsContainer);"
+        "@{offset=" + str(offset) + "; total=$n;"
+        " has_more=(($pg.Count + " + str(offset) + ") -lt $n); items=@($pg)}"
+        " | ConvertTo-Json -Compress -Depth 3"
     )
 
 
@@ -3382,6 +3993,16 @@ async def _engine_pc_files_target(
         request, user_id=user_id, selected_device_id=selected_device_id,
     )
     if kind == "link":
+        node_ref = linked["node_ref"]
+        # The link decides which PC and which folders. What the Mesh client is
+        # run against stays the deployment's own answer: a row that names this
+        # device supplies the reference it already used, so an adopted identity
+        # can never become a command sent to a node nobody listens to. A PC the
+        # map does not name at all keeps the node it reported for itself.
+        address_of = getattr(source, "mesh_node_ref_for_device", None)
+        addressed = address_of(device_id=node_ref) if callable(address_of) else None
+        if addressed is not None and addressed != node_ref:
+            linked = {**linked, "node_ref": addressed}
         return {
             "authorized": True,
             "target": linked,
@@ -3443,6 +4064,12 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "subject_id", "run_id", "device_id", "op", "path",
             "tool_call_ref", "mode",
         }
+        # A write names its bytes and a move names where the file lands. Nothing
+        # else may add a field, and the operation itself is validated below.
+        extra_fields = {"write": {"content"}, "move": {"destination"}}
+        named = payload.get("op")
+        if isinstance(named, str) and named in extra_fields:
+            expected = expected | extra_fields[named]
     elif mode in ("command_status", "result"):
         expected = {"subject_id", "run_id", "dispatch_id", "mode"}
     else:
@@ -3568,7 +4195,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
 
     if mode == "dispatch":
         op = payload.get("op")
-        if op not in ("list", "read"):
+        if op not in _PC_FILES_OPS:
             return _error(422, "oracle_mesh_file_op_invalid")
         # The independently signed ceiling is enforced before either dispatch
         # constructor. The existing owner/path/size/idempotency checks follow.
@@ -3592,6 +4219,51 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             return _error(503, "oracle_mesh_workspace_unavailable")
         if not command_workspace:
             return _error(503, "oracle_mesh_workspace_unavailable")
+        if op in _PC_WRITE_OPS:
+            # One write step, one account. The path the PC will change is built
+            # the way the listing builds its folder - the root the server picked
+            # plus the relative path the caller named - so a request never
+            # carries an absolute target of its own.
+            resolved = root.rstrip("/") + ("/" + relative if relative else "")
+            content_b64 = None
+            if op == "write":
+                content = payload.get("content")
+                if not isinstance(content, str):
+                    return _error(422, "oracle_mesh_file_content_invalid")
+                content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
+            destination_path = None
+            if op == "move":
+                picked_destination = _pc_files_pick_root(roots, payload.get("destination"))
+                if picked_destination is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                destination_root, destination_relative = picked_destination
+                if destination_root != root or not destination_relative:
+                    # A move stays inside the folder this link was granted, and
+                    # never onto the granted root itself: replacing a whole
+                    # folder is not what moving one file means.
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                destination_path = destination_root.rstrip("/") + "/" + destination_relative
+            command = _pc_write_command(
+                op=op,
+                target=resolved,
+                backup_dir=_pc_backup_dir(
+                    root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                ),
+                relative=relative,
+                destination=destination_path,
+                content_b64=content_b64,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+            )
         if op == "read":
             # #5015: the read reuses the existing kind="read" MeshCentral
             # download lane. No shell command is built for it.
@@ -3610,7 +4282,6 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             )
         command = _pc_files_command(
             op=op, root=root, relative=relative,
-            limit=PC_FILES_LIST_DEFAULT_LIMIT,
         )
         response = await dispatch_oracle_mesh_command_intent(
             request, command=command,
@@ -3673,13 +4344,13 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
     exit_code = dispatch.get("exit_code")
     if termination not in (
         "exited", "no_exit_code", "output_too_large", "not_executed",
-        "timed_out", "cancelled", "no_reply",
+        "timed_out", "cancelled", "no_reply", "bad_reply",
     ):
         return _error(503, "oracle_mesh_original_unavailable")
     if exit_code is None:
         if termination not in (
             "timed_out", "no_reply", "no_exit_code", "not_executed",
-            "output_too_large", "cancelled",
+            "output_too_large", "cancelled", "bad_reply",
         ):
             return _error(503, "oracle_mesh_original_unavailable")
     elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
@@ -3876,13 +4547,13 @@ async def oracle_mesh_engine_desktop_call(request: Request) -> JSONResponse:
             exit_code = dispatch.get("exit_code")
             if termination not in (
                 "exited", "no_exit_code", "output_too_large", "not_executed",
-                "timed_out", "cancelled", "no_reply",
+                "timed_out", "cancelled", "no_reply", "bad_reply",
             ):
                 return _error(503, "oracle_mesh_original_unavailable")
             if exit_code is None:
                 if termination not in (
                     "timed_out", "no_reply", "no_exit_code", "not_executed",
-                    "output_too_large", "cancelled",
+                    "output_too_large", "cancelled", "bad_reply",
                 ):
                     return _error(503, "oracle_mesh_original_unavailable")
             elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
@@ -4033,13 +4704,13 @@ async def oracle_chat_engine_pc_drive_call(request: Request) -> JSONResponse:
             exit_code = dispatch.get("exit_code")
             if termination not in (
                 "exited", "no_exit_code", "output_too_large", "not_executed",
-                "timed_out", "cancelled", "no_reply",
+                "timed_out", "cancelled", "no_reply", "bad_reply",
             ):
                 return _error(503, "oracle_mesh_original_unavailable")
             if exit_code is None:
                 if termination not in (
                     "timed_out", "no_reply", "no_exit_code", "not_executed",
-                    "output_too_large", "cancelled",
+                    "output_too_large", "cancelled", "bad_reply",
                 ):
                     return _error(503, "oracle_mesh_original_unavailable")
             elif isinstance(exit_code, bool) or not isinstance(exit_code, int):

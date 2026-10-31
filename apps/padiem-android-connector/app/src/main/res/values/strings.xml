@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Padiem Connector</string>
+    <string name="app_tagline">스마트폰의 허용된 파일을 PADIEM Chat·Claw에 연결하는 기초 앱</string>
+
+    <string name="server_section_title">서버 연결 상태</string>
+    <string name="server_status_not_connected">아직 연결되지 않음</string>
+    <string name="server_status_note">기기 등록과 Chat·Claw 연결은 다음 단계에서 진행합니다.</string>
+    <string name="server_badge">다음 단계</string>
+
+    <string name="folder_section_title">허용 폴더</string>
+    <string name="folder_none_title">선택된 폴더 없음</string>
+    <string name="folder_none_hint">스마트폰에서 폴더를 선택하면 이 앱은 그 폴더의 파일만 읽을 수 있습니다.</string>
+    <string name="folder_select">폴더 선택</string>
+    <string name="folder_clear">폴더 선택 해제</string>
+    <string name="folder_refresh">새로고침</string>
+    <string name="folder_permission_available">읽기 권한 사용 가능</string>
+    <string name="folder_permission_revoked">읽기 권한 취소됨</string>
+    <string name="folder_loading">파일 목록을 불러오는 중…</string>
+    <string name="folder_path_label">경로: %1$s</string>
+    <string name="folder_name_fallback">선택한 폴더</string>
+
+    <string name="files_section_title">파일 목록</string>
+    <string name="files_empty">선택한 폴더에 표시할 파일이 없습니다.</string>
+    <string name="files_initial">폴더를 선택하면 파일 목록이 표시됩니다.</string>
+    <string name="files_count">파일 %1$d개</string>
+    <string name="files_too_many">파일이 너무 많아 처음 %1$d개만 표시합니다.</string>
+    <string name="files_subfolders_note">하위 폴더는 이번 기초 버전의 목록에 포함하지 않습니다.</string>
+    <string name="badge_txt">TXT</string>
+    <string name="badge_other">기타</string>
+    <string name="size_unknown">크기 알 수 없음</string>
+    <string name="file_meta">%1$s · %2$s</string>
+
+    <string name="preview_section_title">TXT 내용</string>
+    <string name="preview_none">TXT 파일을 선택하면 내용이 여기에 표시됩니다.</string>
+    <string name="preview_loading">%1$s 읽는 중…</string>
+    <string name="preview_meta">%1$s · %2$s · UTF-8</string>
+    <string name="preview_empty">(빈 파일입니다.)</string>
+    <string name="preview_truncated">파일이 커서 처음 %1$s만 표시합니다.</string>
+    <string name="preview_not_txt">이번 단계에서는 .txt 파일만 열 수 있습니다.</string>
+
+    <string name="error_permission_revoked">폴더 접근 권한이 취소되었습니다. ‘폴더 선택’을 눌러 다시 허용해 주세요.</string>
+    <string name="error_folder_missing">선택한 폴더를 찾을 수 없습니다. 폴더가 삭제되었거나 이동했을 수 있습니다.</string>
+    <string name="error_file_missing">선택한 파일이 삭제되었거나 더 이상 접근할 수 없습니다. ‘새로고침’을 눌러 목록을 갱신해 주세요.</string>
+    <string name="error_read_failed">파일을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_folder_read_failed">폴더의 파일 목록을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="error_persist_permission">이 폴더의 영구 접근 권한을 얻지 못했습니다. 다른 폴더를 선택해 주세요.</string>
+    <string name="error_picker_unavailable">폴더 선택 화면을 열 수 없습니다. 기기의 파일 관리자를 확인해 주세요.</string>
+    <string name="error_preview_permission">파일을 열 수 없습니다. 폴더 접근 권한이 취소되었습니다.</string>
+    <string name="error_preview_file_missing">파일이 삭제되었거나 더 이상 접근할 수 없습니다.</string>
+    <string name="error_preview_read_failed">파일을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+
+    <string name="toast_selection_cancelled">폴더 선택이 취소되었습니다.</string>
+    <string name="toast_selection_cleared">폴더 선택을 해제했습니다.</string>
+    <string name="toast_no_folder">먼저 폴더를 선택해 주세요.</string>
+    <string name="toast_file_gone">파일을 찾을 수 없습니다. 목록을 새로고침해 주세요.</string>
+
+    <string name="footer_note">이번 버전은 스마트폰 안에서 폴더 선택·파일 목록·TXT 열람만 지원합니다. 서버로 파일을 전송하지 않습니다.</string>
+</resources>

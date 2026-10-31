@@ -216,7 +216,7 @@ async def test_health_reports_binary_attachment_readiness() -> None:
         response = await client.get("/health")
 
     assert response.status_code == 200
-    assert response.json()["binary_document_attachment_ready"] is True
+    assert response.json()["binary_document_attachment_ready"] is False
 
 
 def test_browser_capability_follows_the_runtime_readiness_signal() -> None:

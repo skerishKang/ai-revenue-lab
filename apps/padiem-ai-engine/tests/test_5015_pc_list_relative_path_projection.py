@@ -209,12 +209,43 @@ def test_helper_never_stitches_a_separator_into_a_nested_name() -> None:
 
 
 @pytest.mark.parametrize("list_path", ["./notes", "notes/../other", "notes//sub",
-                                       "notes/", "/etc", "C:/x"])
+                                       "notes/", "/etc", "E:x", "C://x"])
 def test_normalizer_refuses_the_shapes_the_chat_endpoint_refuses(list_path: str) -> None:
     # A trailing or doubled separator is an empty segment, which the Chat
     # endpoint refuses as well: the projection stays exactly as strict as its
     # consumer instead of inventing a path that would be rejected later.
     assert driver._pc_list_folder_prefix(list_path) is None
+
+
+@pytest.mark.parametrize("list_path,expected", [
+    ("C:", "C:/"),
+    ("C:/", "C:/"),
+    ("c:/", "C:/"),
+    ("C:\\", "C:/"),
+    ("C:/Users", "C:/Users/"),
+    ("C:\\Users\\견적", "C:/Users/견적/"),
+])
+def test_a_granted_drive_is_a_root_shape_not_a_refused_one(
+    list_path: str, expected: str
+) -> None:
+    """Since #5573 a whole drive is a granted root, so `C:` and `C:\\Users` are
+    shapes this layer must accept; the grant check and the Chat endpoint still
+    refuse a drive the account does not hold.
+    """
+    assert driver._pc_list_folder_prefix(list_path, ("C:", "D:")) == expected
+
+
+def test_a_grant_check_is_what_refuses_an_unheld_drive() -> None:
+    # Without the grant list this layer refuses every drive shape, exactly as it
+    # did before #5573: accepting a volume is the endpoint's call, never this
+    # projection's guess.
+    assert driver._pc_list_folder_prefix("C:/x") is None
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "C:"}]}
+    ) is None
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "E:"}]}
+    ) == "E:/x"
 
 
 def test_a_refused_folder_shape_gets_no_invented_path() -> None:
@@ -305,5 +336,74 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
 def test_verified_root_normalization_preserves_relative_path_guard(path, roots, expected):
     normalized = driver._pc_path_against_verified_roots(path, {"roots": roots})
     assert normalized == expected
-    if expected.startswith(("C:", "../")):
+    if expected.startswith("../"):
+        # A path that climbs out of the grant never passes the shape guard.
         assert driver._pc_list_folder_prefix(normalized) is None
+    if normalized.startswith("C:") and normalized != "C:":
+        # Since #5573 a whole drive is a granted root, so a drive-shaped string is
+        # no longer refused by shape. What refuses it is the grant check: none of
+        # these roots is a bare drive, so nothing here can canonicalise.
+        assert driver._pc_path_against_granted_drive(
+            normalized, {"roots": [{"label": row} for row in (roots or []) if row]}
+        ) is None
+
+
+def test_a_granted_drive_is_a_root_in_every_spelling(monkeypatch) -> None:
+    """``C:``, ``C:\\`` and ``C:\\Users`` all address the drive that was granted.
+
+    The operational failure was upstream of any dispatch: the Engine called
+    ``claw.pc.list_files`` correctly and its own argument guard refused the path as
+    "not relative", so the PC was never asked. The listing rows then have to carry
+    the drive with them, because an account may hold several volumes.
+    """
+    seen = {}
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        if mode == "context":
+            return {"ok": True, "roots": [{"label": "C:"}, {"label": "D:"}],
+                    "tools": [], "device": {"status": "configured"}}
+        if mode == "dispatch":
+            seen["path"] = kwargs["payload"]["path"]
+            seen["op"] = kwargs["payload"]["op"]
+            return {"dispatch": {"run_id": RUN_ID, "kind": "command",
+                                 "dispatch_id": DISPATCH_ID}}
+        if mode == "command_status":
+            return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                                 "kind": "command", "state": "done"}}
+        if mode == "result":
+            body = WIRE_ROWS.encode("utf-8")
+            return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                                 "kind": "command", "output": WIRE_ROWS,
+                                 "result_sha256": "a" * 64,
+                                 "content_sha256": "a" * 64, "content_bytes": len(body),
+                                 "termination": "no_exit_code", "exit_code": None}}
+        raise AssertionError("unexpected mode " + str(mode))
+
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", _no_sleep)
+    handler = _handler("list", PC_LIST_FILES_TOOL_ID)
+
+    for sent, expected in (
+        ("C:", "C:"), ("C:\\", "C:"), ("C:/", "C:"),
+        ("C:\\Users", "C:/Users"), ("C:/Users/견적", "C:/Users/견적"),
+    ):
+        result = asyncio.run(handler({"path": sent}))
+        assert seen["path"] == expected, (sent, seen)
+        assert result["execution_confirmed"] is True
+
+    # A volume this account does not hold is not canonicalised, so the endpoint -
+    # the authority on grants - is the one that refuses it.
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "C:"}, {"label": "D:"}]}
+    ) is None
+
+    listed = json.loads(result["output"]) if "output" in result else None
+    assert listed is not None
+    # Rows listed from a drive keep the drive, so a follow-up read cannot have to
+    # guess which of the account's volumes was meant. The last call in the loop
+    # above listed C:/Users/견적, and the third row has no Name to bind.
+    assert [row.get("relative_path") for row in listed["entries"][:2]] == [
+        "C:/Users/견적/meshcentral-padiem-trial.txt", "C:/Users/견적/notes",
+    ]
+    assert "relative_path" not in listed["entries"][2]

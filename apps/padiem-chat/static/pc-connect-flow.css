@@ -1,0 +1,232 @@
+/* #5573 step 1 — the one "connect this computer" flow (2026-10-29 redesign).
+   The owner's call: connecting must finish on the FIRST screen, not inside the
+   Connectors dialog. This sheet styles the shared modal, the composer chip's
+   connect affordance, the one-line "already connected" notice and the small
+   PC-list popover. Everything reuses the shared tokens (--panel/--line/--muted/
+   --accent-strong/--success/--danger) and, for list rows, the .pc-pairing-*
+   classes the Connectors card already ships, so the three surfaces read as one
+   design-system voice in both themes and at phone width. */
+
+/* -- the modal ------------------------------------------------------------- */
+.pc-connect-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(15, 16, 20, .44);
+}
+
+.pc-connect-backdrop[hidden] {
+  display: none;
+}
+
+.pc-connect-modal {
+  width: min(360px, 100%);
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 14px;
+  background: var(--panel, #fff);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+}
+
+.pc-connect-modal-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: inherit;
+}
+
+.pc-connect-modal-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted, #6f7079);
+}
+
+.pc-connect-install {
+  justify-self: stretch;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent-strong, #5546d6);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pc-connect-install:hover {
+  filter: brightness(1.06);
+}
+
+.pc-connect-install[disabled] {
+  opacity: .6;
+  cursor: default;
+}
+
+.pc-connect-run {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.pc-connect-warn {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted, #6f7079);
+}
+
+.pc-connect-wait {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--accent-strong, #5546d6);
+}
+
+.pc-connect-wait[hidden] {
+  display: none;
+}
+
+.pc-connect-done {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--success, #1a6b3a);
+}
+
+.pc-connect-done[hidden] {
+  display: none;
+}
+
+.pc-connect-refusal {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 12px;
+  color: var(--danger, #b3261e);
+}
+
+.pc-connect-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-width: 32px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #6f7079);
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.pc-connect-close:hover {
+  background: rgba(127, 127, 127, .14);
+}
+
+.pc-connect-modal {
+  position: relative;
+}
+
+/* -- the one-line "already connected" notice ------------------------------- */
+.pc-connect-note {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 230;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 999px;
+  background: var(--panel, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--success, #1a6b3a);
+}
+
+.pc-connect-note[hidden] {
+  display: none;
+}
+
+/* -- the PC-list popover --------------------------------------------------- */
+.pc-connect-popover {
+  position: fixed;
+  z-index: 210;
+  display: grid;
+  gap: 8px;
+  width: min(264px, calc(100vw - 24px));
+  padding: 12px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--panel, #fff);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+}
+
+.pc-connect-popover[hidden] {
+  display: none;
+}
+
+.pc-connect-popover-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Rows reuse the Connectors card's own list styles, so a PC looks the same in
+   both places and the popover carries no extra identity fields. */
+.pc-connect-popover .pc-pairing-list {
+  gap: 6px;
+}
+
+.pc-connect-popover .pc-pairing-link {
+  min-height: 40px;
+  padding: 4px 8px;
+}
+
+.pc-connect-popover .pc-pairing-state {
+  margin-left: auto;
+}
+
+.pc-connect-popover-empty {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted, #6f7079);
+}
+
+/* -- the composer chip's connect affordance -------------------------------- */
+.pc-connect-chip-action {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-strong, #5546d6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pc-connect-chip-action[hidden] {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .pc-connect-modal {
+    padding: 16px;
+  }
+
+  .pc-connect-chip-action {
+    display: none;
+  }
+}

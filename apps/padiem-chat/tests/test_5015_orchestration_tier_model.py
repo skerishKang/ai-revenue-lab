@@ -239,11 +239,11 @@ def test_plus_tier_reaches_the_engine_request(monkeypatch) -> None:
     )
 
 
-def test_legacy_alias_without_tier_keeps_its_model_and_cleans_the_prompt(
+def test_slash_text_without_tier_keeps_the_default_model_and_prompt(
     monkeypatch,
 ) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=False)
-    expected = active_route_for(ProductTierLabel.PLUS).model_id
+    expected = active_route_for(ProductTierLabel.FREE).model_id
 
     response = asyncio.run(routes.api_orchestration(
         _request(
@@ -254,12 +254,12 @@ def test_legacy_alias_without_tier_keeps_its_model_and_cleans_the_prompt(
 
     assert response.status_code == 200
     assert bridge.requests[0]["agent"]["model_policy"] == {"model": expected}
-    assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
-    # The alias survives in the stored user turn and never reaches the model.
+    # Slash-prefixed text is ordinary prompt text and is never rewritten.
+    assert bridge.requests[0]["messages"][0]["content"] == ALIASED_TEXT
     assert history.exchanged[0]["user_text"] == ALIASED_TEXT
 
 
-def test_admin_tier_replaces_the_alias_in_the_engine_prompt(monkeypatch) -> None:
+def test_admin_tier_keeps_slash_text_in_the_engine_prompt(monkeypatch) -> None:
     bridge, history, admin_store = _install(monkeypatch, is_admin=True)
 
     response = asyncio.run(routes.api_orchestration(
@@ -270,6 +270,6 @@ def test_admin_tier_replaces_the_alias_in_the_engine_prompt(monkeypatch) -> None
     assert bridge.requests[0]["agent"]["model_policy"] == {
         "model": ADMIN_B14_MODEL_ID,
     }
-    assert bridge.requests[0]["messages"][0]["content"] == PC_TEXT
-    # The alias survives in the stored user turn and never reaches the model.
+    # Slash-prefixed text is ordinary prompt text and is never rewritten.
+    assert bridge.requests[0]["messages"][0]["content"] == ALIASED_TEXT
     assert history.exchanged[0]["user_text"] == ALIASED_TEXT

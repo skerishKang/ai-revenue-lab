@@ -128,6 +128,14 @@
       "type": "d1"
     },
     {
+      "name": "PADIEM_CHAT_FILE_LANE_ORIGIN",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_FILE_LANE_TICKET_SECRET",
+      "type": "secrets_store_secret"
+    },
+    {
       "name": "PADIEM_CHAT_GLOBAL_DAILY_LIMIT",
       "type": "plain_text"
     },
@@ -162,6 +170,26 @@
     {
       "name": "PADIEM_CHAT_SESSION_SECRET",
       "type": "secret_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_CLIENT_KID",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED",
+      "type": "plain_text"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY",
+      "type": "secrets_store_secret"
+    },
+    {
+      "name": "PADIEM_CHAT_SHARED_LOGIN_ENABLED",
+      "type": "plain_text"
     },
     {
       "name": "PADIEM_CHAT_TEST_GUARD_DIGEST",
@@ -280,6 +308,22 @@
       "type": "r2_bucket"
     },
     {
+      "name": "PC_AGENT_INSTALL_URL",
+      "type": "plain_text"
+    },
+    {
+      "name": "PC_QUEUE_BACKEND",
+      "type": "plain_text"
+    },
+    {
+      "name": "PC_QUEUE_ORIGIN",
+      "type": "plain_text"
+    },
+    {
+      "name": "PC_QUEUE_SERVICE_SECRET",
+      "type": "secret_text"
+    },
+    {
       "name": "TINYFISH_API_KEY",
       "type": "secrets_store_secret"
     },
@@ -289,3 +333,4 @@
     }
   ]
 }
+

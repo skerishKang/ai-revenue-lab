@@ -48,8 +48,11 @@ def test_the_summary_reaches_the_editor(meeting: dict) -> None:
 def test_saving_stores_the_edited_record_named_after_the_meeting(
     meeting: dict,
 ) -> None:
-    assert meeting["savedName"] == f"{TITLE}.txt"
-    assert meeting["savedBody"] == meeting["edited"]
+    # The first save in the scenario is the meeting record; the later book
+    # save uses the book name rule and is pinned separately.
+    assert f"{TITLE}.txt" in meeting["savedRecordNames"]
+    record = meeting["savedRecordBodies"][f"{TITLE}.txt"]
+    assert record == meeting["edited"]
 
 
 def test_the_archive_lists_the_record_with_a_book_selector(meeting: dict) -> None:
@@ -76,6 +79,28 @@ def test_the_book_draft_keeps_each_record_as_a_named_source(meeting: dict) -> No
     assert meeting["bookOutput"].startswith("생성된 초안 본문입니다.")
 
 
+def test_the_record_order_is_rearrangeable_and_drives_the_book(meeting: dict) -> None:
+    # #5608: up/down moves re-arrange the record list itself, and the book
+    # builder reads that arrangement — what the user sees is the sequence
+    # the AI receives.
+    assert meeting["orderBefore"][0].startswith(TITLE)
+    assert meeting["orderAfter"][0].startswith("11월 마을 총회")
+    assert meeting["bookOrderPromptCarriesArrangedOrder"] is True, meeting["bookOrderPrompt"]
+
+
+def test_the_book_draft_saves_under_its_own_name_and_reopens(meeting: dict) -> None:
+    # #5608: the 활동집 저장 action persists the edited draft through the
+    # existing project-file channel under the book name rule, so books never
+    # mix with meeting records; a fresh session lists and restores it.
+    assert meeting["bookSavedName"], "the book draft must persist"
+    assert meeting["bookSavedName"].startswith("활동집 - ")
+    assert meeting["bookSavedName"].endswith(".txt")
+    assert meeting["reentryBookListCount"] >= 1
+    assert meeting["reentryBookRestored"] == meeting["bookOutput"]
+    # The re-entered session still lists the stored meeting records too.
+    assert meeting["reentryRecordCount"] >= 2
+
+
 def test_the_group_touches_only_the_existing_endpoints(meeting: dict) -> None:
     allowed = {
         "GET /api/projects",
@@ -85,11 +110,23 @@ def test_the_group_touches_only_the_existing_endpoints(meeting: dict) -> None:
         "POST /api/chat",
     }
     # Reopening the record and building the book both read the existing detail
-    # route for the stored draft.
-    allowed.add("GET /api/projects/p1/files/f1")
+    # route for the stored drafts; f3 is the saved activity book.
+    allowed.update({"GET /api/projects/p1/files/f1", "GET /api/projects/p1/files/f2", "GET /api/projects/p1/files/f3"})
     assert set(meeting["endpoints"]) <= allowed, meeting["endpoints"]
     assert "POST /api/chat" in meeting["endpoints"]
 
 
 def test_meeting_generation_does_not_reference_the_sns_preview(meeting: dict) -> None:
     assert meeting["pageErrors"] == []
+
+
+def test_the_form_is_built_with_the_save_status_above_its_buttons(meeting: dict) -> None:
+    """Same #6257 order fault as the SNS builder, on the meeting side: the
+    status line was inserted against an actions row that was not a child yet,
+    so the panel never got its form. See ``test_5785_sns_tool.py`` for the
+    full read-back rationale.
+    """
+    build = meeting["formBuild"]
+    assert build["built"] is True, build
+    assert build["loaded"] == "1", build
+    assert build["statusAboveActions"] is True, build

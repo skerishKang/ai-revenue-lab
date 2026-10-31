@@ -56,8 +56,7 @@ def agent(**overrides) -> AgentProfile:
         "model_policy": {
             "model": "padiem-profile/medium-unassigned",
             "temperature": 0.2,
-            "allow_external_fallback": False,
-            },
+        },
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -171,11 +170,9 @@ def test_runtime_composes_one_server_system_message_and_preserves_image_payload(
     assert last["content"][0] == {"type": "text", "text": "이 사진을 설명해줘"}
     assert last["content"][1]["image_url"]["url"] == data_url()
     assert payload["model"] == "padiem-profile/medium-unassigned"
+    # B4/B5: only the real routing inputs travel on the wire now.
     assert payload["business14"] == {
-        "task_type": "general",
         "required_capabilities": ["chat", "image"],
-        "optimize_for": "korean",
-        "allow_external_fallback": False,
     }
 
 
@@ -287,10 +284,6 @@ class FakeStreamExecutor:
                 yield event
         finally:
             self.closed += 1
-
-    def stream_auto(self, request):
-        self.dispatches.append(("auto", request))
-        return self._iterate()
 
     def stream(self, request):
         self.dispatches.append(("manual", request))

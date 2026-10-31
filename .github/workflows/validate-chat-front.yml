@@ -1,0 +1,23 @@
+name: Validate chat front proxy
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat-front/**'
+      - '.github/workflows/validate-chat-front.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proxy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check apps/padiem-chat-front/worker.mjs
+      - name: Proxy, streaming, fallback and CPU-shape tests
+        run: node --test apps/padiem-chat-front/test/worker.test.mjs

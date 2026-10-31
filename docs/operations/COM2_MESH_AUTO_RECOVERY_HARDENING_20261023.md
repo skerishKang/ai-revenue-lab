@@ -1,5 +1,14 @@
 # COM2 Mesh 자동 복구 강화 — 재부팅 후 자동 시작 (2026-10-23)
 
+> **2026-10-30 #5643 폐기 갱신:** 이 문서의 §2.2(터널 supervisor)·§2.3(터널 작업 XML)과
+> D1·D2의 터널 결함은 #5643 소스 정리로 폐기됐다. `com2_mesh_tunnel_supervisor.ps1`,
+> `com2_mesh_tunnel_supervisor_selftest.ps1`, `com2_mesh_tunnel_task.template.xml`,
+> `com2_mesh_task_template.ps1`는 삭제됐고, 복구 엔진의 `tunnel_listener_down`·`tunnel_broken`
+> 분류와 `restart_tunnel` 조치도 제거됐다(에이전트는 2026-10-27부터 자체 인그레스
+> mesh.padiem.net으로 접속 — 컴1 포워드 없음). 자동 시작 관측은 터널 체크 10개가 빠진
+> **5체크**(부팅 시각·에이전트 자동 시작·에이전트 실행·부팅 후 기동·HTTP 200) 기준으로
+> `auto_start_verified`를 다시 정의한다. 아래 본문은 #5578 당시의 역사적 기록으로 보존한다.
+
 ## 2026-10-23 operational transition
 
 - Read-only observation at 20:58 KST: the running COM1 Mesh Agent process has an established direct TCP connection to `192.168.0.101:4443`.

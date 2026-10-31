@@ -157,10 +157,11 @@ def test_comments_and_sse_metadata_are_ignored():
     "req",
     [
         request(model="b14/auto"),
-        request(routing=B14RoutingOptions(allow_external_fallback=True)),
     ],
 )
 def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
+    """B7: the retired auto id is refused; B5 removed the fallback knob, so
+    there is no routing option left that can disqualify a stream request."""
     calls = 0
 
     async def handler(http_request: httpx.Request) -> httpx.Response:

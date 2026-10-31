@@ -87,7 +87,7 @@ def _recording_transport(seen: list, *, upstream_model: str = PAID_UPSTREAM):
 def test_the_manual_route_refuses_an_excluded_free_candidate(ready_route, model_id):
     with pytest.raises(NoSafeRoute) as caught:
         router_core.resolve_manual_route(
-            model_id, allow_external_fallback=False, product_tier="free",
+            model_id, product_tier="free",
         )
 
     assert caught.value.reason_code == "free_candidate_excluded"
@@ -96,7 +96,7 @@ def test_the_manual_route_refuses_an_excluded_free_candidate(ready_route, model_
 
 def test_the_manual_route_still_resolves_the_paid_opencode_go_model(ready_route):
     decision = router_core.resolve_manual_route(
-        PAID_MODEL, allow_external_fallback=False, product_tier="plus",
+        PAID_MODEL, product_tier="plus",
     )
 
     assert decision.selected_model == PAID_MODEL

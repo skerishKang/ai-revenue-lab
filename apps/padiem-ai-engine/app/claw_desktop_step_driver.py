@@ -442,7 +442,6 @@ def build_live_desktop_driver(*, b14_client, chat_service, request_factory,
                 if model_policy is not None else None,
                 max_retries=model_policy.get("max_retries")
                 if model_policy is not None else None,
-                task_type=task_type, optimize_for=optimize_for,
             ),
         )
         response = await b14_client.execute(request)

@@ -70,6 +70,11 @@ USER = "usr_" + "a" * 32
 TENANT = "tenant_0123456789abcdef0123456789abcdef"
 VALID_CALLER = "b54-p01-overlay-20260914-a1"
 VALID_CREDENTIAL = "c" * 48
+# Time anchors: BRIDGED_AT and the document body's expires_at (10-28) are a
+# fixed PAIR that is only ever checked against each other (the bridge clock),
+# never against the wall clock — that is why this suite stays deterministic.
+# If a real-clock check ever enters this path, either pass now= into it or pin
+# the module clock (see docs/operations/TEST_TIME_ANCHOR_AUDIT_20261029.md §4).
 BRIDGED_AT = datetime(2026, 10, 27, 12, 0, tzinfo=timezone.utc)
 DOCUMENT_BYTES = b"COM2 document context"
 MARKER_TEXT = DOCUMENT_BYTES.decode()

@@ -22,6 +22,18 @@ export const THEME_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 export const DEFAULT_THEME: B64Theme = 'light';
 
+/**
+ * Self-hosted Pretendard (issue #6077). The design tokens already name
+ * Pretendard first, but the Worker shipped no `@font-face`, so the typeface
+ * only appeared on machines that happened to have it installed.
+ *
+ * It is a linked stylesheet rather than inlined CSS because the official
+ * dynamic-subset declaration carries ~90 `unicode-range` slices (~55 KB);
+ * inlining it would add that to every HTML response, while linking lets the
+ * browser cache it once and download only the slices a page actually needs.
+ */
+export const B64_FONT_STYLESHEET_HREF = '/fonts/pretendard/pretendard-variable-dynamic-subset.css';
+
 export function isB64Theme(value: unknown): value is B64Theme {
   return value === 'light' || value === 'dark';
 }
@@ -114,7 +126,7 @@ export const THEME_CSS_VARIABLES = `
       --line-soft: #dde4ef;
       --text: #17233b;
       --muted: #46536e;
-      --faint: #6e7b95;
+      --faint: #646f87;
       --accent: #1a6fd1;
       --accent-strong: #155fa8;
       --accent-dim: rgba(26,111,209,.10);
@@ -136,9 +148,40 @@ export const THEME_CSS_VARIABLES = `
       --brand-glow: drop-shadow(0 0 10px rgba(26,111,209,.18));
       --ghost-hover-bg: rgba(26,111,209,.06);
       --radius-card: 16px;
-      --radius-btn: 10px;
+      --radius-btn: 12px;
       --pad: clamp(16px, 4vw, 64px);
-      font-family: "SUIT Variable", "SUIT", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+
+      /* Type and rhythm (issue #6001). One scale for every B64 surface, so a
+         heading on the home page and one on the pipeline are the same size and
+         a label is never small enough to strain. The values are tuned for
+         Hangul: Korean needs more line-height and less negative tracking than
+         Latin at the same point size, and it has no descenders to hide, so the
+         display line is calmer and the small text is heavier. */
+      --fs-display: clamp(26px, 4.4vw, 44px);
+      --lh-display: 1.16;
+      --ls-display: -.022em;
+      --fs-title: 19px;
+      --lh-title: 1.34;
+      --fs-subtitle: 16.5px;
+      --fs-body: 15px;
+      --lh-body: 1.65;
+      --fs-ui: 14.5px;
+      --lh-ui: 1.45;
+      --fs-meta: 12.5px;
+      --fs-label: 12px;
+      --fw-display: 700;
+      --fw-title: 680;
+      --fw-body: 500;
+      --fw-label: 620;
+      --gap-card: 12px;
+      --pad-card: 18px;
+      --space-section: 28px;
+      --control-height: 48px;
+
+      /* Pretendard first, per the owner's direction. It is used when installed
+         and the rest of the stack is a native Korean fallback, so no webfont and
+         no font-src exception is needed and the site still renders offline. */
+      font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
       font-synthesis: none;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
@@ -154,7 +197,7 @@ export const THEME_CSS_VARIABLES = `
       --line-soft: rgba(255,255,255,.09);
       --text: #f4f6fb;
       --muted: rgba(255,255,255,.68);
-      --faint: rgba(255,255,255,.45);
+      --faint: rgba(255,255,255,.5);
       --accent: #88c9ff;
       --accent-strong: #5fb3ff;
       --accent-dim: rgba(136,201,255,.14);

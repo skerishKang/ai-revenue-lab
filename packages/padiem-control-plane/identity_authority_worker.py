@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Any
 
@@ -16,6 +17,7 @@ from identity_connector_ticket import (
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
 )
+from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     ControlPlaneContractError,
@@ -24,7 +26,36 @@ from padiem_control_plane.contracts import (
 from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw", "lovetree-4-0"})
+# #5573 A2: default-off HTTPS ingress for the COM2 parallel host. Proof-gated,
+# allowlisted, and only present when the secret binding exists; the Service
+# Binding RPC surface and the product pin above are untouched.
+IDENTITY_RPC_INGRESS_SECRET_BINDING = "PADIEM_IDENTITY_RPC_INGRESS_SECRET"
+IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
+    "resolve_or_create_product_link",
+    "establish_auth_session",
+    "resolve_auth_session",
+    "resolve_current_auth_session",
+    "revoke_auth_session",
+    "revoke_all_auth_sessions",
+    "resolve_product_user_for_subject",
+    "resolve_connector_workspace",
+    "resolve_connector_context",
+    # Source-evidenced COM2 Chat callers; existing per-method authority gates
+    # still apply. This does not change the default-off HTTPS ingress.
+    "issue_google_connect_ticket",
+    "create_tenant",
+    "assign_tenant_membership",
+    "resolve_active_memberships",
+    "resolve_active_tenant_membership",
+    "install_connector_enrollment_schema",
+    "resolve_connector_owner_scope",
+    "grant_connector_enrollment_consent",
+    "revoke_connector_enrollment_consent",
+    "resolve_connector_enrollment_consent_for_device",
+    "bind_connector_enrollment_challenge",
+    "authorize_connector_enrollment_redeem",
+})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
@@ -191,13 +222,18 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _LINK_KEYS, "identity-link RPC")
+            keys = _LINK_KEYS | {"expected_canonical_subject_id"} if isinstance(payload, dict) and "expected_canonical_subject_id" in payload else _LINK_KEYS
+            wire = _closed(payload, keys, "identity-link RPC")
+            expected = wire.get("expected_canonical_subject_id")
+            if "expected_canonical_subject_id" in wire and not isinstance(expected, str):
+                raise ControlPlaneContractError("invalid_identity_authority_rpc", "invalid expected subject")
             link = self._store.resolve_or_create_product_link(
                 product_id=wire["product_id"],
                 product_user_id=wire["product_user_id"],
                 auth_provider=wire["auth_provider"],
                 provider_subject=wire["provider_subject"],
                 now=datetime.now().astimezone(),
+                **({"expected_canonical_subject_id": expected} if expected is not None else {}),
             )
             return {"ok": True, "link": link.to_public_dict()}
         except ControlPlaneContractError as exc:
@@ -574,11 +610,31 @@ class Default(WorkerEntrypoint):
         return await self._stub().revoke_connector_enrollment_consent(payload)
 
     async def fetch(self, request):
+        secret = await resolve_ingress_secret(
+            getattr(self.env, IDENTITY_RPC_INGRESS_SECRET_BINDING, None)
+        )
+        if secret is not None:
+            handled = await handle_internal_rpc(
+                request,
+                secret=secret,
+                allowed_methods=IDENTITY_RPC_INGRESS_METHODS,
+                dispatcher=self,
+            )
+            if handled is not None:
+                status, payload, headers = handled
+                return Response(
+                    json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+                    status=status,
+                    headers=headers,
+                )
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
 CANONICAL_IDENTITY_AUTHORITY_WORKER_SOURCE = True
+INTERNAL_RPC_HTTPS_INGRESS = True
+INTERNAL_RPC_HTTPS_INGRESS_DEFAULT_OFF = True
+INTERNAL_RPC_HTTPS_INGRESS_PROOF = "v1"
 SQLITE_BACKED_DURABLE_OBJECT = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PROVIDER_SUBJECT_PERSISTED = False

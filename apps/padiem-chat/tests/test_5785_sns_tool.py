@@ -77,6 +77,21 @@ def test_the_group_touches_only_the_existing_endpoints(sns: dict) -> None:
         "GET /api/projects/p1/files",
         "POST /api/chat",
         "POST /api/projects/p1/files",
+        # #5895: whether a PC is linked, read through the existing pairing list.
+        "GET /api/pc/pairings",
     }
     assert "POST /api/chat" in sns["endpoints"]
     assert not sns["alerts"]
+
+
+def test_the_form_is_built_with_the_save_status_above_its_buttons(sns: dict) -> None:
+    """#6257 put ``form.insertBefore(snsSaveState, formActions)`` before the
+    actions row was in the form, so a real document threw NotFoundError and the
+    panel kept its ``util-soon-msg`` placeholder for the whole session — the
+    builder had already set ``dataset.loaded``. The shape is pinned here rather
+    than inferred from a submit, which only reaches the form if it exists.
+    """
+    build = sns["formBuild"]
+    assert build["built"] is True, build
+    assert build["loaded"] == "1", build
+    assert build["statusAboveActions"] is True, build

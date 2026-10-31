@@ -21,11 +21,20 @@ GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 SESSION_COOKIE = "padiem_session"
 OAUTH_STATE_COOKIE = "padiem_oauth_state"
 OAUTH_STATE_MAX_AGE_SECONDS = 600
+#: The only same-origin surfaces a completed Google login may continue to. An app
+#: that logs in inside its own page needs the provider round trip to land back
+#: there, so the continuation is one of these exact values and never a
+#: caller-supplied URL: an origin, a scheme, a host, a prefix or a path under another
+#: product is refused. Anything else (including absent) keeps the Chat root.
+OAUTH_RETURN_TARGETS = frozenset({"/apps/council/"})
 MAX_AUTH_RESPONSE_BYTES = 1024 * 1024
 # Android handoff states are signed with a distinct purpose so a normal
 # cookie-bound OAuth state can never be replayed as a handoff state or back.
 ANDROID_HANDOFF_STATE_PURPOSE = "padiem-chat/android-handoff-state/v1"
 _ANDROID_HANDOFF_ID_RE = re.compile(r"^aho_[A-Za-z0-9_-]{20,48}$")
+LOVETREE_HANDOFF_STATE_PURPOSE = "padiem-chat/lovetree-handoff-state/v1"
+_LOVETREE_TICKET_RE = re.compile(r"^lovt_[A-Za-z0-9_-]{16,48}$")
+_LOVETREE_LOGIN_REQUEST_RE = re.compile(r"^[A-Za-z0-9_-]{16,64}$")
 # #5225: the canonical session id minted by the Control Plane identity
 # authority. The shape is the canonical contract's own bounded safe-identifier
 # grammar, so a malformed claim invalidates the cookie instead of degrading
@@ -149,17 +158,43 @@ def decode_session_token(settings: Settings, token: str | None, now: int | None 
     return claims.user_id if claims is not None else None
 
 
-def create_oauth_state(settings: Settings, now: int | None = None) -> tuple[str, str]:
+def oauth_return_target(value: object) -> str | None:
+    """The exact allowlisted continuation, or None. Never derived from a host."""
+    return value if isinstance(value, str) and value in OAUTH_RETURN_TARGETS else None
+
+
+def create_oauth_state(
+    settings: Settings, now: int | None = None, return_to: str | None = None
+) -> tuple[str, str]:
     if not settings.session_secret:
         raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     issued = int(time.time()) if now is None else now
     state = secrets.token_urlsafe(24)
+    payload: dict[str, Any] = {"v": 1, "state": state, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS}
+    target = oauth_return_target(return_to)
+    if target is not None:
+        payload["rt"] = target
     signed = _signed_token(
         settings.session_secret,
         "padiem-chat/oauth-state/v1",
-        {"v": 1, "state": state, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS},
+        payload,
     )
     return state, signed
+
+
+def verified_oauth_return_target(
+    settings: Settings, cookie_token: str | None, now: int | None = None
+) -> str:
+    """Where the verified login continues. The value only ever comes from this
+    Worker's own signed state cookie, so a request cannot aim the redirect."""
+    if not cookie_token or not settings.session_secret:
+        return "/"
+    payload = _verify_token(
+        settings.session_secret, "padiem-chat/oauth-state/v1", cookie_token, now=now
+    )
+    if not payload or payload.get("v") != 1:
+        return "/"
+    return oauth_return_target(payload.get("rt")) or "/"
 
 
 def verify_oauth_state(settings: Settings, query_state: str | None, cookie_token: str | None, now: int | None = None) -> bool:
@@ -204,6 +239,54 @@ def verify_android_handoff_state(settings: Settings, state: str | None, now: int
         return None
     handoff_id = payload.get("hid")
     return handoff_id if is_android_handoff_id(handoff_id) else None
+
+
+def is_lovetree_ticket(value: object) -> bool:
+    return isinstance(value, str) and _LOVETREE_TICKET_RE.fullmatch(value) is not None
+
+
+def is_lovetree_login_request(value: object) -> bool:
+    """LoveTree's own OAuth state value: opaque, bounded, and never an identity."""
+    return isinstance(value, str) and _LOVETREE_LOGIN_REQUEST_RE.fullmatch(value) is not None
+
+
+def create_lovetree_handoff_state(
+    settings: Settings, ticket_id: str, login_request: str, now: int | None = None
+) -> str:
+    """Sign the OAuth state for a LoveTree login handed to the existing Google flow.
+
+    Like the Android handoff state, this binds one OAuth callback to one pending row and
+    authenticates nobody. It carries the LoveTree login request so the return leg can
+    hand back exactly what that request started with; the row itself keeps only its
+    digest.
+    """
+    if not settings.session_secret:
+        raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
+    if not is_lovetree_ticket(ticket_id):
+        raise AuthError(400, "invalid_lovetree_handoff", "로그인 요청을 확인할 수 없습니다.")
+    if not is_lovetree_login_request(login_request):
+        raise AuthError(400, "invalid_lovetree_login_request", "로그인 요청을 확인할 수 없습니다.")
+    issued = int(time.time()) if now is None else now
+    return _signed_token(
+        settings.session_secret,
+        LOVETREE_HANDOFF_STATE_PURPOSE,
+        {"v": 1, "tid": ticket_id, "lr": login_request, "exp": issued + OAUTH_STATE_MAX_AGE_SECONDS},
+    )
+
+
+def verify_lovetree_handoff_state(
+    settings: Settings, state: str | None, now: int | None = None
+) -> tuple[str, str] | None:
+    if not state or not settings.session_secret:
+        return None
+    payload = _verify_token(settings.session_secret, LOVETREE_HANDOFF_STATE_PURPOSE, state, now=now)
+    if not payload or payload.get("v") != 1:
+        return None
+    ticket_id = payload.get("tid")
+    login_request = payload.get("lr")
+    if not is_lovetree_ticket(ticket_id) or not is_lovetree_login_request(login_request):
+        return None
+    return ticket_id, login_request
 
 
 def session_cookie_kwargs(settings: Settings) -> dict[str, Any]:

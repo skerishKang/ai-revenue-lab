@@ -5,6 +5,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -45,8 +46,11 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     deprecation warnings into a false startup failure.
     """
 
-    python3 = shutil.which("python3")
-    assert python3, "python3 must be available for the documented owner command"
+    # Windows may resolve python3 to a store shim or a non-Python launcher.
+    # Preserve the documented command check on POSIX; use the test interpreter
+    # on Windows so the subprocess uses the same environment.
+    python3 = sys.executable if os.name == "nt" else shutil.which("python3")
+    assert python3, "a Python interpreter is required for the owner startup test"
 
     (tmp_path / ".env").write_text(
         "B14_PROVIDER_MODE=live\n",

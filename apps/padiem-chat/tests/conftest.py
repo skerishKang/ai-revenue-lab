@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 from pathlib import Path
 
 import httpx
@@ -214,3 +215,16 @@ def _synthetic_plus_route_for_non_policy_contracts(
             executable,
             raising=False,
         )
+
+
+@pytest.fixture
+def cross_app_source_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep workspace packages visible to the cross-app subprocess from tests/."""
+    root = Path(__file__).resolve().parents[3]
+    paths = (root / "apps" / "korean-ai-code-agent" / "src",
+             root / "packages" / "padiem-ai-core",
+             root / "packages" / "padiem-control-plane",
+             root / "apps" / "padiem-ai-engine" / "clients" / "python")
+    existing = os.environ.get("PYTHONPATH", "")
+    value = os.pathsep.join(str(path) for path in paths)
+    monkeypatch.setenv("PYTHONPATH", value + (os.pathsep + existing if existing else ""))

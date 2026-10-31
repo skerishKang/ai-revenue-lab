@@ -193,7 +193,7 @@ def test_custom_endpoint_and_provider_model_controls_follow_server_capabilities(
 
 def test_selected_custom_provider_model_goes_to_the_custom_field_without_tier() -> None:
     assert (
-        'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };'
+        'const payload = { messages: outboundMessages, tier: selectedProductTier(), skill };'
         in APP
     )
     assert "const customSelection = !clawGeneralRequest && window.PadiemCustomSelection?.get?.();" in APP
@@ -299,7 +299,6 @@ def _run_transport_cases() -> dict:
         pytest.skip("node is not available for the browser transport harness")
     base = {
         "messages": [{"role": "user", "content": "테스트 질문"}],
-        "mode": "auto",
         "skill": "auto",
         "timezone": "Asia/Seoul",
         "calendar_turn_id": "turn-5121",

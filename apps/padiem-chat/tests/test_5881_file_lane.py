@@ -137,13 +137,17 @@ const assert = require("node:assert/strict");
   assert.equal(api.shouldUse({name:"large.pdf",size:9_999_999}),false);
   assert.equal(api.shouldUse({name:"large.pdf",size:10_000_000}),true);
   for(const name of ["large.txt","large.md","large.csv"]) assert.equal(api.shouldUse({name,size:10_000_000}),true);
-  // Phase-1 automatic routing never changes unsupported/image inline paths.
-  assert.equal(api.shouldUse({name:"large.docx",size:10_000_000}),false);
   assert.equal(api.shouldUse({name:"photo.png",size:10_000_000}),false);
   window.PadiemAttachmentCapabilities={binarySupported:false,fileLaneSupported:true};
-  assert.equal(api.shouldUse({name:"small.pdf",size:100}),true);
+  for(const ext of ["pdf","docx","pptx","xlsx"]) {
+    const file={name:"small."+ext,size:100};
+    assert.equal(api.shouldUse(file),true);
+    assert.equal(api.isBinary(file),true);
+    assert.equal(api.pending(file).fileLane,true);
+  }
   window.PadiemAttachmentCapabilities.fileLaneSupported=false;
-  assert.equal(api.shouldUse({name:"small.pdf",size:100}),false);
+  for(const ext of ["pdf","docx","pptx","xlsx"])
+    assert.equal(api.shouldUse({name:"small."+ext,size:100}),false);
   let calls=[];
   const file={name:"large.pdf",size:10_000_000};
   global.fetch=async(url,options)=>{
@@ -180,7 +184,7 @@ def test_worker_config_never_borrows_a_process_secret(monkeypatch):
     assert 'self.env, "PADIEM_CHAT_FILE_LANE_TICKET_SECRET"' in worker
 
 
-def test_picker_exposes_only_com2_pdf_when_old_binary_parser_is_missing():
+def test_picker_exposes_com2_binary_formats_when_old_binary_parser_is_missing():
     static = Path(__file__).resolve().parents[1] / "static"
     script = "global.window=globalThis;\n" + (static/"attachment-capabilities.js").read_text() + r"""
 const assert=require('node:assert/strict');
@@ -189,10 +193,50 @@ caps.setBinarySupport(false);
 assert(!caps.accept.includes('.pdf'));
 caps.setFileLaneSupport(true);
 assert(caps.accept.includes('.pdf'));
-assert(!caps.accept.includes('.docx'));
+for (const ext of ['.pdf','.docx','.pptx','.xlsx']) assert(caps.accept.includes(ext));
 assert(caps.copy('ko').documentFormats.includes('PDF'));
 caps.setFileLaneSupport(false);
 assert(!caps.accept.includes('.pdf'));
 """
     result=subprocess.run(["node","-e",script],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", ["pdf", "docx", "pptx", "xlsx"])
+async def test_binary_reference_uses_file_lane_and_is_owner_scoped(file_app, monkeypatch, kind):
+    from padiem_file_lane import parsing
+    # The transport and owner checks are real. The parser is isolated here;
+    # format-specific parsing is tested in the COM2 parser suite.
+    monkeypatch.setattr(parsing, "parse_text", lambda path, actual: "parsed by COM2")
+    lane = FileLaneClient("https://files.example.test", SECRET, transport=httpx.ASGITransport(app=file_app))
+    settings = config()
+    app = create_app(settings, history_store=History(), file_lane_client=lane)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", cookies=cookies(settings)) as chat:
+        cap = (await chat.get("/api/files/capabilities")).json()
+        assert cap["ready"] and kind in cap["formats"]
+        ticket = (await chat.post("/api/files/ticket", json={"size_bytes":20}, headers={"Origin":"https://chat.example.test"})).json()
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=file_app), base_url="https://files.example.test") as files:
+            uploaded = await files.post("/files?filename=sample."+kind, headers=ticket["headers"], content=(b"%PDF-1.4" if kind == "pdf" else b"fixture"))
+        assert uploaded.status_code == 201
+        ref = {"type":"file", "file_id":uploaded.json()["file_id"]}
+        parsed = await lane.resolve(USER, ref)
+        assert parsed.text == "parsed by COM2"
+        assert parsed.media_type == __import__("app.file_lane", fromlist=["KINDS"]).KINDS[kind]
+        with pytest.raises(AttachmentValidationError):
+            await lane.resolve(OTHER, ref)
+
+@pytest.mark.asyncio
+async def test_health_requires_configured_lane_and_all_four_formats(monkeypatch):
+    from app import file_lane
+    for origin, secret, expected in [(None, None, False), ("https://files.example.test", None, False),
+                                     ("https://files.example.test", SECRET, True)]:
+        lane = FileLaneClient(origin, secret)
+        app = create_app(config(), history_store=History(), file_lane_client=lane)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as chat:
+            assert (await chat.get("/health")).json()["binary_document_attachment_ready"] is expected
+    monkeypatch.delitem(file_lane.KINDS, "xlsx")
+    lane = FileLaneClient("https://files.example.test", SECRET)
+    app = create_app(config(), history_store=History(), file_lane_client=lane)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as chat:
+        assert (await chat.get("/health")).json()["binary_document_attachment_ready"] is False
