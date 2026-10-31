@@ -19,7 +19,12 @@ their own exit codes and verdict lines:
                             staging database from the published generation
                             (``--apply-pending`` when Production D1 is behind).
 7. ``parity``             — ``chat_copy_parity`` between the D1 copy and the
-                            staging database.
+                            staging database. With ``--apply-pending`` the copy
+                            is deliberately ahead of the generation by then, so
+                            this stage is SKIPPED and the reflect stage's own
+                            pre-apply ``CHAT_COPY_PARITY=MATCH`` is the evidence:
+                            a post-apply comparison would report the rows the
+                            migration changed as window DRIFT.
 8. ``object_reference``   — ``chat_object_reference_check`` referenced keys vs
                             the mirror inventory.
 
@@ -129,6 +134,7 @@ class RehearsalError(Exception):
 class StageResult:
     stage: str
     passed: bool
+    skipped: bool = False
     detail: str = ""
     started_utc: str = ""
     ended_utc: str = ""
@@ -295,7 +301,9 @@ class Rehearsal:
             # Unreachable is a probe failure, not a runner crash: status 0.
             return 0, ""
 
-    def _child(self, stage: str, argv: list[str], expect: str) -> StageResult:
+    def _child(
+        self, stage: str, argv: list[str], expect: str | tuple[str, ...]
+    ) -> StageResult:
         """Run one existing tool and take its own exit code as the verdict."""
 
         result = StageResult(stage=stage, passed=False, commands=[argv])
@@ -316,9 +324,11 @@ class Rehearsal:
         for line in output.splitlines():
             if line.strip():
                 print("  | " + line)
-        result.detail = f"exit={code} expect={expect}"
-        result.passed = code == 0 and expect in output
-        if not result.passed and expect not in output:
+        tokens = (expect,) if isinstance(expect, str) else tuple(expect)
+        missing = [token for token in tokens if token not in output]
+        result.detail = f"exit={code} expect={'+'.join(tokens)}"
+        result.passed = code == 0 and not missing
+        if missing:
             result.detail += " verdict_token_missing"
         return result
 
@@ -427,11 +437,29 @@ class Rehearsal:
         ]
         if self.config.migrations_dir:
             argv += ["--migrations-dir", self.config.migrations_dir]
+        expected = ["STAGING_DB_FROM_GENERATION=READY"]
         if self.config.apply_pending:
             argv.append("--apply-pending")
-        return self._child("reflect", argv, "STAGING_DB_FROM_GENERATION=READY")
+            # The copy is deliberately advanced past the generation after its
+            # verdict, so this same output carries the pre-apply MATCH the
+            # parity stage would otherwise re-measure.
+            expected += ["CHAT_COPY_PARITY=MATCH", "STAGING_DB_PENDING_APPLIED"]
+        return self._child("reflect", argv, tuple(expected))
 
     def _parity(self) -> StageResult:
+        if self.config.apply_pending:
+            # Comparing the generation (pre-migration) with the advanced copy
+            # reports structural DRIFT for the rows the migration changed. The
+            # reflect stage already printed the pre-apply MATCH; that is the
+            # evidence, and no new verdict logic is added here.
+            print("REHEARSAL_PARITY=EVIDENCE=reflect_pre_apply")
+            result = self._stage(
+                "parity",
+                "post_apply_comparison_skipped: reflect_pre_apply_match is the evidence",
+                True,
+            )
+            result.skipped = True
+            return result
         return self._child(
             "parity",
             [
@@ -506,18 +534,21 @@ class Rehearsal:
             result.seconds = round(time.monotonic() - started, 2)
             result.ended_utc = _utc_now()
             self.report.stages.append(result)
+            verdict = (
+                "SKIPPED" if result.skipped else ("PASS" if result.passed else "FAIL")
+            )
             print(
                 "REHEARSAL_STAGE=%s RESULT=%s seconds=%s started=%s ended=%s detail=%s"
                 % (
                     result.stage,
-                    "PASS" if result.passed else "FAIL",
+                    verdict,
                     result.seconds,
                     result.started_utc,
                     result.ended_utc,
                     result.detail,
                 )
             )
-            if not result.passed:
+            if not result.passed and not result.skipped:
                 self.report.failed_stage = result.stage
                 print(f"REHEARSAL_FAILED stage={result.stage} detail={result.detail}")
                 for line in ROLLBACK_GUIDANCE:
@@ -536,6 +567,11 @@ class Rehearsal:
             print(f"REHEARSAL_ACTION stage=freeze_probe action=get_expect_200 path={path}")
         for stage, argv, _token in self._planned_commands():
             print("REHEARSAL_COMMAND stage=%s argv=%s" % (stage, " ".join(argv)))
+        if self.config.apply_pending:
+            print(
+                "REHEARSAL_ACTION stage=parity "
+                "action=skip_post_apply_comparison reason=reflect_pre_apply_match"
+            )
         self.report.stages = [
             self._stage(name, "dry_run", True) for name in STAGE_ORDER
         ]
@@ -553,9 +589,11 @@ class Rehearsal:
                             if self.config.migrations_dir else []),
                          *(["--apply-pending"] if self.config.apply_pending else [])],
              "STAGING_DB_FROM_GENERATION=READY"),
-            ("parity", [sys.executable, str(TOOLS["parity"]),
-                        "--d1", self.config.snapshot_b,
-                        "--com2", self.config.staging_db], "CHAT_COPY_PARITY=MATCH"),
+            *([] if self.config.apply_pending else [
+                ("parity", [sys.executable, str(TOOLS["parity"]),
+                            "--d1", self.config.snapshot_b,
+                            "--com2", self.config.staging_db], "CHAT_COPY_PARITY=MATCH"),
+            ]),
             ("object_reference", [sys.executable, str(TOOLS["object_reference"]),
                                   "--db", self.config.snapshot_b,
                                   "--inventory", self.config.mirror_inventory],
@@ -567,20 +605,28 @@ class Rehearsal:
         self.report.elapsed_seconds = round(time.monotonic() - self._started, 2)
         if self.report.passed:
             print(
-                "REHEARSAL_SUMMARY=PASS stages=%d passed=%d failed=0 elapsed=%ss"
+                "REHEARSAL_SUMMARY=PASS stages=%d passed=%d skipped=%d failed=0 "
+                "elapsed=%ss"
                 % (
                     len(self.report.stages),
                     sum(1 for stage in self.report.stages if stage.passed),
+                    sum(1 for stage in self.report.stages if stage.skipped),
                     self.report.elapsed_seconds,
                 )
             )
         else:
             print(
-                "REHEARSAL_SUMMARY=STOPPED stages=%d passed=%d failed=%s elapsed=%ss"
+                "REHEARSAL_SUMMARY=STOPPED stages=%d passed=%d failed=%s "
+                "skipped=%d elapsed=%ss"
                 % (
                     len(self.report.stages),
                     sum(1 for stage in self.report.stages if stage.passed),
-                    sum(1 for stage in self.report.stages if not stage.passed),
+                    sum(
+                        1
+                        for stage in self.report.stages
+                        if not stage.passed and not stage.skipped
+                    ),
+                    sum(1 for stage in self.report.stages if stage.skipped),
                     self.report.elapsed_seconds,
                 )
             )
