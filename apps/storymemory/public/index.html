@@ -179,6 +179,12 @@
     </div>
     <button type="button" class="auth-gate-primary" id="authGatePrimary">로그인하고 동기화</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
+    <div class="auth-gate-backup" aria-label="기기 기록 백업">
+      <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
+      <button type="button" id="smBackupImport" class="auth-gate-secondary">백업에서 복원</button>
+      <input type="file" id="smBackupFile" accept=".json,application/json" hidden>
+      <small>백업 파일에는 읽기 기록과 메모가 담깁니다. 안전한 곳에 보관해 주세요.</small>
+    </div>
     <small class="auth-gate-foot">DB 비밀번호는 브라우저에 저장하지 않습니다. 로그인 세션의 JWT와 RLS로 내 데이터만 접근합니다.</small>
   </aside>
 </section>
@@ -8358,5 +8364,34 @@ window.__smV1823EvidenceUXV1={
 })();
 </script>
 
+<script src="./storymemory-backup-v1.js"></script>
+<script>
+(function(){
+  const file = document.getElementById('smBackupFile');
+  document.getElementById('smBackupExport').addEventListener('click', function(){
+    try {
+      if (typeof persistUnifiedStore === 'function') persistUnifiedStore();
+      const data = JSON.stringify(window.StoryMemoryBackup.snapshot(localStorage), null, 2);
+      const url = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+      const a = document.createElement('a');
+      a.href = url; a.download = 'storymemory-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    } catch (_) { alert('백업 파일을 만들지 못했습니다. 다시 시도해 주세요.'); }
+  });
+  document.getElementById('smBackupImport').addEventListener('click', function(){ file.value=''; file.click(); });
+  file.addEventListener('change', async function(){
+    const selected = file.files && file.files[0];
+    if (!selected) return;
+    if (selected.size > 5 * 1024 * 1024) { alert('백업 파일이 너무 큽니다.'); return; }
+    if (!confirm('백업에 있는 항목으로 이 기기의 같은 항목을 덮어씁니다. 계속하시겠어요?')) return;
+    try {
+      const text = await selected.text();
+      window.StoryMemoryBackup.restore(localStorage, text);
+      location.reload();
+    } catch (_) { alert('백업을 복원하지 못했습니다. 올바른 StoryMemory 백업 파일인지 확인해 주세요.'); }
+  });
+})();
+</script>
 </body>
 </html>
