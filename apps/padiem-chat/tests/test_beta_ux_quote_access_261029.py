@@ -55,7 +55,12 @@ def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
 
     util = (STATIC / "util-menu.css").read_text(encoding="utf-8")
     assert "border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));" in util
-    assert "border: 1px solid var(--input-border-strong, rgba(51, 74, 91, .34));" in util
+    # The speech-specific controls must use the same strong token with the
+    # shared line fallback after #5799, for inputs, textareas and selects.
+    speech = util[util.index("#utilSpeechPanel .util-form input,"):util.index("/* #5728:")]
+    for selector in ("#utilSpeechPanel .util-form input,", "#utilSpeechPanel .util-form textarea,", "#utilSpeechPanel .util-form select {"):
+        assert selector in speech
+    assert "border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));" in speech
     quote = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
     assert quote.count("var(--input-border-strong, var(--border,") >= 2
     dialog = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")
