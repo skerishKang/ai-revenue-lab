@@ -33,7 +33,7 @@ from .local_service_bridge import (
     LocalB66PdfRendererClient,
     compose_local_b14_transports,
 )
-from .maintenance_mode import MaintenanceModeMiddleware
+from .maintenance_mode import apply_write_freeze
 from .project_files import D1ProjectFileStore
 from .saved_outputs import D1SavedOutputStore
 from .usage_gate import D1UsageCounterStore
@@ -186,12 +186,12 @@ def build_app():
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
 
-    sentinel = os.getenv("PADIEM_CHAT_MAINTENANCE_SENTINEL", "").strip()
-    if sentinel:
-        # Stage-3 window: reads keep working, mutations answer 503 until the
-        # sentinel file is removed. Wrapped outermost so the answer is the same
-        # whatever the request's origin or cookie state is.
-        app = MaintenanceModeMiddleware(app, sentinel_path=sentinel)
+    # The write window (#5573, #5115 step ③): reads keep working, mutations
+    # answer 503 while the sentinel file exists or the environment switch is on.
+    # Wrapped outermost so the answer never depends on origin or cookie state,
+    # and applied after every ``app.state`` assignment above so callers keep a
+    # Starlette application to attach state to.
+    app = apply_write_freeze(app)
     return app
 
 
