@@ -399,9 +399,10 @@ class _ReadPort:
     def __init__(self):
         self.calls = []
 
-    def read_bytes(self, *, node_ref, file_path, timeout_seconds=None):
-        # The real private port supplies its own default when the executor
-        # names no deadline; a fake that required the argument would hide that.
+    def read_bytes(self, *, node_ref, file_path, timeout_seconds=60, max_bytes=None):
+        # The real private port supplies its own default (60) when the
+        # executor names no deadline; a fake that required the argument would
+        # hide that, and a None default would re-admit the #6327 shape.
         self.calls.append((node_ref, file_path, timeout_seconds))
         return b"file-bytes"
 

@@ -248,13 +248,29 @@ def build_app():
         app.state.b66_quote_model_resolver = quote_model_resolver
         app.state.b14_model_choice_resolver = quote_model_resolver
 
+    edge_required = os.getenv("PADIEM_COM2_EDGE_PROOF_REQUIRED", "").strip().lower() in {"1", "true"}
+    connector_enabled = os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}
+    verifier = None
+    if edge_required or connector_enabled:
+        if not host_flag:
+            raise ConfigError("COM2 edge proof requires the CPython host")
+        from com2_edge_proof import EdgeProofVerifier
+        edge_file = os.getenv("PADIEM_COM2_EDGE_SECRET_FILE", "").strip()
+        replay_db = os.getenv("PADIEM_COM2_EDGE_REPLAY_DB", "").strip()
+        if not edge_file:
+            raise ConfigError("PADIEM_COM2_EDGE_SECRET_FILE is required")
+        try:
+            edge_secret = Path(edge_file).read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ConfigError("PADIEM_COM2_EDGE_SECRET_FILE is unreadable") from exc
+        verifier = EdgeProofVerifier(edge_secret, replay_db, all_requests=edge_required)
+
     # This route is a separate, explicit COM2 staging activation. Cloudflare
     # composition does not import this host-only module.
-    if os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}:
+    if connector_enabled:
         if not host_flag:
             raise ConfigError("COM2 connector gateway requires the CPython host")
         from starlette.routing import WebSocketRoute
-        from com2_edge_proof import EdgeProofVerifier
         from .com2_connector_websocket import (
             LoopbackRpcBinding, _BROKER_METHODS, _IDENTITY_METHODS,
             create_com2_gateway,
@@ -270,8 +286,6 @@ def build_app():
             except OSError as exc:
                 raise ConfigError(f"{name} is unreadable") from exc
 
-        replay_db = os.getenv("PADIEM_COM2_EDGE_REPLAY_DB", "").strip()
-        verifier = EdgeProofVerifier(secret_file("PADIEM_COM2_EDGE_SECRET_FILE"), replay_db)
         identity = LoopbackRpcBinding(
             port=8802, secret=secret_file("PADIEM_COM2_IDENTITY_RPC_SECRET_FILE"),
             methods=_IDENTITY_METHODS,
@@ -279,6 +293,9 @@ def build_app():
         broker = LoopbackRpcBinding(
             port=8799, secret=secret_file("PADIEM_COM2_BROKER_RPC_SECRET_FILE"),
             methods=_BROKER_METHODS,
+            # The broker ingress has no replay memory yet, so it would answer
+            # every v2 request 503. It keeps the v1 proof until it has a guard.
+            sign_request_id=False,
         )
         gateway = create_com2_gateway(verifier=verifier, identity_binding=identity, broker_binding=broker)
 
@@ -299,6 +316,9 @@ def build_app():
     # Wrapped outermost so the answer never depends on origin or cookie state,
     # and applied after every ``app.state`` assignment above so callers keep a
     # Starlette application to attach state to.
+    if edge_required:
+        from .com2_edge_middleware import EdgeProofMiddleware
+        app.add_middleware(EdgeProofMiddleware, verifier=verifier)
     app = apply_write_freeze(app)
     return app
 

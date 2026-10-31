@@ -121,6 +121,14 @@ ISSUE=#5115 (COM2 이전 추적)
 
 **총 레인 PR 18개** (① 4 · ② 5 · ③ 3 · ④ 3 · ⑤ 3), 별도 검증 기록 2건.
 
+### ④-전 RPC 서명 v2(service_id) 운영 전환 위치 — 준비 기록 (배포 없음)
+
+- 순서 한 줄: **보내는 쪽 배포 → 운영 `required`.** 받는 쪽 v2 코드(공용 검증기 + 재전송 저장소)는 `optional` 정책으로 먼저 서야 한다. 그 상태에서는 v1 요청도 계속 통과하므로, v2로 서명하는 보내는 쪽(컴2 Chat 호스트의 신원기관 연결, P01 엔진 승인 어댑터)이 그다음에 배포되고, 마지막에 정책을 `required`로 조인다. 보내는 쪽을 v2 수신보다 먼저 배포하면 그 경로는 403/503으로 닫힌다.
+- 운영 신원기관: `packages/padiem-control-plane/wrangler.identity-authority.jsonc`의 최상위 `"vars"`에 `PADIEM_RPC_SERVICE_ID_POLICY`를 넣는다.
+- 승인 Worker: `packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc`의 `"vars"`에 같은 이름을 넣는다.
+- 컴2 CPython 신원기관 입구의 재전송 저장소 경로: 호스트 설정 `PADIEM_COM2_IDENTITY_REPLAY_DB`(파일 경로, `:memory:` 불가).
+- 값과 배포 실행은 이 문서가 정하지 않는다. 실제 정책 값 결정과 Cloudflare 변경은 승인된 별도 작업이다.
+
 ## 5. 컴2 포트 배정
 
 사용 중(변경 금지): `8788` 파일 레인, `8789` B14, `8790` lovetree-api, `8797` 큐, `8830` 스테이징 큐.

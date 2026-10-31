@@ -4,10 +4,13 @@
 # operator installs and starts it; nothing in this repository installs, enables,
 # starts, or restarts it, and shipping this file is not a deployment.
 #
-# Runtime identity: DynamicUser, so no login account is created and no host
-# process inherits the service's write access. No credential value appears in
-# ExecStart, in this file, or in any argument list — systemd reads the names
-# from EnvironmentFile and the app reads values from the secret directory.
+# Runtime identity: a static service account, exactly like padiem-p01. The
+# DynamicUser + SupplementaryGroups pair failed on the COM2 host with 216/217
+# (a group lookup for a transient account that does not exist when the unit is
+# installed), so the account is created once by the operator and named here.
+# No credential value appears in ExecStart, in this file, or in any argument
+# list — systemd reads the names from EnvironmentFile and the app reads values
+# from the secret directory.
 
 [Unit]
 Description=PADIEM B14 (korean-ai-platform) on COM2
@@ -17,8 +20,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-DynamicUser=yes
-SupplementaryGroups=padiem-b14
+User=padiem-b14
+Group=padiem-b14
 WorkingDirectory=/opt/padiem/b14/app
 # The two names this unit knows about are B14_UPSTREAM_MODE and B14_UPSTREAM_URL,
 # plus the deployment configuration. Values are never stored in this file.
@@ -26,7 +29,8 @@ EnvironmentFile=-/opt/padiem/b14/env/b14.env
 Environment=B14_HOST=127.0.0.1
 Environment=B14_PORT=8789
 Environment=B14_CALL_LEDGER_PATH=/opt/padiem/b14/ledger/b14-call-ledger.db
-Environment=B14_SECRET_DIR=/opt/padiem/b14/secrets
+Environment=B14_SECRET_DIR=/var/lib/padiem-b14/b14-secrets
+Environment=B14_REGISTRY_PATH=/var/lib/padiem-b14/b14-registry/b14_models.json
 # Structure logs go to stdout and are collected by journald. To keep a rotated
 # file as well, install 20-log-to-file.conf.example as a drop-in; the matching
 # rotation policy is logrotate.conf.example. This unit declares no log path the
@@ -42,6 +46,10 @@ PrivateTmp=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/opt/padiem/b14/ledger /opt/padiem/b14/logs
+# b14-secrets holds one 0600 file per credential name; b14-registry holds the
+# one registry file this deployment reads. The checkout stays read-only.
+StateDirectory=padiem-b14/b14-secrets padiem-b14/b14-registry
+StateDirectoryMode=0700
 LimitNOFILE=8192
 UMask=0077
 

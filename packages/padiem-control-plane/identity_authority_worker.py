@@ -50,6 +50,20 @@ IDENTITY_RPC_INGRESS_METHODS: frozenset[str] = frozenset({
     "resolve_product_user_for_subject",
     "resolve_connector_workspace",
     "resolve_connector_context",
+    # Source-evidenced COM2 Chat callers; existing per-method authority gates
+    # still apply. This does not change the default-off HTTPS ingress.
+    "issue_google_connect_ticket",
+    "create_tenant",
+    "assign_tenant_membership",
+    "resolve_active_memberships",
+    "resolve_active_tenant_membership",
+    "install_connector_enrollment_schema",
+    "resolve_connector_owner_scope",
+    "grant_connector_enrollment_consent",
+    "revoke_connector_enrollment_consent",
+    "resolve_connector_enrollment_consent_for_device",
+    "bind_connector_enrollment_challenge",
+    "authorize_connector_enrollment_redeem",
 })
 _SERVICE_ID_CLAIM_KEYS = frozenset({"service_id", "expires_at"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})

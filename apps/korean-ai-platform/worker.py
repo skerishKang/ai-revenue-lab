@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger().setLevel(logging.INFO)
 
 from app.main import app
+from app.pilot.model_registry_file import credential_binding_names
 
 # ---------------------------------------------------------------------------
 # Static files — read at module load time (survives Pyodide snapshot)
@@ -44,33 +45,33 @@ for _sd in (
 
 
 # ENV keys
-_ENV_KEYS = frozenset({
+#
+# Provider credential NAMES are not listed here. They come from the registry the
+# catalog installs from (app/pilot/b14_models.json), so onboarding a Provider is
+# a registry edit plus the credential on the host that serves it — never an edit
+# to this entrypoint. What stays fixed below is the non-secret deployment
+# surface, the deployment-owned caller proof, and the Secrets Store slots that
+# wrangler.toml still declares while no registry Provider occupies them.
+#
+# A name this deployment has no binding for is simply not collected, so its
+# routes resolve no credential and fail closed. That is how a credential held
+# only on COM2 stays unusable here instead of borrowing another Provider's key.
+_FIXED_ENV_KEYS = frozenset({
     "BUSINESS14_PROVIDER_REGISTRY_JSON",
     "BUSINESS14_PILOT_BASE_URL",
     "BUSINESS14_PILOT_MODEL_ID",
     "BUSINESS14_PILOT_PROVIDER_ID",
     "BUSINESS14_PILOT_UPSTREAM_MODEL",
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
-    "PADIEM_B14_CREDENTIAL_08",
-    "PADIEM_B14_CREDENTIAL_12",
-    "PADIEM_SENSENOVA_API_KEY",
-    "PADIEM_B14_CREDENTIAL_01",
+    "B14_PROVIDER_MODE",
     "PADIEM_B14_CREDENTIAL_03",
     "PADIEM_B14_CREDENTIAL_07",
-    "PADIEM_B14_CREDENTIAL_06",
-    "PADIEM_B14_CREDENTIAL_02",
-    "PADIEM_B14_CREDENTIAL_04",
-    "PADIEM_B14_CREDENTIAL_05",
-    "PADIEM_B14_CREDENTIAL_09",
-    "PADIEM_B14_CREDENTIAL_10",
-    "PADIEM_B14_CREDENTIAL_13",
-    "PADIEM_B14_CREDENTIAL_11",
-    "PADIEM_B14_CREDENTIAL_14",
+    "PADIEM_B14_CREDENTIAL_08",
     # Deployment-owned server-to-server caller proof for the platform-credential
     # execution lanes. The value lives only in Cloudflare Secrets Store.
     "PADIEM_B14_SERVICE_PROOF_SECRET",
-    "B14_PROVIDER_MODE",
 })
+_ENV_KEYS = _FIXED_ENV_KEYS | credential_binding_names()
 
 _SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",

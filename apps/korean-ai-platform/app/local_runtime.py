@@ -63,6 +63,16 @@ SENSENOVA_BINDING = "PADIEM_SENSENOVA_API_KEY"
 # must not be turned into a credential handle by attribute probing.
 _BINDING_NAME = re.compile(r"\A[A-Z][A-Z0-9_]{2,63}\Z")
 
+
+def is_binding_name(name: str) -> bool:
+    """Whether ``name`` may be a credential binding at all.
+
+    The COM2 secret manager writes files named after bindings, so it must apply
+    the same shape rule as attribute probing here rather than invent its own.
+    """
+    return bool(_BINDING_NAME.fullmatch(name))
+
+
 # A ledger connection is opened once per process. Writes arrive from deferred
 # drain tasks that may run outside the request task, so every statement crosses
 # a single lock instead of sharing a connection between threads.

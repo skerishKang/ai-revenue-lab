@@ -25,4 +25,5 @@ def test_valid_invalid_stale_and_durable_replay(tmp_path):
     assert EdgeProofVerifier(SECRET, db).verify(method="GET", path=PATH, headers=headers("b" * 32), now=1001) is False
     assert verifier.verify(method="GET", path=PATH, headers=good, now=1000) is True
     assert verifier.verify(method="GET", path="/other", headers=headers("c" * 32), now=1000) is False
+    assert verifier.verify(method="GET", path="/other", headers=headers("e" * 32, path="/other"), now=1000) is True
     assert verifier.verify(method="GET", path=PATH, headers=headers("d" * 32, tls="TLSv1.0"), now=1000) is False

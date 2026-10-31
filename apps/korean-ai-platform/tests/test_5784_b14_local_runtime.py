@@ -34,6 +34,7 @@ from app.local_runtime import (
 from app.pilot.call_ledger import AttemptRecord, CallRecord, new_log_id, utc_now_iso
 from app.pilot.call_ledger_store import CallLedgerStore, storage_state
 from app.pilot.deployment_entry import PRODUCT_ENTRY_PATH
+from app.pilot import model_registry_file
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 WORKER_SRC = (APP_ROOT / "worker.py").read_text(encoding="utf-8")
@@ -44,15 +45,46 @@ GRAFANA_BINDING = "PADIEM_GRAFANA_OTLP_TOKEN"
 _WORKER_TREE = ast.parse(WORKER_SRC)
 
 
+def _worker_assignment(name: str):
+    return next(
+        (
+            node for node in _WORKER_TREE.body
+            if isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == name
+                for target in node.targets
+            )
+        ),
+        None,
+    )
+
+
+def _worker_env_keys() -> set[str]:
+    """The request scope worker.py actually builds, by evaluating its own code.
+
+    Unioning the two halves here would keep passing if the entrypoint stopped
+    reading the registry, which is the coupling this file exists to detect.
+    """
+    nodes = [_worker_assignment("_FIXED_ENV_KEYS"), _worker_assignment("_ENV_KEYS")]
+    if any(node is None for node in nodes):
+        raise AssertionError("worker.py lost _FIXED_ENV_KEYS or _ENV_KEYS")
+    scope: dict[str, object] = {}
+    for node in nodes:
+        exec(
+            compile(ast.Module(body=[node], type_ignores=[]), "worker.py", "exec"),
+            {"credential_binding_names": model_registry_file.credential_binding_names},
+            scope,
+        )
+    return set(scope["_ENV_KEYS"])
+
+
 def _worker_literal(name: str):
-    for node in _WORKER_TREE.body:
-        if isinstance(node, ast.Assign) and any(
-            isinstance(target, ast.Name) and target.id == name for target in node.targets
-        ):
-            if name == "_ENV_KEYS":
-                return set(ast.literal_eval(node.value.args[0]))
-            return ast.literal_eval(node.value)
-    raise AssertionError("%s is no longer a literal in worker.py" % name)
+    node = _worker_assignment(name)
+    if node is None:
+        raise AssertionError("%s is no longer a literal in worker.py" % name)
+    if name == "_ENV_KEYS":
+        return _worker_env_keys()
+    return ast.literal_eval(node.value)
 
 
 @pytest.fixture()
@@ -417,10 +449,13 @@ def test_security_policy_is_the_worker_policy_value_for_value() -> None:
 
 
 def test_adapter_keeps_the_plain_route_table() -> None:
+    """The 8789 adapter keeps the Worker route table with no management routes."""
     def paths(app):
         return sorted(getattr(route, "path", None) or repr(route) for route in app.routes)
-
-    assert paths(create_local_app()) == paths(create_app())
+    plain = paths(create_app())
+    local = paths(create_local_app())
+    assert local == plain
+    assert not any(path.startswith("/com2/admin") for path in local)
 
 
 def test_service_proof_boundary_is_unchanged_in_adapter_mode(monkeypatch) -> None:
