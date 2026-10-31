@@ -6,7 +6,11 @@ import json
 from datetime import UTC, datetime
 from typing import Any
 
-from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
+from internal_rpc_ingress import (
+    SERVICE_ID_POLICY_ENV, handle_internal_rpc, resolve_ingress_secret,
+    service_id_policy_from_env,
+)
+from service_id_replay import DurableObjectServiceIdReplayGuard, SqliteServiceIdReplayStore
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -128,6 +132,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "binding is missing"
             )
         self._identity = identity
+        self._service_ids = SqliteServiceIdReplayStore(ctx.storage)
         # Owner-approved Mode 1 is available to Free and all paid plans,
         # independently of usage count. Exact deployment flag is the rollback
         # switch; it does not authorize Mode 2 live tokens.
@@ -289,6 +294,23 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def claim_service_id(self, payload: dict) -> dict:
+        """Consume one signed request id; the ingress refuses a second use."""
+
+        try:
+            wire = _closed(payload, frozenset({"service_id", "expires_at"}), "service id claim")
+            service_id = wire["service_id"]
+            expires_at = wire["expires_at"]
+            if not isinstance(service_id, str) or isinstance(expires_at, bool) or not isinstance(expires_at, int):
+                raise ControlPlaneContractError(
+                    "invalid_engine_admission_authority_rpc",
+                    "service id claim must carry an id and an expiry",
+                )
+            claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
+            return {"ok": True, "claimed": claimed}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def fetch(self, request):
         del request
         return Response(
@@ -344,6 +366,10 @@ class Default(WorkerEntrypoint):
                 secret=secret,
                 allowed_methods=ENGINE_ADMISSION_RPC_INGRESS_METHODS,
                 dispatcher=self,
+                service_id_policy=service_id_policy_from_env(
+                    getattr(self.env, SERVICE_ID_POLICY_ENV, None)
+                ),
+                replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
             )
             if handled is not None:
                 status, payload, headers = handled
