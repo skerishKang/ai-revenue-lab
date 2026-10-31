@@ -22,7 +22,9 @@ def test_the_staging_identity_is_its_own_worker_and_names_no_production_state() 
     text = json.dumps(staging)
 
     assert config["name"] == "padiem-control-plane-identity"
-    assert config["workers_dev"] is False
+    assert config["workers_dev"] is True
+    assert config["preview_urls"] is False
+    assert staging["preview_urls"] is False
     assert staging["name"] == "padiem-control-plane-identity-staging"
     assert staging["workers_dev"] is True
     assert "routes" not in staging and "routes" not in config

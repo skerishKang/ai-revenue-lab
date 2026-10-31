@@ -75,7 +75,7 @@ jobs:
           )
           if config.get("name") != "padiem-control-plane-engine-admission":
               raise SystemExit("CP admission worker name drift")
-          if config.get("workers_dev") is not False or config.get("preview_urls") is not False:
+          if config.get("workers_dev") is not True or config.get("preview_urls") is not False:
               raise SystemExit("CP admission worker public ingress drift")
           for key in ("routes", "custom_domain", "custom_domains"):
               if key in config:
@@ -124,7 +124,7 @@ jobs:
                   raise SystemExit(f"canonical entitlement producer drift: {token}")
 
           print("A7_CP_ADMISSION_SOURCE_CONTRACT=PASS")
-          print("PRIVATE_INGRESS=PASS")
+          print("WORKERS_DEV_ENABLED=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
 
@@ -191,7 +191,7 @@ jobs:
             deployments="${RUNNER_TEMP}/a7-cp-deployments.json"
             curl -fsS "${auth[@]}" "${cp_base}/subdomain" -o "${subdomain}"
             curl -fsS "${auth[@]}" "${cp_base}/deployments" -o "${deployments}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${subdomain}" >/dev/null
             active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
             test -n "${active}"
             cp_state="present"
@@ -347,12 +347,12 @@ jobs:
           curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           jq -e --arg identity "${IDENTITY_WORKER}"             '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)'             "${settings}" >/dev/null
-          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and .result.enabled == true and .result.previews_enabled == false' "${subdomain}" >/dev/null
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
           echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
           echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active}"
-          echo "PRIVATE_INGRESS=PASS"
+          echo "WORKERS_DEV_ENABLED=PASS"
           echo "ENGINE_MUTATION=0"
           echo "ENGINE_BINDING_MUTATION=0"
           echo "PROVIDER_CALLS=0"

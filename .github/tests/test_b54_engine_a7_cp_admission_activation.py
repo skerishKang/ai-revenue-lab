@@ -96,7 +96,7 @@ def test_activation_mutates_only_cp_admission_worker_and_has_no_provider_or_mani
 
 def test_post_readback_requires_private_ingress_identity_binding_and_canonical_served_version() -> None:
     text = _text()
-    assert '.result.enabled == false and .result.previews_enabled == false' in text
+    assert '.result.enabled == true and .result.previews_enabled == false' in text
     assert '"CONTROL_PLANE_IDENTITY"' in text
     assert '"padiem-control-plane-identity"' in text
     assert text.count("cloudflare_served_version_cli.py resolve-active") == 2
