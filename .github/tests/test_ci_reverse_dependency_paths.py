@@ -76,6 +76,8 @@ EXPECTED_DEPENDENCY_TABLE: tuple[tuple[str, str, tuple[str, ...]], ...] = (
     ("padiem-ai-engine", "padiem-ai-engine-ci.yml", ("packages/padiem-ai-core/**",)),
     ("korean-ai-code-agent", "validate-b54-kagent.yml", ("packages/padiem-ai-core/**",)),
     ("padiem-file-lane", "validate-padiem-file-lane.yml", ("packages/padiem-ai-core/**",)),
+    ("padiem-file-lane", "validate-file-lane-com2-packaging.yml", ("packages/padiem-ai-core/**",)),
+    ("claw-connect", "claw-connect-contract-tests.yml", ("packages/padiem-ai-core/**",)),
 )
 
 _APP_PATH = re.compile(r"^apps/([^/]+)/\*\*$")
