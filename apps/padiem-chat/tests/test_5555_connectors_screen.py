@@ -44,12 +44,15 @@ def _card(anchor: str) -> str:
 # ── the page name ──────────────────────────────────────────────────────────
 
 
-def test_the_page_name_is_the_english_connectors_in_both_locales():
-    assert '"connectors-title": "Connectors"' in LOCALE
+def test_the_page_name_is_the_korean_connection_word_in_korean():
+    # Connector unification: the shared header's big title is the Korean word
+    # every other standalone page uses; the eyebrow carries the English name.
+    assert '"connectors-title": "연결"' in LOCALE
+    assert '"connectors-kicker": "Padiem Connectors", "connectors-title": "Connections"' in LOCALE
     assert '"connectors-title": "커넥터"' not in LOCALE
-    # The standalone page title carries the same name.
     view = HTML[HTML.index('id="connectorsView"'):HTML.index('id="connectorsViewBody"')]
-    assert 'data-locale-key="connectors-title">Connectors<' in view
+    assert 'data-locale-key="connectors-title">연결<' in view
+    assert 'class="standalone-view-kicker" data-locale-key="connectors-kicker"' in view
 
 
 def test_no_korean_connector_word_is_left_in_a_display_string():
@@ -65,10 +68,11 @@ def test_no_korean_connector_word_is_left_in_a_display_string():
                 continue
             assert "커넥터" not in stripped, f"{name}:{number}: {stripped[:80]}"
     view = HTML[HTML.index('id="connectorsView"'):HTML.index('id="connectorsViewBody"')]
-    # The rendered header, not the source comment that explains the change.
+    # Connector unification: the shared header component carries the English
+    # eyebrow above the Korean title.
     rendered = re.sub(r"<!--.*?-->", "", view, flags=re.DOTALL)
-    assert "connectors-kicker" not in rendered
-    assert "Padiem Connectors" not in rendered
+    assert "connectors-kicker" in rendered
+    assert "Padiem Connectors" in rendered
 
 
 def test_every_service_card_has_a_mark_before_its_name():
@@ -85,8 +89,6 @@ def test_every_service_card_has_a_mark_before_its_name():
         ('data-connector-id="connector:telegram:bot@1"', "T"),
         ('data-connector-id="connector:slack:workspace@1"', "S"),
         ('data-connector-id="connector:google:calendar@1"', "C"),
-        ('data-connector="discord"', "DC"),
-        ('data-connector="kakao-business"', "KB"),
     ):
         card = _card(anchor)
         assert f'data-service-mark="{mark}"' in card, anchor
@@ -98,6 +100,14 @@ def test_every_service_card_has_a_mark_before_its_name():
             default=len(card),
         )
         assert card.index("<strong") < status, anchor
+    # The two permanently "preparing" cards are gone: the server projection
+    # never carried Discord or Kakao Business, so they could never activate.
+    for anchor, mark in (
+        ('data-connector="discord"', "DC"),
+        ('data-connector="kakao-business"', "KB"),
+    ):
+        assert anchor not in HTML
+        assert f'data-service-mark="{mark}"' not in HTML
     # The chip is a letter in the card's own tokens: no image asset and no
     # provider logo is introduced.
     assert "[data-service-mark]::before" in CSS
@@ -105,9 +115,9 @@ def test_every_service_card_has_a_mark_before_its_name():
     assert "url(" not in CSS.split("attr(data-service-mark)")[0][-200:]
 
 
-def test_the_dialog_title_uses_the_same_english_name():
+def test_the_dialog_title_uses_the_same_name():
     dialog = HTML[HTML.index('id="connectorsDialog"'):HTML.index('id="connectorsLiveStatus"')]
-    assert 'data-locale-key="connectors-title">Connectors<' in dialog
+    assert 'data-locale-key="connectors-title">연결<' in dialog
     assert "커넥터" not in dialog
 
 

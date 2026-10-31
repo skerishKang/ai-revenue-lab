@@ -413,7 +413,7 @@ class TestErrorRedaction:
         monkeypatch.setattr(gateway.Request, "json", broken_json)
         response = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert response.status_code == 200
         assert response.json()["selected_model"]

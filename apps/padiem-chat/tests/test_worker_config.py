@@ -234,7 +234,9 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert 'base_dir = ".b66-worker-src"' in wrangler
     assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
-    assert 'directory = "static"' in wrangler
+    # The release serves the generated bundle, so the Assets set and the Python
+    # moduleRoot are the same byte-verified tree (see wrangler.toml [assets]).
+    assert 'directory = ".b66-worker-src/static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     import tomllib
@@ -248,7 +250,7 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert "D1UsageCounterStore" in worker
     assert "UsageGate(settings, usage_store)" in worker
     assert "usage_gate_enforced = True" in worker
-    assert "_worker_app = create_app(" in worker
+    assert "worker_app = create_app(" in worker
     for required_arg in (
         "settings=settings",
         "history_store=history_store",

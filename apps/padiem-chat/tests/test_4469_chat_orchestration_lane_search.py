@@ -80,7 +80,8 @@ class _FakeAutoGrounding:
         self._prepared = prepared
         self.calls: list[dict] = []
 
-    async def prepare(self, messages, *, skill, additional_system_context=None, explicit_search=False):
+    async def prepare(self, messages, *, skill, additional_system_context=None,
+                    explicit_search=False, util_scope=None):
         self.calls.append({
             "messages": messages,
             "skill": skill,

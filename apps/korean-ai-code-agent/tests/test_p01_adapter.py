@@ -6,8 +6,6 @@ import unittest
 from padiem_ai_core.b14_execution import (
     B14RouteMetadata,
     B14RoutingOptions,
-    _OPTIMIZE_FOR,
-    _TASK_TYPES,
 )
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_runtime import ExecutionResult, _normalize_model_policy
@@ -649,31 +647,25 @@ if __name__ == "__main__":
 
 
 class ClawP01ProfileContractTests(unittest.TestCase):
-    """The Claw P01 profile must satisfy the Core routing contract.
-
-    Core validates ``task_type`` and ``optimize_for`` only when the B14 routing
-    options are built. A profile carrying an unsupported value therefore fails
-    at execution time, before any provider/model call, and the failure looks
-    like a routing error rather than a product-profile bug. These tests pin the
-    profile to the Core-owned enums so the drift cannot return.
-    """
+    """The Claw P01 profile keeps its values and uses the current Core routing contract."""
 
     @with_synthetic_plus_route
     def test_profile_routing_values_are_accepted_by_core(self) -> None:
         profile = _agent_profile()
-        routing = B14RoutingOptions(
-            task_type=profile.task_type,
-            optimize_for=profile.optimize_for,
-        )
-        self.assertEqual(routing.task_type, "coding")
-        self.assertEqual(routing.optimize_for, "balanced")
+        self.assertEqual(profile.task_type, "coding")
+        self.assertEqual(profile.optimize_for, "balanced")
+        _model, _temperature, routing = _normalize_model_policy(profile)
+        self.assertIsInstance(routing, B14RoutingOptions)
+        self.assertNotIn("task_type", routing.to_dict())
+        self.assertNotIn("optimize_for", routing.to_dict())
 
     @with_synthetic_plus_route
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
         self.assertEqual(model, self.plus_route_model)
-        self.assertIn(routing.task_type, _TASK_TYPES)
-        self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
+        self.assertEqual(routing.max_retries, 0)
+        self.assertEqual(routing.product_tier, "plus")
+        self.assertIsNone(routing.required_capabilities)
 
     @with_synthetic_plus_route
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:

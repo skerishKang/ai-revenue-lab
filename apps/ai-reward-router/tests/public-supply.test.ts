@@ -7,7 +7,11 @@ import {
 } from '../src/public-supply/verified-public-opportunities.js';
 import {
   isPublicOpportunityDisplayable,
+  dedupePublicOpportunities,
+  assessPublicSupplyFreshness,
+  displayablePublicOpportunityCards,
   PUBLIC_OPPORTUNITY_MAX_AGE_DAYS,
+  PUBLIC_SUPPLY_EXPIRY_WARNING_DAYS,
   toPublicOpportunityCard,
   toPublicOpportunityDetail,
   computeUserValueScore,
@@ -89,7 +93,7 @@ test('browse activates public categories and keeps the ad-click lane untouched',
   assert.equal(vm.cards.length, 0, 'no ad-click cards in this lane');
   assert.equal(vm.publicCards.length, 6);
   assert.equal(vm.emptyState, null);
-  assert.match(vm.publicSupplyNote ?? '', /PADIEM에 수익을 주지 않고/);
+  assert.match(vm.publicSupplyNote ?? '', /B64는 수익을 받지 않습니다/);
 });
 
 test('browse category selection filters public cards and query matches title/vendor', () => {
@@ -133,8 +137,8 @@ test('public detail renders required facts and a safe outbound link', () => {
   const html = renderAdClickFirstOpportunityDetailWeb(vm);
   assert.match(html, /한국어 Voice AI Evaluator/);
   assert.match(html, /시급 최대 \$31/);
-  assert.match(html, /PADIEM 수익/);
-  assert.match(html, /0 \(이용자 가치 제공용/);
+  assert.match(html, /B64 수익/);
+  assert.match(html, /없음 · 업체에 직접 참여/);
   assert.match(html, /한국 참여 확인/);
   assert.match(html, /href="https:\/\/app\.outlier\.ai\/login\?job_post_id=4722459005"/);
   assert.match(html, /target="_blank"/);
@@ -294,4 +298,53 @@ test('public detail card exposes payer and confirmation time', () => {
   assert.equal(detail.payer.includes('Outlier'), true);
   assert.match(detail.card.verifiedAt, /^\d{4}-\d{2}-\d{2}T/);
   assert.equal(detail.monetizationRole, 'NONE');
+});
+
+test('duplicated curation of one offer reaches the consumer once', () => {
+  const base = VERIFIED_PUBLIC_OPPORTUNITIES[0]!;
+  const twin: PublicOpportunity = { ...base, id: 'pub-curation-twin' };
+  const otherProject: PublicOpportunity = { ...base, id: 'pub-curation-other', titleKo: 'Prolific 별개 연구 모집' };
+
+  assert.equal(dedupePublicOpportunities([base, twin]).length, 1);
+  assert.equal(dedupePublicOpportunities([base, otherProject]).length, 2, 'a different project of the same vendor is not a duplicate');
+
+  const cards = displayablePublicOpportunityCards([base, twin, otherProject]);
+  assert.equal(cards.length, 2);
+});
+
+test('freshness reads when verified supply stops displaying', () => {
+  const now = new Date('2026-10-27T00:00:00.000Z');
+  const dayMs = 24 * 60 * 60 * 1000;
+  const windowMs = PUBLIC_OPPORTUNITY_MAX_AGE_DAYS * dayMs;
+  const fresh: PublicOpportunity = { ...VERIFIED_PUBLIC_OPPORTUNITIES[0]!, verifiedAt: now.toISOString() };
+  const expiringSoon: PublicOpportunity = {
+    ...VERIFIED_PUBLIC_OPPORTUNITIES[1]!,
+    verifiedAt: new Date(now.getTime() - (PUBLIC_OPPORTUNITY_MAX_AGE_DAYS - PUBLIC_SUPPLY_EXPIRY_WARNING_DAYS) * dayMs).toISOString(),
+  };
+  const expired: PublicOpportunity = {
+    ...VERIFIED_PUBLIC_OPPORTUNITIES[2]!,
+    verifiedAt: new Date(now.getTime() - (PUBLIC_OPPORTUNITY_MAX_AGE_DAYS + 1) * dayMs).toISOString(),
+  };
+
+  const report = assessPublicSupplyFreshness([fresh, expiringSoon, expired], now);
+  assert.equal(report.activeCount, 2);
+  assert.equal(report.staleCount, 1);
+  assert.equal(report.expiringWithinDays, 1);
+  assert.equal(report.nextExpiryAt, new Date(Date.parse(expiringSoon.verifiedAt) + windowMs).toISOString());
+  assert.equal(report.laneEmptyAt, new Date(Date.parse(fresh.verifiedAt) + windowMs).toISOString());
+
+  const empty = assessPublicSupplyFreshness([expired], now);
+  assert.equal(empty.activeCount, 0);
+  assert.equal(empty.nextExpiryAt, null);
+  assert.equal(empty.laneEmptyAt, null);
+});
+
+test('no curated record claims a source check that has not happened yet', () => {
+  const now = Date.now();
+  for (const item of VERIFIED_PUBLIC_OPPORTUNITIES) {
+    assert.ok(
+      Date.parse(item.verifiedAt) <= now,
+      `${item.id} carries a future verifiedAt, which would keep an unread source on screen`,
+    );
+  }
 });

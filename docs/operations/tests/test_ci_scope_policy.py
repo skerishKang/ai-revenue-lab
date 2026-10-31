@@ -78,6 +78,11 @@ B62_CHAT_EXPECTED_PATHS = (
     ".github/tests/test_3989_b62_parallel_runtime_jobs.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
+    # #6209 부수 피해: chat 테스트가 게이트 워크플로 본문을 직접 읽는다.
+    # 이 세 게이트를 바꾼 PR에서 chat 스위트가 함께 돌지 않아 main이 빨개졌다.
+    ".github/workflows/b62-claw-production-smoke-gate.yml",
+    ".github/workflows/b62-production-code-deploy-gate.yml",
+    ".github/workflows/b62-browser-qa-unified.yml",
 )
 B62_CHAT_EXPECTED_JOBS = {
     "registry-ci-plan",
@@ -90,6 +95,8 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-core-parser-focused",  # #5341 opt-in isolated parser focused contract
     "b62-b14-attempt-focused",  # B14 outbound attempt-policy targeted regression
     "b14-multimodal-test",
+    "engine-full-regression",  # #5678 Engine whole suite on every main push
+    "b14-full-regression",  # #5678 B14 whole suite on every main push
 }
 
 
@@ -294,6 +301,9 @@ def test_b62_chat_ci_main_runs_all_paths_while_pr_keeps_intended_scope(event: st
         ".github/scripts/b14_model_registration_ci_plan.py",
         ".github/workflows/b62-padiem-chat-ci.yml",
         ".github/workflows/b62-cloudflare-worker-deploy.yml",
+        ".github/workflows/b62-claw-production-smoke-gate.yml",
+        ".github/workflows/b62-production-code-deploy-gate.yml",
+        ".github/workflows/b62-browser-qa-unified.yml",
     )
     excluded = (
         "README.md",

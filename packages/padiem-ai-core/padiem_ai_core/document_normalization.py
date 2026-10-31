@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import stat
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from io import BytesIO
@@ -97,6 +98,33 @@ MAX_XLSX_COLUMNS = 50
 #: integrity. A sheet is read for as long as the caller asked for it.
 MAX_XLSX_NONEMPTY_CELLS = 5_000
 
+#: An OOXML package member is a document part, never a pointer to something
+#: outside the package. The #2824 pre-parser gate already refuses link entries;
+#: this is the same judgement so the archive authority cannot admit a package
+#: shape the gate refuses. ``_bounded_ooxml_repackage`` drops the mode bits and
+#: nothing here extracts to a host filesystem, so no escape is reachable in this
+#: package today — the refusal exists so the two authorities give one answer and
+#: so a future extraction sink inherits the decision instead of rediscovering it.
+_S_IFMT = 0o170000
+_S_IFLNK = stat.S_IFLNK
+
+#: ZIP stores the general-purpose flags twice — once in each local file header
+#: and once in the central directory. ``zipfile`` reports only the central copy,
+#: so an entry whose local header claims ``encrypted`` while the central record
+#: claims ``plain`` is never classified as encrypted on the stdlib path. One
+#: field with two disagreeing copies is a malformed package at best and an
+#: encryption-classification evasion at worst, and both answers are ``encrypted``.
+_ENCRYPTED_FLAG = 0x1
+_LOCAL_HEADER_SIGNATURE = b"PK\x03\x04"
+
+#: Office writes a password-protected OOXML document as an OLE compound file
+#: wrapping an ``EncryptedPackage`` stream, not as a ZIP. Directory-entry names
+#: in that wrapper are UTF-16LE. Without this marker the wrapper reaches the ZIP
+#: reader and is reported as a corrupt file, which is the wrong answer for the
+#: user's own encrypted document.
+_OLE_COMPOUND_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+_ENCRYPTED_PACKAGE_MARKER = "EncryptedPackage".encode("utf-16-le")
+
 TEXT_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "text/plain": frozenset({".txt"}),
     "text/markdown": frozenset({".md", ".markdown"}),
@@ -109,9 +137,11 @@ BINARY_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": frozenset({".docx"}),
     "application/vnd.openxmlformats-officedocument.presentationml.presentation": frozenset({".pptx"}),
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": frozenset({".xlsx"}),
-    # LEGACY_HWP_DECISION=UNSUPPORTED: legacy .hwp is an OLE2 compound binary, not a zip
-    # container, so no bounded pure-stdlib parser is realistic in this slice; application/x-hwp
-    # stays outside every allow-list and fails closed. HWPX below is the OOXML-style zip path.
+    # LEGACY_HWP_DECISION=FILE_LANE (2026-10-28 CTO decision, was UNSUPPORTED):
+    # legacy .hwp is an OLE2 compound binary and stays outside every allow-list
+    # HERE — this package still never parses it. It is read by the COM2 file
+    # lane's own olefile-based reader (BSD, no AGPL), and the Chat Worker only
+    # ferries bytes. HWPX below is the OOXML-style zip path this package owns.
     "application/hwp+zip": frozenset({".hwpx"}),
 }
 
@@ -275,6 +305,33 @@ def _safe_ooxml_member(name: str) -> bool:
     return all(part not in {"", ".", ".."} for part in parts)
 
 
+def _is_link_member(info: ZipInfo) -> bool:
+    """True when the entry's stored mode says it is a symbolic link."""
+
+    return ((info.external_attr >> 16) & _S_IFMT) == _S_IFLNK
+
+
+def _local_header_declares_encryption(payload: bytes, info: ZipInfo) -> bool:
+    """Read the *local* copy of the general-purpose flags for one entry."""
+
+    offset = info.header_offset
+    if offset < 0 or offset + 8 > len(payload):
+        return False
+    if payload[offset:offset + 4] != _LOCAL_HEADER_SIGNATURE:
+        return False
+    flags = int.from_bytes(payload[offset + 6:offset + 8], "little")
+    return bool(flags & _ENCRYPTED_FLAG)
+
+
+def _encrypted_ole_wrapper(payload: bytes) -> bool:
+    """True for the OLE wrapper Office writes around a password-protected package."""
+
+    return (
+        payload.startswith(_OLE_COMPOUND_MAGIC)
+        and _ENCRYPTED_PACKAGE_MARKER in payload
+    )
+
+
 def validate_ooxml_member_name(name: object) -> str:
     """Judge one archive member name with the single path-safety predicate.
 
@@ -371,16 +428,29 @@ def validate_ooxml_archive(payload: bytes) -> None:
     # decompression bomb is an integrity fact, not a capacity preference.
     if not isinstance(payload, (bytes, bytearray)) or not payload:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
+    archive_bytes = bytes(payload)
+    if _encrypted_ole_wrapper(archive_bytes):
+        raise DocumentNormalizationError(
+            "ooxml_encrypted", "Password-protected OOXML package."
+        )
     try:
-        with ZipFile(BytesIO(bytes(payload))) as archive:
+        with ZipFile(BytesIO(archive_bytes)) as archive:
             infos = archive.infolist()
             total = 0
             compressed_total = 0
             for info in infos:
                 if not _safe_ooxml_member(info.filename):
                     raise DocumentNormalizationError("ooxml_unsafe_path", "OOXML archive contains an unsafe member path.")
-                if info.flag_bits & 0x1:
-                    raise DocumentNormalizationError("ooxml_encrypted", "Encrypted OOXML entries are not supported.")
+                if _is_link_member(info):
+                    raise DocumentNormalizationError(
+                        "ooxml_link_entry", "OOXML archive contains a link entry."
+                    )
+                if info.flag_bits & _ENCRYPTED_FLAG or _local_header_declares_encryption(
+                    archive_bytes, info
+                ):
+                    raise DocumentNormalizationError(
+                        "ooxml_encrypted", "Encrypted OOXML entries are not supported."
+                    )
                 total += info.file_size
                 lowered = info.filename.lower()
                 if lowered.endswith(".xml") or lowered.endswith(".rels"):

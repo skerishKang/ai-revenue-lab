@@ -45,7 +45,7 @@ with sync_playwright() as p:
  writes=setup(ctx,"connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[{"state":"CONNECTED","usable":True,"expired":False,"revoked":False}]})
  page=ctx.new_page()
  a=check(page,{"pc":"on","drive":"on","github":"unknown"})
- assert page.locator("#clawPcCardStatus").inner_text().strip()=="\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4"
+ assert page.locator("#clawPcCardStatus").inner_text().strip()=="\u25CF \uC5F0\uACB0\uB428"
  # OFF only lights after durable Broker pause, and never relaunches the card.
  page.evaluate("""() => {
    window.__pcLaunches=0;
@@ -72,7 +72,7 @@ with sync_playwright() as p:
  page.close();ctx.close()
  ctx=b.new_context();writes=setup(ctx,"not_connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[]})
  page=ctx.new_page(); c=check(page,{"pc":"off","drive":"off","github":"unknown"})
- assert page.locator("#clawPcCardStatus").inner_text().strip()=="\uC5F0\uACB0\uD558\uC138\uC694"
+ assert page.locator("#clawPcCardStatus").inner_text().strip()=="\u25CB \uC5F0\uACB0 \uC548 \uB428"
  page.evaluate("""() => {
    window.__pcLaunches=0;
    document.getElementById("clawComputerWorkspace").addEventListener("click",

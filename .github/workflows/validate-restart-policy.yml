@@ -1,0 +1,21 @@
+name: Validate COM2 restart policy
+on:
+  pull_request:
+    paths:
+      - 'deploy/host-com2/restart-policy/**'
+      - '.github/workflows/validate-restart-policy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Drop-in content, unit list, dry-run gate
+        run: python -m unittest discover -s deploy/host-com2/restart-policy/tests -q

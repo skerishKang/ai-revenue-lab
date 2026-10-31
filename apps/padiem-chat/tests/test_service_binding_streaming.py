@@ -294,9 +294,7 @@ def _request() -> B14ChatRequest:
     return B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
         model=MODEL,
-        routing=B14RoutingOptions(
-            allow_external_fallback=False,
-        ),
+        routing=B14RoutingOptions(),
     )
 
 
@@ -359,7 +357,6 @@ def _runtime_request() -> ExecutionRequest:
             required_capabilities=("free",),
             model_policy={
                 "model": MODEL,
-                "allow_external_fallback": False,
             },
         ),
         messages=({"role": "user", "content": "안녕하세요"},),
@@ -418,8 +415,10 @@ def test_service_binding_stream_delivers_first_event_before_final_chunk():
         payload = json.loads(request.options["body"])
         assert payload["stream"] is True
         assert payload["model"] == MODEL
-        assert payload["business14"]["allow_external_fallback"] is False
-        assert "max_attempts" not in payload["business14"]
+        # B5/B4: the retired knob and attempt cap no longer travel; the compat
+        # stream request now sends no business14 block at all.
+        assert "allow_external_fallback" not in (payload.get("business14") or {})
+        assert "max_attempts" not in (payload.get("business14") or {})
         assert "authorization" not in {key.lower() for key in request.options["headers"]}
         assert body.get_reader_count == 1
         assert reader.cancel_count == 1

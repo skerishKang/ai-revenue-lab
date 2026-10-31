@@ -145,13 +145,20 @@ _PC_PLAN_STEPS = MappingProxyType({
     #: the Engine is told not to read; the Engine still refuses ``read_file``
     #: for this hint. The table stays closed: any other shape is refused.
     "files_list": (("list_files", "claw.pc.list_files"),),
+    #: #4434: the write lane. Its own shape, so a plan that may change a file is
+    #: never also a plan that may read one.
+    "files_write": (
+        ("write_file", "claw.pc.write_file"),
+        ("move_file", "claw.pc.move_file"),
+        ("delete_file", "claw.pc.delete_file"),
+    ),
 })
 #: Canonical PC device identity grammar (#5172). This client package has no
 #: runtime dependency, so the two patterns are copied verbatim from
 #: ``padiem_ai_core.pc_device_identity`` and a parity test proves the copies
 #: stay identical to that single authority.
-PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.:@+-]{1,128}$"
-PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.:@+-]{1,128}$"
+PC_DEVICE_ID_PATTERN = r"^[A-Za-z0-9_.$:@+-]{1,128}$"
+PC_MESH_NODE_ID_PATTERN = r"^node/[A-Za-z0-9._-]{0,64}/[A-Za-z0-9_.$:@+-]{1,128}$"
 _PC_DEVICE_ID_RE = re.compile(PC_DEVICE_ID_PATTERN)
 _PC_MESH_NODE_ID_RE = re.compile(PC_MESH_NODE_ID_PATTERN)
 

@@ -1,0 +1,10 @@
+[Unit]
+Description=Record the Padiem PC queue health every few minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

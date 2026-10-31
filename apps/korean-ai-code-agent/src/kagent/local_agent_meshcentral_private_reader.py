@@ -57,6 +57,14 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 #: "Maximum Path Length Limitation"); the former 512-character bound was a
 #: trial number that rejected a legal long path on the PC this lane reads.
 _MAX_FILE_PATH_CHARS = 32_767
+#: How much of the official client's stderr is kept for a refusal. The child is
+#: the only party that knows why MeshCentral refused a download, and its text
+#: used to be discarded whole; the tail is bounded so one chatty client cannot
+#: grow a log line or an exception without limit.
+_CHILD_STDERR_TAIL_BYTES = 2_048
+#: How much of that tail may ride in a refusal message; the executor bounds the
+#: line again before it is printed.
+_CHILD_STDERR_IN_MESSAGE_CHARS = 240
 
 # The official MeshCtrl CLI remains unchanged. Inject the password via stdin
 # inside a Node bootstrap, so the operating system argv never contains it.
@@ -89,6 +97,25 @@ _MESHCTRL_STDIN_BOOTSTRAP = (
     "if(i<0)process.exit(2);"
     "let secret=fs.readFileSync(0,'utf8');"
     "secret=secret.replace(/\\r?\\n$/,'');"
+    "if(!secret)process.exit(3);"
+    "process.argv[i]=secret;"
+    "require(process.argv[1]);"
+)
+
+#: The same credential hand-off for a client that keeps using standard input after
+#: the password — ``meshctrl shell`` pipes the terminal in from there. Reading the
+#: secret one byte at a time and stopping at its newline leaves the rest of the
+#: stream, unread, for the client itself; ``readFileSync(0)`` would take it all.
+_MESHCTRL_STDIN_LINE_BOOTSTRAP = (
+    _MESHCTRL_FLUSH_BARRIER
+    + "const fs=require('node:fs');"
+    "const marker='__PADIEM_MESHCTRL_PASSWORD_FROM_STDIN__';"
+    "const i=process.argv.indexOf(marker);"
+    "if(i<0)process.exit(2);"
+    "let secret='';const buf=Buffer.alloc(1);let done=false;"
+    "while(!done){let n=0;try{n=fs.readSync(0,buf,0,1,null);}catch(_){break;}"
+    "if(n===0)break;if(buf[0]===10)break;secret+=buf.toString('utf8');}"
+    "secret=secret.replace(/\\r$/,'');"
     "if(!secret)process.exit(3);"
     "process.argv[i]=secret;"
     "require(process.argv[1]);"
@@ -153,6 +180,61 @@ class MeshCentralFileReadRequest:
 
 class CommandResultLike(Protocol):
     returncode: int
+
+
+class _ChildStderrTail:
+    """Drain one child's standard error in the background, keep its last bytes.
+
+    The official client reports a refusal on stderr and exits. The pipe must be
+    drained while the child runs or a full buffer blocks it, so this always
+    reads and only the tail is retained for the refusal message.
+    """
+
+    def __init__(self, stream: Any, limit: int = _CHILD_STDERR_TAIL_BYTES) -> None:
+        self._stream = stream
+        self._limit = limit
+        self._buffer = bytearray()
+        self._thread: Any = None
+
+    def start(self) -> None:
+        if self._stream is None:
+            return
+        import threading
+
+        self._thread = threading.Thread(target=self._drain, daemon=True)
+        self._thread.start()
+
+    def _drain(self) -> None:
+        try:
+            while True:
+                chunk = self._stream.read(256)
+                if not chunk:
+                    break
+                if isinstance(chunk, (bytes, bytearray)):
+                    encoded = bytes(chunk)
+                else:
+                    encoded = str(chunk).encode("utf-8", "replace")
+                self._buffer.extend(encoded)
+                if len(self._buffer) > self._limit:
+                    del self._buffer[: len(self._buffer) - self._limit]
+        except Exception:
+            pass
+
+    def text(self, timeout: float = 2.0) -> str:
+        thread = self._thread
+        if thread is not None:
+            try:
+                thread.join(timeout)
+            except Exception:
+                pass
+        tail = bytes(self._buffer).decode("utf-8", "replace")
+        return " ".join(tail.split())[-_CHILD_STDERR_IN_MESSAGE_CHARS:]
+
+
+def _stderr_note(detail: Any) -> str:
+    """A bounded one-line suffix naming the child's own reason, if it had one."""
+    text = " ".join(str(detail or "").split())[-_CHILD_STDERR_IN_MESSAGE_CHARS:]
+    return f": {text}" if text else ""
 
 
 class MeshCentralFileReadPort(Protocol):
@@ -255,10 +337,14 @@ class MeshCentralCliFileReadPort:
             argv,
             stdin=subprocess.PIPE,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            # The child's own reason is the only explanation a refused download
+            # has; it is drained into a bounded tail instead of a black hole.
+            stderr=subprocess.PIPE,
             text=True,
             encoding="utf-8",
         )
+        tail = _ChildStderrTail(getattr(process, "stderr", None))
+        tail.start()
         try:
             stdin = getattr(process, "stdin", None)
             if stdin is None:
@@ -288,11 +374,13 @@ class MeshCentralCliFileReadPort:
                 if time.monotonic() >= deadline:
                     raise MeshCentralReadRefused(
                         "the official meshcentral client exceeded the read timeout"
+                        + _stderr_note(tail.text())
                     )
                 time.sleep(_DOWNLOAD_MONITOR_SECONDS)
             if getattr(process, "returncode", None) != 0:
                 raise MeshCentralReadRefused(
                     "the official meshcentral client refused the private read"
+                    + _stderr_note(tail.text())
                 )
         finally:
             # Always stop the child on every exit path, including the oversize
@@ -350,6 +438,7 @@ class MeshCentralCliFileReadPort:
                 if getattr(completed, "returncode", None) != 0:
                     raise MeshCentralReadRefused(
                         "the official meshcentral client refused the private read"
+                        + _stderr_note(getattr(completed, "stderr", None))
                     )
             try:
                 if os.path.getsize(target) > max_bytes:

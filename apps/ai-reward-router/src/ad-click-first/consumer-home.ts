@@ -4,8 +4,8 @@ import {
   type AdClickConsumerCard,
 } from './consumer-card.js';
 import {
+  displayablePublicOpportunityCards,
   isPublicOpportunityDisplayable,
-  toPublicOpportunityCard,
   toPublicOpportunityDetail,
   type PublicOpportunity,
   type PublicOpportunityCard,
@@ -124,13 +124,13 @@ export function buildAdClickFirstConsumerHome(
   options: BuildAdClickFirstConsumerHomeOptions = {},
 ): AdClickFirstConsumerHomeViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   return Object.freeze({
     mode: 'AD_CLICK_FIRST' as const,
     issueNumber: 1112 as const,
     primaryNavigation: PRIMARY_NAVIGATION,
     hero: Object.freeze({
-      eyebrow: 'PADIEM AI Reward Router',
+      eyebrow: 'B64 AI Reward Router',
       title: '오늘의 추천 수익 기회',
       description: '검증된 조건과 보상만 보여드립니다.',
     }),
@@ -166,7 +166,7 @@ export function buildAdClickFirstTodayRoute(
   options: BuildAdClickFirstTodayRouteOptions = {},
 ): AdClickFirstTodayRouteViewModel {
   const cards = Object.freeze([...buildDefaultAdClickCards(candidates)].sort(byLowestActiveTime));
-  const publicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const publicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   const publicImmediateCards = Object.freeze(
     publicCards
       .filter((card) => card.todayTier === 'IMMEDIATE')
@@ -217,14 +217,6 @@ export interface BuildAdClickFirstOpportunityDetailOptions {
   readonly publicOpportunities?: readonly PublicOpportunity[];
 }
 
-export function displayablePublicCards(opportunities: readonly PublicOpportunity[]): readonly PublicOpportunityCard[] {
-  return Object.freeze(
-    opportunities
-      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity))
-      .map(toPublicOpportunityCard),
-  );
-}
-
 function publicCardMatchesQuery(card: PublicOpportunityCard, lowerQuery: string): boolean {
   return (
     card.titleKo.toLowerCase().includes(lowerQuery) ||
@@ -257,7 +249,7 @@ export function buildAdClickFirstBrowse(
 
   // Public lane: verified public opportunities only. The ad-click lane activation
   // policy is untouched; public categories become active with real verified supply.
-  const allPublicCards = displayablePublicCards(options.publicOpportunities ?? []);
+  const allPublicCards = displayablePublicOpportunityCards(options.publicOpportunities ?? []);
   let publicCards: readonly PublicOpportunityCard[];
   if (selectedCategory === 'ALL') {
     publicCards = allPublicCards;
@@ -321,7 +313,7 @@ export function buildAdClickFirstBrowse(
       : '광고·클릭·방문 적립만 현재 공개됩니다. 그 외 카테고리는 준비 중입니다.',
     publicSupplyNote:
       hasPublicInput && allPublicCards.length > 0
-        ? '공개 기회는 PADIEM에 수익을 주지 않고, 이용자가 각 업체에서 직접 신청·참여합니다.'
+        ? '공개 기회는 업체에 직접 신청·참여하며 B64는 수익을 받지 않습니다.'
         : null,
     accountOnboardingVisibleToConsumer: false as const,
     laterTierNavigationVisible: false as const,

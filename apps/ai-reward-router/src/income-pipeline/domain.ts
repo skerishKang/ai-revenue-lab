@@ -122,7 +122,11 @@ export function buildUserIncomeSummary(records: readonly UserIncomeRecord[]): Us
       const cur = record.expectedCurrency;
       expectedTotal.set(cur, (expectedTotal.get(cur) ?? 0) + record.expectedAmount);
     }
-    if (record.actualAmount !== null && record.actualCurrency !== null) {
+    // Only a confirmed payout counts as realised income (#987). A COMPLETED
+    // record can carry the vendor's stated amount long before that amount is
+    // actually paid, so folding it into this total would show the consumer a
+    // figure as earned that is not yet received.
+    if (record.status === 'PAID' && record.actualAmount !== null && record.actualCurrency !== null) {
       const cur = record.actualCurrency;
       actualTotal.set(cur, (actualTotal.get(cur) ?? 0) + record.actualAmount);
     }

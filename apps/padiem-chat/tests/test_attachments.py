@@ -77,7 +77,7 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": "안녕"}]},
         )
     if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
@@ -93,7 +93,8 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
         assert "max_tokens" not in seen["body"]
         assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
-        assert seen["body"]["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["body"]["business14"]
         assert "max_attempts" not in seen["body"]["business14"]
         assert "attachments" not in response.json()
     else:
@@ -135,7 +136,6 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             "/api/chat",
             json={
                 "messages": history,
-                "mode": "auto",
                 "attachments": [attachment(media_type, data, name)],
             },
         )
@@ -165,7 +165,7 @@ async def test_invalid_attachment_contract_fails_before_b14():
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         transport=httpx.MockTransport(handler),
     )
-    base = {"messages": [{"role": "user", "content": "봐줘"}], "mode": "auto"}
+    base = {"messages": [{"role": "user", "content": "봐줘"}]}
     bad_cases = [
         [{"type": "file", "name": "x.pdf", "media_type": "application/pdf", "base64": "eA=="}],
         [{"type": "image", "name": "x.gif", "media_type": "image/gif", "base64": "R0lGODlh"}],
@@ -189,7 +189,6 @@ async def test_image_attachment_and_web_tool_combination_is_not_implicitly_suppo
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": "찾아봐"}],
-                "mode": "auto",
                 "tool": "web_search",
                 "attachments": [attachment()],
             },
@@ -216,7 +215,6 @@ async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis()
             "/api/chat",
             json={
                 "messages": [{"role": "user", "content": "이 사진 뭐야?"}],
-                "mode": "auto",
                 "attachments": [attachment()],
             },
         )

@@ -61,6 +61,11 @@ def bounded_call(opener, path: str, *, method: str = "GET", payload=None, timeou
         "User-Agent": "PADIEM-B62-owner-long-context-canary/1.0",
         "Cache-Control": "no-store",
     }
+    _version_header = os.environ.get("B62_STAGED_VERSION_HEADER", "")
+    _version_id = os.environ.get("B62_STAGED_VERSION_ID", "")
+    if _version_header and _version_id:
+        # #5895 staged rollout: pin these probes to the version under test.
+        headers[_version_header] = _version_id
     data = None
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -211,7 +216,7 @@ def run() -> int:
         code, body = bounded_call(
             opener, CHAT, method="POST", timeout=CHAT_TIMEOUT_SECONDS,
             payload={
-                "mode": "auto", "tier": "plus",
+                "tier": "plus",
                 "messages": [{"role": "user", "content": prompt}],
             },
         )
@@ -243,7 +248,7 @@ def run() -> int:
         code, result = bounded_call(
             opener, CHAT, method="POST", timeout=CHAT_TIMEOUT_SECONDS,
             payload={
-                "mode": "auto", "tier": "plus", "conversation_id": chat_id,
+                "tier": "plus", "conversation_id": chat_id,
                 # Deliberately supply the displayed 8k previews to mimic the
                 # reopened browser. Server must recover full owner R2 text.
                 "messages": [
@@ -268,7 +273,7 @@ def run() -> int:
         stream = bounded_stream_call(
             opener, STREAM,
             payload={
-                "mode": "auto", "tier": "plus",
+                "tier": "plus",
                 "messages": [{"role": "user", "content":
                               "정상 작동 여부 확인입니다. 한 문장으로 답해 주세요."}],
             },

@@ -109,7 +109,7 @@ def test_the_composer_names_the_unconfirmed_online_state():
     assert "executableHint" in COMPOSER_JS
     assert "executableReady" in COMPOSER_JS
     # The control still never paints connected from the execution grant.
-    assert 'if (next === "connected") return t.connected;' in COMPOSER_JS
+    assert 'if (next === "connected") return vocabStatus("connected", t.connected);' in COMPOSER_JS
 
 
 def test_the_shared_state_still_has_one_reader_and_no_fetch():

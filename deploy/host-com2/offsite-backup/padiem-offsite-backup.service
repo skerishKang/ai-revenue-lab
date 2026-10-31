@@ -1,0 +1,24 @@
+[Unit]
+Description=PADIEM COM2 offsite encrypted backup to Cloudflare R2 (#5093)
+Wants=network-online.target
+After=network-online.target padiem-mesh-queue-backup.service padiem-chat-com2-backup.service padiem-broker-backup.service
+ConditionPathExists=/etc/padiem/offsite-backup.env
+ConditionPathExists=/etc/padiem/offsite-backup.key
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+EnvironmentFile=/etc/padiem/offsite-backup.env
+ExecStart=/opt/padiem/offsite-backup/venv/bin/python /opt/padiem/offsite-backup/offsite.py upload
+UMask=0077
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# The D1 generation root is backed up too, and only ever read: listing it here makes
+# a write into a published generation impossible rather than merely unintended.
+ReadOnlyPaths=/mnt/d/padiem /opt/padiem/backups /mnt/d/PADIEM-Servers
+ReadWritePaths=/var/lib/padiem-offsite-backup
+StandardOutput=journal
+StandardError=journal

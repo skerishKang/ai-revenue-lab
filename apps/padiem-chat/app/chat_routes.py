@@ -5,6 +5,7 @@ from .file_lane import file_resolver
 import asyncio
 import base64
 import json
+from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
@@ -14,7 +15,11 @@ from .attachments import ImageAttachment
 from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
-from .auto_grounding import AutoGroundingService, auto_grounding_may_continue
+from .auto_grounding import (
+    AutoGroundingService,
+    auto_grounding_may_continue,
+    auto_grounding_skip_fields,
+)
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -53,6 +58,7 @@ from .request_contract import (
     CustomModelSelection,
     _apply_b62_model_policy,
     _validate_payload_async,
+    declared_util_scope,
 )
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
@@ -125,21 +131,30 @@ async def _stream_with_keepalive(stream, *, interval: float = SSE_KEEPALIVE_SECO
 
     iterator = stream.__aiter__()
     pending: asyncio.Future | None = None
-    while True:
-        if pending is None:
-            pending = asyncio.ensure_future(iterator.__anext__())
-        try:
-            item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
-        except asyncio.TimeoutError:
-            yield _KEEPALIVE_SENTINEL
-            continue
-        except StopAsyncIteration:
-            return
-        except asyncio.CancelledError:
+    try:
+        while True:
+            if pending is None:
+                pending = asyncio.ensure_future(iterator.__anext__())
+            try:
+                item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
+            except asyncio.TimeoutError:
+                yield _KEEPALIVE_SENTINEL
+                continue
+            except StopAsyncIteration:
+                return
+            except asyncio.CancelledError:
+                pending.cancel()
+                raise
+            pending = None
+            yield item
+    finally:
+        # #5479: a client that left closes this generator at its yield point
+        # (GeneratorExit, which is not a CancelledError); without this, the
+        # shielded upstream read keeps running with nobody to receive it. The
+        # paths that already settled the read leave it done, where this is a
+        # no-op.
+        if pending is not None and not pending.done():
             pending.cancel()
-            raise
-        pending = None
-        yield item
 
 
 def _stream_json_error(exc: ChatRuntimeError) -> JSONResponse:
@@ -180,18 +195,29 @@ async def _close_stream(stream: Any) -> None:
 
 async def _chat_pc_tools_for_turn(
     request: Request, *, uid: str | None, model_id: str,
+    user_text: str | None = None,
 ) -> tuple[Any, ...]:
     """The PC tool declaration for this turn, or an empty tuple.
 
     Tools require BOTH a verified PC target for this account and a resolved
     route whose catalog row declares native tools; otherwise the request keeps
-    its existing shape and this turn has no PC path at all.
+    its existing shape and this turn has no PC path at all. The write tool is
+    added only when the owner's own words asked for a change.
     """
-    from .chat_pc_drive import CHAT_PC_TOOL_DEFINITIONS, pc_tool_entry_available
+    from .chat_pc_drive import pc_tools_for_turn, pc_tool_entry_available
 
     if not await pc_tool_entry_available(request, uid=uid, model_id=model_id):
         return ()
-    return CHAT_PC_TOOL_DEFINITIONS
+    return pc_tools_for_turn(user_text)
+
+
+def _last_user_text(messages: Any) -> str:
+    """The current turn's own words, which decide whether write is declared."""
+    for message in reversed(messages or ()):
+        if isinstance(message, Mapping) and message.get("role") == "user":
+            content = message.get("content")
+            return content if isinstance(content, str) else ""
+    return ""
 
 
 def _model_history_incomplete() -> JSONResponse:
@@ -307,10 +333,8 @@ async def api_chat_stream(request: Request):
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -319,7 +343,7 @@ async def api_chat_stream(request: Request):
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     if tool_request is not None or attachments:
         return JSONResponse(
@@ -504,14 +528,16 @@ async def api_chat_stream(request: Request):
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -561,6 +587,7 @@ async def api_chat_stream(request: Request):
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            util_scope=util_scope,
             **({"explicit_search": True} if raw.get("web_search") else {}),
         )
     except GroundingError as exc:
@@ -593,7 +620,7 @@ async def api_chat_stream(request: Request):
         # context and is never offered a PC tool, so it can neither be deferred
         # nor handed to the PC lane.
         pc_tools = () if browser_project_id is not None else await _chat_pc_tools_for_turn(
-            request, uid=uid, model_id=policy.model_id,
+            request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages),
         )
         stream = client.stream_text_auto(
             messages,
@@ -837,10 +864,8 @@ async def api_chat(request: Request) -> JSONResponse:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -849,7 +874,7 @@ async def api_chat(request: Request) -> JSONResponse:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
@@ -1038,14 +1063,16 @@ async def api_chat(request: Request) -> JSONResponse:
 
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -1081,7 +1108,12 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(messages, skill=skill, **({"explicit_search": True} if raw.get("web_search") else {}))
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(
+                    messages,
+                    skill=skill,
+                    util_scope=util_scope,
+                    **({"explicit_search": True} if raw.get("web_search") else {}),
+                )
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client
@@ -1119,6 +1151,10 @@ async def api_chat(request: Request) -> JSONResponse:
                         result.update(grounding_fallback_fields(exc))
                 else:
                     result = await _plain_completion()
+                    # #6090: an automatic search skipped because the request is a
+                    # document says so in Korean; a plain long answer says nothing.
+                    if auto_decision is not None:
+                        result.update(auto_grounding_skip_fields(auto_decision))
             else:
                 grounded = request.app.state.grounded_chat
                 result = await grounded.complete(

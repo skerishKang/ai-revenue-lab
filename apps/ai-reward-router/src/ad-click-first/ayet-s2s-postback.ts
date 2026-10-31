@@ -20,18 +20,53 @@ function phpUrlencode(value: string): string {
     .replace(/[!'()*~]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 }
 
-/** Mirrors PHP ksort(..., SORT_STRING) + http_build_query(..., '', '&') for scalar callback parameters. */
-export function canonicalAyetS2SParameterString(parameters: AyetS2SParameters): string {
+/**
+ * The two canonical strings ayeT's own documentation shows for the same job.
+ *
+ * The PHP reference (`ksort(..., SORT_STRING)` + `http_build_query`) escapes
+ * `*` as `%2A`; the JavaScript reference (`new URLSearchParams(...).toString()`)
+ * leaves `*` alone. Every other character — space to `+`, `!` `'` `(` `)` `~`,
+ * `%`, `/`, `-`, `.`, `_` — encodes identically in both, measured rather than
+ * assumed. A publisher cannot know which one the sending server used, and a
+ * mismatch costs a real reward, so both are accepted. The API key is secret
+ * either way, so accepting the provider's own two documented recipes widens no
+ * authority.
+ */
+export type AyetS2SCanonicalization = 'php' | 'urlsearchparams';
+
+function urlSearchParamsEncode(value: string): string {
+  return new URLSearchParams({ k: value }).toString().slice(2);
+}
+
+function canonicalEntries(parameters: AyetS2SParameters): Array<readonly [string, string]> {
   return Object.entries(parameters)
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([key, value]) => `${phpUrlencode(key)}=${phpUrlencode(String(value))}`)
+    .map(([key, value]) => [key, String(value)] as const)
+    .sort(([left], [right]) => left.localeCompare(right));
+}
+
+export function canonicalAyetS2SParameterString(
+  parameters: AyetS2SParameters,
+  style: AyetS2SCanonicalization = 'php',
+): string {
+  return canonicalEntries(parameters)
+    .map(([key, value]) => `${style === 'php' ? phpUrlencode(key) : urlSearchParamsEncode(key)}=${style === 'php' ? phpUrlencode(value) : urlSearchParamsEncode(value)}`)
     .join('&');
 }
 
-export function expectedAyetS2SSecurityHash(parameters: AyetS2SParameters, publisherApiKey: string): string {
+export function expectedAyetS2SSecurityHash(
+  parameters: AyetS2SParameters,
+  publisherApiKey: string,
+  style: AyetS2SCanonicalization = 'php',
+): string {
   return createHmac('sha256', publisherApiKey)
-    .update(canonicalAyetS2SParameterString(parameters), 'utf8')
+    .update(canonicalAyetS2SParameterString(parameters, style), 'utf8')
     .digest('hex');
+}
+
+function hashMatches(providedSecurityHash: string, expected: string): boolean {
+  const actualBuffer = Buffer.from(providedSecurityHash.toLowerCase(), 'hex');
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
 }
 
 export function verifyAyetS2SSecurityHash(
@@ -40,10 +75,8 @@ export function verifyAyetS2SSecurityHash(
   publisherApiKey: string,
 ): boolean {
   if (!publisherApiKey || !/^[0-9a-f]{64}$/i.test(providedSecurityHash)) return false;
-  const expected = expectedAyetS2SSecurityHash(parameters, publisherApiKey);
-  const actualBuffer = Buffer.from(providedSecurityHash.toLowerCase(), 'hex');
-  const expectedBuffer = Buffer.from(expected, 'hex');
-  return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
+  return hashMatches(providedSecurityHash, expectedAyetS2SSecurityHash(parameters, publisherApiKey, 'php'))
+    || hashMatches(providedSecurityHash, expectedAyetS2SSecurityHash(parameters, publisherApiKey, 'urlsearchparams'));
 }
 
 function stringParam(parameters: AyetS2SParameters, key: string): string {
@@ -68,20 +101,27 @@ export function normalizeVerifiedAyetS2SRewardPostback(input: {
 
   const callbackType = stringParam(input.parameters, 'callback_type');
   const isChargebackFlag = stringParam(input.parameters, 'is_chargeback');
+  const rawCurrencyAmount = Number(stringParam(input.parameters, 'currency_amount'));
   const isChargeback = callbackType === 'chargeback' || isChargebackFlag === '1';
-  const isConversion = callbackType === 'conversion' && isChargebackFlag !== '1';
+  // The rewarded-video callback macro table does not list callback_type, so a
+  // callback carrying only the documented amount and chargeback fields is
+  // classified from those. An explicit callback_type still decides, and the
+  // non-reward types ayeT documents for other integrations (installation, iap,
+  // iaa, optional, survey) stay refused.
+  const isConversion = !isChargeback
+    && (callbackType === 'conversion'
+      || (callbackType === '' && Number.isFinite(rawCurrencyAmount) && rawCurrencyAmount > 0));
   if (!isChargeback && !isConversion) {
     return Object.freeze({ accepted: false, decision: 'REJECT_INVALID_CALLBACK_TYPE' as const, rewardEvent: null });
   }
 
-  if (isChargeback && callbackType !== 'chargeback' && callbackType !== 'conversion') {
+  if (isChargeback && callbackType !== 'chargeback' && callbackType !== 'conversion' && callbackType !== '') {
     return Object.freeze({ accepted: false, decision: 'REJECT_INVALID_CALLBACK_TYPE' as const, rewardEvent: null });
   }
 
   const rawTransactionId = stringParam(input.parameters, 'transaction_id');
   const externalUserId = stringParam(input.parameters, 'external_identifier');
   const currencyIdentifier = stringParam(input.parameters, 'currency_identifier') || 'AYET_REWARD_UNIT';
-  const rawCurrencyAmount = Number(stringParam(input.parameters, 'currency_amount'));
   const originalTransactionId = normalizeOriginalTransactionId(rawTransactionId, isChargeback);
   const observedAtValid = Number.isFinite(Date.parse(input.observedAt));
 

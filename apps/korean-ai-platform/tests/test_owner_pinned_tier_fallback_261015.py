@@ -25,7 +25,7 @@ def test_google_free_grade_has_exact_owner_backups(monkeypatch):
         "google/gemma-4-31b-it",
     )
     decision = router_core.resolve_manual_route(
-        TIER_DEFAULT_B14_MODEL, allow_external_fallback=False, product_tier="free",
+        TIER_DEFAULT_B14_MODEL, product_tier="free",
     )
     assert decision.selected_model == TIER_DEFAULT_B14_MODEL
     assert decision.fallback_allowed
@@ -45,7 +45,7 @@ def test_other_primary_or_grade_does_not_inherit_free_fallback(monkeypatch, mode
     # refused in test_2505_b14_free_candidate_execution_block.py.
     _ready(monkeypatch)
     decision = router_core.resolve_manual_route(
-        model_id, allow_external_fallback=False, product_tier=tier,
+        model_id, product_tier=tier,
     )
     assert decision.selected_model == model_id
     assert not decision.fallback_allowed
@@ -72,7 +72,7 @@ def test_a_caller_cannot_narrow_the_owner_roster_with_an_attempt_count(monkeypat
     _ready(monkeypatch)
     decision = router_core.resolve_route(
         TIER_DEFAULT_B14_MODEL,
-        {"product_tier": "free", "allow_external_fallback": False, "max_attempts": 1},
+        {"product_tier": "free", "max_attempts": 1},
     )
     assert decision.route_mode == "manual"
     assert decision.fallback_allowed is True
@@ -94,21 +94,21 @@ def test_an_explicit_attempt_count_does_not_narrow_the_nonstreaming_contract(mon
     ]
 
 
-def test_b14_accepts_the_attempt_option_but_never_returns_it_as_a_bound():
-    """#4317: the option is accepted for wire compatibility only.
-
-    It is not forwarded to the router, so it can no longer narrow the
-    candidate list.
+def test_b14_still_accepts_the_attempt_option_only_to_drop_it(caplog):
+    """B4 grace: the scorer-era attempt option is accepted, logged, and
+    dropped — the deployed callers still send it, and it can never reach the
+    router. The next B14 release refuses it as an unknown field again.
     """
+    import logging
+
     from app.pilot.gateway import _validate_b14_options
-    assert "max_attempts" not in _validate_b14_options({"max_attempts": 50})
-
-
-@pytest.mark.parametrize("value", [0, -1, True, 1.5, "50"])
-def test_b14_rejects_invalid_attempt_budget(value):
-    from app.pilot.gateway import _InvalidBody, _validate_b14_options
-    with pytest.raises(_InvalidBody):
-        _validate_b14_options({"max_attempts": value})
+    with caplog.at_level(logging.WARNING, logger="korean-ai-platform.pilot"):
+        for value in (50, 0, 1.5, "50"):
+            assert "max_attempts" not in _validate_b14_options({"max_attempts": value})
+    assert any(
+        "b14_deprecated_business14_fields_ignored" in record.message
+        for record in caplog.records
+    )
 
 
 @pytest.mark.parametrize("tier", ["plus", "pro", "max", "admin"])

@@ -26,7 +26,7 @@
     handingOff = false;
   }
 
-  function card(id, title, description) {
+  function card(id, title, description, options) {
     const button = document.createElement("button");
     button.type = "button";
     button.id = id;
@@ -35,6 +35,12 @@
     const span = document.createElement("span");
     span.textContent = description;
     button.append(strong, span);
+    if (options && options.disabled) {
+      // Disabled, not hidden: the path exists in the product but does not work
+      // yet, and saying "coming soon" would promise a date we do not have.
+      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+    }
     return button;
   }
 
@@ -69,8 +75,9 @@
     hint.textContent = "견적 금액 입력과 달리, 앞으로 반복 사용할 견적서 모양을 등록합니다. 저장·적용은 기존 승인 절차를 따릅니다.";
     const choices = document.createElement("div");
     choices.className = "b66-skill-start-choices";
-    const fromFile = card("b66SkillStartFromFile", "기존 파일에서 만들기",
-      "PDF·엑셀·사진 등의 견적서에서 초안을 만들고 직접 확인합니다.");
+    const fromFile = card("b66SkillStartFromFile", "기존 파일에서 만들기 (지금은 사용할 수 없음)",
+      "파일에서 양식 구조를 자동으로 읽는 기능은 아직 없습니다. 지금은 아래 두 가지로 만들 수 있습니다: 빈 양식 직접 만들기, 운영자에게 맡기기.",
+      { disabled: true });
     const fromBlank = card("b66SkillStartFromBlank", "빈 양식 직접 만들기",
       "제목·표·회사정보·배치를 직접 구성합니다.");
     const fromAssist = card("b66SkillStartAssist", "운영자에게 맡기기",
@@ -113,10 +120,12 @@
       const fromBlank = byId("b66SkillStartFromBlank");
       const fromAssist = byId("b66SkillStartAssist");
       const safe = handlers || {};
-      fromFile.onclick = () => handOff(safe.fileOpen);
+      // The file path stays disabled: no automatic source extraction exists yet,
+      // and opening the wizard would claim it does.
+      fromFile.onclick = null;
       fromBlank.onclick = () => enter(byId("skillManualPanel"), safe.blankOpen, safe.blankCancel);
       fromAssist.onclick = () => handOff(safe.assistOpen);
-      fromFile.focus();
+      fromBlank.focus();
       return true;
     }
   });

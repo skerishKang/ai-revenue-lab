@@ -54,10 +54,20 @@
   background: transparent;
 }
 
+/* padiem-foundation.css, imported through padiem-cinematic-chat.css, floors the shell at
+ * min-width: 320px. On a 320px phone a classic scrollbar leaves a 310px content box, so that
+ * floor made the whole page pan 10px sideways - measured in the user's Tabbit browser, and
+ * invisible in headless Chromium, whose scrollbars overlay the content. This page is fluid
+ * (--cine-measure is percentage based), so it has no use for the app shell's floor. */
+.councillor-body { min-width: 0; }
+
 .councillor-skip {
   position: absolute;
   left: -9999px;
   z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;   /* 실측 40px → 포커스 시 누르는 면도 44px */
   padding: 10px 16px;
   border-radius: 12px;
   background: var(--panel, #fff);
@@ -118,6 +128,55 @@
 }
 .councillor-topbar.is-anchored .councillor-brand-name { color: var(--text, #19191d); }
 .councillor-topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+/* #5786 페이지 구역 내비게이션.
+ * 히어로 아래로 스크롤해야만 다른 구역에 닿던 단일 페이지를, 어디서든 이동 가능하게
+ * 만든다. 헤더가 position:fixed 이므로 앵커가 제목 아래로 숨지 않도록 모든 이동
+ * 대상에 scroll-margin 을 함께 준다 — 이 두 가지는 한 짝이다. */
+/* The offset has to be declared where the sections can INHERIT it. On the topbar it
+ * was invisible to them - the header is a sibling of <main>, and a custom property does
+ * not travel sideways - so scroll-margin resolved to nothing and every phone anchor
+ * landed under the fixed bar. The script overwrites this with the measured bar height;
+ * the value here is only the no-JS floor.
+ * --cine-reveal-shift is the same number the reveal animation moves an unvisited
+ * section down by. A jump is measured from that shifted box, so the margin carries it
+ * too: the landing can then only ever be too low, never tucked under the bar. */
+:root { --cine-anchor-offset: 92px; --cine-reveal-shift: 22px; }
+/* 320px에서 스크롤로 감추는 대신 두 줄로 접는다. 접힌 끝이 화면 밖으로 나가는
+ * 가로 스크롤 내비는 이동표로서 자격이 없다. */
+.councillor-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px 4px;
+  min-width: 0;
+}
+.councillor-nav a {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;   /* 터치 하한은 변의 길이가 아니라 두 변 모두 */
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--muted, #6f7079);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.councillor-nav a:hover { color: var(--accent, #6557e8); }
+.councillor-nav a[aria-current="true"] { color: var(--accent, #6557e8); font-weight: 700; }
+/* 히어로 위에서는 배경이 영상이다. 본문 색을 쓰면 사라지므로 매체 고정을 쓴다. */
+.councillor-topbar:not(.is-anchored) .councillor-nav a { color: var(--cine-on-media-faint); }
+.councillor-topbar:not(.is-anchored) .councillor-nav a:hover,
+.councillor-topbar:not(.is-anchored) .councillor-nav a[aria-current="true"] { color: var(--cine-on-media); }
+#sectionProfile, #sectionActivity, #sectionMedia, #sectionNotes, #sectionSns {
+  scroll-margin-top: calc(var(--cine-anchor-offset) + var(--cine-reveal-shift));
+}
 .councillor-badge {
   padding: 4px 10px;
   border: 1px solid var(--gold, #b8923a);
@@ -145,6 +204,7 @@
   white-space: nowrap;
 }
 .councillor-ghost:focus-visible,
+.councillor-nav a:focus-visible,
 .cine-primary:focus-visible,
 .cine-secondary:focus-visible,
 .cine-chip:focus-visible,
@@ -317,9 +377,14 @@
 }
 .cine-cue {
   position: absolute;
-  right: var(--cine-pad);
-  bottom: 26px;
-  padding: 0;
+  right: calc(var(--cine-pad) - 10px);
+  bottom: 12px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;   /* 글자는 10px 그대로, 누르는 면만 44px 로 키운다. */
   border: 0;
   background: none;
   color: var(--cine-on-media-faint);
@@ -339,7 +404,7 @@
   padding: clamp(64px, 11vw, 140px) 0;
   border-bottom: 1px solid var(--line, #e3e3e9);
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(var(--cine-reveal-shift));
   transition: opacity .6s ease, transform .6s ease;
 }
 .cine-section.is-in { opacity: 1; transform: none; }
@@ -411,7 +476,9 @@
   text-transform: uppercase;
 }
 .cine-timeline-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;   /* 실측 26px → 모바일 하한. 텍스트 링크라도 누르는 칸은 44px. */
   color: var(--text, #19191d);
   font-size: clamp(17px, 2vw, 21px);
   font-weight: 600;
@@ -482,7 +549,8 @@
   text-transform: uppercase;
 }
 .cine-tile-title { font-size: 16px; font-weight: 600; line-height: 1.5; letter-spacing: -.01em; color: var(--cine-on-media); }
-.cine-tile-title a { color: inherit; text-decoration: none; }
+/* 실측 154x21, 189x21 — 타일 제목 링크는 문단의 유일한 자식이라 박스를 키워도 줄이 깨지지 않는다. */
+.cine-tile-title a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .cine-tile-title a:hover { color: var(--accent, #88c9ff); text-decoration: underline; }
 .cine-tile-title.is-unlinked { color: var(--cine-on-media-faint); }
 .cine-tile-note { margin: 0; color: var(--cine-on-media-soft); font-size: 12px; line-height: 1.6; }
@@ -522,7 +590,16 @@
   letter-spacing: .12em;
   text-transform: uppercase;
 }
-.cine-link-title { color: var(--cine-on-media); font-size: 15px; font-weight: 600; text-decoration: none; }
+/* 실측 20px - 의회 공개 링크 제목도 모바일 터치 하한을 맞춘다. */
+.cine-link-title {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--cine-on-media);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
 .cine-link-title:hover { color: var(--accent, #88c9ff); text-decoration: underline; }
 .cine-link-title.is-unlinked { color: var(--cine-on-media-faint); }
 .cine-link-arrow { color: var(--cine-on-media-faint); font-size: 13px; text-align: right; }
@@ -584,15 +661,22 @@
 .cine-admin-signin:hover { text-decoration: underline; }
 .cine-admin-note { margin: 0; color: var(--cine-muted-strong); font-size: 12px; line-height: 1.6; }
 .cine-admin-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+/* 실측 68x20 / 56x20 / 94x20 — 의원3종으로 들어가는 유일한 입구가 손가락보다 작았다.
+ * 박스를 44px로 세우면 border 밑선이 글자에서 19px 아래로 떨어지므로, 선을 border에서
+ * text decoration으로 옮겨 라벨 바로 아래 지금 위치를 유지한다. */
 .cine-admin-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--text, #19191d);
   font-size: 13px;
   font-weight: 600;
-  text-decoration: none;
-  border-bottom: 1px solid var(--line, #e3e3e9);
-  padding-bottom: 2px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--line, #e3e3e9);
 }
-.cine-admin-links a:hover { color: var(--accent, #6557e8); border-bottom-color: var(--accent, #6557e8); }
+.cine-admin-links a:hover { color: var(--accent, #6557e8); text-decoration-color: var(--accent, #6557e8); }
 .councillor-footer-line {
   width: var(--cine-measure);
   margin: 0 auto;
@@ -628,7 +712,32 @@ html[data-cine-motion="off"] .cine-poster:not([hidden]) { display: block; }
   .cine-feature { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
   .cine-feature-media { aspect-ratio: auto; height: 100%; min-height: 340px; }
 }
+/* brand + actions + nav cannot share one line below the desktop breakpoint, and a
+ * 207px fixed header on a 320px phone is a navigation that eats the page instead of
+ * moving through it. So from 1000px down the nav takes its own full-width row and the
+ * items are sized to fit 320 on one line (measured: 5 labels = 274px + gaps).
+ * If a user font still forces a wrap, the script measures the real bar height, so the
+ * anchor offset cannot drift. */
+@media (max-width: 1000px) {
+  :root { --cine-anchor-offset: 131px; }
+  .councillor-topbar { flex-wrap: wrap; row-gap: 6px; }
+  .councillor-nav { order: 3; width: 100%; justify-content: flex-start; }
+  .councillor-nav a { padding: 0 6px; font-size: 13px; letter-spacing: -0.01em; }
+}
+/* 320px: brand + actions overflowed by 21px and pushed the header to a third row.
+ * Trimming the ghost pill padding buys back exactly that, and min-width keeps every
+ * nav target on the 44px floor without forcing a second nav row (measured 287 ≤ 292). */
+@media (max-width: 360px) {
+  :root { --cine-anchor-offset: 169px; }
+  .councillor-ghost { padding-inline: 6px; }
+  .councillor-nav { gap: 0 4px; }
+  .councillor-nav a { min-width: 44px; justify-content: center; padding: 0 4px; font-size: 12px; }
+}
 @media (max-width: 720px) {
+  /* brand + actions no longer share a line at this width: trim the ghost padding by
+   * the 9px that overflowed rather than pushing the actions onto a third row. */
+  .councillor-ghost { padding-inline: 10px; }
+
   .cine-hero { min-height: 92svh; padding-top: 120px; }
   .cine-name { font-size: clamp(46px, 17vw, 76px); }
   .cine-lead { max-width: none; }

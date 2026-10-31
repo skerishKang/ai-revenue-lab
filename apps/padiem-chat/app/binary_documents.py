@@ -31,6 +31,7 @@ _BINARY_ERROR_MESSAGES = {
     "empty_document": "빈 문서는 첨부할 수 없습니다.",
     "pdf_magic_mismatch": "PDF 형식과 실제 파일 내용이 일치하지 않습니다.",
     "pdf_encrypted": "암호화된 PDF는 현재 첨부할 수 없습니다.",
+    "ooxml_link_entry": "문서 압축 안에 안전하지 않은 경로 항목이 있어 열지 않았습니다.",
     "pdf_no_pages": "PDF에서 읽을 페이지를 찾지 못했습니다.",
     "pdf_empty_text": "이 PDF에서는 텍스트를 읽지 못했습니다. 스캔 문서 OCR은 아직 지원하지 않습니다.",
     "pdf_invalid": "PDF를 안전하게 읽지 못했습니다.",
@@ -52,11 +53,23 @@ _BINARY_ERROR_MESSAGES = {
 _OOXML_CODES = {
     "ooxml_archive_size",
     "ooxml_unsafe_path",
-    "ooxml_encrypted",
     "ooxml_entry_size",
     "ooxml_dtd_rejected",
     "ooxml_malformed",
     "ooxml_invalid_xml",
+}
+# An encrypted document is not a damaged one. "안전하게 읽지 못했습니다" sends the
+# owner to look for a corrupt file when the real answer is a password they set.
+_OOXML_ENCRYPTED_MESSAGES = {
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": (
+        "암호화된 DOCX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": (
+        "암호화된 PPTX는 현재 첨부할 수 없습니다."
+    ),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": (
+        "암호화된 XLSX는 현재 첨부할 수 없습니다."
+    ),
 }
 
 
@@ -76,22 +89,40 @@ def _decode_payload(payload: Any) -> bytes:
     return decoded
 
 
-def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
-    if exc.code in _OOXML_CODES:
+def guidance_for_reason_code(code: str, media_type: Any) -> str | None:
+    """The per-code user guidance for one Core reason code, or None.
+
+    The single wording authority for document refusals: the direct parse path
+    (``_translate_binary_error``) and the file-lane resolve path both pick
+    their answer here, so one code can never grow two different wordings.
+    """
+
+    if code == "ooxml_encrypted":
+        return (
+            _OOXML_ENCRYPTED_MESSAGES.get(media_type)
+            or "암호화된 문서는 현재 첨부할 수 없습니다."
+        )
+    if code in _OOXML_CODES:
         if media_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            return BinaryDocumentValidationError("XLSX 압축 구조를 안전하게 읽지 못했습니다.")
+            return "XLSX 압축 구조를 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            return BinaryDocumentValidationError("DOCX 파일을 안전하게 읽지 못했습니다.")
+            return "DOCX 파일을 안전하게 읽지 못했습니다."
         if media_type == "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-            return BinaryDocumentValidationError("PPTX 파일을 안전하게 읽지 못했습니다.")
-    message = _BINARY_ERROR_MESSAGES.get(exc.code)
-    if message is None and exc.code in {
+            return "PPTX 파일을 안전하게 읽지 못했습니다."
+    message = _BINARY_ERROR_MESSAGES.get(code)
+    if message is None and code in {
         "invalid_text",
         "binary_text_rejected",
         "excessive_control_characters",
     }:
         message = "문서에서 추출한 텍스트를 사용할 수 없습니다."
-    return BinaryDocumentValidationError(message or "지원하지 않는 문서 형식입니다.")
+    return message
+
+
+def _translate_binary_error(exc: DocumentNormalizationError, media_type: Any) -> BinaryDocumentValidationError:
+    return BinaryDocumentValidationError(
+        guidance_for_reason_code(exc.code, media_type) or "지원하지 않는 문서 형식입니다."
+    )
 
 
 def _validated_item_payload(item: Any) -> tuple[Any, Any, bytes]:

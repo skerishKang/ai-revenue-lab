@@ -141,8 +141,18 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # calls still enforce 32MiB. Path/encryption/DTD/inflation guards are unchanged.
 # The Core signature fixture names this additive keyword; file-lane tests prove
 # >32MiB acceptance and default rejection before/after the CPython request.
+# Re-pinned for #2824: the archive authority gained a link-entry refusal, now
+# reads the local file header's copy of the encryption flag (zipfile reports only
+# the central-directory copy), and classifies an OLE-wrapped EncryptedPackage as
+# encrypted instead of malformed. The guards these canaries protect -- archive
+# path, encryption, DTD, inflation, the NUL and control-character rules, and
+# locator provenance -- are unchanged or strengthened, and no parser, process,
+# network, filesystem, OCR, provider or Production authority was added. No bound
+# was introduced or retuned: the entry count and the archive-wide uncompressed
+# total stay unenforced (#5573), and the 1000x ratio and the 32MiB per-member
+# ceiling are untouched.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "6886a3b09955ae48ddf69306a39fb7b1239067aed57c71280206e9e74048cc3c",
+    CORE_PACKAGE / "document_normalization.py": "a13344c3a1d86df7b4340ee4bc47c25bf333c17060037b4a0d1ab2204b794b95",
     CORE_PACKAGE / "document_semantics.py": "336eb0b93605833f30e70ac866f9e22cb2f47f39ea5c5ac0d81a7028ca2bc043",
     CORE_TESTS / "test_document_semantics.py": "c350dc331d52a3507d23d2fdb370cd41607c468255bdf2bf4d11486885272494",
     CORE_TESTS / "test_document_normalization.py": "881a3ea5ba15584f6365922302e164d2f7e7f1e75b3e50df7a1822187e0a9d5e",

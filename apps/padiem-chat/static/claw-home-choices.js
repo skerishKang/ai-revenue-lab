@@ -389,21 +389,32 @@
   // reads the existing device directory snapshot, so this card opens no
   // connection of its own and the two surfaces cannot disagree.
   const COMPUTER_STATE_COPY = {
-    connected: ["컴퓨터가 연결되어 있습니다.", "A computer is connected."],
+    connected: ["연결된 PC가 있습니다.", "A PC is connected."],
     connecting: ["컴퓨터 연결 상태를 확인하는 중입니다.", "Checking the computer connection status."],
-    disconnected: ["컴퓨터가 연결되어 있지 않습니다.", "No computer is connected."],
-    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다.", "The computer connection status could not be confirmed."],
+    disconnected: ["연결된 PC가 없습니다.", "No PC is connected."],
+    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.", "The computer connection status could not be confirmed. Please retry."],
     preparing: ["컴퓨터 연결 기능은 아직 준비 중입니다.", "The computer connection feature is not available yet."],
   };
+  // The four connector states come from the shared vocabulary, so this card,
+  // the Claw tiles and the composer chip say the same line for the same
+  // state. The one static line in the card is retired as soon as the live
+  // state is written — one card never shows two different truths.
+  const VOCAB_STATE = { connected: "connected", connecting: "checking", disconnected: "disconnected", unavailable: "failed" };
   function renderComputerState(state) {
     if (!statusText || typeof state !== "string") return;
     const copy = COMPUTER_STATE_COPY[state];
     if (!copy) return;
     const en = document.documentElement.lang === "en";
-    statusText.textContent = en ? copy[1] : copy[0];
+    const vocab = window.PadiemConnectorVocabulary;
+    const key = VOCAB_STATE[state];
+    statusText.textContent = vocab && key ? (vocab.status(key) || (en ? copy[1] : copy[0])) : (en ? copy[1] : copy[0]);
     statusText.hidden = false;
     const card = document.getElementById("connectorComputerCard");
-    if (card) card.dataset.connectorStatus = state;
+    if (card) {
+      card.dataset.connectorStatus = state;
+      const staticLine = card.querySelector(".capability-read");
+      if (staticLine) staticLine.hidden = true;
+    }
   }
   function refreshComputerConnectionState() {
     const shared = window.PadiemComputerConnectionState;

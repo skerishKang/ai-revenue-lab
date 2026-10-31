@@ -83,7 +83,7 @@ def _spec(*, listing: bool) -> ToolSpec:
               else "Hark Office selected local file read",
         description="User confirmation of canonical Office intent only, not file access",
         owner="core", side_effect=ToolSideEffect.NONE,
-        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        approval_policy=ApprovalPolicy.EXTERNAL_AUTHORIZATION,
         auth_scope=(FILE_SCOPE,), input_schema=_schema(listing=listing),
         output_contract={"type": "object", "fields": [
             "intent_confirmed", "request_fingerprint",
@@ -132,6 +132,10 @@ def build_hark_office_p01_tool_binding() -> EngineToolBinding:
     authority = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(FILE_SCOPE,),
+        # Owner decision 2026-10-28: the owner's connected PC lane is the
+        # external authorization; each invocation is re-verified against the
+        # selected root before any file is touched.
+        externally_authorized_tools=frozenset({LIST_TOOL_ID, READ_TOOL_ID}),
     )
     return EngineToolBinding(
         app_id=APP_ID, tool_runtime=runtime, registry=registry,

@@ -71,7 +71,6 @@ env:
   MIGRATIONS_DIR: apps/padiem-chat/migrations
   B62_WORKER: padiem-chat
   D1_BINDING: PADIEM_CHAT_DB
-  TARGET_SHA: ${{ inputs.target_sha }}
   UP_TO: ${{ inputs.up_to }}
   ALLOW_TABLE_DROP: ${{ inputs.allow_table_drop }}
   CONFIRMATION: ${{ inputs.confirmation }}
@@ -81,7 +80,59 @@ jobs:
     name: Contract (offline, no Cloudflare access)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    outputs:
+      target_sha: ${{ steps.b62_target_sha.outputs.target_sha }}
     steps:
+      # The body below is copied verbatim from the marked region of
+      # .github/scripts/b62_verify_target_sha.py, which stays the rule's only authority:
+      # a step that runs before any checkout has no repository to read a script from.
+      - name: Verify target_sha shape before any checkout
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: b62_target_sha
+        env:
+          B62_TARGET_SHA_RAW: ${{ inputs.target_sha }}
+        shell: bash
+        run: |
+          python3 - <<'B62_TARGET_SHA_GUARD'
+          import os
+          import re
+          import sys
+
+          _SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+          def canonical_target_sha(raw):
+              # Case is the only forgiveness: a short or non-hex value is not a commit.
+              value = (raw or "").strip()
+              if len(value) != 40:
+                  return None
+              candidate = value.lower()
+              return candidate if _SHA.match(candidate) else None
+
+
+          def failure_message(raw):
+              return f"target_sha는 40자리 전체 SHA여야 합니다(입력: {len((raw or '').strip())}자리). git rev-parse origin/main 값을 넣으세요"
+
+
+          def main():
+              raw = os.environ.get("B62_TARGET_SHA_RAW", "")
+              canonical = canonical_target_sha(raw)
+              if canonical is None:
+                  sys.stdout.write("::error::" + failure_message(raw) + "\n")
+                  return 1
+              for key, name in (("GITHUB_OUTPUT", "target_sha"), ("GITHUB_ENV", "TARGET_SHA")):
+                  path = os.environ.get(key)
+                  if path:
+                      with open(path, "a", encoding="utf-8") as handle:
+                          handle.write(f"{name}={canonical}\n")
+              sys.stdout.write("B62_TARGET_SHA_INPUT_SHAPE=PASS\n")
+              return 0
+
+
+          if __name__ == "__main__":
+              raise SystemExit(main())
+          B62_TARGET_SHA_GUARD
+
       - name: Checkout PR exact head
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v4
@@ -94,7 +145,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.TARGET_SHA }}
+          ref: ${{ steps.b62_target_sha.outputs.target_sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -126,6 +177,7 @@ jobs:
     permissions:
       contents: read
     env:
+      TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     outputs:
@@ -144,17 +196,27 @@ jobs:
 
       - name: Require exact current main and unmodified migration source
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
+          echo 'PREMUTATION_REF_IS_MAIN=PASS'
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_HEAD_MATCHES_TARGET=PASS'
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          # Byte-for-byte, and no extra file the gate would happily execute.
-          git diff --quiet "$(git rev-parse origin/main)" -- "${MIGRATIONS_DIR}"
-          test "$(find "${MIGRATIONS_DIR}" -maxdepth 1 -name '*.sql' | wc -l)" \
-            = "$(git ls-tree -r --name-only origin/main -- "${MIGRATIONS_DIR}" | wc -l)"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            # #5895: main moved ahead while this run was starting. The plan still
+            # runs when the target is an ancestor of main and the migration
+            # directory did not move between them, because that directory is the
+            # only thing this gate applies.
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
+          fi
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          # Nothing in the migration directory may differ from, or sit beside,
+          # what this exact commit carries: git status sees both, and unlike a
+          # commit-to-worktree diff it is valid in the shallow checkout here.
+          test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'B62_D1_SOURCE_SHA_PINNED=PASS'
 
       - uses: actions/setup-python@v5
@@ -189,9 +251,14 @@ jobs:
         run: |
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
-          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-snapshot.sql
+          # One statement per --command execute: the --file path runs as an
+          # import and answers with run statistics, not with the result rows.
+          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
+            --out /tmp/b62-d1-gate-snapshot.sql --probe-out /tmp/b62-d1-gate-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-snapshot.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-snapshot.sql)" > /tmp/b62-d1-gate-snapshot.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --command="$(cat /tmp/b62-d1-gate-probe.sql)" > /tmp/b62-d1-gate-probe.json
           echo 'B62_D1_SNAPSHOT_READ=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -207,11 +274,11 @@ jobs:
             --out /tmp/b62-d1-gate-inventory.json
           LEDGER_ARGS=()
           LEDGER_PRESENT="$(python .github/scripts/b62_d1_migrate_gate.py probe \
-            --snapshot /tmp/b62-d1-gate-snapshot.json)"
+            --probe /tmp/b62-d1-gate-probe.json)"
           if [ "${LEDGER_PRESENT}" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql --out /tmp/b62-d1-gate-ledger.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
           fi
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
@@ -220,8 +287,18 @@ jobs:
             --up-to "${UP_TO}" \
             --out /tmp/b62-d1-gate-detail.sql
           if [ -s /tmp/b62-d1-gate-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-detail.sql > /tmp/b62-d1-gate-detail.json
+            rm -rf /tmp/b62-d1-gate-detail-parts
+            mkdir -p /tmp/b62-d1-gate-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-detail-parts --out /tmp/b62-d1-gate-detail.json
+            rm -rf /tmp/b62-d1-gate-detail-parts
             DETAIL_ARGS=(--detail /tmp/b62-d1-gate-detail.json)
           else
             DETAIL_ARGS=()
@@ -232,6 +309,7 @@ jobs:
             --app "$GATE_APP" \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-snapshot.json \
+            --probe /tmp/b62-d1-gate-probe.json \
             "${LEDGER_ARGS[@]}" "${DETAIL_ARGS[@]}" "${DROP_ARGS[@]}" \
             --up-to "${UP_TO}" --out /tmp/b62-d1-gate-plan.json
           {
@@ -247,17 +325,17 @@ jobs:
   apply:
     name: Record the baseline and apply the window
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply' && inputs.confirmation == 'APPLY_B62_D1_MIGRATIONS_FROM_EXACT_MAIN' }}
-    needs: readonly
+    needs: [readonly, source-contract]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: production
     permissions:
       contents: read
     env:
+      TARGET_SHA: ${{ needs.source-contract.outputs.target_sha }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_DB_FINGERPRINT: ${{ needs.readonly.outputs.db_fingerprint }}
-      READONLY_LEDGER_PRESENT: ${{ needs.readonly.outputs.ledger_present }}
       READONLY_UP_TO: ${{ needs.readonly.outputs.plan_up_to }}
     steps:
       - name: Require the explicit authorization phrase
@@ -276,13 +354,17 @@ jobs:
 
       - name: Re-require exact main, migration source and the read-only binding
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
-          git diff --quiet "$(git rev-parse origin/main)" -- "${MIGRATIONS_DIR}"
+          if ! test "$(git rev-parse origin/main)" = "${TARGET_SHA}"; then
+            python3 .github/scripts/main_currency_guard.py --target "${TARGET_SHA}" --path "${MIGRATIONS_DIR}" --path .github/scripts/b62_d1_migrate_gate.py
+          fi
+          test -z "$(git status --porcelain --untracked-files=all -- "${MIGRATIONS_DIR}")"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
           echo 'B62_D1_SOURCE_SHA_PINNED=PASS'
 
@@ -316,16 +398,17 @@ jobs:
         run: |
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
+          resp=/tmp/b62-d1-gate-bookmark.json
           # GET only: POST on this endpoint CREATES a recovery bookmark.
-          mark="$(curl -fsS \
+          curl -fsS \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/time_travel/bookmark" \
-            | python -c 'import json,sys; print(json.load(sys.stdin).get("result",{}).get("id",""))')"
-          python - "${mark}" <<'PY'
-          import re, sys
-          if not re.fullmatch(r"[A-Za-z0-9_-]{12,130}", sys.argv[1] or ""):
-              raise SystemExit("D1_TIME_TRAVEL_BOOKMARK_UNAVAILABLE")
-          PY
+            -o "${resp}"
+          # The answer carries the bookmark under result.bookmark (older shape:
+          # result.id). The script validates its name shape and, on refusal,
+          # prints key names only — never the value.
+          python .github/scripts/b62_d1_migrate_gate.py bookmark --response "${resp}"
+          rm -f "${resp}"
           echo 'B62_D1_TIME_TRAVEL_BOOKMARK=AVAILABLE'
 
       - name: Measure the pre-mutation schema and row counts
@@ -337,17 +420,30 @@ jobs:
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           python .github/scripts/b62_d1_migrate_gate.py inventory --app "$GATE_APP" \
             --out /tmp/b62-d1-gate-inventory.json
-          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql --out /tmp/b62-d1-gate-before.sql
+          python .github/scripts/b62_d1_migrate_gate.py snapshot-sql \
+            --out /tmp/b62-d1-gate-before.sql --probe-out /tmp/b62-d1-gate-before-probe.sql
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-before.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-before.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-before-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-before.json \
             --up-to "${READONLY_UP_TO}" \
             --out /tmp/b62-d1-gate-before-detail.sql
           if [ -s /tmp/b62-d1-gate-before-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before-detail.sql > /tmp/b62-d1-gate-before-detail.json
+            rm -rf /tmp/b62-d1-gate-before-detail-parts
+            mkdir -p /tmp/b62-d1-gate-before-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-before-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-before-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-before-detail-parts --out /tmp/b62-d1-gate-before-detail.json
+            rm -rf /tmp/b62-d1-gate-before-detail-parts
           else
             printf '[]\n' > /tmp/b62-d1-gate-before-detail.json
           fi
@@ -386,13 +482,13 @@ jobs:
           # a single name into it. An empty migrations dir is never handed to
           # `migrations apply`, which refuses a directory with nothing in it.
           if [ "$(python .github/scripts/b62_d1_migrate_gate.py probe \
-              --snapshot /tmp/b62-d1-gate-before.json)" != "yes" ]; then
+              --probe /tmp/b62-d1-gate-before-probe.json)" != "yes" ]; then
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --command \
               "CREATE TABLE IF NOT EXISTS \"d1_migrations\"(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);"
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-ledger-check.json
+              --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-ledger-check.json
             test "$(python .github/scripts/b62_d1_migrate_gate.py probe \
-              --snapshot /tmp/b62-d1-gate-ledger-check.json)" = "yes"
+              --probe /tmp/b62-d1-gate-ledger-check.json)" = "yes"
             echo 'B62_D1_LEDGER_TABLE=CREATED'
           else
             echo 'B62_D1_LEDGER_TABLE=ALREADY_PRESENT'
@@ -406,23 +502,36 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-snapshot.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-snapshot.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-probe.json
           DROP_ARGS=()
           if [ "${ALLOW_TABLE_DROP}" = "true" ]; then DROP_ARGS=(--allow-table-drop); fi
-          if [ "${READONLY_LEDGER_PRESENT}" = "yes" ]; then
+          # The ledger is fetched by what the live probe answers NOW, not by the
+          # readonly output: this very job may have just created the table, and
+          # classify re-probes the same file and would demand the ledger.
+          LEDGER_ARGS=()
+          if [ "$(python .github/scripts/b62_d1_migrate_gate.py probe \
+              --probe /tmp/b62-d1-gate-probe.json)" = "yes" ]; then
             python .github/scripts/b62_d1_migrate_gate.py ledger-sql \
               --out /tmp/b62-d1-gate-ledger-query.sql
             npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-ledger-query.sql > /tmp/b62-d1-gate-ledger.json
+              --command="$(cat /tmp/b62-d1-gate-ledger-query.sql)" > /tmp/b62-d1-gate-ledger.json
             LEDGER_ARGS=(--ledger /tmp/b62-d1-gate-ledger.json)
-          else
-            LEDGER_ARGS=()
+          fi
+          # The column evidence this classify needs is the same window the
+          # measure step already asked about; without it the gate would classify
+          # an applied ALTER as pending and re-run it in Production.
+          DETAIL_ARGS=()
+          if [ -s /tmp/b62-d1-gate-before-detail.sql ]; then
+            DETAIL_ARGS=(--detail /tmp/b62-d1-gate-before-detail.json)
           fi
           python .github/scripts/b62_d1_migrate_gate.py classify \
             --app "$GATE_APP" \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-snapshot.json \
-            "${LEDGER_ARGS[@]}" "${DROP_ARGS[@]}" \
+            --probe /tmp/b62-d1-gate-probe.json \
+            "${LEDGER_ARGS[@]}" "${DETAIL_ARGS[@]}" "${DROP_ARGS[@]}" \
             --up-to "${READONLY_UP_TO}" --out /tmp/b62-d1-gate-plan.json
           SEED_COUNT="$(python -c 'import json;print(len(json.load(open("/tmp/b62-d1-gate-plan.json"))["seed"]))')"
           if [ "${SEED_COUNT}" != "0" ]; then
@@ -470,7 +579,9 @@ jobs:
           set -euo pipefail
           DB_ID="$(cat /tmp/b62-d1-gate-db-id)"
           npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-            --file=/tmp/b62-d1-gate-before.sql > /tmp/b62-d1-gate-after.json
+            --command="$(cat /tmp/b62-d1-gate-before.sql)" > /tmp/b62-d1-gate-after.json
+          npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+            --command="$(cat /tmp/b62-d1-gate-before-probe.sql)" > /tmp/b62-d1-gate-after-probe.json
           python .github/scripts/b62_d1_migrate_gate.py detail-sql \
             --inventory /tmp/b62-d1-gate-inventory.json \
             --snapshot /tmp/b62-d1-gate-after.json \
@@ -478,14 +589,26 @@ jobs:
             --plan /tmp/b62-d1-gate-plan.json \
             --out /tmp/b62-d1-gate-after-detail.sql
           if [ -s /tmp/b62-d1-gate-after-detail.sql ]; then
-            npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
-              --file=/tmp/b62-d1-gate-after-detail.sql > /tmp/b62-d1-gate-after-detail.json
+            rm -rf /tmp/b62-d1-gate-after-detail-parts
+            mkdir -p /tmp/b62-d1-gate-after-detail-parts
+            INDEX=0
+            while IFS= read -r STATEMENT; do
+              [ -n "${STATEMENT//[[:space:]]/}" ] || continue
+              INDEX=$((INDEX + 1))
+              npx --yes wrangler@4 d1 execute "${DB_ID}" --remote --json \
+                --command="${STATEMENT}" > "/tmp/b62-d1-gate-after-detail-parts/${INDEX}.json"
+            done < /tmp/b62-d1-gate-after-detail.sql
+            python .github/scripts/b62_d1_migrate_gate.py detail-merge \
+              --dir /tmp/b62-d1-gate-after-detail-parts --out /tmp/b62-d1-gate-after-detail.json
+            rm -rf /tmp/b62-d1-gate-after-detail-parts
           else
             printf '[]\n' > /tmp/b62-d1-gate-after-detail.json
           fi
           python .github/scripts/b62_d1_migrate_gate.py report \
             --before /tmp/b62-d1-gate-before.json \
+            --before-probe /tmp/b62-d1-gate-before-probe.json \
             --after /tmp/b62-d1-gate-after.json \
+            --after-probe /tmp/b62-d1-gate-after-probe.json \
             --detail-before /tmp/b62-d1-gate-before-detail.json \
             --detail-after /tmp/b62-d1-gate-after-detail.json \
             --inventory /tmp/b62-d1-gate-inventory.json \

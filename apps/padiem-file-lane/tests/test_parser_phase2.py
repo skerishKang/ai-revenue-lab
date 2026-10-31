@@ -130,11 +130,17 @@ def test_com2_accepts_member_above_worker_budget_and_default_core_remains_bounde
     assert failure.value.code == 'ooxml_entry_size'
 
 
-@pytest.mark.parametrize('payload', [b'not a zip', docx('<!DOCTYPE forbidden>'), package({'../evil.xml': b'<xml/>'})])
-def test_malformed_or_unsafe_ooxml_does_not_publish_text(client, tmp_path, payload):
+@pytest.mark.parametrize('payload,code', [
+    (b'not a zip', 'ooxml_malformed'),
+    (docx('<!DOCTYPE forbidden>'), 'ooxml_dtd_rejected'),
+    (package({'../evil.xml': b'<xml/>'}), 'ooxml_unsafe_path'),
+])
+def test_malformed_or_unsafe_ooxml_does_not_publish_text(client, tmp_path, payload, code):
+    # #5881: the constant reason code survives (#6316 guidance); the document
+    # still never publishes text.
     meta = upload(client, payload, 'unsafe.docx').json()
     result = client.get(f'/files/{meta["file_id"]}/text', headers=ticket())
-    assert result.status_code == 422 and result.json()['error']['code'] == 'parse_failed'
+    assert result.status_code == 422 and result.json()['error']['code'] == code
     assert not list(tmp_path.rglob('text-v2.txt')) and not list(tmp_path.rglob('*.part'))
 
 

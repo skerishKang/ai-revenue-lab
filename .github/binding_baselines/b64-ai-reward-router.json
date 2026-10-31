@@ -1,24 +1,16 @@
 {
   "worker": "b64-ai-reward-router",
-  "reviewed_utc": "2026-10-26",
-  "source_served_version": "PENDING_FIRST_INTEGRATION_DEPLOY (the live worker is still the 2026-10-23 P0 shell; this baseline records the REVIEWED target binding set of the integrated code and must be re-read from the live worker at first deploy)",
-  "decision_record": "PADIEM_SESSION_SECRET registration is a section-8 D3 change \u2014 owner decision and this baseline PR travel together (issue #987, PR #5853)",
+  "reviewed_utc": "2026-10-27",
+  "source_served_version": "cf25ac1d-4ae2-40b1-937f-9b2a77fa34b6 (read back by deploy run 40456209084). This target set is the independent-business configuration from the 2026-10-27 owner decision and becomes live at the next deploy.",
+  "decision_record": "B64 is an independent business of ai-revenue-lab, not a PADIEM Chat/Apps product (issue #987 owner decision 2026-10-27). The CONTROL_PLANE_IDENTITY and PADIEM_CHAT_SERVICE bindings introduced by #5954 leave the target set: B64 authenticates its own members from its own D1. PADIEM_SESSION_SECRET never enters it. B64_SESSION_SECRET is owner-minted and is reported by the deploy gate rather than declared here, because wrangler.jsonc cannot declare a secret value.",
   "bindings": [
     {
       "name": "B64_INCOME_DB",
       "type": "d1"
     },
     {
-      "name": "PADIEM_B64_PUBLIC_BASE_URL",
+      "name": "B64_PUBLIC_BASE_URL",
       "type": "plain_text"
-    },
-    {
-      "name": "PADIEM_CHAT_SERVICE",
-      "type": "service"
-    },
-    {
-      "name": "PADIEM_SESSION_SECRET",
-      "type": "secret_text"
     }
   ]
 }

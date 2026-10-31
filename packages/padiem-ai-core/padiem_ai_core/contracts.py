@@ -172,7 +172,7 @@ class ToolSpec:
         if self.timeout_seconds is not None and (
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, (int, float))
-            or not 0 < self.timeout_seconds <= 300
+            or not 0 < self.timeout_seconds
         ):
             raise ValueError("timeout_seconds must be a positive number or None")
         object.__setattr__(self, "auth_scope", _tuple_of_identifiers("auth_scope", self.auth_scope))

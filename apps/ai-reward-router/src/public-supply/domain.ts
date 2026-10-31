@@ -42,10 +42,10 @@ export interface PublicOpportunity {
   /**
    * Deterministic user-value score (0-10), computed from verified attributes only:
    * base 4 + reward confirmed (+2) + IMMEDIATE tier (+2) + Korea confirmed (+2).
-   * It never mixes in PADIEM monetization value.
+   * It never mixes in B64 monetization value.
    */
   readonly userValueScore: number;
-  /** Public supply pays PADIEM nothing; monetization stays separated and zero. */
+  /** Public supply earns B64 nothing; monetization stays separated and zero. */
   readonly monetizationRole: 'NONE';
 }
 
@@ -151,6 +151,88 @@ export function isPublicOpportunityDisplayable(
   const ageMs = now.getTime() - verified;
   if (ageMs > PUBLIC_OPPORTUNITY_MAX_AGE_DAYS * 24 * 60 * 60 * 1000) return false;
   return true;
+}
+
+/**
+ * Two curated records for one offer are one opportunity. Curation adds records
+ * by hand, so the same vendor/project can easily be entered twice; the consumer
+ * screens would then show the same earning path as separate choices (#987
+ * 중복 처리). Identity is the offer itself: vendor + Korean title + apply target.
+ */
+export function dedupePublicOpportunities(
+  opportunities: readonly PublicOpportunity[],
+): readonly PublicOpportunity[] {
+  const seen = new Set<string>();
+  const unique: PublicOpportunity[] = [];
+  for (const opportunity of opportunities) {
+    const key = [opportunity.vendor, opportunity.titleKo, opportunity.applyUrl]
+      .join('|')
+      .toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(opportunity);
+  }
+  return Object.freeze(unique);
+}
+
+/** The one verified-supply rule every consumer surface renders from. */
+export function displayablePublicOpportunityCards(
+  opportunities: readonly PublicOpportunity[],
+): readonly PublicOpportunityCard[] {
+  return Object.freeze(
+    dedupePublicOpportunities(opportunities)
+      .filter((opportunity) => isPublicOpportunityDisplayable(opportunity))
+      .map(toPublicOpportunityCard),
+  );
+}
+
+/**
+ * How much verified supply is left, and when it stops showing. The 7-day
+ * display window means a curated lane empties on a calendar date, so the
+ * refresh owner needs the deadline before the consumer screens go blank
+ * rather than after (#987 만료 처리).
+ */
+export interface PublicSupplyFreshness {
+  readonly activeCount: number;
+  readonly staleCount: number;
+  readonly expiringWithinDays: number;
+  readonly nextExpiryAt: string | null;
+  readonly laneEmptyAt: string | null;
+}
+
+export const PUBLIC_SUPPLY_EXPIRY_WARNING_DAYS = 2;
+
+export function assessPublicSupplyFreshness(
+  opportunities: readonly PublicOpportunity[],
+  now: Date = new Date(),
+): PublicSupplyFreshness {
+  const windowMs = PUBLIC_OPPORTUNITY_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  let activeCount = 0;
+  let staleCount = 0;
+  let expiringWithinDays = 0;
+  const expiryTimes: number[] = [];
+  for (const opportunity of opportunities) {
+    if (isPublicOpportunityDisplayable(opportunity, now)) {
+      activeCount += 1;
+      const expiresAt = Date.parse(opportunity.verifiedAt) + windowMs;
+      expiryTimes.push(expiresAt);
+      if (expiresAt - now.getTime() <= PUBLIC_SUPPLY_EXPIRY_WARNING_DAYS * 24 * 60 * 60 * 1000) {
+        expiringWithinDays += 1;
+      }
+    } else {
+      staleCount += 1;
+    }
+  }
+  const sorted = expiryTimes.sort((a, b) => a - b);
+  const next = sorted[0];
+  const last = sorted[sorted.length - 1];
+  return Object.freeze({
+    activeCount,
+    staleCount,
+    expiringWithinDays,
+    nextExpiryAt: next === undefined ? null : new Date(next).toISOString(),
+    laneEmptyAt: last === undefined ? null : new Date(last).toISOString(),
+  });
 }
 
 export function toPublicOpportunityCard(opportunity: PublicOpportunity): PublicOpportunityCard {

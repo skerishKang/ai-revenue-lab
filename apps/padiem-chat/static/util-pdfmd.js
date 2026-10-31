@@ -134,6 +134,78 @@
 
   const PDFMD_NEW_WORK_DISABLED = true; // #5710 COM2 migration, existing downloads remain.
 
+  // #6012: the shared "내 PC에서 가져오기·저장하기" part. It is loaded the first
+  // time this menu uses it, so a page that never opens the menu touches no
+  // script and no PC endpoint (#6034).
+  const PC_COPY = {
+    pick: "내 PC에서 가져오기",
+    ready: "준비 중",
+    noPc: "PC를 연결하면 내 PC 문서를 바로 변환할 수 있습니다.",
+    connect: "이 PC 연결",
+    save: "내 PC에 저장",
+    saving: "내 PC에 저장하는 중...",
+    saved: "내 PC에 저장했습니다.",
+    noSave: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    saveFailed: "저장할 결과를 불러오지 못했습니다.",
+    noFile: "PC에서 가져온 파일을 읽지 못했습니다.",
+  };
+
+  // Where each original came from on the PC, so its result can be offered back
+  // into the same folder. A file uploaded from the browser has no PC folder.
+  const pcOrigin = new Map();
+
+  let pcExchangeLoading = null;
+
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="./pc-file-exchange.css"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "./pc-file-exchange.css";
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = "./pc-file-exchange.js";
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc-exchange-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc-exchange-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    try {
+      const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
+      if (!res.ok) return null;
+      const body = await res.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // The existing Connectors surface owns the computer card: no second pairing screen.
+  function openPcConnect() {
+    const opener = document.getElementById("connectorsNavButton");
+    if (opener) opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
+  function resultName(name) {
+    return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
+  }
+
   window.initPdfMdUtility = function (panel) {
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
@@ -219,6 +291,22 @@
     fileInput.hidden = true;
     fileInput.disabled = PDFMD_NEW_WORK_DISABLED;
     panel.appendChild(fileInput);
+
+    // #6012: the same documents, taken straight from the owner's own PC.
+    const pcPick = el("button", "pdfmd-btn pdfmd-pc-pick", PC_COPY.pick);
+    pcPick.type = "button";
+    pcPick.id = "pdfmdPcPick";
+    panel.appendChild(pcPick);
+
+    const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
+    pcNote.id = "pdfmdPcNote";
+    pcNote.hidden = true;
+    const pcConnect = el("button", "pdfmd-link", PC_COPY.connect);
+    pcConnect.type = "button";
+    pcConnect.addEventListener("click", openPcConnect);
+    pcNote.appendChild(el("span", null, PC_COPY.noPc + " "));
+    pcNote.appendChild(pcConnect);
+    panel.appendChild(pcNote);
 
     const uploadStatus = el("div", "pdfmd-status", "");
     uploadStatus.id = "pdfmdStatus";
@@ -344,6 +432,56 @@
     modeSel.addEventListener("change", () => {
       updateModeHelp();
       if (currentJobId) uploadStatus.textContent = "변환 방식은 새 작업부터 적용됩니다.";
+    });
+
+    // #6012: a file chosen in the shared dialog comes back as the file lane's
+    // id; its bytes are read once and handed to the SAME upload the browser
+    // path uses, so there is one conversion and one ledger.
+    async function importFromPc(picked) {
+      if (!picked || !picked.fileId || PDFMD_NEW_WORK_DISABLED) return;
+      const name = picked.name || "문서.pdf";
+      uploadStatus.textContent = name + " 가져오는 중...";
+      let blob;
+      try {
+        const res = await fetch(
+          "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+          { credentials: "include", cache: "no-store" },
+        );
+        if (!res.ok) throw new Error("http_" + res.status);
+        blob = await res.blob();
+      } catch (e) {
+        uploadStatus.textContent = name + " " + PC_COPY.noFile + " " + describeError(e);
+        return;
+      }
+      const isZip = name.toLowerCase().endsWith(".zip");
+      const file = new File([blob], name, { type: isZip ? "application/zip" : "application/pdf" });
+      if (await uploadFile(file)) pcOrigin.set(name, picked.folder || ".");
+    }
+
+    if (PDFMD_NEW_WORK_DISABLED) {
+      pcPick.disabled = true;
+      pcPick.textContent = PC_COPY.pick + " · " + PC_COPY.ready;
+    } else {
+      pcPick.addEventListener("click", async () => {
+        let component;
+        try {
+          component = await loadPcExchange();
+        } catch (_) {
+          component = null;
+        }
+        if (!component || typeof component.open !== "function") {
+          uploadStatus.textContent = PC_COPY.noSave;
+          return;
+        }
+        component.open({
+          mode: "import",
+          onSelect: (picked) => { void importFromPc(picked); },
+        });
+      });
+    }
+    // Only an answer that there is no PC shows the notice; a failed check stays quiet.
+    void pcLinked().then((linked) => {
+      if (linked === false) pcNote.hidden = false;
     });
 
     async function uploadFile(file) {
@@ -521,6 +659,45 @@
             downloadBlob(blob, (item.name.replace(/\.[^.]+$/, "") || "document") + ".md");
           });
           actions.appendChild(mdBtn);
+
+          // #6012: the same result, put back on the owner's PC beside the file it
+          // came from. The shared part keeps the previous contents as a backup.
+          const pcSaveBtn = el("button", "pdfmd-btn", PC_COPY.save);
+          pcSaveBtn.type = "button";
+          pcSaveBtn.setAttribute("aria-label", item.name + " " + PC_COPY.save);
+          pcSaveBtn.addEventListener("click", async () => {
+            let component;
+            try {
+              component = await loadPcExchange();
+            } catch (_) {
+              component = null;
+            }
+            if (!component || typeof component.open !== "function") {
+              uploadStatus.textContent = PC_COPY.noSave;
+              return;
+            }
+            uploadStatus.textContent = PC_COPY.saving;
+            let markdown;
+            try {
+              const res = await fetch(
+                "/api/document-conversions/items/" + item.id + "/markdown?display=inline",
+                { credentials: "include" },
+              );
+              if (!res.ok) throw new Error("http_" + res.status);
+              markdown = await res.text();
+            } catch (e) {
+              uploadStatus.textContent = PC_COPY.saveFailed + " " + describeError(e);
+              return;
+            }
+            component.open({
+              mode: "save",
+              content: markdown,
+              fileName: resultName(item.name),
+              startFolder: pcOrigin.get(item.name) || ".",
+              onSave: () => { uploadStatus.textContent = PC_COPY.saved; },
+            });
+          });
+          actions.appendChild(pcSaveBtn);
 
           const origBtn = el("button", "pdfmd-btn", "원본 PDF");
           origBtn.type = "button";

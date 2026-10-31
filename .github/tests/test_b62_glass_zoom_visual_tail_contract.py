@@ -375,7 +375,7 @@ class GlassZoomAnswerSourceContract(unittest.TestCase):
         requests: list[dict] = []
         asyncio.run(zoom._install_preview_stream(page, requests))
         self.assertEqual(page.patterns, ["**/api/chat/stream"])
-        route = _FakeRoute('{"mode": "auto", "messages": []}')
+        route = _FakeRoute('{"messages": []}')
         asyncio.run(page.handlers["**/api/chat/stream"](route))
         self.assertEqual(route.status, 200)
         self.assertTrue(str(route.content_type).startswith("text/event-stream"))
@@ -388,7 +388,7 @@ class GlassZoomAnswerSourceContract(unittest.TestCase):
         done = json.loads(body.split("event: done\ndata: ", 1)[1].split("\n\n", 1)[0])
         self.assertTrue(done["done"])
         # The product's own chat request is still the request that is answered.
-        self.assertEqual(requests, [{"mode": "auto", "messages": []}])
+        self.assertEqual(requests, [{"messages": []}])
 
     def test_the_mocked_answer_carries_the_text_the_wait_requires(self):
         source = ZOOM.read_text(encoding="utf-8")

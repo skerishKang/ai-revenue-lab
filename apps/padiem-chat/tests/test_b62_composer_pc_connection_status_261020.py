@@ -325,7 +325,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     measured = page.evaluate(MEASURE)
     assert measured["present"] is True
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 미연결"
+    assert measured["label"] == "○ 연결 안 됨"
     assert "컴퓨터" in (measured["ariaLabel"] or "")
     assert measured["tooltip"] == measured["ariaLabel"]
 
@@ -335,7 +335,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "connected")
     connected = page.evaluate(MEASURE)
     assert connected["state"] == "connected"
-    assert connected["label"] == "PC 연결됨"
+    assert connected["label"] == "● 연결됨"
 
     _unroute_directory(page)
     _route_directory(page, _directory([_device("REVOKED", False, revoked=True)]))
@@ -343,7 +343,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     revoked = page.evaluate(MEASURE)
     assert revoked["state"] == "unavailable"
-    assert revoked["label"] == "상태 확인 불가"
+    assert revoked["label"] == "확인 실패 · 다시 시도"
 
     # A server that cannot answer the directory is an "unavailable" state, never a
     # connected one.
@@ -353,7 +353,7 @@ def test_the_control_reports_the_server_truth(browser, server, width) -> None:
     _wait_state(page, "unavailable")
     failed = page.evaluate(MEASURE)
     assert failed["state"] == "unavailable"
-    assert failed["label"] == "상태 확인 불가"
+    assert failed["label"] == "확인 실패 · 다시 시도"
     assert not errors, errors
     page.close()
 
@@ -387,40 +387,48 @@ def test_the_claw_execution_target_decides_the_state(browser, server) -> None:
     _wait_state(page, "disconnected")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "disconnected"
-    assert measured["label"] == "컴퓨터 미연결"
+    assert measured["label"] == "○ 연결 안 됨"
     assert not errors, errors
     page.close()
 
 
 @requires_browser
-def test_the_click_opens_the_existing_management_panel(browser, server) -> None:
-    """One click reaches the existing computer connection management UI."""
+def test_the_click_opens_the_pc_list_popover_not_the_panel(browser, server) -> None:
+    """#5573 step 1: a connected account's one click opens the small PC-list
+    popover; the directory panel stays closed behind it."""
     page = browser.new_page(viewport={"width": 1440, "height": 900})
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     _route_directory(page, _directory([_device("CONNECTED", True)]))
     _open(page, server)
+    # The composer control has no request of its own, so the read must come
+    # from the directory module; asking it directly removes the race with the
+    # page's own boot-time auth events.
+    _ask_the_directory_module_to_read(page)
+    _wait_state(page, "connected")
     page.click("#composerPcStatus")
-    page.wait_for_timeout(900)
+    page.wait_for_function(
+        "() => !!document.querySelector('.pc-connect-popover') && "
+        "!document.querySelector('.pc-connect-popover').hidden"
+    )
     opened = page.evaluate(
         """() => {
           const panel = document.getElementById('clawDeviceManagerPanel');
-          const toggle = document.getElementById('clawDeviceManagerToggle');
+          const popover = document.querySelector('.pc-connect-popover');
           return {
             panelPresent: Boolean(panel),
             panelVisible: panel ? !panel.hidden : false,
-            toggleExpanded: toggle ? toggle.getAttribute('aria-expanded') : null,
-            rows: document.querySelectorAll('#clawDeviceManagerList li').length,
+            popoverVisible: Boolean(popover) && !popover.hidden,
             state: document.getElementById('composerPcStatus').dataset.state,
           };
         }"""
     )
     assert opened["panelPresent"] is True
-    assert opened["panelVisible"] is True
-    assert opened["toggleExpanded"] == "true"
-    # The confirmed PC is listed by the existing panel, and the composer
-    # control shows the same confirmed state.
-    assert opened["rows"] >= 1
+    # The panel did not open behind the popover: the one connect flow owns the
+    # composer control now.
+    assert opened["panelVisible"] is False
+    assert opened["popoverVisible"] is True
+    # The confirmed directory state still drives the control's label.
     assert opened["state"] == "connected"
     assert not errors, errors
     page.close()
@@ -501,7 +509,7 @@ def test_a_mesh_execution_target_is_unconfirmed_not_disconnected(browser, server
     _wait_state(page, "unavailable")
     measured = page.evaluate(MEASURE)
     assert measured["state"] == "unavailable"
-    assert measured["label"] == "상태 확인 불가"
+    assert measured["label"] == "확인 실패 · 다시 시도"
     assert "온라인 상태는 확인되지 않았습니다" in (measured["ariaLabel"] or "")
     assert not errors, errors
     page.close()

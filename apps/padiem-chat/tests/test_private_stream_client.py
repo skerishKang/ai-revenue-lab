@@ -102,7 +102,8 @@ def test_private_stream_uses_core_contract_and_manual_free_only_payload():
         assert events[-1].done is True
         assert seen["stream"] is True
         assert seen["model"] == MODEL
-        assert seen["business14"]["allow_external_fallback"] is False
+        # B5: the retired fallback knob no longer travels on the wire.
+        assert "allow_external_fallback" not in seen["business14"]
         assert "max_attempts" not in seen["business14"]
         assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["messages"][0]["role"] == "system"

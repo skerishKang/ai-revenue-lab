@@ -1,0 +1,36 @@
+/* mobile-header-collapse.css — #5805, the adopted phone header behavior.
+ *
+ * CTO decision on PR #6274 (2026-10-30): the collapse behavior becomes the
+ * phone default. The header row keeps its space at the top of the page and
+ * shrinks to zero while a primary surface scrolls, leaving the 44px glass
+ * circle from interaction-polish.css (#6153); back at the top the row is
+ * restored. The circle anchors to the sticky box (mobile-header-collapse.js
+ * only mirrors the scroll state onto .app-shell[data-header-collapsed]), so
+ * the row collapses under the button without moving or resizing the 44px
+ * target. Phone-width only, no fixed element (#5804), no opt-in parameter:
+ * this is the default below 920px.
+ */
+
+@media (max-width: 920px) {
+  .app-shell .main-panel > .topbar {
+    transition: min-height .22s ease, padding .22s ease;
+  }
+  /* The button leaves the row's flow so the row can shrink to zero while
+   * the circle keeps its 44px target at the safe-area position. */
+  .app-shell .main-panel > .topbar #mobileMenu {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 6px);
+    left: 10px;
+  }
+  .app-shell[data-header-collapsed] .main-panel > .topbar {
+    min-height: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 920px) and (prefers-reduced-motion: reduce) {
+  .app-shell .main-panel > .topbar {
+    transition: none !important;
+  }
+}

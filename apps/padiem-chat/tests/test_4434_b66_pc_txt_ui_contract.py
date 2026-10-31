@@ -29,7 +29,9 @@ def test_txt_request_surface_exists_and_is_bounded():
     assert 'PC_TXT_READ_PATH = "/api/b66/connect/txt-reads/request"' in js
     assert 'PC_DIALOGUES_PATH = "/api/b66/ai/dialogues?limit=20"' in js
     assert 'PC_RESULT_PATH_PREFIX = "/api/b66/runs/"' in js
-    assert "MAX_PC_DIRECTORY_BYTES = 32768" in js
+    # #5895-D: the whole same-origin response parses; no byte gate refuses it.
+    assert "MAX_PC_DIRECTORY_BYTES" not in js
+    assert "JSON.parse(raw)" in js
     assert "/^chat_[0-9a-f]{32}$/" in js
     assert "/^run_[A-Za-z0-9]{12,80}$/" in js
     assert "attempt < 20" in js

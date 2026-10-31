@@ -1,0 +1,53 @@
+# PADIEM P01 Engine on COM2, Linux/WSL, loopback 8811 (CTO decision 2026-10-31).
+#
+# This is a TEMPLATE. It becomes a live unit only when the authorized COM2
+# operator installs and starts it; nothing in this repository installs, enables,
+# starts or restarts it, and shipping this file is not a deployment.
+#
+# Loopback only: the Engine is reached by the Chat host on the same machine over
+# 127.0.0.1 through `PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN`. A routable bind (or a
+# Tunnel ingress entry) would be a different trust decision and is not made here.
+#
+# The engine's CPython ASGI entrypoint is NOT in this repository: `worker.py` is
+# the Cloudflare Worker entry and the Windows release ships
+# `start-p01-local.ps1`. The unit starts `asgi:app` from the release directory
+# under WorkingDirectory, and `check_config.py` refuses the start when that file
+# is absent, so a missing release can never look like a running Engine.
+#
+# No credential value appears here: systemd reads names from EnvironmentFile and
+# the app resolves the values itself.
+
+[Unit]
+Description=PADIEM P01 Engine (COM2, loopback 8811)
+Documentation=https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/operations/CPYTHON_P01_ENGINE_TRANSPORT_20261031.md
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/opt/padiem/p01/app/asgi.py
+# Keep retrying a failing start and keep leaving the failure in the journal.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-p01
+Group=padiem-p01
+WorkingDirectory=/opt/padiem/p01/app
+EnvironmentFile=-/opt/padiem/p01/env/p01.env
+Environment=P01_HOST=127.0.0.1
+Environment=P01_PORT=8811
+ExecCondition=/opt/padiem/p01/venv/bin/python /opt/padiem/p01/check_config.py --app-root /opt/padiem/p01
+ExecStart=/opt/padiem/p01/venv/bin/python -m uvicorn asgi:app --host 127.0.0.1 --port 8811 --no-server-header --no-access-log
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/padiem/p01/data /opt/padiem/p01/logs
+LimitNOFILE=8192
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

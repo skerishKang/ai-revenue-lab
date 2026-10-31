@@ -1,0 +1,11 @@
+[Unit]
+Description=PADIEM COM2 connector watch every ten minutes (#82 standard 4)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=10min
+AccuracySec=30s
+Unit=padiem-connector-watch.service
+
+[Install]
+WantedBy=timers.target
