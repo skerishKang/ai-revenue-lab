@@ -104,13 +104,13 @@ ISSUE=#5115 (COM2 이전 추적)
 - **되돌리기**: 도메인을 Worker로 복귀하고 ③의 핸드백 절차로 컴2 변경분을 D1에 반영한 뒤 쓰기 재개.
 - **레인 PR**: ④-1 앞단 라우팅 구성(쓰기 효과 기준 폴백 분류 + 테스트) ④-2 전환 후 관찰·스모크 자동화 ④-3 스테이징에서 원복 리허설 1회 기록 — **3개**.
 
-**④-1 ingress 예시 파일 (이번 PR)**: 운영 `deploy/host-com2/chat/cloudflared-chat-public-com2.example.yml`(`chat.padiem.net` → `127.0.0.1:8798`), 되돌리기 `deploy/host-com2/chat/cloudflared-chat-public-worker-rollback.example.yml`(같은 hostname → Worker `workers.dev` origin). 둘 다 예시이고 설치·활성화 스크립트가 없습니다. 적용은 ④-1 게이트 워크플로가 이 파일을 읽어서 합니다. tunnel UUID·자격 파일 경로는 자리표시자이고 파일에 토큰이 없습니다.
+**④ 전환 방식 = 사용자 지정 도메인 이동 (이번 PR 정정)**: 운영 전환은 tunnel ingress를 바꾸는 방식이 아닙니다. `chat.padiem.net` Custom Domain을 `padiem-chat`(Python Worker)에서 `padiem-chat-front`로 **한 번 이동**하고, front가 서명한 뒤 `FRONT_ORIGIN=https://chat-com2.padiem.net`(tunnel → `127.0.0.1:8798`)으로 전달합니다. 근거: #6400 브랜치(`feat/chat-com2-edge-gate-261031`)의 `apps/padiem-chat-front/wrangler.toml`과 `docs/operations/CHAT_COM2_FRONT_RUNBOOK.md`.
 
-- 포트 근거: `deploy/host-com2/chat/padiem-chat-com2.service`의 `ExecStart ... --port 8798`(루프백 전용). 스테이징은 `8801`·`chat-com2.padiem.net`으로 분리돼 있습니다.
-- 단일 규칙으로 덮는 것: `/health`(앱이 직접 응답), 정적 페이지(`app_factory`가 `static/`이 있으면 `/`에 `StaticFiles` 마운트), SSE·NDJSON·WebSocket 업그레이드(`disableChunkedEncoding: false`). ⑤에서 정적 자산을 Cloudflare에 남기면 경로 규칙을 이 파일에 추가하고 hostname은 늘리지 않습니다.
-- #6400 edge proof와 맞물리는 지점: 서명 대상은 `method, path, at, id, tls`이고 Host·클라이언트 IP는 서명에 없습니다. 그래서 tunnel이 앞에 있어도 검증이 깨지지 않습니다. 조건은 ① 경로 rewrite 없음(서명 경로 `/api/claw/connector/gateway/session`) ② `x-padiem-edge-at`·`-id`·`-tls`·`-proof` 헤더 무변형 통과 ③ 서명자가 tunnel 앞(edge)에서 실행. 세 조건 중 하나라도 어긋나면 앱이 fail-closed로 거부합니다.
-- 확인 방법: ① `cloudflared tunnel --config <file> ingress validate`(오프라인) exit 0 ② `https://chat.padiem.net/health` 200 ③ 정적 페이지 1건 200 ④ `/api/chat/stream` 1턴 스트리밍 ⑤ 커넥터 게이트웨이 WSS 업그레이드가 edge proof 검증을 통과.
-- 되돌리기 우선순위: 기본은 hostname tunnel route(DNS) 제거 → `apps/padiem-chat/wrangler.toml`의 Worker custom domain(`chat.padiem.net`)이 다시 응답합니다. 예시 YAML의 Worker-origin 변형은 tunnel을 유지한 채 origin만 되돌리는 선택이고, `workers.dev` Host를 이 Worker가 받아들이는지는 실환경 확인 전에는 쓰지 않습니다.
+- `deploy/host-com2/**`의 cloudflared 예시에는 `chat.padiem.net` hostname을 두지 않습니다. tunnel이 직접 받으면 front를 건너뛰어 서명 없는 요청이 컴2로 들어옵니다. `deploy/host-com2/chat/tests/test_ingress_public_hostname_guard.py`가 이 금지를 고정합니다.
+- tunnel은 지금처럼 `chat-com2.padiem.net` → `127.0.0.1:8798` 하나입니다. 이 hostname·포트가 운영 유닛(`padiem-chat-com2.service`)과 같은지, #6400의 `FRONT_ORIGIN`과 같은지 시험이 대조합니다(#6400이 main에 없으면 skip 사유를 남기고 대기).
+- `chat-com2.padiem.net`은 공개 hostname이라 front를 거치지 않고 직접 들어올 수 있습니다. 그 경로는 #6400 `EdgeProofMiddleware`가 막습니다: `GET /health`를 뺀 **모든 http·websocket 요청**이 서명을 요구하고, 검증기는 `GET /api/claw/connector/gateway/session` 외에는 통과시키지 않습니다(그 밖의 경로는 403, WSS는 close 1008).
+- 전환·원복은 각각 1회입니다: 런북 §2(도메인 이동) / §3(재이동). 앞단 배포·도메인 이동은 저장소 PR로 실행되지 않습니다.
+- 되돌리기: Custom Domain을 `padiem-chat`으로 재이동(1회)하고, 컴2에만 쓰인 데이터는 핸드백으로 D1에 반영한 뒤 쓰기 재개.
 
 ### ⑤ Cloudflare Chat Worker를 정적 파일·입구만 남기고 정리
 
