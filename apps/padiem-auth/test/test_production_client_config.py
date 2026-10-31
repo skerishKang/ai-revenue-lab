@@ -22,10 +22,11 @@ class AuthClientConfigTest(unittest.TestCase):
         config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text())
         client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b62']
         self.assertEqual(client['id'], 'b62')
-        self.assertEqual(client['profile_claims'], ['email', 'email_verified', 'name', 'picture'])
+        self.assertNotIn('profile_claims', client)
+        staging = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b62-staging']
+        self.assertEqual(staging['profile_claims'], ['email', 'email_verified', 'name', 'picture'])
         self.assertEqual(client['redirect_uris'], [
             'https://chat.padiem.net/_test/auth/account-comparison/callback',
-            'https://chat.padiem.net/auth/shared/callback',
         ])
         keys = client['jwks']['keys']
         self.assertEqual(len(keys), 1)
