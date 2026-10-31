@@ -6016,7 +6016,7 @@ function storyMemoryBuildDynamicReaderPages(bundle,{targetChars,pageMaxPassages}
     const first=items[0]?.sourceRef,last=items[items.length-1]?.sourceRef;
     const firstLabel=first?storyMemoryFormatSourceRef(first):'';const lastLabel=last?storyMemoryFormatSourceRef(last):'';
     const rangeLabel=firstLabel&&lastLabel&&firstLabel!==lastLabel?`${firstLabel} → ${lastLabel}`:(firstLabel||lastLabel||'VERIFIED SOURCE');
-    const lang=items.some(x=>x.language==='ko')?'StoryMemory 한국어 번역 · 원문 연결':'영어 원문';
+    const lang=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web' ? '한국어: KRV-1961 · 영어: World English Bible' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
     return `${body}<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>${escapeHtml(rangeLabel)} · ${escapeHtml(lang)}</div>`;
   });
   return {pages,groups,pageSourceRefs:groups.map(g=>g.map(x=>x.sourceRef).filter(Boolean)),passages};
@@ -7616,7 +7616,8 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var fl=first?storyMemoryFormatSourceRef(first):'';
     var ll=last?storyMemoryFormatSourceRef(last):'';
     var range=(fl&&ll&&fl!==ll)?(fl+' → '+ll):(fl||ll||'VERIFIED SOURCE');
-    var lang=items.some(function(x){return x.language==='ko';})?'StoryMemory 한국어 번역 · 원문 연결':'영어 원문';
+    var isStaticBible=__smDynamicReaderState.mode==='static' && __smDynamicReaderState.work && __smDynamicReaderState.work.work_key==='bible-web';
+    var lang=isStaticBible?'한국어: KRV-1961 · 영어: World English Bible':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
     return '<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
   }
   function splitUnit(p){
