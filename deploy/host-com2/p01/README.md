@@ -31,6 +31,10 @@ The installer uses the current checkout as its default source and requires an ex
 
 ## 경계
 
+Chat canonical subject와 P01 identity HTTPS 연결 설정·머지 후 반영/복구 절차는
+[P01 identity/entitlement 수정 기록](../../../docs/operations/P01_IDENTITY_ENTITLEMENT_HOST_FIX_20261031.md)을 따른다.
+P01 identity 설정 추가만으로 Chat의 제품 내부 사용자 ID가 canonical subject로 바뀌지는 않는다.
+
 - Chat이 이 엔진을 부르는 주소는 Chat 호스트 설정이다:
   `PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN=http://127.0.0.1:8811` (설정 이름은 #6382).
   해당 `.env`는 `deploy/host-com2/chat` 소관이므로 이 꾸러미는 손대지 않고 여기 적어만 둔다.

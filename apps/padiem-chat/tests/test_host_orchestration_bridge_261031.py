@@ -11,14 +11,19 @@ Two claims are under test:
 
 from __future__ import annotations
 
+import asyncio
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import pytest
+from padiem_control_plane import AuthSessionSnapshot, AuthSessionState, CanonicalSubjectRef, SubjectType
 from starlette.applications import Starlette
 
 from app import orchestration_composition as composition
 from app.canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
-from app.local_cpython import compose_host_orchestration
+from app.control_plane_identity import IdentityBridgeError
+from app.local_cpython import CurrentCanonicalSubjectResolver, compose_host_orchestration
 from app.orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
 from app.worker_orchestration import build_orchestration_bridge
 
@@ -228,3 +233,65 @@ def test_a_short_host_credential_leaves_the_bridge_off() -> None:
     assert compose_host_orchestration(
         app, env=env, settings=_b14(), db_binding=_Db()
     ) is None
+
+
+def _canonical_session():
+    now = datetime.now(timezone.utc)
+    return AuthSessionSnapshot(
+        session_id="session-host-test", product_id="b62",
+        subject=CanonicalSubjectRef(SubjectType.USER, "sub_host_test"),
+        issued_at=now - timedelta(minutes=5), expires_at=now + timedelta(minutes=5),
+    )
+
+
+class _CurrentAuthority:
+    def __init__(self, session):
+        self.session = session
+        self.calls = []
+
+    async def resolve_current_auth_session(self, **kwargs):
+        self.calls.append(kwargs)
+        return self.session
+
+
+def test_host_resolves_current_canonical_subject_without_a_shadow_row():
+    app = Starlette(routes=[])
+    authority = _CurrentAuthority(_canonical_session())
+    app.state.control_plane_identity_authority = authority
+    env = {
+        **ENABLED,
+        "PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN": "http://127.0.0.1:8811",
+        "PADIEM_CHAT_LOCAL_P01_CALLER_ID": "b62-chat",
+        "PADIEM_CHAT_LOCAL_P01_ENGINE_CREDENTIAL": "z" * 40,
+    }
+    bridge = compose_host_orchestration(
+        app, env=env, settings=_b14(), db_binding=_Db(), client=_Engine(),
+    )
+    assert isinstance(bridge, CanonicalSubjectB62EngineOrchestrationBridge)
+    assert asyncio.run(bridge._resolve_engine_subject("usr_host_test")) == "sub_host_test"
+    assert authority.calls == [{"product_id": "b62", "product_user_id": "usr_host_test"}]
+
+
+@pytest.mark.parametrize("variant,code", [
+    ("untyped", "control_plane_session_invalid"),
+    ("product", "control_plane_session_mismatch"),
+    ("account", "control_plane_session_mismatch"),
+    ("revoked", "control_plane_session_inactive"),
+    ("expired", "control_plane_session_inactive"),
+])
+def test_host_subject_resolution_rejects_invalid_current_sessions(variant, code):
+    session = _canonical_session()
+    if variant == "untyped":
+        session = session.to_public_dict()
+    elif variant == "product":
+        session = replace(session, product_id="b54-padiem-claw")
+    elif variant == "account":
+        session = replace(session, subject=CanonicalSubjectRef(SubjectType.ACCOUNT, "account-host"))
+    elif variant == "revoked":
+        session = replace(session, state=AuthSessionState.REVOKED)
+    elif variant == "expired":
+        session = replace(session, expires_at=datetime.now(timezone.utc) - timedelta(seconds=1))
+    resolver = CurrentCanonicalSubjectResolver(_CurrentAuthority(session))
+    with pytest.raises(IdentityBridgeError) as refused:
+        asyncio.run(resolver.resolve_subject_id(product_user_id="usr_host_test"))
+    assert refused.value.code == code
