@@ -16,7 +16,7 @@ class VerifyStagingTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             module.active_version([{'versions': [{'version_id': VERSION, 'percentage': 50}]}])
 
-    def test_bindings_require_staging_database_and_no_service(self):
+    def test_bindings_require_staging_database_and_exact_service(self):
         bindings = [{'type': 'd1', 'name': 'PADIEM_CHAT_DB', 'id': module.DB},
                     {'type': 'assets', 'name': 'ASSETS'}, {'type': 'version_metadata', 'name': 'CF_VERSION_METADATA'},
                     {'type': 'plain_text', 'name': 'PC_QUEUE_BACKEND', 'text': 'd1'},
@@ -24,14 +24,26 @@ class VerifyStagingTest(unittest.TestCase):
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_LIVE_ENABLED', 'text': 'false'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_RUNTIME_MODE', 'text': 'mock'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'text': 'false'},
-                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'text': 'false'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'text': 'true'},
+                    {'type': 'plain_text', 'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_ID', 'text': 'b62-staging'},
                     {'type': 'plain_text', 'name': 'PADIEM_CHAT_PUBLIC_BASE_URL', 'text': 'https://padiem-chat-staging.charliekant.workers.dev'}]
-        module.verify_bindings({'resources': {'bindings': bindings}})
+        service = {'type': 'service', 'name': 'IDENTITY_AUTHORITY_SERVICE', 'service': 'padiem-control-plane-identity'}
+        module.verify_bindings({'resources': {'bindings': bindings}}, before=True)
+        legacy = [dict(b) for b in bindings if b['name'] != 'PADIEM_CHAT_SHARED_AUTH_CLIENT_ID']
+        next(b for b in legacy if b['name'] == 'PADIEM_CHAT_SHARED_LOGIN_ENABLED')['text'] = 'false'
+        module.verify_bindings({'resources': {'bindings': legacy}}, before=True)
+        module.verify_bindings({'resources': {'bindings': bindings + [service]}})
+        module.verify_bindings({'resources': {'bindings': bindings + [service]}}, before=True)
+        for extra in ([], [{'type': 'service', 'name': 'PRODUCTION', 'service': 'other'}],
+                      [{**service, 'service': 'other'}], [service, service],
+                      [{**service, 'environment': 'staging'}], [{**service, 'entrypoint': 'other'}]):
+            with self.subTest(extra=extra), self.assertRaises(ValueError):
+                module.verify_bindings({'resources': {'bindings': bindings + extra}})
         with self.assertRaises(ValueError):
-            module.verify_bindings({'resources': {'bindings': bindings + [{'type': 'service', 'name': 'PRODUCTION'}]}})
+            module.verify_bindings({'resources': {'bindings': bindings + [service, {'type': 'service', 'name': 'OTHER', 'service': 'other'}]}})
         bindings[0]['id'] = 'wrong'
-        with self.assertRaises(ValueError):
-            module.verify_bindings({'resources': {'bindings': bindings}})
+        with self.assertRaisesRegex(ValueError, 'staging D1 binding mismatch'):
+            module.verify_bindings({'resources': {'bindings': bindings + [service]}})
 
 if __name__ == '__main__':
     unittest.main()

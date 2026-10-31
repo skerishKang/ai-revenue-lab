@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 PRODUCTION_DB = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
 STAGING_DB = "e064ac35-6e45-4fd8-9a2c-c3ae6583c964"
 PRODUCTION_HOSTS = {"chat.padiem.net", "queue.padiem.net"}
+IDENTITY_SERVICE = ("IDENTITY_AUTHORITY_SERVICE", "padiem-control-plane-identity")
 UUID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")
 
 
@@ -32,7 +33,7 @@ def make_config(database_id, public_origin, queue_origin):
         "assets": {"directory": ".b66-worker-src/static", "binding": "ASSETS"},
         "version_metadata": {"binding": "CF_VERSION_METADATA"},
         # The shared-login staging trial uses the canonical identity authority.
-        "services": [{"binding": "IDENTITY_AUTHORITY_SERVICE", "service": "padiem-control-plane-identity"}],
+        "services": [{"binding": IDENTITY_SERVICE[0], "service": IDENTITY_SERVICE[1]}],
         "d1_databases": [{"binding": "PADIEM_CHAT_DB", "database_name": "padiem-chat-staging-db", "database_id": database_id}],
         # Start on isolated D1 while Qoder provisions the separate staging queue
         # and secret. Never silently fall back to an operational queue.
