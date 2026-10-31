@@ -22,6 +22,7 @@ from urllib.parse import urlparse
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from app.maintenance_mode import apply_write_freeze
 from app.b14_upstream_composition import (
     compose_b14_transports,
     request_correlation_headers,
@@ -1750,7 +1751,11 @@ class Default(WorkerEntrypoint):
                 canonical_subject_resolver=canonical_subject_resolver,
             ),
         )
-        return worker_app
+        # The cutover write window (#5115 step ③) applies to this entry too:
+        # the Worker has no filesystem, so only the environment switch can open
+        # it. Wrapped after every ``state`` assignment below/before so callers
+        # keep the Starlette application they attach state to.
+        return apply_write_freeze(worker_app)
 
     async def _get_worker_app(self) -> Any:
         global _worker_app, _worker_app_initialization

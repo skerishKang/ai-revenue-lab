@@ -1,0 +1,101 @@
+# Chat D1 전환 쓰기 정지 스위치와 리허설 절차 (2026-10-31)
+
+계획(#6354)의 ③ D1 전환은 "쓰기 정지 창 → 늦은 쓰기 확인 → D1 내보내기 → COM2 반영 → 패리티 MATCH → 실패 시 핸드백" 순서입니다. 이 문서는 그 창을 여닫는 스위치와, 한 바퀴 도는 절차를 고정합니다.
+
+## 1. 재사용 — 새 스위치를 만들지 않았다
+
+`apps/padiem-chat/app/maintenance_mode.py`(#5573 stage 3)가 이미 "쓰기 503 · 읽기 통과 · 파일 센티널(재시작 불필요) · 기본 꺼짐"을 구현하고 있었습니다. 이번에 필요한 것은 세 가지뿐이었습니다.
+
+1. 환경 스위치 — Cloudflare 진입은 파일시스템이 없다.
+2. 늦은 쓰기 경로 목록 — 쓰기를 하는 GET을 코드 변경 없이 동결.
+3. 두 진입점 공통 적용 — `local_cpython.build_app`(COM2 호스트)과 `worker.py`(Cloudflare)가 같은 헬퍼를 쓴다.
+
+동결 응답은 기존 그대로입니다: `503` · `{"error":{"code":"maintenance","message":"잠시 점검 중입니다. 곧 다시 이용할 수 있습니다."}}` · `cache-control: no-store` · `retry-after: 120`.
+
+## 2. 스위치
+
+| 환경 변수 | 의미 | 기본 |
+| --- | --- | --- |
+| `PADIEM_CHAT_WRITE_FREEZE` | `0/false/no/off`만 명시적 꺼짐. 그 외 값은 켜짐(오타는 안전한 쪽으로 실패) | 미설정 = 꺼짐 |
+| `PADIEM_CHAT_MAINTENANCE_SENTINEL` | 센티널 파일 경로. 파일이 있으면 켜짐, 없으면 꺼짐. 읽을 수 없으면 켜짐 | 미설정 = 꺼짐 |
+| `PADIEM_CHAT_WRITE_FREEZE_PATHS` | 동결할 읽기 경로 목록(쉼표·공백 구분, `*` 접미사는 접두사 매칭) | 비어 있음 |
+
+동작:
+- 쓰기 메서드(`POST/PUT/PATCH/DELETE`) → 503.
+- 읽기(`GET/HEAD`) → 통과. 단 `PADIEM_CHAT_WRITE_FREEZE_PATHS`에 든 경로는 503.
+- `*` 단독은 무시합니다. 사이트 전체 읽기가 멈추는 설정은 실수로도 들어가지 않게 했습니다.
+- 한 요청도 두 겹으로 막히지 않도록 `create_app` 반환 뒤 각 진입점에서 한 번만 감쌉니다. `app.state` 부착은 감싸기 전 Starlette 앱에서 끝냅니다.
+
+## 3. 재배포 필요 여부
+
+| 진입 | 창 여닫기 | 재배포 |
+| --- | --- | --- |
+| COM2 호스트(`local_cpython`) | 센티널 파일 생성·삭제 | 불필요(재시작도 불필요) |
+| Cloudflare(`worker.py`) | `PADIEM_CHAT_WRITE_FREEZE` 값 변경 | 필요 — `wrangler deploy` 1회(1~2분) |
+
+Cloudflare Workers에는 파일시스템이 없어 환경변수만 쓸 수 있습니다. D1에 플래그 행을 두면 배포 없이 열 수 있지만, 전환 창 하나를 위해 새 저장소 권위를 만드는 비용이 더 큽니다. ③의 정지 창은 계획된 짧은 구간이므로 배포 1회를 허용하고, 이 선택을 여기 기록합니다.
+
+## 4. 늦은 쓰기 경로
+
+목록은 **기본 비어 있습니다.** 아스트라5의 쓰기 효과 기준 분류표(쓰기를 하는 GET, 응답 뒤 쓰기)가 나오면 `PADIEM_CHAT_WRITE_FREEZE_PATHS`에 경로를 넣기만 하면 코드 변경 없이 같은 503으로 막힙니다. 접두사 매칭(`/api/auth/*`)을 지원하므로 OAuth 시작·콜백 묶음도 한 항목으로 덮습니다.
+
+## 5. 리허설 절차
+
+합성 또는 스테이징에서 아래 순서로 한 바퀴 돕니다. ③ 실행 시에는 같은 순서를 운영에서 씁니다.
+
+| 단계 | 하는 일 | 소요 목표 | 판정 기준 | 실패 시 |
+| --- | --- | --- | --- | --- |
+| 0 사전 | 최신 main SHA 고정, 스위치 준비, 기준선 스냅숏 보관 | 5분 | `git rev-parse HEAD` = 기록한 SHA | 중단 |
+| 1 쓰기 정지 | 센티널 생성(호스트) 또는 스위치 설정 후 배포 | 2분 | 쓰기 503·`code=maintenance`, `/health`·`/api/auth/status` 200 | 스위치 롤백 |
+| 2 늦은 쓰기 확인 | 분류표 경로 GET 503 확인 + D1 스냅숏 2회 비교(관찰 창 10분) | 12분 | 두 스냅숏의 행 수·정렬 해시·`updated_at` 최대값 차이 0 | 창 유지, 원인 경로를 목록에 추가 |
+| 3 D1 내보내기 | `wrangler d1 export --remote` | 5분 | 파일 크기 > 0, 표 수가 기준선과 동일 | 재시도 |
+| 4 COM2 반영 | 동기화 러너로 내보내기 반영 | 5분 | 반영 스크립트 종료 코드 0 | 핸드백 |
+| 5 패리티 | `chat_copy_parity` | 2분 | `CHAT_COPY_PARITY=MATCH` (종료 코드 0) | 6번 |
+| 6 되돌림 | `chat_d1_handback_gate` plan → apply | 10분 | 적용 후 5번이 `MATCH` | 창 유지, CTO 보고 |
+
+총 목표 40분 이내. 6번은 데이터를 되돌리는 경로이고, 스위치를 끄는 것은 별개입니다.
+
+## 6. 합성 리허설 실행 결과
+
+합성 SQLite 두 개(2표 5행)로 **실제 도구**를 그대로 돌린 출력입니다. 기준선을 복사한 뒤 COM2 쪽에 insert 1·update 1·delete 1을 만들고, 패리티 → 핸드백 plan → apply → 다시 패리티 순서로 진행했습니다.
+
+```
+STEP0 baseline copied, then 1 insert / 1 update / 1 delete on the COM2 side
+STEP parity-before exit=1
+    CHAT_COPY_PARITY=DRIFT tables=2 rows=4 mismatch_rows=3 mismatch_tables=2
+    CHAT_COPY_PARITY_SUMMARY=2표 4행 불일치 5
+    CHAT_COPY_TABLE_DRIFT conversations d1_rows=1 com2_rows=0 missing_on_com2=1 missing_on_d1=0 changed=0
+    CHAT_COPY_TABLE_DRIFT users d1_rows=3 com2_rows=4 missing_on_com2=0 missing_on_d1=1 changed=1
+STEP plan exit=0
+    CHAT_HANDBACK_PLAN=OK tables=2 statements=3 digest=84275eced9c338173154fbddc0c6326b271dd07e96ed1945ee28a874ec82b1de
+STEP apply exit=0
+    CHAT_HANDBACK_APPLY=READY statements=3 digest=84275eced9c338173154fbddc0c6326b271dd07e96ed1945ee28a874ec82b1de
+STEP handback showed 3 statements inside one transaction
+STEP parity-after exit=0
+    CHAT_COPY_PARITY=MATCH tables=2 rows=4 mismatch_rows=0 mismatch_tables=0
+    CHAT_COPY_PARITY_SUMMARY=2표 4행 불일치 0
+```
+
+읽는 법:
+- 패리티가 먼저 불일치를 정확히 셉니다(추가 1·변경 1·삭제 1).
+- 핸드백 plan의 문장 수(3)와 apply의 문장 수(3), 다이제스트가 같습니다 — 승인한 계획과 적용한 계획이 동일합니다.
+- 적용 뒤 패리티가 0으로 닫힙니다. 되돌림 경로가 실제로 닫힌다는 증거입니다.
+
+도구는 이 PR 워크트리에 아직 없는 #6360 브랜치 사본(`chat_copy_parity.py`, `chat_d1_handback_gate.py`)을 썼습니다. #6360이 main에 들어오면 경로만 `.github/scripts/`로 같습니다.
+
+## 7. 테스트
+
+`tests/test_chat_write_freeze.py` + `tests/test_maintenance_mode.py` → **19 passed**
+
+- 설정 없음 = 기존 동작(앱을 감싸지 않음), 쓰기 200.
+- `0/false/no/off/빈 값` = 꺼짐, 오타(`ture`) = 켜짐.
+- 스위치 켜짐: POST·PUT·PATCH·DELETE 503, `/health`·`/api/files/capabilities` 200.
+- 동결 경로 목록: 지정한 GET 503, 미지정 GET 200, 접두사 매칭, `*` 단독 무시, 정규화·중복 제거.
+- 센티널 파일: 생성 시 503, 삭제 시 200(재시작 없이 여닫힘). 읽을 수 없는 센티널은 동결로 계산.
+- 호스트 조립(`build_app`)에서 스위치만으로 503이 되고 `/health` 200 — Cloudflare 진입과 같은 헬퍼 경로 확인.
+
+## 8. 이 PR이 하지 않은 것
+
+- 운영 스위치를 켜지 않았고, 운영 D1·COM2 운영 DB에 접근하지 않았습니다.
+- 실제 80표 3,308행 규모의 리허설은 하지 않았습니다(합성 2표). ③ 실행 시 같은 절차로 운영 규모를 한 번 돕니다.
+- 늦은 쓰기 분류표가 아직 없어 경로 목록은 비어 있습니다.
