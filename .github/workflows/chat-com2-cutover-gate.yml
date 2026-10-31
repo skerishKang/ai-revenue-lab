@@ -1,0 +1,115 @@
+name: Chat COM2 cutover gate
+run-name: chat-com2/${{ inputs.mode }}/${{ inputs.target_sha }}
+
+# Evidence contract: an approved main/workflow_dispatch rehearsal producer
+# uploads chat_cutover_rehearsal.py --json as rehearsal.json in an artifact named
+# chat-cutover-rehearsal. Configure CHAT_COM2_REHEARSAL_WORKFLOW (filename) and
+# CHAT_COM2_REHEARSAL_MAX_AGE_HOURS in production; missing evidence/config fails.
+# This gate only verifies the existing write freeze. It never opens/closes it,
+# stops background writers, exports D1, or performs the separate data handback.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/chat-com2-cutover-gate.yml'
+      - '.github/scripts/chat_com2_cutover_gate.py'
+      - '.github/tests/test_chat_com2_cutover_gate.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [preflight, readonly, switch, rollback]
+      target_sha:
+        description: Exact current main SHA (40 lowercase hex characters)
+        type: string
+        required: true
+      confirmation:
+        description: <MODE>_CHAT_COM2_<target_sha> (MODE in uppercase)
+        type: string
+        required: true
+      rehearsal_run_id:
+        description: Successful approved rehearsal run with rehearsal.json artifact; except rollback
+        type: string
+        required: false
+      readonly_run_id:
+        description: Successful readonly run for this exact SHA; switch only
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+# Share the existing Python Chat production lock as well as serializing all
+# modes here. No mode/ref suffix: rollback cannot overlap an in-flight switch.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('chat-com2-contract-{0}', github.event.pull_request.number) || 'b62-production-code-deploy-gate-production' }}
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest PyYAML
+      - run: python -m pytest -q .github/tests/test_chat_com2_cutover_gate.py
+
+  gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    env:
+      MODE: ${{ inputs.mode }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      REHEARSAL_RUN_ID: ${{ inputs.rehearsal_run_id }}
+      READONLY_RUN_ID: ${{ inputs.readonly_run_id }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Validate dispatch before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_SHA" == "$GITHUB_SHA" ]]
+          case "$MODE" in
+            preflight|readonly|switch|rollback) ;;
+            *) exit 2 ;;
+          esac
+          [[ "$CONFIRMATION" == "${MODE^^}_CHAT_COM2_${TARGET_SHA}" ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        if: inputs.mode == 'switch'
+        with:
+          node-version: '22'
+      - name: Install pinned Wrangler on disposable runner
+        if: inputs.mode == 'switch'
+        run: npm install --no-save --no-audit --no-fund wrangler@4.130.0
+      - name: Execute one approved mode
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          # The front signs probes itself. Its key is never copied to this job.
+          REHEARSAL_WORKFLOW: ${{ vars.CHAT_COM2_REHEARSAL_WORKFLOW }}
+          REHEARSAL_MAX_AGE_HOURS: ${{ vars.CHAT_COM2_REHEARSAL_MAX_AGE_HOURS }}
+        run: python .github/scripts/chat_com2_cutover_gate.py
+      - name: Switch failure guidance (no automatic rollback)
+        if: failure() && inputs.mode == 'switch'
+        run: |
+          echo 'STOP: switch failed; inspect current domain ownership before any further action.'
+          echo 'After this run ends, use rollback mode with current main SHA and ROLLBACK_CHAT_COM2_<SHA>.'
+          echo 'Keep both write freezes enabled; data handback and unfreeze are separate operations.'
