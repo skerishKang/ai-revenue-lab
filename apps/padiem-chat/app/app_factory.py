@@ -431,7 +431,7 @@ async def health(request: Request) -> JSONResponse:
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "binary_document_attachment_ready": bool(request.app.state.file_lane_client.ready and BINARY_KINDS <= KINDS.keys()),
-        "auth_configured": settings.auth_mode != "off",
+        "auth_configured": settings.auth_mode != "off" or getattr(request.app.state, "shared_login_flow", None) is not None,
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
         "project_files_code_ready": True,
