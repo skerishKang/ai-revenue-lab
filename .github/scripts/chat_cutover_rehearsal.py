@@ -16,7 +16,8 @@ their own exit codes and verdict lines:
 5. ``snapshot_pair``      — ``chat_copy_parity`` between two D1 copies taken
                             across the observation window.
 6. ``reflect``            — ``chat_staging_db_from_generation`` builds the
-                            staging database from the published generation.
+                            staging database from the published generation
+                            (``--apply-pending`` when Production D1 is behind).
 7. ``parity``             — ``chat_copy_parity`` between the D1 copy and the
                             staging database.
 8. ``object_reference``   — ``chat_object_reference_check`` referenced keys vs
@@ -167,6 +168,9 @@ class Config:
     plan_out: str = ""
     timeout_seconds: float = 300.0
     synthetic: bool = False
+    #: Production D1 can be behind the repository, so the reflect call forwards
+    #: the staging tool's own ``--apply-pending``. Off by default (unchanged run).
+    apply_pending: bool = False
     stop_confirmations: tuple[str, ...] = ()
 
 
@@ -423,6 +427,8 @@ class Rehearsal:
         ]
         if self.config.migrations_dir:
             argv += ["--migrations-dir", self.config.migrations_dir]
+        if self.config.apply_pending:
+            argv.append("--apply-pending")
         return self._child("reflect", argv, "STAGING_DB_FROM_GENERATION=READY")
 
     def _parity(self) -> StageResult:
@@ -544,7 +550,8 @@ class Rehearsal:
                          "--generations-dir", self.config.generations_dir,
                          "--out", self.config.staging_db, "--force",
                          *(["--migrations-dir", self.config.migrations_dir]
-                            if self.config.migrations_dir else [])],
+                            if self.config.migrations_dir else []),
+                         *(["--apply-pending"] if self.config.apply_pending else [])],
              "STAGING_DB_FROM_GENERATION=READY"),
             ("parity", [sys.executable, str(TOOLS["parity"]),
                         "--d1", self.config.snapshot_b,
@@ -602,6 +609,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--dry-run", action="store_true", help="print the plan, run nothing")
     parser.add_argument("--synthetic", action="store_true",
                         help="allow a non-staging-root placement (tests; production stays refused)")
+    parser.add_argument("--apply-pending", action="store_true",
+                        help="forward --apply-pending to reflect (Production D1 behind the repository)")
     parser.add_argument("--confirm-stop-tick", action="store_true",
                         help="§4b: no new scheduled execution tick")
     parser.add_argument("--confirm-stop-wss", action="store_true",
@@ -634,6 +643,7 @@ def config_from_args(args: argparse.Namespace) -> Config:
         plan_out=args.plan_out,
         timeout_seconds=args.timeout,
         synthetic=args.synthetic,
+        apply_pending=args.apply_pending,
         stop_confirmations=confirmations,
     )
 
