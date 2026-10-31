@@ -14,7 +14,11 @@ from google_oauth_access_lease import (
     GoogleOAuthAccessLeaseRuntime,
 )
 from google_oauth_persisted_store import CloudflareDurableGoogleOAuthStore
-from internal_rpc_ingress import handle_internal_rpc, resolve_ingress_secret
+from internal_rpc_ingress import (
+    SERVICE_ID_POLICY_ENV, handle_internal_rpc, resolve_ingress_secret,
+    service_id_policy_from_env,
+)
+from service_id_replay import DurableObjectServiceIdReplayGuard, SqliteServiceIdReplayStore
 from google_oauth_ingress_runtime import (
     CloudflareGoogleOAuthDestinationVerificationPort,
     CloudflareGoogleOAuthTokenExchangePort,
@@ -82,6 +86,7 @@ class GoogleOAuthDurableObject(DurableObject):
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._store = CloudflareDurableGoogleOAuthStore(ctx.storage)
+        self._service_ids = SqliteServiceIdReplayStore(ctx.storage)
         sealer = GoogleOAuthWebCryptoSealer(
             key_secret_b64url=_required_env(env, "GOOGLE_OAUTH_SEAL_KEY"),
         )
@@ -110,6 +115,17 @@ class GoogleOAuthDurableObject(DurableObject):
             config=config,
             refresh_port=CloudflareGoogleOAuthRefreshPort(),
         )
+
+    async def claim_service_id(self, payload: dict) -> dict:
+        try:
+            wire = _closed_payload(payload, frozenset({"service_id", "expires_at"}), "service id claim")
+            service_id, expires_at = wire["service_id"], wire["expires_at"]
+            if not isinstance(service_id, str) or isinstance(expires_at, bool) or not isinstance(expires_at, int):
+                raise ControlPlaneContractError("invalid_google_oauth_ingress", "invalid service id claim")
+            claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
+            return {"ok": True, "claimed": claimed}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
 
     async def begin_connect(self, payload: dict) -> dict:
         try:
@@ -443,6 +459,10 @@ class Default(WorkerEntrypoint):
                 secret=secret,
                 allowed_methods=self.RPC_INGRESS_METHODS,
                 dispatcher=self,
+                service_id_policy=service_id_policy_from_env(
+                    getattr(self.env, SERVICE_ID_POLICY_ENV, None)
+                ),
+                replay_guard=DurableObjectServiceIdReplayGuard(self._stub()),
             )
             if handled is not None:
                 status, payload, headers = handled
